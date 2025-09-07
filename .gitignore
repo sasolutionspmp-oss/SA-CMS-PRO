@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+uploads/
+extracts/
+chunks/
+data.db*
