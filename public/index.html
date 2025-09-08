@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>PM Dashboard</title>
+  <style>
+    body { font-family: Arial; }
+    .column { float: left; width: 30%; padding: 10px; border: 1px solid #ccc; margin-right: 10px; }
+    .row:after { content: ""; display: table; clear: both; }
+  </style>
+</head>
+<body>
+  <h1>Project Dashboard</h1>
+  <div class="row">
+    <div class="column">
+      <h2>RFIs</h2>
+      <ul id="rfi-list"></ul>
+    </div>
+    <div class="column">
+      <h2>Submittals</h2>
+      <ul id="submittal-list"></ul>
+    </div>
+    <div class="column">
+      <h2>Safety</h2>
+      <ul id="safety-list"></ul>
+    </div>
+  </div>
+  <button id="export-summary">Export Summary</button>
+  <button id="export-pack">Export Compliance Pack</button>
+  <script>
+    async function load() {
+      const rfi = await fetch('/api/rfis').then(r=>r.json());
+      document.getElementById('rfi-list').innerHTML = rfi.map(i=>`<li>${i.title||i.id}</li>`).join('');
+      const sub = await fetch('/api/submittals').then(r=>r.json());
+      document.getElementById('submittal-list').innerHTML = sub.map(i=>`<li>${i.title||i.id}</li>`).join('');
+      const saf = await fetch('/api/safety').then(r=>r.json());
+      document.getElementById('safety-list').innerHTML = saf.map(i=>`<li>${i.title||i.id}</li>`).join('');
+    }
+    load();
+    document.getElementById('export-summary').onclick = async ()=>{
+      const data = await fetch('/api/pm/summary').then(r=>r.json());
+      const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'summary.json'; a.click();
+    };
+    document.getElementById('export-pack').onclick = async ()=>{
+      const res = await fetch('/api/compliance/pack',{method:'POST'});
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href=url; a.download='compliance.zip'; a.click();
+    };
+  </script>
+</body>
+</html>
