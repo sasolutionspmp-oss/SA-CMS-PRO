@@ -1,0 +1,7 @@
+appId: com.sa.cms.pro
+directories:
+  output: dist
+files:
+  - '**/*'
+win:
+  target: zip

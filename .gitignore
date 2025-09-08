@@ -1,0 +1,9 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+backend/sa_cms_pro.db
+backend/test.db
+node_modules/
+dist/
+build/
