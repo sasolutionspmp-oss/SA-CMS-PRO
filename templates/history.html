@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>History</title>
+</head>
+<body>
+<h1>History Upload and Model Training</h1>
+<form action="/api/history/upload" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" />
+    <button type="submit">Upload CSV</button>
+</form>
+
+<form action="/api/learn/train" method="post">
+    <button type="submit">Train Model</button>
+</form>
+
+<h2>Inference</h2>
+<form action="/api/learn/infer" method="post">
+    <label>Project ID: <input type="number" name="projectId"/></label>
+    <button type="submit">Infer</button>
+</form>
+</body>
+</html>
