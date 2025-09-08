@@ -1,0 +1,33 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install -r backend/requirements.txt
+      - run: pip install pyinstaller
+      - run: pytest --cov=backend --cov-fail-under=85
+      - run: npx playwright install --with-deps
+      - run: npx playwright test --headed=false
+      - run: pwsh backend/install/build_exe.ps1
+      - run: pwsh electron/build_desktop.ps1
+      - uses: actions/upload-artifact@v3
+        with:
+          name: desktop-build
+          path: dist
+      - name: Optional Code Signing
+        if: ${{ env.WINDOWS_CERT }}
+        run: echo "Code signing not configured"
