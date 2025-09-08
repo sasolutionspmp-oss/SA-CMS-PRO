@@ -1,0 +1,29 @@
+[project]
+name = "sa-cms-pro-backend"
+version = "0.1.0"
+description = "Synthetic construction management system backend"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic",
+    "sqlalchemy",
+    "alembic",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "httpx",
+    "mypy",
+    "ruff",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q --cov=app --cov-report=term-missing:skip-covered"
+
+[tool.coverage.run]
+branch = true
+source = ["app"]

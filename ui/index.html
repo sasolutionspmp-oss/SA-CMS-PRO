@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Search Demo</title>
+  <style>
+    #overlay { display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); }
+    #dialog { position:absolute; top:20%; left:50%; transform:translateX(-50%); background:white; padding:1em; }
+  </style>
+</head>
+<body>
+  <div id="overlay">
+    <div id="dialog">
+      <input id="search" type="text" placeholder="Type to search..." />
+      <ul id="results"></ul>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('overlay');
+    const input = document.getElementById('search');
+    const results = document.getElementById('results');
+
+    window.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        overlay.style.display = 'block';
+        input.focus();
+      }
+      if (e.key === 'Escape') {
+        overlay.style.display = 'none';
+      }
+    });
+
+    async function performSearch(q) {
+      const keyword = fetch(`/api/search/keyword?q=${encodeURIComponent(q)}`);
+      const semantic = fetch('/api/search/semantic', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: q, k: 5 })
+      });
+      const [kw, sem] = await Promise.all([keyword, semantic]);
+      const kwData = await kw.json();
+      const semData = await sem.json();
+      results.innerHTML = '';
+      [...kwData.results, ...semData.results].forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = `${r.file} (page ${r.page})`;
+        results.appendChild(li);
+      });
+    }
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        performSearch(input.value);
+      }
+    });
+  </script>
+</body>
+</html>
