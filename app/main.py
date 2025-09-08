@@ -24,6 +24,7 @@ async def ingest_zip(file: UploadFile):
     job_id = create_job("ingest")
     update_status(job_id, "running")
     dest = Path("uploads") / f"{uuid4()}.zip"
+    dest.parent.mkdir(parents=True, exist_ok=True)
     with dest.open("wb") as f:
         while chunk := await file.read(1024 * 1024):
             f.write(chunk)
@@ -57,8 +58,10 @@ def process_zip(zip_path: Path, job_id: int):
                             "INSERT INTO chunks(file_id, idx, text_path, page_hint, size) VALUES (?,?,?,?,?)",
                             (file_id, idx, str(cpath), None, cpath.stat().st_size),
                         )
+                    conn.commit()
                     fts.index_chunks(file_id, chunks)
-                conn.commit()
+                else:
+                    conn.commit()
         update_status(job_id, "done")
     except Exception as e:  # pragma: no cover
         log(job_id, f"error {e}")

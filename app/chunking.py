@@ -17,7 +17,9 @@ def chunk_text(text: str, out_dir: Path) -> List[Path]:
         path = out_dir / f"chunk_{idx}.txt"
         path.write_text(chunk)
         chunks.append(path)
-        start = end - OVERLAP
+        if end == len(text):
+            break
+        start = max(0, end - OVERLAP)
         idx += 1
     manifest = out_dir / 'manifest.ndjson'
     with manifest.open('w') as f:

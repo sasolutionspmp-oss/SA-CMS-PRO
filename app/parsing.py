@@ -1,8 +1,11 @@
 from pathlib import Path
 from typing import Optional
 
-from docx import Document
 from openpyxl import load_workbook
+try:  # pragma: no cover - python-docx optional
+    from docx import Document
+except Exception:  # pragma: no cover
+    Document = None
 try:  # pragma: no cover - pillow optional
     from PIL import Image
 except Exception:  # pragma: no cover
@@ -11,15 +14,16 @@ except Exception:  # pragma: no cover
 
 def parse_pdf(path: Path) -> str:
     try:
-        data = path.read_bytes()
-        if b"hello" in data.lower():
-            return "hello pdf"
+        from pypdf import PdfReader
+        reader = PdfReader(str(path))
+        return "".join(page.extract_text() or "" for page in reader.pages)
     except Exception:  # pragma: no cover
-        pass
-    return ""
+        return ""
 
 
 def parse_docx(path: Path) -> str:
+    if not Document:
+        return ""
     doc = Document(str(path))
     return "\n".join(p.text for p in doc.paragraphs)
 
