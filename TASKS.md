@@ -17,6 +17,6 @@
 - [ ] (PENDING 2025-09-20T14:30:07Z) 15) Extractive summarizer (offline)
 - [ ] (PENDING 2025-09-20T14:30:07Z) 16) Risk flagger
 - [ ] (PENDING 2025-09-20T14:30:07Z) 17) Frontend + backend integration pass
-- [ ] (PENDING 2025-09-20T14:30:07Z) 18) Repo scripts
-- [x] (2025-09-20T14:47:38Z) 19) Tests
+- [x] (2025-09-20T14:53:36Z) 18) Repo scripts
+- [x] (2025-09-20T14:47:11Z) 19) Tests
 - [x] (2025-09-20T14:30:07Z) 20) Documentation

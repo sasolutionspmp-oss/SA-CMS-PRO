@@ -47,3 +47,9 @@
 - 2025-09-20T14:38:01Z Task 19 (Test harness) in progress: auditing ingest/parser modules and planning backend/frontend coverage.
 
 - 2025-09-20T14:47:11Z Added ingest/classifier/metrics risk tests, Playwright smoke, and ran  `.venv \\\\Scripts\\\\python -m pytest tests/unit/ingest/test_parsing.py tests/unit/ingest/test_classifier.py tests/unit/ingest/test_risk_flagger.py tests/unit/metrics/test_metrics_normalizer.py ` + `pnpm run test` (chromium). 
+
+- 2025-09-20T14:49:39Z Task 18 (Dev scripts) in progress: assessing existing PowerShell automation to design dev.ps1 and seed.ps1.
+
+- 2025-09-20T14:52:36Z Authored scripts/dev.ps1 (multi-process launcher) and verified dry run outputs commands.
+
+- 2025-09-20T14:52:36Z Added scripts/seed.ps1 to call apps.api.seed and optional intake launch; initial run flagged legacy SQLite schema (projects.stage missing) and advises removing stale DB before re-run.
