@@ -75,3 +75,14 @@
 
 - 2025-09-20T17:34:45Z Task 9 (Ingest endpoints): Enabled upload-name disk fallback in apps/api/services/intake.py so lane intake can reuse staged bundles, and added .\.venv\Scripts\python.exe -m pytest tests/api/test_lane3_endpoints.py::test_intake_launch_with_upload_name to cover the flow.
 - 2025-09-20T19:35:35Z Task 12 (PDF/DOCX/XLSX parsers): Swapped PDF extraction to pypdf with guarded ocrmypdf fallback, hardened DOCX handling for tables, added coordinate-aware XLSX previews, and verified via .\.venv\Scripts\python.exe -m pytest tests/unit/ingest/test_parsing.py tests/unit/test_ingest_pipeline.py tests/unit/test_intake_service.py tests/unit/ingest/test_classifier.py.
+- 2025-09-20T19:45:12Z Task 11 (Workers): Added workers/runner.py to poll data/queue/ingest.jsonl with PID/offset tracking, per-job logging, and intake orchestration; verified via .\.venv\Scripts\python.exe -m pytest tests/unit/workers/test_runner.py.
+
+- 2025-09-20T18:02:30Z Task 10 (Parsing pipeline): Added parser service and graph integration so DOCX/XLSX/CSV flows produce chunks, updated /process_zip to consume upload-name archives, and verified via .\\.venv\\Scripts\\python.exe -m pytest tests/unit/ingest/test_parsing.py tests/unit/test_ingest_pipeline.py tests/unit/test_intake_service.py.
+
+- 2025-09-20T18:04:12Z Task 6 (Estimating grid): Streamlined the React estimating panel to a read-only summary, wired it to fetch estimator data, and verified the bundle with pnpm run build.
+
+- 2025-09-20T21:10:00Z Synced docs: marked Task 6 and Task 10 as complete in TASKS.md and refreshed SUMMARY.md to reflect the estimating grid and parsing pipeline availability.
+- 2025-09-20T22:06:41Z Task 1 Tailwind/PostCSS fix: added @tailwindcss/postcss, refreshed TailwindProbe demo, and revalidated the dev pipeline.
+  - commands: pnpm add -D @tailwindcss/postcss; pnpm run build; pnpm run dev -- --host 127.0.0.1 --port 5175 --clearScreen=false (terminated after warmup).
+- 2025-09-20T21:42:00Z Verification pass: bootstrap (-RunTests) fails on missing legacy test files, pytest run hit job queue + metrics fallback regressions (3 failing), pnpm run test (frontend) passed, codex-oneclick packaging failed building apps/web TopBar.tsx due to TypeScript parse errors.
+
