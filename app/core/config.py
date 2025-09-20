@@ -52,6 +52,7 @@ class IngestConfig:
     chunk_min_chars: int
     chunk_max_chars: int
     redact_sensitive: bool
+    ocr_language: str | None
     use_ocr: bool
     vector_backend: str
     default_collection: str
@@ -371,6 +372,7 @@ def _deserialize(config: Dict[str, Any]) -> AppConfig:
         chunk_min_chars=chunk_min_chars,
         chunk_max_chars=chunk_max_chars,
         redact_sensitive=redact_sensitive,
+        ocr_language=ingest_section.get("ocr_language"),
         use_ocr=bool(ingest_section.get("use_ocr", True)),
         vector_backend=str(ingest_section.get("vector_backend", "memory")),
         default_collection=str(ingest_section.get("default_collection", "project_docs")),
@@ -378,6 +380,7 @@ def _deserialize(config: Dict[str, Any]) -> AppConfig:
         tesseract_cmd=ingest_section.get("tesseract_cmd"),
         telemetry_enabled=bool(telemetry_section.get("enabled", True)),
         telemetry_log_path=telemetry_log_path,
+
     )
 
     scope_cfg = ScopeConfig(

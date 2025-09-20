@@ -19,6 +19,7 @@ ingest:
   chunk_min_chars: 1500
   chunk_max_chars: 2000
   redact_sensitive: false
+  ocr_language: null
   use_ocr: true
   vector_backend: chroma
   default_collection: project_docs
