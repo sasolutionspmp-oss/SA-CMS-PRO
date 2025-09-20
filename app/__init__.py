@@ -1,1 +1,1 @@
-\ \\SA-CMS Pro application package.\\\
+"""SA-CMS Pro application package."""

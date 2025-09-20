@@ -1,0 +1,124 @@
+paths:
+  data_root: data
+  templates_root: data/templates
+  pricebooks_root: data/pricebooks
+  work_root: '%AppData%/SA-CMS-Pro'
+  database: '%AppData%/SA-CMS-Pro/sa_cms_pro.db'
+  vector_store: '%AppData%/SA-CMS-Pro/vectors'
+logging:
+  level: INFO
+  file: '%AppData%/SA-CMS-Pro/logs/sa_cms_pro.log'
+server:
+  host: 127.0.0.1
+  port: 8765
+  reload: false
+  workers: 1
+ingest:
+  chunk_size: 1800
+  chunk_overlap: 200
+  chunk_min_chars: 1500
+  chunk_max_chars: 2000
+  redact_sensitive: false
+  use_ocr: true
+  vector_backend: chroma
+  default_collection: project_docs
+  ruleset: rules/base_rules.yaml
+  tesseract_cmd: null
+  telemetry:
+    enabled: true
+    log_path: output/logs/ingest_events.jsonl
+scope:
+  csi_mapping: config/providers.yaml
+  default_disciplines:
+  - CIV
+  - STR
+  - ARC
+  - MEP
+  - EL
+  llm_provider: null
+  rule_sets:
+  - config/rules/base_rules.yaml
+estimation:
+  default_margin:
+    labor: 0.18
+    equipment: 0.12
+    subcontractor: 0.08
+    freight: 0.05
+    fuel: 0.04
+    contingency: 0.03
+  price_providers:
+  - type: vendors_csv
+    config: data/pricebooks/vendors.csv
+  - type: rsmeans_stub
+  - type: custom
+  currency: USD
+compliance:
+  templates:
+    docx: app/compliance/templates/compliance.docx
+    pdf: app/compliance/templates/compliance.docx
+  jurisdictions_dir: config/jurisdictions
+bid:
+  proposal_template: app/bid/templates/proposal.docx
+  output_dir: '%AppData%/SA-CMS-Pro/bid'
+crm:
+  reminder_days: 3
+contract:
+  registers_dir: '%AppData%/SA-CMS-Pro/registers'
+pm:
+  reports_dir: '%AppData%/SA-CMS-Pro/pm'
+tokens:
+  provider: dpapi
+  keyring_service: SA-CMS-Pro
+llm:
+  provider: null
+  timeout_seconds: 30
+  max_tokens: 512
+workspace:
+  root: '%ProgramData%/SA-CMS-Pro/projects'
+  concurrency_limit: 4
+  first_run_flag: '%AppData%/SA-CMS-Pro/state/first_run.json'
+theme:
+  default_mode: light
+  allow_dark_mode: true
+  animation_ms: 250
+  loader_asset: data/branding/logo_primary.png
+auth:
+  db_path: '%AppData%/SA-CMS-Pro/auth/users.db'
+  audit_log_dir: '%ProgramData%/SA-CMS-Pro/logs'
+  session_timeout_minutes: 60
+settings:
+  llm_provider: none
+  telemetry_opt_in: false
+  show_tour_on_start: true
+metrics:
+  enabled: true
+  cache_ttl_seconds: 180
+  retry:
+    attempts: 3
+    backoff_seconds: 0.5
+  endpoints:
+    scope: data/metrics/scope.json
+    estimate: data/metrics/estimate.json
+    compliance: data/metrics/compliance.json
+    bid: data/metrics/bid.json
+    crm: data/metrics/crm.json
+    pm: data/metrics/pm.json
+    summary: data/metrics/summary.json
+    activity: data/metrics/activity.json
+  refresh_intervals:
+    summary: 300
+    scope: 180
+    estimate: 240
+    compliance: 300
+    bid: 240
+    crm: 240
+    pm: 300
+  feature_flags:
+    allow_offline_fallback: true
+    audit_refresh: true
+copilot:
+  enabled: true
+  provider: auto
+  timeout_seconds: 45
+  prompt_packs_root: data/copilot
+  offline_allowed: true

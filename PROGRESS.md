@@ -68,3 +68,7 @@
 
 - 2025-09-20T17:05:05Z Task 7 (Backend scaffolding): Verified FastAPI scaffolding by exercising server/main.create_app through the health endpoint test and confirming routers mount without errors. Commands: .\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_health.py
 - 2025-09-20T19:06:37Z Task 14 (Rule-based classifier): Extended heuristics coverage by adding representative corpus test ensuring >=90% tagging and verified with .\\.venv\\Scripts\\python.exe -m pytest tests/unit/ingest/test_classifier.py.
+
+- 2025-09-20T17:22:45Z Task 8 (Auth placeholder): Added optional token fallback that seeds demo user/org/project in packages/core/dependencies.py, taught frontend App bootstrap to respect VITE_AUTH_OPTIONAL, and validated via .\\.venv\\Scripts\\python.exe -m pytest tests/api/test_lane3_endpoints.py::test_bootstrap_without_token.
+
+- 2025-09-20T19:24:26Z Task 13 (Normalizer + sanitizer): Added ingest normalizer preserving line structure with optional redaction, chunked docs to 1.5-2k chars, wired metadata/raw text into graph + pipeline, and validated via .\.venv\Scripts\python.exe -m pytest tests/unit/ingest/test_normalizer.py tests/unit/test_ingest_pipeline.py tests/unit/test_intake_service.py.

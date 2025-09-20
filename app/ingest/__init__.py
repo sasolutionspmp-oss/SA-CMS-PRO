@@ -1,1 +1,1 @@
-\ \\Ingest pipeline package.\\\
+"""Ingest pipeline package."""
