@@ -42,3 +42,8 @@
 - 2025-09-20T14:28:50Z Updated README + API reference, registered OpenAPI tag metadata;  `python -m compileall apps/api/main.py` passes. 
 
 - 2025-09-20T14:30:21Z Reinstated TASKS.md with updated timestamps (Task 20 marked complete).
+- 2025-09-20T14:35:57Z Delivered functional estimating grid: added EstimatingPanel with scope mining, acceptance toggles, scenario markup editing, and totals hooked to platform API; build validated via `pnpm run build`.
+
+- 2025-09-20T14:38:01Z Task 19 (Test harness) in progress: auditing ingest/parser modules and planning backend/frontend coverage.
+
+- 2025-09-20T14:47:11Z Added ingest/classifier/metrics risk tests, Playwright smoke, and ran  `.venv \\\\Scripts\\\\python -m pytest tests/unit/ingest/test_parsing.py tests/unit/ingest/test_classifier.py tests/unit/ingest/test_risk_flagger.py tests/unit/metrics/test_metrics_normalizer.py ` + `pnpm run test` (chromium). 

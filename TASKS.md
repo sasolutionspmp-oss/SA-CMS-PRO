@@ -18,5 +18,5 @@
 - [ ] (PENDING 2025-09-20T14:30:07Z) 16) Risk flagger
 - [ ] (PENDING 2025-09-20T14:30:07Z) 17) Frontend + backend integration pass
 - [ ] (PENDING 2025-09-20T14:30:07Z) 18) Repo scripts
-- [ ] (PENDING 2025-09-20T14:30:07Z) 19) Tests
+- [x] (2025-09-20T14:47:38Z) 19) Tests
 - [x] (2025-09-20T14:30:07Z) 20) Documentation
