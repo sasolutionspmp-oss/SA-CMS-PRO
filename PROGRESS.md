@@ -56,3 +56,15 @@
 - 2025-09-20T10:57:46Z Task 19 (Tests): Added xlsxwriter pytest shim, new estimator unit coverage, aligned extra metadata, and reran targeted suites (pytest tests/unit/apps/api/test_estimator_service.py, pytest tests/api/test_lane3_endpoints.py::test_crm_board_and_creation).
 - 2025-09-20T11:05:22Z Task 18 (Repo scripts): Added skip switches and dependency checks to scripts/dev.ps1, expanded seed.ps1 with wait/login options, updated docs, and validated via dry-run (pwsh ./scripts/dev.ps1 -DryRun -SkipFrontend) + pwsh ./scripts/seed.ps1 -SkipSeed -SkipIngest.
 - 2025-09-20T11:09:35Z Task 17 (Integration) in progress: reviewing frontend/api wiring to replace mock adapters with live endpoints.
+
+- 2025-09-20T15:58:00Z Task 16 (Risk flagger): Persisted risk flag artifacts via IntakeService, added `.venv\Scripts\python.exe -m pytest tests/unit/test_intake_service.py::test_launch_generates_risk_flags`, typed `risk_flags` in `frontend/src/api.ts`, surfaced the Risk insights panel in `App.tsx`, and verified with `pnpm run build`.
+
+- 2025-09-20T16:07:52Z Task 16 (Risk flagger): IntakeService now runs risk detection after parsing, writes risk_flags.json under data/uploads/{project}/{sha}/, exposes flags plus generated_at on IntakeRunStatus, and the dashboard renders real risk insights. Commands: .\.venv\Scripts\python.exe -m pytest tests/unit/test_intake_service.py; .\.venv\Scripts\python.exe -m pytest tests/api/test_intake_api.py; pnpm run test.
+
+- 2025-09-20T16:43:31Z Task 15 (Extractive summarizer): Added TextRank/BM25 + MMR scoring, persisted summary_highlights.json and summary.md alongside ingest artifacts, and extended IntakeRunStatus plus tests. Commands: .\.venv\Scripts\python.exe -m pytest tests\unit\test_intake_service.py; .\.venv\Scripts\python.exe -m pytest tests\api\test_intake_api.py; pnpm run test.
+
+- 2025-09-20T16:35:00Z Task 4 (Dashboard stub data): Replaced the dashboard placeholder with `DashboardOverview`, added preview KPI cards/milestones/feed, updated AppShell navigation, and verified via `pnpm run build`.
+- 2025-09-20T16:41:45Z Task 5 (Upload panel with queue + progress): Added demo seeding, disabled gating, and queue summaries to `UploadPanel`, and verified via `.\.venv\Scripts\python.exe -m pytest tests/unit/ingest/test_summarizer.py tests/unit/test_intake_service.py::test_launch_generates_summary_highlights` plus `pnpm run build`.
+
+- 2025-09-20T17:05:05Z Task 7 (Backend scaffolding): Verified FastAPI scaffolding by exercising server/main.create_app through the health endpoint test and confirming routers mount without errors. Commands: .\\.venv\\Scripts\\python.exe -m pytest tests/unit/test_health.py
+- 2025-09-20T19:06:37Z Task 14 (Rule-based classifier): Extended heuristics coverage by adding representative corpus test ensuring >=90% tagging and verified with .\\.venv\\Scripts\\python.exe -m pytest tests/unit/ingest/test_classifier.py.
