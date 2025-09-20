@@ -16,7 +16,14 @@ test("intake launch calls API", async ({ page }) => {
   };
 
   let launchCalled = false;
-  await page.route("**/api/intake/launch", async (route) => {
+  await page.route("**/auth/login", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({ access_token: "demo-token", refresh_token: "demo-refresh", expires_in: 3600, refresh_expires_in: 7200 }),
+    });
+  });
+  await page.route("**/intake/launch", async (route) => {
     launchCalled = true;
     await route.fulfill({
       status: 200,
@@ -24,7 +31,7 @@ test("intake launch calls API", async ({ page }) => {
       body: JSON.stringify(mockRun),
     });
   });
-  await page.route("**/api/intake/status**", async (route) => {
+  await page.route("**/intake/status**", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -39,7 +46,7 @@ test("intake launch calls API", async ({ page }) => {
 
   await Promise.all([
     page.waitForResponse((response) =>
-      response.url().includes("/api/intake/launch") && response.status() === 200
+      response.url().includes("/intake/launch") && response.status() === 200
     ),
     page.getByRole("button", { name: "Launch Intake" }).click(),
   ]);

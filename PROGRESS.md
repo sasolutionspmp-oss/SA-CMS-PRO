@@ -53,3 +53,6 @@
 - 2025-09-20T14:52:36Z Authored scripts/dev.ps1 (multi-process launcher) and verified dry run outputs commands.
 
 - 2025-09-20T14:52:36Z Added scripts/seed.ps1 to call apps.api.seed and optional intake launch; initial run flagged legacy SQLite schema (projects.stage missing) and advises removing stale DB before re-run.
+- 2025-09-20T10:57:46Z Task 19 (Tests): Added xlsxwriter pytest shim, new estimator unit coverage, aligned extra metadata, and reran targeted suites (pytest tests/unit/apps/api/test_estimator_service.py, pytest tests/api/test_lane3_endpoints.py::test_crm_board_and_creation).
+- 2025-09-20T11:05:22Z Task 18 (Repo scripts): Added skip switches and dependency checks to scripts/dev.ps1, expanded seed.ps1 with wait/login options, updated docs, and validated via dry-run (pwsh ./scripts/dev.ps1 -DryRun -SkipFrontend) + pwsh ./scripts/seed.ps1 -SkipSeed -SkipIngest.
+- 2025-09-20T11:09:35Z Task 17 (Integration) in progress: reviewing frontend/api wiring to replace mock adapters with live endpoints.
