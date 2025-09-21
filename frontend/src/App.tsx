@@ -87,6 +87,7 @@ import { UploadPanel } from "./components/upload/UploadPanel";
 
 
 import { EstimatingPanel } from "./components/estimating/EstimatingPanel";
+import { useFallbackTelemetry } from "./hooks/useFallbackTelemetry";
 
 
 
@@ -926,6 +927,7 @@ export default function App(): JSX.Element {
 
 
   const [run, setRun] = useState<IntakeRunSummary | null>(null);
+  const telemetry = useFallbackTelemetry();
 
 
 
@@ -1398,6 +1400,12 @@ export default function App(): JSX.Element {
 
         }
 
+        if (telemetry.fallback_events > 0) {
+          const fallbackCount = telemetry.fallback_events;
+          item.badge = `${fallbackCount} fallback${fallbackCount === 1 ? "" : "s"}`;
+          item.tone = "danger";
+        }
+
 
 
       }
@@ -1412,7 +1420,7 @@ export default function App(): JSX.Element {
 
 
 
-  }, [run]);
+  }, [run, telemetry.fallback_events, telemetry.last_event_at]);
 
 
 
@@ -3389,6 +3397,5 @@ const intakeView = (
 
 
 }
-
 
 

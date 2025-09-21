@@ -92,3 +92,6 @@
 
 - 2025-09-21T00:42:03Z Tailwind probe validation: added dedicated dev entry + Playwright spec to exercise gradient/grid utilities independent of App and verified via pnpm exec playwright test tests/e2e/tailwind-probe.spec.ts.
   - note: tests/e2e/intake-workflow.spec.ts still fails (Cannot access ''intakeDisabled'' before initialization) from existing App runtime issue; logged for follow-up.
+- 2025-09-21T01:20:21Z Task 5 (Metrics/Telemetry fallback sweep): added shared metrics normaliser, improved MetricsService offline handling, and introduced a fallback telemetry watcher in the React shell.
+  - tests: .\/.venv\/Scripts\/python.exe -m pytest tests\/unit\/test_services.py; pnpm run build (from frontend/).
+  - ui: useFallbackTelemetry hook now drives intake nav fallback badge and warning toasts.

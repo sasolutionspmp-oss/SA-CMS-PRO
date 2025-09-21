@@ -4,32 +4,103 @@ export interface IntakeFileItem {
   id: string;
   project_id: string;
   rel_path: string;
+  filename: string;
+  classification: string;
   mime: string;
   size: number;
   parsed_status: "pending" | "parsed" | "failed";
-  updated_at: string;
+  updated_at: string | null;
+  checksum: string;
+  metadata: Record<string, unknown>;
+  snippet?: string | null;
   error?: string | null;
   page_count?: number | null;
-  checksum?: string | null;
   artifact_path?: string | null;
-  metadata?: Record<string, unknown>;
+}
+
+
+export interface IntakeRiskFlag {
+  file_id: string;
+  rel_path: string;
+  code: string;
+  message: string;
+  line: number;
+  snippet: string;
+  run_id?: string | null;
+  project_id?: string | null;
+}
+
+export interface IntakeSummaryHighlight {
+  file_id: string;
+  rel_path: string;
+  snippet: string;
+  score: number;
+  rank: number;
+  run_id?: string | null;
+  project_id?: string | null;
+}
+
+export interface IntakeDocumentEntity {
+  id: string;
+  document_id: string;
+  entity_type: string;
+  label: string;
+  confidence: number;
   snippet?: string | null;
+  metadata: Record<string, unknown>;
+}
+
+export interface IntakeDocumentLink {
+  id: string;
+  source_entity_id: string;
+  target_entity_id: string;
+  relation_type: string;
+  confidence: number;
+  rationale?: string | null;
 }
 
 export interface IntakeRunSummary {
   run_id: string;
   project_id: string;
+  org_id: string;
   status: string;
   total: number;
   pending: number;
   parsed: number;
   failed: number;
-  started_at: string;
-  updated_at: string;
+  started_at: string | null;
+  updated_at: string | null;
   completed_at?: string | null;
   items: IntakeFileItem[];
+  entities: IntakeDocumentEntity[];
+  links: IntakeDocumentLink[];
+  risk_flags: IntakeRiskFlag[];
+  risk_generated_at?: string | null;
+  summary_highlights: IntakeSummaryHighlight[];
+  summary_generated_at?: string | null;
 }
 
+export interface IntakeUploadResponse {
+  upload_name: string;
+  stored_path: string;
+  size_bytes: number;
+  checksum: string;
+  original_filename: string;
+  org_id: string;
+  project_id: string;
+}
+
+export interface IntakeTelemetry {
+  fallback_events: number;
+  last_event_at: string | null;
+}
+
+export interface LaunchIntakeParams {
+  projectId: string;
+  zipPath?: string;
+  uploadName?: string;
+  orgId?: string;
+}
 export interface BootstrapProject {
   id: string;
   code: string;
@@ -228,6 +299,133 @@ function handleAxiosError(error: unknown, fallbackMessage: string): Error {
   return new Error(fallbackMessage);
 }
 
+interface RawIntakeFile {
+  id: string;
+  filename: string;
+  relative_path: string;
+  classification: string;
+  parsed_status: "pending" | "parsed" | "failed";
+  mime_type: string;
+  size_bytes: number;
+  checksum: string;
+  snippet?: string | null;
+  metadata?: Record<string, unknown>;
+  updated_at?: string | null;
+}
+
+interface RawIntakeDocumentEntity {
+  id: string;
+  document_id: string;
+  entity_type: string;
+  label: string;
+  confidence: number;
+  snippet?: string | null;
+  metadata?: Record<string, unknown>;
+}
+
+interface RawIntakeStatus {
+  run_id: string;
+  project_id: string;
+  org_id: string;
+  status: string;
+  total: number;
+  pending: number;
+  parsed: number;
+  failed: number;
+  started_at?: string | null;
+  completed_at?: string | null;
+  files: RawIntakeFile[];
+  entities: RawIntakeDocumentEntity[];
+  links: IntakeDocumentLink[];
+  risk_flags?: IntakeRiskFlag[];
+  risk_generated_at?: string | null;
+  summary_highlights?: IntakeSummaryHighlight[];
+  summary_generated_at?: string | null;
+}
+
+function mapIntakeFile(raw: RawIntakeFile, projectId: string): IntakeFileItem {
+  const metadata = (raw.metadata ?? {}) as Record<string, unknown>;
+  const pageCount = metadata["page_count"];
+  const artifactPath = metadata["artifact_path"];
+  const errorMessage = metadata["error"];
+  return {
+    id: raw.id,
+    project_id: projectId,
+    rel_path: raw.relative_path,
+    filename: raw.filename,
+    classification: raw.classification,
+    mime: raw.mime_type,
+    size: raw.size_bytes,
+    parsed_status: raw.parsed_status,
+    updated_at: raw.updated_at ?? null,
+    checksum: raw.checksum,
+    metadata,
+    snippet: raw.snippet ?? null,
+    error: typeof errorMessage === "string" ? errorMessage : null,
+    page_count: typeof pageCount === "number" ? pageCount : undefined,
+    artifact_path: typeof artifactPath === "string" ? artifactPath : undefined,
+  };
+}
+
+function mapIntakeEntity(raw: RawIntakeDocumentEntity): IntakeDocumentEntity {
+  return {
+    id: raw.id,
+    document_id: raw.document_id,
+    entity_type: raw.entity_type,
+    label: raw.label,
+    confidence: raw.confidence,
+    snippet: raw.snippet ?? null,
+    metadata: raw.metadata ?? {},
+  };
+}
+
+function mapIntakeLink(link: IntakeDocumentLink): IntakeDocumentLink {
+  return {
+    id: link.id,
+    source_entity_id: link.source_entity_id,
+    target_entity_id: link.target_entity_id,
+    relation_type: link.relation_type,
+    confidence: link.confidence,
+    rationale: link.rationale ?? null,
+  };
+}
+
+export function normalizeIntakeStatus(raw: RawIntakeStatus): IntakeRunSummary {
+  const items = raw.files.map((file) => mapIntakeFile(file, raw.project_id));
+  let updatedAt: string | null = null;
+  for (const file of raw.files) {
+    if (file.updated_at && (!updatedAt || file.updated_at > updatedAt)) {
+      updatedAt = file.updated_at;
+    }
+  }
+  if (!updatedAt) {
+    updatedAt = raw.completed_at ?? raw.started_at ?? null;
+  }
+  const entities = raw.entities.map(mapIntakeEntity);
+  const links = raw.links.map(mapIntakeLink);
+  return {
+    run_id: raw.run_id,
+    project_id: raw.project_id,
+    org_id: raw.org_id,
+    status: raw.status,
+    total: raw.total,
+    pending: raw.pending,
+    parsed: raw.parsed,
+    failed: raw.failed,
+    started_at: raw.started_at ?? null,
+    updated_at: updatedAt,
+    completed_at: raw.completed_at ?? null,
+    items,
+    entities,
+    links,
+    risk_flags: raw.risk_flags ?? [],
+    risk_generated_at: raw.risk_generated_at ?? null,
+    summary_highlights: raw.summary_highlights ?? [],
+    summary_generated_at: raw.summary_generated_at ?? null,
+  };
+}
+
+
 export async function login(username: string, password: string, orgId?: string): Promise<TokenPayload> {
   const response = await apiClient.post<TokenPayload>("/auth/login", {
     username,
@@ -251,19 +449,100 @@ export async function fetchBootstrap(): Promise<BootstrapResponse> {
   return response.data;
 }
 
-export async function launchIntake(projectId: string, zipPath: string): Promise<IntakeRunSummary> {
-  const response = await apiClient.post<IntakeRunSummary>("/intake/launch", {
-    project_id: projectId,
-    zip_path: zipPath,
+export async function uploadIntakeBundle(
+  file: File,
+  orgId: string,
+  projectId: string,
+  options?: { signal?: AbortSignal; onProgress?: (percent: number) => void },
+): Promise<IntakeUploadResponse> {
+  const formData = new FormData();
+  formData.append("org_id", orgId);
+  formData.append("project_id", projectId);
+  formData.append("file", file);
+  const response = await apiClient.post<IntakeUploadResponse>("/intake/uploads", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    signal: options?.signal,
+    onUploadProgress: (event) => {
+      if (options?.onProgress && event.total) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        options.onProgress(percent);
+      }
+    },
   });
   return response.data;
 }
 
+export async function fetchIntakeTelemetry(): Promise<IntakeTelemetry> {
+  const response = await apiClient.get<IntakeTelemetry>("/intake/telemetry");
+  return response.data;
+}
+export async function launchIntake(params: LaunchIntakeParams): Promise<IntakeRunSummary> {
+  const { projectId, zipPath, uploadName, orgId } = params;
+  const payload: Record<string, unknown> = { project_id: projectId };
+  if (orgId) {
+    payload.org_id = orgId;
+  }
+  if (zipPath) {
+    payload.zip_path = zipPath;
+  }
+  if (uploadName) {
+    payload.upload_name = uploadName;
+  }
+  const response = await apiClient.post<RawIntakeStatus>("/intake/launch", payload);
+  return normalizeIntakeStatus(response.data);
+}
+
+
 export async function fetchIntakeStatus(runId: string): Promise<IntakeRunSummary> {
-  const response = await apiClient.get<IntakeRunSummary>("/intake/status", {
+  const response = await apiClient.get<RawIntakeStatus>("/intake/status", {
     params: { run_id: runId },
   });
-  return response.data;
+  return normalizeIntakeStatus(response.data);
+}
+
+export interface IntakeStreamHandlers {
+  onUpdate: (summary: IntakeRunSummary) => void;
+  onError?: (event: Event | MessageEvent) => void;
+}
+
+export function subscribeIntakeStatus(runId: string, handlers: IntakeStreamHandlers): () => void {
+  const url = new URL(`${API_BASE}/intake/status/stream`);
+  url.searchParams.set("run_id", runId);
+  const source = new EventSource(url.toString());
+
+  const handleUpdate = (event: MessageEvent<string>) => {
+    try {
+      const raw = JSON.parse(event.data) as RawIntakeStatus;
+      handlers.onUpdate(normalizeIntakeStatus(raw));
+    } catch (error) {
+      console.error("Failed to parse intake stream update", error);
+      handlers.onError?.(event);
+    }
+  };
+
+  const handleError = (event: Event) => {
+    if (event instanceof MessageEvent && typeof event.data === "string" && event.data) {
+      try {
+        const payload = JSON.parse(event.data);
+        console.error("Intake stream reported error", payload);
+      } catch {
+        // ignore JSON parse issues for error payloads
+      }
+    }
+    handlers.onError?.(event);
+    if (!(event instanceof MessageEvent)) {
+      source.close();
+    }
+  };
+
+  source.addEventListener("update", handleUpdate as unknown as EventListener);
+  source.addEventListener("error", handleError as EventListener);
+
+  return () => {
+    source.removeEventListener("update", handleUpdate as unknown as EventListener);
+    source.removeEventListener("error", handleError as EventListener);
+    source.close();
+  };
 }
 
 export async function downloadExport(projectId: string, kind: "pdf" | "docx" | "xlsx"): Promise<Blob> {
@@ -336,3 +615,7 @@ export async function adjustEstimatorScenario(scenarioId: string, payload: Scena
     throw handleAxiosError(error, "Failed to update scenario");
   }
 }
+
+
+
+
