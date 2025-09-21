@@ -86,3 +86,9 @@
   - commands: pnpm add -D @tailwindcss/postcss; pnpm run build; pnpm run dev -- --host 127.0.0.1 --port 5175 --clearScreen=false (terminated after warmup).
 - 2025-09-20T21:42:00Z Verification pass: bootstrap (-RunTests) fails on missing legacy test files, pytest run hit job queue + metrics fallback regressions (3 failing), pnpm run test (frontend) passed, codex-oneclick packaging failed building apps/web TopBar.tsx due to TypeScript parse errors.
 
+- 2025-09-20T22:19:00Z Task 6 (Estimating grid): Upgraded the estimator panel to an interactive workspace with scope mining, WBS acceptance toggles, markup editing, and scenario cloning wired to the existing platform endpoints so totals refresh automatically.
+- Verification: `pnpm run build` (pass).
+- 2025-09-20T21:55:00Z Wired upload queue to backend: added /intake/uploads + /intake/telemetry APIs (platform + server), front-end now streams real archives, updates nav badges with fallback counts, and pytest smoke (tests/api/test_intake_api.py::test_upload_bundle_and_launch, tests/api/test_intake_api.py::test_intake_telemetry_reports_fallbacks, tests/unit/app/test_telemetry.py) passes.
+
+- 2025-09-21T00:42:03Z Tailwind probe validation: added dedicated dev entry + Playwright spec to exercise gradient/grid utilities independent of App and verified via pnpm exec playwright test tests/e2e/tailwind-probe.spec.ts.
+  - note: tests/e2e/intake-workflow.spec.ts still fails (Cannot access ''intakeDisabled'' before initialization) from existing App runtime issue; logged for follow-up.

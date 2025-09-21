@@ -24,8 +24,10 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     env: {
       VITE_API_BASE: "http://127.0.0.1:5173",
+      VITE_TAILWIND_PROBE: "1",
     },
     stdout: "pipe",
     stderr: "pipe",
   },
 });
+

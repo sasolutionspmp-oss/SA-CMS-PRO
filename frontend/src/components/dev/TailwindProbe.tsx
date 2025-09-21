@@ -29,6 +29,8 @@ const statusChips: StatusChip[] = [
   },
 ];
 
+const toTestId = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
 export function TailwindProbe(): JSX.Element {
   return (
     <section
@@ -50,7 +52,11 @@ export function TailwindProbe(): JSX.Element {
       </p>
       <div className="mt-4 flex flex-wrap items-center gap-2">
         {statusChips.map((chip) => (
-          <span key={chip.label} className={chipClasses}>
+          <span
+            key={chip.label}
+            data-testid={`tailwind-probe-chip-${toTestId(chip.label)}`}
+            className={chipClasses}
+          >
             <span className={clsx("h-2 w-2 rounded-full", chip.indicatorClass)} aria-hidden />
             {chip.label}
             <span className={badgeClasses}>{chip.badge}</span>
@@ -58,17 +64,26 @@ export function TailwindProbe(): JSX.Element {
         ))}
       </div>
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-accent/30 bg-gradient-to-r from-brand-500 via-accent to-brand-700 p-5 text-accent-contrast shadow-shell">
+        <div
+          data-testid="tailwind-probe-gradient-card"
+          className="rounded-2xl border border-accent/30 bg-gradient-to-r from-brand-500 via-accent to-brand-700 p-5 text-accent-contrast shadow-shell"
+        >
           <p className="text-xs uppercase tracking-[0.28em] text-accent-contrast/80">
             Gradient Check
           </p>
           <p className="mt-2 text-sm font-semibold">bg-gradient-to-r | from-brand-500 | via-accent | to-brand-700</p>
         </div>
-        <div className="rounded-2xl border border-border-subtle bg-surface p-5 shadow-panel">
+        <div
+          data-testid="tailwind-probe-layout-card"
+          className="rounded-2xl border border-border-subtle bg-surface p-5 shadow-panel"
+        >
           <p className="text-xs uppercase tracking-[0.28em] text-text-tertiary">
             Layout Grid
           </p>
-          <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-semibold text-text-secondary">
+          <div
+            data-testid="tailwind-probe-layout-grid"
+            className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-semibold text-text-secondary"
+          >
             <span className="rounded-xl bg-surface-muted py-2 shadow-inner">gap-2</span>
             <span className="rounded-xl bg-surface-muted py-2 shadow-inner">grid-cols-3</span>
             <span className="rounded-xl bg-surface-muted py-2 shadow-inner">rounded-xl</span>
