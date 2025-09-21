@@ -1,0 +1,27 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+*.eggs/
+*.pytest_cache/
+.venv/
+.env
+
+# Node artifacts
+node_modules/
+frontend/node_modules/
+desktop/node_modules/
+apps/web/node_modules/
+
+# Build outputs
+frontend/dist/
+apps/web/dist/
+backend/sa_cms_dev.db
+*.sqlite3
+*.db
+
+# OS files
+.DS_Store
+Thumbs.db
