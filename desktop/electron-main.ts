@@ -1,10 +1,15 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'path'
 import fs from 'fs'
-import { spawn, ChildProcess, SpawnOptionsWithoutStdio } from 'child_process'
+import { spawn, ChildProcess, SpawnOptions } from 'child_process'
 
 const DEV_SERVER_URL = 'http://localhost:5173'
-const FRONTEND_ENTRY_SEGMENTS = ['frontend', 'dist', 'index.html']
+const FRONTEND_ENTRY_SEGMENT_OPTIONS = [
+  ['frontend', 'dist', 'index.html'],
+  ['frontend-dist', 'index.html'],
+]
+const BACKEND_HOST = '127.0.0.1'
+const BACKEND_PORT = 8000
 
 let backend: ChildProcess | undefined
 
@@ -17,29 +22,39 @@ function resolveRendererEntry(): string | undefined {
   ]
 
   for (const root of searchRoots) {
-    const candidate = path.join(root, ...FRONTEND_ENTRY_SEGMENTS)
-    if (fs.existsSync(candidate)) {
-      return candidate
+    for (const segments of FRONTEND_ENTRY_SEGMENT_OPTIONS) {
+      const candidate = path.join(root, ...segments)
+      if (fs.existsSync(candidate)) {
+        return candidate
+      }
     }
   }
 
   return undefined
 }
 
-function resolvePythonModuleRoot(): string | undefined {
-  const candidateRoots = [
-    path.resolve(__dirname, '..'),
-    process.resourcesPath,
-    path.join(process.resourcesPath, 'app.asar.unpacked'),
+function getBackendWorkingDirectory(): string {
+  if (app.isPackaged) {
+    return path.join(process.resourcesPath, 'backend')
+  }
+
+  const repoBackend = path.resolve(app.getAppPath(), '..', 'backend')
+  if (fs.existsSync(repoBackend)) {
+    return repoBackend
+  }
+
+  return path.join(app.getAppPath(), 'backend')
+}
+
+function resolvePackagedPythonRuntimeRoot(): string | undefined {
+  const runtimeRoots = [
+    path.join(process.resourcesPath, 'python-runtime'),
+    path.join(process.resourcesPath, 'app.asar.unpacked', 'python-runtime'),
   ]
 
-  for (const candidate of candidateRoots) {
-    if (candidate.endsWith('.asar')) {
-      continue
-    }
-
-    if (fs.existsSync(path.join(candidate, 'app', '__init__.py'))) {
-      return candidate
+  for (const root of runtimeRoots) {
+    if (fs.existsSync(root)) {
+      return root
     }
   }
 
@@ -61,45 +76,55 @@ function resolvePackagedPythonExecutable(runtimeRoot: string): string | undefine
   return candidates.find((candidate) => fs.existsSync(candidate))
 }
 
-function resolvePackagedPythonRuntimeRoot(): string | undefined {
-  const runtimeRoots = [
-    path.join(process.resourcesPath, 'python-runtime'),
-    path.join(process.resourcesPath, 'app.asar.unpacked', 'python-runtime'),
-  ]
-
-  for (const root of runtimeRoots) {
-    if (fs.existsSync(root)) {
-      return root
-    }
-  }
-
-  return undefined
-}
-
-function buildBackendSpawnOptions(moduleRoot?: string): SpawnOptionsWithoutStdio {
+function buildBackendSpawnOptions(moduleRoot: string): SpawnOptions {
   const env = { ...process.env }
 
-  if (moduleRoot) {
-    env.PYTHONPATH = [moduleRoot, env.PYTHONPATH]
-      .filter((value): value is string => Boolean(value && value.length > 0))
-      .join(path.delimiter)
-  }
+  env.PYTHONPATH = [moduleRoot, env.PYTHONPATH]
+    .filter((value): value is string => Boolean(value && value.length > 0))
+    .join(path.delimiter)
 
-  const options: SpawnOptionsWithoutStdio = {
+  return {
     env,
     stdio: 'inherit',
+    cwd: moduleRoot,
   }
+}
 
-  if (moduleRoot) {
-    options.cwd = moduleRoot
-  }
+function createUvicornModuleArgs(): string[] {
+  return [
+    '-m',
+    'uvicorn',
+    'app.main:app',
+    '--host',
+    BACKEND_HOST,
+    '--port',
+    BACKEND_PORT.toString(),
+  ]
+}
 
-  return options
+function createUvicornCliArgs(): string[] {
+  return [
+    'app.main:app',
+    '--host',
+    BACKEND_HOST,
+    '--port',
+    BACKEND_PORT.toString(),
+  ]
 }
 
 function startBackend() {
-  const moduleRoot = resolvePythonModuleRoot()
-  const spawnOptions = buildBackendSpawnOptions(moduleRoot)
+  const backendCwd = getBackendWorkingDirectory()
+  const spawnOptions = buildBackendSpawnOptions(backendCwd)
+  const moduleArgs = createUvicornModuleArgs()
+  const cliArgs = createUvicornCliArgs()
+
+  const launchUvicornFromEnvironment = () => {
+    const child = spawn('uvicorn', cliArgs, spawnOptions)
+    child.on('error', (error) => {
+      console.error('Failed to launch uvicorn from the current environment:', error)
+    })
+    backend = child
+  }
 
   if (app.isPackaged) {
     const runtimeRoot = resolvePackagedPythonRuntimeRoot()
@@ -108,10 +133,16 @@ function startBackend() {
       : undefined
 
     if (pythonExecutable) {
-      backend = spawn(pythonExecutable, ['-m', 'uvicorn', 'app.main:app'], spawnOptions)
-      backend.on('error', (error) => {
+      let fallbackInvoked = false
+      const child = spawn(pythonExecutable, moduleArgs, spawnOptions)
+      child.on('error', (error) => {
         console.error('Failed to launch bundled backend:', error)
+        if (!fallbackInvoked) {
+          fallbackInvoked = true
+          launchUvicornFromEnvironment()
+        }
       })
+      backend = child
       return
     }
 
@@ -120,16 +151,13 @@ function startBackend() {
     )
   }
 
-  backend = spawn('uvicorn', ['app.main:app'], spawnOptions)
-  backend.on('error', (error) => {
-    console.error('Failed to launch uvicorn from the current environment:', error)
-  })
+  launchUvicornFromEnvironment()
 }
 
 function createWindow() {
   const win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1024,
+    height: 768,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -143,20 +171,59 @@ function createWindow() {
     }
 
     console.error('Unable to locate the bundled frontend. Falling back to the dev server URL.')
+  } else {
+    win.loadURL(DEV_SERVER_URL)
+    win.webContents.openDevTools({ mode: 'detach' })
+    return
   }
 
   win.loadURL(DEV_SERVER_URL)
 }
 
+function stopBackend() {
+  if (!backend) {
+    return
+  }
+
+  backend.kill()
+  backend = undefined
+}
+
 app.whenReady().then(() => {
   startBackend()
   createWindow()
+
+  app.on('activate', () => {
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow()
+    }
+  })
 })
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit()
+  if (process.platform !== 'darwin') {
+    app.quit()
+  }
+})
+
+app.on('before-quit', () => {
+  stopBackend()
 })
 
 app.on('quit', () => {
-  backend?.kill()
+  stopBackend()
+})
+
+process.on('exit', () => {
+  stopBackend()
+})
+
+process.on('SIGINT', () => {
+  stopBackend()
+  process.exit(0)
+})
+
+process.on('SIGTERM', () => {
+  stopBackend()
+  process.exit(0)
 })
