@@ -42,7 +42,6 @@ import {
 
 
 
-  Moon,
 
 
 
@@ -58,7 +57,6 @@ import {
 
 
 
-  Sun,
 
 
 
@@ -119,7 +117,6 @@ import {
 
 
 
-  type BootstrapResponse,
 
 
 
@@ -140,6 +137,35 @@ import {
 
 
 const POLL_INTERVAL = 1500;
+
+function formatFileSize(bytes: number | null | undefined): string {
+  if (typeof bytes !== "number" || !Number.isFinite(bytes) || bytes < 0) {
+    return "-";
+  }
+  if (bytes === 0) {
+    return "0 B";
+  }
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = bytes;
+  let unitIndex = 0;
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+  const digits = value >= 10 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[unitIndex]}`;
+}
+
+function formatTimestamp(value: string | null | undefined): string {
+  if (!value) {
+    return "-";
+  }
+  const timestamp = new Date(value);
+  if (Number.isNaN(timestamp.getTime())) {
+    return "-";
+  }
+  return timestamp.toLocaleString();
+}
 
 
 
@@ -958,8 +984,6 @@ export default function App(): JSX.Element {
   const [selectedItem, setSelectedItem] = useState<IntakeFileItem | null>(null);
 
   const [activeModule, setActiveModule] = useState<ModuleKey>("intake");
-  const [bootstrapData, setBootstrapData] = useState<BootstrapResponse | null>(null);
-  const [bootstrapLoading, setBootstrapLoading] = useState(true);
   const [bootstrapError, setBootstrapError] = useState<string | null>(null);
   const [workspaceOrg, setWorkspaceOrg] = useState(DEFAULT_ORG_PROFILE);
   const [workspaceProject, setWorkspaceProject] = useState(DEFAULT_PROJECT_PROFILE);
@@ -971,7 +995,6 @@ export default function App(): JSX.Element {
 
     async function hydrateBootstrap() {
       try {
-        setBootstrapLoading(true);
         setBootstrapError(null);
 
         if (!getStoredTokens()) {
@@ -982,8 +1005,6 @@ export default function App(): JSX.Element {
         if (cancelled) {
           return;
         }
-
-        setBootstrapData(payload);
 
         const displayName = (payload.user.full_name && payload.user.full_name.trim()) || payload.user.username;
         const displayTitle = payload.user.roles[0] ?? "Operator";
@@ -1022,11 +1043,7 @@ export default function App(): JSX.Element {
         if (!cancelled) {
           setBootstrapError(error instanceof Error ? error.message : "Unable to reach the platform API");
         }
-      } finally {
-        if (!cancelled) {
-          setBootstrapLoading(false);
         }
-      }
     }
 
     hydrateBootstrap();
@@ -1178,7 +1195,7 @@ export default function App(): JSX.Element {
 
 
 
-      const summary = await launchIntake(projectId, zipPath);
+        const summary = await launchIntake({ projectId, zipPath });
 
 
 
@@ -2388,7 +2405,7 @@ const intakeView = (
 
 
 
-                        <td className="px-4 py-3 text-text-secondary">{formatBytes(item.size)}</td>
+                          <td className="px-4 py-3 text-text-secondary">{formatFileSize(item.size)}</td>
 
 
 
@@ -2396,7 +2413,7 @@ const intakeView = (
 
 
 
-                          {new Date(item.updated_at).toLocaleString()}
+                            {formatTimestamp(item.updated_at)}
 
 
 
@@ -2748,7 +2765,7 @@ const intakeView = (
 
 
 
-                        <div className="font-semibold text-text-primary">{selectedItem ? formatBytes(selectedItem.size) : "-"}</div>
+                          <div className="font-semibold text-text-primary">{formatFileSize(selectedItem?.size)}</div>
 
 
 
@@ -2768,7 +2785,7 @@ const intakeView = (
 
 
 
-                          {selectedItem ? new Date(selectedItem.updated_at).toLocaleString() : "-"}
+                            {formatTimestamp(selectedItem?.updated_at)}
 
 
 

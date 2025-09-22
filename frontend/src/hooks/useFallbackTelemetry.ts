@@ -24,7 +24,7 @@ export function useFallbackTelemetry(pollIntervalMs = 30000): IntakeTelemetry {
         }
       } catch (error) {
         if (!cancelled) {
-          console.debug("intake telemetry poll failed", error);
+          console.warn("intake telemetry poll failed", error);
         }
       }
     };

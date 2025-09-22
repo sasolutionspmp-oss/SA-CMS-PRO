@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { type InternalAxiosRequestConfig } from "axios";
 
 export interface IntakeFileItem {
   id: string;
@@ -225,7 +225,7 @@ interface StoredTokens {
   refreshExpiresAt?: number;
 }
 
-const API_BASE = (import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000").replace(/\/$/, "");
+const API_BASE = (import.meta.env.VITE_API_BASE ?? "/api").replace(/\/$/, "");
 const TOKEN_STORAGE_KEY = "saCms.authTokens";
 
 function readStoredTokens(): StoredTokens | null {
@@ -268,13 +268,19 @@ export function getStoredTokens(): StoredTokens | null {
 
 export function getAccessToken(): string | null {
   const tokens = readStoredTokens();
-  return tokens?.accessToken ?? null;
+  if (tokens?.accessToken) {
+    return tokens.accessToken;
+  }
+  if (import.meta.env.DEV) {
+    return import.meta.env.VITE_DEV_TOKEN ?? "dev-token";
+  }
+  return null;
 }
 
 const apiClient = axios.create({ baseURL: API_BASE });
 const platformClient = axios.create({ baseURL: `${API_BASE}/platform` });
 
-const attachAuthHeader = (config: Parameters<typeof apiClient.interceptors.request.use>[0]) => {
+const attachAuthHeader = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const token = getAccessToken();
   if (token) {
     config.headers = config.headers ?? {};

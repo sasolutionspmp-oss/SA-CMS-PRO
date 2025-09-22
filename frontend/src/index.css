@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@theme {
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-surface: #f8fafc;
+  --color-surface-muted: #f1f5f9;
+  --color-surface-elevated: #ffffff;
+  --color-surface-inset: #e2e8f0;
+
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+
+  --color-accent: #10b981;
+  --color-accent-soft: #d1fae5;
+  --color-accent-contrast: #ecfdf5;
+
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --color-brand-950: #082f49;
+
+  --color-success: #16a34a;
+  --color-success-soft: #dcfce7;
+
+  --color-warning: #f59e0b;
+  --color-warning-soft: #fef3c7;
+
+  --color-danger: #dc2626;
+  --color-danger-soft: #fee2e2;
+
+  --color-border-subtle: #e2e8f0;
+  --color-border-strong: #cbd5f5;
+
+  --shadow-panel: 0 12px 24px -16px rgba(15, 23, 42, 0.18), 0 8px 16px -12px rgba(15, 23, 42, 0.12);
+  --shadow-shell: 0 30px 60px -25px rgba(15, 23, 42, 0.4);
+}
+
+@theme .dark {
+  --color-surface: #0f172a;
+  --color-surface-muted: #111c2f;
+  --color-surface-elevated: #13223d;
+  --color-surface-inset: #1e293b;
+
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+
+  --color-accent: #34d399;
+  --color-accent-soft: #14532d;
+  --color-accent-contrast: #ecfdf5;
+
+  --color-brand-500: #38bdf8;
+  --color-brand-600: #0ea5e9;
+  --color-brand-700: #0284c7;
+  --color-brand-950: #082f49;
+
+  --color-success: #22c55e;
+  --color-success-soft: #14532d;
+
+  --color-warning: #fbbf24;
+  --color-warning-soft: #854d0e;
+
+  --color-danger: #f87171;
+  --color-danger-soft: #7f1d1d;
+
+  --color-border-subtle: #1e293b;
+  --color-border-strong: #334155;
+
+  --shadow-panel: 0 20px 40px -25px rgba(2, 6, 23, 0.6), 0 10px 20px -15px rgba(2, 6, 23, 0.4);
+  --shadow-shell: 0 35px 55px -30px rgba(8, 47, 73, 0.65);
+}
+
+:root {
+  color-scheme: light;
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+@layer utilities {
+  .shadow-panel {
+    box-shadow: var(--shadow-panel);
+  }
+
+  .shadow-shell {
+    box-shadow: var(--shadow-shell);
+  }
+}

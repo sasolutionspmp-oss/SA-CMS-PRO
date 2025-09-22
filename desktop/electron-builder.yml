@@ -1,0 +1,42 @@
+appId: com.sasolutions.cmspro
+productName: SA CMS Pro
+files:
+  - main.js
+  - preload.js
+  - package.json
+  - node_modules/**/*
+  - resources/**/*
+  - scripts/**/*
+  - "!python-runtime/**"
+  - "!dist/**"
+  - "!node_modules/.cache/**"
+extraResources:
+  - from: ../frontend/dist
+    to: frontend/dist
+  - from: ../backend
+    to: backend
+    filter:
+      - alembic/**
+      - alembic.ini
+      - app/**
+      - scripts/**
+      - requirements.txt
+  - from: python-runtime
+    to: python-runtime
+directories:
+  output: dist
+  buildResources: resources
+asarUnpack:
+  - backend/**
+  - frontend/dist/**
+  - python-runtime/**
+linux:
+  target:
+    - dir
+win:
+  target:
+    - nsis
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
