@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const fs = require("fs");
 const { spawn } = require("child_process");
 const http = require("http");
 
@@ -10,7 +11,58 @@ let isQuitting = false;
 const isDev = process.env.NODE_ENV === "development" || !app.isPackaged;
 const devServerUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
 const backendDir = path.resolve(__dirname, "../backend");
-const pythonCommand = process.env.SA_CMS_PYTHON || (process.platform === "win32" ? "python" : "python3");
+
+function resolvePythonCommand() {
+  if (process.env.SA_CMS_PYTHON) {
+    return process.env.SA_CMS_PYTHON;
+  }
+
+  if (!app.isPackaged) {
+    return process.platform === "win32" ? "python" : "python3";
+  }
+
+  const embeddedRoot = path.join(process.resourcesPath, "python");
+  const candidates =
+    process.platform === "win32"
+      ? [
+          path.join(embeddedRoot, "Scripts", "python.exe"),
+          path.join(embeddedRoot, "python.exe"),
+        ]
+      : [
+          path.join(embeddedRoot, "bin", "python3"),
+          path.join(embeddedRoot, "bin", "python"),
+        ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  console.warn(
+    "Embedded Python runtime was not found. Falling back to the system interpreter.",
+  );
+  return process.platform === "win32" ? "python" : "python3";
+}
+
+function createPythonEnv() {
+  const env = { ...process.env, PYTHONUNBUFFERED: "1" };
+
+  if (!process.env.SA_CMS_PYTHON && app.isPackaged) {
+    const embeddedRoot = path.join(process.resourcesPath, "python");
+    const binDir =
+      process.platform === "win32"
+        ? path.join(embeddedRoot, "Scripts")
+        : path.join(embeddedRoot, "bin");
+
+    env.PATH = env.PATH ? `${binDir}${path.delimiter}${env.PATH}` : binDir;
+    env.VIRTUAL_ENV = embeddedRoot;
+  }
+
+  return env;
+}
+
+const pythonCommand = resolvePythonCommand();
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -42,7 +94,7 @@ function pingBackend() {
 async function bootstrapDatabase() {
   const result = spawn(pythonCommand, ["scripts/dev.py"], {
     cwd: backendDir,
-    env: { ...process.env, PYTHONUNBUFFERED: "1" },
+    env: createPythonEnv(),
     stdio: "inherit",
   });
 
@@ -68,7 +120,7 @@ function startBackend() {
     ["-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000"],
     {
       cwd: backendDir,
-      env: { ...process.env, PYTHONUNBUFFERED: "1" },
+      env: createPythonEnv(),
       stdio: "inherit",
     },
   );
