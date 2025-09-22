@@ -1,0 +1,22 @@
+<svg width="620" height="200" viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .mark-fill { fill: #0B1F3C; }
+    .tagline { font: 600 18px 'Plus Jakarta Sans', 'Montserrat', 'Arial', sans-serif; letter-spacing: 0.32em; }
+    .name { font: 800 58px 'Plus Jakarta Sans', 'Montserrat', 'Arial', sans-serif; letter-spacing: 0.08em; }
+    .suffix { font: 700 20px 'Plus Jakarta Sans', 'Montserrat', 'Arial', sans-serif; letter-spacing: 0.6em; }
+  </style>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(10 20)">
+      <circle class="mark-fill" cx="70" cy="80" r="64" />
+      <path d="M70 24c-24.9 0-45.548 16.682-49.275 38.472h98.55C115.548 40.682 94.9 24 70 24Z" fill="#FFFFFF" opacity=".94" />
+      <rect fill="#FFFFFF" x="24" y="88" width="92" height="14" rx="7" />
+      <rect fill="#FFFFFF" x="24" y="110" width="92" height="14" rx="7" />
+    </g>
+    <g transform="translate(180 36)" fill="#0B1F3C">
+      <text class="tagline" x="0" y="32">TACTICAL TECHNICAL ACTION</text>
+      <text class="name" x="0" y="98">S&amp;A SOLUTIONS</text>
+      <rect x="0" y="114" width="360" height="6" fill="#0B1F3C" />
+      <text class="suffix" x="0" y="156">LLC</text>
+    </g>
+  </g>
+</svg>
