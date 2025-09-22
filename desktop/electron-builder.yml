@@ -1,0 +1,29 @@
+appId: com.sasolutions.sacmspro
+productName: SA CMS Pro
+asar: true
+directories:
+  output: dist
+  buildResources: build
+files:
+  - "**/*"
+  - "!node_modules/.cache/**"
+  - "!dist/**"
+extraResources:
+  - from: ..
+    filter:
+      - backend/**/*
+  - from: ..
+    filter:
+      - frontend/dist/**/*
+  - from: ..
+    filter:
+      - static/**/*
+win:
+  target:
+    - nsis
+mac:
+  target:
+    - dmg
+linux:
+  target:
+    - AppImage
