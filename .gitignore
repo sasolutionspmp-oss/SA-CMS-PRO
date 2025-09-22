@@ -18,6 +18,7 @@ apps/web/node_modules/
 # Build outputs
 frontend/dist/
 apps/web/dist/
+desktop/dist/
 backend/sa_cms_dev.db
 *.sqlite3
 *.db

@@ -69,6 +69,14 @@ npm run prod
 
 This command builds the React app, ensures the backend is migrated/seeded, and serves the compiled UI from `frontend/dist` inside the Electron window.
 
+To produce an installable build that bundles the packaged frontend, backend service, and static assets, run:
+
+```bash
+npm run dist
+```
+
+Electron Builder (configured via `desktop/electron-builder.yml`) copies `frontend/dist`, the Python backend under `backend/`, and the contents of `static/` into the app bundle. Platform-specific installers (for example, `SA CMS Pro Setup.exe` on Windows) and unpacked archives are emitted to `desktop/dist/`. Use `npm run package` to generate only the unpacked directory structure during development.
+
 ## Smoke Tests
 
 With the backend running (`uvicorn app.main:app --reload --port 8000`):
