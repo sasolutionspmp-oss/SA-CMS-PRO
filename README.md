@@ -43,6 +43,9 @@ uvicorn app.main:app --reload --port 8000
 export DATABASE_URL="sqlite:///$(pwd)/local.db"
 ```
 
+Set `SA_CMS_DATA_DIR` to change where the default SQLite file is created. The packaged Electron app points this variable at its
+per-user data directory so installers run against a writable location.
+
 ## Frontend Quick Start
 
 ```bash
@@ -75,7 +78,7 @@ To create a distributable installer with an embedded Python runtime run:
 npm run dist
 ```
 
-The packaging workflow compiles the frontend, vendors a `desktop/python-runtime` virtual environment populated from `requirements.txt`, and copies the FastAPI service into the Electron bundle. Installers land under `desktop/dist/` (for Windows builds the default output is an `.exe`). Use `npm run package` to generate an unpacked directory for manual inspection. The cached virtual environment can be refreshed by deleting `desktop/python-runtime/` or by forcing a reinstall with `SA_CMS_PYTHON=<path-to-python> npm run bundle:python`.
+The packaging workflow compiles the frontend, vendors a `desktop/python-runtime` virtual environment populated from `requirements.txt`, and copies the FastAPI service into the Electron bundle. Installers land under `desktop/dist/` (for Windows builds the default output is an `.exe`). Use `npm run package` to generate an unpacked directory for manual inspection. The cached virtual environment can be refreshed by deleting `desktop/python-runtime/` or by forcing a reinstall with `SA_CMS_PYTHON=<path-to-python> npm run bundle:python`. The embedded backend persists its SQLite data under Electron's `app.getPath("userData")`; override with `DATABASE_URL` or `SA_CMS_DATA_DIR` if you need a different location.
 
 ## Smoke Tests
 

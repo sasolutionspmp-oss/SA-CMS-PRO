@@ -59,6 +59,14 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function toSqliteUrl(filePath) {
+  const absolutePath = path.resolve(filePath);
+  const normalized = process.platform === "win32"
+    ? absolutePath.replace(/\\/g, "/")
+    : absolutePath;
+  return `sqlite:///${normalized}`;
+}
+
 function pingBackend() {
   return new Promise((resolve) => {
     const req = http.request(
@@ -82,10 +90,30 @@ function pingBackend() {
   });
 }
 
-async function bootstrapDatabase() {
+function createBackendEnv() {
+  const env = { ...process.env, PYTHONUNBUFFERED: "1" };
+  let dataDir = process.env.SA_CMS_DATA_DIR;
+  if (dataDir) {
+    dataDir = path.resolve(dataDir);
+  } else {
+    dataDir = app.getPath("userData");
+  }
+
+  fs.mkdirSync(dataDir, { recursive: true });
+  env.SA_CMS_DATA_DIR = dataDir;
+
+  if (!process.env.DATABASE_URL) {
+    const sqliteFile = path.join(dataDir, "sa_cms_dev.db");
+    env.DATABASE_URL = toSqliteUrl(sqliteFile);
+  }
+
+  return env;
+}
+
+async function bootstrapDatabase(env) {
   const result = spawn(pythonCommand, ["scripts/dev.py"], {
     cwd: backendDir,
-    env: { ...process.env, PYTHONUNBUFFERED: "1" },
+    env,
     stdio: "inherit",
   });
 
@@ -101,7 +129,7 @@ async function bootstrapDatabase() {
   });
 }
 
-function startBackend() {
+function startBackend(env) {
   if (backendProcess) {
     return;
   }
@@ -111,7 +139,7 @@ function startBackend() {
     ["-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "8000"],
     {
       cwd: backendDir,
-      env: { ...process.env, PYTHONUNBUFFERED: "1" },
+      env,
       stdio: "inherit",
     },
   );
@@ -132,12 +160,13 @@ async function ensureBackend() {
   if (await pingBackend()) {
     return;
   }
+  const backendEnv = createBackendEnv();
   try {
-    await bootstrapDatabase();
+    await bootstrapDatabase(backendEnv);
   } catch (err) {
     console.error(err);
   }
-  startBackend();
+  startBackend(backendEnv);
   for (let i = 0; i < 10; i += 1) {
     if (await pingBackend()) {
       return;

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -8,7 +9,12 @@ from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
-_DEFAULT_DB_PATH = _PROJECT_ROOT / "sa_cms_dev.db"
+_DATA_DIR_ENV = "SA_CMS_DATA_DIR"
+_DEFAULT_DATA_DIR = _PROJECT_ROOT
+_data_dir_override = os.environ.get(_DATA_DIR_ENV)
+if _data_dir_override:
+    _DEFAULT_DATA_DIR = Path(_data_dir_override).expanduser().resolve()
+_DEFAULT_DB_PATH = (_DEFAULT_DATA_DIR / "sa_cms_dev.db").resolve()
 
 
 class Settings(BaseSettings):
@@ -42,7 +48,7 @@ class Settings(BaseSettings):
             raw_path = url.replace("sqlite:////", "/", 1)
         path = Path(raw_path)
         if not path.is_absolute():
-            path = (_PROJECT_ROOT / path).resolve()
+            path = (_DEFAULT_DATA_DIR / path).resolve()
         return f"sqlite:///{path.as_posix()}"
 
     @property
