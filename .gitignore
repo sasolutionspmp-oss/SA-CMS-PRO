@@ -7,3 +7,8 @@ backend/test.db
 node_modules/
 dist/
 build/
+frontend/dist/
+desktop/dist/
+desktop/frontend-dist/
+desktop/backend/
+desktop/python-runtime/
