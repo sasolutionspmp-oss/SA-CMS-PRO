@@ -1,10 +1,11 @@
 {
   "name": "sa-cms-pro-desktop",
   "version": "0.1.0",
-  "main": "electron-main.js",
+  "main": "dist/electron-main.js",
   "scripts": {
     "dev": "ts-node electron-main.ts",
-    "build": "electron-builder"
+    "compile": "tsc --project tsconfig.json",
+    "build": "npm run compile && electron-builder"
   },
   "devDependencies": {
     "electron": "^25.2.0",
