@@ -3,5 +3,18 @@ directories:
   output: dist
 files:
   - '**/*'
+  - '!backend{,/**}'
+  - '!frontend-dist{,/**}'
+  - '!python-runtime{,/**}'
+extraResources:
+  - from: backend
+    to: backend
+  - from: frontend-dist
+    to: frontend-dist
+  - from: python-runtime
+    to: python-runtime
+asarUnpack:
+  - backend/**/*
+  - python-runtime/**/*
 win:
   target: zip

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "ts-node electron-main.ts",
     "compile": "tsc --project tsconfig.json",
-    "build": "npm run compile && electron-builder"
+    "prepare-assets": "node ./scripts/prepare-assets.cjs",
+    "build": "npm run compile && npm run prepare-assets && electron-builder",
+    "dist": "npm run build"
   },
   "devDependencies": {
     "electron": "^25.2.0",
