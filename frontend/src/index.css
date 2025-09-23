@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-surface: 249 250 251;
+  --color-surface-muted: 241 245 249;
+  --color-surface-elevated: 255 255 255;
+  --color-surface-inset: 226 232 240;
+  --color-border-subtle: 226 232 240;
+  --color-border-strong: 148 163 184;
+  --color-border-accent: 165 180 252;
+  --color-text-primary: 15 23 42;
+  --color-text-secondary: 71 85 105;
+  --color-text-tertiary: 100 116 139;
+  --color-accent: 99 102 241;
+  --color-accent-soft: 224 231 255;
+  --color-accent-contrast: 255 255 255;
+  --color-success: 34 197 94;
+  --color-success-soft: 220 252 231;
+  --color-warning: 234 179 8;
+  --color-warning-soft: 254 249 195;
+  --color-danger: 239 68 68;
+  --color-danger-soft: 254 226 226;
+  --color-brand-500: 56 189 248;
+  --color-brand-600: 14 165 233;
+  --color-brand-700: 2 132 199;
+  --shadow-panel: 0 20px 45px -25px rgba(15, 23, 42, 0.35), 0 15px 25px -15px rgba(15, 23, 42, 0.2);
+  --shadow-shell: 0 35px 65px -30px rgba(79, 70, 229, 0.55);
+}
+
+.dark {
+  color-scheme: dark;
+  --color-surface: 15 23 42;
+  --color-surface-muted: 30 41 59;
+  --color-surface-elevated: 45 55 72;
+  --color-surface-inset: 71 85 105;
+  --color-border-subtle: 51 65 85;
+  --color-border-strong: 100 116 139;
+  --color-border-accent: 129 140 248;
+  --color-text-primary: 226 232 240;
+  --color-text-secondary: 148 163 184;
+  --color-text-tertiary: 100 116 139;
+  --color-accent: 129 140 248;
+  --color-accent-soft: 76 81 191;
+  --color-accent-contrast: 15 23 42;
+  --color-success: 34 197 94;
+  --color-success-soft: 52 211 153;
+  --color-warning: 250 204 21;
+  --color-warning-soft: 253 230 138;
+  --color-danger: 248 113 113;
+  --color-danger-soft: 252 165 165;
+  --color-brand-500: 125 211 252;
+  --color-brand-600: 56 189 248;
+  --color-brand-700: 14 165 233;
+  --shadow-panel: 0 25px 50px -25px rgba(2, 6, 23, 0.85), 0 20px 35px -15px rgba(15, 23, 42, 0.6);
+  --shadow-shell: 0 45px 90px -35px rgba(49, 46, 129, 0.75);
+}
+
+@layer base {
+  body {
+    @apply min-h-screen bg-surface text-text-primary antialiased;
+  }
+}
+
+@layer utilities {
+  .shadow-panel {
+    box-shadow: var(--shadow-panel);
+  }
+
+  .shadow-shell {
+    box-shadow: var(--shadow-shell);
+  }
+}
