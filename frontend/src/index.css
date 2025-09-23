@@ -1,0 +1,308 @@
+@config "../tailwind.config.ts";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-surface: 248 250 252;
+  --color-surface-elevated: 255 255 255;
+  --color-surface-muted: 241 245 249;
+  --color-surface-inset: 226 232 240;
+  --color-text-primary: 15 23 42;
+  --color-text-secondary: 71 85 105;
+  --color-text-tertiary: 100 116 139;
+  --color-accent: 59 130 246;
+  --color-accent-soft: 219 234 254;
+  --color-accent-contrast: 255 255 255;
+  --color-border-subtle: 226 232 240;
+  --color-border-strong: 148 163 184;
+  --color-success: 34 197 94;
+  --color-success-soft: 220 252 231;
+  --color-warning: 245 158 11;
+  --color-warning-soft: 254 243 199;
+  --color-danger: 239 68 68;
+  --color-danger-soft: 254 226 226;
+  --color-brand-500: 99 102 241;
+  --color-brand-700: 67 56 202;
+  --shadow-panel: 0 18px 36px -20px rgba(15, 23, 42, 0.35);
+  --shadow-shell: 0 32px 64px -28px rgba(15, 23, 42, 0.42);
+}
+
+.dark {
+  color-scheme: dark;
+  --color-surface: 11 17 26;
+  --color-surface-elevated: 15 23 42;
+  --color-surface-muted: 24 34 52;
+  --color-surface-inset: 36 50 77;
+  --color-text-primary: 241 245 249;
+  --color-text-secondary: 148 163 184;
+  --color-text-tertiary: 100 116 139;
+  --color-accent: 96 165 250;
+  --color-accent-soft: 37 99 235;
+  --color-accent-contrast: 255 255 255;
+  --color-border-subtle: 51 65 85;
+  --color-border-strong: 71 85 105;
+  --color-success: 34 197 94;
+  --color-success-soft: 34 197 94;
+  --color-warning: 245 158 11;
+  --color-warning-soft: 245 158 11;
+  --color-danger: 239 68 68;
+  --color-danger-soft: 239 68 68;
+  --color-brand-500: 99 102 241;
+  --color-brand-700: 79 70 229;
+  --shadow-panel: 0 22px 48px -20px rgba(2, 6, 23, 0.65);
+  --shadow-shell: 0 36px 72px -28px rgba(2, 6, 23, 0.7);
+}
+
+@layer base {
+  body {
+    @apply bg-surface text-text-primary antialiased;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-surface {
+    background-color: rgb(var(--color-surface) / 1);
+  }
+
+  .bg-surface-soft {
+    background-color: rgb(var(--color-surface) / 0.6);
+  }
+
+  .bg-surface-muted {
+    background-color: rgb(var(--color-surface-muted) / 1);
+  }
+
+  .bg-surface-muted-soft {
+    background-color: rgb(var(--color-surface-muted) / 0.6);
+  }
+
+  .bg-surface-elevated {
+    background-color: rgb(var(--color-surface-elevated) / 1);
+  }
+
+  .bg-surface-elevated-90 {
+    background-color: rgb(var(--color-surface-elevated) / 0.9);
+  }
+
+  .bg-surface-inset {
+    background-color: rgb(var(--color-surface-inset) / 1);
+  }
+
+  .bg-surface-inset-soft {
+    background-color: rgb(var(--color-surface-inset) / 0.6);
+  }
+
+  .bg-accent {
+    background-color: rgb(var(--color-accent) / 1);
+  }
+
+  .bg-accent-90 {
+    background-color: rgb(var(--color-accent) / 0.9);
+  }
+
+  .bg-accent-soft {
+    background-color: rgb(var(--color-accent-soft) / 1);
+  }
+
+  .bg-accent-contrast-20 {
+    background-color: rgb(var(--color-accent-contrast) / 0.2);
+  }
+
+  .bg-success {
+    background-color: rgb(var(--color-success) / 1);
+  }
+
+  .bg-success-90 {
+    background-color: rgb(var(--color-success) / 0.9);
+  }
+
+  .bg-success-soft {
+    background-color: rgb(var(--color-success-soft) / 1);
+  }
+
+  .bg-warning {
+    background-color: rgb(var(--color-warning) / 1);
+  }
+
+  .bg-warning-soft {
+    background-color: rgb(var(--color-warning-soft) / 1);
+  }
+
+  .bg-danger {
+    background-color: rgb(var(--color-danger) / 1);
+  }
+
+  .bg-danger-soft {
+    background-color: rgb(var(--color-danger-soft) / 1);
+  }
+
+  .bg-danger-soft-10 {
+    background-color: rgb(var(--color-danger-soft) / 0.1);
+  }
+
+  .bg-danger-soft-70 {
+    background-color: rgb(var(--color-danger-soft) / 0.7);
+  }
+
+  .bg-brand-500 {
+    background-color: rgb(var(--color-brand-500) / 1);
+  }
+
+  .bg-brand-700 {
+    background-color: rgb(var(--color-brand-700) / 1);
+  }
+
+  .text-text-primary {
+    color: rgb(var(--color-text-primary) / 1);
+  }
+
+  .text-text-secondary {
+    color: rgb(var(--color-text-secondary) / 1);
+  }
+
+  .text-text-tertiary {
+    color: rgb(var(--color-text-tertiary) / 1);
+  }
+
+  .text-accent {
+    color: rgb(var(--color-accent) / 1);
+  }
+
+  .text-accent-contrast {
+    color: rgb(var(--color-accent-contrast) / 1);
+  }
+
+  .text-accent-contrast-80 {
+    color: rgb(var(--color-accent-contrast) / 0.8);
+  }
+
+  .text-success {
+    color: rgb(var(--color-success) / 1);
+  }
+
+  .text-warning {
+    color: rgb(var(--color-warning) / 1);
+  }
+
+  .text-danger {
+    color: rgb(var(--color-danger) / 1);
+  }
+
+  .border-border-subtle {
+    border-color: rgb(var(--color-border-subtle) / 1);
+  }
+
+  .border-border-strong {
+    border-color: rgb(var(--color-border-strong) / 1);
+  }
+
+  .border-accent {
+    border-color: rgb(var(--color-accent) / 1);
+  }
+
+  .border-accent-30 {
+    border-color: rgb(var(--color-accent) / 0.3);
+  }
+
+  .border-accent-50 {
+    border-color: rgb(var(--color-accent) / 0.5);
+  }
+
+  .border-accent-contrast-40 {
+    border-color: rgb(var(--color-accent-contrast) / 0.4);
+  }
+
+  .border-danger-soft {
+    border-color: rgb(var(--color-danger-soft) / 1);
+  }
+
+  .divide-border-subtle > :not([hidden]) ~ :not([hidden]) {
+    --tw-divide-y-reverse: 0;
+    border-color: rgb(var(--color-border-subtle) / 1);
+  }
+
+  .ring-accent {
+    --tw-ring-color: rgb(var(--color-accent) / 1);
+  }
+
+  .ring-accent-20 {
+    --tw-ring-color: rgb(var(--color-accent) / 0.2);
+  }
+
+  .ring-accent-30 {
+    --tw-ring-color: rgb(var(--color-accent) / 0.3);
+  }
+
+  .ring-accent-40 {
+    --tw-ring-color: rgb(var(--color-accent) / 0.4);
+  }
+
+  .ring-accent-50 {
+    --tw-ring-color: rgb(var(--color-accent) / 0.5);
+  }
+
+  .focus\:ring-accent-30:focus {
+    --tw-ring-color: rgb(var(--color-accent) / 0.3);
+  }
+
+  .focus\:ring-accent-40:focus {
+    --tw-ring-color: rgb(var(--color-accent) / 0.4);
+  }
+
+  .focus\:ring-accent-50:focus {
+    --tw-ring-color: rgb(var(--color-accent) / 0.5);
+  }
+
+  .focus-visible\:ring-accent:focus-visible {
+    --tw-ring-color: rgb(var(--color-accent) / 1);
+  }
+
+  .hover\:bg-accent-90:hover {
+    background-color: rgb(var(--color-accent) / 0.9);
+  }
+
+  .hover\:bg-success-90:hover {
+    background-color: rgb(var(--color-success) / 0.9);
+  }
+
+  .hover\:bg-surface-soft:hover {
+    background-color: rgb(var(--color-surface) / 0.6);
+  }
+
+  .hover\:bg-surface-muted:hover {
+    background-color: rgb(var(--color-surface-muted) / 1);
+  }
+
+  .hover\:bg-danger-soft:hover {
+    background-color: rgb(var(--color-danger-soft) / 1);
+  }
+
+  .shadow-panel {
+    box-shadow: var(--shadow-panel);
+  }
+
+  .shadow-shell {
+    box-shadow: var(--shadow-shell);
+  }
+
+  .from-brand-500 {
+    --tw-gradient-from: rgb(var(--color-brand-500)) var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(var(--color-brand-500) / 0);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+  }
+
+  .via-accent {
+    --tw-gradient-stops: var(--tw-gradient-from),
+      rgb(var(--color-accent)) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  }
+
+  .to-brand-700 {
+    --tw-gradient-to: rgb(var(--color-brand-700)) var(--tw-gradient-to-position);
+  }
+}

@@ -1512,7 +1512,7 @@ export default function App(): JSX.Element {
 
 
 
-    <div className="rounded-xl border border-danger-soft bg-danger-soft/10 px-4 py-3 text-sm text-danger">
+    <div className="rounded-xl border border-danger-soft bg-danger-soft-10 px-4 py-3 text-sm text-danger">
 
 
 
@@ -1600,7 +1600,7 @@ const intakeView = (
 
 
 
-                  className="w-full rounded-lg border border-border-subtle bg-surface-elevated px-3 py-2 text-sm shadow-panel focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-border-subtle bg-surface-elevated px-3 py-2 text-sm shadow-panel focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-40"
 
 
 
@@ -1648,7 +1648,7 @@ const intakeView = (
 
 
 
-                  className="w-full rounded-lg border border-border-subtle bg-surface-elevated px-3 py-2 text-sm shadow-panel focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40"
+                  className="w-full rounded-lg border border-border-subtle bg-surface-elevated px-3 py-2 text-sm shadow-panel focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent-40"
 
 
 
@@ -1700,7 +1700,7 @@ const intakeView = (
 
 
 
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-contrast shadow-panel transition hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent/50 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2 text-sm font-semibold text-accent-contrast shadow-panel transition hover:bg-accent-90 focus:outline-none focus:ring-2 focus:ring-accent-50 disabled:cursor-not-allowed disabled:opacity-60"
 
 
 
@@ -2228,7 +2228,7 @@ const intakeView = (
 
 
 
-                className="inline-flex items-center gap-2 rounded-full border border-danger-soft bg-danger-soft/70 px-3 py-1 text-xs font-medium text-danger shadow-panel transition hover:bg-danger-soft disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-full border border-danger-soft bg-danger-soft-70 px-3 py-1 text-xs font-medium text-danger shadow-panel transition hover:bg-danger-soft disabled:opacity-50"
 
 
 
@@ -2496,7 +2496,7 @@ const intakeView = (
 
 
 
-                className="inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-xs font-semibold text-accent-contrast shadow-panel transition hover:bg-success/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-xs font-semibold text-accent-contrast shadow-panel transition hover:bg-success-90 disabled:cursor-not-allowed disabled:opacity-50"
 
 
 
@@ -2592,7 +2592,7 @@ const intakeView = (
 
 
 
-            <div className="fixed inset-0 bg-surface-inset/60" />
+            <div className="fixed inset-0 bg-surface-inset-soft" />
 
 
 
@@ -2804,7 +2804,7 @@ const intakeView = (
 
 
 
-                      <div className="rounded-lg border border-danger-soft bg-danger-soft/70 p-3 text-danger">
+                      <div className="rounded-lg border border-danger-soft bg-danger-soft-70 p-3 text-danger">
 
 
 

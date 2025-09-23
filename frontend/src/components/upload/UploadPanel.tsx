@@ -213,7 +213,7 @@ export function UploadPanel({ className, projectId }: UploadPanelProps): JSX.Ele
         </div>
       </div>
 
-      <div className="rounded-xl border border-border-subtle bg-surface-muted/60 p-4 shadow-panel space-y-3">
+      <div className="rounded-xl border border-border-subtle bg-surface-muted-soft p-4 shadow-panel space-y-3">
         <div className="flex flex-wrap items-center justify-between text-xs text-text-secondary">
           <span>
             {totalFiles} file{totalFiles === 1 ? '' : 's'} in queue

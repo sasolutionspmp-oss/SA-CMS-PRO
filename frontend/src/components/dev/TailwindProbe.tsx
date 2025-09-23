@@ -9,7 +9,7 @@ type StatusChip = {
 const chipClasses =
   "inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1.5 text-xs font-semibold text-accent-contrast shadow-panel transition-transform hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent";
 const badgeClasses =
-  "rounded-full border border-accent-contrast/40 bg-accent-contrast/20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-accent-contrast";
+  "rounded-full border border-accent-contrast-40 bg-accent-contrast-20 px-2 py-0.5 text-[10px] uppercase tracking-wide text-accent-contrast";
 
 const statusChips: StatusChip[] = [
   {
@@ -36,7 +36,7 @@ export function TailwindProbe(): JSX.Element {
     <section
       data-testid="tailwind-probe"
       className={clsx(
-        "rounded-3xl border border-accent/50 bg-surface-elevated/90 p-6 text-accent shadow-panel ring-1 ring-accent/20 backdrop-blur"
+        "rounded-3xl border border-accent-50 bg-surface-elevated-90 p-6 text-accent shadow-panel ring-1 ring-accent-20 backdrop-blur"
       )}
     >
       <p className="text-xs font-medium uppercase tracking-[0.2em] text-text-tertiary">
@@ -66,9 +66,9 @@ export function TailwindProbe(): JSX.Element {
       <div className="mt-6 grid gap-4 sm:grid-cols-2">
         <div
           data-testid="tailwind-probe-gradient-card"
-          className="rounded-2xl border border-accent/30 bg-gradient-to-r from-brand-500 via-accent to-brand-700 p-5 text-accent-contrast shadow-shell"
+          className="rounded-2xl border border-accent-30 bg-gradient-to-r from-brand-500 via-accent to-brand-700 p-5 text-accent-contrast shadow-shell"
         >
-          <p className="text-xs uppercase tracking-[0.28em] text-accent-contrast/80">
+          <p className="text-xs uppercase tracking-[0.28em] text-accent-contrast-80">
             Gradient Check
           </p>
           <p className="mt-2 text-sm font-semibold">bg-gradient-to-r | from-brand-500 | via-accent | to-brand-700</p>
