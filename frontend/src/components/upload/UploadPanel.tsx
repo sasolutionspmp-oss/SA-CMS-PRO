@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Check, Loader2, Trash2, UploadCloud, X } from "lucide-react";
+import { Loader2, Trash2, UploadCloud, X } from "lucide-react";
 
 export type UploadStatus = "queued" | "uploading" | "success" | "error";
 
@@ -16,6 +16,7 @@ export interface UploadItem {
 
 export interface UploadPanelProps {
   className?: string;
+  projectId?: string;
 }
 
 interface ActiveUploadController {

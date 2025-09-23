@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from "axios";
 
 export interface IntakeFileItem {
   id: string;
@@ -274,11 +274,15 @@ export function getAccessToken(): string | null {
 const apiClient = axios.create({ baseURL: API_BASE });
 const platformClient = axios.create({ baseURL: `${API_BASE}/platform` });
 
-const attachAuthHeader = (config: Parameters<typeof apiClient.interceptors.request.use>[0]) => {
+const attachAuthHeader = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
   const token = getAccessToken();
   if (token) {
-    config.headers = config.headers ?? {};
-    config.headers.Authorization = `Bearer ${token}`;
+    const headers =
+      config.headers instanceof AxiosHeaders
+        ? config.headers
+        : new AxiosHeaders(config.headers ?? {});
+    headers.set("Authorization", `Bearer ${token}`);
+    config.headers = headers;
   }
   return config;
 };
