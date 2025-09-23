@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --color-surface-base: 244 247 254;
+  --color-surface: 255 255 255;
+  --color-surface-muted: 244 246 252;
+  --color-surface-elevated: 255 255 255;
+  --color-surface-inset: 226 232 240;
+  --color-text-primary: 17 24 39;
+  --color-text-secondary: 71 85 105;
+  --color-text-tertiary: 100 116 139;
+  --color-accent: 99 102 241;
+  --color-accent-contrast: 239 244 255;
+  --color-accent-soft: 226 230 255;
+  --color-success: 34 197 94;
+  --color-success-soft: 220 252 231;
+  --color-warning: 245 158 11;
+  --color-warning-soft: 254 243 199;
+  --color-danger: 239 68 68;
+  --color-danger-soft: 254 226 226;
+  --color-border-subtle: 219 226 239;
+  --color-border-strong: 148 163 184;
+  --color-brand-500: 14 165 233;
+  --color-brand-700: 12 105 175;
+  --shadow-panel: 0 18px 36px -24px rgba(15, 23, 42, 0.35), 0 12px 24px -26px rgba(15, 23, 42, 0.25);
+  --shadow-shell: 0 30px 80px -45px rgba(15, 23, 42, 0.55);
+}
+
+.dark {
+  color-scheme: dark;
+  --color-surface-base: 11 15 23;
+  --color-surface: 18 24 32;
+  --color-surface-muted: 26 33 44;
+  --color-surface-elevated: 33 42 55;
+  --color-surface-inset: 56 68 88;
+  --color-text-primary: 226 232 240;
+  --color-text-secondary: 165 180 197;
+  --color-text-tertiary: 129 140 153;
+  --color-accent: 129 140 248;
+  --color-accent-contrast: 15 23 42;
+  --color-accent-soft: 64 72 120;
+  --color-success: 74 222 128;
+  --color-success-soft: 34 197 94;
+  --color-warning: 252 211 77;
+  --color-warning-soft: 250 204 21;
+  --color-danger: 248 113 113;
+  --color-danger-soft: 127 29 29;
+  --color-border-subtle: 45 55 72;
+  --color-border-strong: 71 85 105;
+  --color-brand-500: 56 189 248;
+  --color-brand-700: 14 165 233;
+  --shadow-panel: 0 18px 36px -28px rgba(2, 6, 23, 0.7), 0 12px 24px -32px rgba(15, 23, 42, 0.55);
+  --shadow-shell: 0 35px 120px -60px rgba(2, 6, 23, 0.75);
+}
+
+@layer base {
+  * {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-surface-base text-text-primary;
+    font-family: "Inter", "SF Pro Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+  }
+
+  ::selection {
+    background-color: rgb(var(--color-accent) / 0.2);
+  }
+}
+

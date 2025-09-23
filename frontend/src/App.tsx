@@ -580,6 +580,32 @@ function formatStage(status?: string | null): string {
 
 }
 
+function formatBytes(size?: number | null): string {
+  if (!Number.isFinite(size ?? 0) || !size || size <= 0) {
+    return "0 B";
+  }
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  let value = size;
+  let index = 0;
+  while (value >= 1024 && index < units.length - 1) {
+    value /= 1024;
+    index += 1;
+  }
+  const digits = value >= 10 ? 0 : 1;
+  return `${value.toFixed(digits)} ${units[index]}`;
+}
+
+function formatTimestamp(value?: string | null): string {
+  if (!value) {
+    return "-";
+  }
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+  return parsed.toLocaleString();
+}
+
 
 
 
@@ -1178,7 +1204,7 @@ export default function App(): JSX.Element {
 
 
 
-      const summary = await launchIntake(projectId, zipPath);
+      const summary = await launchIntake({ projectId, zipPath, orgId: activeOrgId });
 
 
 
@@ -2396,7 +2422,7 @@ const intakeView = (
 
 
 
-                          {new Date(item.updated_at).toLocaleString()}
+                          {formatTimestamp(item.updated_at)}
 
 
 
@@ -2768,7 +2794,7 @@ const intakeView = (
 
 
 
-                          {selectedItem ? new Date(selectedItem.updated_at).toLocaleString() : "-"}
+                          {selectedItem?.updated_at ? formatTimestamp(selectedItem.updated_at) : "-"}
 
 
 
