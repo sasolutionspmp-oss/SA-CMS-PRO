@@ -27,14 +27,23 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
     "pm": {
         "commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill",
         "labor.approve_timesheet", "procurement.award", "field.respond_rfi", "field.decide_submittal", "field.accept_closeout",
+        "field.distribute_rfi", "prime_bill.send",
     },
     "accountant": {
         "bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
         "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",
         "close.close_period", "close.reopen_period", "close.lock_period", "close.post_wip_adjustment", "close.reverse_wip_adjustment",
-        "labor.post_payroll", "labor.bill",
+        "labor.post_payroll", "labor.bill", "prime_bill.send", "prime_retainage.release", "journal.reverse", "handoff.acknowledge",
+        "retainage.release",
     },
-    "treasury": {"payment.release", "payment.release_retainage", "retainage.release", "reimbursement.pay"},
+    "controller": {
+        "bill.approve", "prime_bill.approve", "period.close", "close.close_period", "close.reopen_period", "close.lock_period",
+        "close.post_wip_adjustment", "close.reverse_wip_adjustment", "journal.reverse", "banking.lock_reconciliation", "banking.post_fee",
+        "labor.post_payroll", "labor.bill", "handoff.acknowledge", "prime_retainage.release", "asset.capitalise", "asset.post_depreciation",
+        "asset.reverse_depreciation", "asset.dispose", "reimbursement.approve", "retainage.release",
+    },
+    "reconciler": {"banking.lock_reconciliation", "banking.post_fee"},
+    "treasury": {"payment.release", "payment.release_retainage", "retainage.release", "reimbursement.pay", "payment.resume_releases", "labor.post_payroll"},
     "viewer": set(),
 }
 

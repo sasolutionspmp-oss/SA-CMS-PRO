@@ -41,14 +41,14 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "create_project": lambda d: c.create_project(name=d["name"], entity=d.get("entity", "S&A Solutions LLC (synthetic)"), budget=d.get("budget", "0"), customer_id=d.get("customer_id")),
         "set_budget": lambda d: c.set_budget(*p(d, "project_id", "budget")),
         "open_period": lambda d: c.open_period(*p(d, "period_id", "name", "start_date", "end_date")),
-        "close_period": lambda d: c.close_period(*p(d, "period_id")),
+        "close_period": lambda d: _governed_close(c, d),
         "register_document": lambda d: c.evidence.register_document(project_id=d["project_id"], kind=d.get("kind", "drawing"), title=d["title"], actor=d.get("actor", "owner")),
         "add_revision": lambda d: c.evidence.add_revision(document_id=d["document_id"], content=str(d.get("content", "")), note=d.get("note", ""), actor=d.get("actor", "owner")),
         "create_estimate": lambda d: c.estimates.create(project_id=d["project_id"], document_revision_id=d["document_revision_id"], lines=d["lines"], actor=d.get("actor", "owner"), supersedes=d.get("supersedes")),
         "create_commitment": lambda d: c.commitments.create(project_id=d["project_id"], supplier_id=d["supplier_id"], title=d["title"], sov_lines=d["sov_lines"], retainage_rate=d.get("retainage_rate", "0.10"), estimate_id=d.get("estimate_id"), actor=d.get("actor", "owner")),
         "propose_change": lambda d: c.commitments.propose_change(d["commitment_id"], amount=d["amount"], reason=d.get("reason", ""), sov_line_id=d.get("sov_line_id"), actor=d.get("actor", "owner")),
         "reject_change": lambda d: c.commitments.reject_change(d["change_id"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
-        "close_commitment": lambda d: c.commitments.close(d["commitment_id"], actor=d.get("actor", "owner")),
+        "close_commitment": lambda d: c.close_commitment(d["commitment_id"], actor=d.get("actor", "owner")),
         "add_stored_material": lambda d: c.bills.add_stored_material(commitment_id=d["commitment_id"], sov_line_id=d["sov_line_id"], description=d.get("description", ""), eligible_amount=d["eligible_amount"], evidence_hash=d.get("evidence_hash", ""), location=d.get("location", ""), actor=d.get("actor", "owner")),
         "certify_bill": lambda d: c.bills.certify(commitment_id=d["commitment_id"], period_id=d["period_id"], installed=d["installed"], transfers=d.get("transfers"), actor=d.get("actor", "owner")),
         "void_bill": lambda d: c.bills.void(d["bill_id"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
@@ -57,7 +57,7 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "record_collection": lambda d: c.receivables.record_collection(prime_bill_id=d["prime_bill_id"], period_id=d["period_id"], amount=d["amount"], fee=d.get("fee", "0"), provider_ref=d["provider_ref"], actor=d.get("actor", "owner")),
         "record_return": lambda d: c.receivables.record_return(collection_id=d["collection_id"], period_id=d["period_id"], reason=d.get("reason", ""), actor=d.get("actor", "owner")),
         "request_approval": lambda d: c.request_approval(d["operation"], d["subject_id"], actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner")),
-        "approve": lambda d: c.approve(d["approval_id"], approver=d.get("actor", "owner")),
+        "approve": lambda d: c.approve(d["approval_id"], approver=d.get("actor", "owner"), approver_role=d.get("approver_role", "owner")),
         "reject": lambda d: c.reject(d["approval_id"], approver=d.get("actor", "owner"), reason=d.get("reason", "")),
         "execute": lambda d: c.execute(d["approval_id"], actor=d.get("actor", "owner"), op_id=d.get("op_id"), period_id=d.get("period_id")).__dict__,
         "dispatch_payments": lambda d: c.dispatch_payments(),
@@ -115,6 +115,16 @@ def _store_selftest(c: Cipher, report: dict[str, Any]) -> dict[str, Any]:
     """The console's browser self-test posts its outcome here so a headless run can be read back."""
     setattr(c, "_selftest_report", {"result": report.get("result"), "nonce": report.get("nonce"), "steps": report.get("steps", []), "user_agent": report.get("user_agent", "")})
     return {"stored": True}
+
+
+def _governed_close(c: Cipher, d: dict[str, Any]) -> dict[str, Any]:
+    """Interactive period close never bypasses the checklist: it opens a
+    close.close_period approval when the close module is registered."""
+    period_id = d["period_id"]
+    if "close" in c._plugins:
+        ap = c.request_approval("close.close_period", period_id, actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner"))
+        return {"approval_requested": ap["id"], "operation": "close.close_period", "checklist": c.plugin("close").checklist(period_id)}
+    return c.close_period(period_id, actor=d.get("actor", "owner"))
 
 
 def _set_mode(c: Cipher, mode: str) -> dict[str, Any]:

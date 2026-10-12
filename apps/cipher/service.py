@@ -39,6 +39,8 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.procurement",
     "apps.cipher.domain.field",
     "apps.cipher.domain.close",
+    "apps.cipher.domain.handoff",
+    "apps.cipher.domain.rights",
 ]
 # Optional plugin hook used by the close module's checklist:
 #   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
@@ -89,6 +91,36 @@ class CipherError(RuntimeError):
     pass
 
 
+class RoleNotAuthorised(CipherError, PermissionError):
+    pass
+
+
+class CoreReconciliationChecks:
+    """Pseudo-module that contributes core subledger-to-GL checks to the close
+    checklist and the Ricky brief through the standard close_checks hook.  Each
+    check runs only when the core domain exposes the corresponding method."""
+
+    CHECKS = (
+        ("retainage payable reconciled (2050)", "bills", "retainage_open_items"),
+        ("stored materials reconciled (1300)", "bills", "stored_material_items"),
+        ("retainage receivable reconciled (1150)", "receivables", "retainage_receivable_items"),
+        ("provider clearing reconciled (1200)", "payments", "clearing_items"),
+    )
+
+    def __init__(self, cipher: "Cipher"):
+        self.c = cipher
+
+    def close_checks(self, period_id: str) -> list[dict[str, Any]]:
+        out = []
+        for label, domain_name, method in self.CHECKS:
+            fn = getattr(getattr(self.c, domain_name), method, None)
+            if fn is None:
+                continue
+            r = fn()
+            out.append({"check": label, "ok": bool(r.get("reconciled")), "detail": f"subledger {r.get('subledger_total')} vs control {r.get('control_balance')}"})
+        return out
+
+
 OPERATIONS = {
     "estimate.approve": "estimate",
     "commitment.execute": "commitment",
@@ -118,12 +150,18 @@ class Cipher:
         self.forecast = Forecast(self.db, self.commitments, self.ledger)
         self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins, forecast=self.forecast)
         self.provider = provider or SimulatedProvider()
+        # provider callbacks are verified against the provider's webhook secret when it has one
+        self.payments.webhook_secret = getattr(self.provider, "webhook_secret", None)
         self._plugins: dict[str, Any] = {}
         for mod in _load_plugin_modules():
             try:
                 self.register_plugin(mod.PLUGIN_NAME, mod.Plugin(self))
             except Exception as exc:
                 log.warning("plugin %s failed to initialise: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
+        self.register_plugin("core_reconciliation", CoreReconciliationChecks(self))
+        # Plugins that post to accounts receivable (1100) expose ar_open_items(project_id)
+        # so the AR subledger covers every source, not only prime bills.
+        self.receivables.extra_ar_sources = lambda: [p for n, p in sorted(self._plugins.items()) if hasattr(p, "ar_open_items")]
 
     # ---- plugins (v2 modules register here) ------------------------------------ #
 
@@ -188,7 +226,24 @@ class Cipher:
 
     # ---- approvals ------------------------------------------------------------------ #
 
+    def _core_domains(self) -> tuple[Any, ...]:
+        """Core domain services that may own additional approval-bound operations.
+        A domain opts in by defining handles(operation) -> bool plus
+        manifest_for(operation, subject_id, *, actor_role) and
+        apply(operation, subject_id, *, approval_id, manifest, actor, period_id)."""
+        return (self.receivables, self.bills, self.payments, self.commitments, self.estimates, self.ledger, self.evidence)
+
+    def _core_owner(self, operation: str) -> Any | None:
+        for domain in self._core_domains():
+            handles = getattr(domain, "handles", None)
+            if handles is not None and handles(operation):
+                return domain
+        return None
+
     def _manifest(self, operation: str, subject_id: str, actor_role: str) -> dict[str, Any]:
+        owner = self._core_owner(operation)
+        if owner is not None:
+            return owner.manifest_for(operation, subject_id, actor_role=actor_role)
         if operation == "estimate.approve":
             return self.estimates.manifest(subject_id, actor_role=actor_role)
         if operation == "commitment.execute":
@@ -213,10 +268,20 @@ class Cipher:
         raise CipherError(f"unknown operation {operation}")
 
     def request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
-        manifest = self._manifest(operation, subject_id, actor_role)
+        """The manifest's actor_role is the role that will execute the operation; it
+        must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
+        manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
+        if not Ricky.can(actor_role, operation):
+            raise RoleNotAuthorised(f"role {actor_role!r} is not authorised for {operation}")
         return self.approvals.request(manifest, requested_by=requested_by)
 
-    def approve(self, approval_id: str, *, approver: str = "owner") -> dict[str, Any]:
+    def approve(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
+        """Grant an approval.  The approver's role must hold the operation's authority.
+        A sole owner holds every role; two owner logins are not two-person separation
+        (plan v1.1), which is why releases also need the independent controls in payments."""
+        ap = self.approvals.get(approval_id)
+        if not Ricky.can(approver_role, ap["operation"]):
+            raise RoleNotAuthorised(f"role {approver_role!r} cannot approve {ap['operation']}")
         return self.approvals.grant(approval_id, approver=approver)
 
     def reject(self, approval_id: str, *, approver: str = "owner", reason: str = "") -> dict[str, Any]:
@@ -242,6 +307,9 @@ class Cipher:
             raise
 
     def _apply(self, operation: str, subject_id: str, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
+        owner = self._core_owner(operation)
+        if owner is not None:
+            return owner.apply(operation, subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
         if operation == "estimate.approve":
             return {"estimate": self.estimates.approve(subject_id, approval_id=approval_id, actor=actor)["id"], "status": "approved"}
         if operation == "commitment.execute":
@@ -293,7 +361,21 @@ class Cipher:
         return row
 
     def close_period(self, period_id: str, *, actor: str = "owner") -> dict[str, Any]:
+        """Low-level close used by fixtures.  Interactive surfaces (HTTP, console) go
+        through the close module's checklist approval ("close.close_period")."""
         return self.ledger.close_period(period_id, actor=actor)
+
+    def close_commitment(self, commitment_id: str, *, actor: str = "owner") -> dict[str, Any]:
+        """Close a commitment from an interactive surface.  When the field module is
+        registered, closing happens only through its accepted closeout
+        ("field.accept_closeout"), which is what lets retainage be released."""
+        field = self._plugins.get("field")
+        if field is not None:
+            accepted = getattr(field, "closeout_accepted", None)
+            if accepted is None or not accepted(commitment_id):
+                raise CipherError("closeout has not been accepted; request the field.accept_closeout approval instead")
+            return self.commitments.get(commitment_id)
+        return self.commitments.close(commitment_id, actor=actor)
 
     # ---- payments -------------------------------------------------------------------------- #
 
@@ -338,6 +420,35 @@ class Cipher:
         return state
 
     def audit_export(self) -> dict[str, Any]:
+        """Everything an independent reviewer needs to re-perform the books: chart,
+        periods, journals, approvals, source records with their evidence hashes,
+        payment execution history, subledger reconciliations, every module's own
+        records (via its optional audit_export() hook), the schema manifest and the
+        hash-chained audit log."""
+        q = self.db.query
+        modules: dict[str, Any] = {}
+        for name, plugin in sorted(self._plugins.items()):
+            fn = getattr(plugin, "audit_export", None)
+            if fn is not None:
+                try:
+                    modules[name] = fn()
+                except Exception as exc:  # an export must say what it could not include
+                    modules[name] = {"error": f"{type(exc).__name__}: {exc}"}
+        reconciliations: dict[str, Any] = {"ap": self.bills.ap_open_items(), "ar": self.receivables.ar_open_items()}
+        for label, domain_name, method in CoreReconciliationChecks.CHECKS:
+            fn = getattr(getattr(self, domain_name), method, None)
+            if fn is not None:
+                reconciliations[label] = fn()
+        close_checks: dict[str, Any] = {}
+        for period in self.db.query("SELECT id FROM periods WHERE status='open' ORDER BY start_date"):
+            checks = []
+            for name, plugin in sorted(self._plugins.items()):
+                if hasattr(plugin, "close_checks"):
+                    try:
+                        checks.extend({**chk, "source": name} for chk in (plugin.close_checks(period["id"]) or []))
+                    except Exception as exc:
+                        checks.append({"check": f"{name} close checks", "ok": False, "detail": str(exc), "source": name})
+            close_checks[period["id"]] = checks
         return {
             "exported_at": utcnow_iso(),
             "workspace": self.db.authority_status(),
@@ -347,8 +458,34 @@ class Cipher:
             "trial_balance": self.ledger.trial_balance(),
             "journals": self.ledger.journals(),
             "approvals": self.approvals.list(),
-            "ap_reconciliation": self.bills.ap_open_items(),
-            "ar_reconciliation": self.receivables.ar_open_items(),
+            "ap_reconciliation": reconciliations["ap"],
+            "ar_reconciliation": reconciliations["ar"],
+            "source_records": {
+                "parties": q("SELECT id, kind, name, destination_version, destination_verified, created_at FROM parties ORDER BY created_at"),
+                "projects": q("SELECT * FROM projects ORDER BY created_at"),
+                "documents": q("SELECT * FROM documents ORDER BY created_at"),
+                "document_revisions": q("SELECT * FROM document_revisions ORDER BY created_at"),
+                "estimates": q("SELECT * FROM estimates ORDER BY created_at"),
+                "estimate_lines": q("SELECT * FROM estimate_lines ORDER BY estimate_id, line_no"),
+                "commitments": q("SELECT * FROM commitments ORDER BY created_at"),
+                "sov_lines": q("SELECT * FROM sov_lines ORDER BY commitment_id, line_no"),
+                "changes": q("SELECT * FROM changes ORDER BY created_at"),
+                "stored_material_lots": q("SELECT * FROM stored_material_lots ORDER BY created_at"),
+                "bills": q("SELECT * FROM bills ORDER BY created_at"),
+                "bill_lines": q("SELECT * FROM bill_lines ORDER BY bill_id"),
+                "prime_bills": q("SELECT * FROM prime_bills ORDER BY created_at"),
+                "collections": q("SELECT * FROM collections ORDER BY received_at"),
+            },
+            "payment_execution": {
+                "intents": q("SELECT * FROM payment_intents ORDER BY created_at"),
+                "provider_events": q("SELECT * FROM provider_events ORDER BY received_at"),
+                "outbox": q("SELECT id, kind, status, attempts, last_error, created_at, dispatched_at FROM outbox ORDER BY created_at"),
+                "idempotency": q("SELECT op_id, payload_hash, created_at FROM idempotency ORDER BY created_at"),
+            },
+            "reconciliations": reconciliations,
+            "open_period_close_checks": close_checks,
+            "modules": modules,
+            "ricky_proposals": q("SELECT id, workflow, actor_role, decision, reason, created_at FROM ricky_proposals ORDER BY created_at"),
             "audit": self.audit.export(),
         }
 
@@ -363,8 +500,16 @@ class Cipher:
         quarantined until the owner claims authority and reconciles."""
         return cls(path, provider=provider)
 
-    def claim_write_authority(self, *, approval_ref: str, actor: str = "owner") -> dict[str, Any]:
-        return self.db.claim_write_authority(approval_ref=approval_ref, note=f"claimed by {actor}")
+    def claim_write_authority(self, *, approval_ref: str | None = None, actor: str = "owner", reason: str | None = None, claim_code: str | None = None) -> dict[str, Any]:
+        """Claim write authority for a restored or copied workspace.  The claim is an
+        attested owner action (approver and reason recorded; a claim code is required
+        when CIPHER_OWNER_SECRET is configured) because a read-only copy cannot record
+        an approval of its own."""
+        reason = reason or f"claimed by {actor}"
+        try:
+            return self.db.claim_write_authority(approver=actor, reason=reason, approval_ref=approval_ref, claim_code=claim_code)
+        except TypeError:  # older Database signature
+            return self.db.claim_write_authority(approval_ref=approval_ref or reason, note=f"claimed by {actor}: {reason}")
 
     def complete_recovery(self, *, actor: str = "owner") -> dict[str, Any]:
         return self.payments.complete_recovery_reconciliation(self.provider, actor=actor)
@@ -405,7 +550,10 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     commitment = c.commitments.get(commitment["id"])
 
     # period 1
-    lot1 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Ductile iron pipe, on site", eligible_amount="10000", evidence_hash=sha256_hex(b"title/insurance/location evidence"), location="laydown yard", actor=owner)
+    # stored material must be backed by an evidence revision on the project (title/control, insurance, location, delivery)
+    pipe_evidence = c.evidence.register_document(project_id=project["id"], kind="stored_material_evidence", title="DI pipe: bill of sale, insurance certificate, laydown photos", actor=owner)
+    pipe_rev = c.evidence.add_revision(document_id=pipe_evidence["id"], content=b"synthetic stored-material evidence: DI pipe", note="title, insurance, location", actor=owner)
+    lot1 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Ductile iron pipe, on site", eligible_amount="10000", evidence_hash=pipe_rev["content_hash"], location="laydown yard", actor=owner)
     bill1 = c.bills.certify(commitment_id=commitment["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "20000"}], actor=owner)
     c.approve_and_execute("bill.approve", bill1["id"], actor_role="owner")
     bill1 = c.bills.get(bill1["id"])
@@ -425,7 +573,9 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     duplicate = c.payments.ingest_event(settle_event, actor="webhook")
 
     # period 2
-    lot2 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Valves, on site", eligible_amount="5000", evidence_hash=sha256_hex(b"valve evidence"), actor=owner)
+    valve_evidence = c.evidence.register_document(project_id=project["id"], kind="stored_material_evidence", title="Valves: bill of sale, insurance certificate, laydown photos", actor=owner)
+    valve_rev = c.evidence.add_revision(document_id=valve_evidence["id"], content=b"synthetic stored-material evidence: valves", note="title, insurance, location", actor=owner)
+    lot2 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Valves, on site", eligible_amount="5000", evidence_hash=valve_rev["content_hash"], location="laydown yard", actor=owner)
     bill2 = c.bills.certify(commitment_id=commitment["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "45000"}], transfers=[{"lot_id": lot1["id"], "amount": "10000"}], actor=owner)
     c.approve_and_execute("bill.approve", bill2["id"], actor_role="owner")
     bill2 = c.bills.get(bill2["id"])
@@ -436,7 +586,16 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     # prime billing and collection
     prime = c.receivables.certify(project_id=project["id"], period_id="2026-10", certified_cumulative="60000", retainage_rate="0.10", actor=owner)
     c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="owner")
-    c.receivables.send(prime["id"], actor=owner)
+    # external sending is its own authority when the receivables domain governs it
+    if c._core_owner("prime_bill.send") is not None:
+        c.approve_and_execute("prime_bill.send", prime["id"], actor_role="owner")
+    else:
+        c.receivables.send(prime["id"], actor=owner)
+    # ACH collection requires the customer's recorded debit mandate when mandates are supported
+    if hasattr(c.receivables, "record_mandate"):
+        mandate_doc = c.evidence.register_document(project_id=project["id"], kind="ach_mandate", title="Customer ACH debit authorization (synthetic)", actor=owner)
+        mandate_rev = c.evidence.add_revision(document_id=mandate_doc["id"], content=b"synthetic ACH debit authorization", note="signed authorization", actor=owner)
+        c.receivables.record_mandate(customer_id=customer["id"], mandate_ref="MANDATE-SIM-0001", evidence_hash=mandate_rev["content_hash"], actor=owner)
     collection = c.receivables.record_collection(prime_bill_id=prime["id"], period_id="2026-10", amount="54000", fee="5", provider_ref="ach_sim_rcv_0001", actor=owner)
     c.close_period("2026-10")
     late_return = c.receivables.record_return(collection_id=collection["id"], period_id="2026-11", reason="late return after close (simulated)", actor=owner)

@@ -20,7 +20,7 @@ from .money import fmt
 
 POLICY_VERSION = "cipher-approval-policy/1"
 DEFAULT_EXPIRY_SECONDS = 24 * 3600
-MATERIAL_KEYS = ("operation", "subject", "actor_role", "amounts", "bindings", "destination", "policy_version")
+MATERIAL_KEYS = ("operation", "subject", "actor_role", "entity", "currency", "amounts", "bindings", "destination", "policy_version")
 
 
 class ApprovalError(RuntimeError):
@@ -55,12 +55,18 @@ def build_manifest(
     policy_version: str = POLICY_VERSION,
     expiry_seconds: int = DEFAULT_EXPIRY_SECONDS,
     now: _dt.datetime | None = None,
+    entity: str | None = None,
+    currency: str = "USD",
 ) -> dict[str, Any]:
+    """``entity`` (legal entity) and ``currency`` are material: an approval granted
+    for one entity or currency can never execute against another."""
     now = now or utcnow()
     return {
         "operation": operation,
         "subject": {"type": subject_type, "id": subject_id},
         "actor_role": actor_role,
+        "entity": entity,
+        "currency": currency,
         "amounts": {k: fmt(v) for k, v in (amounts or {}).items()},
         "bindings": bindings or {},
         "destination": destination,
