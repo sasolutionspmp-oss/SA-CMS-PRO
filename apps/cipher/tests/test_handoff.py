@@ -232,6 +232,7 @@ class PackageTests(unittest.TestCase):
             "stored materials reconciled (1300)": ("0.00", "0.00", True),
             "retainage receivable reconciled (1150)": ("3000.00", "3000.00", True),  # 10% of the 30,000.00 prime bill
             "provider clearing reconciled (1200)": ("0.00", "0.00", True),
+            "customer deposits reconciled (2400)": ("0.00", "0.00", True),  # no customer advance in this fixture
         }
         self.assertEqual(set(core), set(expected_core))
         self.assertEqual(set(pkg["reconciliations"]), {"ap", "ar"} | set(expected_core))

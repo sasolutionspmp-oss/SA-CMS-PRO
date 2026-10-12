@@ -38,7 +38,16 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
 
     return {
         "add_party": lambda d: c.add_party(kind=d["kind"], name=d["name"], destination=d.get("destination")),
-        "verify_destination": lambda d: c.verify_destination(*p(d, "party_id"), destination=d["destination"], verified_by=d.get("actor", "owner")),
+        # A payee destination change is never one call on this surface: request it, record the
+        # independent verification (a different person, a stored evidence revision), then open
+        # the party.verify_destination approval (bank_admin) and execute it once granted.
+        "request_destination_change": lambda d: c.payments.request_destination_change(
+            *p(d, "party_id", "new_destination"), d.get("requested_by", d.get("actor", "owner")), d.get("reason", ""), d.get("actor", "owner")),
+        "record_verification_evidence": lambda d: c.payments.record_verification_evidence(
+            *p(d, "change_id", "channel", "verified_by", "evidence_hash"), d.get("actor", "owner")),
+        "withdraw_destination_change": lambda d: c.payments.withdraw_destination_change(*p(d, "change_id"), d.get("reason", ""), d.get("actor", "owner")),
+        "request_destination_approval": lambda d: c.request_approval("party.verify_destination", *p(d, "change_id"), actor_role=d.get("actor_role", "bank_admin"), requested_by=d.get("actor", "owner")),
+        "destination_changes": lambda d: c.payments.change_history(*p(d, "party_id")),
         "create_project": lambda d: c.create_project(name=d["name"], entity=d.get("entity", "S&A Solutions LLC (synthetic)"), budget=d.get("budget", "0"), customer_id=d.get("customer_id")),
         "set_budget": lambda d: c.set_budget(*p(d, "project_id", "budget")),
         "open_period": lambda d: c.open_period(*p(d, "period_id", "name", "start_date", "end_date")),
@@ -53,6 +62,9 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "add_stored_material": lambda d: c.bills.add_stored_material(commitment_id=d["commitment_id"], sov_line_id=d["sov_line_id"], description=d.get("description", ""), eligible_amount=d["eligible_amount"], evidence_hash=d.get("evidence_hash", ""), location=d.get("location", ""), actor=d.get("actor", "owner")),
         "certify_bill": lambda d: c.bills.certify(commitment_id=d["commitment_id"], period_id=d["period_id"], installed=d["installed"], transfers=d.get("transfers"), actor=d.get("actor", "owner")),
         "void_bill": lambda d: c.bills.void(d["bill_id"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
+        # drafts only: each becomes effective through its approval (bill.credit_note / bill.correct)
+        "prepare_credit_note": lambda d: c.bills.prepare_credit_note(*p(d, "bill_id", "amount", "reason", "evidence_hash"), d.get("actor", "owner")),
+        "prepare_bill_correction": lambda d: c.bills.prepare_correction(*p(d, "bill_id", "reason"), d.get("actor", "owner")),
         "certify_prime_bill": lambda d: c.receivables.certify(project_id=d["project_id"], period_id=d["period_id"], certified_cumulative=d["certified_cumulative"], retainage_rate=d.get("retainage_rate", "0.10"), actor=d.get("actor", "owner")),
         # sending is its own authority: this opens the prime_bill.send approval
         "send_prime_bill": lambda d: c.request_approval("prime_bill.send", d["prime_bill_id"], actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner")),
@@ -61,6 +73,19 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
             fee=d.get("fee", "0"), provider_ref=d["provider_ref"], actor=d.get("actor", "owner"), method=d.get("method", "ach"), mandate_ref=d.get("mandate_ref")),
         "record_mandate": lambda d: c.receivables.record_mandate(d["customer_id"], d["mandate_ref"], d["evidence_hash"], actor=d.get("actor", "owner")),
         "revoke_mandate": lambda d: c.receivables.revoke_mandate(d["customer_id"], d["mandate_ref"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
+        "set_customer_terms": lambda d: c.receivables.set_customer_terms(*p(d, "customer_id", "days"), d.get("actor", "owner")),
+        "record_deposit": lambda d: c.receivables.record_deposit(
+            *p(d, "customer_id", "project_id", "amount", "provider_ref"), d.get("method", "ach"), d.get("actor", "owner"),
+            period_id=d.get("period_id"), settlement_date=d.get("settlement_date"), mandate_ref=d.get("mandate_ref")),
+        # drafts only: receivable.* approvals apply them
+        "prepare_deposit_application": lambda d: c.receivables.prepare_deposit_application(*p(d, "deposit_id", "prime_bill_id", "amount"), d.get("actor", "owner")),
+        "prepare_credit_memo": lambda d: c.receivables.prepare_credit_memo(*p(d, "prime_bill_id", "amount", "reason", "evidence_hash"), d.get("actor", "owner")),
+        "prepare_write_off": lambda d: c.receivables.prepare_write_off(*p(d, "prime_bill_id", "amount", "reason"), d.get("actor", "owner")),
+        "set_initial_budget": lambda d: c.forecast.set_initial_budget(*p(d, "project_id", "lines"), d.get("actor", "owner"), reason=d.get("reason", "initial budget")),
+        # a draft only: the budget.revise approval applies it
+        "prepare_budget_revision": lambda d: c.forecast.prepare_budget_revision(*p(d, "project_id", "lines", "reason"), d.get("actor", "owner")),
+        "forecast_snapshot": lambda d: c.forecast.snapshot(*p(d, "project_id"), d.get("actor", "owner"), d.get("label", "")),
+        "stale_payments": lambda d: c.payments.stale_processing(int(d["days"])) if "days" in d else c.payments.stale_processing(),
         "record_return": lambda d: c.receivables.record_return(collection_id=d["collection_id"], period_id=d["period_id"], reason=d.get("reason", ""), actor=d.get("actor", "owner")),
         "request_approval": lambda d: c.request_approval(d["operation"], d["subject_id"], actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner")),
         "approve": lambda d: c.approve(d["approval_id"], approver=d.get("actor", "owner"), approver_role=d.get("approver_role", "owner")),

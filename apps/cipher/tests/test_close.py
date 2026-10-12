@@ -224,7 +224,7 @@ class CloseGoldenTests(unittest.TestCase):
         # aging ties to the subledgers
         aging = cl.aging(bill["created_at"][:10])
         self.assertEqual((aging["ap"]["total"], aging["ap"]["subledger_total"]), ("40500.00", "40500.00"))
-        self.assertEqual(aging["ap"]["buckets"], {"current": "40500.00", "31_60": "0.00", "61_90": "0.00", "over_90": "0.00"})
+        self.assertEqual(aging["ap"]["buckets"], {"current": "40500.00", "1_30": "0.00", "31_60": "0.00", "61_90": "0.00", "over_90": "0.00"})
         self.assertTrue(aging["ap"]["ties_to_subledger"] and aging["ar"]["ties_to_subledger"])
         self.assertEqual(aging["ar"]["total"], "0.00")
 
@@ -899,36 +899,143 @@ class WipTests(unittest.TestCase):
         self.assertEqual(cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")["amount"], "7500.00")
 
 
+BUCKETS = ("current", "1_30", "31_60", "61_90", "over_90")
+
+
+def expected_bucket(days_past_due):
+    """The aging bucket for whole days past due (current while not yet past due)."""
+    if days_past_due <= 0:
+        return "current"
+    return "1_30" if days_past_due <= 30 else "31_60" if days_past_due <= 60 else "61_90" if days_past_due <= 90 else "over_90"
+
+
 class AgingAndStateTests(unittest.TestCase):
-    def test_aging_buckets_tie_to_subledgers(self):
+    def test_aging_buckets_by_due_date_tie_to_subledgers(self):
         s = Scenario()
         c, cl = s.c, s.close
         cmt = s.commitment()
         bill = s.supplier_bill(cmt, "20000")  # 18,000 payable, 2,000 retained
-        prime = s.prime_bill("30000")  # 27,000 receivable
+        prime = s.prime_bill("30000")  # 27,000 receivable, invoiced today, due in 30 days (default terms)
         c.commitments.close(cmt["id"], actor="owner")
         c.approve_and_execute("retainage.release", cmt["id"], period_id="P1")  # 2,000 retainage now payable
-        bill_date = dt.date.fromisoformat(bill["created_at"][:10])
-        prime_date = dt.date.fromisoformat(prime["created_at"][:10])
-        for offset, bucket in ((-3, "after_as_of"), (0, "current"), (30, "current"), (31, "31_60"), (60, "31_60"), (61, "61_90"), (90, "61_90"), (91, "over_90"), (400, "over_90")):
-            ag = cl.aging((bill_date + dt.timedelta(days=offset)).isoformat())
+        invoice = dt.date.fromisoformat(prime["invoice_date"])
+        due = dt.date.fromisoformat(prime["due_date"])
+        self.assertEqual((due - invoice).days, 30)
+        # the AP bill is aged from its own due date when the bills subledger dates it, else from its created date
+        ap_bill = next(it for it in c.bills.ap_open_items()["items"] if it.get("bill_id") == bill["id"])
+        ap_basis = dt.date.fromisoformat((ap_bill.get("due_date") or bill["created_at"])[:10])
+        bill_date = dt.date.fromisoformat((ap_bill.get("invoice_date") or bill["created_at"])[:10])
+        for offset, bucket in ((-31, "after_as_of"), (-30, "current"), (-1, "current"), (0, "current"), (1, "1_30"), (30, "1_30"), (31, "31_60"),
+                               (60, "31_60"), (61, "61_90"), (90, "61_90"), (91, "over_90"), (400, "over_90")):
+            as_of = due + dt.timedelta(days=offset)
+            ag = cl.aging(as_of.isoformat())
             ap, ar = ag["ap"], ag["ar"]
+            self.assertEqual(ag["buckets"], list(BUCKETS))
+            # AR: the prime bill is aged from its due date
+            self.assertEqual((ar["total"], ar["subledger_total"]), ("27000.00", "27000.00"))
+            self.assertTrue(ar["ties_to_subledger"] and ar["reconciled"])
+            self.assertEqual(set(ar["buckets"]), set(BUCKETS))
+            item = ar["items"][0]
+            self.assertEqual((item["ref"], item["bucket"], item["open"], item["due_date"]), (prime["id"], bucket, "27000.00", prime["due_date"]))
+            if bucket == "after_as_of":  # dated after as_of: never aged, never current
+                self.assertEqual((item["days_past_due"], item["basis"], ar["aged_total"], ar["after_as_of"]), (None, None, "0.00", "27000.00"))
+            else:
+                self.assertEqual((item["days_past_due"], item["basis"], item["days"]), (max(0, offset), "due_date", offset + 30))
+                self.assertEqual(ar["buckets"][bucket], "27000.00")
+                self.assertEqual(sum(D(v) for v in ar["buckets"].values()), D("27000.00"))
+            # AP ties the same way, whichever basis its items carry
             self.assertEqual((ap["total"], ap["subledger_total"]), ("20000.00", "20000.00"))
             self.assertTrue(ap["ties_to_subledger"] and ap["reconciled"])
-            self.assertEqual(set(ap["buckets"]), {"current", "31_60", "61_90", "over_90"})
-            self.assertEqual(sum(D(v) for v in ap["buckets"].values()) + D(ap["after_as_of"]), D("20000.00"))
-            self.assertEqual(ap["aged_total"], "0.00" if offset < 0 else "20000.00")  # an item recorded after as_of is never "current"
-            self.assertEqual(ag["warning"] is not None, offset < 0)  # a historical as_of is flagged: open items are today's
+            self.assertEqual(sum(D(v) for v in ap["buckets"].values()) + D(ap["after_as_of"]) + D(ap["undated"]), D("20000.00"))
             bill_item = next(it for it in ap["items"] if it["ref"] == bill["id"])
-            self.assertEqual((bill_item["bucket"], bill_item["open"], bill_item["days"]), (bucket, "18000.00", offset))
+            if as_of < bill_date:
+                self.assertEqual(bill_item["bucket"], "after_as_of")
+            else:
+                self.assertEqual((bill_item["bucket"], bill_item["open"]), (expected_bucket((as_of - ap_basis).days), "18000.00"))
+                self.assertEqual(bill_item["basis"], "due_date" if ap_bill.get("due_date") else "document_date")
             self.assertTrue(any(it["kind"] == "retainage_release" and it["open"] == "2000.00" for it in ap["items"]))
-            self.assertEqual((ar["total"], ar["subledger_total"]), ("27000.00", "27000.00"))
-            self.assertTrue(ar["ties_to_subledger"])
-            ar_days = (bill_date + dt.timedelta(days=offset) - prime_date).days
-            self.assertEqual(ar["items"][0]["days"], ar_days)
+            self.assertEqual(ag["warning"] is not None, as_of < dt.date.fromisoformat(prime["created_at"][:10]))  # a historical as_of is flagged
         for bad in ("2026-02-30", "2026/10/01", 20261001, ""):
             with self.assertRaises(CloseError):
                 cl.aging(bad)
+
+    def test_aging_uses_each_items_due_date_and_falls_back_to_document_dates(self):
+        """Items carrying a due date (AP from the bills subledger, AR from any source) are
+        aged from it; items without one from their invoice date, else their created date,
+        as if due that day; an item nothing dates is undated, never current."""
+        s = Scenario()
+        cl = s.close
+        as_of = "2027-03-31"
+        ap_rows = [
+            {"kind": "supplier_bill", "bill_id": "bil_due", "supplier_id": "sup", "sequence": 1, "invoice_date": "2027-01-15", "due_date": "2027-02-14", "open": "100.00"},
+            {"kind": "supplier_bill", "bill_id": "bil_fresh", "supplier_id": "sup", "sequence": 2, "invoice_date": "2027-03-20", "due_date": "2027-04-19", "open": "50.00"},
+            {"kind": "supplier_bill", "bill_id": "bil_undue", "supplier_id": "sup", "sequence": 3, "created_at": "2027-03-01T08:00:00Z", "open": "25.00"},
+            {"kind": "supplier_bill", "bill_id": "bil_later", "supplier_id": "sup", "sequence": 4, "invoice_date": "2027-04-02", "due_date": "2027-05-02", "open": "10.00"},
+        ]
+        ar_rows = [
+            {"source": "prime_bill", "kind": "prime_bill_like", "id": "ar_due", "customer_id": "cus", "invoice_date": "2026-11-01", "due_date": "2026-12-01", "open": "1000.00"},
+            {"source": "labor", "kind": "labor_like", "id": "ar_invoice_only", "customer_id": "cus", "invoice_date": "2027-02-27", "open": "200.00"},
+            {"source": "reimbursement", "kind": "reimb_like", "id": "ar_created_only", "customer_id": "cus", "created_at": "2027-03-31T23:00:00Z", "open": "30.00"},
+            {"source": "mystery", "kind": "mystery", "id": "ar_undated", "customer_id": "cus", "open": "7.00"},
+        ]
+        ap_total, ar_total = "185.00", "1237.00"
+        with mock.patch.object(s.c.bills, "ap_open_items", return_value={"items": ap_rows, "subledger_total": ap_total, "control_balance": ap_total, "reconciled": True}), \
+             mock.patch.object(s.c.receivables, "ar_open_items", return_value={"items": ar_rows, "subledger_total": ar_total, "control_balance": ar_total, "reconciled": True}):
+            ag = cl.aging(as_of)
+        ap = {it["ref"]: (it["basis"], it["days_past_due"], it["bucket"]) for it in ag["ap"]["items"]}
+        self.assertEqual(ap, {
+            "bil_due": ("due_date", 45, "31_60"),           # 2027-02-14 to 2027-03-31
+            "bil_fresh": ("due_date", 0, "current"),        # not yet due
+            "bil_undue": ("document_date", 30, "1_30"),     # no due date: aged from its created date
+            "bil_later": (None, None, "after_as_of"),       # invoiced after as_of
+        })
+        self.assertEqual(ag["ap"]["buckets"], {"current": "50.00", "1_30": "25.00", "31_60": "100.00", "61_90": "0.00", "over_90": "0.00"})
+        self.assertEqual((ag["ap"]["after_as_of"], ag["ap"]["undated"], ag["ap"]["total"], ag["ap"]["ties_to_subledger"]), ("10.00", "0.00", "185.00", True))
+        ar = {it["ref"]: (it["basis"], it["days_past_due"], it["bucket"]) for it in ag["ar"]["items"]}
+        self.assertEqual(ar, {
+            "ar_due": ("due_date", 120, "over_90"),
+            "ar_invoice_only": ("document_date", 32, "31_60"),
+            "ar_created_only": ("document_date", 0, "current"),
+            "ar_undated": (None, None, "undated"),
+        })
+        self.assertEqual(ag["ar"]["buckets"], {"current": "30.00", "1_30": "0.00", "31_60": "200.00", "61_90": "0.00", "over_90": "1000.00"})
+        self.assertEqual((ag["ar"]["undated"], ag["ar"]["after_as_of"], ag["ar"]["total"], ag["ar"]["ties_to_subledger"]), ("7.00", "0.00", "1237.00", True))
+        self.assertIn("due date", ag["basis"])
+
+    def test_aging_follows_credit_memos_write_offs_and_deposit_applications(self):
+        """AR aging is drawn from the receivables subledger after every credit; customer
+        deposits (2400) are not receivables and never appear in it."""
+        s = Scenario()
+        c, cl = s.c, s.close
+        r = c.receivables
+        today = r.today()
+        r.today = lambda: today  # one calendar day for the whole scenario, even across midnight UTC
+        # an explicit invoice date is never before its bill's period, so the old bill is billed
+        # in an earlier period, closed before P1 (whose checklist needs every earlier period closed)
+        c.open_period("P0", "P0", "2025-01-01", "2026-09-30")
+        old = s.c.receivables.certify(project_id=s.pid, period_id="P0", certified_cumulative="10000", retainage_rate="0.10", actor="owner",
+                                      invoice_date=(today - dt.timedelta(days=150)).isoformat())
+        c.approve_and_execute("prime_bill.approve", old["id"])
+        c.close_period("P0")
+        old = r.get(old["id"])  # 9,000 due, 120 days past due
+        doc = c.evidence.register_document(project_id=s.pid, kind="credit_memo_evidence", title="Agreed concession (synthetic)", actor="owner")
+        rev = c.evidence.add_revision(document_id=doc["id"], content=b"synthetic concession letter", note="signed", actor="owner")
+        memo = r.prepare_credit_memo(old["id"], "1000", "agreed concession on pay item 3", rev["content_hash"], "accountant")
+        c.approve_and_execute("prime_bill.credit_memo", memo["id"], actor_role="accountant", period_id="P1")
+        wo = r.prepare_write_off(old["id"], "2000", "customer insolvent for this portion (synthetic)", "controller")
+        c.approve_and_execute("receivable.write_off", wo["id"], actor_role="controller", period_id="P1")
+        dep = r.record_deposit(s.customer["id"], s.pid, "1500", "WIRE-DEP-AGING-1", "wire", "treasury", period_id="P1")
+        app = r.prepare_deposit_application(dep["id"], old["id"], "1500", "accountant")
+        c.approve_and_execute("receivable.apply_deposit", app["id"], actor_role="accountant", period_id="P1")
+        self.assertEqual(r.get(old["id"])["open"], "4500.00")  # 9,000 - 1,000 - 2,000 - 1,500
+        ag = cl.aging(today.isoformat())
+        self.assertEqual((ag["ar"]["total"], ag["ar"]["subledger_total"], ag["ar"]["ties_to_subledger"], ag["ar"]["reconciled"]), ("4500.00", "4500.00", True, True))
+        self.assertEqual(ag["ar"]["buckets"], {"current": "0.00", "1_30": "0.00", "31_60": "0.00", "61_90": "0.00", "over_90": "4500.00"})
+        self.assertEqual([(it["ref"], it["days_past_due"]) for it in ag["ar"]["items"]], [(old["id"], 120)])
+        self.assertEqual(c.ledger.balance("2400"), D("0.00"))
+        self.assertTrue(cl.checklist_report("P1")["all_ok"], cl.checklist_report("P1")["failing"])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
 
     def test_state_shape_and_project_state(self):
         s = Scenario()

@@ -41,6 +41,7 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.close",
     "apps.cipher.domain.handoff",
     "apps.cipher.domain.rights",
+    "apps.cipher.domain.ap_intake",
 ]
 # Optional plugin hook used by the close module's checklist:
 #   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
@@ -105,6 +106,7 @@ class CoreReconciliationChecks:
         ("stored materials reconciled (1300)", "bills", "stored_material_items"),
         ("retainage receivable reconciled (1150)", "receivables", "retainage_receivable_items"),
         ("provider clearing reconciled (1200)", "payments", "clearing_items"),
+        ("customer deposits reconciled (2400)", "receivables", "deposits_items"),
     )
 
     def __init__(self, cipher: "Cipher"):
@@ -152,6 +154,8 @@ class Cipher:
         self.provider = provider or SimulatedProvider()
         # provider callbacks are verified against the provider's webhook secret when it has one
         self.payments.webhook_secret = getattr(self.provider, "webhook_secret", None)
+        # a bill payment releases the open payable (after credit notes and earlier payments)
+        self.payments.open_payable_for_bill = self.bills.open_payable
         self._plugins: dict[str, Any] = {}
         for mod in _load_plugin_modules():
             try:
@@ -234,7 +238,7 @@ class Cipher:
         A domain opts in by defining handles(operation) -> bool plus
         manifest_for(operation, subject_id, *, actor_role) and
         apply(operation, subject_id, *, approval_id, manifest, actor, period_id)."""
-        return (self.receivables, self.bills, self.payments, self.commitments, self.estimates, self.ledger, self.evidence)
+        return (self.receivables, self.bills, self.payments, self.commitments, self.estimates, self.ledger, self.evidence, self.forecast)
 
     def _core_owner(self, operation: str) -> Any | None:
         for domain in self._core_domains():

@@ -7,6 +7,7 @@ from decimal import Decimal
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.banking import PLUGIN_NAME, BankingError, line_fingerprint
+from apps.cipher.domain.payments import SimulatedProvider
 from apps.cipher.service import Cipher, run_golden_fixture
 
 
@@ -915,10 +916,209 @@ class CoreFlowIntegrationTests(unittest.TestCase):
         self.assertEqual(rec["gl_balance"], "-27005.00")
         self.assertEqual(rec["difference"], "0.00")
         self.assertTrue(rec["reconciled"])
-        c.approve_and_execute("banking.lock_reconciliation", st["id"], actor_role="accountant", period_id="2026-11")
+        [intent] = c.payments.list()
+        self.assertEqual((intent["status"], intent["lifecycle_status"]), ("settled", "settled"))
+        lock = c.approve_and_execute("banking.lock_reconciliation", st["id"], actor_role="accountant", period_id="2026-11")
+        self.assertEqual(lock.result["payments_bank_reconciled"], [intent["id"]])  # the golden payment's settlement cleared the bank
+        got = c.payments.get(intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"], got["bank_reconciliation_id"]), ("settled", "bank_reconciled", lock.result["reconciliation_id"]))
         self.assertTrue(b.reconciliation_status("2026-11")["reconciled"])
         self.assertTrue(c.ledger.trial_balance()["balanced"])
         self.assertTrue(c.audit.verify_chain()["ok"])
+        self.assertTrue(c.bills.ap_open_items()["reconciled"])
+
+
+class PaymentBankReconciliationTests(unittest.TestCase):
+    """A settled payment advances to bank_reconciled only when its settlement bank line is matched
+    to a statement line in a locked reconciliation; a later return still books and reconciles."""
+
+    def setUp(self):
+        self.c = Cipher(provider=SimulatedProvider(fee="1.50"))
+        c = self.c
+        self.b = c.plugin(PLUGIN_NAME)
+        sup = c.add_party(kind="supplier", name="Synthetic Sheet Pile Subcontractor", destination="ACH-SIM-BNK-0001")
+        self.supplier = c.verify_destination(sup["id"], destination="ACH-SIM-BNK-0001", verified_by="owner")
+        customer = c.add_party(kind="customer", name="Synthetic Owner Agency")
+        self.project = c.create_project(name="Cofferdam and dewatering", entity="S&A Solutions LLC (synthetic)", budget="115000", customer_id=customer["id"])
+        c.open_period("P1", "P1", "2026-10-01", "2026-10-31")
+        cmt = c.commitments.create(project_id=self.project["id"], supplier_id=self.supplier["id"], title="Sheet piling and dewatering",
+                                   sov_lines=[{"description": "Sheet piling", "amount": "60000"}, {"description": "Dewatering", "amount": "40000"}], actor="pm")
+        c.approve_and_execute("commitment.execute", cmt["id"])
+        self.cmt = c.commitments.get(cmt["id"])
+
+    def settled_payment(self, cumulative="20000", *, process=True):
+        c = self.c
+        bill = c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.cmt["sov"][0]["id"], "cumulative_installed": cumulative}], actor="pm")
+        c.approve_and_execute("bill.approve", bill["id"])
+        res = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        intent = c.payments.get(res.result["intent"])
+        if process:
+            c.payments.ingest_event(c.provider.process(intent["logical_op_id"]), actor="webhook")
+            self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "processing")
+        c.payments.ingest_event(c.provider.settle(intent["logical_op_id"]), actor="webhook")
+        intent = c.payments.get(intent["id"])
+        self.assertEqual((intent["status"], intent["lifecycle_status"]), ("settled", "settled"))
+        return bill, intent
+
+    def settlement_line(self, intent):
+        [j] = [j for j in self.c.ledger.journals(source_type="provider_event") if intent["provider_ref"] in j["description"] and "settled" in j["description"]]
+        return next(ln for ln in j["lines"] if ln["account_code"] == "1000")
+
+    def lock(self, statement_id, period_id):
+        return self.c.approve_and_execute("banking.lock_reconciliation", statement_id, actor_role="reconciler", actor="reconciler", period_id=period_id)
+
+    def assert_books(self):
+        c = self.c
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+        self.assertTrue(c.bills.ap_open_items()["reconciled"])
+        self.assertTrue(c.payments.clearing_items()["reconciled"])
+
+    def test_processing_settled_and_bank_reconciled_end_to_end_then_a_late_return(self):
+        c, b = self.c, self.b
+        bill, intent = self.settled_payment()
+        line = self.settlement_line(intent)
+        self.assertEqual((line["credit"], intent["amount"], intent["fee"]), ("18001.50", "18000.00", "1.50"))
+        st = b.import_statement(statement_ref="OCT-PAY", period_id="P1", opening_balance="0.00", closing_balance="-18001.50", lines=[
+            {"date": "2026-10-20", "amount": "-18001.50", "description": "ACH DEBIT SYNTHETIC SHEET PILE SUBCONTRACTOR", "reference": intent["provider_ref"]},
+        ], actor="accountant")
+        run = b.auto_match(st["id"], "accountant")
+        self.assertEqual([(m["journal_line_id"], m["basis"]) for m in run["matched"]], [(line["id"], "reference")])
+        self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "settled")  # matched but not locked: not yet
+        lock = self.lock(st["id"], "P1")
+        self.assertEqual(lock.result["payments_bank_reconciled"], [intent["id"]])
+        got = c.payments.get(intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"], got["bank_reconciliation_id"], got["bank_journal_line_id"]),
+                         ("settled", "bank_reconciled", lock.result["reconciliation_id"], line["id"]))
+        self.assertIsNotNone(got["processing_at"])
+        self.assertEqual([p["id"] for p in c.payments.list(status="bank_reconciled")], [intent["id"]])
+        [audit] = [json.loads(e["payload_json"]) for e in c.audit.entries(entity_id=intent["id"]) if e["action"] == "payment.bank_reconciled"]
+        self.assertEqual((audit["reconciliation_id"], audit["statement_id"], audit["journal_line_id"], audit["statement_line_id"]),
+                         (lock.result["reconciliation_id"], st["id"], line["id"], st["lines"][0]["id"]))
+        self.assertEqual((c.ledger.balance("1000"), c.ledger.balance("6000"), c.ledger.balance("1200")), (Decimal("-18001.50"), Decimal("1.50"), Decimal("0.00")))
+        self.assert_books()
+        # a second lock path cannot mark it again, and a direct call naming another reconciliation is refused
+        again = c.payments.mark_bank_reconciled_for_journal_lines([line["id"]], "reconciler")
+        self.assertEqual((again["advanced"], again["already_bank_reconciled"]), ([], [intent["id"]]))
+        with self.assertRaisesRegex(Exception, "locked bank reconciliation brc_other"):
+            c.payments.mark_bank_reconciled_for_journal_lines([line["id"]], "reconciler", reconciliation_id="brc_other")
+
+        # the period closes; then the provider returns the payment: it books in the open period
+        c.close_period("P1")
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        returned = c.payments.ingest_event(c.provider.return_payment(intent["logical_op_id"], "account closed"), actor="webhook")
+        self.assertTrue(returned["applied"])
+        got = c.payments.get(intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"]), ("returned", "returned"))
+        self.assertEqual(got["bank_reconciliation_id"], lock.result["reconciliation_id"])  # history kept
+        self.assertEqual(c.bills.get(bill["id"])["status"], "posted")
+        self.assertEqual((c.ledger.balance("1000"), c.ledger.balance("2000")), (Decimal("-1.50"), Decimal("18000.00")))
+        [ret_j] = [j for j in c.ledger.journals(source_type="provider_event") if "returned" in j["description"]]
+        self.assertEqual(ret_j["period_id"], "P2")
+        nov = b.import_statement(statement_ref="NOV-RET", period_id="P2", opening_balance="-18001.50", closing_balance="-1.50", lines=[
+            {"date": "2026-11-04", "amount": "18000.00", "description": "ACH RETURN R02 ACCOUNT CLOSED", "reference": intent["provider_ref"]},
+        ], actor="accountant")
+        self.assertEqual(len(b.auto_match(nov["id"], "accountant")["matched"]), 1)
+        self.assertTrue(b.reconciliation(nov["id"])["reconciled"])
+        lock2 = self.lock(nov["id"], "P2")
+        self.assertEqual(lock2.result["payments_bank_reconciled"], [])  # the return is reconciled; the intent stays returned
+        self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "returned")
+        self.assertTrue(b.reconciliation_status("P2")["reconciled"])
+        self.assert_books()
+
+    def test_a_return_booked_before_the_lock_leaves_the_intent_returned(self):
+        c, b = self.c, self.b
+        _bill, intent = self.settled_payment(process=False)
+        c.payments.ingest_event(c.provider.return_payment(intent["logical_op_id"], "invalid account"), actor="webhook")
+        st = b.import_statement(statement_ref="OCT-BOTH", period_id="P1", opening_balance="0.00", closing_balance="-1.50", lines=[
+            {"date": "2026-10-20", "amount": "-18001.50", "description": "ACH DEBIT", "reference": intent["provider_ref"]},
+            {"date": "2026-10-22", "amount": "18000.00", "description": "ACH RETURN", "reference": intent["provider_ref"]},
+        ], actor="accountant")
+        self.assertEqual(len(b.auto_match(st["id"], "accountant")["matched"]), 2)
+        lock = self.lock(st["id"], "P1")
+        self.assertEqual(lock.result["payments_bank_reconciled"], [])
+        got = c.payments.get(intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"], got["bank_reconciled_at"]), ("returned", "returned", None))
+        self.assert_books()
+
+    def test_an_unlocked_match_or_an_opening_item_does_not_bank_reconcile_a_payment(self):
+        c, b = self.c, self.b
+        _bill, intent = self.settled_payment()
+        line = self.settlement_line(intent)
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        # the earliest statement carries the settlement inside its opening balance (an opening item pairs no statement line)
+        nov = b.import_statement(statement_ref="NOV-OPEN", period_id="P2", opening_balance="-18001.50", closing_balance="-18016.50", lines=[
+            {"date": "2026-11-30", "amount": "-15.00", "description": "MONTHLY SERVICE FEE", "reference": "FEE-2026-11"},
+        ], actor="accountant")
+        b.clear_opening_balance(nov["id"], [line["id"]], "accountant")
+        c.approve_and_execute("banking.post_fee", nov["lines"][0]["id"], actor_role="accountant", actor="accountant", period_id="P2")
+        self.assertTrue(b.reconciliation(nov["id"])["reconciled"])
+        self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "settled")
+        lock = self.lock(nov["id"], "P2")
+        self.assertEqual(lock.result["payments_bank_reconciled"], [])
+        self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "settled")
+        with self.assertRaisesRegex(Exception, "not matched to a bank statement line in a locked bank reconciliation"):
+            c.payments.mark_bank_reconciled_for_journal_lines([line["id"]], "reconciler")
+        # raw SQL cannot cite the locked reconciliation either: its evidence pairs the settlement line with no statement line
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "only by a locked bank reconciliation whose evidence matched its settlement bank line"):
+            c.db.execute("UPDATE payment_intents SET bank_reconciled_at='2026-11-30T00:00:00Z', bank_reconciliation_id=?, bank_journal_line_id=? WHERE id=?",
+                         (lock.result["reconciliation_id"], line["id"], intent["id"]))
+        self.assertEqual(c.payments.get(intent["id"])["lifecycle_status"], "settled")
+        self.assert_books()
+
+    def test_raw_sql_cannot_mark_a_payment_bank_reconciled_without_its_locked_match(self):
+        """Review finding: the bank-reconciled trigger checked only write-once and 'settled'."""
+        c, b = self.c, self.b
+        _bill1, first = self.settled_payment("20000")
+        _bill2, second = self.settled_payment("30000", process=False)
+        line1, line2 = self.settlement_line(first), self.settlement_line(second)
+        st = b.import_statement(statement_ref="OCT-ONE", period_id="P1", opening_balance="0.00", closing_balance="-27003.00", lines=[
+            {"date": "2026-10-20", "amount": "-18001.50", "description": "ACH DEBIT", "reference": first["provider_ref"]},
+            {"date": "2026-10-21", "amount": "-9001.50", "description": "ACH DEBIT", "reference": second["provider_ref"]},
+        ], actor="accountant")
+        self.assertEqual(len(b.auto_match(st["id"], "accountant")["matched"]), 2)
+        forged = "UPDATE payment_intents SET bank_reconciled_at='2026-10-31T00:00:00Z', bank_reconciliation_id=?, bank_journal_line_id=? WHERE id=?"
+        # matched but not locked: there is no locked reconciliation to cite
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "only by a locked bank reconciliation"):
+            c.db.execute(forged, ("brc_forged", line1["id"], first["id"]))
+        # a GL line that is not the intent's own settlement line is refused, whatever reconciliation is named
+        for bogus in ("y", line2["id"]):
+            with self.assertRaisesRegex(sqlite3.DatabaseError, "only against its own settlement bank line"):
+                c.db.execute(forged, ("brc_forged", bogus, first["id"]))
+        lock = self.lock(st["id"], "P1")
+        self.assertEqual(sorted(lock.result["payments_bank_reconciled"]), sorted([first["id"], second["id"]]))
+        for intent, line in ((first, line1), (second, line2)):
+            got = c.payments.get(intent["id"])
+            self.assertEqual((got["lifecycle_status"], got["bank_reconciliation_id"], got["bank_journal_line_id"]),
+                             ("bank_reconciled", lock.result["reconciliation_id"], line["id"]))
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "bank-reconciled once"):  # written once
+            c.db.execute(forged, (lock.result["reconciliation_id"], line1["id"], first["id"]))
+        self.assert_books()
+
+    def test_a_later_locked_statement_resting_on_an_earlier_open_match_marks_the_payment_once(self):
+        c, b = self.c, self.b
+        _bill, intent = self.settled_payment()
+        line = self.settlement_line(intent)
+        oct_st = b.import_statement(statement_ref="OCT-EARLY", period_id="P1", opening_balance="0.00", closing_balance="-18001.50", lines=[
+            {"date": "2026-10-20", "amount": "-18001.50", "description": "ACH DEBIT", "reference": intent["provider_ref"]},
+        ], actor="accountant")
+        b.auto_match(oct_st["id"], "accountant")
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        nov = b.import_statement(statement_ref="NOV-LATER", period_id="P2", opening_balance="-18001.50", closing_balance="-18016.50", lines=[
+            {"date": "2026-11-30", "amount": "-15.00", "description": "MONTHLY SERVICE FEE", "reference": "FEE-2026-11"},
+        ], actor="accountant")
+        c.approve_and_execute("banking.post_fee", nov["lines"][0]["id"], actor_role="accountant", actor="accountant", period_id="P2")
+        self.assertTrue(b.reconciliation(nov["id"])["reconciled"])
+        lock_nov = self.lock(nov["id"], "P2")  # the October match is evidence of the locked November reconciliation
+        self.assertEqual(lock_nov.result["payments_bank_reconciled"], [intent["id"]])
+        self.assertEqual(c.payments.get(intent["id"])["bank_reconciliation_id"], lock_nov.result["reconciliation_id"])
+        lock_oct = self.lock(oct_st["id"], "P1")
+        self.assertEqual(lock_oct.result["payments_bank_reconciled"], [])  # already bank-reconciled; marked once
+        got = c.payments.get(intent["id"])
+        self.assertEqual((got["lifecycle_status"], got["bank_reconciliation_id"]), ("bank_reconciled", lock_nov.result["reconciliation_id"]))
+        self.assertEqual(len([e for e in c.audit.entries(entity_id=intent["id"]) if e["action"] == "payment.bank_reconciled"]), 1)
+        self.assert_books()
 
 
 if __name__ == "__main__":

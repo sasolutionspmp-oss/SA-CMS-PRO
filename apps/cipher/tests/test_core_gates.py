@@ -14,11 +14,19 @@ adapter must report ``not_run`` without touching anything, the weights must sum
 to 100, and deliberately broken candidates must be disqualified.  That includes
 candidates whose "refusals" are unrelated errors, crashing plugin paths,
 unexercised probes or a broken reimbursement scenario.
+
+Round three (``cipher-core-gates/4``) adds G6 checks for supplier-invoice binding and
+governed payee changes and G9 checks for credit notes, credit memos, write-offs and
+customer deposits (2400).  Each new control is probed directly against the core, and
+re-opened in a test adapter so that the gate fails exactly the checks it guards; a
+scenario the candidate cannot run fails as "not exercised", never passes.
 """
 import contextlib
+import datetime as dt
 import io
 import json
 import os
+import re
 import shutil
 import sqlite3
 import tempfile
@@ -26,22 +34,35 @@ import unittest
 from decimal import ROUND_HALF_UP, Decimal
 from unittest import mock
 
+from apps.cipher.core.approvals import StaleApprovalError
 from apps.cipher.core.db import OWNER_SECRET_ENV
 from apps.cipher.core.ids import new_id, utcnow_iso
-from apps.cipher.core.money import D, allocate, fmt, money, total
+from apps.cipher.core.money import ZERO, D, allocate, fmt, money, total
+from apps.cipher.domain import payments as payments_module
+from apps.cipher.domain.bills import BillError
 from apps.cipher.domain.ledger import RULE_VERSION
-from apps.cipher.service import Cipher
+from apps.cipher.domain.payments import DestinationChangeError
+from apps.cipher.domain.receivables import ReceivableError, ReceivableIneligible
+from apps.cipher.service import Cipher, run_golden_fixture
 from apps.cipher.tools import core_gates as cg
 from apps.cipher.tools.core_gates import (
-    ALLOCATION_CASES, ASSUMED_CRITERIA, ERPNEXT_UNAVAILABLE, GATE_IDS, REFUSAL_CONTROLS, REQUIRED_TRIGGERS, WEIGHTS, CoreGateError, ERPNextAdapter,
-    NativeCipherAdapter, evaluate_candidate, run_gate, weights_total,
+    ALLOCATION_CASES, ASSUMED_CRITERIA, ERPNEXT_UNAVAILABLE, G6_INVOICE_KEYS, G6_PAYEE_KEYS, G9_ADJUSTMENT_KEYS, GATE_IDS, REFUSAL_CONTROLS,
+    REQUIRED_TRIGGERS, WEIGHTS, CoreGateError, ERPNextAdapter, NativeCipherAdapter, evaluate_candidate, run_gate, weights_total,
 )
 
 PROBED_PLUGINS = ("asset", "reimbursement", "labor")
 TEST_OWNER_SECRET = "test-owner-secret-core-gates"
+ENTITY = "S&A Solutions LLC (synthetic)"
 
-# Hard checks per gate in cipher-core-gates/3 (G4 adds two per probed plugin).
-CHECKS_PER_GATE = {"G1": 22, "G2": 13, "G3": 12, "G4": 15, "G5": 5, "G6": 6, "G7": 14, "G8": 13, "G9": 4}
+# Hard checks per gate in cipher-core-gates/4 (G4 adds two per probed plugin).  Round three
+# added 8 checks to G6 (6 -> 14) and 9 to G9 (4 -> 13); every earlier check is kept.
+CHECKS_PER_GATE = {"G1": 22, "G2": 13, "G3": 12, "G4": 15, "G5": 5, "G6": 14, "G7": 14, "G8": 13, "G9": 13}
+ROUND_THREE_KEYS = {"G6": set(G6_INVOICE_KEYS) | set(G6_PAYEE_KEYS), "G9": set(G9_ADJUSTMENT_KEYS)}
+# The cipher-core-gates/3 check keys of G6 and G9, which must all still run.
+EARLIER_KEYS = {
+    "G6": {"g6.control", "g6.one_cent", "g6.changed_base", "g6.destination_verified", "g6.destination_raw", "g6.fresh_approval"},
+    "G9": {"g9.ap", "g9.ar", "g9.employee_payable", "g9.trial_balance"},
+}
 
 
 @contextlib.contextmanager
@@ -300,6 +321,92 @@ def probe_core() -> dict[str, bool]:
 
 
 # --------------------------------------------------------------------------- #
+# Independent probes of the round-three controls (not through the adapter)     #
+# --------------------------------------------------------------------------- #
+
+class ProbeWorld:
+    """A verified sheet-pile subcontractor and an owner agency on a cofferdam project, open
+    period P1 (October 2026) and an executed 60,000 + 40,000 subcontract at 10% retainage.
+    Cost codes are placeholders ("XX 10 00")."""
+
+    def __init__(self):
+        c = self.c = Cipher()
+        c.open_period("P1", "P1", "2026-10-01", "2026-10-31", actor="test")
+        sup = c.add_party(kind="supplier", name="Probe sheet pile subcontractor", destination="ACH-SIM-PROBE-0001", actor="test")
+        self.supplier = c.verify_destination(sup["id"], destination="ACH-SIM-PROBE-0001", verified_by="test-bank-detail-maintainer")
+        self.customer = c.add_party(kind="customer", name="Probe owner agency", actor="test")
+        self.project = c.create_project(name="Probe cofferdam and dewatering", entity=ENTITY, budget="250000", customer_id=self.customer["id"], actor="test")
+        self.pid = self.project["id"]
+        cmt = c.commitments.create(project_id=self.pid, supplier_id=sup["id"], title="Probe sheet pile and dewatering subcontract",
+                                   sov_lines=[{"description": "Sheet piling", "amount": "60000", "cost_code": "XX 10 00"},
+                                              {"description": "Dewatering", "amount": "40000", "cost_code": "XX 20 00"}],
+                                   retainage_rate="0.10", actor="test")
+        c.approve_and_execute("commitment.execute", cmt["id"], actor="test")
+        self.cid = cmt["id"]
+        self.line = c.commitments.get(cmt["id"])["sov"][0]["id"]
+        self._docs = 0
+
+    def evidence(self, kind, label):
+        self._docs += 1
+        doc = self.c.evidence.register_document(project_id=self.pid, kind=kind, title=f"{label} ({self._docs})", actor="test")
+        return self.c.evidence.add_revision(document_id=doc["id"], content=f"probe {kind} {self._docs}: {label}".encode(), note=label, actor="test")
+
+    def posted_bill(self, cumulative):
+        b = self.c.bills.certify(commitment_id=self.cid, period_id="P1", installed=[{"sov_line_id": self.line, "cumulative_installed": cumulative}], actor="test")
+        self.c.approve_and_execute("bill.approve", b["id"], actor_role="accountant", actor="test-accountant")
+        return self.c.bills.get(b["id"])
+
+    def journals(self):
+        return self.c.db.scalar("SELECT COUNT(*) FROM journals")
+
+    def assert_books(self, tc):
+        c = self.c
+        tc.assertTrue(c.ledger.trial_balance()["balanced"])
+        tc.assertTrue(c.audit.verify_chain()["ok"])
+        for label, rec in (("AP 2000", c.bills.ap_open_items()), ("AR 1100", c.receivables.ar_open_items()), ("deposits 2400", c.receivables.deposits_items()),
+                           ("retainage 2050", c.bills.retainage_open_items()), ("retainage 1150", c.receivables.retainage_receivable_items())):
+            tc.assertTrue(rec["reconciled"], (label, rec))
+
+
+def credited_bill_release_pays_open_payable() -> bool:
+    """Direct probe behind the G9 credited-bill advisory: after a 1500.00 credit note on an
+    18000.00 bill, does payment.release create one intent for the 16500.00 open payable?"""
+    w = ProbeWorld()
+    c = w.c
+    try:
+        bill = w.posted_bill("20000")
+        note = c.bills.prepare_credit_note(bill["id"], "1500.00", "supplier credit for rejected sheet piles",
+                                           w.evidence("supplier_credit_note", "credit note SP-CN-9")["content_hash"], "test-accountant")
+        c.approve_and_execute("bill.credit_note", note["id"], actor_role="accountant", actor="test-accountant", period_id="P1")
+        try:
+            c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
+        except (RuntimeError, sqlite3.DatabaseError):
+            pass
+        intents = [p for p in c.payments.list() if p["bill_id"] == bill["id"]]
+        return len(intents) == 1 and intents[0]["amount"] == "16500.00"
+    finally:
+        c.db.close()
+
+
+def _advisory(result, check_prefix):
+    [adv] = [a for a in result["advisories"] if a["check"].startswith(check_prefix)]
+    return adv
+
+
+def close_checklist_reconciles_deposits() -> bool:
+    """Direct probe behind the G9 advisory: does the golden fixture's close checklist for
+    its open period carry a check naming customer deposits or account 2400?"""
+    c = Cipher()
+    try:
+        fixture = run_golden_fixture(c)
+        assert fixture["ar"]["reconciled"]
+        checklist = c.plugin("close").checklist("2026-11")
+        return any("2400" in f"{ch['check']} {ch['detail']}" or "customer deposit" in f"{ch['check']} {ch['detail']}".lower() for ch in checklist)
+    finally:
+        c.db.close()
+
+
+# --------------------------------------------------------------------------- #
 # Test adapters: each former gap re-opened                                     #
 # --------------------------------------------------------------------------- #
 
@@ -421,6 +528,139 @@ REINTRODUCED = {
     "g8.claim_requires_attestation": (UnattestedClaim, {"g8.claim_requires_attestation", "g8.claim_credential_single_use"}),
     "g8.older_backup_no_resubmission": (RecoveryIgnoresQueuedIntents, {"g8.older_backup_no_resubmission"}),
 }
+
+
+# --------------------------------------------------------------------------- #
+# Round three: each new control re-opened                                     #
+# --------------------------------------------------------------------------- #
+
+class InvoiceBlindBillApproval(NativeCipherAdapter):
+    """bill.approve that neither binds nor re-checks the supplier invoice its bill carries."""
+
+    candidate = "gap_invoice_blind_bill_approval"
+
+    def reset(self, path=None):
+        super().reset(path)
+        self.c.bills._supplier_invoice_binding = lambda b: None
+
+
+class SelfVerifiedPayeeChange(NativeCipherAdapter):
+    """No two-person rule on payee changes: the service compares no names and the schema
+    trigger that repeats the rule is absent while a verification is written."""
+
+    candidate = "gap_self_verified_payee_change"
+
+    def record_destination_verification(self, change_id, *, verified_by):
+        with mock.patch.object(payments_module, "_same_person", lambda a, b: False), without_triggers(self, "destination_changes_lifecycle"):
+            super().record_destination_verification(change_id, verified_by=verified_by)
+
+    def privileged_self_verify_destination_change(self, change_id):
+        with without_triggers(self, "destination_changes_lifecycle"):
+            super().privileged_self_verify_destination_change(change_id)
+
+
+class PendingChangeApprovable(NativeCipherAdapter):
+    """party.verify_destination may be requested for a change nobody has verified yet."""
+
+    candidate = "gap_pending_change_approvable"
+
+    def reset(self, path=None):
+        super().reset(path)
+        payments = self.c.payments
+        original = payments._require_change_applies
+
+        def relaxed(ch, party):
+            if ch["status"] != "pending":
+                original(ch, party)
+
+        payments._require_change_applies = relaxed
+
+
+class EvidenceBlindChangeCheck(NativeCipherAdapter):
+    """payments no longer checks whether a change's verification record is still current."""
+
+    candidate = "gap_evidence_blind_change_check"
+
+    def reset(self, path=None):
+        super().reset(path)
+        self.c.payments._evidence_problem = lambda ch: None
+
+
+class CreditNotesOffTheSubledger(NativeCipherAdapter):
+    """The AP subledger (and the open payable that bounds a credit) ignores supplier credit notes."""
+
+    candidate = "gap_credit_notes_off_subledger"
+
+    def reset(self, path=None):
+        super().reset(path)
+        self.c.bills.credited = lambda bill_id: ZERO
+
+
+class DepositApplicationsIgnored(NativeCipherAdapter):
+    """The deposit subledger reads every deposit as wholly unapplied; the database still
+    bounds an application by the deposit's unapplied balance."""
+
+    candidate = "gap_deposit_applications_ignored"
+
+    def reset(self, path=None):
+        super().reset(path)
+        receivables = self.c.receivables
+        original = receivables.deposit
+
+        def deposit(deposit_id):
+            d = original(deposit_id)
+            return dict(d, applied="0.00", unapplied=d["amount"] if d["reversal_journal_id"] is None else "0.00")
+
+        receivables.deposit = deposit
+
+
+# gate check key -> (adapter, gate, every hard check the re-opened control must fail, evidence the gate prints)
+ROUND_THREE_REOPENED = {
+    "g6.supplier_invoice_change": (InvoiceBlindBillApproval, "G6", {"g6.supplier_invoice_change", "g6.supplier_invoice_fresh_approval"},
+                                   "executing the earlier approval was ACCEPTED; status consumed; bill posted; journals 1 -> 2"),
+    "g6.payee_change_two_person": (SelfVerifiedPayeeChange, "G6", {"g6.payee_change_two_person", "g6.payee_change_raw_self_verification"},
+                                   "verification by the named requester (as ' Gate-Site-PM ') was ACCEPTED"),
+    "g6.payee_change_requires_evidence": (PendingChangeApprovable, "G6", {"g6.payee_change_requires_evidence"},
+                                          "with no independent verification yet was ACCEPTED; approvals recorded on it: 1"),
+    "g9.credit_note_ap": (CreditNotesOffTheSubledger, "G9", {"g9.credit_note_ap", "g9.credit_note_bounded", "g9.adjusted_totals"},
+                          "AP subledger 18000.00 = GL 2000 16500.00 (expected 16500.00)"),
+    "g9.deposit_application": (DepositApplicationsIgnored, "G9", {"g9.deposit_application", "g9.adjusted_totals"},
+                               "deposits 5000.00 = GL 2400 3000.00 (expected 3000.00)"),
+}
+
+
+class NoSupplierInvoiceIntake(NativeCipherAdapter):
+    """A candidate without supplier-invoice intake: the G6 invoice scenario cannot run."""
+
+    candidate = "broken_no_supplier_invoice_intake"
+
+    def _ap_intake(self):
+        raise cg.GateScenarioError("no supplier-invoice intake: the ap_intake module is not registered")
+
+
+class BrokenDepositScenario(NativeCipherAdapter):
+    candidate = "broken_deposit_scenario"
+
+    def record_customer_deposit(self, *args, **kwargs):
+        raise AttributeError("'Receivables' object has no attribute 'record_deposit'")
+
+
+class UnrelatedCreditRefusal(NativeCipherAdapter):
+    """A further credit note is refused, but by a closed period: not the open-amount bound."""
+
+    candidate = "broken_unrelated_credit_refusal"
+
+    def post_supplier_credit_note(self, bill_id, amount, *, period_id):
+        if amount != cg.G9_CREDIT_NOTE:
+            raise RuntimeError(f"PeriodNotOpen: period {period_id} is closed")
+        return super().post_supplier_credit_note(bill_id, amount, period_id=period_id)
+
+
+class NoCloseChecklist(NativeCipherAdapter):
+    candidate = "broken_no_close_checklist"
+
+    def close_checklist(self, period_id):
+        return None
 
 
 # --------------------------------------------------------------------------- #
@@ -635,6 +875,17 @@ class NativeGateTests(unittest.TestCase):
         self.assertEqual({g: self.gates[g]["checks"]["total"] for g in GATE_IDS}, expected)
         self.assertEqual(self.result["hard_check_summary"]["total"], sum(expected.values()))
         self.assertEqual(self.result["hard_check_summary"]["passed"], sum(expected.values()))
+        for gate_id in GATE_IDS:
+            keys = self.gates[gate_id]["check_keys"]
+            with self.subTest(gate=gate_id):
+                self.assertEqual(len(keys), len(set(keys)), keys)  # every check has its own stable key
+                self.assertEqual(len(keys), self.gates[gate_id]["checks"]["total"])
+        # round three kept every earlier G6/G9 check and added its own, in order
+        for gate_id in ("G6", "G9"):
+            keys = self.gates[gate_id]["check_keys"]
+            with self.subTest(gate=gate_id):
+                self.assertEqual(set(keys), EARLIER_KEYS[gate_id] | ROUND_THREE_KEYS[gate_id])
+                self.assertEqual(set(keys[:len(EARLIER_KEYS[gate_id])]), EARLIER_KEYS[gate_id])
 
     def test_each_former_gap_is_closed_in_the_core(self):
         for key, (probe, fragment) in FORMER_GAPS.items():
@@ -715,6 +966,72 @@ class NativeGateTests(unittest.TestCase):
         self.assertIn("AP: open-bill subledger 18000.00 = GL 2000 18000.00", self.evidence("G9"))
         self.assertIn("AR: open prime-bill subledger 54000.00 = GL 1100 54000.00", self.evidence("G9"))
 
+    def test_round_three_g6_evidence(self):
+        g6 = self.evidence("G6")
+        self.assertIn("PASS: supplier invoice GATE-SI-0001 for 9000.00 (due 2026-11-14) was matched to bill ", g6)
+        self.assertIn("the supplier then reissued it (version 2, due 2026-12-15): executing the earlier approval was refused (BillIneligible: bill 2 (", g6)
+        self.assertIn("was revised to version 2 after it was attached", g6)
+        self.assertIn("status invalidated; bill draft; journals 1 -> 1", g6)
+        self.assertIn("PASS: control case: re-matching the reissued invoice and a fresh bill.approve post the bill (posted; journals 1 -> 2); "
+                      "it carries invoice version 2 due 2026-12-15 (hash matches the invoice record: True)", g6)
+        self.assertIn("verification by the named requester (as ' Gate-Site-PM ') refused (DestinationChangeError: 'Gate-Site-PM' requested this destination change, "
+                      "so cannot also verify it; the two-person rule", g6)
+        self.assertIn("verification by the login that recorded the request (as 'GATE-AP-CLERK') refused (DestinationChangeError: 'GATE-AP-CLERK' recorded the request", g6)
+        self.assertIn("the change stays pending; destination version 5 -> 5", g6)
+        self.assertIn("PASS: privileged path: a raw UPDATE marking a change verified by its own requester (trusted channel, current evidence used once) refused "
+                      "(IntegrityError: payee destination changes move only pending -> evidenced (a verifier other than the requester", g6)
+        self.assertRegex(g6, r"PASS: requesting party\.verify_destination for a change with no independent verification yet refused \(DestinationChangeError: "
+                             r"destination change dch_\w+ has no verification evidence yet;.*approvals recorded on it: 0; the change stays pending")
+        self.assertRegex(g6, r"PASS: a party\.verify_destination approval granted on an independently verified change is refused once its verification record "
+                             r"gains a newer revision \(DestinationChangeStale: .*\); status invalidated; destination version 5 -> 5")
+        self.assertIn("verified by gate-external-accountant executes under party.verify_destination: change executed, "
+                      "destination ACH-SIM-GATE-FINAL v5 -> ACH-SIM-GATE-GOVERNED v6", g6)
+        self.assertRegex(g6, r"PASS: a 9000\.00 release granted before the governed change is refused \(ApprovalNotGranted: approval apr_\w+ is invalidated, not granted\); "
+                             r"status invalidated; intents on the bill 0 -> 0; a fresh approval releases 9000\.00 to ACH-SIM-GATE-GOVERNED v6")
+
+    def test_round_three_g9_evidence(self):
+        g9 = self.evidence("G9")
+        self.assertIn("PASS: supplier credit note 1500.00 on the 18000.00 bill posts [('2000', '1500.00', '0.00'), ('5000', '0.00', '1500.00')]; "
+                      "AP subledger 16500.00 = GL 2000 16500.00 (expected 16500.00)", g9)
+        self.assertIn("PASS: a further credit note of 16500.01, a cent above the 16500.00 still open, refused (BillError: credit 16500.01 exceeds what is open on bill 2: "
+                      "open payable 16500.00", g9)
+        self.assertIn("AP stays 16500.00 = GL 16500.00", g9)
+        self.assertIn("PASS: credit memo 1000.00 on the 54000.00 progress bill posts [('4000', '1000.00', '0.00'), ('1100', '0.00', '1000.00')]; "
+                      "AR subledger 53000.00 = GL 1100 53000.00 (expected 53000.00)", g9)
+        self.assertIn("PASS: customer deposit 5000.00 by check: unapplied-deposit subledger 5000.00 = GL 2400 5000.00 on the project (workspace 5000.00 = 5000.00)", g9)
+        self.assertIn("PASS: applying 2000.00 of the deposit to the progress bill posts [('2400', '2000.00', '0.00'), ('1100', '0.00', '2000.00')]; "
+                      "deposits 3000.00 = GL 2400 3000.00 (expected 3000.00); AR 51000.00 = GL 1100 51000.00 (expected 51000.00)", g9)
+        self.assertIn("PASS: applying 3000.01, a cent above the 3000.00 unapplied, refused (ReceivableError: application 3000.01 exceeds the 3000.00 unapplied on deposit", g9)
+        self.assertIn("deposits stay 3000.00 = GL 2400 3000.00", g9)
+        self.assertRegex(g9, r"PASS: writing 100\.00 off the golden progress bill, which is not 90 days past due, refused \(ReceivableIneligible: prime bill 1 is 0 days "
+                             r"past due on \d{4}-\d{2}-\d{2} \(due \d{4}-\d{2}-\d{2}\); only a receivable at least 90 days past due can be written off\); "
+                             r"journals 13 -> 13; GL 1100 stays 51000\.00")
+        self.assertRegex(g9, r"PASS: a 9000\.00 progress bill 100 days past due \(due \d{4}-\d{2}-\d{2}\): writing 4000\.00 off posts "
+                             r"\[\('6100', '4000\.00', '0\.00'\), \('1100', '0\.00', '4000\.00'\)\]; AR subledger 5000\.00 = GL 1100 5000\.00 on its project "
+                             r"\(expected 5000\.00\); bad debt 6100 0\.00 -> 4000\.00")
+        self.assertIn("PASS: workspace after the adjustments: AP 16500.00 = 16500.00, AR 56000.00 = 56000.00 (expected 56000.00), customer deposits 3000.00 = 3000.00; "
+                      "trial balance Dr 306734.56 = Cr 306734.56 over 15 journals", g9)
+        self.assertIn("INFO: after the adjustments: customer deposits 2400 3000.00, bad debt 6100 4000.00, contract revenue 4000 69000.00, subcontract cost 5000 43500.00", g9)
+
+    def test_g9_credited_bill_advisory_matches_a_direct_probe_of_the_release(self):
+        adv = _advisory(self.result, "a credited supplier bill is released")
+        self.assertEqual(adv["gate"], "G9")
+        pays = credited_bill_release_pays_open_payable()
+        self.assertEqual(adv["status"], "pass" if pays else "open", adv["observed"])
+        if not pays:
+            self.assertIn("releasing the credited bill (amount due 18000.00, open payable 16500.00 after the 1500.00 credit note) was refused (IntegrityError: "
+                          "a payment release for a bill carrying a posted supplier credit note must be for exactly its open payable", adv["observed"])
+            self.assertIn("; intents on the bill: 0 - the credited bill cannot be paid through the service until the release binds the open payable", adv["observed"])
+
+    def test_g9_advisory_matches_a_direct_probe_of_the_close_checklist(self):
+        adv = _advisory(self.result, "the period-close checklist")
+        self.assertEqual((adv["gate"], adv["check"]), ("G9", "the period-close checklist reconciles customer deposits (2400)"))
+        covered = close_checklist_reconciles_deposits()
+        self.assertEqual(adv["status"], "pass" if covered else "open", adv["observed"])
+        if not covered:
+            self.assertRegex(adv["observed"], r"^none of the \d+ checks the close checklist runs for 2026-11 names customer deposits or account 2400, "
+                                              r"so a period can close while 2400 is unreconciled \(2400 stands at 3000\.00;")
+
     def test_plugin_paths_have_positive_controls_and_refuse_closed_periods(self):
         info = next(e for e in self.gates["G4"]["evidence"] if e.startswith("INFO: registered plugins:"))
         registered = info.split(";")[0].removeprefix("INFO: registered plugins: ").split(", ")
@@ -772,6 +1089,193 @@ class ReintroducedGapTests(unittest.TestCase):
                 self.assertIn(FORMER_GAPS[key][1], _text(g))
                 self.assertNotIn(f"{gate_id.lower()}.aborted", g["failed_checks"])
         self.assertEqual(os.environ.get(OWNER_SECRET_ENV), secret_before)
+
+
+class RoundThreeReopenedTests(unittest.TestCase):
+    """Each round-three control re-opened in a test adapter: the gate fails exactly the
+    checks that control guards, keeps running every other check, and prints the evidence."""
+
+    def test_each_reopened_control_fails_exactly_its_checks(self):
+        for key, (adapter_cls, gate_id, expected, fragment) in ROUND_THREE_REOPENED.items():
+            with self.subTest(check=key, adapter=adapter_cls.candidate):
+                g = run_gate(gate_id, adapter_cls())
+                self.assertEqual(g["status"], "fail", _text(g))
+                self.assertIn(key, expected)
+                self.assertEqual(set(g["failed_checks"]), expected, _text(g))
+                self.assertIn(fragment, _text(g))
+                self.assertNotIn(f"{gate_id.lower()}.aborted", g["failed_checks"])
+                self.assertEqual(set(g["check_keys"]), EARLIER_KEYS[gate_id] | ROUND_THREE_KEYS[gate_id])  # nothing skipped
+
+    def test_the_payee_approval_also_binds_evidence_currency_in_its_manifest(self):
+        """Defence in depth: without payments' own evidence check, the party.verify_destination
+        manifest still binds whether the evidence revision is current, so the stale approval is
+        invalidated at execution and G6 keeps passing."""
+        g = run_gate("G6", EvidenceBlindChangeCheck())
+        self.assertEqual((g["status"], g["failed_checks"]), ("pass", []), _text(g))
+        self.assertRegex(_text(g), r"PASS: a party\.verify_destination approval granted on an independently verified change is refused once its verification "
+                                   r"record gains a newer revision \(StaleApprovalError: approval apr_\w+ no longer matches the subject: bindings\); status invalidated")
+
+    def test_the_database_bound_on_a_deposit_application_counts_as_the_open_amount_control(self):
+        g = run_gate("G9", DepositApplicationsIgnored())
+        self.assertNotIn("g9.deposit_application_bounded", g["failed_checks"], _text(g))
+        self.assertIn("PASS: applying 3000.01, a cent above the 3000.00 unapplied, refused (IntegrityError: a deposit application cannot exceed the unapplied "
+                      "balance of its deposit)", _text(g))
+
+    def test_a_refusal_for_an_unrelated_reason_is_not_the_open_amount_bound(self):
+        g = run_gate("G9", UnrelatedCreditRefusal())
+        self.assertEqual(g["failed_checks"], ["g9.credit_note_bounded"], _text(g))
+        self.assertIn("a cent above the 16500.00 still open, was not refused by the expected control: it failed for an unrelated reason "
+                      "(RuntimeError: PeriodNotOpen: period 2026-11 is closed)", _text(g))
+
+    def test_a_candidate_without_supplier_invoice_intake_fails_the_invoice_checks_as_not_exercised(self):
+        g = run_gate("G6", NoSupplierInvoiceIntake())
+        self.assertEqual(g["status"], "fail")
+        self.assertEqual(set(g["failed_checks"]), set(G6_INVOICE_KEYS), _text(g))
+        self.assertIn("FAIL: the supplier-invoice binding scenario did not complete, so this check was not exercised "
+                      "(GateScenarioError: no supplier-invoice intake: the ap_intake module is not registered)", _text(g))
+        self.assertEqual(g["checks"], {"passed": 12, "failed": 2, "total": 14})  # the payee-change checks still run and pass
+
+    def test_a_broken_deposit_scenario_fails_g9_instead_of_reconciling_nothing(self):
+        g = run_gate("G9", BrokenDepositScenario())
+        self.assertEqual(g["status"], "fail")
+        self.assertEqual(set(g["failed_checks"]), {"g9.deposit_recorded", "g9.deposit_application", "g9.deposit_application_bounded",
+                                                   "g9.write_off_requires_age", "g9.write_off_ar", "g9.adjusted_totals"}, _text(g))
+        self.assertIn("did not complete, so this check was not exercised (AttributeError: 'Receivables' object has no attribute 'record_deposit')", _text(g))
+        for key in ("g9.ap", "g9.ar", "g9.credit_note_ap", "g9.credit_note_bounded", "g9.credit_memo_ar"):
+            self.assertNotIn(key, g["failed_checks"])
+
+    def test_without_a_close_checklist_the_deposit_advisory_is_open(self):
+        g = run_gate("G9", NoCloseChecklist())
+        self.assertEqual(g["status"], "pass", _text(g))
+        adv = _advisory(g, "the period-close checklist")
+        self.assertEqual(adv["status"], "open")
+        self.assertIn("the candidate has no period-close checklist", adv["observed"])
+
+    def test_the_new_refusal_markers_are_declared_and_specific(self):
+        patterns = cg._markers(NativeCipherAdapter(), REFUSAL_CONTROLS)  # raises if any matches empty or unrelated errors
+        self.assertEqual(len(patterns), 10)
+        markers = NativeCipherAdapter().refusal_markers()
+        for control, reason in ((cg.CONTROL_OPEN_AMOUNT, "PeriodNotOpen: period 2026-11 is closed"),
+                                (cg.CONTROL_WRITE_OFF_AGE, "ReceivableError: write-off 100.00 exceeds the 90.00 open"),
+                                (cg.CONTROL_INDEPENDENT_VERIFICATION, "DestinationChangeError: verification channel must be one of ...")):
+            with self.subTest(control=control):
+                self.assertIsNone(re.search(markers[control], reason, re.IGNORECASE))
+
+
+# --------------------------------------------------------------------------- #
+# Round three: the controls probed directly against the core                  #
+# --------------------------------------------------------------------------- #
+
+class RoundThreeCoreProbeTests(unittest.TestCase):
+    """The behaviour the new G6 and G9 checks report, reproduced on Cipher directly."""
+
+    def test_a_reissued_supplier_invoice_invalidates_the_bill_approval_granted_before(self):
+        w = ProbeWorld()
+        c = w.c
+        ap_intake = c.plugin("ap_intake")
+        bill = c.bills.certify(commitment_id=w.cid, period_id="P1", installed=[{"sov_line_id": w.line, "cumulative_installed": "30000"}], actor="test")
+        self.assertEqual(bill["amount_due"], "27000.00")
+        pdf = w.evidence("supplier_invoice", "Probe supplier invoice SP-7001")
+        inv = ap_intake.receive_invoice(w.supplier["id"], "SP-7001", "2026-10-15", "27000.00", pdf["content_hash"], "probe-ap-clerk", project_id=w.pid, commitment_id=w.cid)
+        self.assertEqual((inv["status"], inv["due_date"], inv["version"]), ("received", "2026-11-14", 1))
+        self.assertEqual(ap_intake.match(inv["id"], "probe-ap-clerk")["status"], "matched")
+        c.approve_and_execute("ap_intake.match_invoice", inv["id"], actor_role="accountant", actor="test-accountant")
+        approval = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="test")
+        self.assertEqual(approval["manifest"]["bindings"]["supplier_invoice"]["due_date"], "2026-11-14")
+        c.approve(approval["id"], approver="test-controller", approver_role="controller")
+        ap_intake.revise_invoice(inv["id"], "probe-ap-clerk", reason="supplier reissued the invoice with a corrected due date", due_date="2026-12-15")
+        before = w.journals()
+        with self.assertRaises(StaleApprovalError):
+            c.execute(approval["id"], actor="test-accountant")
+        self.assertEqual((c.approvals.get(approval["id"])["status"], c.bills.get(bill["id"])["status"], w.journals()), ("invalidated", "draft", before))
+        self.assertTrue(any("revised to version 2" in p for p in c.bills.supplier_invoice_state(bill["id"])["problems"]))
+        # the stale approval is final: re-match and approve afresh
+        self.assertEqual(ap_intake.match(inv["id"], "probe-ap-clerk")["status"], "matched")
+        c.approve_and_execute("ap_intake.match_invoice", inv["id"], actor_role="accountant", actor="test-accountant")
+        c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="test-accountant")
+        posted = c.bills.get(bill["id"])
+        self.assertEqual((posted["status"], posted["due_date"], posted["supplier_invoice_hash"]), ("posted", "2026-12-15", ap_intake.invoice(inv["id"])["content_hash"]))
+        ap = c.bills.ap_open_items(w.pid)
+        self.assertEqual((ap["subledger_total"], ap["control_balance"], ap["reconciled"]), ("27000.00", "27000.00", True))
+        w.assert_books(self)
+
+    def test_a_payee_change_needs_a_verifier_other_than_its_requester(self):
+        w = ProbeWorld()
+        c, p = w.c, w.c.payments
+        change = p.request_destination_change(w.supplier["id"], "ACH-SIM-PROBE-0002", "probe-site-pm", "supplier letter announcing a new bank account", "probe-ap-clerk")
+        for verifier in (" Probe-Site-PM ", "PROBE-AP-CLERK", "probe-site-pm"):
+            with self.subTest(verifier=verifier), self.assertRaises(DestinationChangeError):
+                p.record_verification_evidence(change["id"], "call-back to number on file", verifier,
+                                               w.evidence("destination_verification", f"call-back by {verifier}")["content_hash"], "probe-bank-admin")
+        with self.assertRaises(DestinationChangeError):  # nothing to approve before an independent verification
+            c.request_approval("party.verify_destination", change["id"], actor_role="bank_admin", requested_by="test")
+        self.assertEqual(c.db.scalar("SELECT COUNT(*) FROM approvals WHERE subject_id=?", (change["id"],)), 0)
+        rev = w.evidence("destination_verification", "raw self-verification")
+        with self.assertRaises(sqlite3.IntegrityError):  # the schema repeats the two-person rule
+            c.db.execute("UPDATE destination_changes SET status='evidenced', version=version+1, channel='call-back to number on file', verified_by=requested_by, "
+                         "evidence_hash=?, evidence_revision_id=?, evidence_recorded_by='raw', evidenced_at=? WHERE id=?",
+                         (rev["content_hash"], rev["id"], utcnow_iso(), change["id"]))
+        self.assertEqual(p.destination_change(change["id"])["status"], "pending")
+        bill = w.posted_bill("10000")
+        release = c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="test")
+        c.approve(release["id"], approver="test-owner")
+        p.record_verification_evidence(change["id"], "call-back to number on file", "probe-external-accountant",
+                                       w.evidence("destination_verification", "independent call-back")["content_hash"], "probe-bank-admin")
+        c.approve_and_execute("party.verify_destination", change["id"], actor_role="bank_admin", actor="probe-bank-admin")
+        party = c.party(w.supplier["id"])
+        self.assertEqual((party["destination"], party["destination_version"]), ("ACH-SIM-PROBE-0002", 3))
+        self.assertEqual(c.approvals.get(release["id"])["status"], "invalidated")
+        fresh = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury").result
+        intent = c.payments.get(fresh["intent"])
+        self.assertEqual((intent["amount"], intent["destination"], intent["destination_version"]), ("9000.00", "ACH-SIM-PROBE-0002", 3))
+        w.assert_books(self)
+
+    def test_credits_write_offs_and_deposits_keep_every_subledger_reconciled(self):
+        w = ProbeWorld()
+        c, r = w.c, w.c.receivables
+        bill = w.posted_bill("20000")  # 18,000.00 payable
+        note = c.bills.prepare_credit_note(bill["id"], "1500.00", "supplier credit for rejected sheet piles",
+                                           w.evidence("supplier_credit_note", "credit note SP-CN-1")["content_hash"], "test-accountant")
+        with self.assertRaises(BillError):  # a second draft may not reserve more than is left open
+            c.bills.prepare_credit_note(bill["id"], "16500.01", "over-credit", w.evidence("supplier_credit_note", "credit note SP-CN-2")["content_hash"], "test-accountant")
+        c.approve_and_execute("bill.credit_note", note["id"], actor_role="accountant", actor="test-accountant", period_id="P1")
+        ap = c.bills.ap_open_items(w.pid)
+        self.assertEqual((ap["subledger_total"], ap["control_balance"], ap["reconciled"]), ("16500.00", "16500.00", True))
+        self.assertEqual(c.bills.open_payable(bill["id"]), D("16500.00"))
+
+        today = r.today()
+        c.open_period("P0", "P0", (today - dt.timedelta(days=170)).isoformat(), (today - dt.timedelta(days=100)).isoformat(), actor="test")
+        prime = r.certify(project_id=w.pid, period_id="P0", certified_cumulative="60000", retainage_rate="0.10", actor="test",
+                          invoice_date=(today - dt.timedelta(days=130)).isoformat())
+        c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant", actor="test-accountant")
+        prime = r.get(prime["id"])
+        self.assertEqual((prime["amount_due"], prime["open"], prime["due_date"]), ("54000.00", "54000.00", (today - dt.timedelta(days=100)).isoformat()))
+        memo = r.prepare_credit_memo(prime["id"], "1000.00", "agreed concession on a pay item", w.evidence("credit_memo_evidence", "concession")["content_hash"], "test-accountant")
+        c.approve_and_execute("prime_bill.credit_memo", memo["id"], actor_role="accountant", actor="test-accountant", period_id="P1")
+        deposit = r.record_deposit(w.customer["id"], w.pid, "5000.00", "PROBE-DEP-0001", "check", "test-treasury", period_id="P1")
+        draft = r.prepare_deposit_application(deposit["id"], prime["id"], "2000.00", "test-accountant")
+        c.approve_and_execute("receivable.apply_deposit", draft["id"], actor_role="accountant", actor="test-accountant", period_id="P1")
+        with self.assertRaises(ReceivableError):
+            r.prepare_deposit_application(deposit["id"], prime["id"], "3000.01", "test-accountant")
+        written = r.prepare_write_off(prime["id"], "4000.00", "customer insolvent for this portion", "test-controller")
+        c.approve_and_execute("receivable.write_off", written["id"], actor_role="controller", actor="test-controller", period_id="P1")
+        self.assertEqual(r.get(prime["id"])["open"], "47000.00")  # 54,000 - 1,000 memo - 2,000 applied - 4,000 written off
+        ar, dep = r.ar_open_items(w.pid), r.deposits_items(w.pid)
+        self.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("47000.00", "47000.00", True))
+        self.assertEqual((dep["subledger_total"], dep["control_balance"], dep["reconciled"]), ("3000.00", "3000.00", True))
+        self.assertEqual({code: fmt(c.ledger.balance(code)) for code in ("2000", "1100", "2400", "6100", "4000", "5000")},
+                         {"2000": "16500.00", "1100": "47000.00", "2400": "3000.00", "6100": "4000.00", "4000": "59000.00", "5000": "18500.00"})
+        w.assert_books(self)
+
+    def test_a_receivable_not_yet_ninety_days_past_due_is_not_written_off(self):
+        w = ProbeWorld()
+        c, r = w.c, w.c.receivables
+        prime = r.certify(project_id=w.pid, period_id="P1", certified_cumulative="10000", retainage_rate="0.10", actor="test")
+        c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant", actor="test-accountant")
+        with self.assertRaises(ReceivableIneligible):
+            r.prepare_write_off(prime["id"], "100.00", "too early", "test-controller")
+        self.assertEqual((r.write_offs(), fmt(c.ledger.balance("6100")), r.get(prime["id"])["open"]), ([], "0.00", "9000.00"))
+        w.assert_books(self)
 
 
 # --------------------------------------------------------------------------- #
@@ -968,7 +1472,9 @@ class ScorecardTests(unittest.TestCase):
         native = written["candidates"][0]
         self.assertTrue(written["native_passes_all_hard_gates"], native["failed_checks"])
         self.assertEqual(code, 0)
-        self.assertEqual(written["version"], "cipher-core-gates/3")
+        self.assertEqual(written["version"], "cipher-core-gates/4")
+        self.assertEqual(native["hard_check_summary"]["failed"], 0)
+        self.assertEqual([a["gate"] for a in native["advisories"]], ["G5", "G8", "G8", "G9", "G9"])
         self.assertEqual(printed["weights_total"], 100)
         self.assertEqual([c["candidate"] for c in written["candidates"]], ["native_cipher", "erpnext"])
         self.assertEqual([c["status"] for c in written["candidates"]], ["scored", "not_evaluated"])

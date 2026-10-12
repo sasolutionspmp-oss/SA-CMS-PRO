@@ -14,14 +14,19 @@ from unittest import mock
 from apps.cipher.core import db as core_db
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import new_id, sha256_hex, utcnow_iso
-from apps.cipher.core.money import MoneyError
-from apps.cipher.domain.bills import BILLS_HARDENING_SCHEMA_NAME, BILLS_SCHEMA_NAME, BillError
+from apps.cipher.core.money import MoneyError, fmt
+from apps.cipher.domain.ap_intake import INTEGRITY_SCHEMA_NAME as AP_INTAKE_INTEGRITY_SCHEMA_NAME
+from apps.cipher.domain.bills import (
+    BILLS_HARDENING_SCHEMA_NAME, BILLS_LIFECYCLE_SCHEMA_NAME, BILLS_LINK_PAYMENT_SCHEMA_NAME, BILLS_SCHEMA_NAME, BillError, BillIneligible,
+)
 from apps.cipher.domain.commitments import COMMITMENTS_SCHEMA_NAME, CommitmentError
-from apps.cipher.domain.ledger import PeriodNotOpen
+from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
 from apps.cipher.domain.payments import PaymentError
-from apps.cipher.service import Cipher, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
 
 ENTITY = "S&A Solutions LLC (synthetic)"
+# entries that build on bills_invoices_credits_corrections: a workspace older than it has none of them
+AFTER_LIFECYCLE = (BILLS_LINK_PAYMENT_SCHEMA_NAME, AP_INTAKE_INTEGRITY_SCHEMA_NAME)
 
 
 def lines_of(journal):
@@ -1123,7 +1128,8 @@ class LegacyBillingHistoryTests(unittest.TestCase):
         d = tempfile.mkdtemp()
         path = os.path.join(d, "legacy-bills.sqlite")
         tick = "2026-10-12T03:00:00Z"  # every record below lands in the same second
-        legacy_catalog = [e for e in core_db.SCHEMA_CATALOG if e[1] not in (BILLS_SCHEMA_NAME, BILLS_HARDENING_SCHEMA_NAME)]
+        legacy_catalog = [e for e in core_db.SCHEMA_CATALOG
+                          if e[1] not in (BILLS_SCHEMA_NAME, BILLS_HARDENING_SCHEMA_NAME, BILLS_LIFECYCLE_SCHEMA_NAME, *AFTER_LIFECYCLE)]
         with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy_catalog):
             w = World(path)
             c = w.c
@@ -1156,7 +1162,7 @@ class LegacyBillingHistoryTests(unittest.TestCase):
         try:
             c = reopened
             status = {v["name"]: v for v in c.db.schema_status()["versions"]}
-            self.assertTrue(status[BILLS_SCHEMA_NAME]["applied"] and status[BILLS_HARDENING_SCHEMA_NAME]["applied"])
+            self.assertTrue(status[BILLS_SCHEMA_NAME]["applied"] and status[BILLS_HARDENING_SCHEMA_NAME]["applied"] and status[BILLS_LIFECYCLE_SCHEMA_NAME]["applied"])
             # the timestamp rule alone attributes the tied lot to bill 1
             tied = c.db.scalar("SELECT id FROM bills WHERE commitment_id=? AND status != 'void' AND created_at >= ? ORDER BY sequence LIMIT 1", (w.cid, tick))
             self.assertEqual(tied, bill1)
@@ -1174,6 +1180,453 @@ class LegacyBillingHistoryTests(unittest.TestCase):
             self.assertTrue(c.audit.verify_chain()["ok"])
         finally:
             reopened.db.close()
+
+
+# --------------------------------------------------------------------------- #
+# 14. supplier credit notes (bill.credit_note)                                 #
+# --------------------------------------------------------------------------- #
+
+def credit_evidence(w, label, *, kind="supplier_credit_note"):
+    doc = w.c.evidence.register_document(project_id=w.pid, kind=kind, title=f"Supplier credit note: {label}", actor="accountant")
+    rev = w.c.evidence.add_revision(document_id=doc["id"], content=f"synthetic supplier credit note: {label}".encode(), actor="accountant")
+    return doc, rev
+
+
+def granted(c, operation, subject_id, *, actor_role="accountant", approver_role="controller"):
+    ap = c.request_approval(operation, subject_id, actor_role=actor_role, requested_by="accountant")
+    c.approve(ap["id"], approver=approver_role, approver_role=approver_role)
+    return ap
+
+
+def release_open_payable(c, bill_id):
+    """Release a payment of a bill for exactly its open payable and return the intent.  When the
+    service's payment.release manifest already binds the open payable it is used as is; while
+    payments still binds the amount due (refused by the storage guard for a credited bill), the
+    probe binds the open payable itself -- what payments.manifest_for_bill must bind -- and runs
+    the same approval and intent steps the service runs."""
+    open_amt = fmt(c.bills.open_payable(bill_id))
+    m = c.payments.manifest_for_bill(bill_id, actor_role="treasury")
+    if m["amounts"]["amount"] == open_amt:
+        intent_id = c.approve_and_execute("payment.release", bill_id, actor_role="treasury", actor="treasury").result["intent"]
+        return c.payments.get(intent_id)
+    m["amounts"]["amount"] = open_amt
+    ap = c.approvals.request(m, requested_by="treasury")
+    c.approve(ap["id"], approver="treasury", approver_role="treasury")
+    c.approvals.consume(ap["id"], current_manifest=m, consumer="treasury")
+    return c.payments.create_intent(manifest=m, approval_id=ap["id"], bill_id=bill_id, note="bill payment", actor="treasury")
+
+
+class SupplierCreditNoteTests(unittest.TestCase):
+    def test_credit_note_posts_dr_ap_cr_cost_and_the_subledger_follows(self):
+        w = World()
+        c = w.c
+        b = w.certify({1: "30000"})
+        w.post(b["id"])  # 27,000 payable, 3,000 retained
+        doc, rev = credit_evidence(w, "CN-0001 back-charge for damaged sheet piling")
+        n = c.bills.prepare_credit_note(b["id"], "1500.00", "back-charge: damaged sheet piling replaced by others", rev["content_hash"], "accountant")
+        self.assertEqual((n["status"], n["amount"], n["evidence_document_id"], n["evidence_revision_id"], n["evidence_current"]),
+                         ("draft", "1500.00", doc["id"], rev["id"], True))
+        ap = granted(c, "bill.credit_note", n["id"])
+        m = ap["manifest"]
+        self.assertEqual((m["subject"], m["amounts"], m["entity"]), ({"type": "supplier_credit_note", "id": n["id"]},
+                                                                     {"credit": "1500.00", "open_payable": "27000.00"}, ENTITY))
+        self.assertEqual((m["bindings"]["bill_hash"], m["bindings"]["open_payable"], m["bindings"]["evidence_hash"], m["bindings"]["source_type"]),
+                         (b["content_hash"], "27000.00", rev["content_hash"], "supplier_credit_note"))
+        self.assertEqual([(ln["account"], ln["debit"], ln["credit"]) for ln in m["bindings"]["journal_preview"]],
+                         [("2000", "1500.00", "0.00"), ("5000", "0.00", "1500.00")])
+        res = c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual((res.result["status"], res.result["amount"], res.result["open_payable"]), ("posted", "1500.00", "25500.00"))
+        self.assertTrue(c.execute(ap["id"], actor="accountant", period_id="P1").replayed)
+        j = c.ledger.journal(res.result["journal_id"])
+        self.assertEqual(lines_of(j), [("2000", "1500.00", "0.00"), ("5000", "0.00", "1500.00")])
+        self.assertEqual((j["source_type"], j["source_id"], j["approval_id"], j["period_id"]), ("supplier_credit_note", n["id"], ap["id"], "P1"))
+        self.assertEqual({(ln["project_id"], ln["party_id"]) for ln in j["lines"]}, {(w.pid, w.supplier["id"])})
+        self.assertEqual((str(c.bills.open_payable(b["id"])), str(c.bills.credited(b["id"]))), ("25500.00", "1500.00"))
+        ap_items = c.bills.ap_open_items(w.pid)
+        item = next(i for i in ap_items["items"] if i["bill_id"] == b["id"])
+        self.assertEqual((item["amount_due"], item["paid"], item["credited"], item["open"]), ("27000.00", "0.00", "1500.00", "25500.00"))
+        self.assertEqual((ap_items["subledger_total"], ap_items["control_balance"]), ("25500.00", "25500.00"))
+        self.assertEqual((str(c.ledger.balance("2000")), str(c.ledger.balance("5000")), str(c.ledger.balance("2050"))), ("25500.00", "28500.00", "3000.00"))
+        self.assertEqual(c.bills.credit_note(n["id"])["status"], "posted")
+        # the credit-note journal is corrected through its own module, never a bare journal.reverse
+        with self.assertRaises(LedgerError):
+            c.ledger.prepare_reversal(j["id"], "reverse the credit", "controller")
+        for sql in ("UPDATE bill_credit_notes SET amount='15.00' WHERE id=?", "UPDATE bill_credit_notes SET status='cancelled' WHERE id=?",
+                    "DELETE FROM bill_credit_notes WHERE id=?"):
+            with self.subTest(sql=sql), self.assertRaises(sqlite3.DatabaseError):
+                c.db.execute(sql, (n["id"],))
+        w.assert_books(self)
+
+    def test_credit_cannot_exceed_the_open_payable(self):
+        w = World()
+        c = w.c
+        draft = w.certify({1: "30000"})
+        _, rev = credit_evidence(w, "CN-1")
+        with self.assertRaises(BillError):  # a draft bill has no payable to credit
+            c.bills.prepare_credit_note(draft["id"], "100.00", "early credit", rev["content_hash"], "accountant")
+        w.post(draft["id"])
+        b = draft
+        _, wrong_kind = credit_evidence(w, "a stored-material record", kind="stored_material_evidence")
+        doc_old, rev_old = credit_evidence(w, "CN-old")
+        w.c.evidence.add_revision(document_id=doc_old["id"], content=b"synthetic supplier credit note reissued", actor="accountant")
+        for label, amount, evidence in (("above the open payable", "27000.01", rev["content_hash"]), ("zero", "0", rev["content_hash"]),
+                                        ("negative", "-1.00", rev["content_hash"]), ("float", 100.0, rev["content_hash"]),
+                                        ("sub-cent", "10.005", rev["content_hash"]), ("wrong document kind", "100.00", wrong_kind["content_hash"]),
+                                        ("superseded revision", "100.00", rev_old["content_hash"]), ("unknown hash", "100.00", sha256_hex(b"never stored")),
+                                        ("no evidence", "100.00", "")):
+            with self.subTest(case=label), self.assertRaises(BillError):
+                c.bills.prepare_credit_note(b["id"], amount, "credit", evidence, "accountant")
+        with self.assertRaises(BillError):
+            c.bills.prepare_credit_note(b["id"], "100.00", "  ", rev["content_hash"], "accountant")
+        n1 = c.bills.prepare_credit_note(b["id"], "20000.00", "scope removed (synthetic)", rev["content_hash"], "accountant")
+        with self.assertRaises(BillError):  # one credit-note document backs one credit note
+            c.bills.prepare_credit_note(b["id"], "1.00", "again", rev["content_hash"], "accountant")
+        _, rev2 = credit_evidence(w, "CN-2")
+        with self.assertRaises(BillError):  # the draft reserves its 20,000: 7,000 is left
+            c.bills.prepare_credit_note(b["id"], "7000.01", "second credit", rev2["content_hash"], "accountant")
+        n2 = c.bills.prepare_credit_note(b["id"], "7000.00", "second credit", rev2["content_hash"], "accountant")
+        ap2 = granted(c, "bill.credit_note", n2["id"])  # binds the open payable of 27,000
+        ap1 = granted(c, "bill.credit_note", n1["id"])
+        c.execute(ap1["id"], actor="accountant", period_id="P1")
+        with self.assertRaises(StaleApprovalError):  # the open payable moved to 7,000 after ap2 was granted
+            c.execute(ap2["id"], actor="accountant", period_id="P1")
+        self.assertEqual(c.approvals.get(ap2["id"])["status"], "invalidated")
+        ap2b = granted(c, "bill.credit_note", n2["id"])
+        self.assertEqual(ap2b["manifest"]["amounts"], {"credit": "7000.00", "open_payable": "7000.00"})
+        c.execute(ap2b["id"], actor="accountant", period_id="P1")
+        self.assertEqual(str(c.bills.open_payable(b["id"])), "0.00")
+        _, rev3 = credit_evidence(w, "CN-3")
+        with self.assertRaises(BillError):  # nothing is open any more
+            c.bills.prepare_credit_note(b["id"], "0.01", "third credit", rev3["content_hash"], "accountant")
+        with self.assertRaises(BillIneligible):  # a posted credit note is not posted twice
+            c.request_approval("bill.credit_note", n1["id"], actor_role="accountant")
+        self.assertEqual((str(c.ledger.balance("2000")), str(c.ledger.balance("5000"))), ("0.00", "3000.00"))
+        w.assert_books(self)
+
+    def test_cancel_period_and_payment_interplay(self):
+        w = World()
+        c = w.c
+        b = w.certify({1: "30000"})
+        w.post(b["id"])
+        pay = granted(c, "payment.release", b["id"], actor_role="treasury", approver_role="treasury")  # granted for the full 27,000
+        _, rev = credit_evidence(w, "CN-10")
+        n = c.bills.prepare_credit_note(b["id"], "2000.00", "liquidated damages (synthetic)", rev["content_hash"], "accountant")
+        ap = granted(c, "bill.credit_note", n["id"])
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        c.close_period("P1")
+        with self.assertRaises(PeriodNotOpen):
+            c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "granted")  # the approval survives: execute into an open period
+        res = c.execute(ap["id"], actor="accountant")  # defaults to the latest open period
+        self.assertEqual(res.result["period_id"], "P2")
+        self.assertEqual(c.approvals.get(pay["id"])["status"], "invalidated")  # the payment approval was for 27,000
+        with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
+            c.execute(pay["id"], actor="treasury")
+        # a draft is cancelled once and its approval goes stale
+        _, rev2 = credit_evidence(w, "CN-11")
+        n2 = c.bills.prepare_credit_note(b["id"], "500.00", "rebate (synthetic)", rev2["content_hash"], "accountant")
+        ap_n2 = granted(c, "bill.credit_note", n2["id"])
+        cancelled = c.bills.cancel_credit_note(n2["id"], "supplier withdrew the rebate", "accountant")
+        self.assertEqual((cancelled["status"], cancelled["cancelled_by"]), ("cancelled", "accountant"))
+        self.assertEqual(c.approvals.get(ap_n2["id"])["status"], "invalidated")
+        with self.assertRaises(BillError):
+            c.bills.cancel_credit_note(n2["id"], "again", "accountant")
+        # the cancelled document may back a new credit note
+        n3 = c.bills.prepare_credit_note(b["id"], "400.00", "rebate reissued (synthetic)", rev2["content_hash"], "accountant")
+        self.assertEqual(n3["status"], "draft")
+        # a payment in flight stops a new credit; the payment is for the 25,000 still open, not the 27,000 due
+        intent = release_open_payable(c, b["id"])
+        self.assertEqual((intent["amount"], intent["status"]), ("25000.00", "queued"))
+        _, rev4 = credit_evidence(w, "CN-12")
+        with self.assertRaises(BillError):
+            c.bills.prepare_credit_note(b["id"], "100.00", "in flight", rev4["content_hash"], "accountant")
+        with self.assertRaises(BillIneligible):
+            c.request_approval("bill.credit_note", n3["id"], actor_role="accountant")
+        self.assertEqual(str(c.bills.open_payable(b["id"])), "25000.00")
+        # once paid, the bill has nothing open: AP nets to zero, never below
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        self.assertEqual((c.bills.get(b["id"])["status"], str(c.bills.open_payable(b["id"])), str(c.ledger.balance("2000"))), ("paid", "0.00", "0.00"))
+        with self.assertRaises(BillIneligible):  # the draft credit note has nothing left to credit
+            c.request_approval("bill.credit_note", n3["id"], actor_role="accountant")
+        w.assert_books(self)
+
+
+class CreditedBillPaymentTests(unittest.TestCase):
+    """A payment released after a supplier credit note pays the open payable, never the amount due."""
+
+    def credited(self, amount):
+        w = World()
+        c = w.c
+        b = w.certify({1: "30000"})
+        w.post(b["id"])  # 27,000 due
+        early = granted(c, "payment.release", b["id"], actor_role="treasury", approver_role="treasury")  # bound to 27,000
+        _, rev = credit_evidence(w, f"CN-{amount}")
+        n = c.bills.prepare_credit_note(b["id"], amount, "back-charge for damaged sheet piles (synthetic)", rev["content_hash"], "accountant")
+        c.approve_and_execute("bill.credit_note", n["id"], actor_role="accountant", actor="accountant", period_id="P1")
+        return w, c, b, early
+
+    def assert_release_never_overpays(self, c, bill_id):
+        """However payments builds the release, a credited bill's approval is never for more than its open payable."""
+        open_amt = fmt(c.bills.open_payable(bill_id))
+        try:
+            ap = c.request_approval("payment.release", bill_id, actor_role="treasury", requested_by="treasury")
+        except sqlite3.IntegrityError as exc:  # payments binds the amount due: refused before anyone can approve it
+            self.assertIn("open payable", str(exc))
+            return None
+        self.assertEqual(ap["manifest"]["amounts"]["amount"], open_amt)
+        c.reject(ap["id"], approver="treasury", reason="probe only")
+        return ap
+
+    def test_payment_after_a_credit_pays_the_open_payable_and_ap_never_goes_negative(self):
+        w, c, b, early = self.credited("2000.00")
+        self.assertEqual(c.approvals.get(early["id"])["status"], "invalidated")  # the credit made the 27,000 approval stale
+        self.assertEqual(str(c.bills.open_payable(b["id"])), "25000.00")
+        self.assert_release_never_overpays(c, b["id"])
+        # a release built for the full amount due never becomes a payment intent, by any path
+        with self.assertRaises(sqlite3.IntegrityError) as cm:
+            c.payments.create_intent(manifest=early["manifest"], approval_id=early["id"], bill_id=b["id"], note="bill payment", actor="treasury")
+        self.assertIn("overpay", str(cm.exception))
+        self.assertEqual(c.db.scalar("SELECT COUNT(*) FROM payment_intents WHERE bill_id=?", (b["id"],)), 0)
+        # paying the open payable settles the bill exactly
+        intent = release_open_payable(c, b["id"])
+        self.assertEqual(intent["amount"], "25000.00")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        c.reconcile_payments()
+        self.assertEqual(c.bills.get(b["id"])["status"], "paid")
+        item = next(i for i in c.bills.ap_open_items(w.pid)["items"] if i["bill_id"] == b["id"])
+        self.assertEqual((item["amount_due"], item["paid"], item["credited"], item["open"]), ("27000.00", "25000.00", "2000.00", "0.00"))
+        self.assertEqual((str(c.bills.open_payable(b["id"])), str(c.ledger.balance("2000")), str(c.ledger.balance("5000"))), ("0.00", "0.00", "28000.00"))
+        with self.assertRaises(PaymentError):  # paid: nothing more is released
+            c.request_approval("payment.release", b["id"], actor_role="treasury")
+        w.assert_books(self)
+
+    def test_a_fully_credited_bill_releases_nothing(self):
+        w, c, b, _ = self.credited("27000.00")
+        self.assertEqual((str(c.bills.open_payable(b["id"])), str(c.ledger.balance("2000"))), ("0.00", "0.00"))
+        ap = None
+        try:
+            ap = self.assert_release_never_overpays(c, b["id"])
+        except PaymentError:  # a payments release that binds the open payable refuses a zero payment
+            pass
+        self.assertIsNone(ap)
+        self.assertEqual(c.db.scalar("SELECT COUNT(*) FROM payment_intents WHERE bill_id=?", (b["id"],)), 0)
+        item = next(i for i in c.bills.ap_open_items(w.pid)["items"] if i["bill_id"] == b["id"])
+        self.assertEqual((item["credited"], item["open"]), ("27000.00", "0.00"))
+        w.assert_books(self)
+
+    def test_an_uncredited_bill_still_releases_its_amount_due(self):
+        w = World()
+        c = w.c
+        b = w.certify({1: "30000"})
+        w.post(b["id"])
+        out = c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
+        self.assertEqual(out.result["amount"], "27000.00")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        self.assertEqual((c.bills.get(b["id"])["status"], str(c.ledger.balance("2000"))), ("paid", "0.00"))
+        w.assert_books(self)
+
+
+# --------------------------------------------------------------------------- #
+# 15. posted-bill correction (bill.correct)                                    #
+# --------------------------------------------------------------------------- #
+
+class BillCorrectionTests(unittest.TestCase):
+    def two_bills(self):
+        w = World()
+        lot1, _, _ = w.lot("sheet piling", "10000")
+        b1 = w.certify({1: "20000"})
+        w.post(b1["id"])  # 30,000 gross, 3,000 retained, 27,000 due
+        lot2, _, _ = w.lot("dewatering pumps", "5000")
+        b2 = w.certify({1: "45000"}, transfers=[{"lot_id": lot1["id"], "amount": "10000"}])
+        w.post(b2["id"])  # 50,000 gross, 5,000 retained, 18,000 due
+        return w, lot1, lot2, b1, b2
+
+    def test_correction_reverses_the_bill_and_a_replacement_certifies_exactly(self):
+        w, lot1, lot2, b1, b2 = self.two_bills()
+        c = w.c
+        originals = [lines_of(j) for j in c.ledger.journals(source_type="bill", source_id=b2["id"])]
+        self.assertEqual(originals, [[("5000", "10000.00", "0.00"), ("1300", "0.00", "10000.00")],
+                                     [("5000", "15000.00", "0.00"), ("1300", "5000.00", "0.00"), ("2000", "0.00", "18000.00"), ("2050", "0.00", "2000.00")]])
+        reason = "the sheet piling transfer was certified a period early (synthetic)"
+        req = c.bills.prepare_correction(b2["id"], reason, "accountant")
+        self.assertEqual((req["status"], req["reason"], req["bill_id"]), ("pending", reason, b2["id"]))
+        ap = granted(c, "bill.correct", b2["id"])
+        bound = ap["manifest"]["bindings"]
+        self.assertEqual((bound["request"]["id"], bound["reason"], bound["bill_hash"], bound["restore_transfers"], bound["unbill_lots"], len(bound["journals"])),
+                         (req["id"], reason, b2["content_hash"], [{"lot_id": lot1["id"], "amount": "10000.00"}], [lot2["id"]], 2))
+        self.assertEqual(ap["manifest"]["amounts"], {"amount_due": "18000.00", "retainage_this_period": "2000.00", "cumulative_gross": "50000.00"})
+        res = c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual((res.result["status"], res.result["period_id"], res.result["unbilled_lots"]), ("corrected", "P1", [lot2["id"]]))
+        self.assertEqual(res.result["restored_lots"], [{"lot_id": lot1["id"], "amount": "10000.00", "remaining": "10000.00"}])
+        reversals = [c.ledger.journal(jid) for jid in res.result["reversal_journals"]]
+        self.assertEqual([lines_of(j) for j in reversals],
+                         [[("5000", "0.00", "10000.00"), ("1300", "10000.00", "0.00")],
+                          [("5000", "0.00", "15000.00"), ("1300", "0.00", "5000.00"), ("2000", "18000.00", "0.00"), ("2050", "2000.00", "0.00")]])
+        for rev, orig in zip(reversals, c.ledger.journals(source_type="bill", source_id=b2["id"])):
+            self.assertEqual((rev["reversal_of"], rev["approval_id"], rev["period_id"], rev["source_type"]), (orig["id"], ap["id"], "P1", "bill"))
+            self.assertIn(reason, rev["description"])
+        corrected = c.bills.get(b2["id"])
+        self.assertEqual((corrected["status"], corrected["correction_id"], corrected["amount_due"]), ("corrected", req["id"], "18000.00"))
+        done = c.bills.correction(req["id"])
+        self.assertEqual((done["status"], done["approval_id"], done["period_id"], done["reversal_journals"]),
+                         ("executed", ap["id"], "P1", res.result["reversal_journals"]))
+        self.assertEqual((c.bills.lot(lot1["id"])["remaining_amount"], c.bills.lot(lot1["id"])["billed_bill_id"]), ("10000.00", b1["id"]))
+        self.assertEqual((c.bills.lot(lot2["id"])["remaining_amount"], c.bills.lot(lot2["id"])["billed_bill_id"]), ("5000.00", None))
+        self.assertEqual([str(c.ledger.balance(a)) for a in ("5000", "1300", "2000", "2050")], ["20000.00", "10000.00", "27000.00", "3000.00"])
+        self.assertEqual((c.bills.retainage_open_items(w.pid)["subledger_total"], c.bills.stored_material_items(w.pid)["subledger_total"],
+                          c.bills.ap_open_items(w.pid)["subledger_total"]), ("3000.00", "10000.00", "27000.00"))
+        self.assertEqual(c.bills.latest(w.cid)["id"], b1["id"])
+        w.assert_books(self)
+
+        # the replacement certifies from bill 1's progress with the same figures and posts the same journals
+        b3 = w.certify({1: "45000"}, transfers=[{"lot_id": lot1["id"], "amount": "10000"}])
+        keys = ("cumulative_installed", "cumulative_stored", "cumulative_gross", "cumulative_retainage", "cumulative_net", "prior_net", "amount_due",
+                "retainage_this_period", "installed_this_period", "stored_added_this_period", "stored_transferred_this_period")
+        self.assertEqual({k: b3[k] for k in keys}, {k: b2[k] for k in keys})
+        self.assertEqual((b3["sequence"], b3["status"]), (3, "draft"))
+        w.post(b3["id"])
+        self.assertEqual([lines_of(j) for j in c.ledger.journals(source_type="bill", source_id=b3["id"])], originals)
+        self.assertEqual([str(c.ledger.balance(a)) for a in ("5000", "1300", "2000", "2050")], ["45000.00", "5000.00", "45000.00", "5000.00"])
+        self.assertEqual((c.bills.lot(lot1["id"])["remaining_amount"], c.bills.lot(lot2["id"])["billed_bill_id"]), ("0.00", b3["id"]))
+        self.assertEqual([e["action"] for e in c.audit.entries(entity_type="bill", entity_id=b2["id"]) if e["action"].startswith("bill.correct")],
+                         ["bill.correction_requested", "bill.corrected"])
+        w.assert_books(self)
+
+    def test_correction_refusals(self):
+        w, lot1, lot2, b1, b2 = self.two_bills()
+        c = w.c
+        with self.assertRaises(BillError):  # only the commitment's latest bill
+            c.bills.prepare_correction(b1["id"], "wrong bill", "accountant")
+        with self.assertRaises(BillIneligible):  # the reason is recorded first
+            c.request_approval("bill.correct", b2["id"], actor_role="accountant")
+        self.assertEqual(c.ricky.propose("bill.correct", actor_role="accountant", context={"bill_id": b2["id"]})["decision"], "abstained")
+        with self.assertRaises(BillError):
+            c.bills.prepare_correction(b2["id"], "   ", "accountant")
+        req = c.bills.prepare_correction(b2["id"], "re-measure (synthetic)", "accountant")
+        self.assertEqual(c.ricky.propose("bill.correct", actor_role="accountant", context={"bill_id": b2["id"]})["decision"], "proposed")
+        self.assertEqual(c.ricky.propose("bill.correct", actor_role="estimator", context={"bill_id": b2["id"]})["decision"], "abstained")
+        with self.assertRaises(BillError):  # one pending request per bill
+            c.bills.prepare_correction(b2["id"], "again", "accountant")
+        with self.assertRaises(RoleNotAuthorised):
+            c.request_approval("bill.correct", b2["id"], actor_role="pm")
+        # a cancelled request makes its approval stale
+        ap = granted(c, "bill.correct", b2["id"])
+        c.bills.cancel_correction(req["id"], "measured again: the bill stands", "accountant")
+        with self.assertRaises(StaleApprovalError):
+            c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        # a payment released after the approval makes it stale too
+        c.bills.prepare_correction(b2["id"], "re-measure, second look (synthetic)", "accountant")
+        ap2 = granted(c, "bill.correct", b2["id"])
+        c.approve_and_execute("payment.release", b2["id"], actor_role="treasury", actor="treasury")
+        with self.assertRaises(StaleApprovalError):
+            c.execute(ap2["id"], actor="accountant", period_id="P1")
+        self.assertEqual((c.approvals.get(ap2["id"])["status"], c.bills.get(b2["id"])["status"]), ("invalidated", "posted"))
+        self.assertEqual(str(c.ledger.balance("2000")), "45000.00")
+        # raw SQL never marks a bill corrected
+        pending = c.bills.corrections(b2["id"])[-1]
+        for sql, params in (("UPDATE bills SET status='corrected' WHERE id=?", (b2["id"],)),
+                            ("UPDATE bills SET status='corrected', correction_id=?, corrected_at='2026-10-12T00:00:00Z' WHERE id=?", (pending["id"], b2["id"])),
+                            ("UPDATE stored_material_lots SET billed_bill_id=NULL WHERE id=?", (lot2["id"],)),
+                            ("UPDATE bill_corrections SET status='executed' WHERE id=?", (pending["id"],)),
+                            ("DELETE FROM bill_corrections WHERE id=?", (pending["id"],))):
+            with self.subTest(sql=sql), self.assertRaises(sqlite3.DatabaseError):
+                c.db.execute(sql, params)
+        w.assert_books(self)
+
+    def test_paid_or_credited_bills_are_not_corrected_and_a_corrected_bill_is_final(self):
+        w, lot1, lot2, b1, b2 = self.two_bills()
+        c = w.c
+        _, rev = credit_evidence(w, "CN-20")
+        n = c.bills.prepare_credit_note(b2["id"], "100.00", "rebate (synthetic)", rev["content_hash"], "accountant")
+        with self.assertRaises(BillError):  # a credited bill (even a draft credit) is not corrected
+            c.bills.prepare_correction(b2["id"], "re-measure", "accountant")
+        c.bills.cancel_credit_note(n["id"], "superseded by the correction", "accountant")
+        c.bills.prepare_correction(b2["id"], "re-measure (synthetic)", "accountant")
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        c.close_period("P1")
+        ap = granted(c, "bill.correct", b2["id"])
+        with self.assertRaises(PeriodNotOpen):  # a closed period never receives the reversal
+            c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "granted")
+        res = c.execute(ap["id"], actor="accountant")  # the current open period
+        self.assertEqual(res.result["period_id"], "P2")
+        self.assertEqual({c.ledger.journal(j)["period_id"] for j in res.result["reversal_journals"]}, {"P2"})
+        self.assertEqual(c.ledger.trial_balance("P1")["total_debit"], c.ledger.trial_balance("P1")["total_credit"])
+        with self.assertRaises(PaymentError):  # a corrected bill is never paid
+            c.request_approval("payment.release", b2["id"], actor_role="treasury")
+        _, rev2 = credit_evidence(w, "CN-21")
+        with self.assertRaises(BillError):  # nor credited
+            c.bills.prepare_credit_note(b2["id"], "1.00", "late rebate", rev2["content_hash"], "accountant")
+        with self.assertRaises(BillError):  # nor corrected twice
+            c.bills.prepare_correction(b2["id"], "again", "accountant")
+        for sql in ("UPDATE bills SET status='posted' WHERE id=?", "UPDATE bills SET amount_due='1.00' WHERE id=?",
+                    "UPDATE bills SET correction_id=NULL, corrected_at=NULL WHERE id=?", "DELETE FROM bills WHERE id=?"):
+            with self.subTest(sql=sql), self.assertRaises(sqlite3.DatabaseError):
+                c.db.execute(sql, (b2["id"],))
+        # bill 1 is paid: once it is the latest bill again it still cannot be corrected
+        c.approve_and_execute("payment.release", b1["id"], actor_role="treasury", actor="treasury")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        with self.assertRaises(BillError):
+            c.bills.prepare_correction(b1["id"], "too late: paid", "accountant")
+        w.assert_books(self)
+
+    def test_older_workspace_is_rebuilt_with_every_bill_kept(self):
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "pre-corrections.sqlite")
+        older = [e for e in core_db.SCHEMA_CATALOG if e[1] not in (BILLS_LIFECYCLE_SCHEMA_NAME, *AFTER_LIFECYCLE)]
+        with mock.patch.object(core_db, "SCHEMA_CATALOG", older):
+            w = World(path)
+            c = w.c
+            self.assertNotIn("corrected", c.db.scalar("SELECT sql FROM sqlite_master WHERE type='table' AND name='bills'"))
+            lot1, _, _ = w.lot("sheet piling", "10000")
+            b1 = w.certify({1: "20000"})
+            w.post(b1["id"])
+            c.approve_and_execute("payment.release", b1["id"], actor_role="treasury", actor="treasury")
+            self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+            b2 = w.certify({1: "45000"}, transfers=[{"lot_id": lot1["id"], "amount": "10000"}])
+            w.post(b2["id"])
+            draft = w.certify({2: "1000"})
+            before = c.db.query("SELECT * FROM bills ORDER BY sequence")
+            bill_triggers = {r["name"] for r in c.db.query("SELECT name FROM sqlite_master WHERE type='trigger' AND tbl_name='bills'")}
+            counts = {t: c.db.scalar(f"SELECT COUNT(*) FROM {t}") for t in ("bills", "bill_lines", "bill_transfers", "payment_intents", "stored_material_lots")}
+            c.db.close()
+        upgraded = Cipher(path)
+        try:
+            c = upgraded
+            status = {v["name"]: v for v in c.db.schema_status()["versions"]}
+            self.assertTrue(status[BILLS_LIFECYCLE_SCHEMA_NAME]["applied"])
+            self.assertTrue(all(status[name]["applied"] for name in AFTER_LIFECYCLE))  # applied after the rebuild, so their bills guards survive it
+            self.assertEqual(c.db.schema_status()["pending"], [])
+            after = c.db.query("SELECT * FROM bills ORDER BY sequence")
+            self.assertEqual([{k: r[k] for k in before[0]} for r in after], before)
+            self.assertEqual({k: [r.get(k) for r in after] for k in ("supplier_invoice_id", "correction_id")},
+                             {"supplier_invoice_id": [None] * 3, "correction_id": [None] * 3})
+            self.assertEqual({t: c.db.scalar(f"SELECT COUNT(*) FROM {t}") for t in counts}, counts)
+            self.assertEqual(c.db.query("PRAGMA foreign_key_check"), [])
+            self.assertEqual(c.db.scalar("PRAGMA defer_foreign_keys"), 0)
+            # the rebuild drops the old table's triggers with it: every one of them must be recreated
+            rebuilt = {r["name"] for r in c.db.query("SELECT name FROM sqlite_master WHERE type='trigger' AND tbl_name='bills'")}
+            self.assertTrue(bill_triggers <= rebuilt, sorted(bill_triggers - rebuilt))
+            self.assertTrue({"bills_supplier_invoice_fresh_approval", "bills_supplier_invoice_one_live_bill", "bills_supplier_invoice_from_matched_record"} <= rebuilt)
+            self.assertIn("corrected", c.db.scalar("SELECT sql FROM sqlite_master WHERE type='table' AND name='bills'"))
+            for sql in ("UPDATE bills SET amount_due='1.00' WHERE id=?", "UPDATE bills SET status='void' WHERE id=?"):
+                with self.subTest(sql=sql), self.assertRaises(sqlite3.DatabaseError):  # the recreated guards hold
+                    c.db.execute(sql, (b2["id"],))
+            self.assertEqual(c.bills.get(b1["id"])["status"], "paid")
+            # the rebuilt table admits the governed correction of the latest unpaid bill
+            c.bills.void(draft["id"], actor="pm", reason="not needed")
+            c.bills.prepare_correction(b2["id"], "re-measure after upgrade (synthetic)", "accountant")
+            res = c.execute(granted(c, "bill.correct", b2["id"])["id"], actor="accountant", period_id="P1")
+            self.assertEqual(res.result["status"], "corrected")
+            self.assertEqual([str(c.ledger.balance(a)) for a in ("5000", "1300", "2050")], ["20000.00", "10000.00", "3000.00"])
+            for rec in (c.bills.ap_open_items(), c.bills.retainage_open_items(), c.bills.stored_material_items()):
+                self.assertTrue(rec["reconciled"], rec)
+            self.assertEqual(c.db.migrate(), [])
+            self.assertTrue(c.ledger.trial_balance()["balanced"])
+            self.assertTrue(c.audit.verify_chain()["ok"])
+        finally:
+            upgraded.db.close()
 
 
 if __name__ == "__main__":

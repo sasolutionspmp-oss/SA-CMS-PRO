@@ -27,22 +27,27 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
     "pm": {
         "commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill",
         "labor.approve_timesheet", "procurement.award", "field.respond_rfi", "field.decide_submittal", "field.accept_closeout",
-        "field.distribute_rfi", "prime_bill.send",
+        "field.distribute_rfi", "prime_bill.send", "budget.revise",
     },
     "accountant": {
         "bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
         "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",
         "close.close_period", "close.reopen_period", "close.lock_period", "close.post_wip_adjustment", "close.reverse_wip_adjustment",
         "labor.post_payroll", "labor.bill", "prime_bill.send", "prime_retainage.release", "journal.reverse", "handoff.acknowledge",
-        "retainage.release",
+        "retainage.release", "ap_intake.match_invoice", "bill.credit_note", "bill.correct", "prime_bill.credit_memo",
+        "receivable.apply_deposit",
     },
     "controller": {
         "bill.approve", "prime_bill.approve", "period.close", "close.close_period", "close.reopen_period", "close.lock_period",
         "close.post_wip_adjustment", "close.reverse_wip_adjustment", "journal.reverse", "banking.lock_reconciliation", "banking.post_fee",
         "labor.post_payroll", "labor.bill", "handoff.acknowledge", "prime_retainage.release", "asset.capitalise", "asset.post_depreciation",
         "asset.reverse_depreciation", "asset.dispose", "reimbursement.approve", "retainage.release",
+        "ap_intake.match_invoice", "bill.credit_note", "bill.correct", "prime_bill.credit_memo", "receivable.write_off",
+        "receivable.apply_deposit", "budget.revise",
     },
     "reconciler": {"banking.lock_reconciliation", "banking.post_fee"},
+    # the plan separates the bank-detail maintainer from treasury release
+    "bank_admin": {"party.verify_destination"},
     "treasury": {"payment.release", "payment.release_retainage", "retainage.release", "reimbursement.pay", "payment.resume_releases", "labor.post_payroll"},
     "viewer": set(),
 }
@@ -124,6 +129,8 @@ class Ricky:
                 add("execute", "outbox", f"{pending} approved payment(s) are queued in the outbox for dispatch.")
             for p in self.db.query("SELECT id, amount, note FROM payment_intents WHERE status IN ('failed','returned') ORDER BY created_at"):
                 add("review", "payment_failed", f"Payment {p['id']} for {p['amount']} failed or was returned; the obligation is open again ({p['note'] or 'no note'}).", p["id"])
+            for s in self.payments.stale_processing():
+                add("reconcile", "payment_stale", f"Payment {s['intent_id']} for {s['amount']} has been processing at the provider for {s['days_processing']} day(s); chase the provider before close.", s["intent_id"], "payment.release")
 
         ap_items = self.bills.ap_open_items(project_id)
         if not ap_items["reconciled"]:

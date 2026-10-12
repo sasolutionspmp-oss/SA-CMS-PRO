@@ -15,6 +15,13 @@ chain intact) and, where the plan expects routing, that Ricky's role-filtered br
 (``Cipher.ricky.brief``) or the owning module surfaces the exception to the role
 that owns it.
 
+``FirstSliceAdversarialVariantTests`` adds the variants of the first production slice
+(plan section 11: supplier-bill intake, matching and approval) and of the AR and payee
+controls that slice relies on: a duplicate supplier invoice, an invoice amount that does
+not match the certified bill, a payee bank change attempted by one person, a customer
+deposit applied beyond what it holds, and a write-off before 90 days past due.  They
+assert the same safe failure and routing as the plan's list.
+
 ``AdversarialVariantDefectTests`` pins plan behaviour a module does not deliver
 yet.  Each is an expected failure naming the defect, so a fix shows up as an
 unexpected success.
@@ -26,6 +33,7 @@ import datetime as _dt
 import json
 import os
 import shutil
+import sqlite3
 import tempfile
 import threading
 import unittest
@@ -35,16 +43,20 @@ from unittest import mock
 from apps.cipher.core import approvals as approvals_module
 from apps.cipher.core.approvals import ApprovalExpired, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
-from apps.cipher.core.ids import utcnow
+from apps.cipher.core.ids import utcnow, utcnow_iso
+from apps.cipher.domain.ap_intake import APIntakeError, DuplicateInvoiceError, InvoiceIneligible
 from apps.cipher.domain.banking import BankingError
-from apps.cipher.domain.bills import BillError
+from apps.cipher.domain.bills import BillError, BillIneligible
 from apps.cipher.domain.close import CloseError
 from apps.cipher.domain.commitments import CommitmentError
 from apps.cipher.domain.drawings import DrawingError
 from apps.cipher.domain.estimates import EstimateError
 from apps.cipher.domain.field import FieldError
-from apps.cipher.domain.payments import PaymentError, ProviderEventRejected, ReleaseQuarantined, SimulatedProvider
-from apps.cipher.domain.receivables import ReceivableError
+from apps.cipher.domain.payments import (
+    VERIFICATION_CHANNELS, VERIFY_DESTINATION_OPERATION, DestinationChangeError, PaymentError, ProviderEventRejected, ReleaseQuarantined,
+    SimulatedProvider,
+)
+from apps.cipher.domain.receivables import ReceivableDuplicate, ReceivableError, ReceivableIneligible
 from apps.cipher.domain.rights import RightsError
 from apps.cipher.ricky_sdk import UNTRUSTED_NOTICE, ReceiptStoreUnavailable, RickySDK
 from apps.cipher.service import Cipher, RoleNotAuthorised
@@ -54,6 +66,13 @@ ENTITY = "S&A Solutions LLC (synthetic)"
 OTHER_ENTITY = "Synthetic Affiliate Holdings LLC (synthetic)"
 DEST = "ACH-SIM-ADV-0001"
 AI_HOST = "local-model-host (synthetic)"
+CALL_BACK = VERIFICATION_CHANNELS[0]  # "call-back to number on file"
+RAW_APPLICATION = (
+    "INSERT INTO deposit_applications (id, deposit_id, prime_bill_id, project_id, customer_id, amount, bill_hash, status, created_at, created_by) "
+    "VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', ?, 'raw')")
+RAW_WRITE_OFF = (
+    "INSERT INTO receivable_write_offs (id, prime_bill_id, project_id, customer_id, amount, reason, requested_on, due_date, days_past_due, bill_hash, "
+    "status, created_at, created_by) VALUES (?, ?, ?, ?, '1000.00', 'raw write-off', ?, ?, ?, ?, 'draft', ?, 'raw')")
 
 
 # --------------------------------------------------------------------------- #
@@ -104,10 +123,25 @@ class World:
         res = self.c.approve_and_execute("payment.release", bill_id, actor_role="treasury", actor="treasury")
         return self.c.payments.get(res.result["intent"])
 
-    def posted_prime_bill(self, certified="60000"):
-        prime = self.c.receivables.certify(project_id=self.pid, period_id="P1", certified_cumulative=certified, retainage_rate="0.10", actor="pm")
+    def posted_prime_bill(self, certified="60000", *, period="P1", project_id=None, invoice_date=None):
+        prime = self.c.receivables.certify(project_id=project_id or self.pid, period_id=period, certified_cumulative=certified, retainage_rate="0.10",
+                                           actor="pm", invoice_date=invoice_date)
         self.c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant", actor="accountant")
         return self.c.receivables.get(prime["id"])
+
+    def certified_bill(self, line1="30000"):
+        """A draft (certified, not yet approved) progress bill on SOV line 1."""
+        return self.c.bills.certify(commitment_id=self.cid, period_id="P1", installed=[{"sov_line_id": self.line1, "cumulative_installed": line1}], actor="pm")
+
+    def receive_invoice(self, number, invoice_date, amount, evidence_hash):
+        """The subcontractor's invoice on this commitment, received by the AP clerk with its PDF."""
+        return self.c.plugin("ap_intake").receive_invoice(self.supplier["id"], number, invoice_date, amount, evidence_hash, "ap-clerk",
+                                                          project_id=self.pid, commitment_id=self.cid)
+
+    def granted_match(self, invoice_id):
+        ap = self.c.request_approval("ap_intake.match_invoice", invoice_id, actor_role="accountant", requested_by="ap-clerk")
+        self.c.approve(ap["id"], approver="controller", approver_role="controller")
+        return ap
 
     def assert_books(self, tc):
         c = self.c
@@ -132,6 +166,10 @@ class SerialisedProvider(SimulatedProvider):
     def submit(self, **kwargs):
         with self._lock:
             return super().submit(**kwargs)
+
+
+def lines_of(journal):
+    return [(ln["account_code"], ln["debit"], ln["credit"]) for ln in journal["lines"]]
 
 
 def brief_items(c, project_id, role, *, kind=None, level=None):
@@ -831,6 +869,347 @@ class AdversarialVariantTests(unittest.TestCase):
         self.assertTrue(copy.ledger.trial_balance()["balanced"])
         self.assertTrue(copy.bills.ap_open_items(w.pid)["reconciled"])
         self.assertTrue(c.db.has_write_authority())  # the live workspace is untouched
+
+
+# --------------------------------------------------------------------------- #
+# First production slice: supplier intake, payee changes, AR adjustments       #
+# --------------------------------------------------------------------------- #
+
+class FirstSliceAdversarialVariantTests(unittest.TestCase):
+    """Variants of the plan's first production slice (section 11: supplier-bill intake,
+    matching and approval) and of the payee and receivable controls it relies on.  Each
+    fails safely -- nothing posted, paid or applied that a human did not approve on current
+    facts -- and leaves the books balanced, the audit chain intact and every subledger
+    reconciled."""
+
+    def test_v17_duplicate_supplier_invoice(self):
+        """Variant: duplicate supplier invoice.  The same supplier and number is refused however
+        it is spelled and whatever PDF comes with it; one PDF backs one invoice; a near duplicate
+        (another number, the same amount, three days apart) is held as a possible duplicate the
+        match approval cannot pass until it is reviewed; while unmatched past due both hold the
+        period close and reach the accountant's brief; the rejected duplicate stays rejected and
+        the bill is paid once."""
+        w = World()
+        c = w.c
+        intake = c.plugin("ap_intake")
+        bill = w.certified_bill("30000")  # 27,000 due
+        pdf = w.evidence("supplier_invoice", "Supplier invoice SPD-ADV-0001 (pay application 1)", b"adversarial synthetic supplier invoice SPD-ADV-0001, net 27,000.00")
+        inv = w.receive_invoice("SPD-ADV-0001", "2026-09-25", "27000.00", pdf["content_hash"])
+        self.assertEqual((inv["status"], inv["due_date"], inv["possible_duplicate"]), ("received", "2026-10-25", False))
+        for n, number in enumerate(("SPD-ADV-0001", "spd adv 0001", "SPD/ADV/0001", " Spd.Adv.0001 ")):
+            copy = w.evidence("supplier_invoice", f"Re-sent invoice copy {n}", f"adversarial synthetic re-sent copy {n} of SPD-ADV-0001".encode())
+            with self.assertRaises(DuplicateInvoiceError, msg=number):
+                w.receive_invoice(number, "2026-09-25", "27000.00", copy["content_hash"])
+        with self.assertRaises(APIntakeError):  # the same PDF under another number is the same invoice
+            w.receive_invoice("SPD-ADV-0001-COPY", "2026-09-25", "27000.00", pdf["content_hash"])
+        near_pdf = w.evidence("supplier_invoice", "Supplier invoice SPD-ADV-0002", b"adversarial synthetic supplier invoice SPD-ADV-0002: pay application 1 billed again")
+        near = w.receive_invoice("SPD-ADV-0002", "2026-09-28", "27000.00", near_pdf["content_hash"])
+        self.assertEqual((near["possible_duplicate"], near["duplicate_of"], near["duplicate_blocking"]), (True, [inv["id"]], True))
+        res = intake.match(near["id"], "ap-clerk")
+        self.assertEqual((res["status"], res["exceptions"]), ("exception", ["possible_duplicate"]))
+        with self.assertRaises(InvoiceIneligible):
+            c.request_approval("ap_intake.match_invoice", near["id"], actor_role="accountant", requested_by="ap-clerk")
+        summary = intake.state(w.pid)["summary"]
+        self.assertEqual((summary["invoices"], summary["possible_duplicates"], summary["exceptions"], summary["unmatched"]), (2, 1, 1, 2))
+
+        # unmatched past their due dates, both hold the period close; the brief names them
+        self.assertIn("ap_intake unmatched supplier invoices past due", c.plugin("close").checklist_report("P1")["failing"])
+        held = [it for it in brief_items(c, w.pid, "accountant", kind="close_check") if "unmatched supplier invoice" in it["text"]]
+        self.assertEqual(len(held), 1)
+        self.assertIn("SPD-ADV-0001", held[0]["text"])
+        self.assertIn("SPD-ADV-0002", held[0]["text"])
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.close_period", "P1", actor_role="controller", actor="controller", period_id="P1")
+
+        # the genuine invoice is matched and linked under one approval; the duplicate is rejected for good
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
+        self.assertEqual(c.execute(w.granted_match(inv["id"])["id"], actor="accountant").result["bill"], bill["id"])
+        with self.assertRaises(APIntakeError):  # a matched invoice is not matched a second time
+            intake.match(inv["id"], "ap-clerk")
+        self.assertEqual(intake.reject_invoice(near["id"], "duplicate of SPD-ADV-0001: the same pay application billed again", "ap-clerk")["status"], "rejected")
+        with self.assertRaises(APIntakeError):
+            intake.match(near["id"], "ap-clerk")
+        with self.assertRaises(APIntakeError):  # rejection is final
+            intake.revise_invoice(near["id"], "ap-clerk", reason="try again", amount="26999.00")
+        later = w.evidence("supplier_invoice", "Supplier invoice SPD-ADV-0002 resent", b"adversarial synthetic SPD-ADV-0002 resent a week later")
+        with self.assertRaises(DuplicateInvoiceError):  # its number stays taken
+            w.receive_invoice("SPD-ADV-0002", "2026-10-05", "27000.00", later["content_hash"])
+        self.assertNotIn("ap_intake unmatched supplier invoices past due", c.plugin("close").checklist_report("P1")["failing"])
+
+        # the bill posts with the genuine invoice bound and is paid exactly once
+        ap = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="accountant")
+        self.assertEqual((ap["manifest"]["bindings"]["supplier_invoice"]["id"], ap["manifest"]["bindings"]["supplier_invoice"]["number"]), (inv["id"], "SPD-ADV-0001"))
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        c.execute(ap["id"], actor="accountant")
+        intent = w.release(bill["id"])
+        self.assertEqual(intent["amount"], "27000.00")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        c.payments.ingest_event(c.provider.settle(intent["logical_op_id"]), actor="webhook")
+        with self.assertRaises(PaymentError):  # a paid bill is not payable again
+            c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="accountant")
+        self.assertEqual((len(c.payments.list()), len(c.provider.transfers)), (1, 1))
+        summary = intake.state(w.pid)["summary"]
+        self.assertEqual({k: summary[k] for k in ("invoices", "matched", "rejected", "unmatched", "possible_duplicates", "open_amount")},
+                         {"invoices": 2, "matched": 1, "rejected": 1, "unmatched": 0, "possible_duplicates": 0, "open_amount": "0.00"})
+        w.assert_books(self)
+
+    def test_v18_invoice_amount_mismatch(self):
+        """Variant: the supplier's invoice amount does not match the certified bill.  The match
+        records amount_mismatch and its approval cannot be requested; a match approval granted
+        on agreeing amounts dies when the supplier reissues the invoice at another amount; a
+        bill.approve granted on the linked invoice dies when the invoice is revised after it.
+        Nothing posts or pays until invoice and certification agree, and then exactly once."""
+        w = World()
+        c = w.c
+        intake = c.plugin("ap_intake")
+        bill = w.certified_bill("30000")  # 27,000 due
+        pdf = w.evidence("supplier_invoice", "Supplier invoice SPD-ADV-0101", b"adversarial synthetic SPD-ADV-0101: 27,500.00 incl. a mobilisation extra not in the SOV")
+        doc_id = pdf["document_id"]
+        inv = w.receive_invoice("SPD-ADV-0101", "2026-10-15", "27500.00", pdf["content_hash"])
+        res = intake.match(inv["id"], "ap-clerk")
+        self.assertEqual((res["status"], res["exceptions"], res["bill"], res["matched_amount"]), ("exception", ["amount_mismatch"], None, None))
+        self.assertIn("invoice 27500.00 matches no certified bill: bill 1 due 27000.00", res["details"][0]["detail"])
+        with self.assertRaises(InvoiceIneligible):
+            c.request_approval("ap_intake.match_invoice", inv["id"], actor_role="accountant", requested_by="ap-clerk")
+        self.assertEqual(intake.state(w.pid)["summary"]["exceptions"], 1)
+
+        def reissue(amount, why):
+            rev = c.evidence.add_revision(document_id=doc_id, content=f"adversarial synthetic SPD-ADV-0101 reissued at {amount}: {why}".encode(), actor="ap-clerk")
+            return intake.revise_invoice(inv["id"], "ap-clerk", reason=why, amount=amount, evidence_hash=rev["content_hash"])
+
+        # reissued at the certified 27,000: it matches; the approval is granted ...
+        self.assertEqual(reissue("27000.00", "supplier withdrew the mobilisation extra")["version"], 2)
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
+        match = w.granted_match(inv["id"])
+        # ... and dies when the supplier changes the amount again before it executes
+        reissue("27250.00", "supplier added a fuel surcharge")
+        self.assertEqual(c.approvals.get(match["id"])["status"], "invalidated")
+        with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):  # refused whichever check reaches it first
+            c.execute(match["id"], actor="accountant")
+        self.assertEqual(c.approvals.get(match["id"])["status"], "invalidated")
+        self.assertIsNone(c.bills.get(bill["id"])["supplier_invoice_id"])
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["exceptions"], ["amount_mismatch"])
+
+        # agreed again at 27,000: matched, linked, and the bill approval binds that invoice
+        reissue("27000.00", "supplier withdrew the fuel surcharge")
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
+        c.execute(w.granted_match(inv["id"])["id"], actor="accountant")
+        self.assertEqual(c.bills.get(bill["id"])["supplier_invoice_id"], inv["id"])
+        bill_ap = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="accountant")
+        self.assertEqual(bill_ap["manifest"]["bindings"]["supplier_invoice"]["invoice_hash"], intake.invoice(inv["id"])["content_hash"])
+        c.approve(bill_ap["id"], approver="controller", approver_role="controller")
+        # the invoice is revised after the bill approval was granted: the posting refuses and the approval dies
+        reissue("26000.00", "supplier deducted a back-charge on the face of the invoice")
+        journals = c.ledger.trial_balance()["journal_count"]
+        with self.assertRaises(StaleApprovalError):
+            c.execute(bill_ap["id"], actor="accountant")
+        self.assertEqual((c.approvals.get(bill_ap["id"])["status"], c.bills.get(bill["id"])["status"], c.ledger.trial_balance()["journal_count"]),
+                         ("invalidated", "draft", journals))
+        with self.assertRaises(BillIneligible):  # no new bill approval rests on an invoice that no longer agrees
+            c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="accountant")
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["exceptions"], ["amount_mismatch"])  # it stays on its bill, and no longer fits it
+        with self.assertRaises(PaymentError):  # nothing is payable: the bill never posted
+            c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="accountant")
+        self.assertEqual((c.payments.list(), c.ledger.journals(source_type="bill")), ([], []))
+
+        # once invoice and certification agree, the bill posts and is paid exactly once
+        reissue("27000.00", "supplier reissued the invoice at the certified amount; the back-charge follows as a credit note")
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
+        c.execute(w.granted_match(inv["id"])["id"], actor="accountant")
+        self.assertEqual(c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant").result["amount_due"], "27000.00")
+        self.assertEqual(w.release(bill["id"])["amount"], "27000.00")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        self.assertEqual(c.ledger.balance("1000"), D("0.00"))  # accepted, not yet settled: the cash moves at settlement
+        self.assertEqual((len(c.payments.list()), len(c.provider.transfers)), (1, 1))
+        self.assertEqual(intake.invoice(inv["id"])["version"], 6)
+        w.assert_books(self)
+
+    def test_v19_payee_bank_change_by_one_person(self):
+        """Variant: payee bank change by one person.  Whoever asks for a new destination, or
+        records the request, cannot also verify it -- through the change flow, the one-call
+        helper or raw SQL -- and an unverified change cannot be approved; treasury cannot change
+        where payments go.  Until an independent verifier's evidence is approved by the bank
+        maintainer, payments keep going to the verified destination; once it is, approvals bound
+        to the old destination die and a fresh release pays the new one."""
+        w = World()
+        c = w.c
+        p = c.payments
+        bill = w.posted_bill("20000")  # 18,000 due
+        release = w.granted_release(bill["id"])  # approved against the verified destination, version 2
+        new_dest = "ACH-SIM-ADV-NEW-0002"
+        ch = p.request_destination_change(w.supplier["id"], new_dest, "treasury-clerk", "supplier e-mail announcing a new bank account", "ap-clerk")
+        self.assertEqual((ch["status"], ch["new_destination_masked"], ch["old_destination_version"]), ("pending", "****0002", 2))
+        ev = w.evidence("destination_verification", "Payee verification: call-back notes", b"adversarial synthetic call-back notes for the new bank account")
+        for verifier in ("treasury-clerk", " Treasury-Clerk ", "AP-CLERK"):  # the requester, or the login that recorded the request
+            with self.assertRaises(DestinationChangeError, msg=verifier):
+                p.record_verification_evidence(ch["id"], CALL_BACK, verifier, ev["content_hash"], "bank-admin")
+        with self.assertRaises(DestinationChangeError):  # an unverified change cannot be put up for approval
+            c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="bank_admin", requested_by="bank-admin")
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "a verifier other than the requester"):  # nor verified by raw SQL by the requester
+            c.db.execute("UPDATE destination_changes SET status='evidenced', version=version+1, channel=?, verified_by=?, evidence_hash=?, evidence_revision_id=?, "
+                         "evidence_recorded_by=?, evidenced_at=? WHERE id=?",
+                         (CALL_BACK, "treasury-clerk", ev["content_hash"], ev["id"], "treasury-clerk", utcnow_iso(), ch["id"]))
+        solo = w.evidence("destination_verification", "Payee verification: owner's own call", b"adversarial synthetic owner self-verification")
+        with self.assertRaises(DestinationChangeError):  # one person through the one-call helper: refused whole, nothing half-recorded
+            p.governed_destination_change(w.supplier["id"], "ACH-SIM-ADV-NEW-0003", "owner", "owner", CALL_BACK, solo["content_hash"], "owner")
+        self.assertEqual([(h["id"], h["status"]) for h in p.change_history(w.supplier["id"])], [(ch["id"], "pending")])
+        party = c.party(w.supplier["id"])
+        self.assertEqual((party["destination"], party["destination_version"], party["destination_verified"]), (DEST, 2, 1))  # nothing moved
+        self.assertEqual(c.approvals.get(release["id"])["status"], "granted")
+
+        # an independent verifier (the external accountant calling the number on file) records the evidence
+        evidenced = p.record_verification_evidence(ch["id"], CALL_BACK, "ext-accountant", ev["content_hash"], "bank-admin")
+        self.assertEqual((evidenced["status"], evidenced["verified_by"]), ("evidenced", "ext-accountant"))
+        with self.assertRaises(RoleNotAuthorised):  # treasury releases payments; it cannot also change where they go
+            c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="treasury", requested_by="treasury")
+        ap = c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="bank_admin", requested_by="bank-admin")
+        self.assertEqual((ap["manifest"]["bindings"]["verified_by"], ap["manifest"]["bindings"]["requested_by"], ap["manifest"]["bindings"]["requested_actor"]),
+                         ("ext-accountant", "treasury-clerk", "ap-clerk"))
+        self.assertNotIn(new_dest, json.dumps(ap["manifest"]))  # fingerprints only
+        with self.assertRaises(RoleNotAuthorised):
+            c.approve(ap["id"], approver="treasury", approver_role="treasury")
+        c.approve(ap["id"], approver="owner", approver_role="owner")
+        res = c.execute(ap["id"], actor="bank-admin")
+        self.assertEqual((res.result["status"], res.result["destination_version"]), ("executed", 3))
+        self.assertIn(release["id"], res.result["invalidated_approvals"])
+
+        # the release approved against the old destination is dead; a fresh one pays the verified new destination once
+        with self.assertRaises(ApprovalNotGranted):
+            c.execute(release["id"], actor="treasury")
+        self.assertEqual(c.payments.list(), [])
+        intent = w.release(bill["id"])
+        self.assertEqual((intent["destination"], intent["destination_version"], intent["amount"]), (new_dest, 3, "18000.00"))
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        self.assertEqual([t["destination"] for t in c.provider.transfers.values()], [new_dest])
+        w.assert_books(self)
+
+    def test_v20_deposit_over_application(self):
+        """Variant: a customer deposit applied beyond what it holds.  An application may not
+        exceed the deposit's unapplied balance or the bill's open amount, nor reach another
+        project's bill, nor be approved by treasury; two drafts that each fit but together exceed
+        the deposit cannot both post (the second approval goes stale at execution); raw SQL is
+        refused; the deposit is used up exactly, and 2400 reconciles throughout."""
+        w = World()
+        c = w.c
+        r = c.receivables
+        prime1 = w.posted_prime_bill("60000")  # 54,000 due
+        prime2 = w.posted_prime_bill("80000")  # 18,000 due
+        dep = r.record_deposit(w.customer["id"], w.pid, "20000", "WIRE-SIM-ADV-DEP-0001", method="wire", actor="treasury", period_id="P1")
+        self.assertEqual((dep["status"], dep["unapplied"], c.ledger.balance("2400")), ("unapplied", "20000.00", D("20000.00")))
+        with self.assertRaises(ReceivableError):  # beyond the deposit
+            r.prepare_deposit_application(dep["id"], prime1["id"], "20000.01", "accountant")
+        with self.assertRaises(ReceivableError):  # beyond the bill
+            r.prepare_deposit_application(dep["id"], prime2["id"], "18000.01", "accountant")
+        other = c.create_project(name="Unrelated synthetic dewatering project (adversarial)", entity=ENTITY, budget="50000", customer_id=w.customer["id"])
+        other_bill = w.posted_prime_bill("10000", project_id=other["id"])
+        with self.assertRaises(ReceivableError):  # onto another project's bill
+            r.prepare_deposit_application(dep["id"], other_bill["id"], "1000", "accountant")
+        for amount in ("0", "-1.00", 100.0):
+            with self.assertRaises(ReceivableError, msg=repr(amount)):
+                r.prepare_deposit_application(dep["id"], prime1["id"], amount, "accountant")
+
+        # two drafts that each fit and together exceed the deposit: the first posts, the second goes stale
+        d1 = r.prepare_deposit_application(dep["id"], prime1["id"], "15000", "accountant")
+        d2 = r.prepare_deposit_application(dep["id"], prime2["id"], "9000", "accountant")
+        with self.assertRaises(ReceivableDuplicate):  # one open draft per deposit and bill
+            r.prepare_deposit_application(dep["id"], prime1["id"], "100", "accountant")
+        with self.assertRaises(RoleNotAuthorised):
+            c.request_approval("receivable.apply_deposit", d1["id"], actor_role="treasury", requested_by="treasury")
+        aps = []
+        for d in (d1, d2):
+            ap = c.request_approval("receivable.apply_deposit", d["id"], actor_role="accountant", requested_by="accountant")
+            self.assertEqual(ap["manifest"]["amounts"]["deposit_unapplied"], "20000.00")
+            c.approve(ap["id"], approver="controller", approver_role="controller")
+            aps.append(ap)
+        res = c.execute(aps[0]["id"], actor="accountant", period_id="P1")
+        self.assertEqual((res.result["deposit_unapplied"], res.result["open"]), ("5000.00", "39000.00"))
+        with self.assertRaises(StaleApprovalError):
+            c.execute(aps[1]["id"], actor="accountant", period_id="P1")
+        self.assertEqual((c.approvals.get(aps[1]["id"])["status"], r.deposit_application(d2["id"])["status"], r.get(prime2["id"])["open"]),
+                         ("invalidated", "draft", "18000.00"))
+        with self.assertRaises(ReceivableIneligible):
+            c.request_approval("receivable.apply_deposit", d2["id"], actor_role="accountant", requested_by="accountant")
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "unapplied balance"):  # raw SQL cannot over-apply it either
+            c.db.execute(RAW_APPLICATION, ("dap_raw_over", dep["id"], prime1["id"], w.pid, w.customer["id"], "6000.00", r.get(prime1["id"])["content_hash"], utcnow_iso()))
+        self.assertEqual((r.deposit(dep["id"])["unapplied"], c.ledger.balance("2400")), ("5000.00", D("5000.00")))
+        self.assertTrue(r.deposits_items()["reconciled"])
+
+        # the rest is applied once, exactly; nothing more can be drawn from the deposit
+        r.cancel_deposit_application(d2["id"], "accountant", "exceeds what the deposit still holds")
+        d3 = r.prepare_deposit_application(dep["id"], prime2["id"], "5000", "accountant")
+        c.approve_and_execute("receivable.apply_deposit", d3["id"], actor_role="accountant", actor="accountant", period_id="P1")
+        self.assertEqual((r.deposit(dep["id"])["status"], r.deposit(dep["id"])["unapplied"], r.get(prime2["id"])["open"]), ("applied", "0.00", "13000.00"))
+        with self.assertRaises(ReceivableError):
+            r.prepare_deposit_application(dep["id"], prime2["id"], "0.01", "accountant")
+        self.assertEqual(len(c.ledger.journals(source_type="deposit_application")), 2)
+        self.assertEqual((c.ledger.balance("2400"), c.ledger.balance("1100"), c.ledger.balance("1000")), (D("0.00"), D("61000.00"), D("20000.00")))
+        deposits = r.deposits_items()
+        self.assertEqual((deposits["subledger_total"], deposits["control_balance"], deposits["reconciled"]), ("0.00", "0.00", True))
+        w.assert_books(self)
+
+    def test_v21_write_off_before_ninety_days_past_due(self):
+        """Variant: a write-off before the receivable is 90 days past due.  It is refused on the
+        request day whatever the amount, by raw SQL too (under 90 days, a days count the dates do
+        not give, or a request dated ahead), and moving the workspace clock ahead does not age a
+        receivable.  At 90 days it is the controller's decision alone, and an approval granted
+        before a receipt arrived goes stale."""
+        w = World()
+        c = w.c
+        r = c.receivables
+        today = r.today()
+        r.today = lambda: today  # one calendar day for the whole test
+
+        def day(n):
+            return (today + _dt.timedelta(days=n)).isoformat()
+
+        c.open_period("P0", "Before October 2026", "2025-01-01", "2026-09-30")
+        old = w.posted_prime_bill("10000", period="P0", invoice_date=day(-120))    # due day -90: 90 days past due today
+        young = w.posted_prime_bill("20000", period="P0", invoice_date=day(-119))  # due day -89
+        fresh = w.posted_prime_bill("30000")                                        # dated today, due in 30 days
+        self.assertEqual([(b["amount_due"], b["due_date"]) for b in (old, young, fresh)], [("9000.00", day(-90)), ("9000.00", day(-89)), ("9000.00", day(30))])
+        for bill, days in ((young, 89), (fresh, 0)):
+            with self.assertRaises(ReceivableIneligible) as cm:
+                r.prepare_write_off(bill["id"], "1000", "customer disputes the invoice (synthetic)", "controller")
+            self.assertIn(f"{days} days past due", str(cm.exception))
+        ahead = today + _dt.timedelta(days=2)
+        r.today = lambda: ahead  # a clock set ahead would make the young bill 91 days past due ...
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "no later than today"):  # ... but the database counts to the real day
+            r.prepare_write_off(young["id"], "1000", "customer disputes the invoice (synthetic)", "controller")
+        r.today = lambda: today
+        for requested_on, days, why in ((day(0), 89, "89 days past due"), (day(0), 95, "a count the dates do not give"), (day(2), 91, "requested ahead")):
+            with self.assertRaises(sqlite3.DatabaseError, msg=why):
+                c.db.execute(RAW_WRITE_OFF, (f"wof_raw_{days}", young["id"], w.pid, w.customer["id"], requested_on, young["due_date"], days, young["content_hash"], utcnow_iso()))
+        self.assertEqual(r.write_offs(), [])
+
+        # at 90 days: the controller's decision alone
+        wo = r.prepare_write_off(old["id"], "9000", "customer insolvent (synthetic)", "controller")
+        self.assertEqual((wo["requested_on"], wo["due_date"], wo["days_past_due"], wo["status"]), (day(0), day(-90), 90, "draft"))
+        for role in ("accountant", "treasury", "pm"):
+            with self.assertRaises(RoleNotAuthorised, msg=role):
+                c.request_approval("receivable.write_off", wo["id"], actor_role=role, requested_by=role)
+        ap = c.request_approval("receivable.write_off", wo["id"], actor_role="controller", requested_by="controller")
+        self.assertEqual((ap["manifest"]["bindings"]["days_past_due"], ap["manifest"]["bindings"]["minimum_days_past_due"]), (90, 90))
+        with self.assertRaises(RoleNotAuthorised):
+            c.approve(ap["id"], approver="accountant", approver_role="accountant")
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        # a partial receipt arrives after the grant: the approval no longer fits the receivable and dies
+        r.record_collection(prime_bill_id=old["id"], period_id="P1", amount="1000", provider_ref="chk_sim_adv_late_0001", actor="treasury", method="check")
+        with self.assertRaises(StaleApprovalError):
+            c.execute(ap["id"], actor="controller", period_id="P1")
+        self.assertEqual((c.approvals.get(ap["id"])["status"], c.ledger.journals(source_type="receivable_write_off")), ("invalidated", []))
+        r.cancel_write_off(wo["id"], "controller", "a partial receipt arrived")
+        rest = r.prepare_write_off(old["id"], "8000", "customer insolvent: the rest is uncollectable (synthetic)", "controller")
+        res = c.approve_and_execute("receivable.write_off", rest["id"], actor_role="controller", actor="controller", period_id="P1")
+        self.assertEqual(lines_of(c.ledger.journal(res.result["journal_id"])), [("6100", "8000.00", "0.00"), ("1100", "0.00", "8000.00")])
+        self.assertEqual((res.result["days_past_due"], res.result["open"]), (90, "0.00"))
+        with self.assertRaises(ReceivableError):  # nothing is left to write off
+            r.prepare_write_off(old["id"], "0.01", "again", "controller")
+        # the younger receivables stay open, aged, for collection
+        items = {it["prime_bill_id"]: it for it in r.ar_open_items(w.pid)["items"] if it.get("prime_bill_id")}
+        self.assertEqual([(items[b["id"]]["open"], items[b["id"]]["days_past_due"]) for b in (old, young, fresh)],
+                         [("0.00", 0), ("9000.00", 89), ("9000.00", 0)])
+        self.assertEqual((c.ledger.balance("6100"), c.ledger.balance("1100")), (D("8000.00"), D("18000.00")))
+        w.assert_books(self)
 
 
 # --------------------------------------------------------------------------- #

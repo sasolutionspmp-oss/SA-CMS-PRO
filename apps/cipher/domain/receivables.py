@@ -53,6 +53,55 @@ Controls (plan sections 5, 6 and 10):
   so the subledger reconciles to control account 1100.
   ``retainage_receivable_items`` reconciles 1150 the same way, in the same shape.
 
+Dates, credits, write-offs and deposits (catalog entries ``receivables_dates_credits`` and
+``receivables_dates_credits_guards``):
+
+* **Dates.**  A prime bill carries an ``invoice_date`` (the date it posts, or the
+  explicit ``invoice_date`` given to ``certify``: never later than the day it is
+  certified, never before the start of the bill's period, and never before the invoice
+  date of the latest standing prime bill on the project) and a ``due_date`` = invoice date + the customer's payment terms
+  (``set_customer_terms``; 30 days when none are recorded), both fixed when it posts.
+  ``prime_bill.approve`` binds the invoice-date basis and the terms version, so a
+  terms change after approval makes the approval stale.  A retainage invoice is dated
+  the day its release posts, with a due date on the same terms (bound by the release
+  approval).  A receipt records its ``settlement_date`` (default: the day it is
+  recorded; never in the future, never before the invoice it settles), distinct from
+  the record time.  ``ar_open_items(project_id, as_of)`` gives each core item its
+  invoice date, due date and days past due as of ``as_of`` (default today).  Bills
+  posted before this entry keep no dates (nothing is invented for them).
+* **Credit memos** (``prime_bill.credit_memo``, subject: a draft from
+  ``prepare_credit_memo``, on a standing posted or sent bill, backed by evidence filed
+  on the bill's project, for at most what is open): ``Dr 4000 / Cr 1100``, a revenue
+  reduction under the fixture policy (SHADOW); the bill's open amount falls by it.
+* **Write-offs** (``receivable.write_off``, controller authority, subject: a draft from
+  ``prepare_write_off``): only a bill at least 90 days past its due date on the day the
+  write-off is requested, for at most what is open; ``Dr 6100 / Cr 1100``.  The
+  manifest binds the open amount, the days past due (as of the request date), the
+  due date, the day the bill posted and the reason.  The request date is never later
+  than today: approval and posting recompute the days past due from the bill's due date
+  to the request date and refuse a draft dated ahead (the database refuses one recorded
+  ahead of the real date, or posted from one).
+* **Customer deposits.**  ``record_deposit`` books an advance ``Dr 1000 / Cr 2400``
+  (ACH needs the active mandate, as for collections; the reference is unique across
+  every receipt table) as an unapplied deposit.  ``receivable.apply_deposit`` (subject:
+  a draft from ``prepare_deposit_application``, same customer and project, for at most
+  both the deposit's unapplied balance and the bill's open amount) posts
+  ``Dr 2400 / Cr 1100``.  ``deposits_items`` reconciles unapplied deposits to 2400.
+* Each draft is single-use (one open draft per bill, or per deposit and bill), its
+  approval binds the open amounts it was computed on (any receipt, credit or
+  application in between makes it stale), and execution posts into an open period
+  that does not start before the bill's (or the deposit's) period.  The database backs
+  every rule: drafts are recorded as drafts, post only under their consumed approval
+  with their own journal, never beyond what is open, and neither a deposit with standing
+  applications nor a prime bill with standing credit memos, write-offs or deposit
+  applications can be reversed (its reversal request is refused, and so is the reversing
+  journal): reverse the adjustments first.  A credit memo, write-off or application whose
+  journal is reversed (``journal.reverse``) no longer counts: the receivable (and the
+  deposit balance) is restored, exactly as the ledger shows.
+* **Sending states the balance.**  The ``prime_bill.send`` message carries what was
+  received, credited, written off and applied from deposits, and the balance due; the
+  approval binds it, so any of them changing after approval makes the send stale.
+
 Posting rules (fixture policy ``cipher-posting-rules/1``):
 
 * prime bill:          Dr 1100 amount due, Dr 1150 retainage withheld (Cr 1150 for a
@@ -60,16 +109,21 @@ Posting rules (fixture policy ``cipher-posting-rules/1``):
 * retainage release:   Dr 1100 / Cr 1150 (the project's whole retainage receivable)
 * collection:          Dr 1000 net, Dr 6000 fee / Cr 1100 gross
 * late return:         Dr 1100 / Cr 1000 in the current open period (the receipt stays)
+* credit memo:         Dr 4000 / Cr 1100 (SHADOW revenue reduction)
+* write-off:           Dr 6100 bad debt expense / Cr 1100
+* customer deposit:    Dr 1000 / Cr 2400 customer deposits
+* deposit application: Dr 2400 / Cr 1100
 """
 from __future__ import annotations
 
+import datetime as _dt
 from decimal import Decimal
 from typing import Any, Callable
 
 from ..core.approvals import Approvals, StaleApprovalError, build_manifest
 from ..core.audit import Audit
 from ..core.db import Database, register_schema_version
-from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow_iso
+from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow, utcnow_iso
 from ..core.money import ZERO, MoneyError, fmt, money, pct, rate, total
 from .ledger import RULE_VERSION, Ledger
 
@@ -489,12 +543,462 @@ CONTROLS_GUARDS_SCHEMA_STATEMENTS = [
 register_schema_version(CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_STATEMENTS)
 
 # --------------------------------------------------------------------------- #
+# Schema (catalog entry ``receivables_dates_credits``)                         #
+# --------------------------------------------------------------------------- #
+# Document dates, credit memos, write-offs and customer deposits arrive as their own
+# append-only entry (never edit it, or the two entries before it, once applied).  Every
+# statement applies to a workspace written earlier: the new columns start NULL (bills,
+# invoices and receipts recorded before stay undated rather than being given invented
+# dates) and the triggers check new writes only.  Amounts are compared as REAL with a
+# half-cent tolerance, like the guards before them; Python computes the exact values.
+
+TERMS_MAX_DAYS = 365
+WRITE_OFF_MIN_DAYS_PAST_DUE = 90
+_ADJUSTMENT_TABLES = ("prime_bill_credit_memos", "receivable_write_offs", "deposit_applications")
+_DRAFT_COLUMNS = """status TEXT NOT NULL CHECK (status IN ('draft','posted','cancelled')),
+        created_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        approval_id TEXT UNIQUE REFERENCES approvals(id),
+        journal_id TEXT UNIQUE REFERENCES journals(id),
+        period_id TEXT REFERENCES periods(id),
+        posted_at TEXT,
+        posted_by TEXT,
+        cancelled_at TEXT,
+        cancelled_by TEXT,
+        cancel_reason TEXT"""
+
+
+def _valid_date(expr: str) -> str:
+    """SQL: ``expr`` is a calendar date written YYYY-MM-DD (SQLite normalises anything else)."""
+    return f"({expr} IS NOT NULL AND date({expr}) IS {expr})"
+
+
+def _valid_terms(expr: str) -> str:
+    return f"(typeof({expr}) = 'integer' AND {expr} BETWEEN 0 AND {TERMS_MAX_DAYS})"
+
+
+def _dated(alias: str) -> str:
+    """SQL: record ``alias`` carries a valid invoice date and the due date its terms give."""
+    return (f"({_valid_date(alias + '.invoice_date')} AND {_valid_terms(alias + '.payment_terms_days')} "
+            f"AND {alias}.due_date IS date({alias}.invoice_date, '+' || {alias}.payment_terms_days || ' days'))")
+
+
+def _standing_adjustments(key: str) -> str:
+    """SQL: what the posted credit memos, write-offs and deposit applications whose journals
+    still stand take off prime bill ``key`` (``Receivables._bill_balance``)."""
+    return "(" + " + ".join(
+        f"(SELECT TOTAL(CAST(x.amount AS REAL)) FROM {t} x WHERE x.prime_bill_id = {key} AND x.status = 'posted' "
+        "AND NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = x.journal_id))" for t in _ADJUSTMENT_TABLES) + ")"
+
+
+def _bill_open(alias: str) -> str:
+    """SQL: what stays open on prime bill ``alias`` after its receipts, a reversal and every
+    standing credit memo, write-off and deposit application."""
+    return f"({_open_on(alias, 'amount_due', 'collections', 'prime_bill_id')} - {_standing_adjustments(alias + '.id')})"
+
+
+def _deposit_unapplied(alias: str) -> str:
+    """SQL: deposit ``alias`` while its journal stands, less its standing applications."""
+    return (f"((CASE WHEN NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = {alias}.journal_id) THEN CAST({alias}.amount AS REAL) ELSE 0 END) - "
+            f"(SELECT TOTAL(CAST(a.amount AS REAL)) FROM deposit_applications a WHERE a.deposit_id = {alias}.id AND a.status = 'posted' "
+            "AND NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = a.journal_id)))")
+
+
+def _first_line(account: str, side: str) -> str:
+    return f"(SELECT l.{side} FROM journal_lines l WHERE l.journal_id = NEW.journal_id AND l.account_code = '{account}' ORDER BY l.line_no LIMIT 1)"
+
+
+def _own_journal(source_type: str, *lines: tuple[str, str], approval: bool = True) -> str:
+    """SQL: NEW records its own standing ``source_type`` journal (source id NEW.id, in
+    NEW.period_id, under NEW.approval_id) whose first line on each (account, side) carries
+    NEW.amount."""
+    approval_sql = "AND j.approval_id IS NEW.approval_id " if approval else ""
+    amounts = " ".join(f"AND NEW.amount IS {_first_line(account, side)}" for account, side in lines)
+    return (f"(EXISTS (SELECT 1 FROM journals j WHERE j.id = NEW.journal_id AND j.source_type = '{source_type}' AND j.source_id = NEW.id "
+            f"{approval_sql}AND j.period_id IS NEW.period_id AND j.reversal_of IS NULL) {amounts})")
+
+
+def _draft_insert(table: str, label: str, extra: list[tuple[str, str]]) -> str:
+    """BEFORE INSERT trigger for an approval-bound adjustment of a prime bill: recorded as a
+    draft, for a positive amount within what is open, on a standing posted prime bill of its
+    project and customer whose hash it records, plus the table's own checks."""
+    whens = "\n".join(f"                WHEN {cond}\n                THEN RAISE(ABORT, '{msg}')" for cond, msg in extra)
+    return f"""CREATE TRIGGER {table}_insert BEFORE INSERT ON {table}
+        BEGIN
+            SELECT CASE
+                WHEN NEW.status IS NOT 'draft' OR NEW.approval_id IS NOT NULL OR NEW.journal_id IS NOT NULL OR NEW.period_id IS NOT NULL
+                     OR NEW.posted_at IS NOT NULL OR NEW.posted_by IS NOT NULL OR NEW.cancelled_at IS NOT NULL OR NEW.cancelled_by IS NOT NULL
+                THEN RAISE(ABORT, 'a {label} is recorded as a draft; it posts only through its approval')
+                WHEN NOT (CAST(NEW.amount AS REAL) > 0)
+                THEN RAISE(ABORT, 'a {label} is for a positive amount')
+                WHEN NOT EXISTS (SELECT 1 FROM prime_bills b WHERE b.id = NEW.prime_bill_id AND {_live('b')} AND b.project_id = NEW.project_id
+                                 AND b.customer_id = NEW.customer_id AND b.content_hash = NEW.bill_hash)
+                THEN RAISE(ABORT, 'a {label} is drawn on a standing posted prime bill of its project and customer, recording its hash')
+                WHEN CAST(NEW.amount AS REAL) > (SELECT {_bill_open('b')} FROM prime_bills b WHERE b.id = NEW.prime_bill_id) + 0.005
+                THEN RAISE(ABORT, 'a {label} cannot exceed what is open on its prime bill')
+{whens}
+            END;
+        END"""
+
+
+def _draft_guard(table: str, label: str, operation: str, fixed: tuple[str, ...], journal_ok: str, extra: list[tuple[str, str]]) -> str:
+    """BEFORE UPDATE trigger: a draft moves once, to cancelled (posting nothing) or to posted
+    (under its consumed approval, with its own journal, within what is open)."""
+    whens = "\n".join(f"                WHEN NEW.status = 'posted' AND ({cond})\n                THEN RAISE(ABORT, '{msg}')" for cond, msg in extra)
+    return f"""CREATE TRIGGER {table}_guard BEFORE UPDATE ON {table}
+        BEGIN
+            SELECT CASE
+                WHEN {_changed(fixed)} OR OLD.status IS NOT 'draft' OR NEW.status NOT IN ('posted','cancelled')
+                THEN RAISE(ABORT, 'a {label} only moves once, from draft to posted or cancelled')
+                WHEN NEW.status = 'cancelled' AND (NEW.cancelled_at IS NULL OR NEW.cancelled_by IS NULL OR NEW.approval_id IS NOT NULL
+                                                   OR NEW.journal_id IS NOT NULL OR NEW.period_id IS NOT NULL OR NEW.posted_at IS NOT NULL)
+                THEN RAISE(ABORT, 'a cancelled {label} records who cancelled it and posts nothing')
+                WHEN NEW.status = 'posted' AND NOT EXISTS (SELECT 1 FROM approvals a WHERE a.id = NEW.approval_id AND a.operation = '{operation}'
+                                                           AND a.subject_id = NEW.id AND a.status = 'consumed')
+                THEN RAISE(ABORT, 'a {label} posts only under its consumed {operation} approval')
+                WHEN NEW.status = 'posted' AND (NEW.posted_at IS NULL OR NEW.posted_by IS NULL OR NEW.cancelled_at IS NOT NULL OR NOT {journal_ok})
+                THEN RAISE(ABORT, 'a {label} posts with its own journal for its amount, in its period, under its approval')
+                WHEN NEW.status = 'posted' AND NOT EXISTS (SELECT 1 FROM prime_bills b WHERE b.id = NEW.prime_bill_id AND {_live('b')})
+                THEN RAISE(ABORT, 'a {label} posts only against a standing posted prime bill')
+                WHEN NEW.status = 'posted' AND CAST(NEW.amount AS REAL) > (SELECT {_bill_open('b')} FROM prime_bills b WHERE b.id = NEW.prime_bill_id) + 0.005
+                THEN RAISE(ABORT, 'a {label} cannot exceed what is open on its prime bill')
+{whens}
+            END;
+        END"""
+
+
+_ADJUSTMENT_FIXED = ("id", "prime_bill_id", "project_id", "customer_id", "amount", "bill_hash", "created_at", "created_by")
+_CREDIT_MEMO_FIXED = _ADJUSTMENT_FIXED + ("reason", "evidence_hash", "evidence_revision_id")
+_WRITE_OFF_FIXED = _ADJUSTMENT_FIXED + ("reason", "requested_on", "due_date", "days_past_due")
+_APPLICATION_FIXED = _ADJUSTMENT_FIXED + ("deposit_id",)
+_REF_IN_DEPOSITS = "EXISTS (SELECT 1 FROM customer_deposits x WHERE x.provider_ref = NEW.provider_ref COLLATE NOCASE)"
+_RECEIPT_REF_ONCE = "a receipt reference is recorded once, ignoring case"
+
+DATES_CREDITS_SCHEMA_NAME = "receivables_dates_credits"
+DATES_CREDITS_SCHEMA_STATEMENTS = [
+    # =============================== chart, tables and columns =============================== #
+    "INSERT OR IGNORE INTO accounts (code, name, type, control_kind) VALUES ('2400', 'Customer deposits', 'liability', 'customer_deposits')",
+    "INSERT OR IGNORE INTO accounts (code, name, type, control_kind) VALUES ('6100', 'Bad debt expense', 'expense', NULL)",
+    # ---- customer payment terms: versioned, latest wins, never edited ----
+    """CREATE TABLE customer_payment_terms (
+        id TEXT PRIMARY KEY,
+        customer_id TEXT NOT NULL REFERENCES parties(id),
+        version INTEGER NOT NULL CHECK (version >= 1),
+        days INTEGER NOT NULL,
+        created_at TEXT NOT NULL,
+        created_by TEXT NOT NULL,
+        UNIQUE (customer_id, version)
+    )""",
+    # ---- document dates: set once, when the bill posts or the retainage invoice is released ----
+    "ALTER TABLE prime_bills ADD COLUMN invoice_date TEXT",
+    "ALTER TABLE prime_bills ADD COLUMN due_date TEXT",
+    "ALTER TABLE prime_bills ADD COLUMN payment_terms_days INTEGER",
+    "ALTER TABLE prime_retainage_invoices ADD COLUMN invoice_date TEXT",
+    "ALTER TABLE prime_retainage_invoices ADD COLUMN due_date TEXT",
+    "ALTER TABLE prime_retainage_invoices ADD COLUMN payment_terms_days INTEGER",
+    # ---- receipts: the settlement date, distinct from the time the receipt was recorded ----
+    "ALTER TABLE collections ADD COLUMN settlement_date TEXT",
+    "ALTER TABLE prime_retainage_collections ADD COLUMN settlement_date TEXT",
+    # ---- credit memos on prime bills ----
+    f"""CREATE TABLE prime_bill_credit_memos (
+        id TEXT PRIMARY KEY,
+        prime_bill_id TEXT NOT NULL REFERENCES prime_bills(id),
+        project_id TEXT NOT NULL REFERENCES projects(id),
+        customer_id TEXT NOT NULL REFERENCES parties(id),
+        amount TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        evidence_hash TEXT NOT NULL,
+        evidence_revision_id TEXT NOT NULL REFERENCES document_revisions(id),
+        bill_hash TEXT NOT NULL,
+        posted_on TEXT,
+        {_DRAFT_COLUMNS}
+    )""",
+    # ---- write-offs of prime bills at least 90 days past due ----
+    f"""CREATE TABLE receivable_write_offs (
+        id TEXT PRIMARY KEY,
+        prime_bill_id TEXT NOT NULL REFERENCES prime_bills(id),
+        project_id TEXT NOT NULL REFERENCES projects(id),
+        customer_id TEXT NOT NULL REFERENCES parties(id),
+        amount TEXT NOT NULL,
+        reason TEXT NOT NULL,
+        requested_on TEXT NOT NULL,
+        due_date TEXT NOT NULL,
+        days_past_due INTEGER NOT NULL,
+        bill_hash TEXT NOT NULL,
+        {_DRAFT_COLUMNS}
+    )""",
+    # ---- customer deposits (advances) and their applications to prime bills ----
+    """CREATE TABLE customer_deposits (
+        id TEXT PRIMARY KEY,
+        customer_id TEXT NOT NULL REFERENCES parties(id),
+        project_id TEXT NOT NULL REFERENCES projects(id),
+        amount TEXT NOT NULL,
+        method TEXT NOT NULL CHECK (method IN ('ach','check','wire')),
+        mandate_id TEXT REFERENCES customer_mandates(id),
+        provider_ref TEXT NOT NULL,
+        settlement_date TEXT NOT NULL,
+        period_id TEXT NOT NULL REFERENCES periods(id),
+        journal_id TEXT NOT NULL UNIQUE REFERENCES journals(id),
+        received_at TEXT NOT NULL,
+        recorded_by TEXT NOT NULL
+    )""",
+    f"""CREATE TABLE deposit_applications (
+        id TEXT PRIMARY KEY,
+        deposit_id TEXT NOT NULL REFERENCES customer_deposits(id),
+        prime_bill_id TEXT NOT NULL REFERENCES prime_bills(id),
+        project_id TEXT NOT NULL REFERENCES projects(id),
+        customer_id TEXT NOT NULL REFERENCES parties(id),
+        amount TEXT NOT NULL,
+        bill_hash TEXT NOT NULL,
+        {_DRAFT_COLUMNS}
+    )""",
+    # ==================================== indexes ===================================== #
+    "CREATE UNIQUE INDEX prime_bill_credit_memos_one_draft ON prime_bill_credit_memos (prime_bill_id) WHERE status = 'draft'",
+    "CREATE INDEX prime_bill_credit_memos_bill ON prime_bill_credit_memos (prime_bill_id, status)",
+    "CREATE UNIQUE INDEX receivable_write_offs_one_draft ON receivable_write_offs (prime_bill_id) WHERE status = 'draft'",
+    "CREATE INDEX receivable_write_offs_bill ON receivable_write_offs (prime_bill_id, status)",
+    "CREATE UNIQUE INDEX customer_deposits_ref ON customer_deposits (provider_ref COLLATE NOCASE)",
+    "CREATE INDEX customer_deposits_customer ON customer_deposits (customer_id, project_id)",
+    "CREATE UNIQUE INDEX deposit_applications_one_draft ON deposit_applications (deposit_id, prime_bill_id) WHERE status = 'draft'",
+    "CREATE INDEX deposit_applications_bill ON deposit_applications (prime_bill_id, status)",
+    "CREATE INDEX deposit_applications_deposit ON deposit_applications (deposit_id, status)",
+    # ==================================== triggers ==================================== #
+    # ---- payment terms ----
+    f"""CREATE TRIGGER customer_payment_terms_insert BEFORE INSERT ON customer_payment_terms
+        BEGIN
+            SELECT CASE
+                WHEN NEW.version IS NOT COALESCE((SELECT MAX(version) FROM customer_payment_terms WHERE customer_id = NEW.customer_id), 0) + 1
+                THEN RAISE(ABORT, 'payment terms versions are contiguous')
+                WHEN NOT {_valid_terms('NEW.days')}
+                THEN RAISE(ABORT, 'payment terms are a whole number of days from 0 to {TERMS_MAX_DAYS}')
+                WHEN NOT EXISTS (SELECT 1 FROM parties p WHERE p.id = NEW.customer_id AND p.kind = 'customer')
+                THEN RAISE(ABORT, 'payment terms belong to a customer')
+            END;
+        END""",
+    "CREATE TRIGGER customer_payment_terms_no_update BEFORE UPDATE ON customer_payment_terms BEGIN SELECT RAISE(ABORT, 'payment terms versions are immutable; set a new version'); END",
+    "CREATE TRIGGER customer_payment_terms_no_delete BEFORE DELETE ON customer_payment_terms BEGIN SELECT RAISE(ABORT, 'payment terms versions are immutable; set a new version'); END",
+    # ---- prime bill dates: a draft may carry a requested invoice date; both dates are fixed when it posts ----
+    f"""CREATE TRIGGER prime_bills_dates_insert BEFORE INSERT ON prime_bills
+        WHEN NEW.due_date IS NOT NULL OR NEW.payment_terms_days IS NOT NULL
+          OR (NEW.invoice_date IS NOT NULL AND NOT {_valid_date('NEW.invoice_date')})
+        BEGIN SELECT RAISE(ABORT, 'a draft prime bill carries at most a valid requested invoice date; its due date is fixed when it posts'); END""",
+    """CREATE TRIGGER prime_bills_dates_guard BEFORE UPDATE ON prime_bills
+        WHEN (NEW.invoice_date IS NOT OLD.invoice_date OR NEW.due_date IS NOT OLD.due_date OR NEW.payment_terms_days IS NOT OLD.payment_terms_days)
+          AND NOT (OLD.status = 'draft' AND NEW.status = 'posted' AND OLD.due_date IS NULL AND OLD.payment_terms_days IS NULL
+                   AND (OLD.invoice_date IS NULL OR NEW.invoice_date IS OLD.invoice_date))
+        BEGIN SELECT RAISE(ABORT, 'a prime bill''s invoice and due dates are fixed once, when it posts'); END""",
+    f"""CREATE TRIGGER prime_bills_post_dated BEFORE UPDATE OF status ON prime_bills
+        WHEN OLD.status = 'draft' AND NEW.status = 'posted' AND NOT {_dated('NEW')}
+        BEGIN SELECT RAISE(ABORT, 'a prime bill posts with its invoice date and the due date its payment terms give'); END""",
+    # ---- retainage invoice dates: fixed at release ----
+    f"""CREATE TRIGGER prime_retainage_invoices_dated BEFORE INSERT ON prime_retainage_invoices
+        WHEN NOT {_dated('NEW')}
+        BEGIN SELECT RAISE(ABORT, 'a retainage invoice records its invoice date and the due date its payment terms give'); END""",
+    """CREATE TRIGGER prime_retainage_invoices_dates_fixed BEFORE UPDATE ON prime_retainage_invoices
+        WHEN NEW.invoice_date IS NOT OLD.invoice_date OR NEW.due_date IS NOT OLD.due_date OR NEW.payment_terms_days IS NOT OLD.payment_terms_days
+        BEGIN SELECT RAISE(ABORT, 'a retainage invoice''s dates are fixed when it is released'); END""",
+    # ---- receipts: settlement date; never more than is open after credits; references unique with deposits ----
+    f"""CREATE TRIGGER collections_dated BEFORE INSERT ON collections
+        BEGIN
+            SELECT CASE
+                WHEN NOT {_valid_date('NEW.settlement_date')}
+                THEN RAISE(ABORT, 'a receipt records its settlement date (YYYY-MM-DD)')
+                WHEN NEW.settlement_date < (SELECT b.invoice_date FROM prime_bills b WHERE b.id = NEW.prime_bill_id)
+                THEN RAISE(ABORT, 'a receipt never settles before the invoice date of the bill it collects')
+                WHEN {_REF_IN_DEPOSITS}
+                THEN RAISE(ABORT, '{_RECEIPT_REF_ONCE}')
+                WHEN CAST(NEW.amount AS REAL) > (SELECT {_bill_open('b')} FROM prime_bills b WHERE b.id = NEW.prime_bill_id) + 0.005
+                THEN RAISE(ABORT, 'a receipt cannot exceed what is open on its prime bill after credit memos, write-offs and deposit applications')
+            END;
+        END""",
+    f"""CREATE TRIGGER prime_retainage_collections_dated BEFORE INSERT ON prime_retainage_collections
+        BEGIN
+            SELECT CASE
+                WHEN NOT {_valid_date('NEW.settlement_date')}
+                THEN RAISE(ABORT, 'a receipt records its settlement date (YYYY-MM-DD)')
+                WHEN NEW.settlement_date < (SELECT i.invoice_date FROM prime_retainage_invoices i WHERE i.id = NEW.retainage_invoice_id)
+                THEN RAISE(ABORT, 'a receipt never settles before the invoice date of the retainage invoice it collects')
+                WHEN {_REF_IN_DEPOSITS}
+                THEN RAISE(ABORT, '{_RECEIPT_REF_ONCE}')
+            END;
+        END""",
+    "CREATE TRIGGER collections_settlement_fixed BEFORE UPDATE ON collections WHEN NEW.settlement_date IS NOT OLD.settlement_date "
+    "BEGIN SELECT RAISE(ABORT, 'a receipt''s settlement date is fixed when it is recorded'); END",
+    "CREATE TRIGGER prime_retainage_collections_settlement_fixed BEFORE UPDATE ON prime_retainage_collections WHEN NEW.settlement_date IS NOT OLD.settlement_date "
+    "BEGIN SELECT RAISE(ABORT, 'a receipt''s settlement date is fixed when it is recorded'); END",
+    # ---- credit memos ----
+    _draft_insert("prime_bill_credit_memos", "credit memo", [
+        ("length(trim(NEW.reason)) = 0", "a credit memo records its reason"),
+        ("NOT EXISTS (SELECT 1 FROM document_revisions r JOIN documents d ON d.id = r.document_id WHERE r.id = NEW.evidence_revision_id "
+         "AND r.content_hash = NEW.evidence_hash AND d.project_id = NEW.project_id)",
+         "a credit memo records the content hash of its evidence revision, filed on the project of its bill"),
+    ]),
+    _draft_guard("prime_bill_credit_memos", "credit memo", "prime_bill.credit_memo", _CREDIT_MEMO_FIXED,
+                 _own_journal("prime_bill_credit_memo", ("1100", "credit"), ("4000", "debit")),
+                 [("NOT " + _valid_date("NEW.posted_on"), "a posted credit memo records the date it posted")]),
+    "CREATE TRIGGER prime_bill_credit_memos_no_delete BEFORE DELETE ON prime_bill_credit_memos BEGIN SELECT RAISE(ABORT, 'credit memos are never deleted'); END",
+    # ---- write-offs ----
+    _draft_insert("receivable_write_offs", "write-off", [
+        ("length(trim(NEW.reason)) = 0", "a write-off records its reason"),
+        (f"NOT {_valid_date('NEW.requested_on')} OR NEW.due_date IS NOT (SELECT b.due_date FROM prime_bills b WHERE b.id = NEW.prime_bill_id) "
+         "OR NOT " + _valid_date("NEW.due_date") + " OR NEW.days_past_due IS NOT CAST(julianday(NEW.requested_on) - julianday(NEW.due_date) AS INTEGER)",
+         "a write-off records the due date of its bill and the days past due on the date it was requested"),
+        (f"NEW.days_past_due < {WRITE_OFF_MIN_DAYS_PAST_DUE}", f"only a receivable at least {WRITE_OFF_MIN_DAYS_PAST_DUE} days past due can be written off"),
+    ]),
+    _draft_guard("receivable_write_offs", "write-off", "receivable.write_off", _WRITE_OFF_FIXED,
+                 _own_journal("receivable_write_off", ("1100", "credit"), ("6100", "debit")), []),
+    "CREATE TRIGGER receivable_write_offs_no_delete BEFORE DELETE ON receivable_write_offs BEGIN SELECT RAISE(ABORT, 'write-offs are never deleted'); END",
+    # ---- customer deposits: immutable, with their own journal; ACH needs a backed mandate ----
+    f"""CREATE TRIGGER customer_deposits_insert BEFORE INSERT ON customer_deposits
+        BEGIN
+            SELECT CASE
+                WHEN NOT (CAST(NEW.amount AS REAL) > 0)
+                THEN RAISE(ABORT, 'a deposit is for a positive amount')
+                WHEN NOT EXISTS (SELECT 1 FROM projects p JOIN parties c ON c.id = p.customer_id WHERE p.id = NEW.project_id
+                                 AND p.customer_id = NEW.customer_id AND c.kind = 'customer')
+                THEN RAISE(ABORT, 'a deposit is taken from the customer of its project')
+                WHEN NOT {_valid_date('NEW.settlement_date')}
+                THEN RAISE(ABORT, 'a deposit records its settlement date (YYYY-MM-DD)')
+                WHEN NEW.method = 'ach' AND NOT EXISTS (SELECT 1 FROM customer_mandates m WHERE m.id = NEW.mandate_id AND m.customer_id = NEW.customer_id
+                                                        AND m.status = 'active' AND {_mandate_backed('m')})
+                THEN RAISE(ABORT, '{_MISSING_BACKED_MANDATE}')
+                WHEN NEW.method IS NOT 'ach' AND NEW.mandate_id IS NOT NULL
+                THEN RAISE(ABORT, 'a mandate applies to ACH deposits only')
+                WHEN {_REF_CLASH} OR {_REF_IN_DEPOSITS}
+                THEN RAISE(ABORT, '{_RECEIPT_REF_ONCE}')
+                WHEN NOT {_own_journal("customer_deposit", ("2400", "credit"), ("1000", "debit"), approval=False)}
+                THEN RAISE(ABORT, 'a deposit records its own journal crediting 2400 by its amount, in its period')
+            END;
+        END""",
+    "CREATE TRIGGER customer_deposits_no_update BEFORE UPDATE ON customer_deposits BEGIN SELECT RAISE(ABORT, 'deposits are immutable; apply them, or reverse an unapplied one'); END",
+    "CREATE TRIGGER customer_deposits_no_delete BEFORE DELETE ON customer_deposits BEGIN SELECT RAISE(ABORT, 'deposits are never deleted'); END",
+    # ---- deposit applications ----
+    _draft_insert("deposit_applications", "deposit application", [
+        ("NOT EXISTS (SELECT 1 FROM customer_deposits d WHERE d.id = NEW.deposit_id AND d.customer_id = NEW.customer_id AND d.project_id = NEW.project_id)",
+         "a deposit is applied only to a prime bill of its own customer and project"),
+        (f"CAST(NEW.amount AS REAL) > (SELECT {_deposit_unapplied('d')} FROM customer_deposits d WHERE d.id = NEW.deposit_id) + 0.005",
+         "a deposit application cannot exceed the unapplied balance of its deposit"),
+    ]),
+    _draft_guard("deposit_applications", "deposit application", "receivable.apply_deposit", _APPLICATION_FIXED,
+                 _own_journal("deposit_application", ("1100", "credit"), ("2400", "debit")), [
+                     (f"CAST(NEW.amount AS REAL) > (SELECT {_deposit_unapplied('d')} FROM customer_deposits d WHERE d.id = NEW.deposit_id) + 0.005",
+                      "a deposit application cannot exceed the unapplied balance of its deposit"),
+                 ]),
+    "CREATE TRIGGER deposit_applications_no_delete BEFORE DELETE ON deposit_applications BEGIN SELECT RAISE(ABORT, 'deposit applications are never deleted'); END",
+    # ---- a deposit is reversed only once nothing applied from it still stands ----
+    """CREATE TRIGGER customer_deposits_reversal_guard BEFORE INSERT ON journals
+        WHEN NEW.reversal_of IS NOT NULL AND EXISTS (
+            SELECT 1 FROM customer_deposits d JOIN deposit_applications a ON a.deposit_id = d.id
+            WHERE d.journal_id = NEW.reversal_of AND a.status = 'posted'
+              AND NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = a.journal_id))
+        BEGIN SELECT RAISE(ABORT, 'a customer deposit with standing applications cannot be reversed; reverse its applications first'); END""",
+]
+register_schema_version(DATES_CREDITS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_STATEMENTS)
+
+# --------------------------------------------------------------------------- #
+# Schema (catalog entry ``receivables_dates_credits_guards``)                  #
+# --------------------------------------------------------------------------- #
+# Guards added after the review of ``receivables_dates_credits`` (append-only: never edit
+# either entry once applied).  Every statement is a trigger that checks new writes only,
+# so it applies to any workspace written earlier; records an earlier workspace already
+# holds are re-checked in Python (a write-off draft when it is approved and posted) or
+# reported (a reversed prime bill that still carries standing adjustments, under
+# ``ar_open_items(...)["errors"]``).
+#
+# * A write-off is requested no later than the real calendar day (SQLite ``date('now')``,
+#   UTC) and no later than the day its row is recorded, so its days past due can never be
+#   counted to a future date; the same is checked again when a draft posts.
+# * An explicit invoice date is never before the start of the bill's period.
+# * A prime bill whose credit memos, write-offs or deposit applications still stand cannot
+#   be reversed (neither its reversal request nor the reversing journal is accepted), and
+#   neither can a deposit's reversal be requested while its applications stand: reverse the
+#   adjustments first, so the receivable and the deposit balance never go negative.
+
+
+def _has_standing_adjustment(bill: str) -> str:
+    """SQL: prime bill ``bill`` has a posted credit memo, write-off or deposit application
+    whose journal still stands."""
+    return "(" + " OR ".join(
+        f"EXISTS (SELECT 1 FROM {t} x WHERE x.prime_bill_id = {bill}.id AND x.status = 'posted' "
+        "AND NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = x.journal_id))" for t in _ADJUSTMENT_TABLES) + ")"
+
+
+def _deposit_has_standing_application(journal_expr: str) -> str:
+    """SQL: the deposit whose journal is ``journal_expr`` has a posted application whose
+    journal still stands."""
+    return ("EXISTS (SELECT 1 FROM customer_deposits d JOIN deposit_applications a ON a.deposit_id = d.id "
+            f"WHERE d.journal_id = {journal_expr} AND a.status = 'posted' "
+            "AND NOT EXISTS (SELECT 1 FROM journals rv WHERE rv.reversal_of = a.journal_id))")
+
+
+_BILL_REVERSAL_BLOCKED = ("a prime bill with standing credit memos, write-offs or deposit applications cannot be reversed; "
+                          "reverse them first")
+_DEPOSIT_REVERSAL_BLOCKED = "a customer deposit with standing applications cannot be reversed; reverse its applications first"
+_WRITE_OFF_FACTS_HOLD = (
+    "NEW.requested_on <= date('now') AND NEW.due_date IS (SELECT b.due_date FROM prime_bills b WHERE b.id = NEW.prime_bill_id) "
+    "AND NEW.days_past_due IS CAST(julianday(NEW.requested_on) - julianday(NEW.due_date) AS INTEGER) "
+    f"AND NEW.days_past_due >= {WRITE_OFF_MIN_DAYS_PAST_DUE}"
+)
+
+DATES_CREDITS_GUARDS_SCHEMA_NAME = "receivables_dates_credits_guards"
+DATES_CREDITS_GUARDS_SCHEMA_STATEMENTS = [
+    # ---- write-offs: requested no later than today, and no later than the day recorded ----
+    f"""CREATE TRIGGER receivable_write_offs_request_date BEFORE INSERT ON receivable_write_offs
+        WHEN {_valid_date('NEW.requested_on')}
+          AND (NEW.requested_on > date('now') OR date(NEW.created_at) IS NULL OR NEW.requested_on > date(NEW.created_at))
+        BEGIN SELECT RAISE(ABORT, 'a write-off is requested no later than today and no later than the day it is recorded; its days past due count to that date'); END""",
+    f"""CREATE TRIGGER receivable_write_offs_post_request_date BEFORE UPDATE OF status ON receivable_write_offs
+        WHEN OLD.status = 'draft' AND NEW.status = 'posted' AND NOT ({_valid_date('NEW.requested_on')} AND {_WRITE_OFF_FACTS_HOLD})
+        BEGIN SELECT RAISE(ABORT, 'a write-off posts only when it was requested no later than today, at least {WRITE_OFF_MIN_DAYS_PAST_DUE} days past the due date of its bill'); END""",
+    # ---- an explicit invoice date is never before the start of the bill's period ----
+    f"""CREATE TRIGGER prime_bills_invoice_date_in_period BEFORE INSERT ON prime_bills
+        WHEN {_valid_date('NEW.invoice_date')} AND NEW.invoice_date < (SELECT p.start_date FROM periods p WHERE p.id = NEW.period_id)
+        BEGIN SELECT RAISE(ABORT, 'an explicit invoice date is never before the start of the period the prime bill is billed in'); END""",
+    # ---- reversals: a prime bill (or deposit) only once its standing adjustments are reversed ----
+    f"""CREATE TRIGGER prime_bills_reversal_guard BEFORE INSERT ON journals
+        WHEN NEW.reversal_of IS NOT NULL
+          AND EXISTS (SELECT 1 FROM prime_bills b WHERE b.journal_id = NEW.reversal_of AND {_has_standing_adjustment('b')})
+        BEGIN SELECT RAISE(ABORT, '{_BILL_REVERSAL_BLOCKED}'); END""",
+    f"""CREATE TRIGGER prime_bills_reversal_request_guard BEFORE INSERT ON journal_reversal_requests
+        WHEN EXISTS (SELECT 1 FROM prime_bills b WHERE b.journal_id = NEW.journal_id AND {_has_standing_adjustment('b')})
+        BEGIN SELECT RAISE(ABORT, '{_BILL_REVERSAL_BLOCKED}'); END""",
+    f"""CREATE TRIGGER customer_deposits_reversal_request_guard BEFORE INSERT ON journal_reversal_requests
+        WHEN {_deposit_has_standing_application('NEW.journal_id')}
+        BEGIN SELECT RAISE(ABORT, '{_DEPOSIT_REVERSAL_BLOCKED}'); END""",
+]
+register_schema_version(DATES_CREDITS_GUARDS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_STATEMENTS)
+
+# --------------------------------------------------------------------------- #
 # Constants and errors                                                         #
 # --------------------------------------------------------------------------- #
 
 OP_SEND = "prime_bill.send"
 OP_RELEASE_RETAINAGE = "prime_retainage.release"
-OWNED_OPERATIONS = (OP_SEND, OP_RELEASE_RETAINAGE)
+OP_CREDIT_MEMO = "prime_bill.credit_memo"
+OP_WRITE_OFF = "receivable.write_off"
+OP_APPLY_DEPOSIT = "receivable.apply_deposit"
+OWNED_OPERATIONS = (OP_SEND, OP_RELEASE_RETAINAGE, OP_CREDIT_MEMO, OP_WRITE_OFF, OP_APPLY_DEPOSIT)
+
+DEFAULT_PAYMENT_TERMS_DAYS = 30
+MAX_REASON_LENGTH = 500
+CREDIT_MEMO_POLICY = "fixture: a credit memo reduces certified progress revenue, Dr 4000 / Cr 1100 (SHADOW)"
+WRITE_OFF_POLICY = (f"fixture: a receivable at least {WRITE_OFF_MIN_DAYS_PAST_DUE} days past due may be written off to bad debt expense, "
+                    "Dr 6100 / Cr 1100 (SHADOW)")
+DEPOSIT_POLICY = "fixture: customer advances are held in 2400 until applied to a prime bill, Dr 2400 / Cr 1100 (SHADOW)"
+SUBJECT_CREDIT_MEMO = "prime_bill_credit_memo"
+SUBJECT_WRITE_OFF = "receivable_write_off"
+SUBJECT_DEPOSIT_APPLICATION = "deposit_application"
+JOURNAL_CREDIT_MEMO = "prime_bill_credit_memo"
+JOURNAL_WRITE_OFF = "receivable_write_off"
+JOURNAL_DEPOSIT = "customer_deposit"
+JOURNAL_DEPOSIT_APPLICATION = "deposit_application"
+SOURCE_CUSTOMER_DEPOSIT = "customer_deposit"
+AR_ACCOUNT = "1100"
+REVENUE_ACCOUNT = "4000"
+BANK_ACCOUNT = "1000"
+DEPOSITS_ACCOUNT = "2400"
+BAD_DEBT_ACCOUNT = "6100"
+DEPOSITS_CONTROL = "customer_deposits"
 
 SEND_CHANNEL = "mail-sink"
 COLLECTION_METHODS = ("ach", "check", "wire")
@@ -506,11 +1010,11 @@ SOURCE_RETAINAGE_INVOICE = "prime_retainage_invoice"
 SOURCE_PRIME_RETAINAGE = "prime_retainage"
 _BANK_MEMO = {"ach": "ACH receipt (simulated)", "check": "check deposit (simulated)", "wire": "wire receipt (simulated)"}
 # Tables holding customer receipts; a new receipt's provider reference is unique across all
-# of them, ignoring case.  The database enforces it across the two core tables
-# (_REF_CLASH); the plugin tables (labor T&M, reimbursement billings) may be absent from a
+# of them, ignoring case.  The database enforces it across the core tables (_REF_CLASH, and
+# _REF_IN_DEPOSITS for customer deposits); the plugin tables (labor T&M, reimbursement billings) may be absent from a
 # workspace, so across them it is checked here in Python (labor checks the core tables the
 # same way) and any clash a plugin let through is reported by receipt_reference_conflicts().
-_CORE_RECEIPT_TABLES = ("collections", "prime_retainage_collections")
+_CORE_RECEIPT_TABLES = ("collections", "prime_retainage_collections", "customer_deposits")
 _RECEIPT_TABLES = _CORE_RECEIPT_TABLES + ("labor_collections", "reimbursement_collections")
 
 
@@ -537,6 +1041,11 @@ class ReceivableCutoffError(ReceivableError):
     releases.  The approval (if any) survives: execute again with a later period."""
 
 
+class ReceivableDuplicate(ReceivableError):
+    """The same draft (credit memo, write-off or deposit application) is already open,
+    or a receipt reference is already recorded."""
+
+
 # --------------------------------------------------------------------------- #
 # Receivables                                                                  #
 # --------------------------------------------------------------------------- #
@@ -548,8 +1057,82 @@ class Receivables:
         self.ledger = ledger
         # The service replaces this with every plugin exposing ar_open_items(project_id).
         self.extra_ar_sources: Callable[[], list[Any]] = lambda: []
+        # The calendar day (UTC) this workspace treats as today: the default invoice and
+        # settlement date, the request date of a write-off and the default as_of of the AR
+        # subledger.  Tests may replace it; it never moves a posting into another period.
+        self.today: Callable[[], _dt.date] = lambda: utcnow().date()
 
     # ---- input helpers ------------------------------------------------------ #
+
+    def _today(self) -> _dt.date:
+        day = self.today()
+        if isinstance(day, _dt.datetime) or not isinstance(day, _dt.date):
+            raise ReceivableError("the receivables clock must return a calendar date")
+        return day
+
+    @staticmethod
+    def _date(value: Any, label: str) -> str:
+        """A calendar date written YYYY-MM-DD (or a ``datetime.date``), as its ISO text."""
+        if isinstance(value, _dt.datetime):
+            raise ReceivableInputError(f"{label} must be a calendar date (YYYY-MM-DD), not a timestamp")
+        if isinstance(value, _dt.date):
+            return value.isoformat()
+        text = value.strip() if isinstance(value, str) else ""
+        try:
+            day = _dt.date.fromisoformat(text) if len(text) == 10 else None
+        except ValueError:
+            day = None
+        if day is None or day.isoformat() != text:
+            raise ReceivableInputError(f"{label} must be a calendar date written YYYY-MM-DD, got {value!r}")
+        return text
+
+    @staticmethod
+    def _terms_days(value: Any) -> int:
+        if isinstance(value, bool):
+            raise ReceivableInputError("payment terms must be a whole number of days")
+        if isinstance(value, str) and value.strip().isdigit():
+            value = int(value.strip())
+        if not isinstance(value, int):
+            raise ReceivableInputError(f"payment terms must be a whole number of days, got {value!r}")
+        if not 0 <= value <= TERMS_MAX_DAYS:
+            raise ReceivableInputError(f"payment terms must be between 0 and {TERMS_MAX_DAYS} days, got {value}")
+        return value
+
+    def _reason(self, value: Any, label: str = "reason") -> str:
+        text = self._text(value, label)
+        if len(text) > MAX_REASON_LENGTH:
+            raise ReceivableInputError(f"{label} is longer than {MAX_REASON_LENGTH} characters")
+        return text
+
+    def _positive(self, value: Any, label: str) -> Decimal:
+        amt = self._money(value, label)
+        if amt <= 0:
+            raise ReceivableInputError(f"{label} must be positive, got {fmt(amt)}")
+        return amt
+
+    @staticmethod
+    def _plus_days(day: str, days: int) -> str:
+        return (_dt.date.fromisoformat(day) + _dt.timedelta(days=days)).isoformat()
+
+    @staticmethod
+    def _days_past_due(due_date: str | None, as_of: _dt.date, open_amount: Any = None) -> int | None:
+        """Whole days ``as_of`` is past ``due_date`` (0 while not yet due, and 0 when nothing is
+        open: a settled item is not past due); None when undated."""
+        if not due_date:
+            return None
+        if open_amount is not None and money(open_amount) <= 0:
+            return 0
+        return max(0, (as_of - _dt.date.fromisoformat(due_date)).days)
+
+    def _settlement_date(self, value: Any, *, not_before: str | None, what: str) -> str:
+        """A receipt's settlement date: the given date or today, never in the future and
+        never before the invoice date of what it settles (when that is dated)."""
+        day = self._today().isoformat() if value is None else self._date(value, "settlement date")
+        if day > self._today().isoformat():
+            raise ReceivableInputError(f"settlement date {day} is in the future; a receipt is recorded once it has settled")
+        if not_before and day < not_before:
+            raise ReceivableError(f"settlement date {day} is before the invoice date {not_before} of {what}; an advance before invoicing is a customer deposit")
+        return day
 
     @staticmethod
     def _money(value: Any, label: str) -> Decimal:
@@ -754,6 +1337,43 @@ class Receivables:
             self.audit.record(actor, "billing_recipients.set", "party", customer_id, {"version": version, "recipients": cleaned, "previous_version": current["version"]})
         return self.billing_recipients(customer_id)
 
+    # ---- payment terms ---------------------------------------------------------- #
+
+    def payment_terms(self, customer_id: str) -> dict[str, Any]:
+        """The customer's current payment terms (latest version).  Without a recorded
+        version the default of 30 days applies (version 0)."""
+        row = self.db.one("SELECT * FROM customer_payment_terms WHERE customer_id=? ORDER BY version DESC LIMIT 1", (customer_id,))
+        if row is None:
+            return {"customer_id": customer_id, "version": 0, "days": DEFAULT_PAYMENT_TERMS_DAYS, "source": "default"}
+        return {"customer_id": customer_id, "version": row["version"], "days": row["days"], "source": "recorded",
+                "id": row["id"], "created_at": row["created_at"], "created_by": row["created_by"]}
+
+    def payment_terms_history(self, customer_id: str) -> list[dict[str, Any]]:
+        return self.db.query("SELECT * FROM customer_payment_terms WHERE customer_id=? ORDER BY version", (customer_id,))
+
+    def set_customer_terms(self, customer_id: str, days: int | str, actor: str | None = None) -> dict[str, Any]:
+        """Record a new version of the customer's payment terms (whole days, 0 to 365).
+        Bills already posted keep the due date they posted with; a prime bill or retainage
+        release whose approval bound the previous terms goes stale.  A version that
+        repeats the current recorded terms is refused."""
+        actor = self._require_actor(actor)
+        self._customer(customer_id)
+        n = self._terms_days(days)
+        with self.db.transaction() as conn:
+            current = self.payment_terms(customer_id)
+            if current["version"] and current["days"] == n:
+                raise ReceivableDuplicate(f"payment terms version {current['version']} of customer {customer_id} are already {n} days; nothing changed")
+            version = current["version"] + 1
+            tid = new_id("ptm")
+            conn.execute(
+                "INSERT INTO customer_payment_terms (id, customer_id, version, days, created_at, created_by) VALUES (?,?,?,?,?,?)",
+                (tid, customer_id, version, n, utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "payment_terms.set", "party", customer_id, {
+                "version": version, "days": n, "previous_version": current["version"], "previous_days": current["days"],
+            })
+        return self.payment_terms(customer_id)
+
     # ---- ACH mandates ----------------------------------------------------------- #
 
     def mandates(self, customer_id: str | None = None) -> list[dict[str, Any]]:
@@ -839,14 +1459,19 @@ class Receivables:
         row = self.db.one("SELECT * FROM prime_bills WHERE project_id=? AND status != 'void' ORDER BY sequence DESC LIMIT 1", (project_id,))
         return self.get(row["id"]) if row else None
 
-    def certify(self, *, project_id: str, period_id: str, certified_cumulative: str | Decimal, retainage_rate: str | Decimal | None = None, actor: str) -> dict[str, Any]:
+    def certify(self, *, project_id: str, period_id: str, certified_cumulative: str | Decimal, retainage_rate: str | Decimal | None = None, actor: str,
+                invoice_date: str | _dt.date | None = None) -> dict[str, Any]:
         """Create a draft prime bill from the cumulative certified value.
 
         The increment is computed against what the standing (posted, unreversed)
         prime bills already put on the books.  With a prime contract the certified
         cumulative may not exceed the contract value and the contract's retainage
         rate applies (an explicit different rate is refused); without one the rate
-        defaults to 10%."""
+        defaults to 10%.  ``invoice_date`` (YYYY-MM-DD) dates the invoice: never later than
+        today, never before the start of the bill's period and never before the invoice
+        date of the latest standing prime bill on the project (invoices are dated in
+        sequence); without it the bill is dated the day it posts.  Its due date is fixed
+        when it posts, from the customer's payment terms then."""
         actor = self._require_actor(actor)
         project = self._project(project_id)
         if not project["customer_id"]:
@@ -854,7 +1479,14 @@ class Receivables:
         certified = self._money(certified_cumulative, "certified cumulative")
         if certified < 0:
             raise ReceivableInputError("certified cumulative cannot be negative")
-        self.ledger.require_open(period_id)
+        requested_date = None if invoice_date is None else self._date(invoice_date, "invoice date")
+        if requested_date is not None and requested_date > self._today().isoformat():
+            raise ReceivableInputError(f"invoice date {requested_date} is later than today ({self._today().isoformat()}); an invoice is never dated ahead")
+        bill_period = self.ledger.require_open(period_id)
+        if requested_date is not None and requested_date < bill_period["start_date"]:
+            raise ReceivableInputError(
+                f"invoice date {requested_date} is before the start of period {period_id} ({bill_period['start_date']}); "
+                "an invoice is never dated before the period it is billed in")
         with self.db.transaction() as conn:
             prior = self.latest(project_id)
             if prior and prior["status"] == "draft":
@@ -870,6 +1502,11 @@ class Receivables:
             else:
                 r = self._rate(DEFAULT_RETAINAGE_RATE if retainage_rate is None else retainage_rate)
             chain = self._billed_chain(project_id)
+            latest_live = chain["latest"]
+            if requested_date is not None and latest_live is not None and latest_live["invoice_date"] and requested_date < latest_live["invoice_date"]:
+                raise ReceivableInputError(
+                    f"invoice date {requested_date} is before the invoice date {latest_live['invoice_date']} of prime bill {latest_live['sequence']}, "
+                    "the latest standing prime bill on the project; invoices are dated in sequence")
             prior_certified, prior_ret, prior_net = chain["certified"], chain["retained"], chain["net"]
             if certified < prior_certified:
                 raise ReceivableError(f"certified cumulative cannot decrease: the standing prime bills already certify {fmt(prior_certified)}")
@@ -888,33 +1525,48 @@ class Receivables:
             last_seq = self.db.scalar("SELECT MAX(sequence) FROM prime_bills WHERE project_id=?", (project_id,)) or 0
             sequence = last_seq + 1
             contract_version = contract["version"] if contract else None
-            content_hash = hash_json({
+            hashed = {
                 "project_id": project_id, "period_id": period_id, "sequence": sequence, "certified": fmt(certified), "rate": f"{r:f}",
                 "retainage_cumulative": fmt(ret_cum), "amount_due": fmt(amount_due), "contract_version": contract_version,
-            })
+            }
+            if requested_date is not None:
+                hashed["invoice_date"] = requested_date
+            content_hash = hash_json(hashed)
             pid = new_id("pbl")
             conn.execute(
                 """INSERT INTO prime_bills (id, project_id, customer_id, period_id, sequence, status, certified_cumulative, retainage_rate, retainage_cumulative,
-                   prior_net, amount_due, revenue_this_period, content_hash, created_at, contract_version)
-                   VALUES (?,?,?,?,?,'draft',?,?,?,?,?,?,?,?,?)""",
+                   prior_net, amount_due, revenue_this_period, content_hash, created_at, contract_version, invoice_date)
+                   VALUES (?,?,?,?,?,'draft',?,?,?,?,?,?,?,?,?,?)""",
                 (pid, project_id, project["customer_id"], period_id, sequence, fmt(certified), f"{r:f}", fmt(ret_cum), fmt(prior_net), fmt(amount_due),
-                 fmt(revenue), content_hash, utcnow_iso(), contract_version),
+                 fmt(revenue), content_hash, utcnow_iso(), contract_version, requested_date),
             )
             self.audit.record(actor, "prime_bill.certified", "prime_bill", pid, {
                 "project_id": project_id, "sequence": sequence, "certified": fmt(certified), "amount_due": fmt(amount_due),
                 "retainage_this_period": fmt(retainage_this), "contract_version": contract_version, "content_hash": content_hash,
-                "prior_billed_certified": fmt(prior_certified), "prior_net": fmt(prior_net),
+                "prior_billed_certified": fmt(prior_certified), "prior_net": fmt(prior_net), "invoice_date": requested_date,
             })
         return self.get(pid)
 
     def _bill_balance(self, b: dict[str, Any]) -> dict[str, Decimal]:
-        """Billed, received and reversed amounts of a prime bill, and what stays open in
-        1100.  A reversed bill's journal cleared its whole receivable, so the bill is
-        credited by its amount due; what was received on it is then owed back."""
+        """Billed, received and reversed amounts of a prime bill, the standing credit memos,
+        write-offs and deposit applications on it, and what stays open in 1100.  A reversed
+        bill's journal cleared its whole receivable, so the bill is credited by its amount
+        due; what was received or credited on it is then owed back."""
         billed = money(b["amount_due"]) if b["recorded_status"] in POSTED_BILL_STATES else ZERO
         received = total(c["credited"] for c in b["collections"])
         credited = billed if b["reversed"] else ZERO
-        return {"billed": billed, "received": received, "reversed": credited, "open": money(billed - received - credited)}
+        memos = total(m["amount"] for m in b["credit_memos"] if m["standing"])
+        written = total(w["amount"] for w in b["write_offs"] if w["standing"])
+        applied = total(a["amount"] for a in b["deposit_applications"] if a["standing"])
+        return {"billed": billed, "received": received, "reversed": credited, "credit_memos": memos, "written_off": written,
+                "deposits_applied": applied, "open": money(billed - received - credited - memos - written - applied)}
+
+    def _adjustment_rows(self, table: str, column: str, key: str) -> list[dict[str, Any]]:
+        """Credit memos, write-offs or deposit applications (``table``) on ``key``, each with
+        its reversal state.  ``standing`` is true while a posted row's journal stands, and
+        ``status`` reads ``reversed`` once it has been reversed (the stored status is kept
+        as ``recorded_status``)."""
+        return [self._annotate_adjustment(r) for r in self.db.query(f"SELECT * FROM {table} WHERE {column}=? ORDER BY created_at, id", (key,))]
 
     def get(self, prime_bill_id: str) -> dict[str, Any]:
         """A prime bill with its receipts, send, contract state and reversal state.
@@ -933,10 +1585,18 @@ class Receivables:
         if reversal is not None:
             row["status"] = "reversed"
         row["collections"] = [self._receipt(c) for c in self.db.query("SELECT * FROM collections WHERE prime_bill_id=? ORDER BY received_at, id", (prime_bill_id,))]
+        row["credit_memos"] = self._adjustment_rows("prime_bill_credit_memos", "prime_bill_id", prime_bill_id)
+        row["write_offs"] = self._adjustment_rows("receivable_write_offs", "prime_bill_id", prime_bill_id)
+        row["deposit_applications"] = self._adjustment_rows("deposit_applications", "prime_bill_id", prime_bill_id)
         bal = self._bill_balance(row)
         row["received"] = fmt(bal["received"])
         row["credited_by_reversal"] = fmt(bal["reversed"])
+        row["credited_by_memo"] = fmt(bal["credit_memos"])
+        row["written_off"] = fmt(bal["written_off"])
+        row["deposits_applied"] = fmt(bal["deposits_applied"])
         row["open"] = fmt(bal["open"])
+        # settled: posted, standing, and nothing left open (by receipts, credits or applications)
+        row["settled"] = row["recorded_status"] in POSTED_BILL_STATES and not row["reversed"] and bal["open"] == ZERO
         send = self.db.one("SELECT * FROM prime_bill_sends WHERE prime_bill_id=?", (prime_bill_id,))
         if send is not None:
             send["recipients"] = loads(send.pop("recipients_json"))
@@ -1027,6 +1687,7 @@ class Receivables:
             raise ReceivableIneligible(f"prime bill {prime_bill_id} is {b['status']}; only a draft prime bill can be approved for posting")
         contract = self._check_billable(b)
         project = self._project(b["project_id"])
+        terms = self.payment_terms(b["customer_id"])
         return build_manifest(
             operation="prime_bill.approve",
             subject_type="prime_bill",
@@ -1043,22 +1704,37 @@ class Receivables:
                 "bill_contract_version": b["contract_version"], "prior_net": b["prior_net"],
                 "prior_billed_certified": fmt(money(b["certified_cumulative"]) - money(b["revenue_this_period"])),
                 "posting_rule": RULE_VERSION, "journal_preview": self._preview(self._bill_lines(b)),
+                # the due date follows from the invoice date and these terms when the bill posts
+                "invoice_date": b["invoice_date"], "invoice_date_basis": "explicit" if b["invoice_date"] else "date of posting",
+                "payment_terms_days": terms["days"], "payment_terms_version": terms["version"],
             },
         )
 
-    def post(self, prime_bill_id: str, *, approval_id: str, actor: str) -> dict[str, Any]:
-        """Post an approved draft.  The caller has consumed ``approval_id``."""
+    def post(self, prime_bill_id: str, *, approval_id: str, actor: str, manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Post an approved draft.  The caller has consumed ``approval_id``.  The bill is
+        dated (its requested invoice date, or today) and its due date fixed from the
+        payment terms the approval bound (the current terms when no manifest is given)."""
         with self.db.transaction() as conn:
             b = self.get(prime_bill_id)
             if b["status"] != "draft":
                 raise ReceivableError(f"prime bill {prime_bill_id} is {b['status']}")
             self._check_billable(b)
+            terms = self.payment_terms(b["customer_id"])
+            bound = (manifest or {}).get("bindings", {})
+            if "payment_terms_days" in bound and bound["payment_terms_days"] != terms["days"]:
+                raise ReceivableIneligible(f"the customer's payment terms are now {terms['days']} days, not the approved {bound['payment_terms_days']}")
+            invoice_date = b["invoice_date"] or self._today().isoformat()
+            due_date = self._plus_days(invoice_date, terms["days"])
             j = self.ledger.post(
                 period_id=b["period_id"], description=f"Prime bill {b['sequence']}", lines=self._bill_lines(b),
                 source_type="prime_bill", source_id=prime_bill_id, source_version="1", posted_by=actor, approval_id=approval_id,
             )
-            conn.execute("UPDATE prime_bills SET status='posted', approval_id=?, journal_id=? WHERE id=?", (approval_id, j["id"], prime_bill_id))
-            self.audit.record(actor, "prime_bill.posted", "prime_bill", prime_bill_id, {"approval_id": approval_id, "journal_id": j["id"], "contract_version": b["contract_version"]})
+            conn.execute("UPDATE prime_bills SET status='posted', approval_id=?, journal_id=?, invoice_date=?, due_date=?, payment_terms_days=? WHERE id=?",
+                         (approval_id, j["id"], invoice_date, due_date, terms["days"], prime_bill_id))
+            self.audit.record(actor, "prime_bill.posted", "prime_bill", prime_bill_id, {
+                "approval_id": approval_id, "journal_id": j["id"], "contract_version": b["contract_version"],
+                "invoice_date": invoice_date, "due_date": due_date, "payment_terms_days": terms["days"], "payment_terms_version": terms["version"],
+            })
         return self.get(prime_bill_id)
 
     # ---- core-domain operations: handles / manifest_for / apply --------------------- #
@@ -1071,6 +1747,12 @@ class Receivables:
             return self._send_manifest(subject_id, actor_role=actor_role)
         if operation == OP_RELEASE_RETAINAGE:
             return self._retainage_manifest(subject_id, actor_role=actor_role)
+        if operation == OP_CREDIT_MEMO:
+            return self._credit_memo_manifest(subject_id, actor_role=actor_role)
+        if operation == OP_WRITE_OFF:
+            return self._write_off_manifest(subject_id, actor_role=actor_role)
+        if operation == OP_APPLY_DEPOSIT:
+            return self._application_manifest(subject_id, actor_role=actor_role)
         raise ReceivableError(f"receivables does not own operation {operation}")
 
     def apply(self, operation: str, subject_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
@@ -1078,6 +1760,12 @@ class Receivables:
             return self._apply_send(subject_id, approval_id=approval_id, manifest=manifest, actor=actor)
         if operation == OP_RELEASE_RETAINAGE:
             return self._apply_release(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
+        if operation == OP_CREDIT_MEMO:
+            return self._apply_credit_memo(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
+        if operation == OP_WRITE_OFF:
+            return self._apply_write_off(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
+        if operation == OP_APPLY_DEPOSIT:
+            return self._apply_application(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
         raise ReceivableError(f"receivables does not own operation {operation}")
 
     # ---- sending (prime_bill.send) ----------------------------------------------------- #
@@ -1105,16 +1793,29 @@ class Receivables:
         if b["recorded_status"] != "posted":
             raise ReceivableIneligible(f"prime bill {b['id']} is {b['status']}; only a posted prime bill awaiting delivery can be sent")
 
+    @staticmethod
+    def _send_message(b: dict[str, Any], rec: dict[str, Any]) -> dict[str, Any]:
+        """What the delivered invoice states: the bill, its amount due, every standing receipt,
+        credit memo, write-off and deposit application already taken off it, and the balance
+        due.  The send approval binds its hash, so any of these changing after approval makes
+        the approval stale (the customer is never told a balance that is no longer owed)."""
+        message = {
+            "prime_bill_id": b["id"], "bill_hash": b["content_hash"], "sequence": b["sequence"], "amount_due": b["amount_due"],
+            "received": b["received"], "credited_by_memo": b["credited_by_memo"], "written_off": b["written_off"],
+            "deposits_applied": b["deposits_applied"], "balance_due": b["open"],
+            "customer_id": b["customer_id"], "channel": SEND_CHANNEL, "recipients": rec["recipients"],
+        }
+        if b["due_date"]:  # the delivered invoice states its dates (bills posted before dates existed have none)
+            message.update(invoice_date=b["invoice_date"], due_date=b["due_date"])
+        return message
+
     def _send_manifest(self, prime_bill_id: str, *, actor_role: str) -> dict[str, Any]:
         b = self.get(prime_bill_id)
         self._sendable(b)
         project = self._project(b["project_id"])
         customer = self._customer(b["customer_id"])
         rec = self.billing_recipients(b["customer_id"])
-        message_hash = hash_json({
-            "prime_bill_id": prime_bill_id, "bill_hash": b["content_hash"], "sequence": b["sequence"], "amount_due": b["amount_due"],
-            "customer_id": b["customer_id"], "channel": SEND_CHANNEL, "recipients": rec["recipients"],
-        })
+        message_hash = hash_json(self._send_message(b, rec))
         return build_manifest(
             operation=OP_SEND,
             subject_type="prime_bill",
@@ -1127,6 +1828,11 @@ class Receivables:
                 "project_id": b["project_id"], "customer_id": b["customer_id"], "customer_name": customer["name"], "sequence": b["sequence"],
                 "period_id": b["period_id"], "bill_hash": b["content_hash"], "journal_id": b["journal_id"], "journal_reversed": b["reversed"],
                 "channel": SEND_CHANNEL, "recipients": rec["recipients"], "recipients_version": rec["version"], "message_hash": message_hash,
+                "invoice_date": b["invoice_date"], "due_date": b["due_date"],
+                # the balance the invoice states: a receipt, credit memo, write-off or deposit
+                # application after approval changes it, so the approval goes stale
+                "received": b["received"], "credited_by_memo": b["credited_by_memo"], "written_off": b["written_off"],
+                "deposits_applied": b["deposits_applied"], "balance_due": b["open"],
             },
         )
 
@@ -1138,6 +1844,12 @@ class Receivables:
             self._sendable(b)
             if bindings["bill_hash"] != b["content_hash"] or bindings["channel"] != SEND_CHANNEL:
                 raise ReceivableIneligible(f"prime bill {prime_bill_id} no longer matches the approved send")
+            current = hash_json(self._send_message(b, self.billing_recipients(b["customer_id"])))
+            if bindings.get("message_hash") != current:
+                raise ReceivableIneligible(
+                    f"prime bill {prime_bill_id} now states balance due {b['open']} (amount due {b['amount_due']}, received {b['received']}, "
+                    f"credited {b['credited_by_memo']}, written off {b['written_off']}, deposits applied {b['deposits_applied']}) "
+                    "or other recipients than the approved send; request a new send approval")
             sid = new_id("snd")
             conn.execute(
                 "INSERT INTO prime_bill_sends (id, prime_bill_id, approval_id, channel, recipients_json, bill_hash, message_hash, sent_at, sent_by) VALUES (?,?,?,?,?,?,?,?,?)",
@@ -1213,6 +1925,7 @@ class Receivables:
         contract = self.contract(project_id)
         lines = self._release_lines(project_id, st["customer_id"], st["open"], st["next_invoice_sequence"])
         cutoff = st["cutoff_period"]
+        terms = self.payment_terms(st["customer_id"])
         return build_manifest(
             operation=OP_RELEASE_RETAINAGE,
             subject_type="project",
@@ -1232,6 +1945,8 @@ class Receivables:
                 "earliest_period": cutoff,
                 "target_rule": (f"execute with period_id of an open period starting on or after {cutoff['start_date']} (period {cutoff['id']})"
                                 if cutoff else "execute with period_id of an open period"),
+                # the retainage invoice is dated the day the release posts, due on these terms
+                "invoice_date_basis": "date of posting", "payment_terms_days": terms["days"], "payment_terms_version": terms["version"],
             },
         )
 
@@ -1248,6 +1963,12 @@ class Receivables:
                 self._require_not_before(target, cutoff["id"], f"retainage withheld on prime bills through sequence {st['through_sequence']}")
             contract = self.contract(project_id)
             contract_version = contract["version"] if contract else None
+            terms = self.payment_terms(st["customer_id"])
+            bound_days = manifest.get("bindings", {}).get("payment_terms_days", terms["days"])
+            if bound_days != terms["days"]:
+                raise ReceivableIneligible(f"the customer's payment terms are now {terms['days']} days, not the approved {bound_days}")
+            invoice_date = self._today().isoformat()
+            due_date = self._plus_days(invoice_date, terms["days"])
             seq = st["next_invoice_sequence"]
             inv_id = new_id("rti")
             j = self.ledger.post(
@@ -1257,19 +1978,22 @@ class Receivables:
             )
             content_hash = hash_json({
                 "project_id": project_id, "sequence": seq, "amount": fmt(amount), "contract_version": contract_version,
-                "through_prime_bill_sequence": st["through_sequence"], "period_id": pid,
+                "through_prime_bill_sequence": st["through_sequence"], "period_id": pid, "invoice_date": invoice_date, "due_date": due_date,
             })
             conn.execute(
                 """INSERT INTO prime_retainage_invoices (id, project_id, customer_id, period_id, sequence, amount, status, contract_version,
-                   through_prime_bill_sequence, content_hash, approval_id, journal_id, created_at, created_by)
-                   VALUES (?,?,?,?,?,?,'open',?,?,?,?,?,?,?)""",
-                (inv_id, project_id, st["customer_id"], pid, seq, fmt(amount), contract_version, st["through_sequence"], content_hash, approval_id, j["id"], utcnow_iso(), actor),
+                   through_prime_bill_sequence, content_hash, approval_id, journal_id, created_at, created_by, invoice_date, due_date, payment_terms_days)
+                   VALUES (?,?,?,?,?,?,'open',?,?,?,?,?,?,?,?,?,?)""",
+                (inv_id, project_id, st["customer_id"], pid, seq, fmt(amount), contract_version, st["through_sequence"], content_hash, approval_id, j["id"],
+                 utcnow_iso(), actor, invoice_date, due_date, terms["days"]),
             )
             self.audit.record(actor, "prime_retainage.released", "prime_retainage_invoice", inv_id, {
                 "project_id": project_id, "amount": fmt(amount), "journal_id": j["id"], "approval_id": approval_id, "period_id": pid,
                 "contract_version": contract_version, "through_prime_bill_sequence": st["through_sequence"], "sequence": seq,
+                "invoice_date": invoice_date, "due_date": due_date, "payment_terms_days": terms["days"],
             })
-        return {"retainage_invoice": inv_id, "project_id": project_id, "sequence": seq, "amount": fmt(amount), "journal_id": j["id"], "period_id": pid, "status": "open"}
+        return {"retainage_invoice": inv_id, "project_id": project_id, "sequence": seq, "amount": fmt(amount), "journal_id": j["id"], "period_id": pid,
+                "status": "open", "invoice_date": invoice_date, "due_date": due_date}
 
     def retainage_invoice(self, invoice_id: str) -> dict[str, Any]:
         """A retainage invoice with its receipts and reversal state.  ``status`` reads
@@ -1339,6 +2063,7 @@ class Receivables:
         actor: str,
         method: str = "ach",
         mandate_ref: str | None = None,
+        settlement_date: str | _dt.date | None = None,
     ) -> dict[str, Any]:
         """Record a customer receipt against a prime bill or a retainage invoice.
 
@@ -1346,7 +2071,12 @@ class Receivables:
         ``mandate_ref`` or the latest active one), ``check`` or ``wire``.  The provider
         reference is unique across every receipt table, ignoring case.  A reversed bill
         or invoice has nothing receivable, and a receipt is never dated in a period
-        that starts before the period of the bill or invoice it collects."""
+        that starts before the period of the bill or invoice it collects.
+        ``settlement_date`` (default today) is when the money settled, kept apart from the
+        time the receipt is recorded; it is never in the future and never before the
+        invoice date of what it collects.  What is open is net of credit memos,
+        write-offs and deposit applications; the bill reads collected only once its
+        receipts cover its whole amount due."""
         actor = self._require_actor(actor)
         if (prime_bill_id is None) == (retainage_invoice_id is None):
             raise ReceivableInputError("name exactly one of prime_bill_id or retainage_invoice_id")
@@ -1360,11 +2090,13 @@ class Receivables:
         if amt <= 0 or f < 0 or f >= amt:
             raise ReceivableInputError("invalid collection amount or fee (amount must be positive and the fee below it)")
         ref = self._text(provider_ref, "provider reference")
+        if settlement_date is not None:
+            self._date(settlement_date, "settlement date")  # input errors first, before any lookup
         target_period = self.ledger.require_open(period_id)
         with self.db.transaction() as conn:
             taken = self._receipt_ref_taken(ref)
             if taken:
-                raise ReceivableError(f"collection {ref} was already recorded ({taken})")
+                raise ReceivableDuplicate(f"collection {ref} was already recorded ({taken})")
             if prime_bill_id is not None:
                 b = self.get(prime_bill_id)
                 if b["recorded_status"] not in POSTED_BILL_STATES:
@@ -1373,19 +2105,23 @@ class Receivables:
                     raise ReceivableError(f"prime bill {b['sequence']} ({prime_bill_id}) was reversed by journal {b['reversal_journal_id']}; nothing is receivable on it")
                 open_amt = money(b["open"])
                 recorded_status, source_period = b["recorded_status"], b["period_id"]
-                target = {"project_id": b["project_id"], "customer_id": b["customer_id"], "label": f"prime bill {b['sequence']}"}
+                covers_amount = money(b["received"]) + amt >= money(b["amount_due"])
+                target = {"project_id": b["project_id"], "customer_id": b["customer_id"], "label": f"prime bill {b['sequence']}", "invoice_date": b["invoice_date"]}
             else:
                 inv = self.retainage_invoice(retainage_invoice_id)
                 if inv["reversed"]:
                     raise ReceivableError(f"retainage invoice {inv['sequence']} ({retainage_invoice_id}) was reversed by journal {inv['reversal_journal_id']}; nothing is receivable on it")
                 open_amt = money(inv["open"])
                 recorded_status, source_period = inv["recorded_status"], inv["period_id"]
-                target = {"project_id": inv["project_id"], "customer_id": inv["customer_id"], "label": f"retainage invoice {inv['sequence']}"}
+                covers_amount = amt == open_amt
+                target = {"project_id": inv["project_id"], "customer_id": inv["customer_id"], "label": f"retainage invoice {inv['sequence']}",
+                          "invoice_date": inv.get("invoice_date")}
             if open_amt <= 0:
                 raise ReceivableError(f"{target['label']} is {recorded_status} with nothing open to collect")
             if amt > open_amt:
                 raise ReceivableError(f"collection {fmt(amt)} exceeds open receivable {fmt(open_amt)}")
             self._require_not_before(target_period, source_period, target["label"])
+            settled_on = self._settlement_date(settlement_date, not_before=target["invoice_date"], what=target["label"])
             mandate = None
             if m == "ach":
                 mandate = self.active_mandate(target["customer_id"], mandate_ref)
@@ -1405,23 +2141,27 @@ class Receivables:
             if prime_bill_id is not None:
                 cid = new_id("col")
                 conn.execute(
-                    "INSERT INTO collections (id, prime_bill_id, amount, fee, status, journal_id, provider_ref, received_at, method, mandate_id) VALUES (?,?,?,?,'received',?,?,?,?,?)",
-                    (cid, prime_bill_id, fmt(amt), fmt(f), j["id"], ref, now, m, mandate_id),
+                    "INSERT INTO collections (id, prime_bill_id, amount, fee, status, journal_id, provider_ref, received_at, method, mandate_id, settlement_date) "
+                    "VALUES (?,?,?,?,'received',?,?,?,?,?,?)",
+                    (cid, prime_bill_id, fmt(amt), fmt(f), j["id"], ref, now, m, mandate_id, settled_on),
                 )
-                if amt == open_amt and recorded_status != "collected":
+                # collected exactly while the receipts cover the amount due (a bill settled partly by
+                # credits or applications stays posted or sent, with nothing open)
+                if covers_amount and recorded_status != "collected":
                     conn.execute("UPDATE prime_bills SET status='collected' WHERE id=?", (prime_bill_id,))
             else:
                 cid = new_id("rcl")
                 conn.execute(
-                    """INSERT INTO prime_retainage_collections (id, retainage_invoice_id, amount, fee, method, mandate_id, status, journal_id, provider_ref, received_at, recorded_by)
-                       VALUES (?,?,?,?,?,?,'received',?,?,?,?)""",
-                    (cid, retainage_invoice_id, fmt(amt), fmt(f), m, mandate_id, j["id"], ref, now, actor),
+                    """INSERT INTO prime_retainage_collections (id, retainage_invoice_id, amount, fee, method, mandate_id, status, journal_id, provider_ref, received_at,
+                       recorded_by, settlement_date) VALUES (?,?,?,?,?,?,'received',?,?,?,?,?)""",
+                    (cid, retainage_invoice_id, fmt(amt), fmt(f), m, mandate_id, j["id"], ref, now, actor, settled_on),
                 )
-                if amt == open_amt and recorded_status != "collected":
+                if covers_amount and recorded_status != "collected":
                     conn.execute("UPDATE prime_retainage_invoices SET status='collected' WHERE id=?", (retainage_invoice_id,))
             self.audit.record(actor, "collection.recorded", "collection", cid, {
                 "prime_bill_id": prime_bill_id, "retainage_invoice_id": retainage_invoice_id, "amount": fmt(amt), "fee": fmt(f), "journal_id": j["id"],
                 "method": m, "mandate_ref": mandate["mandate_ref"] if mandate else None, "provider_ref": ref, "period_id": period_id,
+                "settlement_date": settled_on,
             })
         return self.collection(cid)
 
@@ -1486,6 +2226,515 @@ class Receivables:
             })
         return self.collection(collection_id)
 
+    # ---- adjustments of a prime bill: shared helpers ----------------------------------- #
+
+    def _annotate_adjustment(self, row: dict[str, Any]) -> dict[str, Any]:
+        row["recorded_status"] = row["status"]
+        reversal = self._reversal_of(row["journal_id"]) if row["status"] == "posted" else None
+        row["reversal_journal_id"] = reversal
+        row["standing"] = row["status"] == "posted" and reversal is None
+        if reversal is not None:
+            row["status"] = "reversed"
+        return row
+
+    def _adjustable_bill(self, prime_bill_id: str, what: str) -> dict[str, Any]:
+        """A standing posted (or sent) prime bill with something open, for a new draft."""
+        b = self.get(prime_bill_id)
+        if b["recorded_status"] not in POSTED_BILL_STATES:
+            raise ReceivableError(f"prime bill {prime_bill_id} is {b['status']}; a {what} applies to a posted prime bill")
+        if b["reversed"]:
+            raise ReceivableError(f"prime bill {b['sequence']} ({prime_bill_id}) was reversed by journal {b['reversal_journal_id']}; nothing is receivable on it")
+        if money(b["open"]) <= 0:
+            raise ReceivableError(f"prime bill {b['sequence']} ({prime_bill_id}) has nothing open")
+        return b
+
+    def _require_eligible(self, row: dict[str, Any], b: dict[str, Any], what: str) -> None:
+        """Refuse (and, at execution, invalidate) a draft whose bill no longer takes it."""
+        if row["recorded_status"] != "draft":
+            raise ReceivableIneligible(f"{what} {row['id']} is {row['status']}; only a draft {what} can be approved or posted")
+        if b["reversed"]:
+            raise ReceivableIneligible(f"prime bill {b['sequence']} ({b['id']}) was reversed by journal {b['reversal_journal_id']}; nothing is receivable on it")
+        if b["recorded_status"] not in POSTED_BILL_STATES or b["content_hash"] != row["bill_hash"]:
+            raise ReceivableIneligible(f"prime bill {b['id']} no longer matches {what} {row['id']}")
+        if money(row["amount"]) > money(b["open"]):
+            raise ReceivableIneligible(f"{what} {row['id']} for {row['amount']} exceeds the {b['open']} now open on prime bill {b['sequence']}")
+
+    def _earliest_period(self, *period_ids: str) -> dict[str, Any]:
+        latest = max((self.ledger.period(p) for p in period_ids), key=lambda p: (p["start_date"], p["id"]))
+        return {"id": latest["id"], "start_date": latest["start_date"]}
+
+    @staticmethod
+    def _bill_facts(b: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+        """The bill amounts and bindings every adjustment approval binds: any receipt, credit,
+        write-off or application on the bill in between makes the approval stale."""
+        amounts = {"amount_due": b["amount_due"], "received": b["received"], "credited_by_memo": b["credited_by_memo"],
+                   "written_off": b["written_off"], "deposits_applied": b["deposits_applied"], "open_receivable": b["open"]}
+        bindings = {"prime_bill_id": b["id"], "project_id": b["project_id"], "customer_id": b["customer_id"], "sequence": b["sequence"],
+                    "bill_hash": b["content_hash"], "bill_journal_id": b["journal_id"], "bill_period_id": b["period_id"],
+                    "invoice_date": b["invoice_date"], "due_date": b["due_date"]}
+        return amounts, bindings
+
+    @staticmethod
+    def _adjustment_lines(b: dict[str, Any], debit_account: str, amount: Decimal, debit_memo: str, credit_memo: str) -> list[dict[str, Any]]:
+        tags = {"project_id": b["project_id"], "party_id": b["customer_id"]}
+        return [{"account": debit_account, "debit": amount, **tags, "memo": debit_memo},
+                {"account": AR_ACCOUNT, "credit": amount, **tags, "memo": credit_memo}]
+
+    def _target_period(self, period_id: str | None, earliest: dict[str, Any], what: str) -> dict[str, Any]:
+        pid = period_id or self._latest_open_period()
+        target = self.ledger.require_open(pid)
+        self._require_not_before(target, earliest["id"], what)
+        return target
+
+    def _mark_posted(self, table: str, row_id: str, *, approval_id: str, journal_id: str, period_id: str, actor: str, extra: dict[str, Any] | None = None) -> None:
+        sets = {"status": "posted", "approval_id": approval_id, "journal_id": journal_id, "period_id": period_id, "posted_at": utcnow_iso(), "posted_by": actor,
+                **(extra or {})}
+        self.db.execute(f"UPDATE {table} SET {', '.join(f'{k}=?' for k in sets)} WHERE id=?", (*sets.values(), row_id))
+
+    def _cancel_draft(self, table: str, subject_type: str, what: str, row_id: str, actor: Any, reason: Any) -> None:
+        actor = self._require_actor(actor)
+        why = self._reason(reason, "cancellation reason")
+        with self.db.transaction() as conn:
+            row = self.db.one(f"SELECT * FROM {table} WHERE id=?", (row_id,))
+            if row is None:
+                raise ReceivableError(f"unknown {what} {row_id}")
+            if row["status"] != "draft":
+                raise ReceivableError(f"{what} {row_id} is {row['status']}; only a draft {what} can be cancelled")
+            conn.execute(f"UPDATE {table} SET status='cancelled', cancelled_at=?, cancelled_by=?, cancel_reason=? WHERE id=?", (utcnow_iso(), actor, why, row_id))
+            self.audit.record(actor, f"{subject_type}.cancelled", subject_type, row_id, {"reason": why, "prime_bill_id": row["prime_bill_id"]})
+            Approvals(self.db, self.audit).invalidate_for_subject(subject_type, row_id, reason=f"{what} cancelled: {why}", actor=actor)
+
+    # ---- credit memos (prime_bill.credit_memo) ---------------------------------------- #
+
+    def credit_memo(self, memo_id: str) -> dict[str, Any]:
+        row = self.db.one("SELECT * FROM prime_bill_credit_memos WHERE id=?", (memo_id,))
+        if row is None:
+            raise ReceivableError(f"unknown credit memo {memo_id}")
+        return self._annotate_adjustment(row)
+
+    def credit_memos(self, prime_bill_id: str | None = None) -> list[dict[str, Any]]:
+        if prime_bill_id:
+            return self._adjustment_rows("prime_bill_credit_memos", "prime_bill_id", prime_bill_id)
+        return [self._annotate_adjustment(r) for r in self.db.query("SELECT * FROM prime_bill_credit_memos ORDER BY created_at, id")]
+
+    def prepare_credit_memo(self, prime_bill_id: str, amount: str | Decimal, reason: str, evidence_hash: str, actor: str | None = None) -> dict[str, Any]:
+        """Draft a credit memo on a standing posted or sent prime bill, for at most what is
+        open on it.  ``evidence_hash`` is the content hash of an evidence revision filed on
+        the bill's project (the agreed concession).  It posts only through the
+        ``prime_bill.credit_memo`` approval; one draft per bill at a time."""
+        actor = self._require_actor(actor)
+        amt = self._positive(amount, "credit memo amount")
+        why = self._reason(reason)
+        h = self._text(evidence_hash, "evidence hash")
+        with self.db.transaction() as conn:
+            b = self._adjustable_bill(prime_bill_id, "credit memo")
+            if amt > money(b["open"]):
+                raise ReceivableError(f"credit memo {fmt(amt)} exceeds the {b['open']} open on prime bill {b['sequence']}")
+            dup = self.db.one("SELECT id FROM prime_bill_credit_memos WHERE prime_bill_id=? AND status='draft'", (prime_bill_id,))
+            if dup is not None:
+                raise ReceivableDuplicate(f"prime bill {b['sequence']} already has draft credit memo {dup['id']}; approve or cancel it first")
+            rev = self.db.one(
+                "SELECT r.id FROM document_revisions r JOIN documents d ON d.id = r.document_id WHERE r.content_hash=? AND d.project_id=? "
+                "ORDER BY r.created_at DESC, r.id DESC LIMIT 1", (h, b["project_id"]))
+            if rev is None:
+                if self.db.one("SELECT id FROM document_revisions WHERE content_hash=?", (h,)) is None:
+                    raise ReceivableError(f"evidence hash {h} is not the content hash of any recorded evidence revision")
+                raise ReceivableError(f"the evidence revision with hash {h} is not filed on project {b['project_id']} of prime bill {b['sequence']}")
+            mid = new_id("pcm")
+            conn.execute(
+                """INSERT INTO prime_bill_credit_memos (id, prime_bill_id, project_id, customer_id, amount, reason, evidence_hash, evidence_revision_id, bill_hash,
+                   status, created_at, created_by) VALUES (?,?,?,?,?,?,?,?,?,'draft',?,?)""",
+                (mid, prime_bill_id, b["project_id"], b["customer_id"], fmt(amt), why, h, rev["id"], b["content_hash"], utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "prime_bill_credit_memo.prepared", SUBJECT_CREDIT_MEMO, mid, {
+                "prime_bill_id": prime_bill_id, "amount": fmt(amt), "reason": why, "evidence_hash": h, "evidence_revision_id": rev["id"], "open": b["open"],
+            })
+        return self.credit_memo(mid)
+
+    def cancel_credit_memo(self, memo_id: str, actor: str | None = None, reason: str = "") -> dict[str, Any]:
+        self._cancel_draft("prime_bill_credit_memos", SUBJECT_CREDIT_MEMO, "credit memo", memo_id, actor, reason)
+        return self.credit_memo(memo_id)
+
+    def _credit_memo_lines(self, b: dict[str, Any], amount: Decimal) -> list[dict[str, Any]]:
+        return self._adjustment_lines(b, REVENUE_ACCOUNT, amount, f"credit memo on prime bill {b['sequence']} (fixture policy)", f"prime bill {b['sequence']} credited")
+
+    def _credit_memo_manifest(self, memo_id: str, *, actor_role: str) -> dict[str, Any]:
+        m = self.credit_memo(memo_id)
+        b = self.get(m["prime_bill_id"])
+        self._require_eligible(m, b, "credit memo")
+        project = self._project(b["project_id"])
+        amounts, bindings = self._bill_facts(b)
+        earliest = self._earliest_period(b["period_id"])
+        return build_manifest(
+            operation=OP_CREDIT_MEMO, subject_type=SUBJECT_CREDIT_MEMO, subject_id=memo_id, actor_role=actor_role,
+            entity=project["entity"], currency=project["currency"],
+            amounts={"amount": m["amount"], **amounts},
+            bindings={
+                **bindings, "credit_memo_id": memo_id, "customer_name": self._customer(b["customer_id"])["name"], "reason": m["reason"],
+                "evidence_hash": m["evidence_hash"], "evidence_revision_id": m["evidence_revision_id"], "recognition_policy": CREDIT_MEMO_POLICY,
+                "posting_rule": RULE_VERSION, "journal_preview": self._preview(self._credit_memo_lines(b, money(m["amount"]))),
+                "earliest_period": earliest, "target_rule": f"execute with period_id of an open period starting on or after {earliest['start_date']}",
+            },
+        )
+
+    def _apply_credit_memo(self, memo_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
+        with self.db.transaction():
+            m = self.credit_memo(memo_id)
+            b = self.get(m["prime_bill_id"])
+            self._require_eligible(m, b, "credit memo")
+            target = self._target_period(period_id, self._earliest_period(b["period_id"]), f"prime bill {b['sequence']}")
+            amount = money(m["amount"])
+            j = self.ledger.post(
+                period_id=target["id"], description=f"Credit memo on prime bill {b['sequence']}: {m['reason']}", lines=self._credit_memo_lines(b, amount),
+                source_type=JOURNAL_CREDIT_MEMO, source_id=memo_id, source_version="1", posted_by=actor, approval_id=approval_id,
+            )
+            posted_on = self._today().isoformat()
+            self._mark_posted("prime_bill_credit_memos", memo_id, approval_id=approval_id, journal_id=j["id"], period_id=target["id"], actor=actor,
+                              extra={"posted_on": posted_on})
+            self.audit.record(actor, "prime_bill_credit_memo.posted", SUBJECT_CREDIT_MEMO, memo_id, {
+                "prime_bill_id": b["id"], "amount": fmt(amount), "journal_id": j["id"], "approval_id": approval_id, "period_id": target["id"],
+                "open_before": b["open"], "policy": CREDIT_MEMO_POLICY,
+            })
+        after = self.get(b["id"])
+        return {"credit_memo": memo_id, "prime_bill": b["id"], "amount": fmt(amount), "journal_id": j["id"], "period_id": target["id"],
+                "posted_on": posted_on, "open": after["open"], "status": "posted"}
+
+    # ---- write-offs (receivable.write_off) -------------------------------------------- #
+
+    def write_off(self, write_off_id: str) -> dict[str, Any]:
+        row = self.db.one("SELECT * FROM receivable_write_offs WHERE id=?", (write_off_id,))
+        if row is None:
+            raise ReceivableError(f"unknown write-off {write_off_id}")
+        return self._annotate_adjustment(row)
+
+    def write_offs(self, prime_bill_id: str | None = None) -> list[dict[str, Any]]:
+        if prime_bill_id:
+            return self._adjustment_rows("receivable_write_offs", "prime_bill_id", prime_bill_id)
+        return [self._annotate_adjustment(r) for r in self.db.query("SELECT * FROM receivable_write_offs ORDER BY created_at, id")]
+
+    def prepare_write_off(self, prime_bill_id: str, amount: str | Decimal, reason: str, actor: str | None = None) -> dict[str, Any]:
+        """Draft a write-off of (part of) what is open on a standing posted prime bill that
+        is at least 90 days past its due date today (the request date, recorded with the
+        days past due).  It posts only through the controller's ``receivable.write_off``
+        approval; one draft per bill at a time."""
+        actor = self._require_actor(actor)
+        amt = self._positive(amount, "write-off amount")
+        why = self._reason(reason)
+        requested_on = self._today()
+        with self.db.transaction() as conn:
+            b = self._adjustable_bill(prime_bill_id, "write-off")
+            if not b["due_date"]:
+                raise ReceivableIneligible(f"prime bill {b['sequence']} ({prime_bill_id}) has no due date (it posted before invoice dates were recorded); "
+                                           "it cannot be aged for a write-off")
+            days = (requested_on - _dt.date.fromisoformat(b["due_date"])).days
+            if days < WRITE_OFF_MIN_DAYS_PAST_DUE:
+                raise ReceivableIneligible(
+                    f"prime bill {b['sequence']} is {max(days, 0)} days past due on {requested_on.isoformat()} (due {b['due_date']}); "
+                    f"only a receivable at least {WRITE_OFF_MIN_DAYS_PAST_DUE} days past due can be written off")
+            if amt > money(b["open"]):
+                raise ReceivableError(f"write-off {fmt(amt)} exceeds the {b['open']} open on prime bill {b['sequence']}")
+            dup = self.db.one("SELECT id FROM receivable_write_offs WHERE prime_bill_id=? AND status='draft'", (prime_bill_id,))
+            if dup is not None:
+                raise ReceivableDuplicate(f"prime bill {b['sequence']} already has draft write-off {dup['id']}; approve or cancel it first")
+            wid = new_id("wof")
+            conn.execute(
+                """INSERT INTO receivable_write_offs (id, prime_bill_id, project_id, customer_id, amount, reason, requested_on, due_date, days_past_due, bill_hash,
+                   status, created_at, created_by) VALUES (?,?,?,?,?,?,?,?,?,?,'draft',?,?)""",
+                (wid, prime_bill_id, b["project_id"], b["customer_id"], fmt(amt), why, requested_on.isoformat(), b["due_date"], days, b["content_hash"],
+                 utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "receivable_write_off.prepared", SUBJECT_WRITE_OFF, wid, {
+                "prime_bill_id": prime_bill_id, "amount": fmt(amt), "reason": why, "requested_on": requested_on.isoformat(), "due_date": b["due_date"],
+                "days_past_due": days, "open": b["open"],
+            })
+        return self.write_off(wid)
+
+    def cancel_write_off(self, write_off_id: str, actor: str | None = None, reason: str = "") -> dict[str, Any]:
+        self._cancel_draft("receivable_write_offs", SUBJECT_WRITE_OFF, "write-off", write_off_id, actor, reason)
+        return self.write_off(write_off_id)
+
+    def _write_off_lines(self, b: dict[str, Any], amount: Decimal) -> list[dict[str, Any]]:
+        return self._adjustment_lines(b, BAD_DEBT_ACCOUNT, amount, f"bad debt: prime bill {b['sequence']}", f"prime bill {b['sequence']} written off")
+
+    def _write_off_eligible(self, w: dict[str, Any], b: dict[str, Any]) -> None:
+        """A write-off draft is approved and posted only while it was requested no later than
+        today, on the bill's own due date, and the days past due recomputed from that due date
+        to the request date are the ones it records and at least 90.  A draft written outside
+        prepare_write_off (raw SQL) with a future request date is refused here as well as by
+        the database."""
+        self._require_eligible(w, b, "write-off")
+        today = self._today()
+        try:
+            requested = _dt.date.fromisoformat(self._date(w["requested_on"], "write-off request date"))
+        except ReceivableInputError as exc:
+            raise ReceivableIneligible(f"write-off {w['id']} records no valid request date: {exc}") from exc
+        if requested > today:
+            raise ReceivableIneligible(
+                f"write-off {w['id']} was requested on {requested.isoformat()}, after today ({today.isoformat()}); "
+                "days past due are counted to the day a write-off is requested, never to a future date")
+        if not b["due_date"] or w["due_date"] != b["due_date"]:
+            raise ReceivableIneligible(f"write-off {w['id']} records due date {w['due_date']}, not the due date {b['due_date']} of prime bill {b['sequence']}")
+        days = (requested - _dt.date.fromisoformat(b["due_date"])).days
+        if days != w["days_past_due"] or days < WRITE_OFF_MIN_DAYS_PAST_DUE:
+            raise ReceivableIneligible(
+                f"write-off {w['id']} no longer rests on a receivable at least {WRITE_OFF_MIN_DAYS_PAST_DUE} days past due: "
+                f"prime bill {b['sequence']} was {max(days, 0)} days past due on {requested.isoformat()} (the draft records {w['days_past_due']})")
+
+    def _write_off_manifest(self, write_off_id: str, *, actor_role: str) -> dict[str, Any]:
+        w = self.write_off(write_off_id)
+        b = self.get(w["prime_bill_id"])
+        self._write_off_eligible(w, b)
+        project = self._project(b["project_id"])
+        amounts, bindings = self._bill_facts(b)
+        earliest = self._earliest_period(b["period_id"])
+        return build_manifest(
+            operation=OP_WRITE_OFF, subject_type=SUBJECT_WRITE_OFF, subject_id=write_off_id, actor_role=actor_role,
+            entity=project["entity"], currency=project["currency"],
+            amounts={"amount": w["amount"], **amounts},
+            bindings={
+                **bindings, "write_off_id": write_off_id, "customer_name": self._customer(b["customer_id"])["name"], "reason": w["reason"],
+                "requested_on": w["requested_on"], "days_past_due": w["days_past_due"], "minimum_days_past_due": WRITE_OFF_MIN_DAYS_PAST_DUE,
+                # when the bill reached the books, next to how long it has been past due
+                "bill_posted_on": (self.db.scalar("SELECT posted_at FROM journals WHERE id=?", (b["journal_id"],)) or "")[:10] or None,
+                "policy": WRITE_OFF_POLICY, "posting_rule": RULE_VERSION, "journal_preview": self._preview(self._write_off_lines(b, money(w["amount"]))),
+                "earliest_period": earliest, "target_rule": f"execute with period_id of an open period starting on or after {earliest['start_date']}",
+            },
+        )
+
+    def _apply_write_off(self, write_off_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
+        with self.db.transaction():
+            w = self.write_off(write_off_id)
+            b = self.get(w["prime_bill_id"])
+            self._write_off_eligible(w, b)
+            target = self._target_period(period_id, self._earliest_period(b["period_id"]), f"prime bill {b['sequence']}")
+            amount = money(w["amount"])
+            j = self.ledger.post(
+                period_id=target["id"], description=f"Write-off of prime bill {b['sequence']} ({w['days_past_due']} days past due): {w['reason']}",
+                lines=self._write_off_lines(b, amount), source_type=JOURNAL_WRITE_OFF, source_id=write_off_id, source_version="1", posted_by=actor,
+                approval_id=approval_id,
+            )
+            self._mark_posted("receivable_write_offs", write_off_id, approval_id=approval_id, journal_id=j["id"], period_id=target["id"], actor=actor)
+            self.audit.record(actor, "receivable_write_off.posted", SUBJECT_WRITE_OFF, write_off_id, {
+                "prime_bill_id": b["id"], "amount": fmt(amount), "journal_id": j["id"], "approval_id": approval_id, "period_id": target["id"],
+                "days_past_due": w["days_past_due"], "open_before": b["open"], "policy": WRITE_OFF_POLICY,
+            })
+        after = self.get(b["id"])
+        return {"write_off": write_off_id, "prime_bill": b["id"], "amount": fmt(amount), "journal_id": j["id"], "period_id": target["id"],
+                "days_past_due": w["days_past_due"], "open": after["open"], "status": "posted"}
+
+    # ---- customer deposits and their application (receivable.apply_deposit) ----------- #
+
+    def deposit(self, deposit_id: str) -> dict[str, Any]:
+        """A customer deposit with its applications: ``unapplied`` is its amount while its
+        journal stands, less its standing applications."""
+        row = self.db.one("SELECT * FROM customer_deposits WHERE id=?", (deposit_id,))
+        if row is None:
+            raise ReceivableError(f"unknown deposit {deposit_id}")
+        reversal = self._reversal_of(row["journal_id"])
+        apps = self._adjustment_rows("deposit_applications", "deposit_id", deposit_id)
+        amount = money(row["amount"])
+        applied = total(a["amount"] for a in apps if a["standing"])
+        reversed_amount = amount if reversal is not None else ZERO
+        unapplied = money(amount - reversed_amount - applied)
+        row["reversal_journal_id"] = reversal
+        row["reversed"] = fmt(reversed_amount)
+        row["applications"] = apps
+        row["applied"] = fmt(applied)
+        row["unapplied"] = fmt(unapplied)
+        row["status"] = ("reversed" if reversal is not None else "applied" if unapplied == ZERO
+                         else "partially_applied" if applied > 0 else "unapplied")
+        return row
+
+    def deposits(self, customer_id: str | None = None, project_id: str | None = None) -> list[dict[str, Any]]:
+        sql, params = "SELECT id FROM customer_deposits", []
+        clauses = []
+        if customer_id:
+            clauses.append("customer_id=?")
+            params.append(customer_id)
+        if project_id:
+            clauses.append("project_id=?")
+            params.append(project_id)
+        if clauses:
+            sql += " WHERE " + " AND ".join(clauses)
+        return [self.deposit(r["id"]) for r in self.db.query(sql + " ORDER BY received_at, id", tuple(params))]
+
+    def record_deposit(self, customer_id: str, project_id: str, amount: str | Decimal, provider_ref: str, method: str = "ach", actor: str | None = None, *,
+                       period_id: str | None = None, settlement_date: str | _dt.date | None = None, mandate_ref: str | None = None) -> dict[str, Any]:
+        """Record a customer advance on a project: ``Dr 1000 / Cr 2400``, held as an
+        unapplied deposit until ``receivable.apply_deposit`` applies it to a prime bill.
+        ``method`` is ``ach`` (needs the customer's active debit mandate, as for
+        collections), ``check`` or ``wire``; the reference is unique across every receipt
+        table, ignoring case.  It posts into ``period_id`` (default the latest open period);
+        ``settlement_date`` defaults to today and is never in the future."""
+        actor = self._require_actor(actor)
+        self._customer(customer_id)
+        project = self._project(project_id)
+        if project["customer_id"] != customer_id:
+            raise ReceivableError(f"project {project_id} belongs to customer {project['customer_id']}, not {customer_id}; a deposit is taken on the customer's own project")
+        m = method.strip().lower() if isinstance(method, str) else ""
+        if m not in COLLECTION_METHODS:
+            raise ReceivableInputError(f"deposit method {method!r} is not one of {', '.join(COLLECTION_METHODS)}")
+        if mandate_ref is not None and m != "ach":
+            raise ReceivableInputError("a mandate reference applies to ACH deposits only")
+        amt = self._positive(amount, "deposit amount")
+        ref = self._text(provider_ref, "provider reference")
+        settled_on = self._settlement_date(settlement_date, not_before=None, what="a deposit")
+        pid = period_id or self._latest_open_period()
+        self.ledger.require_open(pid)
+        with self.db.transaction() as conn:
+            taken = self._receipt_ref_taken(ref)
+            if taken:
+                raise ReceivableDuplicate(f"receipt {ref} was already recorded ({taken})")
+            mandate = None
+            if m == "ach":
+                mandate = self.active_mandate(customer_id, mandate_ref)
+                if mandate is None:
+                    named = f" {mandate_ref} is not an active mandate of this customer" if mandate_ref is not None else " none is active"
+                    raise ReceivableError(f"missing mandate: an ACH deposit from customer {customer_id} needs its active debit mandate;{named}. "
+                                          "Record one with record_mandate, or take the deposit by check or wire")
+            did = new_id("dep")
+            tags = {"project_id": project_id, "party_id": customer_id}
+            j = self.ledger.post(
+                period_id=pid, description=f"Customer deposit {ref} on project {project_id}",
+                lines=[{"account": BANK_ACCOUNT, "debit": amt, **tags, "memo": _BANK_MEMO[m]},
+                       {"account": DEPOSITS_ACCOUNT, "credit": amt, **tags, "memo": "customer deposit (unapplied)"}],
+                source_type=JOURNAL_DEPOSIT, source_id=did, source_version="1", posted_by=actor,
+            )
+            conn.execute(
+                """INSERT INTO customer_deposits (id, customer_id, project_id, amount, method, mandate_id, provider_ref, settlement_date, period_id, journal_id,
+                   received_at, recorded_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (did, customer_id, project_id, fmt(amt), m, mandate["id"] if mandate else None, ref, settled_on, pid, j["id"], utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "deposit.recorded", "customer_deposit", did, {
+                "customer_id": customer_id, "project_id": project_id, "amount": fmt(amt), "method": m, "mandate_ref": mandate["mandate_ref"] if mandate else None,
+                "provider_ref": ref, "settlement_date": settled_on, "period_id": pid, "journal_id": j["id"],
+            })
+        return self.deposit(did)
+
+    def deposit_application(self, application_id: str) -> dict[str, Any]:
+        row = self.db.one("SELECT * FROM deposit_applications WHERE id=?", (application_id,))
+        if row is None:
+            raise ReceivableError(f"unknown deposit application {application_id}")
+        return self._annotate_adjustment(row)
+
+    def prepare_deposit_application(self, deposit_id: str, prime_bill_id: str, amount: str | Decimal, actor: str | None = None) -> dict[str, Any]:
+        """Draft the application of (part of) a deposit to a standing posted prime bill of
+        the same customer and project, for at most both the deposit's unapplied balance and
+        what is open on the bill.  It posts only through ``receivable.apply_deposit``; one
+        draft per deposit and bill at a time."""
+        actor = self._require_actor(actor)
+        amt = self._positive(amount, "application amount")
+        with self.db.transaction() as conn:
+            d = self.deposit(deposit_id)
+            if d["reversal_journal_id"] is not None:
+                raise ReceivableError(f"deposit {d['provider_ref']} ({deposit_id}) was reversed by journal {d['reversal_journal_id']}; nothing is left to apply")
+            b = self._adjustable_bill(prime_bill_id, "deposit application")
+            if (b["customer_id"], b["project_id"]) != (d["customer_id"], d["project_id"]):
+                raise ReceivableError(f"deposit {d['provider_ref']} was taken from customer {d['customer_id']} on project {d['project_id']}; "
+                                      f"prime bill {b['sequence']} is for customer {b['customer_id']} on project {b['project_id']}")
+            if amt > money(d["unapplied"]):
+                raise ReceivableError(f"application {fmt(amt)} exceeds the {d['unapplied']} unapplied on deposit {d['provider_ref']}")
+            if amt > money(b["open"]):
+                raise ReceivableError(f"application {fmt(amt)} exceeds the {b['open']} open on prime bill {b['sequence']}")
+            dup = self.db.one("SELECT id FROM deposit_applications WHERE deposit_id=? AND prime_bill_id=? AND status='draft'", (deposit_id, prime_bill_id))
+            if dup is not None:
+                raise ReceivableDuplicate(f"deposit {d['provider_ref']} already has draft application {dup['id']} to prime bill {b['sequence']}; approve or cancel it first")
+            aid = new_id("dap")
+            conn.execute(
+                """INSERT INTO deposit_applications (id, deposit_id, prime_bill_id, project_id, customer_id, amount, bill_hash, status, created_at, created_by)
+                   VALUES (?,?,?,?,?,?,?,'draft',?,?)""",
+                (aid, deposit_id, prime_bill_id, b["project_id"], b["customer_id"], fmt(amt), b["content_hash"], utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "deposit_application.prepared", SUBJECT_DEPOSIT_APPLICATION, aid, {
+                "deposit_id": deposit_id, "prime_bill_id": prime_bill_id, "amount": fmt(amt), "deposit_unapplied": d["unapplied"], "open": b["open"],
+            })
+        return self.deposit_application(aid)
+
+    def cancel_deposit_application(self, application_id: str, actor: str | None = None, reason: str = "") -> dict[str, Any]:
+        self._cancel_draft("deposit_applications", SUBJECT_DEPOSIT_APPLICATION, "deposit application", application_id, actor, reason)
+        return self.deposit_application(application_id)
+
+    def _application_lines(self, b: dict[str, Any], d: dict[str, Any], amount: Decimal) -> list[dict[str, Any]]:
+        return self._adjustment_lines(b, DEPOSITS_ACCOUNT, amount, f"deposit {d['provider_ref']} applied", f"prime bill {b['sequence']} settled from deposit")
+
+    def _application_eligible(self, a: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any]]:
+        d = self.deposit(a["deposit_id"])
+        b = self.get(a["prime_bill_id"])
+        self._require_eligible(a, b, "deposit application")
+        if d["reversal_journal_id"] is not None:
+            raise ReceivableIneligible(f"deposit {d['provider_ref']} was reversed by journal {d['reversal_journal_id']}; nothing is left to apply")
+        if money(a["amount"]) > money(d["unapplied"]):
+            raise ReceivableIneligible(f"deposit application {a['id']} for {a['amount']} exceeds the {d['unapplied']} now unapplied on deposit {d['provider_ref']}")
+        return d, b
+
+    def _application_manifest(self, application_id: str, *, actor_role: str) -> dict[str, Any]:
+        a = self.deposit_application(application_id)
+        d, b = self._application_eligible(a)
+        project = self._project(b["project_id"])
+        amounts, bindings = self._bill_facts(b)
+        earliest = self._earliest_period(b["period_id"], d["period_id"])
+        return build_manifest(
+            operation=OP_APPLY_DEPOSIT, subject_type=SUBJECT_DEPOSIT_APPLICATION, subject_id=application_id, actor_role=actor_role,
+            entity=project["entity"], currency=project["currency"],
+            amounts={"amount": a["amount"], "deposit_amount": d["amount"], "deposit_applied": d["applied"], "deposit_unapplied": d["unapplied"], **amounts},
+            bindings={
+                **bindings, "application_id": application_id, "customer_name": self._customer(b["customer_id"])["name"],
+                "deposit_id": d["id"], "deposit_ref": d["provider_ref"], "deposit_journal_id": d["journal_id"], "deposit_period_id": d["period_id"],
+                "deposit_settlement_date": d["settlement_date"], "policy": DEPOSIT_POLICY, "posting_rule": RULE_VERSION,
+                "journal_preview": self._preview(self._application_lines(b, d, money(a["amount"]))),
+                "earliest_period": earliest, "target_rule": f"execute with period_id of an open period starting on or after {earliest['start_date']}",
+            },
+        )
+
+    def _apply_application(self, application_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
+        with self.db.transaction():
+            a = self.deposit_application(application_id)
+            d, b = self._application_eligible(a)
+            target = self._target_period(period_id, self._earliest_period(b["period_id"], d["period_id"]),
+                                         f"prime bill {b['sequence']} and deposit {d['provider_ref']}")
+            amount = money(a["amount"])
+            j = self.ledger.post(
+                period_id=target["id"], description=f"Deposit {d['provider_ref']} applied to prime bill {b['sequence']}",
+                lines=self._application_lines(b, d, amount), source_type=JOURNAL_DEPOSIT_APPLICATION, source_id=application_id, source_version="1",
+                posted_by=actor, approval_id=approval_id,
+            )
+            self._mark_posted("deposit_applications", application_id, approval_id=approval_id, journal_id=j["id"], period_id=target["id"], actor=actor)
+            self.audit.record(actor, "deposit_application.posted", SUBJECT_DEPOSIT_APPLICATION, application_id, {
+                "deposit_id": d["id"], "prime_bill_id": b["id"], "amount": fmt(amount), "journal_id": j["id"], "approval_id": approval_id,
+                "period_id": target["id"], "deposit_unapplied_before": d["unapplied"], "open_before": b["open"],
+            })
+        return {"deposit_application": application_id, "deposit": d["id"], "prime_bill": b["id"], "amount": fmt(amount), "journal_id": j["id"],
+                "period_id": target["id"], "deposit_unapplied": self.deposit(d["id"])["unapplied"], "open": self.get(b["id"])["open"], "status": "posted"}
+
+    def deposits_items(self, project_id: str | None = None) -> dict[str, Any]:
+        """Unapplied customer deposits behind control account 2400 (``customer_deposits``),
+        in the shape of ``ar_open_items``: items, subledger_total, control_balance,
+        reconciled, sources, errors.  A reversed deposit is credited by its amount."""
+        errors: list[dict[str, Any]] = []
+        items: list[dict[str, Any]] = []
+        subledger = ZERO
+        try:
+            for d in self.deposits(project_id=project_id):
+                items.append({
+                    "source": SOURCE_CUSTOMER_DEPOSIT, "kind": "customer_deposit", "deposit_id": d["id"], "customer_id": d["customer_id"],
+                    "project_id": d["project_id"], "provider_ref": d["provider_ref"], "method": d["method"], "settlement_date": d["settlement_date"],
+                    "period_id": d["period_id"], "status": d["status"], "amount": d["amount"], "applied": d["applied"], "reversed": d["reversed"],
+                    "reversal_journal_id": d["reversal_journal_id"], "open": d["unapplied"],
+                })
+                subledger += money(d["unapplied"])
+        except Exception as exc:  # report, never reconcile silently
+            errors.append({"source": SOURCE_CUSTOMER_DEPOSIT, "error": f"{type(exc).__name__}: {exc}"})
+        try:
+            control = self.ledger.control_balance(DEPOSITS_CONTROL, project_id=project_id) if project_id else self.ledger.control_balance(DEPOSITS_CONTROL)
+        except Exception as exc:
+            errors.append({"source": "control account 2400", "error": f"{type(exc).__name__}: {exc}"})
+            control = None
+        return {
+            "items": items, "subledger_total": fmt(subledger), "control_balance": fmt(control) if control is not None else None,
+            "reconciled": not errors and control is not None and money(subledger) == control,
+            "sources": [{"source": SOURCE_CUSTOMER_DEPOSIT, "subledger_total": fmt(subledger)}], "errors": errors,
+        }
+
     # ---- subledgers ------------------------------------------------------------------- #
 
     def _ar_sources(self) -> list[Any]:
@@ -1503,7 +2752,7 @@ class Receivables:
     def _source_label(src: Any) -> str:
         return str(getattr(src, "PLUGIN_NAME", None) or type(src).__module__.rsplit(".", 1)[-1] or type(src).__name__)
 
-    def ar_open_items(self, project_id: str | None = None) -> dict[str, Any]:
+    def ar_open_items(self, project_id: str | None = None, as_of: str | _dt.date | None = None) -> dict[str, Any]:
         """The complete AR subledger behind control account 1100: posted prime bills,
         retainage invoices and every extra source (plugins that debit 1100), each item
         tagged with its ``source``.  A bill or invoice whose journal was reversed is
@@ -1514,9 +2763,17 @@ class Receivables:
         Core items carry plain values only (text, integers, money strings, None), with the
         column meanings the other 1100 sources use: ``reversed`` is the amount the
         reversal credited (``"0.00"`` while the journal stands) and ``reversal_journal_id``
-        the reversing journal, as on labor T&M and reimbursement items.  An extra source's
-        items are kept as that source returned them; ``source`` is set to the source's
-        label, and an item's own different ``source`` value is kept as ``item_source``."""
+        the reversing journal, as on labor T&M and reimbursement items.  They also carry
+        ``invoice_date``, ``due_date`` and ``days_past_due`` (whole days past the due date
+        as of ``as_of``, default today; 0 while not yet due or once nothing is open; None
+        for a record posted before dates existed), and a prime bill its standing ``credited_by_memo``,
+        ``written_off`` and ``deposits_applied``.  ``date`` stays the record's created
+        date.  An extra source's items are kept as that source returned them; ``source``
+        is set to the source's label, and an item's own different ``source`` value is
+        kept as ``item_source``.  A reversed prime bill on which credit memos, write-offs or
+        deposit applications still stand (only possible in a workspace written before the
+        reversal guard) is reported under ``errors``, so the subledger is not reconciled."""
+        as_of_day = self._today() if as_of is None else _dt.date.fromisoformat(self._date(as_of, "as_of"))
         items: list[dict[str, Any]] = []
         sql = "SELECT id FROM prime_bills WHERE status IN ('posted','sent','collected')"
         params: tuple = ()
@@ -1524,13 +2781,24 @@ class Receivables:
             sql += " AND project_id=?"
             params = (project_id,)
         prime_total = ZERO
+        errors: list[dict[str, Any]] = []
         for row in self.db.query(sql + " ORDER BY project_id, sequence", params):
             b = self.get(row["id"])
+            stranded = [a["id"] for kind in ("credit_memos", "write_offs", "deposit_applications") for a in b[kind] if a["standing"]] if b["reversed"] else []
+            if stranded:
+                # only a workspace written before receivables_dates_credits_guards can hold this:
+                # the bill was reversed while adjustments on it stood, so 1100 carries a credit
+                # nothing is owed against.  Reported, never reconciled silently.
+                errors.append({"source": SOURCE_PRIME_BILL, "prime_bill_id": b["id"],
+                               "error": (f"prime bill {b['sequence']} ({b['id']}) was reversed by journal {b['reversal_journal_id']} while "
+                                         f"{', '.join(stranded)} still stand on it (open {b['open']}); reverse them")})
             items.append({
                 "source": SOURCE_PRIME_BILL, "kind": "prime_bill", "prime_bill_id": b["id"], "project_id": b["project_id"], "customer_id": b["customer_id"],
                 "sequence": b["sequence"], "period_id": b["period_id"], "date": b["created_at"][:10], "status": b["status"],
                 "amount_due": b["amount_due"], "received": b["received"], "reversed": b["credited_by_reversal"],
-                "reversal_journal_id": b["reversal_journal_id"], "open": b["open"],
+                "reversal_journal_id": b["reversal_journal_id"], "credited_by_memo": b["credited_by_memo"], "written_off": b["written_off"],
+                "deposits_applied": b["deposits_applied"], "invoice_date": b["invoice_date"], "due_date": b["due_date"],
+                "days_past_due": self._days_past_due(b["due_date"], as_of_day, b["open"]), "open": b["open"],
             })
             prime_total += money(b["open"])
         retainage_total = ZERO
@@ -1539,11 +2807,11 @@ class Receivables:
                 "source": SOURCE_RETAINAGE_INVOICE, "kind": "retainage_invoice", "retainage_invoice_id": inv["id"], "project_id": inv["project_id"],
                 "customer_id": inv["customer_id"], "sequence": inv["sequence"], "period_id": inv["period_id"], "date": inv["created_at"][:10],
                 "status": inv["status"], "amount_due": inv["amount"], "received": inv["received"], "reversed": inv["credited_by_reversal"],
-                "reversal_journal_id": inv["reversal_journal_id"], "open": inv["open"],
+                "reversal_journal_id": inv["reversal_journal_id"], "invoice_date": inv["invoice_date"], "due_date": inv["due_date"],
+                "days_past_due": self._days_past_due(inv["due_date"], as_of_day, inv["open"]), "open": inv["open"],
             })
             retainage_total += money(inv["open"])
         sources = [{"source": SOURCE_PRIME_BILL, "subledger_total": fmt(prime_total)}, {"source": SOURCE_RETAINAGE_INVOICE, "subledger_total": fmt(retainage_total)}]
-        errors: list[dict[str, Any]] = []
         subledger = prime_total + retainage_total
         try:
             extra = self._ar_sources()
@@ -1577,7 +2845,7 @@ class Receivables:
         control = self.ledger.control_balance("ar", project_id=project_id) if project_id else self.ledger.control_balance("ar")
         return {
             "items": items, "subledger_total": fmt(subledger), "control_balance": fmt(control),
-            "reconciled": not errors and money(subledger) == control, "sources": sources, "errors": errors,
+            "reconciled": not errors and money(subledger) == control, "sources": sources, "errors": errors, "as_of": as_of_day.isoformat(),
         }
 
     def retainage_receivable_items(self, project_id: str | None = None) -> dict[str, Any]:
@@ -1619,20 +2887,29 @@ class Receivables:
 
     def audit_export(self) -> dict[str, Any]:
         """The receivables control records an independent reviewer needs (contracts,
-        recipients, mandates and any not backed by their evidence, sends and the legacy
-        sends found at upgrade, retainage invoices and their collections, receipt
-        reference clashes) with both subledger reconciliations."""
+        recipients, payment terms, mandates and any not backed by their evidence, sends and
+        the legacy sends found at upgrade, retainage invoices and their collections, credit
+        memos, write-offs, customer deposits and their applications, receipt reference
+        clashes) with the AR (1100), retainage receivable (1150) and customer deposit (2400)
+        reconciliations."""
         q = self.db.query
         return {
             "prime_contracts": q("SELECT * FROM prime_contracts ORDER BY project_id, version"),
             "billing_recipients": q("SELECT * FROM customer_billing_recipients ORDER BY customer_id, version"),
+            "payment_terms": q("SELECT * FROM customer_payment_terms ORDER BY customer_id, version"),
             "mandates": q("SELECT * FROM customer_mandates ORDER BY recorded_at, id"),
             "unbacked_mandates": self.unbacked_mandates(),
             "prime_bill_sends": q("SELECT * FROM prime_bill_sends ORDER BY sent_at, id"),
             "prime_bill_legacy_sends": q("SELECT * FROM prime_bill_legacy_sends ORDER BY prime_bill_id"),
             "retainage_invoices": q("SELECT * FROM prime_retainage_invoices ORDER BY project_id, sequence"),
             "retainage_collections": q("SELECT * FROM prime_retainage_collections ORDER BY received_at, id"),
+            "credit_memos": self.credit_memos(),
+            "write_offs": self.write_offs(),
+            "customer_deposits": q("SELECT * FROM customer_deposits ORDER BY received_at, id"),
+            "deposit_applications": [self._annotate_adjustment(r) for r in q("SELECT * FROM deposit_applications ORDER BY created_at, id")],
+            "policies": {"credit_memo": CREDIT_MEMO_POLICY, "write_off": WRITE_OFF_POLICY, "deposit": DEPOSIT_POLICY, "recognition": RECOGNITION_POLICY},
             "receipt_reference_conflicts": self.receipt_reference_conflicts(),
             "ar_reconciliation": self.ar_open_items(),
             "retainage_reconciliation": self.retainage_receivable_items(),
+            "deposits_reconciliation": self.deposits_items(),
         }

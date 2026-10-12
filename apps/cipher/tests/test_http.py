@@ -152,6 +152,67 @@ class GovernedActionTests(unittest.TestCase):
             self.assertTrue(state["trial_balance"]["balanced"])
             self.assertEqual(state["ar"]["subledger_total"], "9000.00")
 
+    def test_payee_destination_change_is_governed_over_http(self):
+        """No one-call payee verification on the console surface: the change is requested,
+        verified by a different person against stored evidence, and applied only through a
+        granted party.verify_destination approval."""
+        with BackgroundServer(Cipher()) as s:
+            ok = lambda name, body: _post(s.url + f"/api/action/{name}", body)  # noqa: E731
+            self.assertEqual(ok("verify_destination", {"party_id": "x", "destination": "ACH-SIM-ANY"})[0], 404)
+            sup = ok("add_party", {"kind": "supplier", "name": "Synthetic Sub (HTTP payee)", "destination": "ACH-SIM-HTTP-PAYEE-1"})[1]["result"]
+            cust = ok("add_party", {"kind": "customer", "name": "Synthetic Owner (HTTP payee)"})[1]["result"]
+            prj = ok("create_project", {"name": "HTTP payee project", "budget": "1000", "customer_id": cust["id"]})[1]["result"]
+            status, body = ok("request_destination_change", {"party_id": sup["id"], "new_destination": "ACH-SIM-HTTP-PAYEE-1",
+                                                             "requested_by": "http requester", "reason": "first verification"})
+            self.assertEqual(status, 200, body)
+            change_id = body["result"]["id"]
+            status, body = ok("request_destination_approval", {"change_id": change_id})
+            self.assertEqual(status, 400, body)  # no independent verification yet
+            doc = ok("register_document", {"project_id": prj["id"], "kind": "destination_verification", "title": "call-back notes"})[1]["result"]
+            rev = ok("add_revision", {"document_id": doc["id"], "content": "called the number on file", "note": "call-back"})[1]["result"]
+            status, body = ok("record_verification_evidence", {"change_id": change_id, "channel": "call-back to number on file",
+                                                               "verified_by": "http requester", "evidence_hash": rev["content_hash"]})
+            self.assertEqual(status, 400, body)  # two-person rule
+            status, body = ok("record_verification_evidence", {"change_id": change_id, "channel": "call-back to number on file",
+                                                               "verified_by": "outside accountant", "evidence_hash": rev["content_hash"]})
+            self.assertEqual(status, 200, body)
+            self.assertFalse(next(p for p in _get(s.url + "/api/state")[1]["parties"] if p["id"] == sup["id"])["destination_verified"])
+            status, body = ok("request_destination_approval", {"change_id": change_id})
+            self.assertEqual((status, body["result"]["operation"], body["result"]["actor_role"]), (200, "party.verify_destination", "bank_admin"), body)
+            ap = body["result"]["id"]
+            self.assertEqual(ok("execute", {"approval_id": ap})[0], 400)  # not granted yet
+            ok("approve", {"approval_id": ap})
+            status, body = ok("execute", {"approval_id": ap})
+            self.assertEqual(status, 200, body)
+            self.assertTrue(next(p for p in _get(s.url + "/api/state")[1]["parties"] if p["id"] == sup["id"])["destination_verified"])
+            status, hist = ok("destination_changes", {"party_id": sup["id"]})
+            self.assertEqual((status, [h["status"] for h in hist["result"]]), (200, ["executed"]))
+
+    def test_round_three_actions_over_http(self):
+        """Terms, deposits, budgets and forecast snapshots are reachable; corrections and
+        credits only draft (their approvals apply them)."""
+        with BackgroundServer(Cipher()) as s:
+            ok = lambda name, body: _post(s.url + f"/api/action/{name}", body)  # noqa: E731
+            cust = ok("add_party", {"kind": "customer", "name": "Synthetic Owner (HTTP r3)"})[1]["result"]
+            prj = ok("create_project", {"name": "HTTP r3 project", "budget": "0", "customer_id": cust["id"]})[1]["result"]
+            self.assertEqual(ok("open_period", {"period_id": "P1", "name": "P1", "start_date": "2026-10-01", "end_date": "2026-10-31"})[0], 200)
+            status, body = ok("set_customer_terms", {"customer_id": cust["id"], "days": 45})
+            self.assertEqual(status, 200, body)
+            status, body = ok("set_initial_budget", {"project_id": prj["id"], "lines": [{"cost_code": "03-300", "amount": "25000"}]})
+            self.assertEqual(status, 200, body)
+            status, body = ok("prepare_budget_revision", {"project_id": prj["id"], "lines": [{"cost_code": "03-300", "amount": "27000"}], "reason": "owner change"})
+            self.assertEqual(status, 200, body)
+            status, body = ok("forecast_snapshot", {"project_id": prj["id"], "label": "http month-end"})
+            self.assertEqual(status, 200, body)
+            status, body = ok("record_deposit", {"customer_id": cust["id"], "project_id": prj["id"], "amount": "5000",
+                                                 "provider_ref": "wire_sim_http_dep_1", "method": "wire", "period_id": "P1"})
+            self.assertEqual(status, 200, body)
+            state = _get(s.url + "/api/state?project=" + prj["id"])[1]
+            self.assertTrue(state["trial_balance"]["balanced"])
+            self.assertEqual(ok("stale_payments", {})[1]["result"], [])
+            self.assertEqual(ok("prepare_credit_note", {"bill_id": "nope", "amount": "1", "reason": "r", "evidence_hash": "h"})[0], 400)
+            self.assertEqual(ok("prepare_write_off", {"prime_bill_id": "nope", "amount": "1"})[0], 400)  # missing reason
+
     def test_restored_copy_is_read_only_over_http_until_claimed(self):
         d = tempfile.mkdtemp(prefix="cipher-http-restore-")
         self.addCleanup(shutil.rmtree, d, True)

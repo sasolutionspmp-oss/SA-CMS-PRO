@@ -16,15 +16,36 @@ reconciliation locked through the banking module, before the next one opens.  Th
 modules do not force separate periods, but payment acceptance and settlement post into
 the latest open period, and the plan needs a closed period behind the late return.
 
+Supplier invoices and dates (the plan's first production slice, sections 5 and 11): each
+supplier progress bill is matched to the subcontractor's own invoice before it is
+approved.  The invoice arrives with its PDF as evidence (``ap_intake.receive_invoice``),
+carries its invoice date and the due date the supplier's 30-day terms give, is matched
+to the certified bill (``ap_intake.match``) and linked to it only through the
+``ap_intake.match_invoice`` approval; ``bill.approve`` then binds the invoice, and AP open
+items carry its due date.  Prime bills carry an invoice date and the due date the
+customer's recorded 30-day terms give, collections their settlement date, and the AR
+items their days past due.  Document dates follow a scenario clock (the receivables
+calendar day, ``VerticalV1.clock``), so every date is the fiction's October-December
+2026 whatever day the suite runs.  The owner agency's year-end prepayment of part of
+the final pay application is a customer deposit (Dr 1000 / Cr 2400) applied to the
+final prime bill through ``receivable.apply_deposit``.  None of this moves a golden
+number of the plan: the deposit changes only the fixture's own December bank balance
+and closing AR (the plan prices no final prime billing), and what it adds is asserted
+separately.  A supplier credit note would lower the subcontract's cost below its 110,000
+gross and its payments below the plan's 110,000, so it runs as a focused variant
+(``VerticalV1VariantTests``) on the same small fixture instead.
+
 ``VerticalV1Tests`` runs the scenario as ordered step tests sharing one workspace:
 each ``test_stepNN`` runs every earlier step it depends on exactly once, so a single
 step can be run on its own; a step whose prerequisite failed is skipped, not
 re-run.  ``VerticalV1VariantTests`` adds focused adversarial variants that the module
 suites do not already cover.  ``VerticalV1KnownDefectTests`` asserts the plan's
-behaviour where a module once fell short; every named defect has since been fixed,
-so these are regression tests now.  The plan's full adversarial-variant list is in
+behaviour where a module once fell short; the named defects fixed since are
+regression tests, and an open one is an expected failure that names it, so its fix
+shows up as an unexpected success.  The plan's full adversarial-variant list is in
 ``test_adversarial_variants.py``.
 """
+import datetime as _dt
 import json
 import os
 import shutil
@@ -36,6 +57,7 @@ from decimal import Decimal
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import hash_json, sha256_hex
+from apps.cipher.domain.ap_intake import DuplicateInvoiceError
 from apps.cipher.domain.banking import BankingError
 from apps.cipher.domain.bills import BillError
 from apps.cipher.domain.close import CloseError
@@ -45,13 +67,15 @@ from apps.cipher.domain.labor import LaborError
 from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
 from apps.cipher.domain.payments import PaymentError, ReleaseQuarantined
 from apps.cipher.domain.receivables import ReceivableError
-from apps.cipher.service import Cipher
+from apps.cipher.service import Cipher, RoleNotAuthorised
 
 D = Decimal
 STALE = (StaleApprovalError, ApprovalNotGranted)
 SHADOW = "SHADOW - not authoritative"
 PERIODS = {"P1": ("2026-10-01", "2026-10-31"), "P2": ("2026-11-01", "2026-11-30"), "P3": ("2026-12-01", "2026-12-31")}
 SUPPLIER_DESTINATION = "ACH-SIM-V1-SUB-0001"
+TERMS_DAYS = 30  # the subcontract's and the prime contract's payment terms
+DEPOSIT_REF = "WIRE-SIM-V1-DEP-0001"
 MEASUREMENT_BASIS_A = "Drawing A rev 0 at 1:100, scale verified against the dimensioned grid"
 CLOSEOUT_DELIVERABLES = (
     ("as_builts", "As-built drawings"),
@@ -60,7 +84,7 @@ CLOSEOUT_DELIVERABLES = (
     ("final_lien_release", "Final lien release"),
 )
 # journals that record a bank or provider fact rather than a human decision
-BANK_FACT_SOURCES = {"collection", "collection_return", "provider_event"}
+BANK_FACT_SOURCES = {"collection", "collection_return", "provider_event", "customer_deposit"}
 
 
 def lines_of(journal):
@@ -118,6 +142,16 @@ class VerticalV1:
         self.bank = c.plugin("banking")
         self.close = c.plugin("close")
         self.reimb = c.plugin("reimbursement")
+        self.intake = c.plugin("ap_intake")
+        self.invoices: dict[int, dict] = {}  # supplier invoices by pay application
+        self.clock("2026-10-01")
+
+    def clock(self, day):
+        """Set the scenario clock: the receivables calendar day, which dates invoices, receipts
+        and deposits and is the default as_of of the AR subledger (it never moves a posting
+        into another period)."""
+        today = _dt.date.fromisoformat(day)
+        self.c.receivables.today = lambda: today
 
     def cleanup(self):
         if self.restored is not None:
@@ -170,6 +204,48 @@ class VerticalV1:
         tc.assertEqual(c.payments.get(intent["id"])["status"], "settled")
         return intent["id"]
 
+    def receive_supplier_invoice(self, tc, n, bill, *, number, invoice_date, due_date, service_period, description):
+        """Pay application ``n``: the subcontractor's invoice arrives with its PDF, is recorded
+        with its invoice date and the due date the supplier's terms give, and the 3-way match
+        against the certified ``bill`` is computed (not yet approved)."""
+        pdf = self.evidence("supplier_invoice", f"Supplier invoice {number} (pay application {n})",
+                            f"V1 synthetic supplier invoice {number}: pay application {n}, net {bill['amount_due']}".encode())
+        inv = self.intake.receive_invoice(self.supplier["id"], number, invoice_date, bill["amount_due"], pdf["content_hash"], "ap-clerk",
+                                          project_id=self.pid, commitment_id=self.cid, service_period_start=service_period[0],
+                                          service_period_end=service_period[1],
+                                          lines=[{"description": description, "amount": bill["amount_due"]}])
+        tc.assertEqual(pick(inv, ("status", "version", "amount", "invoice_date", "due_date", "terms_days", "evidence_hash", "evidence_current", "possible_duplicate")),
+                       {"status": "received", "version": 1, "amount": bill["amount_due"], "invoice_date": invoice_date, "due_date": due_date,
+                        "terms_days": TERMS_DAYS, "evidence_hash": pdf["content_hash"], "evidence_current": True, "possible_duplicate": False})
+        res = self.intake.match(inv["id"], "ap-clerk")
+        tc.assertEqual((res["basis"], res["status"], res["exceptions"], res["matched_amount"], res["bill"]["id"]),
+                       ("progress", "matched", [], bill["amount_due"], bill["id"]))
+        self.invoices[n] = self.intake.invoice(inv["id"])
+        return self.invoices[n]
+
+    def approve_supplier_invoice_match(self, tc, n, bill):
+        """``ap_intake.match_invoice``: the accountant's approval binds the invoice, its PDF, the
+        recorded match and the bill; executing it links the invoice to the bill, which is what
+        ``bill.approve`` then binds."""
+        c, inv = self.c, self.invoices[n]
+        ap = c.request_approval("ap_intake.match_invoice", inv["id"], actor_role="accountant", requested_by="ap-clerk")
+        m = ap["manifest"]
+        tc.assertEqual(m["amounts"], {"invoice_amount": bill["amount_due"], "matched_amount": bill["amount_due"]})
+        tc.assertEqual((m["bindings"]["bill"]["id"], m["bindings"]["invoice_hash"], m["bindings"]["evidence_hash"], m["bindings"]["due_date"]),
+                       (bill["id"], inv["content_hash"], inv["evidence_hash"], inv["due_date"]))
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        res = c.execute(ap["id"], actor="accountant")
+        tc.assertEqual(pick(res.result, ("status", "basis", "bill", "amount", "due_date")),
+                       {"status": "matched", "basis": "progress", "bill": bill["id"], "amount": bill["amount_due"], "due_date": inv["due_date"]})
+        linked = c.bills.get(bill["id"])
+        tc.assertEqual(pick(linked, ("supplier_invoice_id", "supplier_invoice_number", "invoice_date", "due_date", "supplier_invoice_approval_id")),
+                       {"supplier_invoice_id": inv["id"], "supplier_invoice_number": inv["invoice_number"], "invoice_date": inv["invoice_date"],
+                        "due_date": inv["due_date"], "supplier_invoice_approval_id": ap["id"]})
+        tc.assertEqual(c.bills.supplier_invoice_state(bill["id"])["problems"], [])
+        self.invoices[n] = self.intake.invoice(inv["id"])
+        tc.assertEqual((self.invoices[n]["status"], self.invoices[n]["matched_bill_id"]), ("matched", bill["id"]))
+        return ap
+
     def reconcile_and_close(self, tc, period_id, statement_ref, opening, closing, lines, *, before_close=None):
         """Import the period's bank statement, match it, lock the reconciliation through an
         approval, then close the period through the close module's checklist approval."""
@@ -219,6 +295,10 @@ class VerticalV1:
                                         budget="125000", customer_id=self.customer["id"])
         self.pid = self.project["id"]
         c.open_period("P1", "P1", *PERIODS["P1"])
+        # payment terms on both contracts: the subcontractor's invoices and the prime bills fall due 30 days after their date
+        tc.assertEqual(self.intake.set_terms(self.supplier["id"], TERMS_DAYS, "controller"), {"supplier_id": self.supplier["id"], "days": TERMS_DAYS, "version": 1})
+        terms = c.receivables.set_customer_terms(self.customer["id"], TERMS_DAYS, actor="controller")
+        tc.assertEqual(pick(terms, ("version", "days", "source")), {"version": 1, "days": TERMS_DAYS, "source": "recorded"})
 
         # drawing A: an immutable evidence revision, registered as D-A and issued through an approval
         self.ev_a = self.evidence("drawing", "Drawing A - sheet pile cofferdam and pump station", b"V1 synthetic drawing A rev 0 (company-owned placeholder)")
@@ -394,7 +474,8 @@ class VerticalV1:
     # ---- step 4 ------------------------------------------------------------ #
 
     def step4(self, tc):
-        """Period 1: 20,000 installed + 10,000 eligible stored with evidence = 30,000; 3,000 retainage; 27,000 due."""
+        """Period 1: 20,000 installed + 10,000 eligible stored with evidence = 30,000; 3,000 retainage; 27,000 due.
+        The subcontractor's invoice for it arrives with its PDF and is matched to the certified bill."""
         c = self.c
         self.ev_lot1 = self.evidence("stored_material_evidence", "PZ-27 sheet piling stored on site",
                                      b"V1 title, insurance certificate, laydown location and delivery ticket: PZ-27 sheet piling")
@@ -410,14 +491,29 @@ class VerticalV1:
         tc.assertEqual(c.bills.lot(self.lot1["id"])["evidence_hash"], self.ev_lot1["content_hash"])
         self.bill1 = bill
 
+        # supplier invoice intake: the subcontractor's invoice for pay application 1, dated 20 October, due on 30-day terms
+        inv = self.receive_supplier_invoice(tc, 1, bill, number="SPD-2026-0101", invoice_date="2026-10-20", due_date="2026-11-19",
+                                            service_period=PERIODS["P1"],
+                                            description="Pay application 1: cofferdam installed 20,000 and PZ-27 piling stored 10,000, less 10% retainage")
+        with tc.assertRaises(DuplicateInvoiceError):  # the same invoice e-mailed again is refused, however its number is spelled
+            self.intake.receive_invoice(self.supplier["id"], "spd 2026/0101", "2026-10-21", "27000.00", inv["evidence_hash"], "ap-clerk",
+                                        project_id=self.pid, commitment_id=self.cid)
+        tc.assertEqual([i["id"] for i in self.intake.invoices(self.pid)], [inv["id"]])
+        tc.assertEqual(c.bills.get(bill["id"])["supplier_invoice_id"], None)  # nothing is linked until the match is approved
+
     # ---- step 5 ------------------------------------------------------------ #
 
     def step5(self, tc):
-        """Dr cost 20,000 + Dr stored 10,000 / Cr AP 27,000 + Cr retainage payable 3,000."""
+        """The supplier invoice match is approved first; then Dr cost 20,000 + Dr stored 10,000 /
+        Cr AP 27,000 + Cr retainage payable 3,000, with the invoice bound and its due date in AP."""
         c = self.c
+        match = self.approve_supplier_invoice_match(tc, 1, self.bill1)
         ap = c.request_approval("bill.approve", self.bill1["id"], actor_role="accountant", requested_by="accountant")
         tc.assertEqual(ap["manifest"]["amounts"], {"amount_due": "27000.00", "retainage_this_period": "3000.00", "cumulative_gross": "30000.00"})
         tc.assertEqual(ap["manifest"]["bindings"]["posting_rule"], "cipher-posting-rules/1")
+        bound = ap["manifest"]["bindings"]["supplier_invoice"]
+        tc.assertEqual(pick(bound, ("id", "number", "invoice_date", "due_date", "approval_id")),
+                       {"id": self.invoices[1]["id"], "number": "SPD-2026-0101", "invoice_date": "2026-10-20", "due_date": "2026-11-19", "approval_id": match["id"]})
         c.approve(ap["id"], approver="controller")
         res = c.execute(ap["id"], actor="accountant")
         tc.assertEqual((res.result["status"], res.result["amount_due"]), ("posted", "27000.00"))
@@ -428,6 +524,11 @@ class VerticalV1:
         for code, bal in (("5000", "20000.00"), ("1300", "10000.00"), ("2000", "27000.00"), ("2050", "3000.00")):
             tc.assertEqual(c.ledger.balance(code, project_id=self.pid), D(bal), code)
         tc.assertTrue(c.bills.ap_open_items(self.pid)["reconciled"])
+        # AP carries the supplier invoice's number and due date (not the bill's creation date)
+        [item] = [it for it in c.bills.ap_open_items(self.pid)["items"] if it["bill_id"] == self.bill1["id"]]
+        tc.assertEqual(pick(item, ("open", "due_date", "due_date_basis", "supplier_invoice_number", "invoice_date", "supplier_invoice_current")),
+                       {"open": "27000.00", "due_date": "2026-11-19", "due_date_basis": "supplier_invoice", "supplier_invoice_number": "SPD-2026-0101",
+                        "invoice_date": "2026-10-20", "supplier_invoice_current": True})
 
     # ---- step 6 ------------------------------------------------------------ #
 
@@ -478,7 +579,8 @@ class VerticalV1:
     # ---- step 7 ------------------------------------------------------------ #
 
     def step7(self, tc):
-        """P1 closes; period 2: cumulative installed 45,000 incl. the 10,000 stored transfer, 5,000 new stored."""
+        """P1 closes; period 2: cumulative installed 45,000 incl. the 10,000 stored transfer, 5,000 new stored,
+        invoiced by the subcontractor and matched before the bill is approved."""
         c = self.c
         self.reconcile_and_close(tc, "P1", "SIM-BANK-2026-10", "0.00", "-28040.00", [
             {"date": "2026-10-16", "amount": "-1040.00", "description": "Payroll (simulated)", "reference": "PR-2026-10-01"},
@@ -496,6 +598,10 @@ class VerticalV1:
                     "cumulative_net": "45000.00", "prior_net": "27000.00", "amount_due": "18000.00", "retainage_this_period": "2000.00",
                     "installed_this_period": "25000.00", "stored_added_this_period": "5000.00", "stored_transferred_this_period": "10000.00"}
         tc.assertEqual(pick(bill, expected), expected)
+        # pay application 2 is invoiced, matched and linked before the bill is approved
+        self.receive_supplier_invoice(tc, 2, bill, number="SPD-2026-0102", invoice_date="2026-11-20", due_date="2026-12-20", service_period=PERIODS["P2"],
+                                      description="Pay application 2: cofferdam installed to 45,000 (10,000 from stored) and pumps stored 5,000, less retainage and prior net")
+        self.approve_supplier_invoice_match(tc, 2, bill)
         res = c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
         js = c.ledger.journals(source_type="bill", source_id=bill["id"])
         tc.assertEqual([lines_of(j) for j in js], [
@@ -519,24 +625,35 @@ class VerticalV1:
     # ---- step 8 ------------------------------------------------------------ #
 
     def step8(self, tc):
-        """Prime bill: 60,000 certified, 6,000 retainage, 54,000 AR (fixture policy, SHADOW statements)."""
+        """Prime bill: 60,000 certified, 6,000 retainage, 54,000 AR (fixture policy, SHADOW statements),
+        invoiced 16 November and due on the customer's 30-day terms."""
         c = self.c
-        prime = c.receivables.certify(project_id=self.pid, period_id="P2", certified_cumulative="60000", retainage_rate="0.10", actor="pm")
+        self.clock("2026-11-16")
+        with tc.assertRaises(ReceivableError):  # an invoice is never dated ahead of today
+            c.receivables.certify(project_id=self.pid, period_id="P2", certified_cumulative="60000", retainage_rate="0.10", actor="pm", invoice_date="2026-11-17")
+        prime = c.receivables.certify(project_id=self.pid, period_id="P2", certified_cumulative="60000", retainage_rate="0.10", actor="pm", invoice_date="2026-11-16")
         expected = {"certified_cumulative": "60000.00", "retainage_cumulative": "6000.00", "amount_due": "54000.00",
                     "revenue_this_period": "60000.00", "retainage_this_period": "6000.00", "status": "draft"}
         tc.assertEqual(pick(prime, expected), expected)
         ap = c.request_approval("prime_bill.approve", prime["id"], actor_role="accountant", requested_by="pm")
         tc.assertIn("SHADOW", ap["manifest"]["bindings"]["recognition_policy"])
+        tc.assertEqual(pick(ap["manifest"]["bindings"], ("invoice_date", "invoice_date_basis", "payment_terms_days", "payment_terms_version")),
+                       {"invoice_date": "2026-11-16", "invoice_date_basis": "explicit", "payment_terms_days": TERMS_DAYS, "payment_terms_version": 1})
         c.approve(ap["id"], approver="controller")
         j = c.ledger.journal(c.execute(ap["id"], actor="accountant").result["journal_id"])
         tc.assertEqual(lines_of(j), [("1100", "54000.00", "0.00"), ("1150", "6000.00", "0.00"), ("4000", "0.00", "60000.00")])
         tc.assertEqual(j["period_id"], "P2")
+        tc.assertEqual(pick(c.receivables.get(prime["id"]), ("invoice_date", "due_date", "payment_terms_days")),
+                       {"invoice_date": "2026-11-16", "due_date": "2026-12-16", "payment_terms_days": TERMS_DAYS})
         tc.assertEqual(c.ledger.income_statement()["label"], SHADOW)
         statements = self.close.statements("P2")
         tc.assertEqual((statements["label"], statements["income_statement"]["revenue"]), (SHADOW, "60000.00"))
         tc.assertIn("SHADOW", c.forecast.project(self.pid)["label"])
         ar = c.receivables.ar_open_items(self.pid)
         tc.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("54000.00", "54000.00", True))
+        [item] = [it for it in ar["items"] if it.get("prime_bill_id") == prime["id"]]
+        tc.assertEqual(pick(item, ("invoice_date", "due_date", "days_past_due", "open")),
+                       {"invoice_date": "2026-11-16", "due_date": "2026-12-16", "days_past_due": 0, "open": "54000.00"})
         self.prime1 = c.receivables.get(prime["id"])
 
     # ---- step 9 ------------------------------------------------------------ #
@@ -550,6 +667,8 @@ class VerticalV1:
         send_ap, sent_result = send_prime_bill(c, self.prime1["id"])
         tc.assertEqual((sent_result["status"], sent_result["channel"]), ("sent", "mail-sink"))
         tc.assertEqual((send_ap["manifest"]["amounts"], send_ap["manifest"]["bindings"]["bill_hash"]), ({"amount_due": "54000.00"}, self.prime1["content_hash"]))
+        tc.assertEqual(pick(send_ap["manifest"]["bindings"], ("invoice_date", "due_date", "balance_due")),
+                       {"invoice_date": "2026-11-16", "due_date": "2026-12-16", "balance_due": "54000.00"})  # the delivered invoice states its dates
         tc.assertEqual(c.receivables.get(self.prime1["id"])["status"], "sent")
         sent = [e for e in c.audit.entries(entity_type="prime_bill", entity_id=self.prime1["id"]) if e["action"] == "prime_bill.sent"]
         tc.assertEqual(len(sent), 1)
@@ -561,9 +680,11 @@ class VerticalV1:
             c.receivables.record_collection(prime_bill_id=self.prime1["id"], period_id="P2", amount="54000", fee="5.00",
                                             provider_ref="ach_sim_rcv_0001", actor="treasury")
         record_mandate(c, self.pid, self.customer["id"], "MANDATE-SIM-V1-0001")
+        self.clock("2026-11-20")
         col = c.receivables.record_collection(prime_bill_id=self.prime1["id"], period_id="P2", amount="54000", fee="5.00",
                                               provider_ref="ach_sim_rcv_0001", actor="treasury")
         tc.assertEqual((col["amount"], col["fee"], col["status"]), ("54000.00", "5.00", "received"))
+        tc.assertEqual(col["settlement_date"], "2026-11-20")  # when the money settled, apart from when it was recorded
         receipt = c.ledger.journal(col["journal_id"])
         tc.assertEqual(lines_of(receipt), [("1000", "53995.00", "0.00"), ("6000", "5.00", "0.00"), ("1100", "0.00", "54000.00")])
         with tc.assertRaises(ReceivableError):  # a replayed receipt is never booked twice
@@ -577,6 +698,7 @@ class VerticalV1:
 
         # the late return arrives after P2 closed: it posts in open P3, never in P2
         c.open_period("P3", "P3", *PERIODS["P3"])
+        self.clock("2026-12-03")
         reason = "R01 insufficient funds - late return after close (simulated)"
         with tc.assertRaises(PeriodNotOpen):
             c.receivables.record_return(collection_id=col["id"], period_id="P2", reason=reason, actor="treasury")
@@ -595,8 +717,10 @@ class VerticalV1:
     # ---- step 10 ----------------------------------------------------------- #
 
     def step10(self, tc):
-        """Final gross 110,000, retainage 11,000, net 99,000; 54,000 payable; closeout accepted through
-        the field module closes the commitment; 11,000 retainage released and paid separately."""
+        """Final gross 110,000, retainage 11,000, net 99,000; 54,000 payable on the matched final
+        invoice; the owner's 10,000 prepayment is held as a deposit and applied to the final prime
+        bill; closeout accepted through the field module closes the commitment; 11,000 retainage
+        released and paid separately."""
         c, f = self.c, self.field
         bill = c.bills.certify(commitment_id=self.cid, period_id="P3",
                                installed=[{"sov_line_id": self.line1, "cumulative_installed": "70000"}, {"sov_line_id": self.line2, "cumulative_installed": "40000"}],
@@ -605,6 +729,9 @@ class VerticalV1:
                     "cumulative_net": "99000.00", "prior_net": "45000.00", "amount_due": "54000.00", "retainage_this_period": "6000.00",
                     "installed_this_period": "65000.00", "stored_added_this_period": "0.00", "stored_transferred_this_period": "5000.00"}
         tc.assertEqual(pick(bill, expected), expected)
+        self.receive_supplier_invoice(tc, 3, bill, number="SPD-2026-0103", invoice_date="2026-12-12", due_date="2027-01-11", service_period=PERIODS["P3"],
+                                      description="Pay application 3 (final): cofferdam to 70,000 and pump station 40,000, less retainage and prior net")
+        self.approve_supplier_invoice_match(tc, 3, bill)
         c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
         tc.assertEqual([lines_of(j) for j in c.ledger.journals(source_type="bill", source_id=bill["id"])], [
             [("5000", "5000.00", "0.00"), ("1300", "0.00", "5000.00")],
@@ -616,16 +743,53 @@ class VerticalV1:
         self.bill3 = c.bills.get(bill["id"])
         self.pay_bill(tc, bill["id"], "sim_000003")
 
-        # prime final billing under its own contract (fixture: 132,000 contract, 10% retainage)
-        prime = c.receivables.certify(project_id=self.pid, period_id="P3", certified_cumulative="132000", retainage_rate="0.10", actor="pm")
+        # the owner agency prepays part of the final pay application before its fiscal year-end: a customer
+        # deposit, held in 2400 (not revenue, not a receipt on a bill) until the final prime bill posts
+        self.clock("2026-12-10")
+        with tc.assertRaises(PeriodNotOpen):  # never into the closed November books
+            c.receivables.record_deposit(self.customer["id"], self.pid, "10000", DEPOSIT_REF, method="wire", actor="treasury", period_id="P2")
+        dep = c.receivables.record_deposit(self.customer["id"], self.pid, "10000", DEPOSIT_REF, method="wire", actor="treasury", period_id="P3")
+        tc.assertEqual(pick(dep, ("amount", "method", "settlement_date", "period_id", "status", "unapplied")),
+                       {"amount": "10000.00", "method": "wire", "settlement_date": "2026-12-10", "period_id": "P3", "status": "unapplied", "unapplied": "10000.00"})
+        tc.assertEqual(lines_of(c.ledger.journal(dep["journal_id"])), [("1000", "10000.00", "0.00"), ("2400", "0.00", "10000.00")])
+        with tc.assertRaises(ReceivableError):  # an advance is recorded once
+            c.receivables.record_deposit(self.customer["id"], self.pid, "10000", DEPOSIT_REF, method="wire", actor="treasury", period_id="P3")
+        tc.assertEqual((c.ledger.balance("2400"), c.receivables.deposits_items()["reconciled"]), (D("10000.00"), True))
+
+        # prime final billing under its own contract (fixture: 132,000 contract, 10% retainage), invoiced 14 December
+        self.clock("2026-12-14")
+        prime = c.receivables.certify(project_id=self.pid, period_id="P3", certified_cumulative="132000", retainage_rate="0.10", actor="pm", invoice_date="2026-12-14")
         expected = {"certified_cumulative": "132000.00", "retainage_cumulative": "13200.00", "prior_net": "54000.00", "amount_due": "64800.00",
                     "revenue_this_period": "72000.00", "retainage_this_period": "7200.00"}
         tc.assertEqual(pick(prime, expected), expected)
         res = c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant", actor="accountant")
         tc.assertEqual(lines_of(c.ledger.journal(res.result["journal_id"])), [("1100", "64800.00", "0.00"), ("1150", "7200.00", "0.00"), ("4000", "0.00", "72000.00")])
-        send_prime_bill(c, prime["id"])
+        tc.assertEqual(pick(c.receivables.get(prime["id"]), ("invoice_date", "due_date")), {"invoice_date": "2026-12-14", "due_date": "2027-01-13"})
+
+        # the deposit is applied to the final bill through its own approval, never beyond what it holds
+        with tc.assertRaises(ReceivableError):
+            c.receivables.prepare_deposit_application(dep["id"], prime["id"], "10000.01", "accountant")
+        draft = c.receivables.prepare_deposit_application(dep["id"], prime["id"], "10000", "accountant")
+        with tc.assertRaises(RoleNotAuthorised):  # treasury moves money; it does not apply customer credits
+            c.request_approval("receivable.apply_deposit", draft["id"], actor_role="treasury", requested_by="treasury")
+        ap = c.request_approval("receivable.apply_deposit", draft["id"], actor_role="accountant", requested_by="accountant")
+        tc.assertEqual(pick(ap["manifest"]["amounts"], ("amount", "deposit_amount", "deposit_unapplied", "open_receivable")),
+                       {"amount": "10000.00", "deposit_amount": "10000.00", "deposit_unapplied": "10000.00", "open_receivable": "64800.00"})
+        tc.assertEqual(ap["manifest"]["bindings"]["deposit_ref"], DEPOSIT_REF)
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        res = c.execute(ap["id"], actor="accountant", period_id="P3")
+        tc.assertEqual(lines_of(c.ledger.journal(res.result["journal_id"])), [("2400", "10000.00", "0.00"), ("1100", "0.00", "10000.00")])
+        tc.assertEqual((res.result["deposit_unapplied"], res.result["open"]), ("0.00", "54800.00"))
+        tc.assertEqual((c.ledger.balance("2400"), c.receivables.deposit(dep["id"])["status"]), (D("0.00"), "applied"))
+        self.deposit = c.receivables.deposit(dep["id"])
+
+        # the invoice the customer receives states the deposit taken off it and the balance it owes
+        send_ap, _ = send_prime_bill(c, prime["id"])
+        tc.assertEqual(pick(send_ap["manifest"]["bindings"], ("deposits_applied", "balance_due", "invoice_date", "due_date")),
+                       {"deposits_applied": "10000.00", "balance_due": "54800.00", "invoice_date": "2026-12-14", "due_date": "2027-01-13"})
         self.prime2 = c.receivables.get(prime["id"])
         tc.assertEqual(self.prime2["status"], "sent")
+        tc.assertEqual((self.prime2["deposits_applied"], self.prime2["open"]), ("10000.00", "54800.00"))
 
         # closeout: required deliverables, punch closure and no pending change
         f.set_closeout_requirements(self.cid, [item for item, _ in CLOSEOUT_DELIVERABLES], "pm")
@@ -698,8 +862,10 @@ class VerticalV1:
             tc_.assertEqual(c.ledger.period("P3")["status"], "open")
             self.labor.delete_entry(entry["id"], actor="engineer", reason="logged in error")
 
-        self.reconcile_and_close(tc, "P3", "SIM-BANK-2026-12", "7955.00", "-111045.00", [
+        # 7,955 - 54,000 return + 10,000 customer deposit - 54,000 - 11,000 disbursements = -101,045
+        self.reconcile_and_close(tc, "P3", "SIM-BANK-2026-12", "7955.00", "-101045.00", [
             {"date": "2026-12-03", "amount": "-54000.00", "description": "ACH return R01 (simulated)", "reference": "ach_sim_rcv_0001"},
+            {"date": "2026-12-10", "amount": "10000.00", "description": "Incoming wire: owner agency prepayment (simulated)", "reference": DEPOSIT_REF},
             {"date": "2026-12-15", "amount": "-54000.00", "description": "ACH disbursement (simulator)", "reference": "sim_000003"},
             {"date": "2026-12-18", "amount": "-11000.00", "description": "ACH disbursement (simulator)", "reference": "sim_000004"},
         ], before_close=stale_close_probe)
@@ -807,7 +973,8 @@ class VerticalV1:
         ap = c.bills.ap_open_items()
         tc.assertEqual((ap["subledger_total"], ap["control_balance"], ap["reconciled"]), ("0.00", "0.00", True))
         ar = c.receivables.ar_open_items()
-        tc.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("118800.00", "118800.00", True))
+        # 54,000 restored by the late return + the final bill's 64,800 less the 10,000 deposit applied to it
+        tc.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("108800.00", "108800.00", True))
         emp = self.reimb.employee_payable_reconciliation(self.pid)
         tc.assertEqual((emp["subledger_total"], emp["control_balance"], emp["reconciled"]), ("0.00", "0.00", True))
         accrued = self.labor.accrued_payroll_reconciliation()
@@ -815,9 +982,15 @@ class VerticalV1:
         for pid in PERIODS:
             tc.assertTrue(self.bank.reconciliation_status(pid)["reconciled"], pid)
         balances = {code: c.ledger.balance(code) for code in ("1000", "1100", "1150", "1200", "1300", "2000", "2050", "2200", "4000", "5000", "5300", "6000")}
-        tc.assertEqual(balances, {"1000": D("-111045.00"), "1100": D("118800.00"), "1150": D("13200.00"), "1200": D("0.00"), "1300": D("0.00"),
+        tc.assertEqual(balances, {"1000": D("-101045.00"), "1100": D("108800.00"), "1150": D("13200.00"), "1200": D("0.00"), "1300": D("0.00"),
                                   "2000": D("0.00"), "2050": D("0.00"), "2200": D("0.00"), "4000": D("132000.00"), "5000": D("110000.00"),
                                   "5300": D("1040.00"), "6000": D("5.00")})
+        # the customer deposit: received 10,000, applied 10,000, nothing left in 2400; no revenue moved
+        deposits = c.receivables.deposits_items()
+        tc.assertEqual((deposits["subledger_total"], deposits["control_balance"], deposits["reconciled"]), ("0.00", "0.00", True))
+        tc.assertEqual([(d["provider_ref"], d["amount"], d["applied"], d["status"]) for d in deposits["items"]], [(DEPOSIT_REF, "10000.00", "10000.00", "applied")])
+        tc.assertEqual(c.ledger.balance("2400"), D("0.00"))
+        tc.assertEqual(c.ledger.account_activity("2400")["debit"], D("10000.00"))
 
         # provider transfers are unique: one transfer, one acceptance and one cash effect per intent
         intents = c.payments.list()
@@ -847,6 +1020,8 @@ class VerticalV1:
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "bill.approve"), 3)
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "payment.release"), 3)
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "close.close_period"), 3)
+        tc.assertEqual(sum(1 for a in consumed if a["operation"] == "ap_intake.match_invoice"), 3)
+        tc.assertEqual(sum(1 for a in consumed if a["operation"] == "receivable.apply_deposit"), 1)
         for j in journals:
             if j["approval_id"]:
                 tc.assertEqual(c.approvals.get(j["approval_id"])["status"], "consumed", j["id"])
@@ -858,6 +1033,33 @@ class VerticalV1:
             tc.assertEqual((bill["status"], c.approvals.get(bill["approval_id"])["status"]), ("paid", "consumed"))
         tc.assertEqual(c.approvals.get(self.field.rfi(self.rfi_id)["approval_id"])["status"], "consumed")
         tc.assertEqual(c.approvals.get(self.field.closeout(self.cid)["approval_id"])["status"], "consumed")
+
+        # every supplier bill rests on the subcontractor's own invoice, matched under a consumed approval;
+        # the invoices sum to the 99,000 of net certifications, and their due dates are what AP carries
+        bills = c.bills.list(commitment_id=self.cid)
+        tc.assertEqual([(b["supplier_invoice_number"], b["invoice_date"], b["due_date"], b["amount_due"]) for b in bills],
+                       [("SPD-2026-0101", "2026-10-20", "2026-11-19", "27000.00"), ("SPD-2026-0102", "2026-11-20", "2026-12-20", "18000.00"),
+                        ("SPD-2026-0103", "2026-12-12", "2027-01-11", "54000.00")])
+        for n, b in enumerate(bills, start=1):
+            inv = self.intake.invoice(self.invoices[n]["id"])
+            tc.assertEqual((inv["status"], inv["matched_bill_id"], inv["integrity_problem"], inv["unmatched"]), ("matched", b["id"], None, False))
+            tc.assertEqual(c.approvals.get(inv["match_approval_id"])["status"], "consumed")
+            tc.assertEqual(c.bills.supplier_invoice_state(b)["problems"], [])
+        tc.assertEqual(sum(D(self.intake.invoice(i["id"])["amount"]) for i in self.invoices.values()), D("99000.00"))
+        tc.assertEqual({it["bill_id"]: (it["due_date"], it["due_date_basis"]) for it in c.bills.ap_open_items(self.pid)["items"] if it.get("bill_id")},
+                       {b["id"]: (b["due_date"], "supplier_invoice") for b in bills})
+        summary = c.project_state(self.pid)["ap_intake"]["summary"]
+        tc.assertEqual(pick(summary, ("invoices", "matched", "unmatched", "exceptions", "possible_duplicates", "rejected", "open_amount")),
+                       {"invoices": 3, "matched": 3, "unmatched": 0, "exceptions": 0, "possible_duplicates": 0, "rejected": 0, "open_amount": "0.00"})
+
+        # receivables are dated: aged at the year end, the returned first bill is 15 days past due, the final bill current
+        items = {it["sequence"]: it for it in c.receivables.ar_open_items(self.pid, as_of="2026-12-31")["items"] if it.get("prime_bill_id")}
+        tc.assertEqual({seq: (it["invoice_date"], it["due_date"], it["days_past_due"], it["deposits_applied"], it["open"]) for seq, it in items.items()},
+                       {1: ("2026-11-16", "2026-12-16", 15, "0.00", "54000.00"), 2: ("2026-12-14", "2027-01-13", 0, "10000.00", "54800.00")})
+        aging = self.close.aging("2026-12-31")["ar"]
+        tc.assertEqual((aging["buckets"], aging["total"], aging["ties_to_subledger"]),
+                       ({"current": "54800.00", "1_30": "54000.00", "31_60": "0.00", "61_90": "0.00", "over_90": "0.00"}, "108800.00", True))
+        tc.assertEqual(self.close.aging("2026-12-31")["ap"]["total"], "0.00")
 
         # the audit chain verifies and the project state carries every module
         tc.assertTrue(c.audit.verify_chain()["ok"])
@@ -955,6 +1157,26 @@ class World:
         b = self.c.bills.certify(commitment_id=self.cid, period_id=period, installed=[{"sov_line_id": self.line1, "cumulative_installed": cumulative}], actor="pm")
         self.c.approve_and_execute("bill.approve", b["id"], actor_role="accountant")
         return self.c.bills.get(b["id"])
+
+    def document(self, kind, title, content):
+        doc = self.c.evidence.register_document(project_id=self.pid, kind=kind, title=title, actor="ap-clerk")
+        return self.c.evidence.add_revision(document_id=doc["id"], content=content, actor="ap-clerk")
+
+    def credited_bill(self, tc, amount="1500.00"):
+        """A posted 27,000 bill (30,000 installed less 10% retainage) and a supplier credit note
+        for ``amount`` posted against it in P1.  Returns (bill, credit note result)."""
+        c = self.c
+        bill = self.posted_bill("30000")
+        ev = self.document("supplier_credit_note", "Supplier credit note CN-V1-0001: back-charge for dewatering pump fuel supplied by S&A",
+                           b"V1 synthetic supplier credit note CN-V1-0001: back-charge, dewatering pump fuel supplied by S&A")
+        note = c.bills.prepare_credit_note(bill["id"], amount, "back-charge: dewatering pump fuel supplied by S&A", ev["content_hash"], "accountant")
+        res = c.approve_and_execute("bill.credit_note", note["id"], actor_role="accountant", actor="accountant", period_id="P1")
+        tc.assertEqual((res.result["status"], res.result["open_payable"]), ("posted", fmt_money(D("27000.00") - D(amount))))
+        return c.bills.get(bill["id"]), res.result
+
+
+def fmt_money(value):
+    return f"{value.quantize(D('0.01')):f}"
 
 
 class VerticalV1VariantTests(unittest.TestCase):
@@ -1072,6 +1294,78 @@ class VerticalV1VariantTests(unittest.TestCase):
         self.assertTrue(c.ledger.trial_balance()["balanced"])
         self.assertTrue(c.bills.ap_open_items()["reconciled"])
 
+    def test_supplier_credit_note_on_a_matched_bill_lowers_cost_and_the_open_payable(self):
+        """The subcontractor credits a back-charge after its matched pay application posted (plan
+        section 6, invariant 6: credit notes stay traceable).  Dr AP / Cr project cost on the bill's
+        project and supplier; the open payable falls; a payment approved for the full amount due
+        before the credit dies; the credit is taken once, from its own document, never beyond what
+        is open, never by a role without the authority.  (It stays out of the V1 scenario because it
+        would lower the subcontract's cost below its 110,000 gross and its payments below 110,000.)"""
+        w = World()
+        c = w.c
+        intake = c.plugin("ap_intake")
+        bill = c.bills.certify(commitment_id=w.cid, period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "30000"}], actor="pm")
+        pdf = w.document("supplier_invoice", "Supplier invoice SPD-VAR-0101", b"V1 variant synthetic supplier invoice SPD-VAR-0101, net 27,000.00")
+        inv = intake.receive_invoice(w.supplier["id"], "SPD-VAR-0101", "2026-10-20", "27000.00", pdf["content_hash"], "ap-clerk", project_id=w.pid, commitment_id=w.cid)
+        self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
+        c.approve_and_execute("ap_intake.match_invoice", inv["id"], actor_role="accountant", actor="accountant")
+        c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
+        release = c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="accountant")
+        self.assertEqual(release["manifest"]["amounts"], {"amount": "27000.00"})
+        c.approve(release["id"], approver="treasury", approver_role="treasury")  # approved, not yet executed, when the credit arrives
+
+        ev = w.document("supplier_credit_note", "Supplier credit note CN-VAR-0001: back-charge for dewatering pump fuel",
+                        b"V1 variant synthetic supplier credit note CN-VAR-0001: back-charge, dewatering pump fuel supplied by S&A")
+        for amount in ("27000.01", "0", "-5.00", 1500.0, "1500.005"):  # beyond the open payable, or not exact positive money
+            with self.assertRaises(BillError, msg=repr(amount)):
+                c.bills.prepare_credit_note(bill["id"], amount, "back-charge", ev["content_hash"], "accountant")
+        with self.assertRaises(BillError):  # a credit note rests on a supplier credit-note document, not on the invoice PDF
+            c.bills.prepare_credit_note(bill["id"], "1500.00", "back-charge", pdf["content_hash"], "accountant")
+        note = c.bills.prepare_credit_note(bill["id"], "1500.00", "back-charge: dewatering pump fuel supplied by S&A", ev["content_hash"], "accountant")
+        self.assertEqual((note["status"], note["amount"], note["evidence_current"]), ("draft", "1500.00", True))
+        with self.assertRaises(BillError):  # the same credit-note document backs one credit only
+            c.bills.prepare_credit_note(bill["id"], "100.00", "the same back-charge again", ev["content_hash"], "accountant")
+        with self.assertRaises(RoleNotAuthorised):  # a PM certifies work; crediting a posted payable is the accountant's
+            c.request_approval("bill.credit_note", note["id"], actor_role="pm", requested_by="pm")
+        ap = c.request_approval("bill.credit_note", note["id"], actor_role="accountant", requested_by="accountant")
+        m = ap["manifest"]
+        self.assertEqual(m["amounts"], {"credit": "1500.00", "open_payable": "27000.00"})
+        self.assertEqual((m["bindings"]["supplier_invoice_id"], m["bindings"]["evidence_hash"], m["bindings"]["bill_hash"]),
+                         (inv["id"], ev["content_hash"], c.bills.get(bill["id"])["content_hash"]))
+        self.assertEqual([(ln["account"], ln["debit"], ln["credit"]) for ln in m["bindings"]["journal_preview"]],
+                         [("2000", "1500.00", "0.00"), ("5000", "0.00", "1500.00")])
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        res = c.execute(ap["id"], actor="accountant", period_id="P1")
+        self.assertEqual((res.result["status"], res.result["amount"], res.result["open_payable"]), ("posted", "1500.00", "25500.00"))
+        self.assertTrue(c.execute(ap["id"], actor="accountant", period_id="P1").replayed)  # one credit, however often it is executed
+        j = c.ledger.journal(res.result["journal_id"])
+        self.assertEqual((lines_of(j), j["source_type"], j["approval_id"]), ([("2000", "1500.00", "0.00"), ("5000", "0.00", "1500.00")], "supplier_credit_note", ap["id"]))
+        self.assertEqual({ln["project_id"] for ln in j["lines"]} | {ln["party_id"] for ln in j["lines"]}, {w.pid, w.supplier["id"]})
+
+        # the release approved for the full 27,000 is dead: the supplier is never paid the credit
+        self.assertEqual(c.approvals.get(release["id"])["status"], "invalidated")
+        with self.assertRaises(ApprovalNotGranted):
+            c.execute(release["id"], actor="treasury")
+        with self.assertRaises(sqlite3.DatabaseError):  # nor can an intent be written from the old 27,000 manifest directly: the storage guard refuses it
+            c.payments.create_intent(manifest=release["manifest"], approval_id=release["id"], bill_id=bill["id"], note="bill payment", actor="treasury")
+        self.assertEqual(c.payments.list(), [])
+        self.assertEqual((c.bills.open_payable(bill["id"]), c.bills.get(bill["id"])["status"]), (D("25500.00"), "posted"))
+        with self.assertRaises(BillError):  # nor can a second credit exceed what is now open
+            c.bills.prepare_credit_note(bill["id"], "25500.01", "over-credit", w.document("supplier_credit_note", "CN-VAR-0002", b"V1 variant CN-VAR-0002")["content_hash"], "accountant")
+
+        # cost and AP fall together; the subledgers still reconcile; the invoice link still holds
+        self.assertEqual((c.ledger.balance("5000", project_id=w.pid), c.ledger.balance("2000", project_id=w.pid), c.ledger.balance("2050", project_id=w.pid)),
+                         (D("28500.00"), D("25500.00"), D("3000.00")))
+        [item] = [it for it in c.bills.ap_open_items(w.pid)["items"] if it.get("bill_id") == bill["id"]]
+        self.assertEqual({k: item[k] for k in ("amount_due", "credited", "open", "due_date", "due_date_basis", "supplier_invoice_current")},
+                         {"amount_due": "27000.00", "credited": "1500.00", "open": "25500.00", "due_date": "2026-11-19", "due_date_basis": "supplier_invoice",
+                          "supplier_invoice_current": True})
+        ap_items = c.bills.ap_open_items(w.pid)
+        self.assertEqual((ap_items["subledger_total"], ap_items["control_balance"], ap_items["reconciled"]), ("25500.00", "25500.00", True))
+        self.assertTrue(c.bills.retainage_open_items()["reconciled"])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
 
 # --------------------------------------------------------------------------- #
 # Former known defects (now regression tests)                                  #
@@ -1096,9 +1390,28 @@ def queued_payment_backup(tc):
 
 
 class VerticalV1KnownDefectTests(unittest.TestCase):
-    """Each test asserts the plan's behaviour where a module once fell short.  All of them
-    were expected failures; each named defect is now fixed, so they are plain regression
-    tests (the class keeps its name so test ids stay stable)."""
+    """Each test asserts the plan's behaviour where a module once fell short.  The tests
+    whose named defect is fixed are plain regression tests (the class keeps its name so
+    test ids stay stable); a test marked ``expectedFailure`` names a defect still open, so
+    its fix shows up as an unexpected success and the marker is then removed."""
+
+    def test_a_credited_bill_is_paid_exactly_its_open_payable_through_payment_release(self):
+        """Plan section 6, invariant 6: after a posted supplier credit note the bill is paid
+        with one release of its open payable (25,500.00 after a 1,500.00 credit on 27,000.00),
+        which ``Payments.manifest_for_bill`` binds, and AP then stands at zero."""
+        w = World()
+        c = w.c
+        bill, _ = w.credited_bill(self)
+        res = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
+        intent = c.payments.get(res.result["intent"])
+        self.assertEqual(intent["amount"], "25500.00")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        self.assertTrue(c.payments.ingest_event(c.provider.settle(intent["logical_op_id"]), actor="webhook")["applied"])
+        self.assertEqual((c.bills.get(bill["id"])["status"], c.bills.open_payable(bill["id"])), ("paid", D("0.00")))
+        ap_items = c.bills.ap_open_items(w.pid)
+        self.assertEqual((ap_items["subledger_total"], ap_items["control_balance"], ap_items["reconciled"]), ("0.00", "0.00", True))
+        self.assertEqual(c.ledger.balance("1000"), D("-25500.00"))
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
 
     def test_retainage_release_requires_an_accepted_closeout(self):
         """Fixed (bills/service): ``retainage.release`` executed before closeout acceptance;

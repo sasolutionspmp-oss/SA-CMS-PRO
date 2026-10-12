@@ -14,8 +14,8 @@ from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.money import MoneyError
 from apps.cipher.domain.ledger import PeriodNotOpen
 from apps.cipher.domain.receivables import (
-    CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_SCHEMA_NAME, ReceivableCutoffError, ReceivableError, ReceivableIneligible, ReceivableInputError,
-    Receivables,
+    CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_NAME, ReceivableCutoffError, ReceivableError,
+    ReceivableIneligible, ReceivableInputError, Receivables,
 )
 from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
 
@@ -23,8 +23,12 @@ ENTITY = "S&A Solutions LLC (synthetic)"
 RAW_TIME = "2026-10-20T00:00:00Z"
 RAW_SEND = ("INSERT INTO prime_bill_sends (id, prime_bill_id, approval_id, channel, recipients_json, bill_hash, message_hash, sent_at, sent_by) "
             "VALUES ('snd_raw', ?, ?, 'mail-sink', '[]', ?, 'h', '2026-10-12T00:00:00Z', 'raw')")
-RAW_COLLECTION = ("INSERT INTO collections (id, prime_bill_id, amount, fee, status, journal_id, provider_ref, received_at, method, mandate_id) "
-                  "VALUES (?, ?, ?, '0.00', 'received', ?, ?, '2026-10-20T00:00:00Z', ?, ?)")
+# a raw receipt records its settlement date (receivables_dates_credits): the invoice date of the
+# bill it collects (the database's today for an undated draft), so it never settles before the
+# invoice date, whenever the test runs (a run that spans midnight UTC included)
+RAW_COLLECTION = ("INSERT INTO collections (id, prime_bill_id, amount, fee, status, journal_id, provider_ref, received_at, method, mandate_id, settlement_date) "
+                  "VALUES (?1, ?2, ?3, '0.00', 'received', ?4, ?5, '2026-10-20T00:00:00Z', ?6, ?7, "
+                  "COALESCE((SELECT b.invoice_date FROM prime_bills b WHERE b.id = ?2), date('now')))")
 RAW_MANDATE = ("INSERT INTO customer_mandates (id, customer_id, mandate_ref, evidence_hash, evidence_revision_id, status, recorded_at, recorded_by) "
                "VALUES (?, ?, ?, ?, ?, 'active', ?, 'raw')")
 
@@ -331,6 +335,9 @@ class SendingTests(unittest.TestCase):
         bd = m["bindings"]
         self.assertEqual((bd["channel"], bd["recipients"], bd["recipients_version"], bd["bill_hash"], bd["customer_id"], bd["journal_id"]),
                          ("mail-sink", [f"mail-sink:{w.cust}"], 0, b["content_hash"], w.cust, b["journal_id"]))
+        # the invoice states the balance due and everything already taken off it
+        self.assertEqual((bd["balance_due"], bd["received"], bd["credited_by_memo"], bd["written_off"], bd["deposits_applied"]),
+                         ("54000.00", "0.00", "0.00", "0.00", "0.00"))
         with self.assertRaises(RoleNotAuthorised):
             w.c.approve(ap["id"], approver="estimator", approver_role="estimator")
         w.c.approve(ap["id"], approver="owner")
@@ -389,6 +396,29 @@ class SendingTests(unittest.TestCase):
             w.r.set_billing_recipients(supplier["id"], new, actor="owner")
         with self.assertRaises(ReceivableError):
             w.r.set_billing_recipients("pty_missing", new, actor="owner")
+        w.assert_books(self)
+
+    def test_a_receipt_after_send_approval_makes_the_send_stale(self):
+        """The delivered invoice states the balance due; a receipt between approval and
+        execution changes it, so the approval goes stale and nothing is delivered."""
+        w = World()
+        b = w.posted("60000")
+        ap = w.c.request_approval("prime_bill.send", b["id"], actor_role="pm", requested_by="pm")
+        self.assertEqual(ap["manifest"]["bindings"]["balance_due"], "54000.00")
+        w.c.approve(ap["id"], approver="owner")
+        w.r.record_collection(prime_bill_id=b["id"], period_id="P1", amount="4000", provider_ref="CHK-SEND-STALE", actor="treasury", method="check")
+        with self.assertRaises(StaleApprovalError):
+            w.c.execute(ap["id"], actor="pm")
+        self.assertEqual((w.c.approvals.get(ap["id"])["status"], w.r.get(b["id"])["send"]), ("invalidated", None))
+        self.assertEqual(w.c.db.one("SELECT COUNT(*) AS n FROM prime_bill_sends")["n"], 0)
+        ap2 = w.c.request_approval("prime_bill.send", b["id"], actor_role="pm", requested_by="pm")
+        self.assertEqual((ap2["manifest"]["bindings"]["balance_due"], ap2["manifest"]["bindings"]["received"], ap2["manifest"]["amounts"]),
+                         ("50000.00", "4000.00", {"amount_due": "54000.00"}))
+        self.assertNotEqual(ap2["manifest"]["bindings"]["message_hash"], ap["manifest"]["bindings"]["message_hash"])
+        w.c.approve(ap2["id"], approver="owner")
+        res = w.c.execute(ap2["id"], actor="pm").result
+        sent = w.r.get(b["id"])
+        self.assertEqual((res["status"], sent["status"], sent["send"]["message_hash"]), ("sent", "sent", ap2["manifest"]["bindings"]["message_hash"]))
         w.assert_books(self)
 
 
@@ -924,8 +954,8 @@ class DatabaseGuardTests(unittest.TestCase):
             with w.c.db.transaction():
                 j = w.collection_journal("WIRE-G-1", "50000.00")
                 w.c.db.execute("""INSERT INTO prime_retainage_collections (id, retainage_invoice_id, amount, fee, method, mandate_id, status, journal_id,
-                                  provider_ref, received_at, recorded_by) VALUES ('rcl_raw_over', ?, '50000.00', '0.00', 'wire', NULL, 'received', ?,
-                                  'WIRE-G-1', ?, 'raw')""", (inv["id"], j["id"], RAW_TIME))
+                                  provider_ref, received_at, recorded_by, settlement_date) VALUES ('rcl_raw_over', ?, '50000.00', '0.00', 'wire', NULL,
+                                  'received', ?, 'WIRE-G-1', ?, 'raw', ?)""", (inv["id"], j["id"], RAW_TIME, inv["invoice_date"]))
         w.r.record_collection(retainage_invoice_id=inv["id"], period_id="P1", amount="1000", provider_ref="WIRE-G-2", actor="treasury", method="wire")
         with self.assertRaisesRegex(sqlite3.DatabaseError, "collected exactly while"):
             w.c.db.execute("UPDATE prime_retainage_invoices SET status='collected' WHERE id=?", (inv["id"],))
@@ -960,7 +990,9 @@ class LegacySendTests(unittest.TestCase):
 
     def test_a_bill_sent_before_the_upgrade_is_never_sent_again(self):
         path = os.path.join(tempfile.mkdtemp(), "legacy-send.sqlite")
-        legacy = [e for e in core_db.SCHEMA_CATALOG if e[1] not in (CONTROLS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_NAME)]
+        # the dates entries build on both controls entries, so a workspace from before them lacks them too
+        legacy = [e for e in core_db.SCHEMA_CATALOG
+                  if e[1] not in (CONTROLS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_NAME)]
         with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy):
             w = World(path=path)
             second = w.c.create_project(name="Synthetic dewatering wells", entity=ENTITY, budget="20000", customer_id=w.cust)["id"]
@@ -1106,6 +1138,7 @@ class SubledgerTests(unittest.TestCase):
         ret = w.r.retainage_receivable_items()
         self.assertEqual((ret["subledger_total"], ret["control_balance"], ret["reconciled"]), ("8000.00", "8000.00", True))
         self.assertEqual(sorted(i["open"] for i in ret["items"]), ["2000.00", "6000.00"])
+        self.assertEqual(w.r.deposits_items()["subledger_total"], "0.00")  # no deposits: 2400 ties at zero
         self.assertEqual(w.r.retainage_receivable_items(second["id"])["subledger_total"], "2000.00")
         checks = {ch["check"]: ch for ch in w.c.plugin("core_reconciliation").close_checks("P1")}
         self.assertTrue(checks["retainage receivable reconciled (1150)"]["ok"])
@@ -1152,9 +1185,11 @@ class GoldenAndSchemaTests(unittest.TestCase):
         w = World(contract="100000", path=path)
         w.posted("60000")
         status = {v["name"]: v for v in w.c.db.schema_status()["versions"]}
-        for name in (CONTROLS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_NAME):
+        for name in (CONTROLS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_NAME):
             self.assertTrue(status[name]["applied"] and status[name]["checksum_matches"], name)
         self.assertLess(status[CONTROLS_SCHEMA_NAME]["version"], status[CONTROLS_GUARDS_SCHEMA_NAME]["version"])
+        self.assertLess(status[CONTROLS_GUARDS_SCHEMA_NAME]["version"], status[DATES_CREDITS_SCHEMA_NAME]["version"])
+        self.assertLess(status[DATES_CREDITS_SCHEMA_NAME]["version"], status[DATES_CREDITS_GUARDS_SCHEMA_NAME]["version"])
         w.c.db.close()
         reopened = Cipher(path)
         try:

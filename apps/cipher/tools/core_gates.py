@@ -17,10 +17,11 @@ executable gates that drive a candidate accounting core through a
     G9 subledger-to-GL reconciliation
 
 Each gate returns ``{"gate", "title", "status", "evidence", "checks",
-"failed_checks", "advisories"}`` where ``status`` is ``pass``, ``fail`` or
-``not_run`` and every evidence line carries the concrete numbers observed.  A gate
+"failed_checks", "check_keys", "advisories"}`` where ``status`` is ``pass``, ``fail``
+or ``not_run`` and every evidence line carries the concrete numbers observed.  A gate
 passes only when every one of its hard checks passes; ``failed_checks`` lists the
-stable keys of the hard checks that failed.
+stable keys of the hard checks that failed and ``check_keys`` every hard check it
+recorded, in order (since ``cipher-core-gates/4``).
 
 Honest gates (the rules every gate follows):
 
@@ -46,9 +47,33 @@ Honest gates (the rules every gate follows):
   the candidate requires (for the native core, an owner claim code computed from
   ``CIPHER_OWNER_SECRET``, which the adapter configures for the drill only).
 
+* A multi-step scenario that cannot be completed on the candidate (a module is
+  missing, a step raises) fails every check it has not yet recorded, with the
+  reason ("not exercised"); it is never skipped silently.
+
 *Advisories* are non-gating observations beyond a gate's specification text
 (status ``pass`` or ``open``).  They lower the computed control-fit score but never
 disqualify a candidate on their own.
+
+Round three (``cipher-core-gates/4``) keeps every earlier check unchanged and adds:
+
+* G6: a supplier invoice matched to a bill and then reissued by the supplier
+  invalidates the ``bill.approve`` granted before (and a fresh approval after
+  re-matching posts the bill carrying the reissued invoice); a governed payee
+  change needs two people (the named requester and the login that recorded the
+  request cannot verify it, by the service or by raw SQL), cannot be approved
+  before its independent verification exists, binds that verification (a newer
+  evidence revision invalidates its approval), and once executed invalidates a
+  payment release granted before it;
+* G9: after the golden fixture, a supplier credit note (Dr 2000 / Cr 5000), a
+  credit memo (Dr 4000 / Cr 1100), a customer deposit (Dr 1000 / Cr 2400) and its
+  application (Dr 2400 / Cr 1100), and a write-off of a receivable more than 90
+  days past due (Dr 6100 / Cr 1100) each leave AP, AR and customer deposits
+  reconciled to their control accounts at the expected totals, and credits and
+  applications beyond what is open, or a write-off of a receivable not yet 90
+  days past due, are refused with nothing posted; two advisories report whether the
+  credited bill is released for exactly its open payable and whether the
+  period-close checklist reconciles customer deposits (2400).
 
 A candidate that passes every hard gate is scored with the plan's weights
 (accounting/control fit 35, AEC fit 20, maintainability/upgrades 20,
@@ -76,6 +101,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import datetime as _dt
 import json
 import os
 import re
@@ -91,7 +117,7 @@ from ..core.ids import hash_json, loads, new_id, sha256_hex, utcnow_iso
 from ..core.money import D, allocate, fmt, money, total
 from ..domain.ledger import RULE_VERSION
 
-SCORECARD_VERSION = "cipher-core-gates/3"
+SCORECARD_VERSION = "cipher-core-gates/4"
 PLAN_REFERENCE = "CIPHER-PLAN-v1.0 section 3 (Accounting foundation decision) and section 13 decision 4"
 
 GATE_IDS = ("G1", "G2", "G3", "G4", "G5", "G6", "G7", "G8", "G9")
@@ -170,8 +196,14 @@ CONTROL_PERIOD_LOCK = "period_lock"
 CONTROL_WRITE_AUTHORITY = "write_authority"
 CONTROL_QUARANTINE = "release_quarantine"
 CONTROL_APPROVAL_REFERENCE = "approval_reference"
+# cipher-core-gates/4: the two-person rule on payee changes (a verifier other than the requester,
+# and no approval before the verification exists), and the subledger bounds G9 drives.
+CONTROL_INDEPENDENT_VERIFICATION = "independent_verification"
+CONTROL_OPEN_AMOUNT = "open_amount"
+CONTROL_WRITE_OFF_AGE = "write_off_age"
 REFUSAL_CONTROLS = (CONTROL_EXACT_MONEY, CONTROL_JOURNAL_SEAL, CONTROL_IMMUTABILITY, CONTROL_PERIOD_LOCK, CONTROL_WRITE_AUTHORITY,
-                    CONTROL_QUARANTINE, CONTROL_APPROVAL_REFERENCE)
+                    CONTROL_QUARANTINE, CONTROL_APPROVAL_REFERENCE, CONTROL_INDEPENDENT_VERIFICATION, CONTROL_OPEN_AMOUNT,
+                    CONTROL_WRITE_OFF_AGE)
 # A declared marker must not match an empty reason or these generic, unrelated failures.
 _UNRELATED_REASONS = (
     "",
@@ -206,6 +238,10 @@ class CoreGateError(RuntimeError):
 
 class GateFault(RuntimeError):
     """A failure the gates inject on purpose to prove atomicity."""
+
+
+class GateScenarioError(RuntimeError):
+    """A gate scenario could not be prepared on the candidate (reported as a failed check)."""
 
 
 # --------------------------------------------------------------------------- #
@@ -421,6 +457,63 @@ class LedgerAdapter:
         """Change a payee's destination, through independent verification or a raw master-data edit."""
         self._unsupported("change_destination")
 
+    def approvals_on(self, subject_id: str) -> list[str]:
+        """The statuses of every approval recorded on ``subject_id``, oldest first."""
+        self._unsupported("approvals_on")
+
+    # ---- supplier invoices (AP intake; cipher-core-gates/4) --------------------------- #
+    def receive_supplier_invoice(self, project: dict[str, Any], commitment_id: str, *, number: str, amount: str, invoice_date: str) -> str:
+        """Receive the project supplier's invoice ``number`` (backed by its own invoice
+        document) billing ``commitment_id``; returns the invoice id."""
+        self._unsupported("receive_supplier_invoice")
+
+    def match_supplier_invoice(self, invoice_id: str) -> dict[str, Any]:
+        """Compute the invoice's match and execute it through the candidate's approval
+        (the invoice is then linked to its certified bill): ``{bill_id, status}``.  Raises
+        when the invoice does not match."""
+        self._unsupported("match_supplier_invoice")
+
+    def revise_supplier_invoice(self, invoice_id: str, *, reason: str, due_date: str) -> dict[str, Any]:
+        """Record the supplier's reissue of the invoice with another due date:
+        ``{version, due_date, status, content_hash}``."""
+        self._unsupported("revise_supplier_invoice")
+
+    def supplier_invoice(self, invoice_id: str) -> dict[str, Any]:
+        """``{version, due_date, status, content_hash}`` of the invoice as it stands."""
+        self._unsupported("supplier_invoice")
+
+    def bill_supplier_invoice(self, bill_id: str) -> dict[str, Any] | None:
+        """The supplier invoice the bill carries, as attached: ``{invoice_id, number, due_date,
+        invoice_hash}`` (None when it carries none)."""
+        self._unsupported("bill_supplier_invoice")
+
+    # ---- governed payee changes (cipher-core-gates/4) ---------------------------------- #
+    def request_destination_change(self, project: dict[str, Any], destination: str, *, requested_by: str, actor: str) -> str:
+        """Request a change of the project supplier's payment destination, named as requested
+        by ``requested_by`` and recorded by the login ``actor``; returns the change id."""
+        self._unsupported("request_destination_change")
+
+    def record_destination_verification(self, change_id: str, *, verified_by: str) -> None:
+        """Record the independent verification of a requested change by ``verified_by``
+        through a trusted channel, backed by a fresh verification evidence record."""
+        self._unsupported("record_destination_verification")
+
+    def revise_destination_evidence(self, change_id: str) -> None:
+        """Give the change's verification evidence record a newer revision (an amended call-back note)."""
+        self._unsupported("revise_destination_evidence")
+
+    def privileged_self_verify_destination_change(self, change_id: str) -> None:
+        """Attempt a direct database write marking a requested change verified by its own
+        requester, valid in every other respect (channel, current evidence used once)."""
+        self._unsupported("privileged_self_verify_destination_change")
+
+    def destination_change_status(self, change_id: str) -> str:
+        self._unsupported("destination_change_status")
+
+    def party_destination(self, party_id: str) -> dict[str, Any]:
+        """``{destination, destination_version}`` of the payee as it stands."""
+        self._unsupported("party_destination")
+
     # ---- payments and recovery ----------------------------------------------------- #
     def payment_intents(self) -> list[dict[str, Any]]:
         self._unsupported("payment_intents")
@@ -490,6 +583,57 @@ class LedgerAdapter:
         """Approve and partly pay an employee claim; ``None`` when the candidate has no such subledger."""
         self._unsupported("add_employee_reimbursement")
 
+    # ---- credits, write-offs and deposits (cipher-core-gates/4) ------------------------ #
+    def ap_open_bills(self, project_id: str) -> list[dict[str, Any]]:
+        """The project's supplier bills in the AP subledger: ``[{bill_id, open}]``."""
+        self._unsupported("ap_open_bills")
+
+    def ar_open_bills(self, project_id: str) -> list[dict[str, Any]]:
+        """The project's customer progress bills in the AR subledger: ``[{prime_bill_id, open}]``."""
+        self._unsupported("ar_open_bills")
+
+    def post_supplier_credit_note(self, bill_id: str, amount: str, *, period_id: str) -> dict[str, Any]:
+        """Post a supplier credit note of ``amount`` against a posted bill through the candidate's
+        governed path, backed by its own credit-note document: ``{credit_note_id, journal_id}``."""
+        self._unsupported("post_supplier_credit_note")
+
+    def post_credit_memo(self, prime_bill_id: str, amount: str, *, period_id: str) -> dict[str, Any]:
+        """Post a customer credit memo of ``amount`` through the governed path: ``{credit_memo_id, journal_id}``."""
+        self._unsupported("post_credit_memo")
+
+    def record_customer_deposit(self, project_id: str, amount: str, *, period_id: str) -> str:
+        """Record a customer advance (by check) on the project; returns the deposit id."""
+        self._unsupported("record_customer_deposit")
+
+    def apply_customer_deposit(self, deposit_id: str, prime_bill_id: str, amount: str, *, period_id: str) -> dict[str, Any]:
+        """Apply ``amount`` of a deposit to a progress bill through the governed path: ``{application_id, journal_id}``."""
+        self._unsupported("apply_customer_deposit")
+
+    def setup_aged_prime_bill(self, *, certified: str, days_past_due: int) -> dict[str, Any]:
+        """A posted progress bill (10% retainage) on a new customer's project, invoiced so that
+        its due date lies ``days_past_due`` days before today:
+        ``{project_id, prime_bill_id, amount_due, due_date, days_past_due}``."""
+        self._unsupported("setup_aged_prime_bill")
+
+    def post_write_off(self, prime_bill_id: str, amount: str, *, period_id: str) -> dict[str, Any]:
+        """Write ``amount`` of a receivable off through the governed path: ``{write_off_id, journal_id}``."""
+        self._unsupported("post_write_off")
+
+    def deposits_reconciliation(self, project_id: str | None = None) -> dict[str, Any]:
+        """Unapplied customer deposits against their control account:
+        ``{subledger_total, control_balance, reconciled}`` (workspace-wide for ``None``)."""
+        self._unsupported("deposits_reconciliation")
+
+    def workspace_reconciliation(self) -> dict[str, Any]:
+        """``{ap, ar, customer_deposits}`` across the whole workspace, each
+        ``{subledger_total, control_balance, reconciled}``."""
+        self._unsupported("workspace_reconciliation")
+
+    def close_checklist(self, period_id: str) -> list[dict[str, Any]] | None:
+        """The candidate's period-close checklist for ``period_id`` (``[{check, ok, detail}]``),
+        or None when it has none."""
+        return None
+
     # ---- extension paths ------------------------------------------------------------ #
     def registered_plugins(self) -> list[str]:
         return []
@@ -534,6 +678,9 @@ class NativeCipherAdapter(LedgerAdapter):
         # The owner secret the restore drill configures (CIPHER_OWNER_SECRET) while a claim
         # runs; synthetic, per adapter, shared with the restored copies it opens.
         self._owner_secret = "gate-owner-secret-" + secrets.token_hex(16)
+        # destination change -> (project whose evidence register holds its verification, evidence document)
+        self._change_project: dict[str, str] = {}
+        self._change_evidence: dict[str, str] = {}
 
     def available(self) -> tuple[bool, str]:
         return True, "in-process: apps.cipher.service.Cipher on a synthetic SQLite workspace"
@@ -547,6 +694,13 @@ class NativeCipherAdapter(LedgerAdapter):
             CONTROL_WRITE_AUTHORITY: r"WriteAuthorityError|write authority",
             CONTROL_QUARANTINE: r"ReleaseQuarantined|quarantined",
             CONTROL_APPROVAL_REFERENCE: r"approval",
+            # the service's two-person refusal, the schema trigger's (destination_changes_lifecycle)
+            # and the refusal to approve a change that has no verification yet
+            CONTROL_INDEPENDENT_VERIFICATION: r"two-person rule|a verifier other than the requester|has no verification evidence",
+            # credits and applications are bounded by what is open (service), and the database
+            # refuses an adjustment beyond what is open on its prime bill or its deposit
+            CONTROL_OPEN_AMOUNT: r"exceeds (?:what is open|the \S+ (?:now )?(?:open|unapplied))|cannot exceed (?:what is open|the unapplied balance)",
+            CONTROL_WRITE_OFF_AGE: r"\d+ days past due|days past the due date",
         }
 
     # ---- workspace ---------------------------------------------------------- #
@@ -818,6 +972,84 @@ class NativeCipherAdapter(LedgerAdapter):
         else:
             self.raw_sql("UPDATE parties SET destination=?, destination_version=destination_version+1 WHERE id=?", (destination, party_id))
 
+    def approvals_on(self, subject_id) -> list[str]:
+        return [r["status"] for r in self.c.db.query("SELECT status FROM approvals WHERE subject_id=? ORDER BY requested_at, id", (subject_id,))]
+
+    def _evidence_revision(self, project_id: str, kind: str, label: str) -> dict[str, Any]:
+        """A new document of ``kind`` on the project with one revision of unique synthetic content."""
+        n = self._next()
+        doc = self.c.evidence.register_document(project_id=project_id, kind=kind, title=f"{label} ({n})", actor="gate")
+        return self.c.evidence.add_revision(document_id=doc["id"], content=f"gate synthetic {kind} {n}: {label}".encode(), note=label, actor="gate")
+
+    # ---- supplier invoices (AP intake) ------------------------------------------------ #
+    def _ap_intake(self):
+        plugin = self._plugins().get("ap_intake")
+        if plugin is None:
+            raise GateScenarioError("no supplier-invoice intake: the ap_intake module is not registered")
+        return plugin
+
+    def receive_supplier_invoice(self, project, commitment_id, *, number, amount, invoice_date) -> str:
+        rev = self._evidence_revision(project["project_id"], "supplier_invoice", f"Gate synthetic supplier invoice {number}")
+        inv = self._ap_intake().receive_invoice(project["supplier_id"], number, invoice_date, amount, rev["content_hash"], "gate-ap-clerk",
+                                                project_id=project["project_id"], commitment_id=commitment_id)
+        return inv["id"]
+
+    def match_supplier_invoice(self, invoice_id) -> dict[str, Any]:
+        computed = self._ap_intake().match(invoice_id, "gate-ap-clerk")
+        if computed["status"] != "matched":
+            raise GateScenarioError(f"supplier invoice {invoice_id} did not match: {', '.join(computed['exceptions'])}")
+        r = self.c.approve_and_execute("ap_intake.match_invoice", invoice_id, actor_role="accountant", actor="gate-accountant")
+        return {"bill_id": r.result.get("bill"), "status": r.result.get("status")}
+
+    def revise_supplier_invoice(self, invoice_id, *, reason, due_date) -> dict[str, Any]:
+        self._ap_intake().revise_invoice(invoice_id, "gate-ap-clerk", reason=reason, due_date=due_date)
+        return self.supplier_invoice(invoice_id)
+
+    def supplier_invoice(self, invoice_id) -> dict[str, Any]:
+        inv = self._ap_intake().invoice(invoice_id)
+        return {k: inv[k] for k in ("version", "due_date", "status", "content_hash")}
+
+    def bill_supplier_invoice(self, bill_id) -> dict[str, Any] | None:
+        b = self.c.bills.get(bill_id)
+        if not b.get("supplier_invoice_id"):
+            return None
+        return {"invoice_id": b["supplier_invoice_id"], "number": b.get("supplier_invoice_number"), "due_date": b.get("due_date"),
+                "invoice_hash": b.get("supplier_invoice_hash")}
+
+    # ---- governed payee changes (payments: party.verify_destination) ------------------------ #
+    def request_destination_change(self, project, destination, *, requested_by, actor) -> str:
+        change = self.c.payments.request_destination_change(project["supplier_id"], destination, requested_by,
+                                                             "gate drill: supplier letter announcing a new bank account", actor)
+        self._change_project[change["id"]] = project["project_id"]
+        return change["id"]
+
+    def record_destination_verification(self, change_id, *, verified_by) -> None:
+        rev = self._evidence_revision(self._change_project[change_id], "destination_verification", "Gate synthetic payee call-back record")
+        self._change_evidence[change_id] = rev["document_id"]
+        self.c.payments.record_verification_evidence(change_id, "call-back to number on file", verified_by, rev["content_hash"], "gate-bank-admin")
+
+    def revise_destination_evidence(self, change_id) -> None:
+        n = self._next()
+        self.c.evidence.add_revision(document_id=self._change_evidence[change_id], content=f"gate synthetic amended call-back record {n}".encode(),
+                                     note="amended call-back record", actor="gate")
+
+    def privileged_self_verify_destination_change(self, change_id) -> None:
+        # Valid in every other respect: a trusted channel, the current revision of a fresh
+        # destination_verification record used by no other change, recorder and time set.
+        rev = self._evidence_revision(self._change_project[change_id], "destination_verification", "Gate synthetic payee record for a raw write")
+        self.raw_sql(
+            "UPDATE destination_changes SET status='evidenced', version=version+1, channel=?, verified_by=requested_by, evidence_hash=?, "
+            "evidence_revision_id=?, evidence_recorded_by=?, evidenced_at=? WHERE id=?",
+            ("call-back to number on file", rev["content_hash"], rev["id"], "privileged-editor", utcnow_iso(), change_id),
+        )
+
+    def destination_change_status(self, change_id) -> str:
+        return self.c.payments.destination_change(change_id)["status"]
+
+    def party_destination(self, party_id) -> dict[str, Any]:
+        p = self.c.party(party_id)
+        return {"destination": p["destination"], "destination_version": p["destination_version"]}
+
     # ---- payments and recovery ----------------------------------------------------- #
     def payment_intents(self) -> list[dict[str, Any]]:
         return [{k: p[k] for k in ("id", "bill_id", "status", "amount", "destination", "destination_version", "provider_ref")} for p in self.c.payments.list()]
@@ -929,6 +1161,75 @@ class NativeCipherAdapter(LedgerAdapter):
         payment = plugin.record_payment(claim["id"], paid, actor="gate")
         self.c.approve_and_execute("reimbursement.pay", payment["id"], actor="gate", period_id=period_id)
         return {"claim_id": claim["id"], "payment_id": payment["id"]}
+
+    # ---- credits, write-offs and deposits ------------------------------------------------ #
+    def ap_open_bills(self, project_id) -> list[dict[str, Any]]:
+        return [{"bill_id": i["bill_id"], "open": i["open"]} for i in self.c.bills.ap_open_items(project_id)["items"] if i.get("bill_id")]
+
+    def ar_open_bills(self, project_id) -> list[dict[str, Any]]:
+        return [{"prime_bill_id": i["prime_bill_id"], "open": i["open"]} for i in self.c.receivables.ar_open_items(project_id)["items"]
+                if i.get("kind") == "prime_bill"]
+
+    def post_supplier_credit_note(self, bill_id, amount, *, period_id) -> dict[str, Any]:
+        bill = self.c.bills.get(bill_id)
+        rev = self._evidence_revision(bill["project_id"], "supplier_credit_note", "Gate synthetic supplier credit note for rejected sheet piles")
+        note = self.c.bills.prepare_credit_note(bill_id, amount, "gate drill: supplier credit for rejected sheet piles", rev["content_hash"], "gate-accountant")
+        r = self.c.approve_and_execute("bill.credit_note", note["id"], actor_role="accountant", actor="gate-accountant", period_id=period_id)
+        return {"credit_note_id": note["id"], "journal_id": r.result["journal_id"]}
+
+    def post_credit_memo(self, prime_bill_id, amount, *, period_id) -> dict[str, Any]:
+        bill = self.c.receivables.get(prime_bill_id)
+        rev = self._evidence_revision(bill["project_id"], "credit_memo_evidence", "Gate synthetic agreed concession")
+        memo = self.c.receivables.prepare_credit_memo(prime_bill_id, amount, "gate drill: agreed concession on a pay item", rev["content_hash"], "gate-accountant")
+        r = self.c.approve_and_execute("prime_bill.credit_memo", memo["id"], actor_role="accountant", actor="gate-accountant", period_id=period_id)
+        return {"credit_memo_id": memo["id"], "journal_id": r.result["journal_id"]}
+
+    def record_customer_deposit(self, project_id, amount, *, period_id) -> str:
+        n = self._next()
+        customer = self.c.project(project_id)["customer_id"]
+        deposit = self.c.receivables.record_deposit(customer, project_id, amount, f"GATE-DEP-{n:04d}", "check", "gate-treasury", period_id=period_id)
+        return deposit["id"]
+
+    def apply_customer_deposit(self, deposit_id, prime_bill_id, amount, *, period_id) -> dict[str, Any]:
+        draft = self.c.receivables.prepare_deposit_application(deposit_id, prime_bill_id, amount, "gate-accountant")
+        r = self.c.approve_and_execute("receivable.apply_deposit", draft["id"], actor_role="accountant", actor="gate-accountant", period_id=period_id)
+        return {"application_id": draft["id"], "journal_id": r.result["journal_id"]}
+
+    def setup_aged_prime_bill(self, *, certified, days_past_due) -> dict[str, Any]:
+        n = self._next()
+        r = self.c.receivables
+        customer = self.c.add_party(kind="customer", name=f"Gate Synthetic Utility District {n}", actor="gate")
+        project = self.c.create_project(name=f"Gate synthetic aged receivable project {n}", entity="S&A Solutions LLC (synthetic)", budget="50000",
+                                        customer_id=customer["id"], actor="gate")
+        today = r.today()
+        terms = int(r.payment_terms(customer["id"])["days"])
+        invoice_date = today - _dt.timedelta(days=days_past_due + terms)
+        # an explicit invoice date is never before the start of its bill's period
+        period = f"G9-AGED-{n}"
+        self.open_period(period, (invoice_date - _dt.timedelta(days=30)).isoformat(), (invoice_date + _dt.timedelta(days=30)).isoformat())
+        pb = r.certify(project_id=project["id"], period_id=period, certified_cumulative=certified, retainage_rate="0.10", actor="gate",
+                       invoice_date=invoice_date.isoformat())
+        self.c.approve_and_execute("prime_bill.approve", pb["id"], actor_role="accountant", actor="gate-accountant")
+        item = next(i for i in r.ar_open_items(project["id"])["items"] if i.get("prime_bill_id") == pb["id"])
+        return {"project_id": project["id"], "prime_bill_id": pb["id"], "amount_due": item["amount_due"], "due_date": item["due_date"],
+                "days_past_due": item["days_past_due"], "period_id": period}
+
+    def post_write_off(self, prime_bill_id, amount, *, period_id) -> dict[str, Any]:
+        draft = self.c.receivables.prepare_write_off(prime_bill_id, amount, "gate drill: customer insolvent for this portion", "gate-controller")
+        r = self.c.approve_and_execute("receivable.write_off", draft["id"], actor_role="controller", actor="gate-controller", period_id=period_id)
+        return {"write_off_id": draft["id"], "journal_id": r.result["journal_id"]}
+
+    def deposits_reconciliation(self, project_id=None) -> dict[str, Any]:
+        return self.c.receivables.deposits_items(project_id)
+
+    def workspace_reconciliation(self) -> dict[str, Any]:
+        return {"ap": self.c.bills.ap_open_items(), "ar": self.c.receivables.ar_open_items(), "customer_deposits": self.c.receivables.deposits_items()}
+
+    def close_checklist(self, period_id) -> list[dict[str, Any]] | None:
+        close = self._plugins().get("close")
+        if close is None or not hasattr(close, "checklist"):
+            return None
+        return close.checklist(period_id)
 
     # ---- extension paths ------------------------------------------------------------ #
     def registered_plugins(self) -> list[str]:
@@ -1123,11 +1424,13 @@ class _Recorder:
         self.evidence: list[str] = []
         self.advisories: list[dict[str, Any]] = []
         self.failed_keys: list[str] = []
+        self.keys: list[str] = []  # every check recorded, in order
         self.passed = 0
         self.failed = 0
 
     def check(self, ok: bool, text: str, key: str | None = None) -> bool:
         key = key or f"{self.gate_id.lower()}.check{self.passed + self.failed + 1}"
+        self.keys.append(key)
         if ok:
             self.passed += 1
         else:
@@ -1145,6 +1448,7 @@ class _Recorder:
     def abort(self, exc: BaseException) -> None:
         self.failed += 1
         self.failed_keys.append(f"{self.gate_id.lower()}.aborted")
+        self.keys.append(f"{self.gate_id.lower()}.aborted")
         self.evidence.append(f"FAIL: gate aborted by {type(exc).__name__}: {_short(exc, 300)}")
 
     def result(self) -> dict[str, Any]:
@@ -1156,8 +1460,29 @@ class _Recorder:
             "evidence": self.evidence,
             "checks": {"passed": self.passed, "failed": self.failed, "total": self.passed + self.failed},
             "failed_checks": self.failed_keys,
+            "check_keys": self.keys,
             "advisories": self.advisories,
         }
+
+
+@contextlib.contextmanager
+def _scenario(r: _Recorder, keys: tuple[str, ...], label: str) -> Iterator[None]:
+    """Run a multi-step scenario whose checks are ``keys``.  If any step raises, every
+    check it has not recorded yet is recorded as FAILED with the reason: a scenario the
+    candidate cannot complete is never skipped and never passes."""
+    try:
+        yield
+    except Exception as exc:
+        reason = f"{type(exc).__name__}: {_short(exc)}"
+        missing = [k for k in keys if k not in r.keys]
+        for key in missing:
+            r.check(False, f"{label} did not complete, so this check was not exercised ({reason})", key=key)
+        if not missing:
+            r.note(f"{label} raised after its checks were recorded ({reason})")
+
+
+def _lines_of(journal: dict[str, Any]) -> list[tuple[str, str, str]]:
+    return [(ln["account"], ln["debit"], ln["credit"]) for ln in journal["lines"]]
 
 
 def _line(account: str, side: str, amount: str) -> dict[str, Any]:
@@ -1622,6 +1947,123 @@ def gate_g6(a: LedgerAdapter, r: _Recorder) -> None:
             f"control case: a fresh approval after re-verification releases {intents[0]['amount'] if intents else '-'} to {intents[0]['destination'] if intents else '-'} "
             f"(destination version {intents[0]['destination_version'] if intents else '-'})", key="g6.fresh_approval")
 
+    _g6_supplier_invoice(a, r, project, cmt, line)
+    _g6_payee_change(a, r, project)
+
+
+G6_INVOICE_NUMBER = "GATE-SI-0001"
+G6_INVOICE_DATE = "2026-10-15"
+G6_REISSUED_DUE = "2026-12-15"
+G6_INVOICE_KEYS = ("g6.supplier_invoice_change", "g6.supplier_invoice_fresh_approval")
+G6_PAYEE_KEYS = ("g6.payee_change_two_person", "g6.payee_change_raw_self_verification", "g6.payee_change_requires_evidence",
+                 "g6.payee_change_evidence_bound", "g6.payee_change_independent_verifier", "g6.payee_change_invalidates_release")
+VERIFY_DESTINATION = "party.verify_destination"
+
+
+def _g6_supplier_invoice(a: LedgerAdapter, r: _Recorder, project: dict[str, Any], cmt: dict[str, Any], line: str) -> None:
+    """Plan section 11 (supplier-bill intake/matching/approval) and section 6 (an approval
+    binds every attachment): a supplier invoice attached to a bill is part of what
+    ``bill.approve`` approves, so the supplier reissuing it invalidates that approval."""
+    with _scenario(r, G6_INVOICE_KEYS, "the supplier-invoice binding scenario"):
+        bill = a.certify_bill(cmt["commitment_id"], "G6", line, "30000")
+        invoice = a.receive_supplier_invoice(project, cmt["commitment_id"], number=G6_INVOICE_NUMBER, amount=bill["amount_due"], invoice_date=G6_INVOICE_DATE)
+        matched = a.match_supplier_invoice(invoice)
+        attached = a.bill_supplier_invoice(bill["bill_id"]) or {}
+        approval = a.request_and_grant("bill.approve", bill["bill_id"], actor_role="accountant")
+        reissued = a.revise_supplier_invoice(invoice, reason="gate drill: the supplier reissued the invoice with a corrected due date", due_date=G6_REISSUED_DUE)
+        before = a.journal_count()
+        refused, why, _ = _attempt(a.execute_approval, approval, actor="gate-accountant")
+        after = a.journal_count()
+        status, bill_status = a.approval_status(approval), a.bill_status(bill["bill_id"])
+        r.check(matched["bill_id"] == bill["bill_id"] and attached.get("invoice_id") == invoice and refused and status == "invalidated"
+                and bill_status == "draft" and after == before,
+                f"supplier invoice {G6_INVOICE_NUMBER} for {bill['amount_due']} (due {attached.get('due_date')}) was matched to bill {bill['bill_id']} "
+                f"(match linked bill {matched['bill_id']}) and bill.approve granted; the supplier then reissued it (version {reissued['version']}, due {reissued['due_date']}): "
+                f"executing the earlier approval {'was refused (' + why + ')' if refused else 'was ACCEPTED'}; status {status}; bill {bill_status}; journals {before} -> {after}",
+                key="g6.supplier_invoice_change")
+        a.match_supplier_invoice(invoice)
+        before = a.journal_count()
+        a.approve_and_execute("bill.approve", bill["bill_id"], actor_role="accountant")
+        carried = a.bill_supplier_invoice(bill["bill_id"]) or {}
+        current = a.supplier_invoice(invoice)
+        bill_status = a.bill_status(bill["bill_id"])
+        r.check(bill_status == "posted" and a.journal_count() == before + 1 and carried.get("invoice_hash") == current["content_hash"]
+                and carried.get("due_date") == G6_REISSUED_DUE == current["due_date"],
+                f"control case: re-matching the reissued invoice and a fresh bill.approve post the bill ({bill_status}; journals {before} -> {a.journal_count()}); "
+                f"it carries invoice version {current['version']} due {carried.get('due_date')} (hash matches the invoice record: "
+                f"{carried.get('invoice_hash') == current['content_hash']})", key="g6.supplier_invoice_fresh_approval")
+
+
+def _g6_payee_change(a: LedgerAdapter, r: _Recorder, project: dict[str, Any]) -> None:
+    """Plan section 6: vendor bank changes are verified independently through a trusted
+    channel (a different person), and an approval binds the verified destination."""
+    supplier = project["supplier_id"]
+    verification = (CONTROL_INDEPENDENT_VERIFICATION,)
+    with _scenario(r, G6_PAYEE_KEYS, "the governed payee-change scenario"):
+        # Its own subcontract and posted bill, so the release binding below does not depend on
+        # the supplier-invoice scenario.
+        cmt = a.setup_commitment(project, amounts=("30000.00",))
+        bill = a.certify_bill(cmt["commitment_id"], "G6", cmt["line_ids"][0], "10000")
+        a.approve_and_execute("bill.approve", bill["bill_id"], actor_role="accountant")
+        start = a.party_destination(supplier)
+
+        own = a.request_destination_change(project, "ACH-SIM-GATE-SELF", requested_by="gate-site-pm", actor="gate-ap-clerk")
+        attempts = []
+        for label, verifier in (("the named requester (as ' Gate-Site-PM ')", " Gate-Site-PM "),
+                                ("the login that recorded the request (as 'GATE-AP-CLERK')", "GATE-AP-CLERK")):
+            outcome, why = _refused_by(a, verification, a.record_destination_verification, own, verified_by=verifier)
+            attempts.append((outcome == "refused", f"verification by {label} {_verdict(outcome, why)}"))
+        status, now = a.destination_change_status(own), a.party_destination(supplier)
+        r.check(all(ok for ok, _ in attempts) and status == "pending" and now == start,
+                "a payee change requested by gate-site-pm and recorded by login gate-ap-clerk: " + "; ".join(text for _, text in attempts)
+                + f"; the change stays {status}; destination version {start['destination_version']} -> {now['destination_version']}",
+                key="g6.payee_change_two_person")
+
+        raw = a.request_destination_change(project, "ACH-SIM-GATE-RAW", requested_by="gate-site-pm", actor="gate-ap-clerk")
+        outcome, why = _refused_by(a, verification, a.privileged_self_verify_destination_change, raw)
+        status = a.destination_change_status(raw)
+        r.check(outcome == "refused" and status == "pending",
+                f"privileged path: a raw UPDATE marking a change verified by its own requester (trusted channel, current evidence used once) {_verdict(outcome, why)}; "
+                f"the change stays {status}", key="g6.payee_change_raw_self_verification")
+
+        governed = a.request_destination_change(project, "ACH-SIM-GATE-GOVERNED", requested_by="gate-site-pm", actor="gate-ap-clerk")
+        outcome, why = _refused_by(a, verification, a.request_and_grant, VERIFY_DESTINATION, governed, actor_role="bank_admin")
+        recorded, status = a.approvals_on(governed), a.destination_change_status(governed)
+        r.check(outcome == "refused" and not recorded and status == "pending",
+                f"requesting {VERIFY_DESTINATION} for a change with no independent verification yet {_verdict(outcome, why)}; "
+                f"approvals recorded on it: {len(recorded)}; the change stays {status}", key="g6.payee_change_requires_evidence")
+
+        amended = a.request_destination_change(project, "ACH-SIM-GATE-AMENDED", requested_by="gate-site-pm", actor="gate-ap-clerk")
+        a.record_destination_verification(amended, verified_by="gate-external-accountant")
+        stale = a.request_and_grant(VERIFY_DESTINATION, amended, actor_role="bank_admin")
+        a.revise_destination_evidence(amended)
+        refused, why, _ = _attempt(a.execute_approval, stale, actor="gate-bank-admin")
+        status, now = a.approval_status(stale), a.party_destination(supplier)
+        r.check(refused and status == "invalidated" and now == start,
+                f"a {VERIFY_DESTINATION} approval granted on an independently verified change is refused once its verification record gains a newer revision "
+                f"({why}); status {status}; destination version {start['destination_version']} -> {now['destination_version']}", key="g6.payee_change_evidence_bound")
+
+        release = a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury")
+        a.record_destination_verification(governed, verified_by="gate-external-accountant")
+        a.execute_approval(a.request_and_grant(VERIFY_DESTINATION, governed, actor_role="bank_admin"), actor="gate-bank-admin")
+        moved, status = a.party_destination(supplier), a.destination_change_status(governed)
+        r.check(status == "executed" and moved["destination"] == "ACH-SIM-GATE-GOVERNED" and moved["destination_version"] == start["destination_version"] + 1,
+                f"control case: a change requested by gate-site-pm (recorded by gate-ap-clerk) and verified by gate-external-accountant executes under "
+                f"{VERIFY_DESTINATION}: change {status}, destination {start['destination']} v{start['destination_version']} -> {moved['destination']} v{moved['destination_version']}",
+                key="g6.payee_change_independent_verifier")
+
+        before = [p for p in a.payment_intents() if p["bill_id"] == bill["bill_id"]]
+        refused, why, _ = _attempt(a.execute_approval, release, actor="treasury")
+        status = a.approval_status(release)
+        mid = [p for p in a.payment_intents() if p["bill_id"] == bill["bill_id"]]
+        a.execute_approval(a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury"), actor="treasury")
+        fresh = [p for p in a.payment_intents() if p["bill_id"] == bill["bill_id"]]
+        r.check(refused and status == "invalidated" and not before and not mid and len(fresh) == 1 and fresh[0]["amount"] == bill["amount_due"]
+                and fresh[0]["destination"] == moved["destination"] and fresh[0]["destination_version"] == moved["destination_version"],
+                f"a {bill['amount_due']} release granted before the governed change {'is refused (' + why + ')' if refused else 'was ACCEPTED'}; status {status}; "
+                f"intents on the bill {len(before)} -> {len(mid)}; a fresh approval releases {fresh[0]['amount'] if fresh else '-'} to "
+                f"{fresh[0]['destination'] if fresh else '-'} v{fresh[0]['destination_version'] if fresh else '-'}", key="g6.payee_change_invalidates_release")
+
 
 # ---- G7 ---------------------------------------------------------------------- #
 
@@ -1919,6 +2361,162 @@ def gate_g9(a: LedgerAdapter, r: _Recorder) -> None:
     r.check(bool(tb["balanced"]), f"trial balance after the fixture: Dr {tb['total_debit']} = Cr {tb['total_credit']} over {tb['journal_count']} journals", key="g9.trial_balance")
     r.note(f"other control balances for context: retainage payable 2050 {_s(a.balance('2050'))}, stored materials 1300 {_s(a.balance('1300'))}, "
            f"operating bank 1000 {_s(a.balance('1000'))}, provider clearing 1200 {_s(a.balance('1200'))}")
+    _g9_adjustments(a, r, fixture)
+
+
+# cipher-core-gates/4: credits, a write-off and a customer deposit after the golden fixture
+G9_CREDIT_NOTE = "1500.00"
+G9_CREDIT_MEMO = "1000.00"
+G9_DEPOSIT = "5000.00"
+G9_APPLICATION = "2000.00"
+G9_YOUNG_WRITE_OFF = "100.00"
+G9_AGED_CERTIFIED = "10000.00"
+G9_AGED_DAYS_PAST_DUE = 100
+G9_WRITE_OFF = "4000.00"
+G9_ADJUSTMENT_KEYS = ("g9.credit_note_ap", "g9.credit_note_bounded", "g9.credit_memo_ar", "g9.deposit_recorded", "g9.deposit_application",
+                      "g9.deposit_application_bounded", "g9.write_off_requires_age", "g9.write_off_ar", "g9.adjusted_totals")
+CENT = Decimal("0.01")
+
+
+def _g9_adjustments(a: LedgerAdapter, r: _Recorder, fixture: dict[str, Any]) -> None:
+    """Plan section 6, invariants 5 and 6: credit notes, deposits, partial payments and
+    write-offs stay traceable, and AP, AR and the other control balances (customer
+    deposits 2400) reconcile exactly to the GL after each of them."""
+    project_id, period = fixture["project_id"], fixture["open_period"]
+    with _scenario(r, G9_ADJUSTMENT_KEYS, "the credits, write-off and deposit scenario"):
+        bills = [b for b in a.ap_open_bills(project_id) if D(b["open"]) > 0]
+        primes = [b for b in a.ar_open_bills(project_id) if D(b["open"]) > 0]
+        if len(bills) != 1 or len(primes) != 1:
+            raise GateScenarioError(f"expected one open supplier bill and one open progress bill after the golden fixture, found {len(bills)} and {len(primes)}")
+        bill, prime = bills[0], primes[0]
+
+        # supplier credit note: Dr 2000 / Cr 5000 against the open 18000.00 bill
+        ap_open = D(bill["open"])
+        note = a.post_supplier_credit_note(bill["bill_id"], G9_CREDIT_NOTE, period_id=period)
+        ap = a.subledger_reconciliation(project_id)["ap"]
+        gl_ap = a.balance("2000", project_id=project_id)
+        expected_ap = money(ap_open - D(G9_CREDIT_NOTE))
+        lines = _lines_of(a.journal(note["journal_id"]))
+        r.check(bool(ap["reconciled"]) and D(ap["subledger_total"]) == gl_ap == expected_ap
+                and lines == [("2000", G9_CREDIT_NOTE, "0.00"), ("5000", "0.00", G9_CREDIT_NOTE)],
+                f"supplier credit note {G9_CREDIT_NOTE} on the {_s(ap_open)} bill posts {lines}; AP subledger {ap['subledger_total']} = GL 2000 {_s(gl_ap)} "
+                f"(expected {_s(expected_ap)})", key="g9.credit_note_ap")
+
+        over = fmt(expected_ap + CENT)
+        before = a.journal_count()
+        outcome, why = _refused_by(a, (CONTROL_OPEN_AMOUNT,), a.post_supplier_credit_note, bill["bill_id"], over, period_id=period)
+        ap2, gl_ap2 = a.subledger_reconciliation(project_id)["ap"], a.balance("2000", project_id=project_id)
+        r.check(outcome == "refused" and a.journal_count() == before and ap2["subledger_total"] == ap["subledger_total"] and gl_ap2 == gl_ap,
+                f"a further credit note of {over}, a cent above the {_s(expected_ap)} still open, {_verdict(outcome, why)}; journals {before} -> {a.journal_count()}; "
+                f"AP stays {ap2['subledger_total']} = GL {_s(gl_ap2)}", key="g9.credit_note_bounded")
+
+        # credit memo: Dr 4000 / Cr 1100 against the open 54000.00 progress bill
+        ar_open = D(prime["open"])
+        memo = a.post_credit_memo(prime["prime_bill_id"], G9_CREDIT_MEMO, period_id=period)
+        ar = a.subledger_reconciliation(project_id)["ar"]
+        gl_ar = a.balance("1100", project_id=project_id)
+        expected_ar = money(ar_open - D(G9_CREDIT_MEMO))
+        lines = _lines_of(a.journal(memo["journal_id"]))
+        r.check(bool(ar["reconciled"]) and D(ar["subledger_total"]) == gl_ar == expected_ar
+                and lines == [("4000", G9_CREDIT_MEMO, "0.00"), ("1100", "0.00", G9_CREDIT_MEMO)],
+                f"credit memo {G9_CREDIT_MEMO} on the {_s(ar_open)} progress bill posts {lines}; AR subledger {ar['subledger_total']} = GL 1100 {_s(gl_ar)} "
+                f"(expected {_s(expected_ar)})", key="g9.credit_memo_ar")
+
+        # customer deposit: Dr 1000 / Cr 2400, unapplied
+        deposit = a.record_customer_deposit(project_id, G9_DEPOSIT, period_id=period)
+        dep, dep_all = a.deposits_reconciliation(project_id), a.deposits_reconciliation(None)
+        gl_dep, gl_dep_all = a.balance("2400", project_id=project_id), a.balance("2400")
+        r.check(bool(dep["reconciled"]) and bool(dep_all["reconciled"]) and D(dep["subledger_total"]) == gl_dep == D(G9_DEPOSIT) == gl_dep_all,
+                f"customer deposit {G9_DEPOSIT} by check: unapplied-deposit subledger {dep['subledger_total']} = GL 2400 {_s(gl_dep)} on the project "
+                f"(workspace {dep_all['subledger_total']} = {_s(gl_dep_all)})", key="g9.deposit_recorded")
+
+        # application: Dr 2400 / Cr 1100
+        applied = a.apply_customer_deposit(deposit, prime["prime_bill_id"], G9_APPLICATION, period_id=period)
+        dep, ar = a.deposits_reconciliation(project_id), a.subledger_reconciliation(project_id)["ar"]
+        gl_dep, gl_ar = a.balance("2400", project_id=project_id), a.balance("1100", project_id=project_id)
+        expected_dep, expected_ar2 = money(D(G9_DEPOSIT) - D(G9_APPLICATION)), money(expected_ar - D(G9_APPLICATION))
+        lines = _lines_of(a.journal(applied["journal_id"]))
+        r.check(bool(dep["reconciled"]) and bool(ar["reconciled"]) and D(dep["subledger_total"]) == gl_dep == expected_dep
+                and D(ar["subledger_total"]) == gl_ar == expected_ar2 and lines == [("2400", G9_APPLICATION, "0.00"), ("1100", "0.00", G9_APPLICATION)],
+                f"applying {G9_APPLICATION} of the deposit to the progress bill posts {lines}; deposits {dep['subledger_total']} = GL 2400 {_s(gl_dep)} "
+                f"(expected {_s(expected_dep)}); AR {ar['subledger_total']} = GL 1100 {_s(gl_ar)} (expected {_s(expected_ar2)})", key="g9.deposit_application")
+
+        over = fmt(expected_dep + CENT)
+        before = a.journal_count()
+        outcome, why = _refused_by(a, (CONTROL_OPEN_AMOUNT,), a.apply_customer_deposit, deposit, prime["prime_bill_id"], over, period_id=period)
+        dep2, gl_dep2, gl_ar2 = a.deposits_reconciliation(project_id), a.balance("2400", project_id=project_id), a.balance("1100", project_id=project_id)
+        r.check(outcome == "refused" and a.journal_count() == before and dep2["subledger_total"] == dep["subledger_total"] and gl_dep2 == gl_dep and gl_ar2 == gl_ar,
+                f"applying {over}, a cent above the {_s(expected_dep)} unapplied, {_verdict(outcome, why)}; journals {before} -> {a.journal_count()}; "
+                f"deposits stay {dep2['subledger_total']} = GL 2400 {_s(gl_dep2)}", key="g9.deposit_application_bounded")
+
+        # a write-off needs a receivable at least 90 days past due
+        before = a.journal_count()
+        outcome, why = _refused_by(a, (CONTROL_WRITE_OFF_AGE,), a.post_write_off, prime["prime_bill_id"], G9_YOUNG_WRITE_OFF, period_id=period)
+        gl_ar2 = a.balance("1100", project_id=project_id)
+        r.check(outcome == "refused" and a.journal_count() == before and gl_ar2 == gl_ar,
+                f"writing {G9_YOUNG_WRITE_OFF} off the golden progress bill, which is not 90 days past due, {_verdict(outcome, why)}; journals {before} -> {a.journal_count()}; "
+                f"GL 1100 stays {_s(gl_ar2)}", key="g9.write_off_requires_age")
+
+        aged = a.setup_aged_prime_bill(certified=G9_AGED_CERTIFIED, days_past_due=G9_AGED_DAYS_PAST_DUE)
+        bad_debt_before = a.balance("6100")
+        written = a.post_write_off(aged["prime_bill_id"], G9_WRITE_OFF, period_id=period)
+        ar_aged, gl_aged = a.subledger_reconciliation(aged["project_id"])["ar"], a.balance("1100", project_id=aged["project_id"])
+        expected_aged = money(D(aged["amount_due"]) - D(G9_WRITE_OFF))
+        bad_debt = a.balance("6100")
+        lines = _lines_of(a.journal(written["journal_id"]))
+        r.check(aged["days_past_due"] >= 90 and bool(ar_aged["reconciled"]) and D(ar_aged["subledger_total"]) == gl_aged == expected_aged
+                and bad_debt - bad_debt_before == D(G9_WRITE_OFF) and lines == [("6100", G9_WRITE_OFF, "0.00"), ("1100", "0.00", G9_WRITE_OFF)],
+                f"a {aged['amount_due']} progress bill {aged['days_past_due']} days past due (due {aged['due_date']}): writing {G9_WRITE_OFF} off posts {lines}; "
+                f"AR subledger {ar_aged['subledger_total']} = GL 1100 {_s(gl_aged)} on its project (expected {_s(expected_aged)}); "
+                f"bad debt 6100 {_s(bad_debt_before)} -> {_s(bad_debt)}", key="g9.write_off_ar")
+
+        ws = a.workspace_reconciliation()
+        tb = a.trial_balance()
+        sections = {name: ws[name] for name in ("ap", "ar", "customer_deposits")}
+        expected_total_ar = money(expected_ar2 + expected_aged)
+        totals = {name: (rec["subledger_total"], rec["control_balance"], bool(rec["reconciled"])) for name, rec in sections.items()}
+        r.check(all(rec["reconciled"] for rec in sections.values()) and D(sections["ar"]["subledger_total"]) == expected_total_ar == a.balance("1100")
+                and D(sections["ap"]["subledger_total"]) == a.balance("2000") and D(sections["customer_deposits"]["subledger_total"]) == expected_dep == a.balance("2400")
+                and bool(tb["balanced"]),
+                f"workspace after the adjustments: AP {totals['ap'][0]} = {totals['ap'][1]}, AR {totals['ar'][0]} = {totals['ar'][1]} (expected {_s(expected_total_ar)}), "
+                f"customer deposits {totals['customer_deposits'][0]} = {totals['customer_deposits'][1]}; trial balance Dr {tb['total_debit']} = Cr {tb['total_credit']} "
+                f"over {tb['journal_count']} journals", key="g9.adjusted_totals")
+        r.note(f"after the adjustments: customer deposits 2400 {_s(a.balance('2400'))}, bad debt 6100 {_s(a.balance('6100'))}, "
+               f"contract revenue 4000 {_s(a.balance('4000'))}, subcontract cost 5000 {_s(a.balance('5000'))}")
+
+        # Advisory (beyond the G9 specification; plan section 6, invariant 6, partial payments
+        # after a credit note): the credited bill is released through the ordinary payment
+        # release for exactly its open payable, never for its amount due.
+        def release_credited_bill():
+            return a.execute_approval(a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury"), actor="treasury")
+
+        refused, why, _ = _attempt(release_credited_bill)
+        on_bill = [p for p in a.payment_intents() if p["bill_id"] == bill["bill_id"]]
+        r.advise(not refused and len(on_bill) == 1 and on_bill[0]["amount"] == fmt(expected_ap),
+                 "a credited supplier bill is released for exactly its open payable through payment.release",
+                 f"releasing the credited bill (amount due {_s(ap_open)}, open payable {_s(expected_ap)} after the {G9_CREDIT_NOTE} credit note) "
+                 + (f"was refused ({why})" if refused else "created " + ", ".join(f"an intent for {p['amount']}" for p in on_bill))
+                 + f"; intents on the bill: {len(on_bill)}"
+                 + (" - the credited bill cannot be paid through the service until the release binds the open payable" if refused else ""))
+
+    # Advisory (beyond the G9 specification): a period closes only on reconciled control
+    # balances, so the close checklist should reconcile customer deposits (2400) as it does
+    # AP, AR, retainage, stored materials and provider clearing.
+    advisory = "the period-close checklist reconciles customer deposits (2400)"
+    try:
+        checklist = a.close_checklist(period)
+    except Exception as exc:
+        r.advise(False, advisory, f"the close checklist for {period} could not be read ({type(exc).__name__}: {_short(exc)})")
+        return
+    if checklist is None:
+        r.advise(False, advisory, "the candidate has no period-close checklist, so nothing holds a period open while 2400 is unreconciled")
+        return
+    deposits = [ch for ch in checklist if re.search(r"2400|customer deposit", f"{ch.get('check', '')} {ch.get('detail', '')}", re.IGNORECASE)]
+    r.advise(bool(deposits) and all(ch.get("ok") is True for ch in deposits), advisory,
+             (f"{len(checklist)} checks for {period}; customer-deposit check(s): " + "; ".join(f"{ch['check']} ({'ok' if ch.get('ok') is True else 'FAILING'})" for ch in deposits))
+             if deposits else
+             f"none of the {len(checklist)} checks the close checklist runs for {period} names customer deposits or account 2400, so a period can close "
+             f"while 2400 is unreconciled (2400 stands at {_s(a.balance('2400'))}; its deposit subledger reconciles, but no close check asks)")
 
 
 GATES: dict[str, Callable[[LedgerAdapter, _Recorder], None]] = {
@@ -1939,7 +2537,7 @@ def run_gate(gate_id: str, adapter: LedgerAdapter) -> dict[str, Any]:
     ok, reason = adapter.available()
     if not ok:
         return {"gate": gate_id, "title": GATE_TITLES[gate_id], "status": "not_run", "evidence": [f"NOT RUN: {reason}"],
-                "checks": {"passed": 0, "failed": 0, "total": 0}, "failed_checks": [], "advisories": []}
+                "checks": {"passed": 0, "failed": 0, "total": 0}, "failed_checks": [], "check_keys": [], "advisories": []}
     rec = _Recorder(gate_id)
     try:
         GATES[gate_id](adapter, rec)

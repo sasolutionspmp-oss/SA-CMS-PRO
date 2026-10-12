@@ -81,14 +81,20 @@ Statements and aging
     balance sheet cumulative through the period (every period whose start date
     is on or before this one's), cash movements on 1000 grouped by journal
     source type.  ``aging(as_of)``: the AP and AR items open now (AR includes
-    every source the core receivables subledger aggregates), bucketed 0-30,
-    31-60, 61-90 and over 90 days from the record's created date to ``as_of``
-    (looked up in the source record's own table: prime bills, retainage
-    invoices, labor invoices, reimbursement billings); an item recorded after
-    ``as_of`` is reported apart (``after_as_of``) and an item nothing dates is
-    reported apart (``undated``), never as current, and buckets + after_as_of +
-    undated equal the subledger totals.  Open balances are not reconstructed as
-    of a past date; a historical ``as_of`` carries a warning saying so.
+    every source the core receivables subledger aggregates), bucketed by days
+    past due at ``as_of``: ``current`` (not yet due, or due that day), 1-30,
+    31-60, 61-90 and over 90 days past due.  An item that carries a
+    ``due_date`` (prime bills and retainage invoices from the receivables
+    subledger, supplier bills once the bills subledger dates them) is aged from
+    it; an item without one falls back to its document date (the item's
+    ``invoice_date`` when it has one, else the record's created date, looked up
+    in the source record's own table: prime bills, retainage invoices, labor
+    invoices, reimbursement billings), as if due that day.  Each aged item says
+    which ``basis`` it used.  An item whose document date is after ``as_of`` is
+    reported apart (``after_as_of``) and an item nothing dates is reported apart
+    (``undated``), never as current, and buckets + after_as_of + undated equal
+    the subledger totals.  Open balances are not reconstructed as of a past
+    date; a historical ``as_of`` carries a warning saying so.
 
 WIP (fixture policy, cost-to-cost percent complete)
     percent complete = cost to date (5000 + 5100 + 5300, cumulative, project)
@@ -162,9 +168,11 @@ BILLING_ACCOUNTS = ("4000", "4100")
 PERCENT_PLACES = Decimal("0.0001")
 ONE = Decimal("1")
 
-AGING_BUCKETS = ("current", "31_60", "61_90", "over_90")
-AFTER_AS_OF = "after_as_of"  # recorded after as_of: not aged, reported apart
+AGING_BUCKETS = ("current", "1_30", "31_60", "61_90", "over_90")
+AFTER_AS_OF = "after_as_of"  # dated after as_of: not aged, reported apart
 UNDATED = "undated"  # no record dates the item: not aged, reported apart (never as current)
+BASIS_DUE_DATE = "due_date"  # aged from the item's own due date
+BASIS_DOCUMENT_DATE = "document_date"  # no due date: aged from its invoice or created date, as if due that day
 # Where an AR item's created date lives, by the record id the item carries (the labor
 # ``invoice_id`` only for ``labor_invoice`` items).  Prime bills are looked up directly.
 AR_RECORD_TABLES = (
@@ -426,14 +434,29 @@ def _natural(acct_type: str, debit: Decimal, credit: Decimal) -> Decimal:
     return money(debit - credit) if acct_type in DEBIT_NORMAL else money(credit - debit)
 
 
-def _bucket(days: int) -> str:
-    if days <= 30:
+def _bucket(days_past_due: int) -> str:
+    """Aging bucket for whole days past due: current while not yet past due."""
+    if days_past_due <= 0:
         return "current"
-    if days <= 60:
+    if days_past_due <= 30:
+        return "1_30"
+    if days_past_due <= 60:
         return "31_60"
-    if days <= 90:
+    if days_past_due <= 90:
         return "61_90"
     return "over_90"
+
+
+def _day(value) -> str | None:
+    """The calendar day of a date, or of a date or timestamp text (its first ten characters), or None."""
+    if isinstance(value, _dt.date):
+        return value.isoformat()[:10]
+    if not isinstance(value, str) or len(value) < 10:
+        return None
+    try:
+        return _dt.date.fromisoformat(value[:10]).isoformat()
+    except ValueError:
+        return None
 
 
 def percent_complete(cost_to_date, estimated_total_cost) -> Decimal:
@@ -657,9 +680,13 @@ class Plugin:
             rows = self.db.query(
                 "SELECT id, status, amount FROM payment_intents WHERE status IN ('submitted','outcome_unknown') ORDER BY created_at, id"
             )
-            detail = (f"{len(rows)} payment intent(s) unresolved: " + ", ".join(f"{r['id']} ({r['status']}, {r['amount']})" for r in rows)
-                      if rows else "no payment intent is submitted or outcome-unknown")
-            add("no_unresolved_payments", not rows, detail, "payments")
+            # an intent the provider has been processing past the threshold is in doubt too
+            stale = self.c.payments.stale_processing() if hasattr(self.c.payments, "stale_processing") else []
+            items = [f"{r['id']} ({r['status']}, {r['amount']})" for r in rows] + [
+                f"{s['intent_id']} (processing {s['days_processing']} day(s), {s['amount']})" for s in stale]
+            detail = (f"{len(items)} payment intent(s) unresolved: " + ", ".join(items)
+                      if items else "no payment intent is submitted, outcome-unknown or stale in processing")
+            add("no_unresolved_payments", not items, detail, "payments")
 
         def wip_drafts():
             rows = self.db.query("SELECT id, project_id FROM close_wip WHERE period_id=? AND status='draft' ORDER BY created_at, id", (pid,))
@@ -879,14 +906,17 @@ class Plugin:
     # ---- aging ------------------------------------------------------------------ #
 
     def aging(self, as_of: str) -> dict[str, Any]:
-        """The AP and AR items open now, bucketed by age at ``as_of`` (YYYY-MM-DD).  The
-        age runs from the record's created date (UTC), looked up in the source record's
-        own table for every AR source the core subledger aggregates.  An item recorded
-        after ``as_of`` is not aged: it is reported apart under ``after_as_of``; an item
-        no record dates is reported apart under ``undated`` (never as current), so
-        buckets + after_as_of + undated still equal the subledger totals.  Open balances
-        are not reconstructed as of a past date, so a historical ``as_of`` carries a
-        warning."""
+        """The AP and AR items open now, bucketed by days past due at ``as_of``
+        (YYYY-MM-DD): ``current`` while not yet past due, then 1-30, 31-60, 61-90 and
+        over 90 days past due.  An item with a ``due_date`` is aged from it; an item
+        without one falls back to its document date (its ``invoice_date``, else the
+        record's created date (UTC), looked up in the source record's own table for every
+        AR source the core subledger aggregates), as if due that day.  An item whose
+        document date is after ``as_of`` is not aged: it is reported apart under
+        ``after_as_of``; an item nothing dates is reported apart under ``undated`` (never
+        as current), so buckets + after_as_of + undated still equal the subledger totals.
+        Open balances are not reconstructed as of a past date, so a historical ``as_of``
+        carries a warning."""
         as_of_date = _parse_date(as_of, "as_of")
         today = _parse_date(utcnow_iso()[:10], "today")
         ap = self.c.bills.ap_open_items()
@@ -898,16 +928,18 @@ class Plugin:
                 continue
             if item.get("bill_id"):
                 b = self.db.one("SELECT created_at FROM bills WHERE id=?", (item["bill_id"],))
-                dated, ref, kind = b["created_at"][:10], item["bill_id"], "supplier_bill"
+                created = b["created_at"] if b else item.get("created_at")
+                ref, kind = item["bill_id"], "supplier_bill"
             else:
                 r = self.db.one(
                     "SELECT MAX(j.posted_at) AS ts FROM journals j JOIN commitments c ON c.id = j.source_id "
                     "WHERE j.source_type='retainage_release' AND c.supplier_id=?",
                     (item.get("supplier_id"),),
                 )
-                stamp = item.get("created_at") or (r and r["ts"])
-                dated, ref, kind = (stamp[:10] if stamp else None), item.get("id"), item.get("kind", "retainage_release")
-            ap_items.append({"ref": ref, "kind": kind, "party_id": item.get("supplier_id"), "sequence": item.get("sequence"), "date": dated, "open": open_amt})
+                created = item.get("created_at") or (r and r["ts"])
+                ref, kind = item.get("id"), item.get("kind", "retainage_release")
+            ap_items.append({"ref": ref, "kind": kind, "party_id": item.get("supplier_id"), "sequence": item.get("sequence"),
+                             "date": _day(item.get("invoice_date")) or _day(created), "due_date": _day(item.get("due_date")), "open": open_amt})
         ar_items = []
         for item in ar["items"]:
             open_amt = money(item["open"])
@@ -921,8 +953,9 @@ class Plugin:
         return {
             "as_of": as_of,
             "buckets": list(AGING_BUCKETS),
-            "basis": ("items open now; days from the record's created date (UTC) to as_of; 0-30 current; items recorded after as_of are reported "
-                      "under after_as_of; items no record dates are reported under undated"),
+            "basis": ("items open now; whole days past the item's due date at as_of (current while not yet past due; 1-30, 31-60, 61-90, over 90); "
+                      "an item without a due date is aged from its document date (invoice date, else the record's created date, UTC) as if due "
+                      "that day; items dated after as_of are reported under after_as_of; items nothing dates are reported under undated"),
             "warning": warning,
             "ap": self._age(ap_items, ap, as_of_date),
             "ar": self._age(ar_items, ar, as_of_date),
@@ -953,45 +986,48 @@ class Plugin:
         return None
 
     def _ar_aging_item(self, item: dict[str, Any], open_amt: Decimal, as_of: str) -> dict[str, Any]:
-        """One open receivable for aging.  The core AR subledger lists prime bills and the
-        items of every plugin source it aggregates (labor T&M invoices, reimbursement
-        billings, ...); each is dated from the record that created it.  An item no record
-        dates is reported as ``undated``: never aged as current."""
+        """One open receivable for aging.  The core AR subledger lists prime bills,
+        retainage invoices and the items of every plugin source it aggregates (labor T&M
+        invoices, reimbursement billings, ...).  Each keeps its own due date when it has
+        one and is dated by its invoice date, else by the record that created it.  An item
+        nothing dates is reported as ``undated``: never aged as current."""
+        due = _day(item.get("due_date"))
         if item.get("prime_bill_id"):
             b = self.db.one("SELECT created_at, customer_id FROM prime_bills WHERE id=?", (item["prime_bill_id"],))
             return {"ref": item["prime_bill_id"], "kind": "prime_bill", "party_id": b["customer_id"], "sequence": item.get("sequence"),
-                    "date": b["created_at"][:10], "open": open_amt}
+                    "date": _day(item.get("invoice_date")) or _day(b["created_at"]), "due_date": due, "open": open_amt}
         ref = item.get("invoice_id") or item.get("retainage_invoice_id") or item.get("billing_id") or item.get("id") or item.get("ref")
         kind = item.get("kind") or item.get("source") or "receivable"
-        dated = self._ar_record_date(item, kind)
-        day = None
-        if dated:
-            try:
-                day = _dt.date.fromisoformat(dated[:10]).isoformat()
-            except ValueError:
-                day = None
+        day = _day(item.get("invoice_date")) or _day(self._ar_record_date(item, kind))
         return {"ref": ref, "kind": kind, "source": item.get("source"), "party_id": item.get("customer_id") or item.get("party_id"),
-                "sequence": item.get("sequence"), "date": day, "open": open_amt}
+                "sequence": item.get("sequence"), "date": day, "due_date": due, "open": open_amt}
 
     @staticmethod
     def _age(items: list[dict[str, Any]], source: dict[str, Any], as_of_date: _dt.date) -> dict[str, Any]:
+        """Bucket each item by whole days past due at ``as_of_date``.  ``days`` is the age
+        from the item's document date (negative when dated after as_of), ``days_past_due``
+        the days past its due date (or past its document date when it has no due date;
+        0 while not yet due) and ``basis`` which of the two it was aged from."""
         buckets = {k: ZERO for k in AGING_BUCKETS}
         after = ZERO
         undated = ZERO
         out = []
         for it in items:
-            if it.get("date") is None:
-                days, b = None, UNDATED
+            doc, due = it.get("date"), it.get("due_date")
+            days = (as_of_date - _dt.date.fromisoformat(doc)).days if doc else None
+            basis, past_due = None, None
+            if doc is None and due is None:
+                b = UNDATED
                 undated += it["open"]
+            elif days is not None and days < 0:
+                b = AFTER_AS_OF
+                after += it["open"]
             else:
-                days = (as_of_date - _dt.date.fromisoformat(it["date"])).days
-                if days < 0:
-                    b = AFTER_AS_OF
-                    after += it["open"]
-                else:
-                    b = _bucket(days)
-                    buckets[b] += it["open"]
-            out.append({**it, "days": days, "bucket": b, "open": fmt(it["open"])})
+                basis = BASIS_DUE_DATE if due else BASIS_DOCUMENT_DATE
+                past_due = max(0, (as_of_date - _dt.date.fromisoformat(due or doc)).days)
+                b = _bucket(past_due)
+                buckets[b] += it["open"]
+            out.append({**it, "days": days, "days_past_due": past_due, "basis": basis, "bucket": b, "open": fmt(it["open"])})
         aged = total(buckets.values())
         grand = money(aged + after + undated)
         return {

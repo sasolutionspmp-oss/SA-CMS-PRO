@@ -242,9 +242,21 @@ async function selfTest() {
   const check = (label, cond) => { steps.push({label, ok: !!cond}); if (!cond) throw new Error('check failed: '+label); };
   try {
     const sup = await post('add_party', {kind:'supplier', name:'Self-test supplier', destination:'ACH-ST-1'});
-    await post('verify_destination', {party_id: sup.id, destination:'ACH-ST-1'});
     const cust = await post('add_party', {kind:'customer', name:'Self-test customer'});
     const prj = await post('create_project', {name:'Self-test project', budget:'5000', customer_id: cust.id});
+    // governed payee verification: request, independent evidence by another person, bank_admin approval
+    const dch = await post('request_destination_change', {party_id: sup.id, new_destination:'ACH-ST-1', requested_by:'self-test requester', reason:'first verification of the supplier destination'});
+    let pre = false; try { await post('request_destination_approval', {change_id: dch.id}); } catch (e) { pre = true; }
+    check('payee approval refused before independent verification', pre);
+    const vdoc = await post('register_document', {project_id: prj.id, kind:'destination_verification', title:'Self-test call-back record'});
+    const vrev = await post('add_revision', {document_id: vdoc.id, content:'call-back record ' + Date.now(), note:'call-back notes'});
+    let selfVerify = false; try { await post('record_verification_evidence', {change_id: dch.id, channel:'call-back to number on file', verified_by:'self-test requester', evidence_hash: vrev.content_hash}); } catch (e) { selfVerify = true; }
+    check('requester cannot verify their own payee change', selfVerify);
+    await post('record_verification_evidence', {change_id: dch.id, channel:'call-back to number on file', verified_by:'self-test outside verifier', evidence_hash: vrev.content_hash});
+    let pap = await post('request_destination_approval', {change_id: dch.id});
+    await post('approve', {approval_id: pap.id});
+    const pex = await post('execute', {approval_id: pap.id});
+    check('payee destination verified through approval', pex.status === 'executed' || (pex.result && pex.result.status === 'executed'));
     const periodId = 'ST-' + Date.now().toString(36);
     await post('open_period', {period_id: periodId, name: periodId, start_date:'2026-12-01', end_date:'2026-12-31'});
     const cmt = await post('create_commitment', {project_id: prj.id, supplier_id: sup.id, title:'Self-test subcontract', sov_lines:[{description:'work', amount:'4000'}], retainage_rate:'0.10'});

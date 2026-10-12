@@ -19,6 +19,7 @@ from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError, m
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import canonical_json, hash_json, utcnow
 from apps.cipher.domain import payments as payments_module
+from apps.cipher.domain.banking import PAYMENT_GUARD_SCHEMA_NAME as BANKING_GUARD_SCHEMA_NAME
 from apps.cipher.domain.payments import (
     CONTROLS_BINDING_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_SCHEMA_NAME, TERMS_SCHEMA_NAME, KillSwitchEngaged, PaymentError,
     ProviderEventRejected, ReleaseQuarantined, SimulatedProvider, sign_event, verify_event,
@@ -1293,6 +1294,250 @@ class ForecastIsolationTests(unittest.TestCase):
         self.assertEqual(c.forecast.project(a.pid)["paid_to_date"], "18000.00")
         self.assertEqual(c.forecast.project(b["id"])["paid_to_date"], "120.00")
         self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+
+class ProcessingStateTests(unittest.TestCase):
+    """The plan's processing state: after acceptance the rail reports processing (signed event);
+    nothing is posted, the money stays in provider clearing, and settlement or a return follow."""
+
+    def setUp(self):
+        self.w = World()
+        self.c = self.w.c
+        self.bill = self.w.posted_bill("20000")
+        intent = self.w.release(self.bill["id"])
+        self.c.dispatch_payments()
+        self.intent = self.c.payments.get(intent["id"])
+        self.op = self.intent["logical_op_id"]
+
+    def test_a_signed_processing_event_moves_an_accepted_intent_to_processing_without_posting(self):
+        c = self.c
+        self.assertEqual((self.intent["status"], self.intent["lifecycle_status"], self.intent["processing_at"]), ("accepted", "accepted", None))
+        journals = self.w.journals()
+        event = c.provider.process(self.op)
+        self.assertEqual((event["id"], event["kind"], event["amount"]), ("evt_sim_000001_processing", "processing", "18000.00"))
+        self.assertTrue(verify_event(event, c.provider.webhook_secret))
+        self.assertTrue(c.payments.ingest_event(event, actor="webhook")["applied"])
+        got = c.payments.get(self.intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"]), ("accepted", "processing"))
+        self.assertIsNotNone(got["processing_at"])
+        self.assertEqual(self.w.journals(), journals)  # nothing is posted
+        clearing = c.payments.clearing_items()
+        self.assertEqual((clearing["in_transit_total"], clearing["control_balance"], clearing["reconciled"]), ("18000.00", "-18000.00", True))
+        self.assertEqual([p["id"] for p in c.payments.list(status="processing")], [self.intent["id"]])
+        self.assertEqual([p["id"] for p in c.payments.list(status="accepted")], [self.intent["id"]])  # the accounting status is unchanged
+        self.assertEqual(c.bills.get(self.bill["id"])["status"], "paid")
+        dup = c.payments.ingest_event(event, actor="webhook")
+        self.assertEqual((dup["applied"], dup["reason"]), (False, "duplicate event"))
+        self.assertEqual([e["action"] for e in c.audit.entries(entity_id=self.intent["id"]) if e["action"] == "provider_event.processing"], ["provider_event.processing"])
+        # processing -> settled books exactly as accepted -> settled always did
+        self.assertTrue(c.payments.ingest_event(c.provider.settle(self.op), actor="webhook")["applied"])
+        got = c.payments.get(self.intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"]), ("settled", "settled"))
+        self.assertIsNotNone(got["processing_at"])  # history survives
+        self.assertEqual((c.ledger.balance("1000"), c.ledger.balance("1200")), (D("-18000.00"), D("0.00")))
+        self.assertEqual(c.payments.list(status="processing"), [])
+        self.w.assert_books(self)
+
+    def test_a_return_while_processing_reinstates_the_payable(self):
+        c = self.c
+        c.payments.ingest_event(c.provider.process(self.op), actor="webhook")
+        self.assertTrue(c.payments.ingest_event(c.provider.return_payment(self.op, "account closed"), actor="webhook")["applied"])
+        got = c.payments.get(self.intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"]), ("returned", "returned"))
+        self.assertEqual((c.ledger.balance("1200"), c.ledger.balance("2000"), c.ledger.balance("1000")), (D("0.00"), D("18000.00"), D("0.00")))
+        self.assertEqual(c.bills.get(self.bill["id"])["status"], "posted")
+        self.w.assert_books(self)
+
+    def test_a_processing_event_delivered_after_settlement_is_ignored(self):
+        c = self.c
+        processing = c.provider.process(self.op)
+        settled = c.provider.settle(self.op)
+        self.assertTrue(c.payments.ingest_event(settled, actor="webhook")["applied"])
+        late = c.payments.ingest_event(processing, actor="webhook")
+        self.assertEqual((late["applied"], late["reason"]), (False, "processing not applicable to settled"))
+        got = c.payments.get(self.intent["id"])
+        self.assertEqual((got["status"], got["lifecycle_status"], got["processing_at"]), ("settled", "settled", None))
+        ignored = [json.loads(e["payload_json"]) for e in c.audit.entries(entity_id=self.intent["id"]) if e["action"] == "provider_event.ignored"]
+        self.assertEqual((ignored[-1]["kind"], ignored[-1]["lifecycle_status"]), ("processing", "settled"))
+        self.w.assert_books(self)
+
+    def test_reconcile_catches_a_missing_processing_callback_exactly_once(self):
+        c = self.c
+        lost = c.provider.process(self.op)  # never delivered
+        out = c.reconcile_payments()
+        self.assertEqual([(r["intent_id"], r["status"], r["caught_up_event"], r["applied"]) for r in out],
+                         [(self.intent["id"], "accepted", "recon_sim_000001_processing", True)])
+        self.assertEqual(c.payments.get(self.intent["id"])["lifecycle_status"], "processing")
+        self.assertEqual(c.reconcile_payments(), [])
+        late = c.payments.ingest_event(lost, actor="webhook")
+        self.assertEqual((late["applied"], late["reason"]), (False, "processing not applicable to processing"))
+        self.assertEqual(len(c.ledger.journals(source_type="provider_event")), 0)
+        # the provider then settles and that callback is lost too: reconciliation books it once
+        c.provider.settle(self.op)
+        self.assertEqual([(r["status"], r["caught_up_event"]) for r in c.reconcile_payments()], [("settled", "recon_sim_000001_settled")])
+        self.assertEqual(c.ledger.balance("1000"), D("-18000.00"))
+        self.w.assert_books(self)
+
+    def test_forged_processing_events_and_processing_out_of_order_at_the_provider_are_refused(self):
+        c = self.c
+        genuine = c.provider.process(self.op)
+        for forged in (dict(genuine, amount="1.00"), {k: v for k, v in genuine.items() if k != "signature"},
+                       sign_event(dict(genuine, signature=None), SimulatedProvider().webhook_secret)):
+            with self.assertRaises(ProviderEventRejected):
+                c.payments.ingest_event(forged, actor="webhook")
+        self.assertEqual(c.payments.get(self.intent["id"])["lifecycle_status"], "accepted")
+        with self.assertRaisesRegex(ProviderEventRejected, "unknown provider_ref"):
+            c.payments.ingest_event(sign_event(dict(genuine, id="evt_x", provider_ref="sim_999999", signature=None), c.provider.webhook_secret), actor="webhook")
+        c.provider.settle(self.op)
+        with self.assertRaisesRegex(PaymentError, "only an accepted transfer starts processing"):
+            c.provider.process(self.op)
+
+    def test_processing_is_recorded_while_every_period_is_closed_but_settlement_waits_for_an_open_period(self):
+        c = self.c
+        c.close_period("P1")
+        journals = self.w.journals()
+        self.assertTrue(c.payments.ingest_event(c.provider.process(self.op), actor="webhook")["applied"])  # nothing to post
+        self.assertEqual(c.payments.get(self.intent["id"])["lifecycle_status"], "processing")
+        settled = c.provider.settle(self.op)
+        with self.assertRaisesRegex(PaymentError, "no open period"):
+            c.payments.ingest_event(settled, actor="webhook")
+        self.assertEqual((self.w.journals(), c.payments.get(self.intent["id"])["lifecycle_status"]), (journals, "processing"))
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        self.assertTrue(c.payments.ingest_event(settled, actor="webhook")["applied"])
+        [j] = c.ledger.journals(source_type="provider_event")
+        self.assertEqual((j["period_id"], c.payments.get(self.intent["id"])["lifecycle_status"]), ("P2", "settled"))
+        self.w.assert_books(self)
+
+    def test_stale_processing_lists_intents_processing_longer_than_the_threshold(self):
+        c = self.c
+        self.assertEqual(c.payments.stale_processing(), [])
+        c.payments.ingest_event(c.provider.process(self.op), actor="webhook")
+        now = utcnow()
+        self.assertEqual(c.payments.stale_processing(3, now=now), [])
+        self.assertEqual(c.payments.stale_processing(3, now=now + _dt.timedelta(days=2)), [])
+        [stale] = c.payments.stale_processing(3, now=now + _dt.timedelta(days=4))
+        self.assertEqual((stale["intent_id"], stale["amount"], stale["days_processing"], stale["threshold_days"], stale["lifecycle_status"]),
+                         (self.intent["id"], "18000.00", 4, 3, "processing"))
+        self.assertEqual(len(c.payments.stale_processing(now=now + _dt.timedelta(days=payments_module.STALE_PROCESSING_DAYS, hours=1))), 1)
+        for bad in (-1, True, "3", 1.5, None):
+            with self.assertRaises(PaymentError):
+                c.payments.stale_processing(bad)
+        # a timezone-naive "now" (what datetime.utcnow() returns) is read as UTC, not a TypeError
+        naive = (now + _dt.timedelta(days=4)).replace(tzinfo=None)
+        self.assertEqual([s["intent_id"] for s in c.payments.stale_processing(3, now=naive)], [self.intent["id"]])
+        self.assertEqual(c.payments.stale_processing(3, now=(now + _dt.timedelta(days=2)).replace(tzinfo=None)), [])
+        for bad_now in ("2026-10-20T00:00:00Z", 1760000000, _dt.date(2026, 10, 20)):
+            with self.assertRaisesRegex(PaymentError, "now must be a datetime"):
+                c.payments.stale_processing(3, now=bad_now)
+        c.payments.ingest_event(c.provider.settle(self.op), actor="webhook")
+        self.assertEqual(c.payments.stale_processing(0, now=now + _dt.timedelta(days=30)), [])
+
+    def test_the_schema_writes_each_lifecycle_marker_once_and_only_from_its_accounting_status(self):
+        c = self.c
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "bank-reconciled once, only after it settled"):
+            c.db.execute("UPDATE payment_intents SET bank_reconciled_at='t', bank_reconciliation_id='brc_x', bank_journal_line_id='jl_x' WHERE id=?", (self.intent["id"],))
+        c.payments.ingest_event(c.provider.process(self.op), actor="webhook")
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "enters processing once"):
+            c.db.execute("UPDATE payment_intents SET processing_at='2026-01-01T00:00:00Z' WHERE id=?", (self.intent["id"],))
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "enters processing once"):
+            c.db.execute("UPDATE payment_intents SET processing_at=NULL WHERE id=?", (self.intent["id"],))
+        c.payments.ingest_event(c.provider.settle(self.op), actor="webhook")
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "bank-reconciled once"):  # a settled intent still needs all three facts
+            c.db.execute("UPDATE payment_intents SET bank_reconciled_at='t' WHERE id=?", (self.intent["id"],))
+        settlement = c.ledger.journals(source_type="provider_event")[0]
+        line = next(ln for ln in settlement["lines"] if ln["account_code"] == "1000")
+        other = next(ln for ln in settlement["lines"] if ln["account_code"] != "1000")
+        # raw SQL cannot mark a settled intent bank-reconciled: the line must be its own settlement bank line ...
+        for bogus_line in ("y", other["id"]):
+            with self.assertRaisesRegex(sqlite3.DatabaseError, "only against its own settlement bank line"):
+                c.db.execute("UPDATE payment_intents SET bank_reconciled_at='t', bank_reconciliation_id='x', bank_journal_line_id=? WHERE id=?",
+                             (bogus_line, self.intent["id"]))
+        # ... and a locked bank reconciliation must have matched that line to a statement line
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "only by a locked bank reconciliation"):
+            c.db.execute("UPDATE payment_intents SET bank_reconciled_at='t', bank_reconciliation_id='brc_forged', bank_journal_line_id=? WHERE id=?",
+                         (line["id"], self.intent["id"]))
+        with self.assertRaisesRegex(PaymentError, "not matched to a bank statement line in a locked bank reconciliation"):
+            c.payments.mark_bank_reconciled_for_journal_lines([line["id"]], "reconciler")
+        self.assertEqual(c.payments.get(self.intent["id"])["lifecycle_status"], "settled")
+        self.assertEqual(c.payments.list(status="bank_reconciled"), [])
+        for bad in ("jl_1", None, [None], [""]):
+            with self.assertRaises(PaymentError):
+                c.payments.mark_bank_reconciled_for_journal_lines(bad, "reconciler")
+        self.assertEqual(c.payments.mark_bank_reconciled_for_journal_lines([], "reconciler")["advanced"], [])
+        self.assertEqual(payments_module.LIFECYCLE_SCHEMA_NAME, "payments_lifecycle")
+        applied = [v["name"] for v in c.db.schema_status()["versions"] if v["applied"]]
+        for name in ("payments_lifecycle", payments_module.LIFECYCLE_PROOF_SCHEMA_NAME, BANKING_GUARD_SCHEMA_NAME):
+            self.assertIn(name, applied)
+        # the guard entry follows the lifecycle columns and the banking tables it names
+        self.assertLess(applied.index("payments_lifecycle"), applied.index(BANKING_GUARD_SCHEMA_NAME))
+        self.assertLess(applied.index("banking"), applied.index(BANKING_GUARD_SCHEMA_NAME))
+
+
+class ProcessingAdoptionTests(unittest.TestCase):
+    def test_a_transfer_the_provider_is_still_processing_is_adopted_as_processing(self):
+        w, d = file_world(self)
+        bill = w.posted_bill("20000")
+        backup = w.c.snapshot(os.path.join(d, "older-than-the-release.sqlite"))
+        live = w.release(bill["id"])
+        self.assertEqual([r["status"] for r in w.c.dispatch_payments()], ["accepted"])
+        w.c.payments.ingest_event(w.c.provider.process(live["logical_op_id"]), actor="webhook")
+        self.assertEqual(w.c.payments.get(live["id"])["lifecycle_status"], "processing")
+        restored = restored_copy(self, w, backup)
+        claim_restored_copy(restored)
+        outcome = restored.complete_recovery(actor="reconciler")
+        [t] = outcome["unrecorded_transfers"]
+        self.assertEqual((t["provider_ref"], t["status"], t["adoptable"]), ("sim_000001", "processing", True))
+        res = restored.approve_and_execute("payment.adopt_transfer", "sim_000001", actor_role="owner").result
+        self.assertEqual((res["status"], [cb["caught_up_event"] for cb in res["callbacks"]]), ("accepted", ["recon_sim_000001_processing"]))
+        got = restored.payments.get(res["intent"])
+        self.assertEqual((got["status"], got["lifecycle_status"]), ("accepted", "processing"))
+        self.assertTrue(restored.complete_recovery(actor="reconciler")["quarantine_lifted"])
+        self.assertEqual((len(w.c.provider.submissions), len(w.c.provider.transfers)), (1, 1))
+        self.assertTrue(restored.ledger.trial_balance()["balanced"] and restored.payments.clearing_items()["reconciled"])
+        self.assertTrue(restored.bills.ap_open_items()["reconciled"])
+
+
+class LifecycleMigrationTests(unittest.TestCase):
+    def test_a_workspace_from_before_the_lifecycle_and_payee_change_entries_migrates_with_its_payments_intact(self):
+        from apps.cipher.core import db as core_db
+        d = tempfile.mkdtemp(prefix="cipher-lifecycle-")
+        self.addCleanup(shutil.rmtree, d, True)
+        path = os.path.join(d, "older-release.sqlite")
+        # an older release had none of the lifecycle and payee-change entries, nor the later ones that build on them
+        new_entries = (payments_module.LIFECYCLE_SCHEMA_NAME, payments_module.DESTINATION_SCHEMA_NAME, payments_module.DESTINATION_VERIFICATION_SCHEMA_NAME,
+                       payments_module.LIFECYCLE_PROOF_SCHEMA_NAME, BANKING_GUARD_SCHEMA_NAME)
+        legacy_catalog = [e for e in core_db.SCHEMA_CATALOG if e[1] not in new_entries]
+        with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy_catalog):
+            w = World(path)
+            c = w.c
+            self.assertNotIn("processing_at", {r["name"] for r in c.db.query("PRAGMA table_info(payment_intents)")})
+            settled = w.release(w.posted_bill("20000")["id"])
+            c.dispatch_payments()
+            c.payments.ingest_event(c.provider.settle(settled["logical_op_id"]), actor="webhook")
+            accepted = w.release(w.posted_bill("30000")["id"])
+            c.dispatch_payments()
+            self.assertEqual([p["lifecycle_status"] for p in c.payments.list()], ["settled", "accepted"])
+            provider = c.provider
+            c.db.close()
+        reopened = Cipher(path, provider=provider)
+        self.addCleanup(reopened.db.close)
+        status = {v["name"]: v for v in reopened.db.schema_status()["versions"]}
+        self.assertTrue(all(status[name]["applied"] for name in new_entries))
+        self.assertIn("processing_at", {r["name"] for r in reopened.db.query("PRAGMA table_info(payment_intents)")})
+        self.assertEqual([(p["id"], p["status"], p["lifecycle_status"]) for p in reopened.payments.list()],
+                         [(settled["id"], "settled", "settled"), (accepted["id"], "accepted", "accepted")])
+        # the older accepted payment now moves through processing to settlement as any other
+        reopened.payments.ingest_event(provider.process(accepted["logical_op_id"]), actor="webhook")
+        self.assertEqual(reopened.payments.get(accepted["id"])["lifecycle_status"], "processing")
+        reopened.payments.ingest_event(provider.settle(accepted["logical_op_id"]), actor="webhook")
+        change = reopened.payments.request_destination_change(w.supplier["id"], "ACH-SIM-CTL-0002", "ap-clerk", "new bank", "ap-clerk")
+        self.assertEqual(change["status"], "pending")
+        triggers = {r["name"] for r in reopened.db.query("SELECT name FROM sqlite_master WHERE type='trigger'")}
+        for name in ("payment_intents_bank_reconciled_once", "banking_payment_bank_reconciled_needs_locked_match", "destination_changes_lifecycle"):
+            self.assertIn(name, triggers)
+        self.assertEqual(reopened.db.migrate(), [])
+        self.assertTrue(reopened.ledger.trial_balance()["balanced"] and reopened.audit.verify_chain()["ok"])
+        self.assertTrue(reopened.bills.ap_open_items()["reconciled"] and reopened.payments.clearing_items()["reconciled"])
 
 
 class GoldenNumbersTests(unittest.TestCase):

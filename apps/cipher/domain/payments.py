@@ -11,6 +11,76 @@ State machine (plan section 6, "Execution and recovery"):
     (adopted)  submitted -> accepted ...   (a provider transfer recorded by payment.adopt_transfer;
                                             it has no outbox row and is never submitted by Cipher)
 
+Lifecycle refinements (catalog entry ``payments_lifecycle``).  The plan's state list also
+names *processing* and *bank-reconciled*:
+
+    accepted --signed "processing" event--> processing --> settled --locked bank reconciliation--> bank_reconciled
+    (a return still moves accepted, processing, settled or bank_reconciled to returned)
+
+They refine two accounting statuses instead of replacing them, because ``status`` is what
+every subledger keys on (AP open items, the forecast's paid-to-date and the reimbursement
+payment triggers read ``status IN ('accepted','settled')``): an intent in *processing* has
+``status='accepted'`` and ``processing_at`` set; a *bank_reconciled* one has
+``status='settled'`` and ``bank_reconciled_at`` / ``bank_reconciliation_id`` /
+``bank_journal_line_id`` set.  ``lifecycle_status`` on every intent ``get``/``list`` returns
+reports the full state (``list(status="processing")`` and ``list(status="bank_reconciled")``
+filter on it).  Schema triggers write each marker once and only from its accounting status;
+the bank-reconciled marker must also name the intent's own settlement bank line, and the
+banking module's trigger requires a locked reconciliation whose evidence matched that line to
+a bank statement line (without the banking module the marker is refused outright).  The
+markers survive a later return as history.  Neither refinement posts a journal or calls
+the source listeners (the status they follow does not change).
+
+* ``SimulatedProvider.process`` emits a signed ``processing`` event for an accepted
+  transfer; ``ingest_event`` records it once (a duplicate or a reordered event arriving after
+  settlement is ignored and audited), and ``reconcile`` catches up a missed one from the
+  provider's status (``recon_<provider_ref>_processing``).
+* ``mark_bank_reconciled_for_journal_lines`` (called by ``banking.lock_reconciliation``)
+  advances a settled intent whose settlement bank line (Cr 1000) is matched to a bank
+  statement line in a *locked* reconciliation; it verifies that proof itself.
+* ``stale_processing(days)`` lists intents that have been processing longer than ``days``
+  (default ``STALE_PROCESSING_DAYS``) -- the service does not call a payments close check, so
+  close and treasury reviews read this list directly.  ``now`` may be given for review as of a
+  moment; a timezone-naive ``now`` is read as UTC.
+
+Payee destination changes (catalog entry ``payments_destination_changes``; plan section 6:
+a separate bank-detail maintainer, and vendor bank changes verified independently through
+a trusted channel):
+
+* ``request_destination_change`` records a pending change: requester, reason, the old
+  destination's fingerprint and version and the new destination's fingerprint.  The new
+  destination itself is stored only in the change row; audit payloads, approval manifests,
+  command results and ``change_history`` carry SHA-256 fingerprints (and a masked hint).
+  Every free text this flow writes to the audit log (request reason and requester,
+  verifier, withdrawal reason, and the acting login of each step) is refused when it repeats
+  the new destination, compared without case, spaces or punctuation;
+* ``record_verification_evidence`` records how it was verified: the channel (one of
+  ``VERIFICATION_CHANNELS``), the verifier and the content hash of the current revision of a
+  ``destination_verification`` document (``DESTINATION_EVIDENCE_KIND``; each evidence revision
+  verifies one change only).  The verifier must be a different person from the named
+  requester and from the login that recorded the request (two-person rule, also enforced by
+  schema trigger): two logins by one owner are not separation, so a sole owner needs an
+  outside verifier.  Who records the evidence is not restricted (a sole owner records the
+  outside verifier's call-back), and the evidence may predate the request
+  (``governed_destination_change`` takes an existing evidence hash);
+* the approval-bound core operation ``party.verify_destination`` (subject: the change id;
+  executing role ``bank_admin`` or ``owner``) binds the change, the old destination
+  fingerprint and version, the new fingerprint, the evidence hash and revision, the channel
+  and the verifier.  Executing it sets the party's destination, bumps its version, marks it
+  verified, supersedes the party's other open changes (their approvals go stale) and
+  invalidates every open approval naming the party's destination (the logic of
+  ``Cipher.verify_destination``); intents already queued for the old destination fail at
+  dispatch.  A change is stale (``DestinationChangeStale``, a ``StaleApprovalError``: no new
+  approval can be requested and a granted one is invalidated at execution) when its party's
+  destination moved since it was requested, or when its evidence document gained a newer
+  revision after the evidence was recorded (evidence is recorded once per change, so the
+  change is withdrawn and requested again with fresh verification).  The schema refuses the
+  execution of a change whose evidence revision is no longer current as well;
+* ``Cipher.verify_destination`` stays callable as the fixture path (synthetic seeding and
+  tests).  Interactive surfaces must use the governed change; ``governed_destination_change``
+  runs request + evidence atomically for callers moving off the fixture path and returns the
+  change id to approve.
+
 * an intent is created together with its outbox row in one transaction;
 * only a pending outbox row can be dispatched, and dispatching a row twice is
   impossible because dispatch claims it (``queued`` -> ``submitted``) before the
@@ -128,6 +198,7 @@ its repair path (re-deriving from the intent) fixes.
 """
 from __future__ import annotations
 
+import datetime as _dt
 import hashlib
 import hmac
 import inspect
@@ -135,11 +206,11 @@ import secrets
 import weakref
 from typing import Any, Callable, NoReturn
 
-from ..core.approvals import build_manifest
+from ..core.approvals import Approvals, StaleApprovalError, build_manifest
 from ..core.audit import Audit
 from ..core.commands import Commands
 from ..core.db import Database, register_schema_version
-from ..core.ids import canonical_json, hash_json, new_id, utcnow, utcnow_iso
+from ..core.ids import canonical_json, hash_json, new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
 from ..core.money import ZERO, MoneyError, fmt, money, total
 from .ledger import Ledger
 
@@ -295,10 +366,197 @@ CONTROLS_BINDING_SCHEMA_STATEMENTS = [
 ]
 register_schema_version(CONTROLS_BINDING_SCHEMA_NAME, CONTROLS_BINDING_SCHEMA_STATEMENTS)
 
+# The plan's processing and bank-reconciled states, as write-once markers on the intent (see
+# the module docstring for why ``status`` keeps its accounting values).  Applied entries are
+# append-only, so they arrive as their own entry.
+LIFECYCLE_SCHEMA_NAME = "payments_lifecycle"
+LIFECYCLE_SCHEMA_STATEMENTS = [
+    "ALTER TABLE payment_intents ADD COLUMN processing_at TEXT",
+    "ALTER TABLE payment_intents ADD COLUMN bank_reconciled_at TEXT",
+    "ALTER TABLE payment_intents ADD COLUMN bank_reconciliation_id TEXT",
+    "ALTER TABLE payment_intents ADD COLUMN bank_journal_line_id TEXT",
+    """CREATE TRIGGER payment_intents_lifecycle_starts_clear BEFORE INSERT ON payment_intents
+        WHEN NEW.processing_at IS NOT NULL OR NEW.bank_reconciled_at IS NOT NULL OR NEW.bank_reconciliation_id IS NOT NULL OR NEW.bank_journal_line_id IS NOT NULL
+        BEGIN SELECT RAISE(ABORT, 'a payment intent is created before it is processing or bank-reconciled'); END""",
+    """CREATE TRIGGER payment_intents_processing_once BEFORE UPDATE OF processing_at ON payment_intents
+        WHEN NEW.processing_at IS NOT OLD.processing_at
+         AND (OLD.processing_at IS NOT NULL OR NEW.processing_at IS NULL OR OLD.status IS NOT 'accepted' OR NEW.status IS NOT 'accepted')
+        BEGIN SELECT RAISE(ABORT, 'a payment enters processing once, only while the provider has accepted it and before it settles'); END""",
+    """CREATE TRIGGER payment_intents_bank_reconciled_once BEFORE UPDATE OF bank_reconciled_at, bank_reconciliation_id, bank_journal_line_id ON payment_intents
+        WHEN (NEW.bank_reconciled_at IS NOT OLD.bank_reconciled_at OR NEW.bank_reconciliation_id IS NOT OLD.bank_reconciliation_id
+              OR NEW.bank_journal_line_id IS NOT OLD.bank_journal_line_id)
+         AND (OLD.bank_reconciled_at IS NOT NULL OR OLD.bank_reconciliation_id IS NOT NULL OR OLD.bank_journal_line_id IS NOT NULL
+              OR NEW.bank_reconciled_at IS NULL OR NEW.bank_reconciliation_id IS NULL OR NEW.bank_journal_line_id IS NULL
+              OR OLD.status IS NOT 'settled' OR NEW.status IS NOT 'settled')
+        BEGIN SELECT RAISE(ABORT, 'a payment is bank-reconciled once, only after it settled, by a locked bank reconciliation'); END""",
+]
+register_schema_version(LIFECYCLE_SCHEMA_NAME, LIFECYCLE_SCHEMA_STATEMENTS)
+
+# Governed payee destination changes (plan section 6): request -> independent verification
+# evidence -> approval-bound execution.  The new destination is stored only here.
+VERIFY_DESTINATION_OPERATION = "party.verify_destination"
+DESTINATION_CHANGE_SUBJECT = "destination_change"
+VERIFICATION_CHANNELS = ("call-back to number on file", "in-person", "signed letter on letterhead")
+DESTINATION_SCHEMA_NAME = "payments_destination_changes"
+DESTINATION_SCHEMA_STATEMENTS = [
+    """CREATE TABLE destination_changes (
+        id TEXT PRIMARY KEY,
+        party_id TEXT NOT NULL REFERENCES parties(id),
+        requested_by TEXT NOT NULL CHECK (trim(requested_by) <> ''),
+        reason TEXT NOT NULL CHECK (trim(reason) <> ''),
+        requested_actor TEXT NOT NULL,
+        old_destination_hash TEXT,
+        old_destination_version INTEGER NOT NULL,
+        new_destination TEXT NOT NULL CHECK (trim(new_destination) <> ''),
+        new_destination_hash TEXT NOT NULL,
+        status TEXT NOT NULL CHECK (status IN ('pending','evidenced','executed','superseded','withdrawn')),
+        version INTEGER NOT NULL DEFAULT 1,
+        channel TEXT CHECK (channel IS NULL OR channel IN ('call-back to number on file','in-person','signed letter on letterhead')),
+        verified_by TEXT,
+        evidence_hash TEXT,
+        evidence_revision_id TEXT REFERENCES document_revisions(id),
+        evidence_recorded_by TEXT,
+        evidenced_at TEXT,
+        approval_id TEXT REFERENCES approvals(id),
+        executed_by TEXT,
+        executed_at TEXT,
+        new_destination_version INTEGER,
+        superseded_by TEXT REFERENCES destination_changes(id),
+        closed_by TEXT,
+        closed_at TEXT,
+        closed_reason TEXT,
+        created_at TEXT NOT NULL
+    )""",
+    "CREATE INDEX destination_changes_party ON destination_changes(party_id, created_at)",
+    "CREATE UNIQUE INDEX destination_changes_one_open_per_target ON destination_changes(party_id, new_destination_hash) WHERE status IN ('pending','evidenced')",
+    "CREATE UNIQUE INDEX destination_changes_evidence_once ON destination_changes(evidence_hash) WHERE evidence_hash IS NOT NULL",
+    "CREATE TRIGGER destination_changes_no_delete BEFORE DELETE ON destination_changes BEGIN SELECT RAISE(ABORT, 'payee destination changes are never deleted'); END",
+    # REPLACE would delete a conflicting row without firing DELETE triggers: refuse any colliding insert first
+    """CREATE TRIGGER destination_changes_no_replace BEFORE INSERT ON destination_changes
+        WHEN EXISTS (SELECT 1 FROM destination_changes d WHERE d.id = NEW.id
+                     OR (d.party_id = NEW.party_id AND d.new_destination_hash = NEW.new_destination_hash AND d.status IN ('pending','evidenced'))
+                     OR (NEW.evidence_hash IS NOT NULL AND d.evidence_hash = NEW.evidence_hash))
+        BEGIN SELECT RAISE(ABORT, 'payee destination changes are never replaced (same id, an open change to the same destination, or reused evidence)'); END""",
+    """CREATE TRIGGER destination_changes_insert_pending BEFORE INSERT ON destination_changes
+        WHEN NEW.status IS NOT 'pending' OR NEW.version IS NOT 1 OR NEW.channel IS NOT NULL OR NEW.verified_by IS NOT NULL
+          OR NEW.evidence_hash IS NOT NULL OR NEW.evidence_revision_id IS NOT NULL OR NEW.evidence_recorded_by IS NOT NULL OR NEW.evidenced_at IS NOT NULL
+          OR NEW.approval_id IS NOT NULL OR NEW.executed_by IS NOT NULL OR NEW.executed_at IS NOT NULL OR NEW.new_destination_version IS NOT NULL
+          OR NEW.superseded_by IS NOT NULL OR NEW.closed_by IS NOT NULL OR NEW.closed_at IS NOT NULL OR NEW.closed_reason IS NOT NULL
+          OR NEW.old_destination_version IS NOT (SELECT destination_version FROM parties WHERE id = NEW.party_id)
+        BEGIN SELECT RAISE(ABORT, 'a payee destination change is recorded only as a pending request against the current destination version'); END""",
+    """CREATE TRIGGER destination_changes_request_immutable
+        BEFORE UPDATE OF id, party_id, requested_by, reason, requested_actor, old_destination_hash, old_destination_version, new_destination,
+                         new_destination_hash, created_at ON destination_changes
+        WHEN NEW.id IS NOT OLD.id OR NEW.party_id IS NOT OLD.party_id OR NEW.requested_by IS NOT OLD.requested_by OR NEW.reason IS NOT OLD.reason
+          OR NEW.requested_actor IS NOT OLD.requested_actor OR NEW.old_destination_hash IS NOT OLD.old_destination_hash
+          OR NEW.old_destination_version IS NOT OLD.old_destination_version OR NEW.new_destination IS NOT OLD.new_destination
+          OR NEW.new_destination_hash IS NOT OLD.new_destination_hash OR NEW.created_at IS NOT OLD.created_at
+        BEGIN SELECT RAISE(ABORT, 'a payee destination change request is immutable; withdraw it and request a new one'); END""",
+    """CREATE TRIGGER destination_changes_lifecycle BEFORE UPDATE ON destination_changes
+        WHEN NOT (
+            (OLD.status = 'pending' AND NEW.status = 'evidenced' AND NEW.version = OLD.version + 1
+             AND NEW.channel IS NOT NULL AND NEW.verified_by IS NOT NULL AND trim(NEW.verified_by) <> ''
+             AND lower(trim(NEW.verified_by)) <> lower(trim(OLD.requested_by))
+             AND NEW.evidence_hash IS NOT NULL AND NEW.evidence_recorded_by IS NOT NULL AND NEW.evidenced_at IS NOT NULL
+             AND EXISTS (SELECT 1 FROM document_revisions r WHERE r.id = NEW.evidence_revision_id AND r.content_hash = NEW.evidence_hash)
+             AND NOT EXISTS (SELECT 1 FROM destination_changes o WHERE o.id <> NEW.id AND o.evidence_hash = NEW.evidence_hash)
+             AND NEW.approval_id IS NULL AND NEW.executed_by IS NULL AND NEW.executed_at IS NULL AND NEW.new_destination_version IS NULL
+             AND NEW.superseded_by IS NULL AND NEW.closed_by IS NULL AND NEW.closed_at IS NULL AND NEW.closed_reason IS NULL)
+         OR (OLD.status = 'evidenced' AND NEW.status = 'executed' AND NEW.version = OLD.version + 1
+             AND NEW.channel IS OLD.channel AND NEW.verified_by IS OLD.verified_by AND NEW.evidence_hash IS OLD.evidence_hash
+             AND NEW.evidence_revision_id IS OLD.evidence_revision_id AND NEW.evidence_recorded_by IS OLD.evidence_recorded_by
+             AND NEW.evidenced_at IS OLD.evidenced_at AND NEW.executed_by IS NOT NULL AND NEW.executed_at IS NOT NULL
+             AND NEW.new_destination_version = OLD.old_destination_version + 1
+             AND EXISTS (SELECT 1 FROM approvals a WHERE a.id = NEW.approval_id AND a.operation = 'party.verify_destination'
+                         AND a.subject_type = 'destination_change' AND a.subject_id = NEW.id AND a.status = 'consumed')
+             AND NEW.superseded_by IS NULL AND NEW.closed_by IS NULL AND NEW.closed_at IS NULL AND NEW.closed_reason IS NULL)
+         OR (OLD.status IN ('pending','evidenced') AND NEW.status IN ('superseded','withdrawn') AND NEW.version = OLD.version + 1
+             AND NEW.channel IS OLD.channel AND NEW.verified_by IS OLD.verified_by AND NEW.evidence_hash IS OLD.evidence_hash
+             AND NEW.evidence_revision_id IS OLD.evidence_revision_id AND NEW.evidence_recorded_by IS OLD.evidence_recorded_by
+             AND NEW.evidenced_at IS OLD.evidenced_at AND NEW.approval_id IS NULL AND NEW.executed_by IS NULL AND NEW.executed_at IS NULL
+             AND NEW.new_destination_version IS NULL AND NEW.closed_by IS NOT NULL AND NEW.closed_at IS NOT NULL AND NEW.closed_reason IS NOT NULL
+             AND ((NEW.status = 'superseded') = (NEW.superseded_by IS NOT NULL))))
+        BEGIN SELECT RAISE(ABORT, 'payee destination changes move only pending -> evidenced (a verifier other than the requester, a stored evidence revision used once) -> executed (a consumed party.verify_destination approval), or close as superseded or withdrawn'); END""",
+]
+register_schema_version(DESTINATION_SCHEMA_NAME, DESTINATION_SCHEMA_STATEMENTS)
+
+# Review follow-up for the change lifecycle (applied entries are append-only, so the trigger is
+# replaced by name): the verifier differs from the requesting login as well as from the named
+# requester; the evidence is the current revision of a ``destination_verification`` document;
+# and a change executes only while that revision is still the document's current one (a later
+# revision -- an amended call-back note, a retracted letter -- leaves the change stale).
+DESTINATION_EVIDENCE_KIND = "destination_verification"
+DESTINATION_VERIFICATION_SCHEMA_NAME = "payments_destination_verification"
+_EVIDENCE_IS_CURRENT_SQL = """EXISTS (SELECT 1 FROM document_revisions r JOIN documents d ON d.id = r.document_id
+                     WHERE r.id = {rev} AND r.content_hash = {hash} AND d.kind = 'destination_verification'
+                       AND NOT EXISTS (SELECT 1 FROM document_revisions later WHERE later.document_id = r.document_id AND later.revision > r.revision))"""
+DESTINATION_VERIFICATION_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER IF EXISTS destination_changes_lifecycle",
+    f"""CREATE TRIGGER destination_changes_lifecycle BEFORE UPDATE ON destination_changes
+        WHEN NOT (
+            (OLD.status = 'pending' AND NEW.status = 'evidenced' AND NEW.version = OLD.version + 1
+             AND NEW.channel IS NOT NULL AND NEW.verified_by IS NOT NULL AND trim(NEW.verified_by) <> ''
+             AND lower(trim(NEW.verified_by)) <> lower(trim(OLD.requested_by))
+             AND lower(trim(NEW.verified_by)) <> lower(trim(OLD.requested_actor))
+             AND NEW.evidence_hash IS NOT NULL AND NEW.evidence_recorded_by IS NOT NULL AND NEW.evidenced_at IS NOT NULL
+             AND {_EVIDENCE_IS_CURRENT_SQL.format(rev='NEW.evidence_revision_id', hash='NEW.evidence_hash')}
+             AND NOT EXISTS (SELECT 1 FROM destination_changes o WHERE o.id <> NEW.id AND o.evidence_hash = NEW.evidence_hash)
+             AND NEW.approval_id IS NULL AND NEW.executed_by IS NULL AND NEW.executed_at IS NULL AND NEW.new_destination_version IS NULL
+             AND NEW.superseded_by IS NULL AND NEW.closed_by IS NULL AND NEW.closed_at IS NULL AND NEW.closed_reason IS NULL)
+         OR (OLD.status = 'evidenced' AND NEW.status = 'executed' AND NEW.version = OLD.version + 1
+             AND NEW.channel IS OLD.channel AND NEW.verified_by IS OLD.verified_by AND NEW.evidence_hash IS OLD.evidence_hash
+             AND NEW.evidence_revision_id IS OLD.evidence_revision_id AND NEW.evidence_recorded_by IS OLD.evidence_recorded_by
+             AND NEW.evidenced_at IS OLD.evidenced_at AND NEW.executed_by IS NOT NULL AND NEW.executed_at IS NOT NULL
+             AND NEW.new_destination_version = OLD.old_destination_version + 1
+             AND {_EVIDENCE_IS_CURRENT_SQL.format(rev='OLD.evidence_revision_id', hash='OLD.evidence_hash')}
+             AND EXISTS (SELECT 1 FROM approvals a WHERE a.id = NEW.approval_id AND a.operation = 'party.verify_destination'
+                         AND a.subject_type = 'destination_change' AND a.subject_id = NEW.id AND a.status = 'consumed')
+             AND NEW.superseded_by IS NULL AND NEW.closed_by IS NULL AND NEW.closed_at IS NULL AND NEW.closed_reason IS NULL)
+         OR (OLD.status IN ('pending','evidenced') AND NEW.status IN ('superseded','withdrawn') AND NEW.version = OLD.version + 1
+             AND NEW.channel IS OLD.channel AND NEW.verified_by IS OLD.verified_by AND NEW.evidence_hash IS OLD.evidence_hash
+             AND NEW.evidence_revision_id IS OLD.evidence_revision_id AND NEW.evidence_recorded_by IS OLD.evidence_recorded_by
+             AND NEW.evidenced_at IS OLD.evidenced_at AND NEW.approval_id IS NULL AND NEW.executed_by IS NULL AND NEW.executed_at IS NULL
+             AND NEW.new_destination_version IS NULL AND NEW.closed_by IS NOT NULL AND NEW.closed_at IS NOT NULL AND NEW.closed_reason IS NOT NULL
+             AND ((NEW.status = 'superseded') = (NEW.superseded_by IS NOT NULL))))
+        BEGIN SELECT RAISE(ABORT, 'payee destination changes move only pending -> evidenced (a verifier other than the requester and the requesting login, the current revision of a destination_verification document, each revision used once) -> executed (a consumed party.verify_destination approval, while that evidence revision is still current), or close as superseded or withdrawn'); END""",
+]
+register_schema_version(DESTINATION_VERIFICATION_SCHEMA_NAME, DESTINATION_VERIFICATION_SCHEMA_STATEMENTS)
+
+# Review follow-up for the bank-reconciled marker (replaced by name): it names the intent's own
+# settlement bank line (the Cr 1000 line of its ``settled`` provider event's journal), and it is
+# refused outright in a workspace without the bank reconciliation module.  The banking module adds
+# the trigger that requires a *locked* reconciliation whose evidence matched that line to a bank
+# statement line (its tables live in its own entry, and a trigger must never name a table that
+# may not exist: SQLite then refuses ALTER TABLE ... RENAME anywhere in the schema).
+LIFECYCLE_PROOF_SCHEMA_NAME = "payments_lifecycle_bank_proof"
+LIFECYCLE_PROOF_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER IF EXISTS payment_intents_bank_reconciled_once",
+    """CREATE TRIGGER payment_intents_bank_reconciled_once BEFORE UPDATE OF bank_reconciled_at, bank_reconciliation_id, bank_journal_line_id ON payment_intents
+        WHEN NEW.bank_reconciled_at IS NOT OLD.bank_reconciled_at OR NEW.bank_reconciliation_id IS NOT OLD.bank_reconciliation_id
+          OR NEW.bank_journal_line_id IS NOT OLD.bank_journal_line_id
+        BEGIN
+            SELECT CASE
+                WHEN OLD.bank_reconciled_at IS NOT NULL OR OLD.bank_reconciliation_id IS NOT NULL OR OLD.bank_journal_line_id IS NOT NULL
+                  OR NEW.bank_reconciled_at IS NULL OR NEW.bank_reconciliation_id IS NULL OR NEW.bank_journal_line_id IS NULL
+                  OR trim(NEW.bank_reconciled_at) = '' OR trim(NEW.bank_reconciliation_id) = ''
+                  OR OLD.status IS NOT 'settled' OR NEW.status IS NOT 'settled'
+                THEN RAISE(ABORT, 'a payment is bank-reconciled once, only after it settled, with the time, the reconciliation and the settlement bank line together')
+                WHEN NOT EXISTS (SELECT 1 FROM journal_lines l JOIN journals j ON j.id = l.journal_id
+                                 JOIN provider_events e ON j.source_type = 'provider_event' AND j.source_id = e.id
+                                 WHERE l.id = NEW.bank_journal_line_id AND l.account_code = '1000' AND e.intent_id = NEW.id AND e.kind = 'settled')
+                THEN RAISE(ABORT, 'a payment is bank-reconciled only against its own settlement bank line (the Cr 1000 line of its settled provider event journal)')
+                WHEN NOT EXISTS (SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'banking_reconciliation_evidence')
+                THEN RAISE(ABORT, 'a payment is bank-reconciled only by a locked bank reconciliation, and this workspace has no bank reconciliation module')
+            END;
+        END""",
+]
+register_schema_version(LIFECYCLE_PROOF_SCHEMA_NAME, LIFECYCLE_PROOF_SCHEMA_STATEMENTS)
+
 DEFAULT_PAYABLE_ACCOUNT = "2000"
 IN_PROGRESS_STATES = ("approved", "queued", "submitted", "outcome_unknown")
 CLEARING_ACCOUNT = "1200"
 FEE_ACCOUNT = "6000"
+SETTLEMENT_BANK_ACCOUNT = "1000"
 
 RESUME_OPERATION = "payment.resume_releases"
 CONTROLS_SUBJECT_TYPE = "payment_controls"
@@ -311,6 +569,13 @@ CORE_SOURCE_LABELS = {"bill": "bill payment", "retainage_release": "retainage re
 
 SIGNATURE_FIELD = "signature"
 EVENT_KINDS = ("settled", "returned")
+PROCESSING_EVENT = "processing"
+
+# Every state the plan names, in lifecycle order (``lifecycle_status`` reports one of them).
+LIFECYCLE_STATES = ("approved", "queued", "submitted", "outcome_unknown", "accepted", "processing", "settled", "bank_reconciled",
+                    "failed", "returned", "canceled")
+# Intents processing longer than this many days are listed by ``stale_processing`` by default.
+STALE_PROCESSING_DAYS = 3
 
 # An intent's ``note`` starts with its purpose label ("bill payment", "retainage
 # release payment", ...); status reasons are appended after this separator so
@@ -338,10 +603,66 @@ class ProviderEventRejected(PaymentError):
     """A provider callback was unsigned, forged or malformed."""
 
 
+class DestinationChangeError(PaymentError):
+    """A payee destination change request, its evidence or its execution is invalid."""
+
+
+class DestinationChangeStale(DestinationChangeError, StaleApprovalError):
+    """The change no longer applies: it was superseded, withdrawn or executed, or the payee's
+    destination moved after it was requested.  Raised while a granted approval executes, the
+    service treats the approval as stale and invalidates it durably."""
+
+
 def _non_empty(value: Any, label: str) -> str:
     if not isinstance(value, str) or not value.strip():
         raise PaymentError(f"{label} is required and must be a non-empty string")
     return value.strip()
+
+
+def lifecycle_status(intent: dict[str, Any]) -> str:
+    """The plan's full state for an intent: ``processing`` and ``bank_reconciled`` refine the
+    accounting statuses ``accepted`` and ``settled`` (see the module docstring)."""
+    status = intent.get("status")
+    if status == "accepted" and intent.get("processing_at"):
+        return "processing"
+    if status == "settled" and intent.get("bank_reconciled_at"):
+        return "bank_reconciled"
+    return status
+
+
+def destination_fingerprint(destination: str | None) -> str | None:
+    """SHA-256 of a payee destination (None when the payee has none): what audit payloads,
+    manifests and change history carry instead of the destination itself."""
+    if destination is None or destination == "":
+        return None
+    return sha256_hex(destination)
+
+
+def _masked(destination: str | None) -> str | None:
+    if not destination:
+        return None
+    return "****" + destination[-4:] if len(destination) > 4 else "****"
+
+
+def _same_person(a: str | None, b: str | None) -> bool:
+    """Case- and whitespace-insensitive identity of two people's names."""
+    norm = lambda s: " ".join((s or "").split()).casefold()  # noqa: E731
+    return bool(norm(a)) and norm(a) == norm(b)
+
+
+def _alnum(text: str) -> str:
+    return "".join(ch for ch in text.casefold() if ch.isalnum())
+
+
+def _mentions_destination(text: str | None, destination: str | None) -> bool:
+    """Whether ``text`` repeats ``destination``, compared without case, spaces or punctuation
+    (so 'ACH SIM PAYEE 0002' and 'ach-sim-payee-0002' both repeat 'ACH-SIM-PAYEE-0002')."""
+    if not text or not destination:
+        return False
+    core = _alnum(destination)
+    if core:
+        return core in _alnum(text)
+    return destination.casefold() in text.casefold()
 
 
 # --------------------------------------------------------------------------- #
@@ -397,6 +718,8 @@ class SimulatedProvider:
     ``reference`` (Cipher's workspace, intent and paid record), which the transfer
     keeps; ``list_transfers`` returns every transfer the way a provider's list
     endpoint would, and a transfer remembers whether it settled before a return.
+    ``process``, ``settle`` and ``return_payment`` move a transfer (accepted -> processing ->
+    settled, or returned) and return the signed event the provider would send.
     """
 
     MODES = ("accept", "timeout_after_accept", "reject", "unavailable", "mfa_failed")
@@ -469,6 +792,15 @@ class SimulatedProvider:
     def _event(self, t: dict[str, Any], kind: str, **extra: Any) -> dict[str, Any]:
         return self.sign({"id": f"evt_{t['provider_ref']}_{kind}", "kind": kind, "provider_ref": t["provider_ref"], "amount": t["amount"], **extra})
 
+    def process(self, logical_op_id: str) -> dict[str, Any]:
+        """The rail has started moving an accepted transfer: status ``processing`` and a
+        signed ``processing`` event.  Only an accepted transfer can start processing."""
+        t = self.transfers[logical_op_id]
+        if t["status"] != "accepted":
+            raise PaymentError(f"transfer {t['provider_ref']} is {t['status']}; only an accepted transfer starts processing")
+        t["status"] = "processing"
+        return self._event(t, PROCESSING_EVENT)
+
     def settle(self, logical_op_id: str) -> dict[str, Any]:
         t = self.transfers[logical_op_id]
         t["status"] = "settled"
@@ -496,6 +828,8 @@ class Payments:
         self._listeners: dict[str, list[Callable[..., None]]] = {}
         self._adopters: dict[str, dict[str, Any]] = {}
         self._savepoint_seq = 0
+        # used to invalidate open approvals that name a payee's destination when it changes
+        self._approvals = Approvals(db, audit)
 
     # ---- provider binding -------------------------------------------------------- #
 
@@ -694,15 +1028,21 @@ class Payments:
         if b["status"] != "posted":
             raise PaymentError(f"bill {bill_id} is {b['status']}; only posted bills are payable")
         supplier = self.db.one("SELECT * FROM parties WHERE id=?", (b["supplier_id"],))
-        terms = self.payment_terms(b["amount_due"], b["project_id"])
+        # release what is still owed: the amount due less posted supplier credit notes and
+        # accepted payments (Bills.open_payable, wired by the service); never the gross figure
+        owed = self._owed_on_bill(bill_id, b["amount_due"])
+        if owed <= 0:
+            raise PaymentError(f"bill {bill_id} has nothing left to pay (amount due {b['amount_due']}, open payable {fmt(owed)})")
+        terms = self.payment_terms(fmt(owed), b["project_id"])
         return build_manifest(
             operation="payment.release",
             subject_type="bill",
             subject_id=bill_id,
             actor_role=actor_role,
-            amounts={"amount": b["amount_due"]},
+            amounts={"amount": fmt(owed)},
             bindings={
-                "bill_hash": b["content_hash"], "bill_status": b["status"], "project_id": b["project_id"], "payable_account": DEFAULT_PAYABLE_ACCOUNT,
+                "bill_hash": b["content_hash"], "bill_status": b["status"], "amount_due": b["amount_due"], "open_payable": fmt(owed),
+                "project_id": b["project_id"], "payable_account": DEFAULT_PAYABLE_ACCOUNT,
                 "destination_verified": bool(supplier["destination_verified"]), "funding_source": "operating-bank-simulated",
                 "fees": terms["fee"], "value_date": terms["value_date"],
             },
@@ -710,6 +1050,12 @@ class Payments:
             entity=terms["entity"],
             currency=terms["currency"],
         )
+
+    def _owed_on_bill(self, bill_id: str, amount_due: Any) -> Decimal:
+        """Open payable of a posted bill.  Uses the bills service when the Cipher service
+        has wired it (``open_payable_for_bill``), else the amount due."""
+        fn = getattr(self, "open_payable_for_bill", None)
+        return money(fn(bill_id)) if fn is not None else money(amount_due)
 
     def _retainage_paid(self, *, supplier_id: str, project_id: str) -> list[dict[str, Any]]:
         """Released-retainage intents still counting against the release: scoped ones on this
@@ -804,14 +1150,17 @@ class Payments:
                               {"version": version, "reason": reason, "was_engaged": current["kill_switch"], "queued_intents_held": queued})
         return self.controls()
 
-    # Payments is a core domain that owns ``payment.resume_releases`` and ``payment.adopt_transfer``.
+    # Payments is a core domain that owns ``payment.resume_releases``, ``payment.adopt_transfer``
+    # and ``party.verify_destination``.
 
     def handles(self, operation: str) -> bool:
-        return operation in (RESUME_OPERATION, ADOPT_OPERATION)
+        return operation in (RESUME_OPERATION, ADOPT_OPERATION, VERIFY_DESTINATION_OPERATION)
 
     def manifest_for(self, operation: str, subject_id: str, *, actor_role: str) -> dict[str, Any]:
         if operation == ADOPT_OPERATION:
             return self._adoption_manifest(subject_id, actor_role=actor_role)
+        if operation == VERIFY_DESTINATION_OPERATION:
+            return self._destination_manifest(subject_id, actor_role=actor_role)
         if operation != RESUME_OPERATION:
             raise PaymentError(f"unknown payment operation {operation}")
         if subject_id != CONTROLS_SUBJECT_ID:
@@ -833,6 +1182,8 @@ class Payments:
     def apply(self, operation: str, subject_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
         if operation == ADOPT_OPERATION:
             return self._apply_adoption(subject_id, approval_id=approval_id, manifest=manifest, actor=actor)
+        if operation == VERIFY_DESTINATION_OPERATION:
+            return self._apply_destination_change(subject_id, approval_id=approval_id, manifest=manifest, actor=actor)
         if operation != RESUME_OPERATION:
             raise PaymentError(f"unknown payment operation {operation}")
         with self.db.transaction() as conn:
@@ -940,14 +1291,55 @@ class Payments:
         if row is None:
             raise PaymentError(f"unknown payment intent {intent_id}")
         row["events"] = self.db.query("SELECT * FROM provider_events WHERE intent_id=? ORDER BY received_at", (intent_id,))
+        row["lifecycle_status"] = lifecycle_status(row)
         return row
 
     def list(self, *, status: str | None = None) -> list[dict[str, Any]]:
-        if status:
+        """Intents in creation order.  ``status`` filters on the status column; the lifecycle
+        refinements ``processing`` and ``bank_reconciled`` filter on ``lifecycle_status``
+        (``status="accepted"`` therefore still includes intents that are processing)."""
+        if status == "processing":
+            rows = self.db.query("SELECT id FROM payment_intents WHERE status='accepted' AND processing_at IS NOT NULL ORDER BY created_at")
+        elif status == "bank_reconciled":
+            rows = self.db.query("SELECT id FROM payment_intents WHERE status='settled' AND bank_reconciled_at IS NOT NULL ORDER BY created_at")
+        elif status:
             rows = self.db.query("SELECT id FROM payment_intents WHERE status=? ORDER BY created_at", (status,))
         else:
             rows = self.db.query("SELECT id FROM payment_intents ORDER BY created_at")
         return [self.get(r["id"]) for r in rows]
+
+    def stale_processing(self, days: int = STALE_PROCESSING_DAYS, *, now: _dt.datetime | None = None) -> list[dict[str, Any]]:
+        """Intents the provider has been processing for longer than ``days`` days (default
+        ``STALE_PROCESSING_DAYS``), oldest first.  The service does not call a payments close
+        check, so period close and treasury review read this list directly; each entry is an
+        exception for treasury to chase with the provider (nothing here retries or resubmits).
+        ``now`` (default: the current UTC time) must be a datetime; a timezone-naive one, such
+        as ``datetime.utcnow()``, is read as UTC."""
+        if isinstance(days, bool) or not isinstance(days, int) or days < 0:
+            raise PaymentError("days must be a whole number of days, zero or more")
+        if now is None:
+            now = utcnow()
+        elif not isinstance(now, _dt.datetime):
+            raise PaymentError(f"now must be a datetime, not {type(now).__name__}")
+        elif now.tzinfo is None or now.utcoffset() is None:
+            now = now.replace(tzinfo=_dt.timezone.utc)
+        cutoff = now - _dt.timedelta(days=days)
+        out = []
+        for i in self.db.query("SELECT * FROM payment_intents WHERE status='accepted' AND processing_at IS NOT NULL ORDER BY processing_at, id"):
+            since = parse_iso(i["processing_at"])
+            if since.tzinfo is None or since.utcoffset() is None:  # Cipher writes UTC with a Z; read any other stored time as UTC too
+                since = since.replace(tzinfo=_dt.timezone.utc)
+            if since >= cutoff:
+                continue
+            age = now - since
+            out.append({
+                "intent_id": i["id"], "provider_ref": i["provider_ref"], "amount": i["amount"], "party_id": i["party_id"], "project_id": i["project_id"],
+                "source_type": i["source_type"], "source_id": i["source_id"], "processing_since": i["processing_at"],
+                "days_processing": age.days, "threshold_days": days, "lifecycle_status": "processing",
+                "detail": f"payment {i['id']} for {i['amount']} has been processing at the provider since {i['processing_at']} "
+                          f"({age.days} day(s), threshold {days}); chase the provider before the period closes",
+            })
+        return out
 
     def _queue_untrusted(self) -> str | None:
         """Why this copy's local payment queue cannot be acted on, or None.  Without
@@ -1229,11 +1621,15 @@ class Payments:
         return results
 
     @staticmethod
-    def _missed_kind(intent_status: str, found: dict[str, Any]) -> str | None:
-        """The provider event Cipher has not recorded for an intent, or None."""
+    def _missed_kind(intent_status: str, found: dict[str, Any], processing_recorded: bool = True) -> str | None:
+        """The provider event Cipher has not recorded for an intent, or None.  A transfer the
+        provider reports as processing is a missed ``processing`` event only while the intent
+        is accepted and has not recorded processing yet."""
         observed = found.get("status")
         if intent_status == "accepted" and observed in EVENT_KINDS:
             return observed
+        if intent_status == "accepted" and observed == PROCESSING_EVENT and not processing_recorded:
+            return PROCESSING_EVENT
         if intent_status == "settled" and observed == "returned":
             return "returned"
         return None
@@ -1241,7 +1637,7 @@ class Payments:
     def _catch_up_intent(self, intent: dict[str, Any], found: dict[str, Any], *, actor: str) -> dict[str, Any] | None:
         """Ingest the reconciliation event for one intent's missed callback (the caller has
         checked that a webhook secret is configured); None when nothing was missed."""
-        kind = self._missed_kind(intent["status"], found)
+        kind = self._missed_kind(intent["status"], found, bool(intent.get("processing_at")))
         if kind is None:
             return None
         event = {"id": f"recon_{intent['provider_ref']}_{kind}", "kind": kind, "provider_ref": intent["provider_ref"], "amount": found.get("amount", intent["amount"]),
@@ -1278,7 +1674,7 @@ class Payments:
                 break  # nothing more can be learned now; the next reconciliation tries again
             if not found.get("found") or found.get("provider_ref") != intent["provider_ref"]:
                 continue
-            if self._missed_kind(intent["status"], found) is None:
+            if self._missed_kind(intent["status"], found, bool(intent.get("processing_at"))) is None:
                 continue
             if not self.webhook_secret:
                 blocked.append({"intent_id": intent["id"], "provider_ref": intent["provider_ref"], "provider_status": found.get("status"),
@@ -1471,8 +1867,9 @@ class Payments:
         allowed = ("posted", "paid") if transfer_status == "returned" else ("posted",)
         if b["status"] not in allowed:
             raise PaymentError(f"bill {bill_id} is {b['status']} in this copy; only a posted (unpaid) bill can take an adopted payment")
-        if money(b["amount_due"]) != amount:
-            raise PaymentError(f"the transfer is for {fmt(amount)} but bill {bill_id} is due {b['amount_due']}")
+        owed = self._owed_on_bill(bill_id, b["amount_due"]) if b["status"] == "posted" else money(b["amount_due"])
+        if amount not in (owed, money(b["amount_due"])):
+            raise PaymentError(f"the transfer is for {fmt(amount)} but bill {bill_id} is due {b['amount_due']} (open payable {fmt(owed)})")
         return {"project_id": b["project_id"], "party_id": b["supplier_id"], "payable_account": DEFAULT_PAYABLE_ACCOUNT, "bill_id": b["id"],
                 "label": CORE_SOURCE_LABELS["bill"], "binding": {"bill_hash": b["content_hash"], "bill_status": b["status"], "amount_due": b["amount_due"]}}
 
@@ -1514,7 +1911,7 @@ class Payments:
         if amount <= 0 or fee < 0:
             raise PaymentError(f"the provider reports amount {fmt(amount)} and fee {fmt(fee)} for transfer {t.get('provider_ref')}")
         status = t.get("status")
-        if status not in ("accepted", "settled", "returned"):
+        if status not in ("accepted", PROCESSING_EVENT, "settled", "returned"):
             raise PaymentError(f"transfer {t.get('provider_ref')} is {status!r} at the provider")
         superseded = self._superseded_queued(source_type, source_id, provider)
         if source_type == "bill":
@@ -1677,6 +2074,445 @@ class Payments:
             "sign_convention": "1200 is debit-normal; accepted-unsettled intents are credits, so both totals are negative while money is in transit",
         }
 
+    # ---- bank reconciliation of settled payments ----------------------------------- #
+
+    def _has_table(self, name: str) -> bool:
+        return bool(self.db.scalar("SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name=?", (name,)))
+
+    def _settlement_lines(self, line_ids: list[str]) -> list[dict[str, Any]]:
+        """The settlement bank lines (Cr 1000 of a ``settled`` provider event's journal) among ``line_ids``."""
+        out: list[dict[str, Any]] = []
+        for start in range(0, len(line_ids), 400):
+            chunk = line_ids[start:start + 400]
+            out.extend(self.db.query(
+                f"""SELECT l.id AS journal_line_id, l.journal_id, e.id AS event_id, i.id AS intent_id
+                    FROM journal_lines l
+                    JOIN journals j ON j.id = l.journal_id
+                    JOIN provider_events e ON j.source_type = 'provider_event' AND j.source_id = e.id
+                    JOIN payment_intents i ON i.id = e.intent_id
+                    WHERE l.id IN ({','.join('?' * len(chunk))}) AND l.account_code = ? AND e.kind = 'settled'
+                    ORDER BY i.created_at, i.id""",
+                (*chunk, SETTLEMENT_BANK_ACCOUNT),
+            ))
+        return out
+
+    def _locked_match_proof(self, journal_line_id: str, reconciliation_id: str | None) -> dict[str, Any] | None:
+        """The locked bank reconciliation whose evidence matches ``journal_line_id`` to a bank
+        statement line (opening items, which pair no statement line, do not count), or None."""
+        if not self._has_table("banking_reconciliation_evidence"):
+            return None
+        sql = """SELECT e.reconciliation_id, e.statement_id, m.id AS match_id, m.line_id AS statement_line_id
+                 FROM banking_reconciliation_evidence e
+                 JOIN banking_matches m ON m.id = e.match_id AND m.journal_line_id = e.journal_line_id
+                 JOIN banking_statements s ON s.id = e.statement_id
+                 JOIN banking_reconciliations r ON r.id = e.reconciliation_id
+                 WHERE e.journal_line_id = ? AND e.kind = 'match' AND m.line_id IS NOT NULL AND s.status = 'locked'"""
+        params: list[Any] = [journal_line_id]
+        if reconciliation_id is not None:
+            sql += " AND e.reconciliation_id = ?"
+            params.append(reconciliation_id)
+        return self.db.one(sql + " ORDER BY r.locked_at, r.id LIMIT 1", tuple(params))
+
+    def mark_bank_reconciled_for_journal_lines(self, journal_line_ids: Any, actor: str, *, reconciliation_id: str | None = None) -> dict[str, Any]:
+        """Advance settled intents to ``bank_reconciled`` once their settlement bank line is
+        matched to a bank statement line in a locked bank reconciliation.
+
+        ``banking.lock_reconciliation`` calls this with the GL lines its locked evidence matched
+        to statement lines.  Lines that are not payment settlements are ignored.  A settlement
+        line the locked evidence does not prove (no locked reconciliation, or not the one named
+        by ``reconciliation_id``) refuses the whole call.  An intent already bank-reconciled is
+        left as it is, and one that was returned before the lock stays returned
+        (``not_settled``).  Nothing is posted: the settlement journal already moved the cash."""
+        if isinstance(journal_line_ids, (str, bytes)) or not isinstance(journal_line_ids, (list, tuple, set, frozenset)):
+            raise PaymentError("journal_line_ids must be a list of GL line ids")
+        ids: list[str] = []
+        for value in journal_line_ids:
+            line_id = _non_empty(value, "journal_line_id")
+            if line_id not in ids:
+                ids.append(line_id)
+        actor = _non_empty(actor, "actor")
+        if reconciliation_id is not None:
+            reconciliation_id = _non_empty(reconciliation_id, "reconciliation_id")
+        out: dict[str, Any] = {"advanced": [], "already_bank_reconciled": [], "not_settled": [], "reconciliation_id": reconciliation_id}
+        if not ids:
+            return out
+        with self.db.transaction() as conn:
+            for row in self._settlement_lines(ids):
+                proof = self._locked_match_proof(row["journal_line_id"], reconciliation_id)
+                if proof is None:
+                    where = f" {reconciliation_id}" if reconciliation_id else ""
+                    raise PaymentError(f"GL line {row['journal_line_id']} (the settlement of payment intent {row['intent_id']}) is not matched to a bank "
+                                       f"statement line in a locked bank reconciliation{where}; nothing was marked bank-reconciled")
+                intent = dict(conn.execute("SELECT * FROM payment_intents WHERE id=?", (row["intent_id"],)).fetchone())
+                if intent.get("bank_reconciled_at"):
+                    out["already_bank_reconciled"].append(intent["id"])
+                    continue
+                if intent["status"] != "settled":
+                    out["not_settled"].append({"intent_id": intent["id"], "status": intent["status"], "lifecycle_status": lifecycle_status(intent)})
+                    continue
+                now = utcnow_iso()
+                conn.execute(
+                    "UPDATE payment_intents SET bank_reconciled_at=?, bank_reconciliation_id=?, bank_journal_line_id=? WHERE id=? AND status='settled' AND bank_reconciled_at IS NULL",
+                    (now, proof["reconciliation_id"], row["journal_line_id"], intent["id"]),
+                )
+                self.audit.record(actor, "payment.bank_reconciled", "payment_intent", intent["id"], {
+                    "reconciliation_id": proof["reconciliation_id"], "statement_id": proof["statement_id"], "statement_line_id": proof["statement_line_id"],
+                    "match_id": proof["match_id"], "journal_line_id": row["journal_line_id"], "journal_id": row["journal_id"], "settlement_event_id": row["event_id"],
+                    "provider_ref": intent["provider_ref"], "amount": intent["amount"], "fee": intent.get("fee"),
+                })
+                out["advanced"].append(intent["id"])
+        return out
+
+    # ---- governed payee destination changes ------------------------------------------ #
+
+    @staticmethod
+    def _dc_text(value: Any, label: str, *, limit: int = 200) -> str:
+        if not isinstance(value, str) or not value.strip():
+            raise DestinationChangeError(f"{label} is required and must be a non-empty string")
+        value = value.strip()
+        if len(value) > limit:
+            raise DestinationChangeError(f"{label} is longer than {limit} characters")
+        return value
+
+    @staticmethod
+    def _channel(value: Any) -> str:
+        if isinstance(value, str):
+            wanted = " ".join(value.split()).casefold()
+            for channel in VERIFICATION_CHANNELS:
+                if channel.casefold() == wanted:
+                    return channel
+        raise DestinationChangeError(f"verification channel must be one of {', '.join(repr(c) for c in VERIFICATION_CHANNELS)}, not {value!r}; "
+                                     "an e-mail or a phone number taken from the change request is not a trusted channel")
+
+    def _change_row(self, change_id: Any) -> dict[str, Any]:
+        change_id = self._dc_text(change_id, "change_id")
+        row = self.db.one("SELECT * FROM destination_changes WHERE id=?", (change_id,))
+        if row is None:
+            raise DestinationChangeError(f"unknown destination change {change_id}")
+        return row
+
+    @staticmethod
+    def _refuse_destination_echo(destination: str, **texts: str | None) -> None:
+        """Refuse free text bound for the audit log (or an approval's invalidation reason) that
+        repeats the new destination: it is stored only in the change row."""
+        for label, text in texts.items():
+            if _mentions_destination(text, destination):
+                raise DestinationChangeError(
+                    f"the {label.replace('_', ' ')} must not repeat the new destination (compared without case, spaces or punctuation): "
+                    "it is stored only in the change record, never in audit payloads"
+                )
+
+    def _evidence_problem(self, ch: dict[str, Any]) -> str | None:
+        """Why a recorded change's evidence no longer supports it (or None): the revision is
+        gone, its content no longer matches, it is not a ``destination_verification`` document,
+        or the document has a newer revision than the one that verified the change."""
+        if ch["evidence_revision_id"] is None:
+            return None
+        rev = self.db.one(
+            """SELECT r.id, r.document_id, r.revision, r.content_hash, d.kind,
+                      (SELECT MAX(o.revision) FROM document_revisions o WHERE o.document_id = r.document_id) AS latest
+               FROM document_revisions r JOIN documents d ON d.id = r.document_id WHERE r.id=?""",
+            (ch["evidence_revision_id"],),
+        )
+        if rev is None or rev["content_hash"] != ch["evidence_hash"]:
+            return f"the verification evidence of destination change {ch['id']} no longer matches a stored evidence revision"
+        if rev["kind"] != DESTINATION_EVIDENCE_KIND:
+            return (f"the verification evidence of destination change {ch['id']} is a {rev['kind']!r} document, not a "
+                    f"{DESTINATION_EVIDENCE_KIND!r} record")
+        if rev["revision"] != rev["latest"]:
+            return (f"the verification evidence of destination change {ch['id']} (revision {rev['revision']} of document {rev['document_id']}) was "
+                    f"superseded by revision {rev['latest']} after it was recorded")
+        return None
+
+    def _public_change(self, row: dict[str, Any], party: dict[str, Any] | None) -> dict[str, Any]:
+        """A change as surfaces may show it: fingerprints and a masked hint, never the destination."""
+        out = {k: v for k, v in row.items() if k != "new_destination"}
+        out["new_destination_masked"] = _masked(row["new_destination"])
+        is_open = row["status"] in ("pending", "evidenced")
+        out["open"] = is_open
+        evidence_problem = self._evidence_problem(row)
+        out["evidence_current"] = None if row["evidence_revision_id"] is None else evidence_problem is None
+        out["stale"] = bool(is_open and ((party is not None and party["destination_version"] != row["old_destination_version"]) or evidence_problem))
+        out["is_current_destination"] = bool(
+            row["status"] == "executed" and party is not None and party["destination_version"] == row["new_destination_version"]
+            and destination_fingerprint(party["destination"]) == row["new_destination_hash"]
+        )
+        out["approvals"] = self.db.query(
+            """SELECT id, status, actor_role, requested_by, requested_at, approver, granted_at, consumed_by, consumed_at, invalidated_reason
+               FROM approvals WHERE operation=? AND subject_type=? AND subject_id=? ORDER BY requested_at, id""",
+            (VERIFY_DESTINATION_OPERATION, DESTINATION_CHANGE_SUBJECT, row["id"]),
+        )
+        return out
+
+    def destination_change(self, change_id: str) -> dict[str, Any]:
+        row = self._change_row(change_id)
+        party = self.db.one("SELECT * FROM parties WHERE id=?", (row["party_id"],))
+        return self._public_change(row, party)
+
+    def change_history(self, party_id: str) -> list[dict[str, Any]]:
+        """Every destination change requested for ``party_id``, oldest first, with its status,
+        evidence, approvals and whether it is the party's current destination.  Destinations
+        appear only as fingerprints and a masked hint."""
+        party_id = self._dc_text(party_id, "party_id")
+        party = self.db.one("SELECT * FROM parties WHERE id=?", (party_id,))
+        if party is None:
+            raise DestinationChangeError(f"unknown party {party_id}")
+        rows = self.db.query("SELECT * FROM destination_changes WHERE party_id=? ORDER BY created_at, id", (party_id,))
+        return [self._public_change(r, party) for r in rows]
+
+    def request_destination_change(self, party_id: str, new_destination: str, requested_by: str, reason: str, actor: str) -> dict[str, Any]:
+        """Record a pending change of ``party_id``'s payment destination.  Nothing about the
+        payee changes until the change is verified (``record_verification_evidence``) and the
+        ``party.verify_destination`` approval executes; payments keep going to the current
+        verified destination meanwhile.  Refused: an unknown party, a destination that already
+        is the party's verified destination, a second open change to the same destination, and
+        a reason, requester or acting login that repeats the new destination."""
+        party_id = self._dc_text(party_id, "party_id")
+        new_destination = self._dc_text(new_destination, "new_destination", limit=128)
+        requested_by = self._dc_text(requested_by, "requested_by")
+        reason = self._dc_text(reason, "reason", limit=1000)
+        actor = self._dc_text(actor, "actor")
+        self._refuse_destination_echo(new_destination, reason=reason, requester=requested_by, acting_login=actor)
+        new_hash = destination_fingerprint(new_destination)
+        change_id = new_id("dch")
+        with self.db.transaction() as conn:
+            party = self.db.one("SELECT * FROM parties WHERE id=?", (party_id,))
+            if party is None:
+                raise DestinationChangeError(f"unknown party {party_id}")
+            old_hash = destination_fingerprint(party["destination"])
+            if old_hash == new_hash and party["destination_verified"]:
+                raise DestinationChangeError(f"that is already party {party_id}'s verified destination (version {party['destination_version']}); there is nothing to change")
+            dup = self.db.one("SELECT id FROM destination_changes WHERE party_id=? AND new_destination_hash=? AND status IN ('pending','evidenced')", (party_id, new_hash))
+            if dup is not None:
+                raise DestinationChangeError(f"destination change {dup['id']} to the same destination is already open for party {party_id}")
+            now = utcnow_iso()
+            conn.execute(
+                """INSERT INTO destination_changes (id, party_id, requested_by, reason, requested_actor, old_destination_hash, old_destination_version,
+                   new_destination, new_destination_hash, status, version, created_at) VALUES (?,?,?,?,?,?,?,?,?,'pending',1,?)""",
+                (change_id, party_id, requested_by, reason, actor, old_hash, party["destination_version"], new_destination, new_hash, now),
+            )
+            self.audit.record(actor, "party.destination_change_requested", DESTINATION_CHANGE_SUBJECT, change_id, {
+                "party_id": party_id, "requested_by": requested_by, "reason": reason, "old_destination_hash": old_hash,
+                "old_destination_version": party["destination_version"], "old_destination_verified": bool(party["destination_verified"]),
+                "new_destination_hash": new_hash,
+            })
+        return self.destination_change(change_id)
+
+    def _evidence_revision(self, evidence_hash: str) -> dict[str, Any]:
+        rows = self.db.query(
+            """SELECT r.id, r.document_id, r.revision, r.content_hash, d.kind, d.project_id,
+                      (SELECT MAX(o.revision) FROM document_revisions o WHERE o.document_id = r.document_id) AS latest
+               FROM document_revisions r JOIN documents d ON d.id = r.document_id WHERE r.content_hash=? ORDER BY r.created_at, r.id""",
+            (evidence_hash,),
+        )
+        if not rows:
+            raise DestinationChangeError("the evidence hash does not match any stored evidence revision; register the verification record "
+                                         f"(call-back notes, meeting record or the signed letter) as a {DESTINATION_EVIDENCE_KIND!r} document revision first")
+        kinds = sorted({r["kind"] for r in rows})
+        rows = [r for r in rows if r["kind"] == DESTINATION_EVIDENCE_KIND]
+        if not rows:
+            raise DestinationChangeError(f"the evidence hash belongs to a document of kind {', '.join(repr(k) for k in kinds)}, not a "
+                                         f"{DESTINATION_EVIDENCE_KIND!r} record; register the call-back notes, meeting record or signed letter "
+                                         "as destination verification evidence")
+        current = [r for r in rows if r["revision"] == r["latest"]]
+        if not current:
+            r = rows[-1]
+            raise DestinationChangeError(f"the evidence hash matches superseded revision {r['revision']} of document {r['document_id']} "
+                                         f"(current revision {r['latest']}); bind the current revision")
+        return current[0]
+
+    def record_verification_evidence(self, change_id: str, channel: str, verified_by: str, evidence_hash: str, actor: str) -> dict[str, Any]:
+        """Record the independent verification of a pending change: the trusted channel, the
+        person who verified it and the content hash of the current revision of a
+        ``destination_verification`` evidence document.  ``verified_by`` must be someone other
+        than the named requester and the login that recorded the request (two-person rule);
+        each evidence revision verifies one change only, and evidence is recorded once.  The
+        verifier and the acting login must not repeat the new destination (audit payloads)."""
+        channel = self._channel(channel)
+        verified_by = self._dc_text(verified_by, "verified_by")
+        evidence_hash = self._dc_text(evidence_hash, "evidence_hash")
+        actor = self._dc_text(actor, "actor")
+        with self.db.transaction() as conn:
+            ch = self._change_row(change_id)
+            if ch["status"] == "evidenced":
+                raise DestinationChangeError(f"verification evidence for destination change {ch['id']} is already recorded ({ch['channel']}, verified by "
+                                             f"{ch['verified_by']}); withdraw the change and request a new one to verify it again")
+            if ch["status"] != "pending":
+                raise DestinationChangeError(f"destination change {ch['id']} is {ch['status']}; evidence is recorded only for a pending change")
+            self._refuse_destination_echo(ch["new_destination"], verifier=verified_by, acting_login=actor)
+            for who, role in ((ch["requested_by"], "requested"), (ch["requested_actor"], "recorded the request for")):
+                if _same_person(verified_by, who):
+                    raise DestinationChangeError(
+                        f"{verified_by!r} {role} this destination change, so cannot also verify it; the two-person rule needs a different person to "
+                        "confirm the destination through the trusted channel: two logins by one owner are not separation and an outside verifier "
+                        "is required (for example the external accountant calling back the number on file)"
+                    )
+            party = self.db.one("SELECT * FROM parties WHERE id=?", (ch["party_id"],))
+            if party["destination_version"] != ch["old_destination_version"]:
+                raise DestinationChangeStale(f"payee {party['id']}'s destination changed after destination change {ch['id']} was requested "
+                                             f"(version {ch['old_destination_version']} -> {party['destination_version']}); request a new change")
+            rev = self._evidence_revision(evidence_hash)
+            reused = self.db.one("SELECT id FROM destination_changes WHERE evidence_hash=?", (evidence_hash,))
+            if reused is not None:
+                raise DestinationChangeError(f"that evidence already verified destination change {reused['id']}; each verification needs its own evidence record")
+            now = utcnow_iso()
+            conn.execute(
+                """UPDATE destination_changes SET status='evidenced', version=version+1, channel=?, verified_by=?, evidence_hash=?, evidence_revision_id=?,
+                   evidence_recorded_by=?, evidenced_at=? WHERE id=? AND status='pending'""",
+                (channel, verified_by, evidence_hash, rev["id"], actor, now, ch["id"]),
+            )
+            self.audit.record(actor, "party.destination_change_evidenced", DESTINATION_CHANGE_SUBJECT, ch["id"], {
+                "party_id": ch["party_id"], "channel": channel, "verified_by": verified_by, "requested_by": ch["requested_by"],
+                "evidence_hash": evidence_hash, "evidence_revision_id": rev["id"], "evidence_document_id": rev["document_id"],
+                "new_destination_hash": ch["new_destination_hash"],
+            })
+        return self.destination_change(ch["id"])
+
+    def withdraw_destination_change(self, change_id: str, reason: str, actor: str) -> dict[str, Any]:
+        """Close an open change without applying it; its open approvals are invalidated.  The
+        reason (audited, and the invalidated approvals' reason) and the acting login must not
+        repeat the new destination."""
+        reason = self._dc_text(reason, "reason", limit=1000)
+        actor = self._dc_text(actor, "actor")
+        with self.db.transaction() as conn:
+            ch = self._change_row(change_id)
+            if ch["status"] not in ("pending", "evidenced"):
+                raise DestinationChangeError(f"destination change {ch['id']} is {ch['status']}; only an open change can be withdrawn")
+            self._refuse_destination_echo(ch["new_destination"], withdrawal_reason=reason, acting_login=actor)
+            conn.execute("UPDATE destination_changes SET status='withdrawn', version=version+1, closed_by=?, closed_at=?, closed_reason=? WHERE id=?",
+                         (actor, utcnow_iso(), reason, ch["id"]))
+            invalidated = self._approvals.invalidate_for_subject(DESTINATION_CHANGE_SUBJECT, ch["id"], reason=f"destination change withdrawn: {reason}", actor=actor)
+            self.audit.record(actor, "party.destination_change_withdrawn", DESTINATION_CHANGE_SUBJECT, ch["id"], {
+                "party_id": ch["party_id"], "reason": reason, "invalidated_approvals": invalidated,
+            })
+        return self.destination_change(ch["id"])
+
+    def governed_destination_change(self, party_id: str, new_destination: str, requested_by: str, verified_by: str, channel: str, evidence_hash: str,
+                                    actor: str, *, reason: str = "payee destination change") -> str:
+        """Compatibility helper for callers moving off ``Cipher.verify_destination``: request the
+        change and record its verification evidence in one transaction (all or nothing), and
+        return the change id.  ``actor`` records both steps, so ``verified_by`` must differ from
+        it as well as from ``requested_by``; ``evidence_hash`` names the current revision of an
+        existing ``destination_verification`` document.  The change is applied only by
+        executing the approval ``party.verify_destination`` on that id."""
+        with self.db.transaction():
+            change = self.request_destination_change(party_id, new_destination, requested_by, reason, actor)
+            self.record_verification_evidence(change["id"], channel, verified_by, evidence_hash, actor)
+        return change["id"]
+
+    def _require_change_applies(self, ch: dict[str, Any], party: dict[str, Any] | None) -> None:
+        if ch["status"] == "pending":
+            raise DestinationChangeError(f"destination change {ch['id']} has no verification evidence yet; record how it was verified "
+                                         f"(record_verification_evidence) before {VERIFY_DESTINATION_OPERATION} can be approved")
+        if ch["status"] != "evidenced":
+            raise DestinationChangeStale(f"destination change {ch['id']} is {ch['status']}; it can no longer be executed")
+        if party is None:
+            raise DestinationChangeError(f"payee {ch['party_id']} no longer exists")
+        if party["destination_version"] != ch["old_destination_version"] or destination_fingerprint(party["destination"]) != ch["old_destination_hash"]:
+            raise DestinationChangeStale(f"payee {party['id']}'s destination changed after destination change {ch['id']} was requested "
+                                         f"(version {ch['old_destination_version']} -> {party['destination_version']}); request a new change against the current destination")
+        problem = self._evidence_problem(ch)
+        if problem is not None:
+            # evidence is recorded once per change, so the change cannot be re-evidenced in place
+            raise DestinationChangeStale(f"{problem}; destination change {ch['id']} can no longer be approved or executed: withdraw it and request "
+                                         "the change again with fresh verification evidence")
+
+    def _destination_manifest(self, change_id: str, *, actor_role: str) -> dict[str, Any]:
+        ch = self._change_row(change_id)
+        party = self.db.one("SELECT * FROM parties WHERE id=?", (ch["party_id"],))
+        self._require_change_applies(ch, party)
+        rev = self.db.one(
+            """SELECT r.id, r.document_id, r.revision, (SELECT MAX(o.revision) FROM document_revisions o WHERE o.document_id = r.document_id) AS latest
+               FROM document_revisions r WHERE r.id=?""",
+            (ch["evidence_revision_id"],),
+        )
+        return build_manifest(
+            operation=VERIFY_DESTINATION_OPERATION,
+            subject_type=DESTINATION_CHANGE_SUBJECT,
+            subject_id=ch["id"],
+            actor_role=actor_role,
+            bindings={
+                "change_id": ch["id"], "change_version": ch["version"], "change_status": ch["status"],
+                "party_id": party["id"], "party_kind": party["kind"], "party_name": party["name"],
+                "requested_by": ch["requested_by"], "requested_actor": ch["requested_actor"], "reason": ch["reason"],
+                "old_destination_hash": ch["old_destination_hash"], "old_destination_version": ch["old_destination_version"],
+                "old_destination_verified": bool(party["destination_verified"]),
+                "new_destination_hash": ch["new_destination_hash"], "new_destination_version": ch["old_destination_version"] + 1,
+                "evidence_hash": ch["evidence_hash"], "evidence_revision_id": ch["evidence_revision_id"],
+                "evidence_document_id": rev["document_id"] if rev else None, "evidence_revision": rev["revision"] if rev else None,
+                "evidence_is_current_revision": bool(rev and rev["revision"] == rev["latest"]),
+                "channel": ch["channel"], "verified_by": ch["verified_by"], "evidence_recorded_by": ch["evidence_recorded_by"],
+                "two_person_rule": "the verifier is neither the requester nor the login that recorded the request",
+            },
+            destination={"party_id": party["id"], "destination_hash": destination_fingerprint(party["destination"]),
+                         "destination_version": party["destination_version"]},
+        )
+
+    def _invalidate_destination_approvals(self, party_id: str, *, reason: str, actor: str) -> list[str]:
+        """Invalidate every open approval whose manifest names ``party_id``'s destination
+        (the logic ``Cipher.verify_destination`` applies)."""
+        invalidated = []
+        for ap in self._approvals.list(status="granted") + self._approvals.list(status="pending"):
+            dest = ap["manifest"].get("destination") or {}
+            if dest.get("party_id") == party_id:
+                self._approvals.invalidate(ap["id"], reason=reason, actor=actor)
+                invalidated.append(ap["id"])
+        return invalidated
+
+    def _apply_destination_change(self, change_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
+        """Execute an approved change: the payee's destination, version and verified flag move
+        together with the change record; other open changes for the payee are superseded and
+        every open approval naming its destination is invalidated.  An executing login that
+        repeats the new destination is refused (it is the audit actor); the approval stays
+        granted for a correct login."""
+        bound = manifest.get("bindings") or {}
+        with self.db.transaction() as conn:
+            ch = self._change_row(change_id)
+            party = self.db.one("SELECT * FROM parties WHERE id=?", (ch["party_id"],))
+            self._require_change_applies(ch, party)
+            self._refuse_destination_echo(ch["new_destination"], acting_login=actor)
+            if destination_fingerprint(ch["new_destination"]) != ch["new_destination_hash"] or ch["new_destination_hash"] != bound.get("new_destination_hash"):
+                raise DestinationChangeError(f"destination change {ch['id']}'s stored destination does not match the approved fingerprint; nothing was changed")
+            previous_version = party["destination_version"]
+            new_version = previous_version + 1
+            now = utcnow_iso()
+            moved = conn.execute("UPDATE parties SET destination=?, destination_version=?, destination_verified=1 WHERE id=? AND destination_version=?",
+                                 (ch["new_destination"], new_version, party["id"], previous_version)).rowcount
+            if moved != 1:
+                raise DestinationChangeStale(f"payee {party['id']}'s destination changed while destination change {ch['id']} was executing")
+            conn.execute(
+                "UPDATE destination_changes SET status='executed', version=version+1, approval_id=?, executed_by=?, executed_at=?, new_destination_version=? WHERE id=? AND status='evidenced'",
+                (approval_id, actor, now, new_version, ch["id"]),
+            )
+            superseded = []
+            for other in self.db.query("SELECT id FROM destination_changes WHERE party_id=? AND id<>? AND status IN ('pending','evidenced') ORDER BY created_at, id",
+                                       (party["id"], ch["id"])):
+                conn.execute(
+                    "UPDATE destination_changes SET status='superseded', version=version+1, superseded_by=?, closed_by=?, closed_at=?, closed_reason=? WHERE id=?",
+                    (ch["id"], actor, now, f"superseded by destination change {ch['id']} (approval {approval_id})", other["id"]),
+                )
+                self.audit.record(actor, "party.destination_change_superseded", DESTINATION_CHANGE_SUBJECT, other["id"], {
+                    "party_id": party["id"], "superseded_by": ch["id"], "approval_id": approval_id,
+                })
+                superseded.append(other["id"])
+            invalidated = self._invalidate_destination_approvals(
+                party["id"], actor=actor, reason=f"payee destination changed after approval (destination change {ch['id']} executed under approval {approval_id})")
+            held = [r["id"] for r in self.db.query("SELECT id FROM payment_intents WHERE party_id=? AND status='queued' ORDER BY created_at, id", (party["id"],))]
+            self.audit.record(actor, "party.destination_verified", "party", party["id"], {
+                "destination_hash": ch["new_destination_hash"], "version": new_version, "previous_version": previous_version,
+                "previous_destination_hash": ch["old_destination_hash"], "channel": ch["channel"], "verified_by": ch["verified_by"],
+                "requested_by": ch["requested_by"], "evidence_hash": ch["evidence_hash"], "change_id": ch["id"], "approval_id": approval_id, "governed": True,
+            })
+            self.audit.record(actor, "party.destination_change_executed", DESTINATION_CHANGE_SUBJECT, ch["id"], {
+                "party_id": party["id"], "approval_id": approval_id, "destination_version": new_version, "superseded_changes": superseded,
+                "invalidated_approvals": invalidated, "queued_intents_to_previous_destination": held,
+            })
+        return {
+            "change": ch["id"], "party_id": party["id"], "status": "executed", "destination_version": new_version, "previous_version": previous_version,
+            "destination_hash": ch["new_destination_hash"], "superseded_changes": superseded, "invalidated_approvals": invalidated,
+            "queued_intents_to_previous_destination": held,
+        }
+
     # ---- provider events ------------------------------------------------------- #
 
     def _reject_event(self, event: Any, reason: str, *, actor: str) -> NoReturn:
@@ -1719,7 +2555,10 @@ class Payments:
         on an intent Cipher still holds as accepted means the settlement callback was
         lost: the settlement is booked first from a derived, signed reconciliation
         event ``recon_<provider_ref>_settled`` (fee and bank leg as approved), so the
-        books end exactly where they would had both callbacks arrived."""
+        books end exactly where they would had both callbacks arrived.
+
+        A ``processing`` event marks an accepted intent as processing (no journal, no period
+        needed); a repeated or reordered one is stored and ignored."""
         self._authenticate_event(event, actor=actor)
         with self.db.transaction() as conn:
             intent = self.db.one("SELECT * FROM payment_intents WHERE provider_ref=?", (event["provider_ref"],))
@@ -1767,8 +2606,31 @@ class Payments:
                 return f"reports amount {event['amount']!r} but intent {intent['id']} is for {intent['amount']}"
         return None
 
+    def _apply_processing(self, conn: Any, event: dict[str, Any], intent: dict[str, Any], *, actor: str) -> dict[str, Any]:
+        """Record that the rail is processing an accepted transfer.  Nothing is posted (the
+        money is still in provider clearing) and the status column stays ``accepted``; a
+        second processing event, or one that arrives after settlement or a return (reordered
+        delivery), is stored and ignored."""
+        conn.execute("INSERT INTO provider_events (id, intent_id, kind, payload_json, received_at) VALUES (?,?,?,?,?)",
+                     (event["id"], intent["id"], event["kind"], canonical_json(event), utcnow_iso()))
+        if intent["status"] == "accepted" and not intent.get("processing_at"):
+            now = utcnow_iso()
+            conn.execute("UPDATE payment_intents SET processing_at=? WHERE id=? AND status='accepted' AND processing_at IS NULL", (now, intent["id"]))
+            self.audit.record(actor, "provider_event.processing", "payment_intent", intent["id"], {
+                "event_id": event["id"], "provider_ref": intent["provider_ref"], "project_id": self._project_for(intent),
+                "processing_at": now, "source": event.get("source", "provider"),
+            })
+            return {"intent_id": intent["id"], "applied": True, "lifecycle_status": "processing"}
+        state = lifecycle_status(intent)
+        self.audit.record(actor, "provider_event.ignored", "payment_intent", intent["id"], {
+            "event_id": event["id"], "kind": event["kind"], "intent_status": intent["status"], "lifecycle_status": state,
+        })
+        return {"intent_id": intent["id"], "applied": False, "reason": f"{event['kind']} not applicable to {state}"}
+
     def _apply_event(self, conn: Any, event: dict[str, Any], intent: dict[str, Any], *, actor: str) -> dict[str, Any]:
         """Apply an authenticated, consistent, not-yet-seen event; the caller holds the write lock."""
+        if event["kind"] == PROCESSING_EVENT:
+            return self._apply_processing(conn, event, intent, actor=actor)
         period = self.db.one("SELECT id FROM periods WHERE status='open' ORDER BY start_date DESC LIMIT 1")
         if period is None:
             raise PaymentError("no open period")

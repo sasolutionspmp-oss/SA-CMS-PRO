@@ -75,7 +75,15 @@ Approval-bound operations (fixture policy ``cipher-posting-rules/1``):
   Schema triggers reject new or released matches on a locked statement and the
   release of any evidence match, whichever statement owns it; the service also
   refuses a new match that would clear a GL line inside a locked statement's
-  view.  A locked reconciliation's difference therefore cannot drift.
+  view.  A locked reconciliation's difference therefore cannot drift.  In the same
+  transaction the lock hands the GL lines its evidence matched to statement lines to
+  ``Payments.mark_bank_reconciled_for_journal_lines``: a settled payment whose settlement
+  bank line is among them advances to ``bank_reconciled`` (the result lists them under
+  ``payments_bank_reconciled``).  A later return of that payment still books normally and its
+  bank line reconciles on a later statement.  The ``banking_payment_reconciled_guard`` schema
+  entry refuses any bank-reconciled marker (raw SQL included) that does not name a locked
+  reconciliation whose evidence matched that GL line to a bank statement line; the payments
+  schema checks that the line is the intent's own settlement bank line.
 
 Record methods (``auto_match``, ``manual_match``, ``unmatch``,
 ``clear_opening_balance``) bump the statement version, so a granted fee or lock
@@ -89,8 +97,10 @@ from decimal import Decimal
 from typing import Any
 
 from ..core.approvals import StaleApprovalError, build_manifest
+from ..core.db import register_schema_version
 from ..core.ids import canonical_json, hash_json, loads, new_id, sha256_hex, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, total
+from . import payments as _payments  # noqa: F401  (registers the payment lifecycle columns before this module's guard entry)
 
 SCHEMA_NAME = "banking"
 PLUGIN_NAME = "banking"
@@ -271,6 +281,42 @@ SCHEMA_STATEMENTS = [
     "CREATE TRIGGER banking_evidence_no_update BEFORE UPDATE ON banking_reconciliation_evidence BEGIN SELECT RAISE(ABORT, 'bank reconciliation evidence is immutable'); END",
     "CREATE TRIGGER banking_evidence_no_delete BEFORE DELETE ON banking_reconciliation_evidence BEGIN SELECT RAISE(ABORT, 'bank reconciliation evidence is never deleted'); END",
 ]
+
+# The payment lifecycle columns (payments' entries, registered by importing payments above) and
+# this plugin's own tables must both exist before the guard below is created: a trigger naming a
+# missing table makes SQLite refuse ALTER TABLE ... RENAME anywhere in the schema.  Registering
+# this plugin's entry here (the plugin loader registers the same entry again, a no-op by name)
+# puts the banking tables ahead of the guard in the catalog.
+register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
+
+# A payment's bank-reconciled marker (payments' lifecycle columns) names a reconciliation and the
+# GL line it matched.  Only a locked reconciliation whose evidence matched that line to a bank
+# statement line (an opening item pairs no statement line) may set it, whatever writes it.  The
+# guard fires only for a marker the payments trigger accepts (written once, on a settled intent,
+# naming its own settlement bank line), so the refusal reason never depends on trigger order.
+PAYMENT_GUARD_SCHEMA_NAME = "banking_payment_reconciled_guard"
+PAYMENT_GUARD_SCHEMA_STATEMENTS = [
+    """CREATE TRIGGER banking_payment_bank_reconciled_needs_locked_match
+        BEFORE UPDATE OF bank_reconciled_at, bank_reconciliation_id, bank_journal_line_id ON payment_intents
+        WHEN (NEW.bank_reconciled_at IS NOT OLD.bank_reconciled_at OR NEW.bank_reconciliation_id IS NOT OLD.bank_reconciliation_id
+              OR NEW.bank_journal_line_id IS NOT OLD.bank_journal_line_id)
+         AND OLD.bank_reconciled_at IS NULL AND OLD.bank_reconciliation_id IS NULL AND OLD.bank_journal_line_id IS NULL
+         AND NEW.bank_reconciled_at IS NOT NULL AND NEW.bank_reconciliation_id IS NOT NULL AND NEW.bank_journal_line_id IS NOT NULL
+         AND trim(NEW.bank_reconciled_at) <> '' AND trim(NEW.bank_reconciliation_id) <> ''
+         AND OLD.status IS 'settled' AND NEW.status IS 'settled'
+         AND EXISTS (SELECT 1 FROM journal_lines l JOIN journals j ON j.id = l.journal_id
+                     JOIN provider_events pe ON j.source_type = 'provider_event' AND j.source_id = pe.id
+                     WHERE l.id = NEW.bank_journal_line_id AND l.account_code = '1000' AND pe.intent_id = NEW.id AND pe.kind = 'settled')
+         AND NOT EXISTS (
+            SELECT 1 FROM banking_reconciliation_evidence e
+            JOIN banking_reconciliations r ON r.id = e.reconciliation_id AND r.statement_id = e.statement_id
+            JOIN banking_statements s ON s.id = e.statement_id
+            JOIN banking_matches m ON m.id = e.match_id AND m.journal_line_id = e.journal_line_id
+            WHERE e.reconciliation_id = NEW.bank_reconciliation_id AND e.journal_line_id = NEW.bank_journal_line_id
+              AND e.kind = 'match' AND m.line_id IS NOT NULL AND s.status = 'locked')
+        BEGIN SELECT RAISE(ABORT, 'a payment is bank-reconciled only by a locked bank reconciliation whose evidence matched its settlement bank line to a bank statement line'); END""",
+]
+register_schema_version(PAYMENT_GUARD_SCHEMA_NAME, PAYMENT_GUARD_SCHEMA_STATEMENTS)
 
 
 class BankingError(RuntimeError):
@@ -1271,20 +1317,37 @@ class Plugin:
                 "UPDATE banking_statements SET status='locked', version=version+1, lock_approval_id=?, locked_by=?, locked_at=?, updated_at=? WHERE id=?",
                 (approval_id, actor, now, now, statement_id),
             )
+            # settled payments whose settlement bank line this locked reconciliation matched to a
+            # statement line advance to bank_reconciled, in the same transaction as the lock
+            payments_marked = self._mark_payments_bank_reconciled(evidence["matches"], reconciliation_id=reconciliation_id, actor=actor)
             self.approvals.invalidate_for_subject(STATEMENT_SUBJECT, statement_id, reason="reconciliation already locked", actor=actor)
             self.audit.record(actor, "banking.reconciliation_locked", STATEMENT_SUBJECT, statement_id, {
                 "approval_id": approval_id, "reconciliation_id": reconciliation_id, "period_id": st["period_id"],
                 "statement_closing": rec["statement_closing"], "gl_balance": rec["gl_balance"], "in_transit_total": rec["in_transit_total"],
                 "difference": rec["difference"], "statement_hash": rec["statement_hash"], "match_set_hash": rec["match_set_hash"],
                 "cleared_hash": rec["cleared_hash"], "evidence_matches": len(evidence["matches"]), "evidence_in_transit": len(evidence["in_transit"]),
-                "report_hash": sha256_hex(report_json),
+                "report_hash": sha256_hex(report_json), "payments_bank_reconciled": payments_marked["advanced"],
             })
         return {
             "statement_id": statement_id, "status": "locked", "reconciliation_id": reconciliation_id, "period_id": st["period_id"],
             "statement_closing": rec["statement_closing"], "gl_balance": rec["gl_balance"], "in_transit_total": rec["in_transit_total"],
             "adjusted_gl_balance": rec["adjusted_gl_balance"], "difference": rec["difference"],
             "evidence_matches": len(evidence["matches"]), "evidence_in_transit": len(evidence["in_transit"]),
+            "payments_bank_reconciled": payments_marked["advanced"],
         }
+
+    def _mark_payments_bank_reconciled(self, evidence_matches: list[tuple[str, str]], *, reconciliation_id: str, actor: str) -> dict[str, Any]:
+        """Hand the GL lines this lock matched to statement lines (opening items pair no
+        statement line and are left out) to the payment domain, which advances settled
+        intents whose settlement bank line is among them to ``bank_reconciled``."""
+        mark = getattr(getattr(self.c, "payments", None), "mark_bank_reconciled_for_journal_lines", None)
+        if mark is None:
+            return {"advanced": []}
+        line_matched = []
+        for match_id, journal_line_id in evidence_matches:
+            if self.db.scalar("SELECT line_id FROM banking_matches WHERE id=?", (match_id,)) is not None:
+                line_matched.append(journal_line_id)
+        return mark(line_matched, actor, reconciliation_id=reconciliation_id)
 
     # ---- state ------------------------------------------------------------------------ #
 
