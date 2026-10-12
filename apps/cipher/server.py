@@ -133,6 +133,8 @@ def _replay_last_event(c: Cipher, intent_id: str) -> dict[str, Any]:
 
 LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1", "[::1]"}
 COOKIE_NAME = "cipher_token"
+MAX_BODY_BYTES = 1_000_000
+MAX_DRAIN_BYTES = 8_000_000  # oversized bodies up to this size are read and discarded before the 413
 
 LOGIN_PAGE = b"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cipher sign-in</title><style>body{font:15px system-ui,sans-serif;background:#f4f6f8;color:#13202e;display:grid;place-items:center;min-height:100vh;margin:0}
@@ -285,6 +287,23 @@ class CipherHandler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.BAD_REQUEST, {"error": str(exc), "type": type(exc).__name__})
 
     def do_POST(self):
+        # Read the body before any response so a rejected request never leaves unread
+        # bytes on the socket (which makes some clients see a connection reset).
+        try:
+            length = int(self.headers.get("Content-Length") or 0)
+        except ValueError:
+            length = -1
+        if length < 0 or length > MAX_BODY_BYTES:
+            self.close_connection = True
+            if 0 < length <= MAX_DRAIN_BYTES:
+                remaining = length
+                while remaining > 0:  # discard so the client can read the 413 instead of a reset
+                    chunk = self.rfile.read(min(65536, remaining))
+                    if not chunk:
+                        break
+                    remaining -= len(chunk)
+            return self._json(HTTPStatus.REQUEST_ENTITY_TOO_LARGE if length > MAX_BODY_BYTES else HTTPStatus.BAD_REQUEST, {"error": f"body must be 0..{MAX_BODY_BYTES} bytes"})
+        raw = self.rfile.read(length) if length else b"{}"
         if self._reject_boundary():
             return
         if not self._authorized():
@@ -301,8 +320,6 @@ class CipherHandler(BaseHTTPRequestHandler):
         action = self.actions.get(name)
         if action is None:
             return self._json(HTTPStatus.NOT_FOUND, {"error": f"unknown action {name}"})
-        length = int(self.headers.get("Content-Length") or 0)
-        raw = self.rfile.read(length) if length else b"{}"
         try:
             body = json.loads(raw or b"{}")
             if not isinstance(body, dict):

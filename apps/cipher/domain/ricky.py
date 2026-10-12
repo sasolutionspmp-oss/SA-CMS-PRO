@@ -23,8 +23,16 @@ from .receivables import Receivables
 ROLE_AUTHORITY: dict[str, set[str]] = {
     "owner": {"*"},
     "estimator": {"estimate.approve"},
-    "pm": {"commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill"},
-    "accountant": {"bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation", "asset.dispose", "reimbursement.approve", "reimbursement.pay"},
+    "pm": {
+        "commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill",
+        "labor.approve_timesheet", "procurement.award", "field.respond_rfi", "field.decide_submittal", "field.accept_closeout",
+    },
+    "accountant": {
+        "bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
+        "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",
+        "close.close_period", "close.reopen_period", "close.lock_period", "close.post_wip_adjustment", "close.reverse_wip_adjustment",
+        "labor.post_payroll", "labor.bill",
+    },
     "treasury": {"payment.release", "payment.release_retainage", "retainage.release", "reimbursement.pay"},
     "viewer": set(),
 }

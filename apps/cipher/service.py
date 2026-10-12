@@ -34,7 +34,14 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.schedule",
     "apps.cipher.domain.drawings",
     "apps.cipher.domain.reimbursements",
+    "apps.cipher.domain.banking",
+    "apps.cipher.domain.labor",
+    "apps.cipher.domain.procurement",
+    "apps.cipher.domain.field",
+    "apps.cipher.domain.close",
 ]
+# Optional plugin hook used by the close module's checklist:
+#   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
 _LOADED_PLUGIN_MODULES: list[Any] = []
 
 

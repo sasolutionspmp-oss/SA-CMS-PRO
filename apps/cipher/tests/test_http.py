@@ -144,6 +144,19 @@ class BoundaryTests(unittest.TestCase):
             status, _, body = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"ok"}', {"Content-Type": "application/json", "Origin": "http://" + host})
             self.assertEqual(status, 200, body)
 
+    def test_oversized_body_is_refused(self):
+        from apps.cipher.server import MAX_BODY_BYTES
+        with BackgroundServer(Cipher()) as s:
+            status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b"{" + b" " * (MAX_BODY_BYTES + 10) + b"}", {"Content-Type": "application/json"})
+            self.assertEqual(status, 413)
+
+    def test_rejections_are_stable_under_repetition(self):
+        # rejected posts must not reset the connection (body is drained before the response)
+        with BackgroundServer(Cipher()) as s:
+            for _ in range(25):
+                status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"x"}' * 200, {"Content-Type": "application/json", "Origin": "https://evil.example"})
+                self.assertEqual(status, 403)
+
     def test_loopback_mode_rejects_foreign_host_header(self):
         with BackgroundServer(Cipher()) as s:
             status, _, _ = _raw(s.url + "/api/state", headers={"Host": "attacker.example:8765"})
