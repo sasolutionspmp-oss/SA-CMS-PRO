@@ -180,8 +180,87 @@ function render() {
     <form onsubmit="event.preventDefault(); api('open_period',{period_id:this.id.value,name:this.id.value,start_date:this.s.value,end_date:this.e.value})"><input name="id" placeholder="2026-12" required><input name="s" placeholder="2026-12-01" required><input name="e" placeholder="2026-12-31" required><button>Open period</button></form>
     <p class="muted">Audit chain: ${s.audit_chain.ok?`ok · ${s.audit_chain.entries} entries`:'<span class="status bad">BROKEN</span>'}</p></section>`);
 
+  // v2 modules: any extra top-level state key is rendered generically
+  const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','audit_chain','outbox_pending']);
+  for (const key of Object.keys(s).filter(k => !CORE_KEYS.has(k))) {
+    parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}</section>`);
+  }
   app.innerHTML = parts.join('');
 }
+
+function renderGeneric(v, depth=0) {
+  if (v == null) return '<span class="muted">—</span>';
+  if (Array.isArray(v)) {
+    if (!v.length) return '<span class="muted">none</span>';
+    if (typeof v[0] === 'object' && v[0] !== null) {
+      const cols = Object.keys(v[0]).filter(k => typeof v[0][k] !== 'object' || v[0][k] === null).slice(0, 10);
+      return `<table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${v.map(row=>`<tr>${cols.map(c=>`<td>${row[c] == null ? '' : (typeof row[c]==='boolean' ? (row[c]?'yes':'no') : String(row[c]).slice(0,40))}</td>`).join('')}</tr>`).join('')}</table>`;
+    }
+    return v.map(x=>`<span class="pill">${String(x)}</span>`).join('');
+  }
+  if (typeof v === 'object') {
+    return `<div class="kv">${Object.entries(v).map(([k,x]) => typeof x === 'object' && x !== null
+      ? `<details style="grid-column:1/-1"><summary>${k}</summary>${depth < 3 ? renderGeneric(x, depth+1) : '<pre class="muted">'+JSON.stringify(x).slice(0,400)+'</pre>'}</details>`
+      : `<span>${k}</span><b>${typeof x==='boolean' ? (x?'yes':'no') : (x ?? '')}</b>`).join('')}</div>`;
+  }
+  return String(v);
+}
+
+// ---- browser self-test (used by tools/browser_check.py with headless Chrome) ----
+async function selfTest() {
+  const out = document.createElement('section'); out.className = 'wide'; out.id = 'selftest';
+  out.innerHTML = '<h2>Browser self-test</h2><p>running…</p>';
+  $('#app').prepend(out);
+  const steps = [];
+  const post = async (name, body) => { const r = await fetch('/api/action/'+name, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})}); const j = await r.json(); if (!j.ok) throw new Error(name+': '+j.error); return j.result; };
+  const check = (label, cond) => { steps.push({label, ok: !!cond}); if (!cond) throw new Error('check failed: '+label); };
+  try {
+    const sup = await post('add_party', {kind:'supplier', name:'Self-test supplier', destination:'ACH-ST-1'});
+    await post('verify_destination', {party_id: sup.id, destination:'ACH-ST-1'});
+    const cust = await post('add_party', {kind:'customer', name:'Self-test customer'});
+    const prj = await post('create_project', {name:'Self-test project', budget:'5000', customer_id: cust.id});
+    const periodId = 'ST-' + Date.now().toString(36);
+    await post('open_period', {period_id: periodId, name: periodId, start_date:'2026-12-01', end_date:'2026-12-31'});
+    const cmt = await post('create_commitment', {project_id: prj.id, supplier_id: sup.id, title:'Self-test subcontract', sov_lines:[{description:'work', amount:'4000'}], retainage_rate:'0.10'});
+    let ap = await post('request_approval', {operation:'commitment.execute', subject_id: cmt.id});
+    let failedEarly = false; try { await post('execute', {approval_id: ap.id}); } catch (e) { failedEarly = true; }
+    check('execute before grant is refused', failedEarly);
+    await post('approve', {approval_id: ap.id});
+    let ex = await post('execute', {approval_id: ap.id});
+    check('commitment executed', ex.result.status === 'executed');
+    const line = (await fetch('/api/state?project='+prj.id).then(r=>r.json())).commitments[0].sov[0].id;
+    const bill = await post('certify_bill', {commitment_id: cmt.id, period_id: periodId, installed:[{sov_line_id: line, cumulative_installed:'2000'}]});
+    check('bill due 1,800 after 10% retainage', bill.amount_due === '1800.00');
+    ap = await post('request_approval', {operation:'bill.approve', subject_id: bill.id});
+    await post('approve', {approval_id: ap.id}); ex = await post('execute', {approval_id: ap.id});
+    check('bill posted', ex.result.status === 'posted');
+    const ricky = await post('ricky_propose', {workflow:'payment.release', actor_role:'treasury', context:{bill_id: bill.id}});
+    check('ricky proposes payment release', ricky.decision === 'proposed');
+    ap = await post('request_approval', {operation:'payment.release', subject_id: bill.id, actor_role:'treasury'});
+    await post('approve', {approval_id: ap.id}); ex = await post('execute', {approval_id: ap.id});
+    const replay = await post('execute', {approval_id: ap.id});
+    check('replay returns stored result', replay.replayed === true);
+    await post('set_provider_mode', {mode:'timeout_after_accept'});
+    const d = await post('dispatch_payments'); check('timeout leaves outcome unknown', d.some(x=>x.status==='outcome_unknown'));
+    await post('set_provider_mode', {mode:'accept'});
+    const rc = await post('reconcile_payments'); check('reconciliation finds the transfer', rc.some(x=>x.status==='accepted'));
+    await post('settle_payment', {intent_id: ex.result.intent});
+    const dup = await post('replay_last_event', {intent_id: ex.result.intent}); check('duplicate event ignored', dup.applied === false);
+    const st = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    check('trial balance balanced', st.trial_balance.balanced);
+    check('AP reconciled', st.ap.reconciled);
+    check('audit chain ok', st.audit_chain.ok);
+    check('paid to date 1,800', st.forecast.paid_to_date === '1800.00');
+    out.dataset.selftest = 'pass';
+  } catch (e) {
+    steps.push({label: String(e), ok: false});
+    out.dataset.selftest = 'fail';
+  }
+  out.innerHTML = `<h2>Browser self-test · <span class="status ${out.dataset.selftest==='pass'?'ok':'bad'}">${out.dataset.selftest}</span></h2><table>${steps.map(s=>`<tr><td>${s.ok?'✔':'✘'}</td><td>${s.label}</td></tr>`).join('')}</table>`;
+  window.__selftest = {result: out.dataset.selftest, steps};
+  try { await post('selftest_report', {result: out.dataset.selftest, steps, user_agent: navigator.userAgent}); } catch (e) {}
+}
+if (location.search.includes('selftest')) { refresh().then(selfTest); }
 
 function openPeriod() { const o = (STATE.periods||[]).filter(x=>x.status==='open'); return o.length ? o[o.length-1].id : ''; }
 

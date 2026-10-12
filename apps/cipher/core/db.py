@@ -378,16 +378,23 @@ SCHEMA_CATALOG: list[tuple[int, str, list[str]]] = [
 ]
 
 
-def register_schema_version(version: int, name: str, statements: list[str]) -> None:
-    """Domain modules append their own catalog versions at import time."""
-    for existing_version, existing_name, _ in SCHEMA_CATALOG:
-        if existing_version == version:
-            if existing_name != name:
-                raise SchemaError(f"schema version {version} already registered as {existing_name!r}")
-            return
-    if version != SCHEMA_CATALOG[-1][0] + 1:
-        raise SchemaError(f"schema versions must be contiguous; next is {SCHEMA_CATALOG[-1][0] + 1}, got {version}")
-    SCHEMA_CATALOG.append((version, name, list(statements)))
+def register_schema_version(name: str, statements: list[str], *, version: int | None = None) -> int:
+    """Domain modules append their own catalog versions at import time.
+
+    Registration is idempotent by name.  Without an explicit ``version`` the
+    next contiguous number is assigned, so plugin load order defines the
+    version sequence (the order is fixed in ``service.PLUGIN_MODULES``).
+    Returns the version number."""
+    for existing_version, existing_name, existing_statements in SCHEMA_CATALOG:
+        if existing_name == name:
+            if catalog_checksum(existing_statements) != catalog_checksum(list(statements)):
+                raise SchemaError(f"schema version {name!r} registered twice with different statements")
+            return existing_version
+    next_version = SCHEMA_CATALOG[-1][0] + 1
+    if version is not None and version != next_version:
+        raise SchemaError(f"schema versions must be contiguous; next is {next_version}, got {version}")
+    SCHEMA_CATALOG.append((next_version, name, list(statements)))
+    return next_version
 
 
 def catalog_checksum(statements: list[str]) -> str:

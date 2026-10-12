@@ -69,7 +69,14 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "snapshot": lambda d: {"path": c.snapshot(d["path"])},
         "claim_authority": lambda d: c.claim_write_authority(approval_ref=d["approval_ref"], actor=d.get("actor", "owner")),
         "complete_recovery": lambda d: c.complete_recovery(actor=d.get("actor", "owner")),
+        "selftest_report": lambda d: _store_selftest(c, d),
     }
+
+
+def _store_selftest(c: Cipher, report: dict[str, Any]) -> dict[str, Any]:
+    """The console's browser self-test posts its outcome here so a headless run can be read back."""
+    setattr(c, "_selftest_report", {"result": report.get("result"), "steps": report.get("steps", []), "user_agent": report.get("user_agent", "")})
+    return {"stored": True}
 
 
 def _set_mode(c: Cipher, mode: str) -> dict[str, Any]:
@@ -123,6 +130,8 @@ class CipherHandler(BaseHTTPRequestHandler):
                 return self._json(HTTPStatus.OK, self.cipher.projects())
             if url.path == "/api/schema":
                 return self._json(HTTPStatus.OK, self.cipher.db.schema_status())
+            if url.path == "/api/selftest":
+                return self._json(HTTPStatus.OK, getattr(self.cipher, "_selftest_report", None) or {"result": None})
             if url.path == "/api/audit-export":
                 return self._json(HTTPStatus.OK, self.cipher.audit_export())
             if url.path == "/api/state":

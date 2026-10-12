@@ -14,7 +14,10 @@ python -m apps.cipher serve --demo             # owner console on http://127.0.0
 python -m apps.cipher serve --db data/cipher.sqlite --port 8765
 python -m apps.cipher export --db data/cipher.sqlite --out audit-export.json
 python -m apps.cipher schema --db data/cipher.sqlite
+python -m apps.cipher.tools.browser_check --out evidence/browser.json   # headless Chrome drives the console's self-test
 ```
+
+The browser check seeds the golden fixture, opens `/?selftest=1` in headless Chrome or Edge, and the console's own JavaScript runs a full journey through the real UI code path (refused execution before grant, commitment execution, bill certification, Ricky proposal, payment release with a provider timeout, reconciliation, duplicate-event handling, reconciliation checks). The page posts its outcome back to the server; the tool exits 0 only when every step passed and the books still balance.
 
 Container (tests run during the build; the console serves on 8765):
 

@@ -11,11 +11,57 @@ the same shape:
 """
 from __future__ import annotations
 
+import importlib
+import logging
 import os
 import tempfile
 from typing import Any
 
 from .core.approvals import Approvals, StaleApprovalError
+from .core.db import register_schema_version
+
+log = logging.getLogger("cipher")
+
+# v2 modules.  Each module is optional (missing or broken modules are skipped
+# with a warning) and must expose:
+#   SCHEMA_NAME: str, SCHEMA_STATEMENTS: list[str]   -> registered as the next schema version, in this order
+#   PLUGIN_NAME: str                                   -> the operation prefix it owns, e.g. "asset" for "asset.*"
+#   class Plugin: __init__(self, cipher); manifest_for(operation, subject_id, *, actor_role) -> manifest;
+#                 apply(operation, subject_id, *, approval_id, manifest, actor, period_id) -> dict;
+#                 state(project_id) -> dict
+PLUGIN_MODULES = [
+    "apps.cipher.domain.assets",
+    "apps.cipher.domain.schedule",
+    "apps.cipher.domain.drawings",
+    "apps.cipher.domain.reimbursements",
+]
+_LOADED_PLUGIN_MODULES: list[Any] = []
+
+
+def _load_plugin_modules() -> list[Any]:
+    if _LOADED_PLUGIN_MODULES:
+        return _LOADED_PLUGIN_MODULES
+    for name in PLUGIN_MODULES:
+        try:
+            mod = importlib.import_module(name)
+        except ModuleNotFoundError as exc:
+            if exc.name == name:
+                continue
+            log.warning("plugin %s failed to import: %s", name, exc)
+            continue
+        except Exception as exc:  # a broken sibling module must not take the core down
+            log.warning("plugin %s failed to import: %s", name, exc)
+            continue
+        try:
+            register_schema_version(mod.SCHEMA_NAME, list(mod.SCHEMA_STATEMENTS))
+        except Exception as exc:
+            log.warning("plugin %s schema rejected: %s", name, exc)
+            continue
+        _LOADED_PLUGIN_MODULES.append(mod)
+    return _LOADED_PLUGIN_MODULES
+
+
+_load_plugin_modules()
 from .core.audit import Audit
 from .core.commands import CommandResult, Commands
 from .core.db import Database
@@ -63,9 +109,14 @@ class Cipher:
         self.receivables = Receivables(self.db, self.audit, self.ledger)
         self.payments = Payments(self.db, self.audit, self.commands, self.ledger)
         self.forecast = Forecast(self.db, self.commitments, self.ledger)
-        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger)
+        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins)
         self.provider = provider or SimulatedProvider()
         self._plugins: dict[str, Any] = {}
+        for mod in _load_plugin_modules():
+            try:
+                self.register_plugin(mod.PLUGIN_NAME, mod.Plugin(self))
+            except Exception as exc:
+                log.warning("plugin %s failed to initialise: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
 
     # ---- plugins (v2 modules register here) ------------------------------------ #
 

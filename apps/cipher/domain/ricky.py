@@ -21,17 +21,17 @@ from .payments import Payments
 from .receivables import Receivables
 
 ROLE_AUTHORITY: dict[str, set[str]] = {
-    "owner": {"estimate.approve", "commitment.execute", "change.execute", "bill.approve", "prime_bill.approve", "payment.release", "retainage.release", "period.close"},
+    "owner": {"*"},
     "estimator": {"estimate.approve"},
-    "pm": {"commitment.execute", "change.execute", "bill.approve"},
-    "accountant": {"bill.approve", "prime_bill.approve", "period.close"},
-    "treasury": {"payment.release", "retainage.release"},
+    "pm": {"commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill"},
+    "accountant": {"bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation", "asset.dispose", "reimbursement.approve", "reimbursement.pay"},
+    "treasury": {"payment.release", "payment.release_retainage", "retainage.release", "reimbursement.pay"},
     "viewer": set(),
 }
 
 
 class Ricky:
-    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger):
+    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger, plugins=None):
         self.db = db
         self.audit = audit
         self.estimates = estimates
@@ -40,6 +40,7 @@ class Ricky:
         self.receivables = receivables
         self.payments = payments
         self.ledger = ledger
+        self._plugins = plugins or (lambda: {})
 
     def propose(self, workflow: str, *, actor_role: str, context: dict[str, Any]) -> dict[str, Any]:
         try:
@@ -56,7 +57,7 @@ class Ricky:
         allowed = ROLE_AUTHORITY.get(actor_role)
         if allowed is None:
             raise _Abstain(f"unknown role {actor_role!r}; Ricky does not infer authority from the request")
-        if operation not in allowed:
+        if "*" not in allowed and operation not in allowed:
             raise _Abstain(f"role {actor_role!r} is not authorised for {operation}; route to a role that is")
 
     def _evaluate(self, workflow: str, actor_role: str, ctx: dict[str, Any]) -> tuple[dict[str, Any], str]:
@@ -127,6 +128,21 @@ class Ricky:
             if c["status"] != "closed":
                 raise _Abstain("retainage is released only after closeout acceptance (commitment closed)")
             return self.bills.retainage_manifest(c["id"], actor_role=actor_role), "release withheld retainage to ordinary payables"
+
+        # v2 plugin operations: the plugin builds the manifest from current state and
+        # raises if the subject is not in a proposable state; Ricky still gates the role.
+        prefix = workflow.split(".")[0]
+        plugin = self._plugins().get(prefix)
+        if plugin is not None and hasattr(plugin, "manifest_for"):
+            self._require_role(actor_role, workflow)
+            subject_id = ctx.get("subject_id") or next((v for k, v in ctx.items() if k.endswith("_id")), None)
+            if not subject_id:
+                raise _Abstain("no subject id supplied")
+            if self.payments.release_allowed()[0] is False and workflow.endswith(".pay"):
+                raise _Abstain(self.payments.release_allowed()[1])
+            manifest = plugin.manifest_for(workflow, subject_id, actor_role=actor_role)
+            amounts = ", ".join(f"{k} {v}" for k, v in (manifest.get("amounts") or {}).items())
+            return manifest, f"{workflow} on {subject_id}{(' for ' + amounts) if amounts else ''}"
 
         raise _Abstain(f"unknown workflow {workflow!r}")
 
