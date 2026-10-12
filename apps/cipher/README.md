@@ -30,16 +30,17 @@ Container (the build runs the full suite; the server refuses to start without a 
 
 ```bash
 docker build -f apps/cipher/Dockerfile -t cipher-prototype .
-docker run --rm -e CIPHER_TOKEN=<16+ character secret> -p 127.0.0.1:8765:8765 -v cipher-data:/workspace/data cipher-prototype
+docker run --rm --env-file cipher.env -p 127.0.0.1:8765:8765 -v cipher-data:/workspace/data cipher-prototype
+# cipher.env holds CIPHER_TOKEN=<16+ character secret> and CIPHER_OWNER_SECRET=<secret for restored-copy claims>
 # open http://127.0.0.1:8765/?token=<secret> once; it sets an HttpOnly session cookie
 python -m apps.cipher.tools.browser_check --url http://127.0.0.1:8765 --token <secret>
 ```
 
-Publish on 127.0.0.1 unless you mean to share the console. The image runs as a non-root user with a health check.
+Publish on 127.0.0.1 unless you mean to share the console. The image runs as a non-root user with a health check. A new image opens an existing workspace volume and applies its schema additions in place.
 
 ## What it does
 
-Core workflow: owned evidence → structured estimate → approved commitment and executed changes → supplier progress bills with retainage and stored materials → payments through a durable outbox and simulated provider → prime contract billing, sending, ACH collection under a mandate, late return, prime retainage → project forecast → period close.
+Core workflow: owned evidence → structured estimate → approved commitment and executed changes → supplier invoice intake and match → supplier progress bills with retainage, stored materials and credit notes → payments through a durable outbox and simulated provider → prime contract billing, sending, ACH collection under a mandate, deposits, credit memos, late return, prime retainage → versioned budget and project forecast → period close.
 
 Modules (each registers its own schema entry and approval-bound operations):
 
@@ -50,8 +51,10 @@ Modules (each registers its own schema entry and approval-bound operations):
 | | `close` | checklist across every module, governed close/reopen/lock, shadow statements, aging, WIP adjustments |
 | | `assets` | capitalisation, monthly straight-line depreciation (never past the base), reversal, disposal |
 | | `handoff` | shadow-finance package for the incumbent books with accountant receipt and omission checks |
-| AP / AR | `bills`, `payments`, `receivables` (core) | stored-material evidence and per-line caps, retainage after closeout, kill switch, signed callbacks, recovery after restore, prime contracts, mandates, AR from every source |
+| AP / AR | `bills`, `payments`, `receivables` (core) | stored-material evidence and per-line caps, retainage after closeout, supplier credit notes and corrections, kill switch, signed callbacks, governed payee changes, processing and bank-reconciled states, recovery after restore, prime contracts, terms and due dates, mandates, deposits (2400), credit memos, write-offs, AR from every source |
+| | `ap_intake` | supplier invoices with number, dates and terms, duplicate refusal and near-duplicate review, approval-bound match to a certified bill or to received purchase-order lines |
 | | `reimbursements` | staff expenses paid through the outbox, separate customer billing |
+| Controls | `forecast` (core) | hash-chained budget versions by cost code through `budget.revise`, cost to date by source, estimate to complete, snapshots |
 | AEC | `labor` | effective-dated rates, phases with fee budgets, timesheets, payroll without double cost, utilization, T&M billing |
 | | `schedule` | CPM with float and critical path, deadlines, resource loading, approved baselines |
 | EPC | `procurement` | equipment, requisitions, bid tabs, justified awards that create draft commitments, long-lead tracking, receiving |
@@ -70,7 +73,8 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 - commands are idempotent by logical operation id; a conflicting payload fails;
 - posted journals cannot be edited, extended, deleted or moved by any SQL path; corrections append reversals; locked periods never change; a period reopens only with a consumed, single-use reopen approval;
 - subledgers reconcile to control accounts: AP, AR (all sources), retainage payable and receivable, stored materials, provider clearing, employee payable, accrued payroll, bank;
-- a payment leaves only through a committed outbox row with Cipher's idempotency key, after the payee is re-verified; a timeout is *outcome unknown* until reconciliation; callbacks must be signed; duplicates are ignored; a kill switch stops releases immediately and resuming needs an approval;
+- a payment leaves only through a committed outbox row with Cipher's idempotency key, after the payee is re-verified; a timeout is *outcome unknown* until reconciliation; callbacks must be signed; duplicates are ignored; one provider reference never pairs with two payments; a kill switch stops releases immediately and resuming needs an approval;
+- a payee destination changes only through a request, independent evidence recorded by someone other than the requester, and a `party.verify_destination` approval;
 - a restored copy is read-only at the SQLite level until the owner claims it; claims bind to that copy's challenge when `CIPHER_OWNER_SECRET` is set (otherwise they are attestation only and Ricky flags it); releases stay quarantined until recovery reconciliation resolves every in-flight and queued payment;
 - the HTTP boundary requires JSON with a same-origin Origin (no CSRF), rejects foreign Host headers in loopback mode (no DNS rebinding), and needs a token for any non-loopback bind; period close and commitment close go through their checklists.
 
@@ -94,7 +98,7 @@ The fixture then executes the 12,000 alternative to exercise stale approvals, so
 apps/cipher/
   core/          money, ids, db (schema catalog by name, triggers, write authority), audit, approvals, commands/outbox
   domain/        core: ledger, evidence, estimates, commitments, bills, receivables, payments, forecast, ricky
-                 modules: assets, schedule, drawings, reimbursements, banking, labor, procurement, field, close, handoff, rights
+                 modules: assets, schedule, drawings, reimbursements, banking, labor, procurement, field, close, handoff, rights, ap_intake
   ricky_sdk.py   typed tool catalog for Ricky
   service.py     Cipher façade: request → approve → execute; core and module routing; golden fixture
   server.py      stdlib HTTP API and console host
