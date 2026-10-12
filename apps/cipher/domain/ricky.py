@@ -27,8 +27,11 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
     "pm": {
         "commitment.execute", "change.execute", "bill.approve", "schedule.baseline", "drawing.issue", "reimbursement.bill",
         "labor.approve_timesheet", "procurement.award", "field.respond_rfi", "field.decide_submittal", "field.accept_closeout",
-        "field.distribute_rfi", "prime_bill.send", "budget.revise",
+        "field.distribute_rfi", "prime_bill.send", "budget.revise", "contract.approve_agreement",
     },
+    # plan section 10 step 1: a PM/legal reviewer approves the exact agreement; an authorised signer executes it
+    "legal": {"contract.approve_agreement"},
+    "signer": {"contract.sign"},
     "accountant": {
         "bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
         "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",

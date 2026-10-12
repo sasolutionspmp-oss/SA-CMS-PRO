@@ -45,6 +45,90 @@ class RoleEnforcementTests(unittest.TestCase):
         self.assertEqual(a["currency"], "USD")
 
 
+class GovernorHookTests(unittest.TestCase):
+    """Governor plugins bind policy facts into approvals they do not own and may refuse a
+    request, a grant or an execution."""
+
+    class Governor:
+        GOVERNOR = True
+
+        def __init__(self):
+            self.level = "standard"
+            self.refuse = set()
+            self.calls = []
+
+        def approval_policy(self, operation, manifest):
+            return {"level": self.level} if operation == "commitment.execute" else None
+
+        def check_request(self, operation, manifest, *, actor_role, requested_by):
+            self.calls.append(("request", operation, requested_by))
+            if "request" in self.refuse:
+                raise CipherError("request refused by policy")
+
+        def check_grant(self, approval, *, approver, approver_role):
+            self.calls.append(("grant", approval["operation"], approver))
+            if "grant" in self.refuse:
+                raise CipherError("grant refused by policy")
+
+        def check_execute(self, approval, manifest, *, actor):
+            self.calls.append(("execute", approval["operation"], actor))
+            if "execute" in self.refuse:
+                raise CipherError("execution refused by policy")
+
+    def setUp(self):
+        self.c, self.prj, self.sup, self.cmt = scenario()
+        self.g = self.Governor()
+        self.c.register_plugin("zz_test_governor", self.g)
+
+    def test_policy_facts_are_bound_and_a_change_invalidates_the_approval(self):
+        c, g = self.c, self.g
+        ap = c.request_approval("commitment.execute", self.cmt["id"], actor_role="pm", requested_by="pm-user")
+        self.assertEqual(ap["manifest"]["governance"], {"zz_test_governor": {"level": "standard"}})
+        c.approve(ap["id"], approver="owner")
+        g.level = "high"  # the policy moved after the grant
+        from apps.cipher.core.approvals import StaleApprovalError
+        with self.assertRaises(StaleApprovalError):
+            c.execute(ap["id"])
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+
+    def test_a_governor_that_binds_nothing_leaves_the_manifest_unchanged(self):
+        self.assertIn("governance", self.c._manifest("commitment.execute", self.cmt["id"], "pm"))
+        self.g.approval_policy = lambda operation, manifest: None
+        self.assertNotIn("governance", self.c._manifest("commitment.execute", self.cmt["id"], "pm"))
+        self.c.register_plugin("zz_test_governor", object())  # a plugin without GOVERNOR = True is never consulted
+        self.assertNotIn("governance", self.c._manifest("commitment.execute", self.cmt["id"], "pm"))
+
+    def test_an_approval_bound_by_a_governor_that_is_gone_is_invalidated(self):
+        c = self.c
+        ap = c.request_approval("commitment.execute", self.cmt["id"], actor_role="pm")
+        c.approve(ap["id"], approver="owner")
+        c.register_plugin("zz_test_governor", object())  # the governor was removed
+        from apps.cipher.core.approvals import StaleApprovalError
+        with self.assertRaisesRegex(StaleApprovalError, "zz_test_governor changed"):
+            c.execute(ap["id"])
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+
+    def test_each_check_can_refuse_and_a_refused_execution_leaves_the_grant(self):
+        c, g = self.c, self.g
+        g.refuse = {"request"}
+        with self.assertRaisesRegex(CipherError, "request refused"):
+            c.request_approval("commitment.execute", self.cmt["id"], actor_role="pm")
+        g.refuse = {"grant"}
+        ap = c.request_approval("commitment.execute", self.cmt["id"], actor_role="pm")
+        with self.assertRaisesRegex(CipherError, "grant refused"):
+            c.approve(ap["id"], approver="owner")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
+        g.refuse = {"execute"}
+        c.approve(ap["id"], approver="owner")
+        with self.assertRaisesRegex(CipherError, "execution refused"):
+            c.execute(ap["id"], actor="pm-user")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "granted")
+        self.assertEqual(c.commitments.get(self.cmt["id"])["status"], "draft")
+        g.refuse = set()
+        self.assertEqual(c.execute(ap["id"], actor="pm-user").result["status"], "executed")
+        self.assertIn(("execute", "commitment.execute", "pm-user"), g.calls)
+
+
 class CoreRoutingTests(unittest.TestCase):
     def test_core_domain_can_own_an_operation(self):
         c, prj, sup, cmt = scenario()

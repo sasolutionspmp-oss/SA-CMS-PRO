@@ -42,6 +42,10 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.handoff",
     "apps.cipher.domain.rights",
     "apps.cipher.domain.ap_intake",
+    # governors (GOVERNOR = True): policy over approvals other modules own
+    "apps.cipher.domain.people",
+    "apps.cipher.domain.payment_policy",
+    "apps.cipher.domain.contracts",
 ]
 # Optional plugin hook used by the close module's checklist:
 #   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
@@ -257,7 +261,44 @@ class Cipher:
                 return domain
         return None
 
+    def _governors(self) -> list[tuple[str, Any]]:
+        """Plugins that add policy to approvals they do not own (identity and role grants,
+        high-risk payment release, contract signature).  A governor sets ``GOVERNOR = True``
+        and may define any of:
+
+        ``approval_policy(operation, manifest) -> dict | None``
+            facts bound into the approval under ``manifest['governance'][name]`` (a top-level
+            key, outside the owning module's material facts, which modules re-check against
+            their own manifests).  The service recomputes them at execution and invalidates
+            the approval (``StaleApprovalError``) when they differ, including when a governor
+            that bound facts is gone.  Return None to bind nothing -- a governor that is not
+            configured must bind nothing, so existing approvals are unaffected -- and keep the
+            facts state-derived (no clock readings) so an unchanged world re-derives exactly
+            the same facts.
+        ``check_request(operation, manifest, *, actor_role, requested_by) -> None``
+        ``check_grant(approval, *, approver, approver_role) -> None``
+        ``check_execute(approval, manifest, *, actor) -> None``
+            refuse by raising.  ``check_execute`` runs inside the execution transaction,
+            before the approval is consumed: a refusal leaves the approval granted unless it
+            raises ``StaleApprovalError``, which invalidates it.
+
+        Governors run in plugin-name order."""
+        return [(n, p) for n, p in sorted(self._plugins.items()) if getattr(p, "GOVERNOR", False) is True]
+
     def _manifest(self, operation: str, subject_id: str, actor_role: str) -> dict[str, Any]:
+        manifest = self._base_manifest(operation, subject_id, actor_role)
+        bound: dict[str, Any] = {}
+        for name, governor in self._governors():
+            policy = getattr(governor, "approval_policy", None)
+            if policy is not None:
+                facts = policy(operation, manifest)
+                if facts:
+                    bound[name] = facts
+        if bound:
+            manifest["governance"] = bound
+        return manifest
+
+    def _base_manifest(self, operation: str, subject_id: str, actor_role: str) -> dict[str, Any]:
         owner = self._core_owner(operation)
         if owner is not None:
             return owner.manifest_for(operation, subject_id, actor_role=actor_role)
@@ -290,6 +331,10 @@ class Cipher:
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
         if not Ricky.can(actor_role, operation):
             raise RoleNotAuthorised(f"role {actor_role!r} is not authorised for {operation}")
+        for _name, governor in self._governors():
+            check = getattr(governor, "check_request", None)
+            if check is not None:
+                check(operation, manifest, actor_role=actor_role, requested_by=requested_by)
         return self.approvals.request(manifest, requested_by=requested_by)
 
     def approve(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
@@ -299,6 +344,10 @@ class Cipher:
         ap = self.approvals.get(approval_id)
         if not Ricky.can(approver_role, ap["operation"]):
             raise RoleNotAuthorised(f"role {approver_role!r} cannot approve {ap['operation']}")
+        for _name, governor in self._governors():
+            check = getattr(governor, "check_grant", None)
+            if check is not None:
+                check(ap, approver=approver, approver_role=approver_role)
         return self.approvals.grant(approval_id, approver=approver)
 
     def reject(self, approval_id: str, *, approver: str = "owner", reason: str = "") -> dict[str, Any]:
@@ -312,6 +361,16 @@ class Cipher:
 
         def handler():
             current = self._manifest(operation, subject_id, ap["actor_role"])
+            fresh = self.approvals.get(approval_id)
+            approved_policy, current_policy = fresh["manifest"].get("governance"), current.get("governance")
+            if fresh["status"] == "granted" and approved_policy != current_policy:
+                changed = sorted(k for k in set(approved_policy or {}) | set(current_policy or {})
+                                 if (approved_policy or {}).get(k) != (current_policy or {}).get(k))
+                raise StaleApprovalError(f"approval {approval_id} no longer matches the policy it was granted under: {', '.join(changed)} changed")
+            for _name, governor in self._governors():
+                check = getattr(governor, "check_execute", None)
+                if check is not None:
+                    check(fresh, current, actor=actor)
             self.approvals.consume(approval_id, current_manifest=current, consumer=actor)
             return self._apply(operation, subject_id, approval_id, current, actor, period_id)
 
