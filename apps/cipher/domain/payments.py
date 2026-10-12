@@ -599,6 +599,10 @@ class KillSwitchEngaged(PaymentError):
     """Release is blocked by the payment kill switch."""
 
 
+class ProviderReferenceConflict(PaymentError):
+    """The provider reported a reference another payment intent already holds."""
+
+
 class ProviderEventRejected(PaymentError):
     """A provider callback was unsigned, forged or malformed."""
 
@@ -724,9 +728,14 @@ class SimulatedProvider:
 
     MODES = ("accept", "timeout_after_accept", "reject", "unavailable", "mfa_failed")
 
-    def __init__(self, *, fee: Any = "0.00", webhook_secret: str | None = None):
+    def __init__(self, *, fee: Any = "0.00", webhook_secret: str | None = None, ref_floor: int = 0):
         self.mode = "accept"
         self.transfers: dict[str, dict[str, Any]] = {}
+        # references continue after ``ref_floor`` (a real rail never reissues one; a server
+        # restarted on an existing workspace seeds this from the references it already holds)
+        if isinstance(ref_floor, bool) or not isinstance(ref_floor, int) or ref_floor < 0:
+            raise PaymentError("ref_floor must be a whole number, zero or more")
+        self.ref_floor = ref_floor
         self.submissions: list[dict[str, Any]] = []
         self.fee = fmt(money(fee))
         if money(self.fee) < 0:
@@ -758,7 +767,7 @@ class SimulatedProvider:
         existing = self.transfers.get(logical_op_id)
         if existing is None:
             existing = {
-                "provider_ref": f"sim_{len(self.transfers) + 1:06d}", "logical_op_id": logical_op_id, "amount": amount, "destination": destination,
+                "provider_ref": f"sim_{self.ref_floor + len(self.transfers) + 1:06d}", "logical_op_id": logical_op_id, "amount": amount, "destination": destination,
                 "payload_hash": payload_hash, "status": "accepted", "settled": False, "fee": self.fee_for(amount),
                 "value_date": value_date, "currency": currency, "reference": dict(reference) if reference else None,
             }
@@ -1552,7 +1561,12 @@ class Payments:
                 results.append(self._result(intent["id"], "outcome_unknown", failures))
                 continue
             if resp["outcome"] == "accepted":
-                failures = self._accept(intent["id"], provider_ref=resp["provider_ref"], actor=actor)
+                try:
+                    failures = self._accept(intent["id"], provider_ref=resp["provider_ref"], actor=actor)
+                except ProviderReferenceConflict as exc:
+                    failures = self._set_status(intent["id"], "outcome_unknown", actor=actor, note=f"{exc}; held for treasury review")
+                    results.append(self._result(intent["id"], "outcome_unknown", failures, reason=str(exc)))
+                    continue
                 results.append(self._result(intent["id"], "accepted", failures, provider_ref=resp["provider_ref"]))
             else:
                 reason = resp.get("reason", "rejected")
@@ -1574,10 +1588,18 @@ class Payments:
             return self._notify(intent_id, actor=actor)
 
     def _accept(self, intent_id: str, *, provider_ref: str, actor: str) -> list[dict[str, str]]:
+        """Record the provider's acceptance.  A provider reference already held by another
+        intent is refused (``ProviderReferenceConflict``) before anything is posted: provider
+        callbacks are matched by reference, so two intents sharing one would let one
+        transfer's settlement or return land on the other."""
         with self.db.transaction() as conn:
             intent = self.get(intent_id)
             if intent["status"] in ("accepted", "settled", "returned") or intent["journal_id"]:
                 return []
+            other = conn.execute("SELECT id FROM payment_intents WHERE provider_ref=? AND id<>?", (provider_ref, intent_id)).fetchone()
+            if other is not None:  # the caller records the hold (the raise rolls this transaction back)
+                raise ProviderReferenceConflict(f"the provider accepted payment {intent_id} under reference {provider_ref}, which payment "
+                                                f"{other['id']} already holds; nothing was posted")
             project_id = self._project_for(intent)
             payable = self._payable_for(intent)
             period = self.db.one("SELECT id FROM periods WHERE status='open' ORDER BY start_date DESC LIMIT 1")
@@ -1613,7 +1635,12 @@ class Payments:
                 results.append(self._result(intent["id"], "outcome_unknown", failures))
                 continue
             if found["found"]:
-                failures = self._accept(intent["id"], provider_ref=found["provider_ref"], actor=actor)
+                try:
+                    failures = self._accept(intent["id"], provider_ref=found["provider_ref"], actor=actor)
+                except ProviderReferenceConflict as exc:
+                    failures = self._set_status(intent["id"], "outcome_unknown", actor=actor, note=f"{exc}; held for treasury review")
+                    results.append(self._result(intent["id"], "outcome_unknown", failures, reason=str(exc)))
+                    continue
                 results.append(self._result(intent["id"], "accepted", failures, provider_ref=found["provider_ref"]))
             else:
                 failures = self._set_status(intent["id"], "failed", actor=actor, note="provider has no record of the submission; obligation remains open", resolved=True)
@@ -2561,11 +2588,17 @@ class Payments:
         needed); a repeated or reordered one is stored and ignored."""
         self._authenticate_event(event, actor=actor)
         with self.db.transaction() as conn:
-            intent = self.db.one("SELECT * FROM payment_intents WHERE provider_ref=?", (event["provider_ref"],))
-            if intent is not None and self.db.one("SELECT id FROM provider_events WHERE id=?", (event["id"],)):
-                self.audit.record(actor, "provider_event.duplicate", "payment_intent", intent["id"], {"event_id": event["id"]})
-                return {"intent_id": intent["id"], "applied": False, "reason": "duplicate event"}
-            problem = self._event_contradiction(event, intent)
+            holders = self.db.query("SELECT * FROM payment_intents WHERE provider_ref=? ORDER BY created_at, id", (event["provider_ref"],))
+            intent = holders[0] if holders else None
+            if len(holders) > 1:
+                # a reference shared by two intents (recorded before the acceptance guard) cannot say which payment the event is for
+                problem: str | None = (f"references provider_ref {event['provider_ref']}, which payments "
+                                       f"{', '.join(h['id'] for h in holders)} all hold; it cannot be matched to one")
+            else:
+                if intent is not None and self.db.one("SELECT id FROM provider_events WHERE id=?", (event["id"],)):
+                    self.audit.record(actor, "provider_event.duplicate", "payment_intent", intent["id"], {"event_id": event["id"]})
+                    return {"intent_id": intent["id"], "applied": False, "reason": "duplicate event"}
+                problem = self._event_contradiction(event, intent)
             if problem is None:
                 derived: dict[str, Any] | None = None
                 if event["kind"] == "returned" and intent["status"] == "accepted" and event.get("settled_before_return") is True:

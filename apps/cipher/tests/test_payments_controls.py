@@ -1540,6 +1540,77 @@ class LifecycleMigrationTests(unittest.TestCase):
         self.assertTrue(reopened.bills.ap_open_items()["reconciled"] and reopened.payments.clearing_items()["reconciled"])
 
 
+class ProviderReferenceTests(unittest.TestCase):
+    """Provider callbacks are matched by reference, so one reference never pairs with two
+    payments: a restarted simulator continues after the workspace's references, and an
+    acceptance under a reference another payment holds posts nothing and is held."""
+
+    def settle(self, c, intent):
+        return c.payments.ingest_event(c.provider.settle(intent["logical_op_id"]), actor="webhook")
+
+    def test_a_server_restarted_on_the_workspace_never_reissues_a_reference(self):
+        w, d = file_world(self)
+        first = w.release(w.posted_bill("20000")["id"])
+        self.assertEqual([r["status"] for r in w.c.dispatch_payments()], ["accepted"])
+        self.settle(w.c, first)
+        first = w.c.payments.get(first["id"])
+        self.assertEqual((first["status"], first["provider_ref"]), ("settled", "sim_000001"))
+        w.c.db.close()
+        c = Cipher(os.path.join(d, "live.sqlite"))  # a restart: a fresh simulator, the same workspace
+        self.addCleanup(c.db.close)
+        self.assertEqual(c.provider.ref_floor, 1)
+        b = c.bills.certify(commitment_id=w.cmt["id"], period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "40000"}], actor="pm")
+        c.approve_and_execute("bill.approve", b["id"])
+        second = c.payments.get(c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury").result["intent"])
+        self.assertEqual([(r["status"], r.get("provider_ref")) for r in c.dispatch_payments()], [("accepted", "sim_000002")])
+        out = self.settle(c, second)
+        self.assertTrue(out.get("applied", True), out)
+        second = c.payments.get(second["id"])
+        self.assertEqual((second["status"], len(second["events"])), ("settled", 1))
+        self.assertEqual(c.payments.get(first["id"])["status"], "settled")
+        self.assertTrue(c.ledger.trial_balance()["balanced"] and c.bills.ap_open_items()["reconciled"] and c.payments.clearing_items()["reconciled"])
+
+    def test_an_acceptance_under_a_reference_another_payment_holds_posts_nothing(self):
+        w = World()
+        c = w.c
+        first = w.release(w.posted_bill("20000")["id"])
+        c.dispatch_payments()
+        self.settle(c, first)
+        c.provider.transfers.clear()  # a rail that forgets its transfers and reissues sim_000001
+        bill2 = w.posted_bill("40000")
+        second = w.release(bill2["id"])
+        journals = w.journals()
+        out = c.dispatch_payments()
+        self.assertEqual([r["status"] for r in out], ["outcome_unknown"])
+        self.assertIn("sim_000001", out[0]["reason"])
+        second = c.payments.get(second["id"])
+        self.assertEqual((second["status"], second["journal_id"], second["provider_ref"]), ("outcome_unknown", None, None))
+        self.assertIn("already holds", second["note"])
+        self.assertEqual(w.journals(), journals)  # nothing posted for the conflicting acceptance
+        self.assertEqual(c.bills.get(bill2["id"])["status"], "posted")  # the payable is still owed
+        self.assertEqual(c.payments.get(first["id"])["status"], "settled")
+        # still in doubt: the period-close payments check and Ricky's brief both surface it
+        self.assertIn("no_unresolved_payments", c.plugin("close").checklist_report("P1")["failing"])
+        self.assertIn(second["id"], [i["ref"] for i in c.ricky.brief(w.pid, actor_role="treasury")["items"] if i["kind"] == "payment_unknown"])
+        w.assert_books(self)
+
+    def test_an_event_for_a_reference_two_payments_hold_is_rejected(self):
+        w = World()
+        c = w.c
+        first = w.release(w.posted_bill("20000")["id"])
+        c.dispatch_payments()
+        c.provider.transfers.clear()
+        second = w.release(w.posted_bill("40000")["id"])
+        c.dispatch_payments()  # held: outcome_unknown under the guard
+        # a workspace recorded before the guard could hold one reference on two payments
+        self.assertEqual(c.payments.get(first["id"])["provider_ref"], "sim_000001")
+        c.db.conn.execute("UPDATE payment_intents SET provider_ref='sim_000001' WHERE id=?", (second["id"],))
+        event = sign_event({"id": "evt_sim_000001_settled", "kind": "settled", "provider_ref": "sim_000001", "amount": first["amount"]}, c.provider.webhook_secret)
+        with self.assertRaisesRegex(ProviderEventRejected, "all hold"):
+            c.payments.ingest_event(event, actor="webhook")
+        self.assertEqual(c.payments.get(first["id"])["status"], "accepted")
+
+
 class GoldenNumbersTests(unittest.TestCase):
     def test_golden_fixture_numbers_are_unchanged(self):
         c = Cipher()

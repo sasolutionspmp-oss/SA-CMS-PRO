@@ -151,7 +151,8 @@ class Cipher:
         self.payments = Payments(self.db, self.audit, self.commands, self.ledger)
         self.forecast = Forecast(self.db, self.commitments, self.ledger)
         self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins, forecast=self.forecast, core_owner=lambda op: self._core_owner(op))
-        self.provider = provider or SimulatedProvider()
+        # a fresh simulator on an existing workspace continues after the references it holds
+        self.provider = provider or SimulatedProvider(ref_floor=self._simulated_ref_floor())
         # provider callbacks are verified against the provider's webhook secret when it has one
         self.payments.webhook_secret = getattr(self.provider, "webhook_secret", None)
         # a bill payment releases the open payable (after credit notes and earlier payments)
@@ -169,6 +170,15 @@ class Cipher:
         # Plugins that post to accounts receivable (1100) expose ar_open_items(project_id)
         # so the AR subledger covers every source, not only prime bills.
         self.receivables.extra_ar_sources = lambda: [p for n, p in sorted(self._plugins.items()) if hasattr(p, "ar_open_items")]
+
+    def _simulated_ref_floor(self) -> int:
+        """The highest simulator reference (``sim_NNNNNN``) this workspace already records."""
+        floor = 0
+        for row in self.db.query("SELECT provider_ref FROM payment_intents WHERE provider_ref LIKE 'sim_%'"):
+            tail = str(row["provider_ref"])[4:]
+            if tail.isdigit():
+                floor = max(floor, int(tail))
+        return floor
 
     # ---- plugins (v2 modules register here) ------------------------------------ #
 
