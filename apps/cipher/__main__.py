@@ -24,6 +24,7 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=int(os.environ.get("CIPHER_PORT", "8765")))
     s.add_argument("--demo", action="store_true", help="seed the golden fixture when the workspace is empty")
+    s.add_argument("--token", default=None, help="access token (default: CIPHER_TOKEN); required for non-loopback hosts")
 
     d = sub.add_parser("demo", help="run the golden fixture")
     d.add_argument("--db", default=":memory:")
@@ -40,10 +41,14 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "serve":
-        from .server import serve
+        from .server import InsecureBindError, serve
         if args.db != ":memory:":
             os.makedirs(os.path.dirname(os.path.abspath(args.db)), exist_ok=True)
-        serve(args.db, args.host, args.port, demo=args.demo)
+        try:
+            serve(args.db, args.host, args.port, demo=args.demo, token=args.token)
+        except InsecureBindError as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
         return 0
 
     if args.command == "demo":

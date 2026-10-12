@@ -59,6 +59,43 @@ class SchemaTests(unittest.TestCase):
         with self.assertRaises(SchemaError):
             db.migrate()
 
+    def test_older_database_upgrades_in_place_by_name(self):
+        """A workspace created before later modules existed gains them on open, keeps its data,
+        and keeps matching entries by name even when catalog positions differ."""
+        d = tempfile.mkdtemp()
+        path = os.path.join(d, "old.sqlite")
+        saved = list(SCHEMA_CATALOG)
+        try:
+            del SCHEMA_CATALOG[1:]  # simulate a release that only had the foundation
+            old = Database(path)
+            Audit(old).record("owner", "seed", "t", "1", {"v": 1})
+            old.close()
+        finally:
+            SCHEMA_CATALOG[:] = saved
+        upgraded = Database(path)
+        status = upgraded.schema_status()
+        self.assertEqual(status["pending"], [])
+        self.assertEqual(status["orphaned"], [])
+        self.assertEqual(len(Audit(upgraded).entries(entity_type="t")), 1)
+        # reordering the catalog (a different module load order) must not break an existing database
+        upgraded.close()
+        if len(SCHEMA_CATALOG) >= 3:
+            reordered = [SCHEMA_CATALOG[0]] + list(reversed(SCHEMA_CATALOG[1:]))
+            try:
+                SCHEMA_CATALOG[:] = reordered
+                again = Database(path)
+                self.assertEqual(again.schema_status()["pending"], [])
+                again.close()
+            finally:
+                SCHEMA_CATALOG[:] = saved
+
+    def test_removed_module_is_reported_as_orphaned(self):
+        db = Database()
+        with db.transaction() as conn:
+            conn.execute("INSERT INTO schema_version (version, name, statement_count, checksum, applied_at) VALUES (999,'retired_module',0,'x','t')")
+        self.assertEqual(db.schema_status()["orphaned"], ["retired_module"])
+        db.migrate()  # does not fail
+
     def test_checksum_is_stable(self):
         self.assertEqual(catalog_checksum(["a", "b"]), catalog_checksum(["a ", " b"]))
 

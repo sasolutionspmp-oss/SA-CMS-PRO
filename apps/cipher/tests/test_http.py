@@ -109,5 +109,86 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(status, 400)
 
 
+def _raw(url, method="GET", body=None, headers=None):
+    req = urllib.request.Request(url, data=body, headers=headers or {}, method=method)
+    opener = urllib.request.build_opener(_NoRedirect)
+    try:
+        with opener.open(req, timeout=10) as r:
+            return r.status, dict(r.headers), r.read()
+    except urllib.error.HTTPError as e:
+        return e.code, dict(e.headers), e.read()
+
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, *args, **kwargs):
+        return None
+
+
+class BoundaryTests(unittest.TestCase):
+    """CSRF, DNS-rebinding and token rules on the HTTP boundary."""
+
+    TOKEN = "t0ken-for-tests-0123456789"
+
+    def test_cross_site_simple_posts_are_refused(self):
+        with BackgroundServer(Cipher()) as s:
+            # a cross-site HTML form or no-cors fetch can only send text/plain / form encodings
+            status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"x"}', {"Content-Type": "text/plain"})
+            self.assertEqual(status, 415)
+            status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b"kind=supplier&name=x", {"Content-Type": "application/x-www-form-urlencoded"})
+            self.assertEqual(status, 415)
+            # a JSON post carrying a foreign Origin is refused
+            status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"x"}', {"Content-Type": "application/json", "Origin": "https://evil.example"})
+            self.assertEqual(status, 403)
+            # same-origin JSON is accepted
+            host = s.url.split("//", 1)[1]
+            status, _, body = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"ok"}', {"Content-Type": "application/json", "Origin": "http://" + host})
+            self.assertEqual(status, 200, body)
+
+    def test_loopback_mode_rejects_foreign_host_header(self):
+        with BackgroundServer(Cipher()) as s:
+            status, _, _ = _raw(s.url + "/api/state", headers={"Host": "attacker.example:8765"})
+            self.assertEqual(status, 403)
+            status, _, _ = _raw(s.url + "/api/state", headers={"Host": "localhost:8765"})
+            self.assertEqual(status, 200)
+
+    def test_non_loopback_bind_requires_token(self):
+        from apps.cipher.server import InsecureBindError, make_server
+        with self.assertRaises(InsecureBindError):
+            make_server(Cipher(), "0.0.0.0", 0)
+        with self.assertRaises(InsecureBindError):
+            make_server(Cipher(), "127.0.0.1", 0, token="short")
+
+    def test_token_mode(self):
+        with BackgroundServer(Cipher(), token=self.TOKEN) as s:
+            status, _, body = _raw(s.url + "/api/state")
+            self.assertEqual(status, 401)
+            status, _, body = _raw(s.url + "/")
+            self.assertEqual(status, 401)
+            self.assertIn(b"Access token", body)
+            status, _, body = _raw(s.url + "/api/health")
+            self.assertEqual((status, json.loads(body)), (200, {"ok": True}))  # health leaks nothing without auth
+            status, _, _ = _raw(s.url + "/api/action/add_party", "POST", b'{"kind":"supplier","name":"x"}', {"Content-Type": "application/json"})
+            self.assertEqual(status, 401)
+            status, _, _ = _raw(s.url + "/api/state", headers={"Authorization": "Bearer wrong-token-0123456789"})
+            self.assertEqual(status, 401)
+            status, _, _ = _raw(s.url + "/api/state", headers={"Authorization": f"Bearer {self.TOKEN}"})
+            self.assertEqual(status, 200)
+            # browser sign-in: ?token= sets an HttpOnly SameSite=Strict cookie and redirects, keeping other params
+            status, headers, _ = _raw(s.url + f"/?token={self.TOKEN}&selftest=abc")
+            self.assertEqual(status, 303)
+            self.assertEqual(headers.get("Location"), "/?selftest=abc")
+            cookie = headers.get("Set-Cookie", "")
+            self.assertIn("HttpOnly", cookie)
+            self.assertIn("SameSite=Strict", cookie)
+            status, _, body = _raw(s.url + "/", headers={"Cookie": cookie.split(";")[0]})
+            self.assertEqual(status, 200)
+            self.assertIn(b"Owner Console", body)
+            status, _, _ = _raw(s.url + f"/?token=wrong-token-0123456789")
+            self.assertEqual(status, 401)
+            # with a token, any Host is acceptable (the token is the control)
+            status, _, _ = _raw(s.url + "/api/state", headers={"Host": "cipher.internal:8765", "Authorization": f"Bearer {self.TOKEN}"})
+            self.assertEqual(status, 200)
+
+
 if __name__ == "__main__":
     unittest.main()

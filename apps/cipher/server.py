@@ -13,6 +13,7 @@ nothing on this surface can bypass approvals or post to the ledger directly.
 """
 from __future__ import annotations
 
+import hmac
 import inspect
 import json
 import os
@@ -20,7 +21,7 @@ import threading
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from .service import Cipher, run_golden_fixture
 
@@ -111,7 +112,7 @@ def _module_call(c: Cipher, d: dict[str, Any]) -> Any:
 
 def _store_selftest(c: Cipher, report: dict[str, Any]) -> dict[str, Any]:
     """The console's browser self-test posts its outcome here so a headless run can be read back."""
-    setattr(c, "_selftest_report", {"result": report.get("result"), "steps": report.get("steps", []), "user_agent": report.get("user_agent", "")})
+    setattr(c, "_selftest_report", {"result": report.get("result"), "nonce": report.get("nonce"), "steps": report.get("steps", []), "user_agent": report.get("user_agent", "")})
     return {"stored": True}
 
 
@@ -130,38 +131,136 @@ def _replay_last_event(c: Cipher, intent_id: str) -> dict[str, Any]:
     return c.payments.ingest_event(last, actor="webhook-replay")
 
 
+LOOPBACK_HOSTS = {"127.0.0.1", "localhost", "::1", "[::1]"}
+COOKIE_NAME = "cipher_token"
+
+LOGIN_PAGE = b"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cipher sign-in</title><style>body{font:15px system-ui,sans-serif;background:#f4f6f8;color:#13202e;display:grid;place-items:center;min-height:100vh;margin:0}
+form{background:#fff;border:1px solid #d9dfe6;border-radius:10px;padding:24px;display:grid;gap:10px;min-width:300px}h1{font-size:18px;margin:0;color:#0B2341}
+input,button{font:inherit;padding:8px;border-radius:6px;border:1px solid #d9dfe6}button{background:#0B2341;color:#fff;border-color:#0B2341}</style></head>
+<body><form method="get" action="/"><h1>Cipher owner console</h1><label>Access token<br><input name="token" type="password" autocomplete="current-password" required></label><button>Sign in</button></form></body></html>"""
+
+
+def _is_loopback(host: str) -> bool:
+    return host in LOOPBACK_HOSTS
+
+
 class CipherHandler(BaseHTTPRequestHandler):
+    """Request boundary.
+
+    * Token mode (``token`` set): every API call needs ``Authorization: Bearer <token>``
+      or the HttpOnly, SameSite=Strict session cookie set by ``GET /?token=...``.
+    * Loopback mode (no token): the server only binds to loopback and only answers
+      requests whose Host header is a loopback name (blocks DNS rebinding).
+    * Every POST must be ``application/json`` and, when the browser sends an Origin,
+      it must match the Host.  Cross-site form or ``text/plain`` posts are refused,
+      so another web page cannot drive the console (CSRF).
+    """
+
     cipher: Cipher
     actions: dict[str, Callable[[dict[str, Any]], Any]]
-    server_version = "Cipher/0.2"
+    token: str | None = None
+    server_version = "Cipher/0.3"
 
     def log_message(self, fmt, *args):  # quiet by default
         if os.environ.get("CIPHER_HTTP_LOG"):
             super().log_message(fmt, *args)
 
-    def _json(self, status: HTTPStatus, body: Any) -> None:
+    def _json(self, status: HTTPStatus, body: Any, extra_headers: dict[str, str] | None = None) -> None:
         data = json.dumps(body, default=str).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(data)))
         self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        for k, v in (extra_headers or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(data)
 
+    def _html(self, status: HTTPStatus, data: bytes) -> None:
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "no-referrer")
+        self.end_headers()
+        self.wfile.write(data)
+
+    # ---- boundary checks -------------------------------------------------- #
+
+    def _host_name(self) -> str:
+        host = (self.headers.get("Host") or "").strip()
+        if host.startswith("["):
+            return host[: host.find("]") + 1] if "]" in host else host
+        return host.rsplit(":", 1)[0] if ":" in host else host
+
+    def _host_allowed(self) -> bool:
+        if self.token:
+            return True
+        return _is_loopback(self._host_name())
+
+    def _cookie_token(self) -> str | None:
+        raw = self.headers.get("Cookie") or ""
+        for part in raw.split(";"):
+            name, _, value = part.strip().partition("=")
+            if name == COOKIE_NAME:
+                return value
+        return None
+
+    def _authorized(self) -> bool:
+        if not self.token:
+            return True
+        auth = self.headers.get("Authorization") or ""
+        presented = auth[7:].strip() if auth.lower().startswith("bearer ") else self._cookie_token()
+        return bool(presented) and hmac.compare_digest(presented.encode("utf-8"), self.token.encode("utf-8"))
+
+    def _origin_ok(self) -> bool:
+        origin = self.headers.get("Origin")
+        if origin is None:
+            return True  # non-browser clients (curl, tests) do not send Origin
+        parsed = urlparse(origin)
+        return parsed.netloc == (self.headers.get("Host") or "")
+
+    def _reject_boundary(self) -> bool:
+        """Send an error and return True when the request must not proceed."""
+        if not self._host_allowed():
+            self._json(HTTPStatus.FORBIDDEN, {"error": "host not allowed"})
+            return True
+        return False
+
     def do_GET(self):
+        if self._reject_boundary():
+            return
         url = urlparse(self.path)
         try:
             if url.path in ("/", "/index.html"):
+                q = parse_qs(url.query)
+                if self.token and "token" in q:
+                    presented = q["token"][0]
+                    if not hmac.compare_digest(presented.encode("utf-8"), self.token.encode("utf-8")):
+                        return self._html(HTTPStatus.UNAUTHORIZED, LOGIN_PAGE)
+                    rest = {k: v for k, v in q.items() if k != "token"}
+                    location = "/" + (("?" + urlencode(rest, doseq=True)) if rest else "")
+                    self.send_response(HTTPStatus.SEE_OTHER)
+                    self.send_header("Set-Cookie", f"{COOKIE_NAME}={presented}; HttpOnly; SameSite=Strict; Path=/")
+                    self.send_header("Location", location)
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                if not self._authorized():
+                    return self._html(HTTPStatus.UNAUTHORIZED, LOGIN_PAGE)
                 with open(CONSOLE_PATH, "rb") as fh:
                     data = fh.read()
-                self.send_response(HTTPStatus.OK)
-                self.send_header("Content-Type", "text/html; charset=utf-8")
-                self.send_header("Content-Length", str(len(data)))
-                self.end_headers()
-                self.wfile.write(data)
-                return
+                return self._html(HTTPStatus.OK, data)
             if url.path == "/api/health":
+                if not self._authorized():
+                    return self._json(HTTPStatus.OK, {"ok": True})
                 return self._json(HTTPStatus.OK, {"ok": True, "authority": self.cipher.db.authority_status(), "schema": self.cipher.db.schema_status()["current_version"]})
+            if not self._authorized():
+                return self._json(HTTPStatus.UNAUTHORIZED, {"error": "authentication required"})
             if url.path == "/api/projects":
                 return self._json(HTTPStatus.OK, self.cipher.projects())
             if url.path == "/api/schema":
@@ -186,6 +285,15 @@ class CipherHandler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.BAD_REQUEST, {"error": str(exc), "type": type(exc).__name__})
 
     def do_POST(self):
+        if self._reject_boundary():
+            return
+        if not self._authorized():
+            return self._json(HTTPStatus.UNAUTHORIZED, {"error": "authentication required"})
+        if not self._origin_ok():
+            return self._json(HTTPStatus.FORBIDDEN, {"error": "cross-origin request refused"})
+        ctype = (self.headers.get("Content-Type") or "").split(";")[0].strip().lower()
+        if ctype != "application/json":
+            return self._json(HTTPStatus.UNSUPPORTED_MEDIA_TYPE, {"error": "Content-Type must be application/json"})
         url = urlparse(self.path)
         if not url.path.startswith("/api/action/"):
             return self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
@@ -205,17 +313,29 @@ class CipherHandler(BaseHTTPRequestHandler):
             return self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc), "type": type(exc).__name__})
 
 
-def make_server(cipher: Cipher, host: str = "127.0.0.1", port: int = 8765) -> ThreadingHTTPServer:
-    handler = type("BoundCipherHandler", (CipherHandler,), {"cipher": cipher, "actions": _actions(cipher)})
+class InsecureBindError(RuntimeError):
+    """Binding beyond loopback without an access token is refused."""
+
+
+def make_server(cipher: Cipher, host: str = "127.0.0.1", port: int = 8765, *, token: str | None = None) -> ThreadingHTTPServer:
+    if token is not None and len(token) < 16:
+        raise InsecureBindError("CIPHER_TOKEN must be at least 16 characters")
+    if not _is_loopback(host) and not token:
+        raise InsecureBindError(
+            f"refusing to serve on {host} without an access token; set CIPHER_TOKEN (or bind 127.0.0.1)"
+        )
+    handler = type("BoundCipherHandler", (CipherHandler,), {"cipher": cipher, "actions": _actions(cipher), "token": token})
     return ThreadingHTTPServer((host, port), handler)
 
 
-def serve(path: str = ":memory:", host: str = "127.0.0.1", port: int = 8765, *, demo: bool = False) -> None:
+def serve(path: str = ":memory:", host: str = "127.0.0.1", port: int = 8765, *, demo: bool = False, token: str | None = None) -> None:
+    token = token or os.environ.get("CIPHER_TOKEN") or None
     cipher = Cipher(path)
     if demo and not cipher.projects():
         run_golden_fixture(cipher)
-    httpd = make_server(cipher, host, port)
-    print(f"Cipher console: http://{host}:{httpd.server_address[1]}/  (workspace {path})")
+    httpd = make_server(cipher, host, port, token=token)
+    mode = "token required" if token else "loopback only, no token"
+    print(f"Cipher console: http://{host}:{httpd.server_address[1]}/  (workspace {path}; {mode})", flush=True)
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
@@ -227,8 +347,8 @@ def serve(path: str = ":memory:", host: str = "127.0.0.1", port: int = 8765, *, 
 class BackgroundServer:
     """Run the server on a thread; used by the HTTP tests and the browser check."""
 
-    def __init__(self, cipher: Cipher, host: str = "127.0.0.1", port: int = 0):
-        self.httpd = make_server(cipher, host, port)
+    def __init__(self, cipher: Cipher, host: str = "127.0.0.1", port: int = 0, *, token: str | None = None):
+        self.httpd = make_server(cipher, host, port, token=token)
         self.thread = threading.Thread(target=self.httpd.serve_forever, daemon=True)
 
     @property

@@ -471,7 +471,15 @@ class Database:
     # ---- schema lifecycle ------------------------------------------------- #
 
     def migrate(self) -> list[dict[str, Any]]:
-        """Apply every catalog version not yet applied.  Returns the versions applied now."""
+        """Apply every catalog entry not yet applied to this database.
+
+        Entries are matched by *name*, not by catalog position: modules register
+        their schema in load order, so the same module can sit at different
+        catalog positions in different releases.  ``schema_version.version`` is
+        this database's own application sequence.  An applied entry whose
+        statements changed is refused (history is append-only); an applied
+        entry no longer in the catalog is reported as orphaned and left alone.
+        Returns the entries applied now."""
         applied_now: list[dict[str, Any]] = []
         with self.transaction() as conn:
             conn.execute(
@@ -483,34 +491,40 @@ class Database:
                     applied_at TEXT NOT NULL
                 )"""
             )
-            applied = {r["version"]: dict(r) for r in conn.execute("SELECT * FROM schema_version")}
-            for version, name, statements in SCHEMA_CATALOG:
+            conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS schema_version_name ON schema_version(name)")
+            applied = {r["name"]: dict(r) for r in conn.execute("SELECT * FROM schema_version")}
+            next_seq = (max((r["version"] for r in applied.values()), default=0)) + 1
+            for _, name, statements in SCHEMA_CATALOG:
                 checksum = catalog_checksum(statements)
-                if version in applied:
-                    if applied[version]["checksum"] != checksum:
+                if name in applied:
+                    if applied[name]["checksum"] != checksum:
                         raise SchemaError(
-                            f"schema version {version} ({name}) was modified after it was applied; "
-                            "add a new version instead of editing history"
+                            f"schema entry {name!r} (applied as version {applied[name]['version']}) was modified after it was applied; "
+                            "add a new entry instead of editing history"
                         )
                     continue
                 for stmt in statements:
                     conn.execute(stmt)
                 conn.execute(
                     "INSERT INTO schema_version (version, name, statement_count, checksum, applied_at) VALUES (?,?,?,?,?)",
-                    (version, name, len(statements), checksum, utcnow_iso()),
+                    (next_seq, name, len(statements), checksum, utcnow_iso()),
                 )
-                applied_now.append({"version": version, "name": name, "statement_count": len(statements), "checksum": checksum})
+                applied_now.append({"version": next_seq, "name": name, "statement_count": len(statements), "checksum": checksum})
+                next_seq += 1
             self._ensure_workspace(conn)
         return applied_now
 
     def schema_status(self) -> dict[str, Any]:
-        applied = {r["version"]: r for r in self.query("SELECT * FROM schema_version ORDER BY version")}
+        rows = self.query("SELECT * FROM schema_version ORDER BY version")
+        applied = {r["name"]: r for r in rows}
+        catalog_names = {name for _, name, _ in SCHEMA_CATALOG}
         versions = []
-        for version, name, statements in SCHEMA_CATALOG:
-            row = applied.get(version)
+        for catalog_position, name, statements in SCHEMA_CATALOG:
+            row = applied.get(name)
             versions.append(
                 {
-                    "version": version,
+                    "version": row["version"] if row else None,
+                    "catalog_position": catalog_position,
                     "name": name,
                     "statement_count": len(statements),
                     "checksum": catalog_checksum(statements),
@@ -520,9 +534,10 @@ class Database:
                 }
             )
         return {
-            "current_version": max(applied) if applied else 0,
+            "current_version": max((r["version"] for r in rows), default=0),
             "catalog_version": SCHEMA_CATALOG[-1][0],
-            "pending": [v["version"] for v in versions if not v["applied"]],
+            "pending": [v["name"] for v in versions if not v["applied"]],
+            "orphaned": [r["name"] for r in rows if r["name"] not in catalog_names],
             "versions": versions,
         }
 

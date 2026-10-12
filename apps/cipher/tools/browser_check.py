@@ -49,69 +49,83 @@ def find_browser(explicit: str | None = None) -> str | None:
     return None
 
 
-def run(out_path: str | None, chrome: str | None) -> int:
-    cipher = Cipher()
-    run_golden_fixture(cipher)
-    evidence = {"api_only": {}, "browser": None}
-    with BackgroundServer(cipher) as server:
-        # API-only sanity (always runs)
-        with urllib.request.urlopen(server.url + "/api/state", timeout=10) as r:
-            state = json.loads(r.read())
-        evidence["api_only"] = {
-            "project": state["project"]["name"],
-            "trial_balance_balanced": state["trial_balance"]["balanced"],
-            "audit_chain_ok": state["audit_chain"]["ok"],
-            "approvals": len(state["approvals"]),
-        }
-        browser = find_browser(chrome)
-        if browser is None:
-            evidence["browser"] = {"available": False}
-            _write(out_path, evidence)
-            print(json.dumps(evidence, indent=2))
-            return 2
-        profile = tempfile.mkdtemp(prefix="cipher-chrome-")
-        cmd = [
-            browser, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run", "--no-default-browser-check",
-            "--disable-extensions", f"--user-data-dir={profile}", server.url + "/?selftest=1",
-        ]
-        report = {"result": None}
-        proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        try:
-            # The page posts its outcome to /api/selftest when the journey finishes; poll for it.
-            deadline = time.time() + 90
-            while time.time() < deadline:
-                try:
-                    with urllib.request.urlopen(server.url + "/api/selftest", timeout=5) as r:
-                        report = json.loads(r.read())
-                except Exception:
-                    report = {"result": None}
-                if report.get("result"):
-                    break
-                if proc.poll() is not None:
-                    break
-                time.sleep(0.5)
-        finally:
-            if proc.poll() is None:
-                proc.terminate()
-                try:
-                    proc.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    proc.kill()
-            shutil.rmtree(profile, ignore_errors=True)
-        evidence["browser"] = {
-            "available": True,
-            "browser": browser,
-            "result": report.get("result") or "no-result",
-            "steps": report.get("steps", []),
-            "user_agent": report.get("user_agent", ""),
-        }
-        # the state after the journey is also checked server-side
-        with urllib.request.urlopen(server.url + "/api/state", timeout=10) as r:
-            state = json.loads(r.read())
-        evidence["after"] = {"trial_balance_balanced": state["trial_balance"]["balanced"], "audit_chain_ok": state["audit_chain"]["ok"], "audit_entries": state["audit_chain"].get("entries")}
+def _get_json(url: str, token: str | None) -> dict:
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"} if token else {})
+    with urllib.request.urlopen(req, timeout=10) as r:
+        return json.loads(r.read())
+
+
+def _summary(state: dict) -> dict:
+    return {
+        "project": (state.get("project") or {}).get("name"),
+        "trial_balance_balanced": (state.get("trial_balance") or {"balanced": True})["balanced"],
+        "audit_chain_ok": (state.get("audit_chain") or {"ok": True})["ok"],
+        "approvals": len(state.get("approvals") or []),
+    }
+
+
+def _drive(base_url: str, token: str | None, chrome: str | None, evidence: dict) -> int:
+    evidence["target"] = base_url
+    evidence["api_only"] = _summary(_get_json(base_url + "/api/state", token))
+    browser = find_browser(chrome)
+    if browser is None:
+        evidence["browser"] = {"available": False}
+        return 2
+    nonce = f"run{int(time.time() * 1000):x}"
+    start = f"{base_url}/?selftest={nonce}" + (f"&token={token}" if token else "")
+    profile = tempfile.mkdtemp(prefix="cipher-chrome-")
+    cmd = [
+        browser, "--headless=new", "--disable-gpu", "--no-sandbox", "--no-first-run", "--no-default-browser-check",
+        "--disable-extensions", f"--user-data-dir={profile}", start,
+    ]
+    report: dict = {"result": None}
+    proc = subprocess.Popen(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    try:
+        # The page posts its outcome (tagged with this run's nonce) to the server; poll for it.
+        deadline = time.time() + 120
+        while time.time() < deadline:
+            try:
+                report = _get_json(base_url + "/api/selftest", token)
+            except Exception:
+                report = {"result": None}
+            if report.get("result") and report.get("nonce") == nonce:
+                break
+            if proc.poll() is not None:
+                break
+            time.sleep(0.5)
+    finally:
+        if proc.poll() is None:
+            proc.terminate()
+            try:
+                proc.wait(timeout=10)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+        shutil.rmtree(profile, ignore_errors=True)
+    matched = report.get("nonce") == nonce
+    evidence["browser"] = {
+        "available": True,
+        "browser": browser,
+        "result": (report.get("result") if matched else None) or "no-result",
+        "steps": report.get("steps", []) if matched else [],
+        "user_agent": report.get("user_agent", ""),
+    }
+    evidence["after"] = _summary(_get_json(base_url + "/api/state", token))
+    ok = evidence["browser"]["result"] == "pass" and evidence["after"]["trial_balance_balanced"] and evidence["after"]["audit_chain_ok"]
+    return 0 if ok else 1
+
+
+def run(out_path: str | None, chrome: str | None, url: str | None = None, token: str | None = None) -> int:
+    evidence: dict = {"api_only": {}, "browser": None}
+    if url:
+        code = _drive(url.rstrip("/"), token, chrome, evidence)
+    else:
+        cipher = Cipher()
+        run_golden_fixture(cipher)
+        with BackgroundServer(cipher) as server:
+            code = _drive(server.url, None, chrome, evidence)
     _write(out_path, evidence)
     print(json.dumps(evidence, indent=2, ensure_ascii=False))
-    return 0 if evidence["browser"]["result"] == "pass" and evidence["after"]["trial_balance_balanced"] else 1
+    return code
 
 
 def _write(out_path: str | None, evidence: dict) -> None:
@@ -125,8 +139,10 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None)
     ap.add_argument("--chrome", default=None)
+    ap.add_argument("--url", default=None, help="drive an already-running console (e.g. the container) instead of an in-process one")
+    ap.add_argument("--token", default=os.environ.get("CIPHER_TOKEN"), help="access token for --url (default: CIPHER_TOKEN)")
     args = ap.parse_args(argv)
-    return run(args.out, args.chrome)
+    return run(args.out, args.chrome, url=args.url, token=args.token)
 
 
 if __name__ == "__main__":
