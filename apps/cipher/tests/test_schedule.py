@@ -323,6 +323,39 @@ class BaselineTests(Base):
             self.c.db.execute("DELETE FROM schedule_baselines WHERE id=?", (bl["id"],))
         self.assertEqual(self.s.baseline(bl["id"])["duration_days"], 12)
 
+    def test_period_open_trigger_guards_direct_inserts(self):
+        """The BEFORE INSERT trigger, not just ledger.require_open(), refuses a
+        baseline row in a closed or unknown period even when the plugin is bypassed."""
+        self.golden()
+        bl = self.c.approve_and_execute("schedule.baseline", self.pid, period_id="P1").result
+        self.c.close_period("P1")
+        insert = """INSERT INTO schedule_baselines (id, project_id, period_id, sequence, content_hash, duration_days,
+                    snapshot_json, snapshot_hash, approval_id, created_by, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)"""
+        row = ["bsl_direct", self.pid, "P1", 2, bl["content_hash"], 12, "{}", "x", bl["approval_id"], "o", "2026-10-31T00:00:00Z"]
+        with self.assertRaises(sqlite3.IntegrityError) as cm:
+            self.c.db.execute(insert, tuple(row))
+        self.assertIn("period is not open for baselining", str(cm.exception))
+        row[2] = "P-missing"
+        with self.assertRaises(sqlite3.IntegrityError) as cm:
+            self.c.db.execute(insert, tuple(row))
+        self.assertIn("period is not open for baselining", str(cm.exception))
+        self.assertEqual([b["id"] for b in self.s.baselines(self.pid)], [bl["id"]])
+
+    def test_apply_rejects_manifest_that_no_longer_matches(self):
+        """apply() re-checks the manifest it is handed, so a direct caller with an
+        old manifest (bypassing Cipher.execute) cannot baseline an unapproved schedule."""
+        acts = self.golden()
+        manifest = self.s.manifest_for("schedule.baseline", self.pid, actor_role="owner")
+        self.s.update_activity(acts["A"]["id"], "o", duration_days=4)
+        with self.assertRaises(ScheduleError):
+            self.s.apply("schedule.baseline", self.pid, approval_id="apr_none", manifest=manifest, actor="o", period_id="P1")
+        fresh = self.s.manifest_for("schedule.baseline", self.pid, actor_role="owner")
+        self.c.approve_and_execute("schedule.baseline", self.pid, period_id="P1")  # sequence 1 is now taken
+        with self.assertRaises(ScheduleError):
+            self.s.apply("schedule.baseline", self.pid, approval_id="apr_none", manifest=fresh, actor="o", period_id="P1")
+        self.assertEqual(len(self.s.baselines(self.pid)), 1)
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
     def test_state_shape_and_serialisable(self):
         empty = self.s.state(self.pid)
         self.assertEqual(set(empty), {"schedule", "baselines"})

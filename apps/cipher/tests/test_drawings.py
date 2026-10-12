@@ -4,7 +4,7 @@ import unittest
 from decimal import Decimal
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
-from apps.cipher.domain.drawings import PLUGIN_NAME, SCHEMA_NAME, DrawingError
+from apps.cipher.domain.drawings import PLUGIN_NAME, SCHEMA_NAME, DrawingError, RevisionNotIssuable
 from apps.cipher.domain.ledger import PeriodNotOpen
 from apps.cipher.service import Cipher, CipherError
 
@@ -35,6 +35,9 @@ class DrawingRegisterTests(unittest.TestCase):
         self.p = self.s.plugin
         self.dwg_id = self.s.dwg["id"]
 
+    def issue_audit_count(self, revision_id: str) -> int:
+        return [e["action"] for e in self.c.audit.entries(entity_type="drawing_revision", entity_id=revision_id)].count("drawing.issued")
+
     # ---- registration ---------------------------------------------------------- #
 
     def test_register_drawing_starts_at_version_one(self):
@@ -56,6 +59,11 @@ class DrawingRegisterTests(unittest.TestCase):
             self.p.register_drawing(self.s.project["id"], "C-101", "Again", "Civil", actor="o")
         with self.assertRaises(DrawingError):  # case-insensitive
             self.p.register_drawing(self.s.project["id"], " c-101 ", "Again", "Civil", actor="o")
+        with self.assertRaises(sqlite3.IntegrityError):  # and the database agrees, case-insensitively
+            self.c.db.execute(
+                "INSERT INTO drawing_register (id, project_id, number, title, discipline, version, created_at, updated_at) VALUES ('dwg_raw', ?, 'c-101', 'T', 'Civil', 1, 't', 't')",
+                (self.s.project["id"],),
+            )
         other = self.c.create_project(name="Other", entity="E", budget="1000")
         self.assertEqual(self.p.register_drawing(other["id"], "C-101", "Other site", "Civil", actor="o")["number"], "C-101")
         self.assertEqual(len(self.p.register(self.s.project["id"])), 1)
@@ -227,6 +235,7 @@ class DrawingRegisterTests(unittest.TestCase):
         self.assertTrue(again.replayed)
         self.assertEqual(again.result, first.result)
         self.assertEqual(self.p.get(self.dwg_id)["version"], first.result["drawing_version"])
+        self.assertEqual(self.issue_audit_count(r1["id"]), 1)
 
     # ---- stale approvals ------------------------------------------------------------------ #
 
@@ -239,7 +248,9 @@ class DrawingRegisterTests(unittest.TestCase):
         self.assertEqual(bindings["evidence_content_hash"], r1["content_hash"])
         self.assertTrue(bindings["evidence_is_current"])
         r1b = self.p.replace_working(self.dwg_id, self.s.evidence(b"r1 corrected")["id"], actor="o")
-        with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
+        # the withdrawal itself invalidated the approval, so execute finds it no longer granted
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises(ApprovalNotGranted):
             self.c.execute(ap["id"], period_id="P1")
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
         self.assertEqual(self.p.revision(r1["id"])["status"], "withdrawn")
@@ -277,6 +288,47 @@ class DrawingRegisterTests(unittest.TestCase):
         self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
         self.assertFalse(self.p.revision(r1["id"])["evidence_is_current"])
 
+    def test_two_granted_approvals_cannot_issue_the_same_revision_twice(self):
+        r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
+        first = self.c.request_approval("drawing.issue", r1["id"])
+        second = self.c.request_approval("drawing.issue", r1["id"])
+        self.c.approve(first["id"])
+        self.c.approve(second["id"])
+        self.c.execute(first["id"], period_id="P1")
+        with self.assertRaises(StaleApprovalError):  # the revision moved on: the second approval's bindings no longer hold
+            self.c.execute(second["id"], period_id="P1")
+        self.assertEqual(self.c.approvals.get(first["id"])["status"], "consumed")
+        self.assertEqual(self.c.approvals.get(second["id"])["status"], "invalidated")
+        self.assertIn("bindings", self.c.approvals.get(second["id"])["invalidated_reason"])
+        self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
+        self.assertEqual(self.p.revision(r1["id"])["approval_id"], first["id"])
+        self.assertEqual(self.issue_audit_count(r1["id"]), 1)
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_dead_granted_approval_is_invalidated_when_executed(self):
+        """A proposal is refused for a non-working revision, so simulate a core
+        that builds proposal manifests inside a transaction: the dead approval
+        it creates is invalidated on execute instead of lingering as granted."""
+        r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
+        self.s.issue(r1["id"])
+        with self.c.db.transaction():
+            manifest = self.p.manifest_for("drawing.issue", r1["id"], actor_role="owner")
+        self.assertEqual(manifest["bindings"]["revision_status"], "issued")
+        ap = self.c.approvals.request(manifest, requested_by="owner")
+        self.c.approve(ap["id"])
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        with self.assertRaises(DrawingError) as caught:
+            self.c.execute(ap["id"], period_id="P1")
+        self.assertIsInstance(caught.exception, RevisionNotIssuable)
+        self.assertIsInstance(caught.exception, StaleApprovalError)
+        ap_after = self.c.approvals.get(ap["id"])
+        self.assertEqual(ap_after["status"], "invalidated")
+        self.assertIn("already issued", ap_after["invalidated_reason"])
+        self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
+        self.assertEqual(self.issue_audit_count(r1["id"]), 1)
+        self.assertEqual(self.c.commands.pending(), [])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
     # ---- periods and operations ------------------------------------------------------------ #
 
     def test_issue_into_closed_period_rejected(self):
@@ -289,21 +341,52 @@ class DrawingRegisterTests(unittest.TestCase):
         with self.assertRaises(CipherError):  # no open period to default to
             self.c.execute(ap["id"])
         self.assertEqual(self.p.revision(r1["id"])["status"], "working")
-        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")  # a closed period is not a subject change
         self.c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
         res = self.c.execute(ap["id"], period_id="P2")
         self.assertEqual(res.result["period_id"], "P2")
         self.assertEqual(self.p.revision(r1["id"])["issued_period_id"], "P2")
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
-    def test_issue_requires_a_working_revision(self):
+    def test_issue_approval_is_proposed_for_working_revisions_only(self):
         r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
         self.s.issue(r1["id"])
+        with self.assertRaises(DrawingError):  # issued
+            self.c.request_approval("drawing.issue", r1["id"])
         with self.assertRaises(DrawingError):
-            self.s.issue(r1["id"])  # already issued
+            self.s.issue(r1["id"])
         self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
+        r2 = self.p.add_revision(self.dwg_id, "R2", self.s.evidence(b"r2")["id"], "", actor="o")
+        ap2 = self.c.request_approval("drawing.issue", r2["id"])  # working: proposable
+        self.assertEqual(ap2["manifest"]["bindings"]["revision_status"], "working")
+        self.assertEqual(ap2["manifest"]["bindings"]["supersedes"], r1["id"])
+        r2b = self.p.replace_working(self.dwg_id, self.s.evidence(b"r2 corrected")["id"], actor="o")
+        self.assertEqual(self.c.approvals.get(ap2["id"])["status"], "invalidated")
+        with self.assertRaises(DrawingError):  # withdrawn
+            self.c.request_approval("drawing.issue", r2["id"])
+        self.s.issue(r2b["id"])
+        self.assertEqual(self.p.revision(r1["id"])["status"], "superseded")
+        with self.assertRaises(DrawingError):  # superseded
+            self.c.request_approval("drawing.issue", r1["id"])
         with self.assertRaises(DrawingError):
             self.c.request_approval("drawing.issue", "dwr_missing")
+        # only the live proposals exist: two consumed issues and the one invalidated by the withdrawal
+        statuses = sorted(a["status"] for a in self.c.approvals.list() if a["operation"] == "drawing.issue")
+        self.assertEqual(statuses, ["consumed", "consumed", "invalidated"])
+
+    def test_ricky_previews_working_revisions_and_abstains_otherwise(self):
+        r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
+        preview = self.c.ricky.propose("drawing.issue", actor_role="pm", context={"drawing_revision_id": r1["id"]})
+        self.assertEqual(preview["decision"], "proposed")
+        self.assertEqual(preview["manifest"]["bindings"]["revision_status"], "working")
+        self.assertEqual(preview["manifest"]["subject"], {"type": "drawing_revision", "id": r1["id"]})
+        self.assertEqual(self.c.ricky.propose("drawing.issue", actor_role="viewer", context={"drawing_revision_id": r1["id"]})["decision"], "abstained")
+        self.s.issue(r1["id"])
+        abstain = self.c.ricky.propose("drawing.issue", actor_role="pm", context={"drawing_revision_id": r1["id"]})
+        self.assertEqual(abstain["decision"], "abstained")
+        self.assertIn("already issued", abstain["reason"])
+        self.assertIsNone(abstain["manifest"])
+        self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
 
     def test_unknown_drawing_operation_rejected(self):
         r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
@@ -334,14 +417,21 @@ class DrawingRegisterTests(unittest.TestCase):
         self.assertEqual(len(self.p.references(r1["id"])), 2)
         self.assertEqual(self.p.revision(r1["id"])["reference_count"], 2)
 
+    # ---- database guards (hold without the plugin) ------------------------------------------------ #
+
     def test_database_guards_hold_without_the_plugin(self):
         r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
         with self.assertRaises(sqlite3.IntegrityError):  # references only on issued revisions
             self.c.db.execute(
+                "INSERT INTO drawing_references (id, drawing_id, drawing_revision_id, referenced_by_type, referenced_by_id, content_hash, created_at) VALUES ('x', ?, ?, 'bill', 'b', ?, 't')",
+                (self.dwg_id, r1["id"], r1["content_hash"]),
+            )
+        self.s.issue(r1["id"])
+        with self.assertRaises(sqlite3.IntegrityError):  # references carry the exact hash
+            self.c.db.execute(
                 "INSERT INTO drawing_references (id, drawing_id, drawing_revision_id, referenced_by_type, referenced_by_id, content_hash, created_at) VALUES ('x', ?, ?, 'bill', 'b', 'h', 't')",
                 (self.dwg_id, r1["id"]),
             )
-        self.s.issue(r1["id"])
         ref = self.p.reference(r1["id"], "bill", "bill_1", actor="o")
         with self.assertRaises(sqlite3.IntegrityError):  # append-only references
             self.c.db.execute("DELETE FROM drawing_references WHERE id=?", (ref["id"],))
@@ -357,8 +447,93 @@ class DrawingRegisterTests(unittest.TestCase):
             self.c.db.execute("UPDATE drawing_register SET number='C-999', version=version+1 WHERE id=?", (self.dwg_id,))
         with self.assertRaises(sqlite3.IntegrityError):
             self.c.db.execute("DELETE FROM drawing_revisions WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.c.db.execute("DELETE FROM drawing_register WHERE id=?", (self.dwg_id,))
         self.assertEqual(self.p.revision(r1["id"])["status"], "issued")
         self.assertEqual(self.p.get(self.dwg_id)["title"], "Site plan")
+
+    def test_revision_rows_are_born_working_at_the_database(self):
+        ev = self.s.evidence(b"raw")
+        cols = "(id, drawing_id, sequence, label, document_revision_id, content_hash, status, created_at, issued_at, approval_id, issued_period_id, withdrawn_at)"
+        insert = f"INSERT INTO drawing_revisions {cols} VALUES ('dwr_forged', ?, 1, 'R1', ?, ?, ?, 't', ?, NULL, ?, ?)"
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "created working"):  # issued on arrival, no approval, no period
+            self.c.db.execute(insert, (self.dwg_id, ev["id"], ev["content_hash"], "issued", "t", None, None))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "created working"):  # working but with lifecycle facts pre-filled
+            self.c.db.execute(insert, (self.dwg_id, ev["id"], ev["content_hash"], "working", None, "P1", None))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "created working"):
+            self.c.db.execute(insert, (self.dwg_id, ev["id"], ev["content_hash"], "withdrawn", None, None, "t"))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "exact content hash"):
+            self.c.db.execute(insert, (self.dwg_id, ev["id"], "tampered", "working", None, None, None))
+        other = self.c.create_project(name="Other", entity="E", budget="1000")
+        other_doc = self.c.evidence.register_document(project_id=other["id"], kind="drawing", title="X", actor="o")
+        foreign = self.c.evidence.add_revision(document_id=other_doc["id"], content=b"foreign", actor="o")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "own project"):
+            self.c.db.execute(insert, (self.dwg_id, foreign["id"], foreign["content_hash"], "working", None, None, None))
+        self.assertEqual(self.p.revisions(self.dwg_id), [])
+        self.assertIsNone(self.p.usable_revision(self.dwg_id))
+        # the honest row is accepted and reads back as an ordinary working revision
+        self.c.db.execute(insert, (self.dwg_id, ev["id"], ev["content_hash"], "working", None, None, None))
+        self.assertEqual(self.p.working_revision(self.dwg_id)["id"], "dwr_forged")
+        self.assertIsNone(self.p.usable_revision(self.dwg_id))
+
+    def test_revision_lifecycle_columns_are_write_once_at_the_database(self):
+        r1 = self.p.add_revision(self.dwg_id, "R1", self.s.evidence(b"r1")["id"], "", actor="o")
+        self.s.issue(r1["id"])
+        r1 = self.p.revision(r1["id"])
+        r2 = self.p.add_revision(self.dwg_id, "R2", self.s.evidence(b"r2")["id"], "", actor="o")
+        db = self.c.db
+        # the issue facts of an issued revision are frozen, even to the same value
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE drawing_revisions SET issued_at='1999-01-01T00:00:00Z' WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE drawing_revisions SET approval_id=NULL WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE drawing_revisions SET issued_period_id='P1' WHERE id=?", (r1["id"],))
+        # issuing by hand: without an approval, with someone else's consumed approval, into a closed period
+        with self.assertRaises(sqlite3.IntegrityError):  # both the status machine and the authorisation guard reject this; their order is SQLite's
+            db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', issued_period_id='P1' WHERE id=?", (r2["id"],))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed drawing.issue approval for that revision"):
+            db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', approval_id=?, issued_period_id='P1' WHERE id=?", (r1["approval_id"], r2["id"]))
+        pending = self.c.request_approval("drawing.issue", r2["id"])  # a real approval for R2, but not consumed
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed drawing.issue approval for that revision"):
+            db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', approval_id=?, issued_period_id='P1' WHERE id=?", (pending["id"], r2["id"]))
+        self.c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        self.c.close_period("P2")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "open period"):
+            db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', approval_id=?, issued_period_id='P2' WHERE id=?", (pending["id"], r2["id"]))
+        # supersede and withdraw facts move only with their own transition, towards a later revision of the same drawing
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE drawing_revisions SET superseded_at='t', superseded_by=? WHERE id=?", (r2["id"], r1["id"]))
+        with self.assertRaises(sqlite3.IntegrityError):  # a revision cannot supersede itself
+            db.execute("UPDATE drawing_revisions SET status='superseded', superseded_at='t', superseded_by=? WHERE id=?", (r1["id"], r1["id"]))
+        with self.assertRaises(sqlite3.IntegrityError):  # superseded needs its facts
+            db.execute("UPDATE drawing_revisions SET status='superseded' WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):  # withdrawn needs withdrawn_at
+            db.execute("UPDATE drawing_revisions SET status='withdrawn' WHERE id=?", (r2["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):  # an issued revision is never withdrawn
+            db.execute("UPDATE drawing_revisions SET status='withdrawn', withdrawn_at='t' WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE drawing_revisions SET withdrawn_at='t' WHERE id=?", (r1["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):  # replaced_by only on a withdrawn revision
+            db.execute("UPDATE drawing_revisions SET replaced_by=? WHERE id=?", (r2["id"], r1["id"]))
+        # the one-working invariant holds at the database too (evidence from another document, so R2's stays current)
+        other_doc = self.c.evidence.register_document(project_id=self.s.project["id"], kind="drawing", title="C-101 detail sheet", actor="o")
+        ev3 = self.c.evidence.add_revision(document_id=other_doc["id"], content=b"r3", actor="o")
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute(
+                "INSERT INTO drawing_revisions (id, drawing_id, sequence, label, document_revision_id, content_hash, status, created_at) VALUES ('dwr_x', ?, 9, 'R3', ?, ?, 'working', 't')",
+                (self.dwg_id, ev3["id"], ev3["content_hash"]),
+            )
+        # nothing moved
+        self.assertEqual((self.p.revision(r1["id"])["status"], self.p.revision(r2["id"])["status"]), ("issued", "working"))
+        self.assertEqual(self.p.revision(r1["id"])["issued_at"], r1["issued_at"])
+        self.assertEqual(self.p.usable_revision(self.dwg_id)["id"], r1["id"])
+        self.assertEqual(self.c.approvals.get(pending["id"])["status"], "pending")
+        # the real path still works: withdrawal and the next issue pass every guard
+        self.c.approve(pending["id"])
+        self.c.execute(pending["id"], period_id="P1")
+        self.assertEqual((self.p.revision(r1["id"])["status"], self.p.revision(r2["id"])["status"]), ("superseded", "issued"))
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
 
     def test_register_lists_drawings_in_number_order_with_shape(self):
         d2 = self.p.register_drawing(self.s.project["id"], "A-201", "Elevations", "Architectural", actor="o")

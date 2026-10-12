@@ -93,6 +93,21 @@ class HttpTests(unittest.TestCase):
         status, body = _post(self.base + "/api/action/set_provider_mode", {"mode": "steal"})
         self.assertEqual(status, 400)
 
+    def test_module_listing_and_generic_call(self):
+        status, mods = _get(self.base + "/api/modules")
+        self.assertEqual(status, 200)
+        if not mods:
+            self.skipTest("no v2 modules registered")
+        name = sorted(mods)[0]
+        self.assertTrue(all(not m.startswith("_") for m in mods[name]))
+        self.assertNotIn("apply", mods[name])
+        status, body = _post(self.base + "/api/action/module_call", {"plugin": name, "method": "apply", "kwargs": {}})
+        self.assertEqual(status, 400)  # approval-bound entry points are not callable directly
+        status, body = _post(self.base + "/api/action/module_call", {"plugin": "nope", "method": "x"})
+        self.assertEqual(status, 400)
+        status, body = _post(self.base + "/api/action/module_call", {"plugin": name, "method": mods[name][0], "kwargs": "not-an-object"})
+        self.assertEqual(status, 400)
+
 
 if __name__ == "__main__":
     unittest.main()

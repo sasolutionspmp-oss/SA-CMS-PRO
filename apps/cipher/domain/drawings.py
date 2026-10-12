@@ -18,12 +18,30 @@ Rules:
 * references (from commitments, bills, RFIs, anything) are exact: they bind
   the revision id and content hash, are permitted only on the issued revision
   and are append-only, so a later issue never rewrites what a record relied on;
-* every change to a drawing bumps its version (a trigger rejects an update
-  that does not).  The issue manifest binds that version, the revision label
-  and status, the evidence content hash and whether that evidence revision is
-  still current, so an approval granted against one state cannot execute
-  against another.  Withdrawing a working revision also invalidates its open
-  approvals outright, because a withdrawn revision can never be issued.
+* every change to the register entry or to its revision set bumps the drawing
+  version (a trigger rejects a register update that does not); references are
+  append-only facts about an issued revision and do not.  The issue manifest
+  binds that version, the revision label and status, the evidence content hash
+  and whether that evidence revision is still current, so an approval granted
+  against one state cannot execute against another.  Withdrawing a working
+  revision also invalidates its open approvals outright, because a withdrawn
+  revision can never be issued;
+* an issue approval can be *proposed* only for a working revision.  When the
+  core re-derives the manifest to consume an approval, the manifest reflects
+  the revision's current status instead, so an approval whose revision moved
+  on is invalidated by the core's material comparison (see
+  ``Plugin._consuming``).  Should an approval nevertheless reach ``apply`` for
+  a revision that cannot be issued, ``RevisionNotIssuable`` is raised: it is a
+  ``DrawingError`` and a ``StaleApprovalError``, so the service invalidates the
+  approval durably instead of leaving it granted.
+
+Database guards back every rule above without the plugin: revision rows are
+born ``working`` with the exact evidence hash of their own project; the status
+machine admits only working->issued (with a consumed ``drawing.issue``
+approval for that revision, into an open period), working->withdrawn and
+issued->superseded; every lifecycle column (issued_at, approval_id,
+issued_period_id, superseded_at, superseded_by, withdrawn_at, replaced_by) is
+written once, on its own transition.
 
 Drawings carry no money: nothing here posts a journal.  Issue is nonetheless
 recorded against an open accounting period (``ledger.require_open``) so the
@@ -33,7 +51,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from ..core.approvals import build_manifest
+from ..core.approvals import StaleApprovalError, build_manifest
 from ..core.ids import new_id, utcnow_iso
 from .evidence import EvidenceError
 
@@ -54,6 +72,7 @@ SCHEMA_STATEMENTS = [
         updated_at TEXT NOT NULL,
         UNIQUE (project_id, number)
     )""",
+    "CREATE UNIQUE INDEX drawing_register_number_ci ON drawing_register (project_id, lower(number))",
     "CREATE TRIGGER drawing_register_no_delete BEFORE DELETE ON drawing_register BEGIN SELECT RAISE(ABORT, 'drawings are never deleted from the register'); END",
     """CREATE TRIGGER drawing_register_identity_immutable BEFORE UPDATE OF id, project_id, number ON drawing_register
         BEGIN SELECT RAISE(ABORT, 'drawing identity (project, number) is immutable'); END""",
@@ -84,14 +103,54 @@ SCHEMA_STATEMENTS = [
     "CREATE UNIQUE INDEX drawing_revisions_live_label ON drawing_revisions (drawing_id, label) WHERE status != 'withdrawn'",
     "CREATE UNIQUE INDEX drawing_revisions_live_evidence ON drawing_revisions (drawing_id, document_revision_id) WHERE status != 'withdrawn'",
     "CREATE TRIGGER drawing_revisions_no_delete BEFORE DELETE ON drawing_revisions BEGIN SELECT RAISE(ABORT, 'drawing revisions are history and are never deleted'); END",
+    """CREATE TRIGGER drawing_revisions_born_working BEFORE INSERT ON drawing_revisions
+        BEGIN
+            SELECT CASE
+                WHEN NEW.status != 'working' OR NEW.issued_at IS NOT NULL OR NEW.approval_id IS NOT NULL OR NEW.issued_period_id IS NOT NULL
+                     OR NEW.superseded_at IS NOT NULL OR NEW.superseded_by IS NOT NULL OR NEW.withdrawn_at IS NOT NULL OR NEW.replaced_by IS NOT NULL
+                THEN RAISE(ABORT, 'a drawing revision is created working; it is issued, superseded or withdrawn only through the status machine')
+                WHEN (SELECT content_hash FROM document_revisions WHERE id = NEW.document_revision_id) IS NOT NEW.content_hash
+                THEN RAISE(ABORT, 'a drawing revision carries the exact content hash of the evidence revision it binds')
+                WHEN (SELECT d.project_id FROM document_revisions r JOIN documents d ON d.id = r.document_id WHERE r.id = NEW.document_revision_id)
+                     IS NOT (SELECT project_id FROM drawing_register WHERE id = NEW.drawing_id)
+                THEN RAISE(ABORT, 'a drawing revision binds evidence of its own project only')
+            END;
+        END""",
     """CREATE TRIGGER drawing_revisions_binding_immutable BEFORE UPDATE OF id, drawing_id, sequence, label, document_revision_id, content_hash ON drawing_revisions
         BEGIN SELECT RAISE(ABORT, 'a drawing revision binding (label, evidence, hash) is immutable; add or replace a revision instead'); END""",
     """CREATE TRIGGER drawing_revisions_status_machine BEFORE UPDATE OF status ON drawing_revisions
         WHEN NEW.status != OLD.status AND NOT (
-            (OLD.status = 'working' AND NEW.status IN ('issued', 'withdrawn'))
-            OR (OLD.status = 'issued' AND NEW.status = 'superseded')
+            (OLD.status = 'working' AND NEW.status = 'issued' AND NEW.issued_at IS NOT NULL AND NEW.approval_id IS NOT NULL AND NEW.issued_period_id IS NOT NULL)
+            OR (OLD.status = 'working' AND NEW.status = 'withdrawn' AND NEW.withdrawn_at IS NOT NULL)
+            OR (OLD.status = 'issued' AND NEW.status = 'superseded' AND NEW.superseded_at IS NOT NULL AND NEW.superseded_by IS NOT NULL)
         )
         BEGIN SELECT RAISE(ABORT, 'illegal drawing revision status transition'); END""",
+    """CREATE TRIGGER drawing_revisions_issue_authorised BEFORE UPDATE OF status ON drawing_revisions
+        WHEN OLD.status = 'working' AND NEW.status = 'issued'
+        BEGIN
+            SELECT CASE
+                WHEN (SELECT status FROM periods WHERE id = NEW.issued_period_id) IS NOT 'open'
+                THEN RAISE(ABORT, 'drawing revisions are issued into an open period only')
+                WHEN (SELECT status FROM approvals WHERE id = NEW.approval_id AND operation = 'drawing.issue' AND subject_type = 'drawing_revision' AND subject_id = NEW.id) IS NOT 'consumed'
+                THEN RAISE(ABORT, 'a drawing revision is issued only against a consumed drawing.issue approval for that revision')
+            END;
+        END""",
+    """CREATE TRIGGER drawing_revisions_issue_fields_once BEFORE UPDATE OF issued_at, approval_id, issued_period_id ON drawing_revisions
+        WHEN NOT (OLD.status = 'working' AND NEW.status = 'issued')
+        BEGIN SELECT RAISE(ABORT, 'issued_at, approval_id and issued_period_id are written once, when a working revision is issued'); END""",
+    """CREATE TRIGGER drawing_revisions_supersede_fields_once BEFORE UPDATE OF superseded_at, superseded_by ON drawing_revisions
+        WHEN NOT (OLD.status = 'issued' AND NEW.status = 'superseded'
+                  AND (SELECT drawing_id FROM drawing_revisions WHERE id = NEW.superseded_by) IS NEW.drawing_id
+                  AND (SELECT sequence FROM drawing_revisions WHERE id = NEW.superseded_by) > OLD.sequence)
+        BEGIN SELECT RAISE(ABORT, 'superseded_at and superseded_by are written once, when a later revision of the same drawing is issued'); END""",
+    """CREATE TRIGGER drawing_revisions_withdraw_fields_once BEFORE UPDATE OF withdrawn_at ON drawing_revisions
+        WHEN NOT (OLD.status = 'working' AND NEW.status = 'withdrawn')
+        BEGIN SELECT RAISE(ABORT, 'withdrawn_at is written once, when a working revision is withdrawn'); END""",
+    """CREATE TRIGGER drawing_revisions_replaced_by_once BEFORE UPDATE OF replaced_by ON drawing_revisions
+        WHEN NOT (OLD.status = 'withdrawn' AND NEW.status = 'withdrawn' AND OLD.replaced_by IS NULL AND NEW.replaced_by IS NOT NULL
+                  AND (SELECT drawing_id FROM drawing_revisions WHERE id = NEW.replaced_by) IS NEW.drawing_id
+                  AND (SELECT sequence FROM drawing_revisions WHERE id = NEW.replaced_by) > OLD.sequence)
+        BEGIN SELECT RAISE(ABORT, 'replaced_by is written once, pointing a withdrawn revision at its later replacement on the same drawing'); END""",
     """CREATE TABLE drawing_references (
         id TEXT PRIMARY KEY,
         drawing_id TEXT NOT NULL REFERENCES drawing_register(id),
@@ -107,6 +166,8 @@ SCHEMA_STATEMENTS = [
             SELECT CASE
                 WHEN (SELECT status FROM drawing_revisions WHERE id = NEW.drawing_revision_id) IS NOT 'issued'
                 THEN RAISE(ABORT, 'drawing references may bind only to the issued revision')
+                WHEN (SELECT content_hash FROM drawing_revisions WHERE id = NEW.drawing_revision_id) IS NOT NEW.content_hash
+                THEN RAISE(ABORT, 'a drawing reference carries the exact content hash of the revision it binds')
             END;
         END""",
     "CREATE TRIGGER drawing_references_no_update BEFORE UPDATE ON drawing_references BEGIN SELECT RAISE(ABORT, 'drawing references are exact and append-only'); END",
@@ -116,6 +177,15 @@ SCHEMA_STATEMENTS = [
 
 class DrawingError(RuntimeError):
     """Invalid drawing register input or an illegal register transition."""
+
+
+class RevisionNotIssuable(DrawingError, StaleApprovalError):
+    """An issue approval reached execution for a revision that is not working.
+
+    It is a ``DrawingError`` for callers of this module and a
+    ``StaleApprovalError`` for the core: ``service.execute`` rolls the command
+    back and invalidates the approval durably, so a granted approval that can
+    never execute does not linger as ``granted``."""
 
 
 class Plugin:
@@ -171,9 +241,15 @@ class Plugin:
         if live is not None:
             raise DrawingError(f"drawing {drawing['number']} already has a revision labelled {label!r} ({live['status']})")
 
-    def _bump(self, conn, drawing: dict[str, Any]) -> int:
+    def _bump(self, conn, drawing: dict[str, Any], **fields: Any) -> int:
+        """Compare-and-set the register row to the next version (plus any
+        ``fields``); a concurrent change is a failure, never a silent overwrite."""
         version = drawing["version"] + 1
-        cur = conn.execute("UPDATE drawing_register SET version=?, updated_at=? WHERE id=? AND version=?", (version, utcnow_iso(), drawing["id"], drawing["version"]))
+        assignments = ", ".join(f"{k}=?" for k in fields)
+        cur = conn.execute(
+            f"UPDATE drawing_register SET {assignments + ', ' if assignments else ''}version=?, updated_at=? WHERE id=? AND version=?",
+            (*fields.values(), version, utcnow_iso(), drawing["id"], drawing["version"]),
+        )
         if cur.rowcount != 1:
             raise DrawingError(f"drawing {drawing['number']} changed concurrently; retry")
         return version
@@ -186,6 +262,33 @@ class Plugin:
             (rev_id, drawing["id"], seq, label, ev["id"], ev["content_hash"], note, utcnow_iso()),
         )
         return rev_id
+
+    @staticmethod
+    def _not_issuable(drawing: dict[str, Any], rev: dict[str, Any]) -> str:
+        """Why a non-working revision cannot be issued, by status."""
+        head = f"drawing {drawing['number']} revision {rev['label']}"
+        if rev["status"] == "issued":
+            return f"{head} is already issued"
+        if rev["status"] == "superseded":
+            return f"{head} was superseded; add a new working revision to issue"
+        if rev["status"] == "withdrawn":
+            return f"{head} was withdrawn and can never be issued"
+        return f"{head} is {rev['status']}; only a working revision can be issued"
+
+    def _consuming(self) -> bool:
+        """True while the core re-derives a manifest to consume an approval.
+
+        ``service.execute`` rebuilds the manifest inside the command transaction
+        (``commands.run`` -> ``_manifest`` -> ``consume`` -> ``apply``), whereas
+        proposals (``request_approval``, Ricky ``propose``, direct calls) build
+        it outside any transaction.  A proposal for a non-working revision is
+        refused, so a dead approval is never created; during consumption the
+        manifest instead reflects the current status, so the core's material
+        comparison, not a plugin error, invalidates an approval whose revision
+        moved on.  If a future core built proposals inside a transaction, the
+        only effect would be that a dead approval could again be requested;
+        ``apply`` then raises ``RevisionNotIssuable`` and the core invalidates it."""
+        return self.db.in_transaction
 
     # ---- drawings ---------------------------------------------------------- #
 
@@ -226,11 +329,8 @@ class Plugin:
                     changes["discipline"] = disc
             if not changes:
                 raise DrawingError(f"nothing to update on drawing {d['number']}")
-            conn.execute(
-                "UPDATE drawing_register SET title=?, discipline=?, version=?, updated_at=? WHERE id=? AND version=?",
-                (changes.get("title", d["title"]), changes.get("discipline", d["discipline"]), d["version"] + 1, utcnow_iso(), drawing_id, d["version"]),
-            )
-            self.audit.record(actor, "drawing.updated", "drawing", drawing_id, {"changes": changes, "version": d["version"] + 1})
+            version = self._bump(conn, d, **changes)
+            self.audit.record(actor, "drawing.updated", "drawing", drawing_id, {"changes": changes, "version": version})
         return self.get(drawing_id)
 
     def get(self, drawing_id: str) -> dict[str, Any]:
@@ -300,11 +400,10 @@ class Plugin:
         return self.revision(rev_id)
 
     def _decorate(self, row: dict[str, Any]) -> dict[str, Any]:
-        ev = self.db.one("SELECT document_id, revision FROM document_revisions WHERE id=?", (row["document_revision_id"],))
-        current = self.db.one("SELECT id FROM document_revisions WHERE document_id=? ORDER BY revision DESC LIMIT 1", (ev["document_id"],)) if ev else None
-        row["evidence_document_id"] = ev["document_id"] if ev else None
-        row["evidence_revision"] = ev["revision"] if ev else None
-        row["evidence_is_current"] = bool(current is not None and current["id"] == row["document_revision_id"])
+        ev = self.c.evidence.revision(row["document_revision_id"])  # the FK and the evidence module's immutability guarantee it exists
+        row["evidence_document_id"] = ev["document_id"]
+        row["evidence_revision"] = ev["revision"]
+        row["evidence_is_current"] = bool(ev["is_current"])
         row["reference_count"] = self.db.scalar("SELECT COUNT(*) FROM drawing_references WHERE drawing_revision_id=?", (row["id"],))
         row["is_usable"] = row["status"] == "issued"
         return row
@@ -333,14 +432,20 @@ class Plugin:
     # ---- issue (approval-bound) ---------------------------------------------- #
 
     def manifest_for(self, operation: str, subject_id: str, *, actor_role: str) -> dict[str, Any]:
-        """Bind everything whose change must invalidate an issue approval.  The
-        manifest reflects the revision's current status rather than rejecting a
-        non-working one, so the core's material-hash comparison (not a plugin
-        error) is what stops a stale approval; ``apply`` enforces the status."""
+        """Bind everything whose change must invalidate an issue approval.
+
+        A proposal (request or Ricky preview) is refused unless the revision is
+        working: nobody can approve issuing a revision that can never issue.
+        During consumption the manifest reflects the revision's current status
+        instead, so an approval granted while the revision was working is
+        invalidated by the core's material comparison once the revision has
+        been issued, superseded or withdrawn (see ``_consuming``)."""
         if operation != ISSUE_OPERATION:
             raise DrawingError(f"unknown drawing operation {operation}")
         rev = self.revision(subject_id)
         d = self.get(rev["drawing_id"])
+        if rev["status"] != "working" and not self._consuming():
+            raise DrawingError(f"{self._not_issuable(d, rev)}; an issue approval is proposed for a working revision only")
         ev = self.c.evidence.revision(rev["document_revision_id"])
         usable = self.usable_revision(d["id"])
         return build_manifest(
@@ -375,9 +480,10 @@ class Plugin:
             rev = self.revision(subject_id)
             d = self.get(rev["drawing_id"])
             if rev["status"] != "working":
-                raise DrawingError(f"only a working revision can be issued; drawing {d['number']} revision {rev['label']} is {rev['status']}")
+                raise RevisionNotIssuable(self._not_issuable(d, rev))
             ev = self.c.evidence.revision(rev["document_revision_id"])
-            if ev["content_hash"] != rev["content_hash"] or manifest["bindings"].get("evidence_content_hash") != rev["content_hash"]:
+            bound_hash = (manifest.get("bindings") or {}).get("evidence_content_hash")
+            if ev["content_hash"] != rev["content_hash"] or bound_hash != rev["content_hash"]:
                 raise DrawingError(f"evidence content hash no longer matches the binding of drawing {d['number']} revision {rev['label']}")
             pid = period_id or self.c.current_period()["id"]
             self.ledger.require_open(pid)
@@ -461,6 +567,7 @@ class Plugin:
         return [self._describe(d) for d in self.db.query("SELECT * FROM drawing_register WHERE project_id=? ORDER BY number, created_at", (project_id,))]
 
     def state(self, project_id: str) -> dict[str, Any]:
+        """The register (``register``) with a summary for the console and API."""
         reg = self.register(project_id)
         return {
             "register": reg,

@@ -337,33 +337,47 @@ class Plugin:
 
     # ---- critical path ------------------------------------------------------------ #
 
+    def _read(self, project_id: str) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
+        """One consistent read of every schedule row on the project.  The reads
+        share a (re-entrant) transaction so a concurrent edit cannot be seen by
+        one query and missed by the next; ``compute`` and ``manifest_for`` would
+        otherwise hash a torn snapshot."""
+        with self.db.transaction():
+            self._project(project_id)
+            return self.activities(project_id), self.dependencies(project_id), self.resources(project_id)
+
     def content_hash(self, project_id: str) -> str:
         return hash_json(self._content(project_id))
 
     def _content(self, project_id: str) -> dict[str, Any]:
         """The material facts a baseline approval binds: every activity (with its
         version), every dependency and every resource."""
+        acts, deps, resources = self._read(project_id)
+        return self._content_of(project_id, acts, deps, resources)
+
+    @staticmethod
+    def _content_of(project_id: str, acts: list[dict[str, Any]], deps: list[dict[str, Any]], resources: list[dict[str, Any]]) -> dict[str, Any]:
         return {
             "project_id": project_id,
             "activities": [
                 {k: a[k] for k in ("id", "name", "duration_days", "deadline_day", "resource_id", "resource_units", "version")}
-                for a in self.activities(project_id)
+                for a in acts
             ],
             "dependencies": [
                 {k: d[k] for k in ("id", "predecessor_id", "successor_id", "lag_days")}
-                for d in self.dependencies(project_id)
+                for d in deps
             ],
             "resources": [
                 {k: r[k] for k in ("id", "name", "capacity_units")}
-                for r in self.resources(project_id)
+                for r in resources
             ],
         }
 
     def compute(self, project_id: str) -> dict[str, Any]:
         """Deterministic CPM in integer days.  See the module docstring."""
-        self._project(project_id)
-        content = self._content(project_id)
-        acts = {a["id"]: dict(a) for a in self.activities(project_id)}
+        act_rows, dep_rows, res_rows = self._read(project_id)
+        content = self._content_of(project_id, act_rows, dep_rows, res_rows)
+        acts = {a["id"]: dict(a) for a in act_rows}
         order_key = {a["id"]: (a["created_at"], a["id"]) for a in acts.values()}
         deps = content["dependencies"]
         resources = content["resources"]
@@ -488,9 +502,11 @@ class Plugin:
     def manifest_for(self, operation: str, subject_id: str, *, actor_role: str) -> dict[str, Any]:
         if operation != BASELINE_OPERATION:
             raise ScheduleError(f"unknown schedule operation {operation}")
-        schedule = self.compute(subject_id)
-        if schedule["activity_count"] == 0:
-            raise ScheduleError("the schedule has no activities; nothing to baseline")
+        with self.db.transaction():  # schedule and next sequence come from the same snapshot
+            schedule = self.compute(subject_id)
+            if schedule["activity_count"] == 0:
+                raise ScheduleError("the schedule has no activities; nothing to baseline")
+            sequence = self._next_sequence(subject_id)
         return build_manifest(
             operation=operation,
             subject_type=SUBJECT_TYPE,
@@ -503,12 +519,19 @@ class Plugin:
                 "activity_count": schedule["activity_count"],
                 "dependency_count": schedule["dependency_count"],
                 "critical_path": schedule["critical_path"],
-                "baseline_sequence": self._next_sequence(subject_id),
+                "baseline_sequence": sequence,
             },
         )
 
     def apply(self, operation: str, subject_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
-        """Freeze the current schedule as a baseline.  The caller has consumed ``approval_id``."""
+        """Freeze the current schedule as a baseline.
+
+        On the ``Cipher.execute`` path the caller has already re-derived the
+        manifest and consumed ``approval_id`` inside the same transaction, so
+        the staleness check there is the real guard.  The checks below repeat
+        it against the ``manifest`` actually passed in, so a direct caller
+        handing over an old manifest is refused rather than baselining a
+        schedule nobody approved."""
         if operation != BASELINE_OPERATION:
             raise ScheduleError(f"unknown schedule operation {operation}")
         pid = period_id or self.c.current_period()["id"]

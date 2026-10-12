@@ -13,6 +13,7 @@ nothing on this surface can bypass approvals or post to the ledger directly.
 """
 from __future__ import annotations
 
+import inspect
 import json
 import os
 import threading
@@ -70,7 +71,42 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "claim_authority": lambda d: c.claim_write_authority(approval_ref=d["approval_ref"], actor=d.get("actor", "owner")),
         "complete_recovery": lambda d: c.complete_recovery(actor=d.get("actor", "owner")),
         "selftest_report": lambda d: _store_selftest(c, d),
+        "module_call": lambda d: _module_call(c, d),
     }
+
+
+def _module_methods(plugin: Any) -> list[str]:
+    reserved = {"manifest_for", "apply", "state"}
+    return sorted(
+        name for name in dir(plugin)
+        if not name.startswith("_") and name not in reserved and callable(getattr(plugin, name))
+    )
+
+
+def _module_call(c: Cipher, d: dict[str, Any]) -> Any:
+    """Call a public record method on a registered v2 module, e.g.
+    {"plugin": "asset", "method": "register_asset", "kwargs": {...}}.
+    Approval-bound operations are not reachable here; they go through request_approval/execute."""
+    plugin = c._plugins.get(d.get("plugin", ""))
+    if plugin is None:
+        raise ValueError(f"unknown module {d.get('plugin')!r}; available: {', '.join(sorted(c._plugins))}")
+    method = d.get("method", "")
+    if method not in _module_methods(plugin):
+        raise ValueError(f"unknown method {method!r} on module {d['plugin']}; available: {', '.join(_module_methods(plugin))}")
+    kwargs = d.get("kwargs") or {}
+    if not isinstance(kwargs, dict):
+        raise ValueError("kwargs must be a JSON object")
+    fn = getattr(plugin, method)
+    params = inspect.signature(fn).parameters
+    accepts_actor = "actor" in params or any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values())
+    if accepts_actor:
+        kwargs.setdefault("actor", d.get("actor", "owner"))
+    else:
+        kwargs.pop("actor", None)
+    unknown = [k for k in kwargs if k not in params and not any(p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values())]
+    if unknown:
+        raise ValueError(f"unknown arguments for {d['plugin']}.{method}: {', '.join(unknown)}; accepted: {', '.join(params)}")
+    return fn(**kwargs)
 
 
 def _store_selftest(c: Cipher, report: dict[str, Any]) -> dict[str, Any]:
@@ -132,6 +168,8 @@ class CipherHandler(BaseHTTPRequestHandler):
                 return self._json(HTTPStatus.OK, self.cipher.db.schema_status())
             if url.path == "/api/selftest":
                 return self._json(HTTPStatus.OK, getattr(self.cipher, "_selftest_report", None) or {"result": None})
+            if url.path == "/api/modules":
+                return self._json(HTTPStatus.OK, {name: _module_methods(p) for name, p in sorted(self.cipher._plugins.items())})
             if url.path == "/api/audit-export":
                 return self._json(HTTPStatus.OK, self.cipher.audit_export())
             if url.path == "/api/state":

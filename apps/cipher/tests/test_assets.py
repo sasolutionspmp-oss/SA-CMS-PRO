@@ -79,9 +79,11 @@ class RegisterTests(unittest.TestCase):
         self.assertEqual(a["monthly_amount"], "1000.00")
         self.assertEqual(a["final_month_amount"], "1000.00")
         self.assertEqual(a["accumulated_depreciation"], "0.00")
+        self.assertEqual(a["remaining_depreciable"], "12000.00")
         self.assertEqual(a["net_book_value"], "12000.00")
         self.assertEqual(a["runs"], [])
         self.assertFalse(a["fully_depreciated"])
+        self.assertFalse(a["over_depreciated"])
         self.assertEqual(len(a["content_hash"]), 64)
         self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 0)
         self.assertTrue(self.c.audit.verify_chain()["ok"])
@@ -206,6 +208,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertEqual(run0["status"], "no_charge")
         self.assertEqual(run0["amount"], "0.00")
         self.assertEqual(run0["sequence"], 0)
+        self.assertEqual(run0["charge_month"], "2026-09")
         self.assertIsNone(run0["journal_id"])
         self.assertIn("precedes", run0["note"])
         with self.assertRaises(AssetError):  # nothing to post, ever
@@ -223,6 +226,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertEqual(run1["status"], "draft")
         self.assertEqual(run1["amount"], "1000.00")
         self.assertEqual(run1["sequence"], 1)
+        self.assertEqual(run1["charge_month"], "2026-10")
         self.assertEqual(run1["asset_version"], 1)
         self.assertFalse(run1["stale"])
         r = self.c.approve_and_execute("asset.post_depreciation", run1["id"], period_id="P1")
@@ -292,12 +296,18 @@ class DepreciationRunTests(unittest.TestCase):
         run0 = self.p.schedule_run(self.a["id"], "P0", "owner")
         with self.assertRaises(AssetError):  # no-charge runs count too
             self.p.schedule_run(self.a["id"], "P0", "owner")
-        # the partial unique index backs the Python check
+        # the partial unique index (per asset per calendar month) backs the Python check
+        raw = "INSERT INTO asset_depreciation_runs (id, asset_id, period_id, charge_month, sequence, amount, asset_version, status, content_hash, created_at) VALUES (?,?,?,?,1,'1000.00',1,'draft','h','t')"
         with self.assertRaises(sqlite3.IntegrityError):
-            self.c.db.execute(
-                "INSERT INTO asset_depreciation_runs (id, asset_id, period_id, sequence, amount, asset_version, status, content_hash, created_at) VALUES ('dep_x',?,?,1,'1000.00',1,'draft','h','t')",
-                (self.a["id"], "P1"),
-            )
+            self.c.db.execute(raw, ("dep_x", self.a["id"], "P1", "2026-10"))
+        self.c.open_period("P1adj", "October 2026 adjustments", "2026-10-01", "2026-10-31")
+        with self.assertRaises(sqlite3.IntegrityError):  # a different period row for the same month is still the same month
+            self.c.db.execute(raw, ("dep_y", self.a["id"], "P1adj", "2026-10"))
+        with self.assertRaises(sqlite3.IntegrityError):  # the month must be the period's own month
+            self.c.db.execute(raw, ("dep_z", self.a["id"], "P2", "2026-10"))
+        with self.assertRaises(sqlite3.IntegrityError):  # a run cannot be moved to another month
+            self.c.db.execute("UPDATE asset_depreciation_runs SET charge_month='2026-11' WHERE id=?", (run1["id"],))
+        self.assertEqual(self.p.get_run(run1["id"])["charge_month"], "2026-10")
         cancelled = self.p.cancel_run(run1["id"], "owner", reason="scheduled by mistake")
         self.assertEqual(cancelled["status"], "cancelled")
         with self.assertRaises(AssetError):  # cancelled runs are final
@@ -384,6 +394,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertEqual(ap["manifest"]["amounts"], {"amount": "1000.00"})
         self.assertEqual(ap["manifest"]["bindings"]["asset_version"], 1)
         self.assertEqual(ap["manifest"]["bindings"]["period_id"], "P1")
+        self.assertEqual(ap["manifest"]["bindings"]["charge_month"], "2026-10")
         edited = self.p.update_asset(self.a["id"], "owner", salvage_value="1200")
         self.assertEqual(edited["version"], 2)
         with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
@@ -400,6 +411,134 @@ class DepreciationRunTests(unittest.TestCase):
         self.c.approve_and_execute("asset.post_depreciation", fresh["id"], period_id="P1")
         self.assertEqual(self.c.ledger.balance("5200"), Decimal("900.00"))
         self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+
+class OverDepreciationGuardTests(unittest.TestCase):
+    """The register can never exceed cost - salvage, whatever the period rows look like."""
+
+    def setUp(self):
+        self.f = Fixture()
+        self.c = self.f.c
+        self.p = self.f.assets
+        self.a = self.f.capitalised(description="Laser level", cost="1000", useful_life_months=3)
+        self.c.open_period("P3", "December 2026", "2026-12-01", "2026-12-31")
+        self.c.open_period("P4", "January 2027", "2027-01-01", "2027-01-31")
+
+    def post(self, period_id):
+        run = self.p.schedule_run(self.a["id"], period_id, "owner")
+        self.c.approve_and_execute("asset.post_depreciation", run["id"], period_id=period_id)
+        return self.p.get_run(run["id"])
+
+    def test_several_period_rows_in_one_month_charge_the_month_once(self):
+        # several open period rows all covering October 2026 (an adjustment period, a split month)
+        self.c.open_period("P1b", "October 2026 adjustments", "2026-10-01", "2026-10-31")
+        self.c.open_period("P1c", "October 2026 second half", "2026-10-16", "2026-10-31")
+        first = self.post("P1")
+        self.assertEqual((first["sequence"], first["amount"], first["charge_month"]), (1, "333.33", "2026-10"))
+        for pid in ("P1b", "P1c"):
+            with self.assertRaises(AssetError) as ctx:
+                self.p.schedule_run(self.a["id"], pid, "owner")
+            self.assertIn("2026-10", str(ctx.exception))
+            self.assertIn("P1", str(ctx.exception))
+        a = self.p.get_asset(self.a["id"])
+        self.assertEqual(a["accumulated_depreciation"], "333.33")
+        self.assertEqual(len(a["runs"]), 1)
+        self.assertEqual(self.p.state(self.f.project["id"])["ledger"]["accumulated_depreciation"], "333.33")
+        # the remaining months complete the schedule exactly and nothing more can ever post
+        self.assertEqual(self.post("P2")["amount"], "333.33")
+        self.assertEqual(self.post("P3")["amount"], "333.34")
+        a = self.p.get_asset(self.a["id"])
+        self.assertEqual((a["accumulated_depreciation"], a["net_book_value"], a["remaining_depreciable"]), ("1000.00", "0.00", "0.00"))
+        self.assertTrue(a["fully_depreciated"])
+        self.assertFalse(a["over_depreciated"])
+        late = self.p.schedule_run(self.a["id"], "P4", "owner")
+        self.assertEqual((late["status"], late["amount"]), ("no_charge", "0.00"))
+        self.assertIn("fully depreciated", late["note"])
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
+        self.assertEqual(self.c.ledger.balance("5200"), Decimal("1000.00"))
+        st = self.p.state(self.f.project["id"])
+        self.assertTrue(st["reconciled"])
+        # and the asset can still be derecognised with a balanced journal
+        r = self.c.approve_and_execute("asset.dispose", self.a["id"], period_id="P4")
+        j = self.c.ledger.journal(r.result["journal_id"])
+        self.assertEqual([(l["account_code"], l["debit"], l["credit"]) for l in j["lines"]], [("1590", "1000.00", "0.00"), ("1500", "0.00", "1000.00")])
+        self.assertEqual(self.c.ledger.balance("1500"), Decimal("0.00"))
+        self.assertEqual(accumulated(self.c), Decimal("0.00"))
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_replacement_run_may_use_an_adjustment_period_of_the_same_month(self):
+        first = self.post("P1")
+        self.c.close_period("P1")
+        self.c.open_period("P1adj", "October 2026 adjustments", "2026-10-01", "2026-10-31")
+        with self.assertRaises(AssetError):  # October is already charged, whichever period row is used
+            self.p.schedule_run(self.a["id"], "P1adj", "owner")
+        rev = self.c.approve_and_execute("asset.reverse_depreciation", first["id"], period_id="P1adj")
+        self.assertEqual(self.c.ledger.journal(rev.result["reversal_journal_id"])["period_id"], "P1adj")
+        self.assertEqual(accumulated(self.c), Decimal("0.00"))
+        with self.assertRaises(PeriodNotOpen):  # the closed period row stays closed
+            self.p.schedule_run(self.a["id"], "P1", "owner")
+        replacement = self.p.schedule_run(self.a["id"], "P1adj", "owner")
+        self.assertEqual(replacement["replaced_run_id"], first["id"])  # linked by month, not by period id
+        self.assertEqual((replacement["sequence"], replacement["amount"], replacement["charge_month"], replacement["status"]), (1, "333.33", "2026-10", "draft"))
+        self.c.approve_and_execute("asset.post_depreciation", replacement["id"], period_id="P1adj")
+        self.assertEqual(accumulated(self.c), Decimal("333.33"))
+        self.assertEqual(self.c.ledger.balance("5200"), Decimal("333.33"))
+        self.assertEqual([r["status"] for r in self.p.get_asset(self.a["id"])["runs"]], ["reversed", "posted"])
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_tampered_draft_cannot_post_past_the_depreciable_base(self):
+        self.post("P1")
+        self.post("P2")
+        draft = self.p.schedule_run(self.a["id"], "P3", "owner")
+        self.assertEqual(draft["amount"], "333.34")
+        # a draft is the only mutable run state; alter it behind the module's back
+        self.c.db.execute("UPDATE asset_depreciation_runs SET amount='333.35' WHERE id=?", (draft["id"],))
+        with self.assertRaises(AssetError) as ctx:
+            self.c.approve_and_execute("asset.post_depreciation", draft["id"], period_id="P3")
+        self.assertIn("over-depreciate", str(ctx.exception))
+        run = self.p.get_run(draft["id"])
+        self.assertEqual(run["status"], "draft")
+        self.assertIsNone(run["journal_id"])
+        self.assertEqual(accumulated(self.c), Decimal("666.66"))
+        self.assertEqual(self.p.get_asset(self.a["id"])["accumulated_depreciation"], "666.66")
+        self.assertFalse(self.p.get_asset(self.a["id"])["over_depreciated"])
+        self.p.cancel_run(draft["id"], "owner", reason="tampered")
+        self.assertEqual(self.post("P3")["amount"], "333.34")
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_charge_is_clamped_to_the_remaining_base(self):
+        draft = self.p.schedule_run(self.a["id"], "P1", "owner")
+        self.c.db.execute("UPDATE asset_depreciation_runs SET amount='600.00' WHERE id=?", (draft["id"],))  # within the base, so it posts
+        self.c.approve_and_execute("asset.post_depreciation", draft["id"], period_id="P1")
+        self.assertEqual(accumulated(self.c), Decimal("600.00"))
+        self.assertEqual(self.post("P2")["amount"], "333.33")  # 933.33 posted, 66.67 left
+        last = self.p.schedule_run(self.a["id"], "P3", "owner")
+        self.assertEqual((last["status"], last["amount"]), ("draft", "66.67"))
+        self.assertIn("clamped", last["note"])
+        self.c.approve_and_execute("asset.post_depreciation", last["id"], period_id="P3")
+        a = self.p.get_asset(self.a["id"])
+        self.assertEqual((a["accumulated_depreciation"], a["remaining_depreciable"], a["fully_depreciated"], a["over_depreciated"]), ("1000.00", "0.00", True, False))
+        self.assertEqual(self.p.schedule_run(self.a["id"], "P4", "owner")["status"], "no_charge")
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
+        self.assertTrue(self.p.state(self.f.project["id"])["reconciled"])
+        r = self.c.approve_and_execute("asset.dispose", self.a["id"], period_id="P4")
+        self.assertEqual(r.result["net_book_value"], "0.00")
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+
+    def test_skipped_month_is_not_caught_up_after_the_schedule_ends(self):
+        self.post("P1")
+        self.post("P3")  # November was never scheduled
+        late = self.p.schedule_run(self.a["id"], "P4", "owner")
+        self.assertEqual((late["status"], late["amount"], late["sequence"]), ("no_charge", "0.00", 4))
+        self.assertIn("333.33 remains", late["note"])
+        self.assertEqual(self.p.get_asset(self.a["id"])["remaining_depreciable"], "333.33")
+        self.assertEqual(self.post("P2")["amount"], "333.33")  # the missed month itself still carries its charge
+        self.assertTrue(self.p.get_asset(self.a["id"])["fully_depreciated"])
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
 
 
 class UpdateTests(unittest.TestCase):

@@ -183,9 +183,20 @@ function render() {
   // v2 modules: any extra top-level state key is rendered generically
   const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','audit_chain','outbox_pending']);
   for (const key of Object.keys(s).filter(k => !CORE_KEYS.has(k))) {
-    parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}</section>`);
+    parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}
+      <form onsubmit="event.preventDefault(); moduleCall(this, '${key}')"><input name="method" placeholder="method, e.g. register_asset" required style="min-width:200px"><input name="kwargs" placeholder='kwargs JSON, e.g. {"project_id":"…","description":"Excavator","cost":"12000","in_service_date":"2026-10-01","useful_life_months":"12"}' style="min-width:420px"><button>Call</button>
+      <input name="op" placeholder="approval operation, e.g. asset.post_depreciation" style="min-width:220px"><input name="subject" placeholder="subject id"><button type="button" onclick="api('request_approval',{operation:this.form.op.value,subject_id:this.form.subject.value})">Request approval</button></form>
+      <p class="muted">Methods: <span id="methods-${key}">loading…</span></p></section>`);
   }
   app.innerHTML = parts.join('');
+  fetch('/api/modules').then(r=>r.json()).then(mods => { for (const [k, methods] of Object.entries(mods)) { const el = $('#methods-'+k); if (el) el.textContent = methods.join(', '); } }).catch(()=>{});
+}
+
+async function moduleCall(form, plugin) {
+  let kwargs = {};
+  if (form.kwargs.value.trim()) { try { kwargs = JSON.parse(form.kwargs.value); } catch (e) { toast('kwargs must be valid JSON', true); return; } }
+  const r = await api('module_call', {plugin, method: form.method.value, kwargs});
+  toast(`${plugin}.${form.method.value}: ${JSON.stringify(r).slice(0, 300)}`);
 }
 
 function renderGeneric(v, depth=0) {

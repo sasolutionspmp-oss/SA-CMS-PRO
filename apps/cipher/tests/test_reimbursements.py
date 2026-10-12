@@ -3,7 +3,7 @@ import sqlite3
 import unittest
 from decimal import Decimal
 
-from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
+from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.ledger import PeriodNotOpen
 from apps.cipher.domain.reimbursements import PLUGIN_NAME, ReimbursementError
 from apps.cipher.service import Cipher
@@ -346,7 +346,7 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         with self.assertRaises(ReimbursementError):
             self.r.create_billing(cl["id"], 5.0, actor="pm")
         with self.assertRaises(ReimbursementError):
-            self.c.request_approval("reimbursement.void", cl["id"])
+            self.c.request_approval("reimbursement.write_off", cl["id"])
 
     def test_duplicate_approvals_on_one_subject_cannot_post_twice(self):
         cl = self.s.claim("120.00")
@@ -442,6 +442,252 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         # an empty project reconciles trivially
         empty = self.c.create_project(name="Empty", entity="E", budget="0")
         self.assertEqual(self.r.state(empty["id"]), {"claims": [], "payments": [], "billings": [], "reconciliation": {"items": [], "subledger_total": "0.00", "control_balance": "0.00", "reconciled": True}})
+
+    def test_claim_status_transitions_are_enforced_by_schema(self):
+        submitted = self.s.claim("10.00")
+        paid = self.s.approved_claim("120.00")
+        p = self.r.record_payment(paid["id"], "120.00", actor="t")
+        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        partial = self.s.approved_claim("50.00")
+        p2 = self.r.record_payment(partial["id"], "20.00", actor="t")
+        self.c.approve_and_execute("reimbursement.pay", p2["id"], period_id="P1")
+        self.assertEqual(self.r.claim(paid["id"])["status"], "paid")
+        self.assertEqual(self.r.claim(partial["id"])["status"], "partially_paid")
+        illegal = (
+            (submitted["id"], "partially_paid"), (submitted["id"], "paid"), (submitted["id"], "voided"),
+            (paid["id"], "submitted"), (paid["id"], "approved"), (paid["id"], "partially_paid"), (paid["id"], "voided"),
+            (partial["id"], "submitted"), (partial["id"], "approved"), (partial["id"], "voided"),
+            (submitted["id"], "reopened"),  # unknown status: CHECK constraint
+        )
+        for claim_id, status in illegal:
+            with self.assertRaises(sqlite3.DatabaseError, msg=f"{status} should be rejected"):
+                self.c.db.execute("UPDATE reimbursement_claims SET status=? WHERE id=?", (status, claim_id))
+        self.assertEqual(self.r.claim(submitted["id"])["status"], "submitted")
+        self.assertEqual(self.r.claim(paid["id"])["status"], "paid")
+        self.assertEqual(self.r.claim(partial["id"])["status"], "partially_paid")
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+
+    def test_cancel_draft_billing_releases_reservation_and_invalidates_approval(self):
+        cl = self.s.approved_claim("120.00")
+        b = self.r.create_billing(cl["id"], "120.00", actor="pm")
+        ap = self.c.request_approval("reimbursement.bill", b["id"])
+        self.c.approve(ap["id"])
+        with self.assertRaises(ReimbursementError):  # the draft reserves the whole claim amount
+            self.r.create_billing(cl["id"], "0.01", actor="pm")
+        self.r.cancel_billing(b["id"], actor="pm", reason="wrong customer PO")
+        self.assertEqual(self.r.billing(b["id"])["status"], "canceled")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises(ReimbursementError):  # a canceled billing has no manifest to execute against
+            self.c.execute(ap["id"], period_id="P1")
+        with self.assertRaises(ReimbursementError):
+            self.r.cancel_billing(b["id"], actor="pm")
+        b2 = self.r.create_billing(cl["id"], "120.00", actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", b2["id"], period_id="P1")
+        self.assertEqual(self.c.ledger.balance("1100"), Decimal("120.00"))
+        self.assertEqual(self.r.claim(cl["id"])["billed"], "120.00")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("120.00"))
+        self.assertEqual([x["status"] for x in self.r.claim(cl["id"])["billings"]], ["canceled", "billed"])
+
+    def test_destination_change_invalidates_granted_pay_approval(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "120.00", actor="t")
+        ap = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
+        self.assertEqual(ap["manifest"]["destination"]["party_id"], self.s.employee["id"])
+        self.assertFalse(ap["manifest"]["bindings"]["destination_verified"])
+        self.c.approve(ap["id"])
+        self.c.verify_destination(self.s.employee["id"], destination="ACH-EMP-2", verified_by="owner")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises(ApprovalNotGranted):
+            self.c.execute(ap["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(self.c.ledger.balance("1000"), Decimal("0.00"))
+        # a fresh approval binds the verified destination and its new version
+        ap2 = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
+        self.assertTrue(ap2["manifest"]["bindings"]["destination_verified"])
+        self.assertEqual(ap2["manifest"]["destination"]["destination_version"], 2)
+        self.c.approve(ap2["id"])
+        self.c.execute(ap2["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.r.claim(cl["id"])["status"], "paid")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("0.00"))
+        self.assertEqual(self.c.ledger.balance("1000"), Decimal("-120.00"))
+
+    def test_execute_replay_is_idempotent(self):
+        cl = self.s.claim("120.00")
+        ap = self.c.request_approval("reimbursement.approve", cl["id"])
+        self.c.approve(ap["id"])
+        first = self.c.execute(ap["id"], period_id="P1")
+        replay = self.c.execute(ap["id"], period_id="P1")
+        self.assertFalse(first.replayed)
+        self.assertTrue(replay.replayed)
+        self.assertEqual(replay.result, first.result)
+        with self.assertRaises((ApprovalConsumed, ReimbursementError)):  # another worker's op id cannot post it again either
+            self.c.execute(ap["id"], period_id="P1", op_id="exec:second-worker")
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 1)
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("120.00"))
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "consumed")
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_billing_a_paid_claim_leaves_payable_at_zero(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "120.00", actor="t")
+        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.assertEqual(self.r.claim(cl["id"])["status"], "paid")
+        b = self.r.create_billing(cl["id"], "120.00", actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", b["id"], period_id="P1")
+        self.assertEqual(self.r.claim(cl["id"])["status"], "paid")  # billing never changes the claim's payable status
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("0.00"))
+        self.assertEqual(self.c.ledger.balance("1100"), Decimal("120.00"))
+        self.assertEqual(self.c.ledger.balance("4000"), Decimal("120.00"))
+        rec = self.r.employee_payable_reconciliation(self.s.project["id"])
+        self.assertEqual(rec["items"], [])  # paid claims are out of the payable subledger
+        self.assertTrue(rec["reconciled"])
+
+
+class ReimbursementVoidTests(unittest.TestCase):
+    """reimbursement.void: the only correction path for an approval granted in error."""
+
+    def setUp(self):
+        self.s = Scenario()
+        self.c = self.s.c
+        self.r = self.s.r
+
+    def test_void_reverses_approval_and_releases_receipt(self):
+        cl = self.s.approved_claim("120.00")
+        receipt = cl["receipt_hash"]
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("120.00"))
+        res = self.c.approve_and_execute("reimbursement.void", cl["id"], period_id="P1")
+        self.assertEqual(res.result["status"], "voided")
+        self.assertEqual(res.result["amount"], "120.00")
+        self.assertEqual(res.result["reversed_journal_id"], cl["journal_id"])
+        self.assertEqual(res.result["payments_canceled"], [])
+        self.assertEqual(res.result["billings_canceled"], [])
+        cl = self.r.claim(cl["id"])
+        self.assertEqual(cl["status"], "voided")
+        self.assertEqual(cl["outstanding"], "0.00")
+        self.assertEqual(cl["amount"], "120.00")  # the record itself is history, not edited
+        self.assertIsNotNone(cl["voided_at"])
+        self.assertIsNotNone(cl["void_approval_id"])
+        self.assertNotEqual(cl["void_approval_id"], cl["approval_id"])
+        rev = self.c.ledger.journal(cl["reversal_journal_id"])
+        self.assertEqual(rev["reversal_of"], cl["journal_id"])
+        self.assertEqual(rev["approval_id"], cl["void_approval_id"])
+        self.assertEqual(self.c.ledger.journal(cl["journal_id"])["reversed_by"], rev["id"])
+        by_account = {ln["account_code"]: ln for ln in rev["lines"]}
+        self.assertEqual(by_account["2100"]["debit"], "120.00")
+        self.assertEqual(by_account["5100"]["credit"], "120.00")
+        self.assertEqual(by_account["2100"]["party_id"], self.s.employee["id"])
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("0.00"))
+        self.assertEqual(self.c.ledger.balance("5100"), Decimal("0.00"))
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 2)  # original + reversal; nothing deleted
+        rec = self.r.employee_payable_reconciliation(self.s.project["id"])
+        self.assertEqual(rec["items"], [])
+        self.assertEqual(rec["subledger_total"], "0.00")
+        self.assertTrue(rec["reconciled"])
+        # a voided claim is frozen and finished
+        with self.assertRaises(ReimbursementError):
+            self.r.update_claim(cl["id"], actor="emp", amount="1.00")
+        with self.assertRaises(ReimbursementError):
+            self.r.record_payment(cl["id"], "1.00", actor="t")
+        with self.assertRaises(ReimbursementError):
+            self.r.create_billing(cl["id"], "1.00", actor="pm")
+        with self.assertRaises(ReimbursementError):
+            self.c.request_approval("reimbursement.void", cl["id"])
+        with self.assertRaises(ReimbursementError):
+            self.c.request_approval("reimbursement.approve", cl["id"])
+        with self.assertRaises(sqlite3.DatabaseError):
+            self.c.db.execute("UPDATE reimbursement_claims SET status='approved' WHERE id=?", (cl["id"],))
+        # the receipt is released for a corrected resubmission, still one live claim per receipt
+        again = self.r.submit_claim(project_id=self.s.project["id"], employee_id=self.s.employee["id"], description="Mileage to site (corrected)", amount="110.00", receipt_hash=receipt, actor="emp")
+        self.assertEqual(again["status"], "submitted")
+        with self.assertRaises(ReimbursementError):
+            self.r.submit_claim(project_id=self.s.project["id"], employee_id=self.s.employee["id"], description="dup", amount="1.00", receipt_hash=receipt, actor="emp")
+        self.assertEqual([c["status"] for c in self.r.claims(self.s.project["id"])], ["voided", "submitted"])
+        self.c.approve_and_execute("reimbursement.approve", again["id"], period_id="P1")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("110.00"))
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_void_only_for_approved_claims_with_nothing_paid_or_billed(self):
+        submitted = self.s.claim("10.00")
+        with self.assertRaises(ReimbursementError):
+            self.c.request_approval("reimbursement.void", submitted["id"])
+        paid = self.s.approved_claim("50.00")
+        p = self.r.record_payment(paid["id"], "20.00", actor="t")
+        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        with self.assertRaises(ReimbursementError):  # money has moved
+            self.c.request_approval("reimbursement.void", paid["id"])
+        billed = self.s.approved_claim("60.00")
+        b = self.r.create_billing(billed["id"], "60.00", actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", b["id"], period_id="P1")
+        self.assertEqual(self.r.claim(billed["id"])["status"], "approved")
+        with self.assertRaises(ReimbursementError):  # the customer has been billed
+            self.c.request_approval("reimbursement.void", billed["id"])
+        # drafts do not block a void: they are canceled with it and their approvals invalidated
+        cl = self.s.approved_claim("120.00")
+        draft_pay = self.r.record_payment(cl["id"], "40.00", actor="t")
+        draft_bill = self.r.create_billing(cl["id"], "120.00", actor="pm")
+        pay_ap = self.c.request_approval("reimbursement.pay", draft_pay["id"], actor_role="treasury")
+        self.c.approve(pay_ap["id"])
+        res = self.c.approve_and_execute("reimbursement.void", cl["id"], period_id="P1")
+        self.assertEqual(res.result["payments_canceled"], [draft_pay["id"]])
+        self.assertEqual(res.result["billings_canceled"], [draft_bill["id"]])
+        self.assertEqual(self.r.payment(draft_pay["id"])["status"], "canceled")
+        self.assertEqual(self.r.billing(draft_bill["id"])["status"], "canceled")
+        self.assertEqual(self.c.approvals.get(pay_ap["id"])["status"], "invalidated")
+        with self.assertRaises(ReimbursementError):
+            self.c.execute(pay_ap["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("90.00"))  # 30.00 + 60.00; the voided 120.00 is gone
+        self.assertEqual(self.c.ledger.balance("5100"), Decimal("110.00"))
+        self.assertEqual(self.c.ledger.balance("1000"), Decimal("-20.00"))
+        rec = self.r.employee_payable_reconciliation(self.s.project["id"])
+        self.assertEqual(rec["subledger_total"], "90.00")
+        self.assertTrue(rec["reconciled"])
+        self.assertEqual(self.c.approvals.list(status="granted"), [])
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_void_approval_dies_with_a_payment_and_respects_the_period_lock(self):
+        cl = self.s.approved_claim("120.00")
+        ap = self.c.request_approval("reimbursement.void", cl["id"])
+        self.c.approve(ap["id"])
+        self.assertEqual(ap["manifest"]["bindings"]["journal_id"], cl["journal_id"])
+        self.assertEqual(ap["manifest"]["amounts"]["booked_payments"], "0.00")
+        # a payment booked after the void was granted makes the void meaningless
+        p = self.r.record_payment(cl["id"], "40.00", actor="t")
+        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises((ApprovalNotGranted, ReimbursementError)):
+            self.c.execute(ap["id"], period_id="P1")
+        self.assertEqual(self.r.claim(cl["id"])["status"], "partially_paid")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("80.00"))
+        # the same happens when the customer is billed after the void was granted
+        billed = self.s.approved_claim("30.00")
+        ap_b = self.c.request_approval("reimbursement.void", billed["id"])
+        self.c.approve(ap_b["id"])
+        b = self.r.create_billing(billed["id"], "30.00", actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", b["id"], period_id="P1")
+        self.assertEqual(self.c.approvals.get(ap_b["id"])["status"], "invalidated")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("110.00"))
+        # the reversal obeys the period lock like every other posting
+        other = self.s.approved_claim("25.00")
+        ap2 = self.c.request_approval("reimbursement.void", other["id"])
+        self.c.approve(ap2["id"])
+        self.c.close_period("P1")
+        with self.assertRaises(PeriodNotOpen):
+            self.c.execute(ap2["id"], period_id="P1")
+        self.assertEqual(self.r.claim(other["id"])["status"], "approved")
+        self.assertEqual(self.c.approvals.get(ap2["id"])["status"], "granted")  # the failed command rolled back
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("135.00"))
+        self.c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        res = self.c.execute(ap2["id"], period_id="P2")
+        self.assertEqual(res.result["period_id"], "P2")
+        self.assertEqual(self.c.ledger.journal(res.result["reversal_journal_id"])["period_id"], "P2")
+        self.assertEqual(self.r.claim(other["id"])["status"], "voided")
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("110.00"))
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
 
 
 if __name__ == "__main__":

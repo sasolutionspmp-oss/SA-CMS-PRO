@@ -58,16 +58,29 @@ Controls enforced in code and covered by tests:
 
 `python -m apps.cipher demo` prints these numbers; `tests/test_workflow.py` asserts them.
 
+## v2 modules
+
+Plugins under `apps/cipher/domain/` register their own schema version and approval-bound operations through the loader in `service.py`; the console renders their state generically and `POST /api/action/module_call` reaches their record methods (`GET /api/modules` lists them).
+
+| Module | Operations | What it keeps honest |
+|---|---|---|
+| `assets` | `asset.capitalise`, `asset.post_depreciation`, `asset.reverse_depreciation`, `asset.dispose` | straight-line monthly runs, no-charge months post nothing, one charge per asset per calendar month, never past the depreciable base |
+| `schedule` | `schedule.baseline` | CPM with float and critical path, deadline violations, resource over-allocation, cycles rejected, baseline approval stale after any edit |
+| `drawings` | `drawing.issue` | one working and one issued revision per drawing; only issued revisions are referenceable; an older issued revision stays usable while a newer working one exists |
+| `reimbursements` | `reimbursement.approve`, `reimbursement.pay`, `reimbursement.bill` | no employee payable before approval, partial payments never overpay, customer billing is a separate authority path, payable reconciles to its control account |
+
 ## Layout
 
 ```
 apps/cipher/
   core/        money, ids, db (schema catalog, triggers, write authority), audit, approvals, commands/outbox
-  domain/      ledger, evidence, estimates, commitments, bills, receivables, payments, forecast, ricky
-  service.py   Cipher façade: request_approval → approve → execute; golden fixture
+  domain/      ledger, evidence, estimates, commitments, bills, receivables, payments, forecast, ricky,
+               and the v2 plugins assets, schedule, drawings, reimbursements
+  service.py   Cipher façade: request_approval → approve → execute; plugin loader; golden fixture
   server.py    stdlib HTTP API and console host
-  console/     owner console (single page, vanilla JS)
-  tests/       unit, workflow, adversarial and HTTP tests
+  console/     owner console (single page, vanilla JS) with the browser self-test
+  tools/       browser_check.py (headless Chrome/Edge run of the console journey)
+  tests/       unit, ledger, workflow, adversarial, HTTP and per-module tests
   Dockerfile   container build that runs the suite
 ```
 

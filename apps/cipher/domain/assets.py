@@ -11,16 +11,23 @@ Schedule: straight-line monthly charge = (cost - salvage) / useful_life_months
 quantised to cents; the FINAL month absorbs the rounding residual so the schedule
 sums to cost - salvage exactly (1,000 over 3 months is 333.33, 333.33, 333.34).
 
-Runs are monthly and keyed by period: the period must lie within one calendar
-month, and the in-service month is charged in full whatever the day.  A period
-before the in-service month or after the schedule ends yields a ``no_charge``
-run with amount 0.00 that can never carry a journal (SQLite triggers enforce
-it).  One live run per asset per period: a duplicate is rejected unless the
-earlier run was reversed (or cancelled), in which case the replacement links
-``replaced_run_id``.  Editing an asset bumps its version, which invalidates any
-open approval bound to the old version, and cancels its unposted runs because
-their amounts derive from the old parameters; an asset with posted
-depreciation cannot be edited until those runs are reversed.
+Runs are monthly: the period must lie within one calendar month, the run is
+charged to that month (``charge_month``), and the in-service month is charged in
+full whatever the day.  A period before the in-service month, or one for which
+the asset is already fully depreciated (accumulated posted depreciation has
+reached cost - salvage) or whose month lies past the end of the schedule,
+yields a ``no_charge`` run with amount 0.00 that can never carry a journal
+(SQLite triggers enforce it).  One live run per asset per calendar month, not
+per period id: several period rows may cover the same month (an adjustment
+period, a split month) and none of them may charge the month twice.  A
+duplicate is rejected unless the earlier run for that month was reversed (or
+cancelled), in which case the replacement links ``replaced_run_id``.  The
+register can never exceed the depreciable base: a run's amount is clamped to
+what remains when it is scheduled and checked again when it is posted.
+Editing an asset bumps its version, which invalidates any open approval bound
+to the old version, and cancels its unposted runs because their amounts derive
+from the old parameters; an asset with posted depreciation cannot be edited
+until those runs are reversed.
 """
 from __future__ import annotations
 
@@ -72,6 +79,7 @@ SCHEMA_STATEMENTS = [
         id TEXT PRIMARY KEY,
         asset_id TEXT NOT NULL REFERENCES asset_register(id),
         period_id TEXT NOT NULL REFERENCES periods(id),
+        charge_month TEXT NOT NULL CHECK (length(charge_month) = 7 AND substr(charge_month, 5, 1) = '-'),
         sequence INTEGER NOT NULL,
         amount TEXT NOT NULL,
         asset_version INTEGER NOT NULL,
@@ -88,8 +96,18 @@ SCHEMA_STATEMENTS = [
         reversed_at TEXT,
         cancelled_at TEXT
     )""",
-    "CREATE UNIQUE INDEX asset_runs_one_live_per_period ON asset_depreciation_runs (asset_id, period_id) WHERE status IN ('draft','no_charge','posted')",
+    # One live run per asset per calendar MONTH.  Several period rows may cover the
+    # same month; keying the guard on the month (not the period id) is what stops
+    # the same monthly charge posting once per period row.
+    "CREATE UNIQUE INDEX asset_runs_one_live_per_month ON asset_depreciation_runs (asset_id, charge_month) WHERE status IN ('draft','no_charge','posted')",
     "CREATE TRIGGER asset_runs_no_delete BEFORE DELETE ON asset_depreciation_runs BEGIN SELECT RAISE(ABORT, 'depreciation runs are never deleted'); END",
+    """CREATE TRIGGER asset_runs_charge_month_matches_period BEFORE INSERT ON asset_depreciation_runs
+        WHEN NEW.charge_month IS NOT (SELECT substr(start_date, 1, 7) FROM periods WHERE id = NEW.period_id)
+          OR (SELECT substr(start_date, 1, 7) IS NOT substr(end_date, 1, 7) FROM periods WHERE id = NEW.period_id)
+        BEGIN SELECT RAISE(ABORT, 'a depreciation run is charged to the calendar month of its period, which must lie within one month'); END""",
+    """CREATE TRIGGER asset_runs_identity_immutable BEFORE UPDATE ON asset_depreciation_runs
+        WHEN NEW.asset_id IS NOT OLD.asset_id OR NEW.period_id IS NOT OLD.period_id OR NEW.charge_month IS NOT OLD.charge_month OR NEW.sequence IS NOT OLD.sequence
+        BEGIN SELECT RAISE(ABORT, 'a depreciation run keeps its asset, period, month and sequence; schedule a new run instead'); END""",
     """CREATE TRIGGER asset_runs_no_charge_insert BEFORE INSERT ON asset_depreciation_runs
         WHEN NEW.status = 'no_charge' AND (NEW.amount != '0.00' OR NEW.journal_id IS NOT NULL OR NEW.reversal_journal_id IS NOT NULL)
         BEGIN SELECT RAISE(ABORT, 'a no-charge depreciation run has amount 0.00 and never carries a journal'); END""",
@@ -154,6 +172,10 @@ def _parse_date(text, label: str = "date") -> _dt.date:
 
 def _month_index(d: _dt.date) -> int:
     return d.year * 12 + d.month
+
+
+def _month_key(d: _dt.date) -> str:
+    return f"{d.year:04d}-{d.month:02d}"
 
 
 def _money(value, label: str, *, allow_zero: bool) -> Decimal:
@@ -325,9 +347,11 @@ class Plugin:
         row["monthly_amount"] = fmt(schedule[0])
         row["final_month_amount"] = fmt(schedule[-1])
         row["accumulated_depreciation"] = fmt(accumulated)
+        row["remaining_depreciable"] = fmt(max(base - accumulated, ZERO))
         row["net_book_value"] = fmt(ZERO if row["status"] == "disposed" else cost - accumulated)
         row["months_posted"] = sum(1 for r in runs if r["status"] == "posted")
-        row["fully_depreciated"] = accumulated == base
+        row["fully_depreciated"] = accumulated >= base
+        row["over_depreciated"] = accumulated > base  # must never be True; guarded at scheduling and posting
         row["runs"] = runs
         return row
 
@@ -352,8 +376,10 @@ class Plugin:
     # ---- depreciation runs ------------------------------------------------------ #
 
     def schedule_run(self, asset_id: str, period_id: str, actor: str) -> dict[str, Any]:
-        """Create the run for ``period_id``: a draft carrying the month's charge, or a
-        ``no_charge`` run (amount 0.00, never journaled) outside the schedule."""
+        """Create the run for ``period_id``: a draft carrying its calendar month's charge,
+        or a ``no_charge`` run (amount 0.00, never journaled) when the month precedes the
+        in-service month, the asset is already fully depreciated, or the schedule has
+        ended.  The charge never exceeds what remains of the depreciable base."""
         with self.db.transaction() as conn:
             a = self.get_asset(asset_id)
             if a["status"] != "active":
@@ -363,36 +389,52 @@ class Plugin:
             end = _parse_date(period["end_date"], "period end date")
             if (start.year, start.month) != (end.year, end.month):
                 raise AssetError(f"depreciation runs are monthly; period {period_id} ({period['start_date']}..{period['end_date']}) spans more than one calendar month")
+            charge_month = _month_key(start)
             live = conn.execute(
-                "SELECT id, status FROM asset_depreciation_runs WHERE asset_id=? AND period_id=? AND status IN ('draft','no_charge','posted')",
-                (asset_id, period_id),
+                "SELECT id, status, period_id FROM asset_depreciation_runs WHERE asset_id=? AND charge_month=? AND status IN ('draft','no_charge','posted')",
+                (asset_id, charge_month),
             ).fetchone()
             if live is not None:
-                raise AssetError(f"a {live['status']} depreciation run already exists for asset {asset_id} in period {period_id} ({live['id']}); reverse or cancel it before scheduling another")
+                where = f"period {live['period_id']}" if live["period_id"] == period_id else f"period {live['period_id']}, which also covers {charge_month}"
+                raise AssetError(f"a {live['status']} depreciation run already exists for asset {asset_id} in {charge_month} ({live['id']}, {where}); reverse or cancel it before scheduling another")
             prior = conn.execute(
-                "SELECT id FROM asset_depreciation_runs WHERE asset_id=? AND period_id=? AND status IN ('reversed','cancelled') ORDER BY created_at DESC, id DESC LIMIT 1",
-                (asset_id, period_id),
+                "SELECT id FROM asset_depreciation_runs WHERE asset_id=? AND charge_month=? AND status IN ('reversed','cancelled') ORDER BY created_at DESC, id DESC LIMIT 1",
+                (asset_id, charge_month),
             ).fetchone()
             replaced_run_id = prior["id"] if prior else None
             in_service = _parse_date(a["in_service_date"], "in-service date")
             sequence = _month_index(start) - _month_index(in_service) + 1
             life = a["useful_life_months"]
             schedule = straight_line_schedule(a["cost"], a["salvage_value"], life)
+            base = money(a["depreciable_base"])
+            accumulated = money(a["accumulated_depreciation"])
+            remaining = base - accumulated
             if sequence < 1:
                 amount, status, note = ZERO, "no_charge", "period precedes the in-service month"
+            elif remaining <= 0:
+                amount, status, note = ZERO, "no_charge", f"asset is fully depreciated ({fmt(accumulated)} of {fmt(base)} posted)"
             elif sequence > life:
-                amount, status, note = ZERO, "no_charge", f"asset is fully depreciated after month {life}"
+                amount, status, note = ZERO, "no_charge", f"schedule ended after month {life}; {fmt(remaining)} remains undepreciated, schedule the missed month instead"
             else:
                 amount = schedule[sequence - 1]
-                status = "draft" if amount > 0 else "no_charge"
-                note = "" if amount > 0 else "nothing to depreciate this month"
-            content = {"asset_id": asset_id, "asset_version": a["version"], "period_id": period_id, "sequence": sequence, "amount": fmt(amount), "replaced_run_id": replaced_run_id}
+                note = ""
+                if amount > remaining:
+                    note = f"charge clamped from {fmt(amount)} to the remaining depreciable base {fmt(remaining)}"
+                    amount = remaining
+                if amount <= 0:
+                    status, note = "no_charge", "nothing to depreciate this month"
+                else:
+                    status = "draft"
+            content = {
+                "asset_id": asset_id, "asset_version": a["version"], "period_id": period_id, "charge_month": charge_month,
+                "sequence": sequence, "amount": fmt(amount), "replaced_run_id": replaced_run_id,
+            }
             content_hash = hash_json(content)
             run_id = new_id("dep")
             conn.execute(
-                """INSERT INTO asset_depreciation_runs (id, asset_id, period_id, sequence, amount, asset_version, status, note, content_hash, replaced_run_id, created_at)
-                   VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
-                (run_id, asset_id, period_id, sequence, fmt(amount), a["version"], status, note, content_hash, replaced_run_id, utcnow_iso()),
+                """INSERT INTO asset_depreciation_runs (id, asset_id, period_id, charge_month, sequence, amount, asset_version, status, note, content_hash, replaced_run_id, created_at)
+                   VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
+                (run_id, asset_id, period_id, charge_month, sequence, fmt(amount), a["version"], status, note, content_hash, replaced_run_id, utcnow_iso()),
             )
             self.audit.record(actor, "asset.run_scheduled", "asset_run", run_id, {**content, "status": status, "note": note, "content_hash": content_hash})
         return self.get_run(run_id)
@@ -436,6 +478,7 @@ class Plugin:
                 "run_hash": run["content_hash"],
                 "run_status": run["status"],
                 "period_id": run["period_id"],
+                "charge_month": run["charge_month"],
                 "sequence": run["sequence"],
                 "journal_id": run["journal_id"],
                 "debit_account": "5200",
@@ -513,6 +556,15 @@ class Plugin:
             amount = money(run["amount"])
             if amount <= 0:
                 raise AssetError(f"run {run_id} has no positive amount to post")
+            # Re-check against the register at posting time: whatever the draft says, the
+            # posted total can never exceed cost - salvage.
+            base = money(a["depreciable_base"])
+            accumulated = money(a["accumulated_depreciation"])
+            if accumulated + amount > base:
+                raise AssetError(
+                    f"posting run {run_id} for {fmt(amount)} would over-depreciate asset {a['id']}: "
+                    f"{fmt(accumulated)} already posted of a {fmt(base)} depreciable base ({fmt(base - accumulated)} remaining); cancel and reschedule the run"
+                )
             j = self.ledger.post(
                 period_id=run["period_id"],
                 description=f"Depreciation month {run['sequence']} of {a['useful_life_months']}: {a['description']}",
@@ -559,6 +611,8 @@ class Plugin:
             self._require_open(pid)
             cost = money(a["cost"])
             accumulated = money(a["accumulated_depreciation"])
+            if accumulated > cost:
+                raise AssetError(f"asset {asset_id} is over-depreciated ({fmt(accumulated)} against cost {fmt(cost)}); reverse the excess depreciation before disposal")
             book_value = cost - accumulated
             lines = []
             if accumulated > 0:
@@ -601,6 +655,7 @@ class Plugin:
                 "disposed": sum(1 for a in assets if a["status"] == "disposed"),
             },
             "ledger": {"fixed_assets": fmt(fixed_assets), "accumulated_depreciation": fmt(accumulated_ledger)},
-            "reconciled": cost_total == fixed_assets and accumulated_total == accumulated_ledger,
+            # register agrees with the ledger AND is internally sound (no asset depreciated past its base)
+            "reconciled": cost_total == fixed_assets and accumulated_total == accumulated_ledger and not any(a["over_depreciated"] for a in assets),
             "posting_rule": POSTING_RULE,
         }
