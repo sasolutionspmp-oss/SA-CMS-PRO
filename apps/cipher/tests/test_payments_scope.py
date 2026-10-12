@@ -10,7 +10,7 @@ from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, bui
 from apps.cipher.core.db import SCHEMA_CATALOG, Database
 from apps.cipher.domain.ledger import PeriodNotOpen
 from apps.cipher.domain.payments import SCOPE_SCHEMA_NAME, PaymentError, ReleaseQuarantined
-from apps.cipher.domain.reimbursements import OUTBOX_GUARDS_SCHEMA_NAME, OUTBOX_SCHEMA_NAME, PLUGIN_NAME, SCHEMA_NAME, ReimbursementError
+from apps.cipher.domain.reimbursements import OUTBOX_GUARDS_SCHEMA_NAME, OUTBOX_SCHEMA_NAME, PLUGIN_NAME, REOPEN_SCHEMA_NAME, SCHEMA_NAME, ReimbursementError
 from apps.cipher.service import Cipher
 
 
@@ -719,7 +719,8 @@ class CorePaymentScopeTests(unittest.TestCase):
             path = os.path.join(d, "old.sqlite")
             saved = list(SCHEMA_CATALOG)
             try:
-                SCHEMA_CATALOG[:] = [e for e in saved if e[1] not in (SCOPE_SCHEMA_NAME, OUTBOX_SCHEMA_NAME, OUTBOX_GUARDS_SCHEMA_NAME)]
+                # a workspace from before the scope columns also predates every later reimbursement entry
+                SCHEMA_CATALOG[:] = [e for e in saved if e[1] not in (SCOPE_SCHEMA_NAME, OUTBOX_SCHEMA_NAME, OUTBOX_GUARDS_SCHEMA_NAME, REOPEN_SCHEMA_NAME)]
                 old = Database(path)
                 with old.transaction() as conn:
                     conn.execute("INSERT INTO parties (id, kind, name, destination, destination_version, destination_verified, created_at) VALUES ('pty_e','employee','E','ACH',1,1,'t')")
@@ -750,7 +751,7 @@ class CorePaymentScopeTests(unittest.TestCase):
             path = os.path.join(d, "outbox.sqlite")
             saved = list(SCHEMA_CATALOG)
             try:
-                SCHEMA_CATALOG[:] = [e for e in saved if e[1] != OUTBOX_GUARDS_SCHEMA_NAME]
+                SCHEMA_CATALOG[:] = [e for e in saved if e[1] not in (OUTBOX_GUARDS_SCHEMA_NAME, REOPEN_SCHEMA_NAME)]
                 Database(path).close()
             finally:
                 SCHEMA_CATALOG[:] = saved
@@ -759,8 +760,10 @@ class CorePaymentScopeTests(unittest.TestCase):
                 status = {v["name"]: v for v in upgraded.schema_status()["versions"]}
                 self.assertEqual(upgraded.schema_status()["pending"], [])
                 self.assertTrue(status[OUTBOX_SCHEMA_NAME]["checksum_matches"] and status[OUTBOX_GUARDS_SCHEMA_NAME]["checksum_matches"])
+                self.assertTrue(status[REOPEN_SCHEMA_NAME]["applied"] and status[REOPEN_SCHEMA_NAME]["checksum_matches"])
                 triggers = {r["name"]: r["sql"] for r in upgraded.query("SELECT name, sql FROM sqlite_master WHERE type='trigger' AND tbl_name IN ('reimbursement_payments','reimbursement_claims')")}
                 self.assertIn("i.journal_id", triggers["reimbursement_payments_follow_intent"])
+                self.assertIn("i.status = 'canceled' AND i.journal_id IS NULL", triggers["reimbursement_payments_follow_intent"])  # the reopen transition
                 self.assertIn("p.status IN ('in_flight','booked')", triggers["reimbursement_claims_status_lifecycle"])
             finally:
                 upgraded.close()

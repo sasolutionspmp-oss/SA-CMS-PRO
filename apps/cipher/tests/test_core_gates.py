@@ -1,13 +1,19 @@
 """Accounting-core decision gates (plan section 3 / section 13 decision 4).
 
-The gates must report the native core truthfully.  Each documented native-core gap
-is probed directly against the core here, and the gate must fail exactly the
-checks whose gap is present.  Nothing outside those gaps may fail.  A test-only
-adapter that simulates the core fixes must pass every hard gate, which shows the
-gates can be passed.  The ERPNext adapter must report ``not_run`` without touching
-anything, the weights must sum to 100, and deliberately broken candidates must be
-disqualified.  That includes candidates whose "refusals" are unrelated errors,
-crashing plugin paths, unexercised probes or a broken reimbursement scenario.
+The gates must report the native core truthfully.  Since the round-two core fixes
+(scorecard ``cipher-core-gates/3``) the native core passes every hard gate, and
+this module asserts that: all nine gates pass, no hard check fails, and the
+candidate is scored.  Each of the eight gaps the previous scorecard reported is
+probed directly against the core and must be closed.
+
+A passing native run could also come from gates that cannot fail, so each former
+gap is re-opened inside a test adapter and the gate must then fail exactly the
+checks that gap breaks, printing the documented evidence.  The two open G8
+advisories are checked against independent probes of the core.  The ERPNext
+adapter must report ``not_run`` without touching anything, the weights must sum
+to 100, and deliberately broken candidates must be disqualified.  That includes
+candidates whose "refusals" are unrelated errors, crashing plugin paths,
+unexercised probes or a broken reimbursement scenario.
 """
 import contextlib
 import io
@@ -17,26 +23,62 @@ import shutil
 import sqlite3
 import tempfile
 import unittest
-from decimal import ROUND_DOWN, ROUND_HALF_UP, Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from unittest import mock
 
-from apps.cipher.core.approvals import build_manifest
-from apps.cipher.core.db import WriteAuthorityError
+from apps.cipher.core.db import OWNER_SECRET_ENV
 from apps.cipher.core.ids import new_id, utcnow_iso
-from apps.cipher.core.money import D, MoneyError, allocate, fmt, money, total
-from apps.cipher.domain.ledger import RULE_VERSION, LedgerError
+from apps.cipher.core.money import D, allocate, fmt, money, total
+from apps.cipher.domain.ledger import RULE_VERSION
 from apps.cipher.service import Cipher
 from apps.cipher.tools import core_gates as cg
 from apps.cipher.tools.core_gates import (
-    ALLOCATION_CASES, ASSUMED_CRITERIA, ERPNEXT_UNAVAILABLE, GATE_IDS, REFUSAL_CONTROLS, WEIGHTS, CoreGateError, ERPNextAdapter,
-    NativeCipherAdapter, build_scorecard, evaluate_candidate, run_gate, weights_total,
+    ALLOCATION_CASES, ASSUMED_CRITERIA, ERPNEXT_UNAVAILABLE, GATE_IDS, REFUSAL_CONTROLS, REQUIRED_TRIGGERS, WEIGHTS, CoreGateError, ERPNextAdapter,
+    NativeCipherAdapter, evaluate_candidate, run_gate, weights_total,
 )
 
 PROBED_PLUGINS = ("asset", "reimbursement", "labor")
+TEST_OWNER_SECRET = "test-owner-secret-core-gates"
+
+# Hard checks per gate in cipher-core-gates/3 (G4 adds two per probed plugin).
+CHECKS_PER_GATE = {"G1": 22, "G2": 13, "G3": 12, "G4": 15, "G5": 5, "G6": 6, "G7": 14, "G8": 13, "G9": 4}
+
+
+@contextlib.contextmanager
+def owner_secret(value):
+    """Configure (or, with None, remove) CIPHER_OWNER_SECRET, restoring it afterwards."""
+    previous = os.environ.get(OWNER_SECRET_ENV)
+    if value is None:
+        os.environ.pop(OWNER_SECRET_ENV, None)
+    else:
+        os.environ[OWNER_SECRET_ENV] = value
+    try:
+        yield
+    finally:
+        if previous is None:
+            os.environ.pop(OWNER_SECRET_ENV, None)
+        else:
+            os.environ[OWNER_SECRET_ENV] = previous
+
+
+@contextlib.contextmanager
+def without_triggers(adapter, *names):
+    """Drop triggers for one statement and put them back exactly as they were, so a
+    re-opened gap stays confined to the check that exercises it."""
+    saved = {}
+    for name in names:
+        saved[name] = adapter.c.db.scalar("SELECT sql FROM sqlite_master WHERE type='trigger' AND name=?", (name,))
+        adapter.c.db.execute(f"DROP TRIGGER IF EXISTS {name}")
+    try:
+        yield
+    finally:
+        for sql in saved.values():
+            if sql:
+                adapter.c.db.execute(sql)
 
 
 # --------------------------------------------------------------------------- #
-# Independent probes of the native core, one per documented gap               #
+# Independent probes of the native core, one per former gap                   #
 # --------------------------------------------------------------------------- #
 
 def _post(c, period="P1", amount="100.00"):
@@ -115,9 +157,10 @@ def gap_raw_unlock_of_locked_period() -> bool:
 
 
 class RestoreScenario:
-    """A file-backed workspace with a sent prime bill and a released supplier payment,
-    copied before dispatch, dispatched, then copied twice more.  Used to probe the
-    core's restore behaviour directly (not through the gate adapter)."""
+    """A file-backed workspace with a sent prime bill (through the prime_bill.send
+    approval, with the customer's ACH mandate on file) and a released supplier payment,
+    copied before dispatch, dispatched, then copied several more times.  Used to probe
+    the core's restore behaviour directly (not through the gate adapter)."""
 
     def __init__(self):
         self.dir = tempfile.mkdtemp(prefix="cipher-core-gates-gap-")
@@ -136,19 +179,22 @@ class RestoreScenario:
         c.approve_and_execute("bill.approve", bill["id"], actor="test")
         prime = c.receivables.certify(project_id=project["id"], period_id="P1", certified_cumulative="10000", retainage_rate="0.10", actor="test")
         c.approve_and_execute("prime_bill.approve", prime["id"], actor="test")
-        c.receivables.send(prime["id"], actor="test")
+        c.approve_and_execute("prime_bill.send", prime["id"], actor="test")
+        doc = c.evidence.register_document(project_id=project["id"], kind="ach_mandate", title="Gap probe ACH debit authorization", actor="test")
+        rev = c.evidence.add_revision(document_id=doc["id"], content=b"gap probe ACH debit authorization", note="signed authorization", actor="test")
+        c.receivables.record_mandate(customer_id=customer["id"], mandate_ref="MANDATE-SIM-GAP-1", evidence_hash=rev["content_hash"], actor="test")
         self.prime_id = prime["id"]
         c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
         self.before_dispatch = c.snapshot(os.path.join(self.dir, "before-dispatch.sqlite"))
         c.dispatch_payments()
-        self.copy_a = c.snapshot(os.path.join(self.dir, "copy-a.sqlite"))
-        self.copy_b = c.snapshot(os.path.join(self.dir, "copy-b.sqlite"))
+        self.copies = {name: c.snapshot(os.path.join(self.dir, f"copy-{name}.sqlite")) for name in ("mutate", "claim", "default", "first", "sibling")}
 
     def _track(self, c):
         self.opened.append(c)
         return c
 
-    def restored(self, path):
+    def restored(self, name_or_path):
+        path = self.copies.get(name_or_path, name_or_path)
         return self._track(Cipher.open_restored(path, provider=self.live.provider))
 
     def close(self):
@@ -159,36 +205,55 @@ class RestoreScenario:
                 pass
         shutil.rmtree(self.dir, ignore_errors=True)
 
+    @staticmethod
+    def _claim(r, code, *, secret=TEST_OWNER_SECRET):
+        with owner_secret(secret):
+            r.claim_write_authority(approval_ref=code, actor="test-controller", reason="core gate probe", claim_code=code)
+
     def restored_copy_mutates(self) -> bool:
-        r = self.restored(self.copy_a)
+        r = self.restored("mutate")
         assert not r.db.has_write_authority()
-        accepted = 0
+        before = r.db.scalar("SELECT COUNT(*) FROM journals")
         for fn in (lambda: r.receivables.record_collection(prime_bill_id=self.prime_id, period_id="P1", amount="4500.00", fee="0", provider_ref="gap-rcv", actor="test"),
                    lambda: _post(r, amount="1.00")):
             try:
                 fn()
-                accepted += 1
             except Exception:
                 pass
-        return accepted > 0
+        return r.db.scalar("SELECT COUNT(*) FROM journals") > before
 
-    def claim_with_unrecorded_reference(self) -> bool:
-        r = self.restored(self.copy_b)
-        try:
-            r.claim_write_authority(approval_ref="apr_not_a_recorded_approval", actor="test")
-        except Exception:
-            return False
+    def claim_without_valid_code_succeeds(self) -> bool:
+        r = self.restored("claim")
+        for code in ("apr_not_a_recorded_approval", ""):
+            try:
+                self._claim(r, code)
+            except Exception:
+                pass
         return r.db.has_write_authority()
+
+    def claim_without_secret_succeeds(self) -> bool:
+        r = self.restored("default")
+        try:
+            self._claim(r, "apr_not_a_recorded_approval", secret=None)
+        except Exception:
+            pass
+        return r.db.has_write_authority()
+
+    def sibling_copy_accepts_used_code(self) -> bool:
+        first = self.restored("first")
+        code = first.db.expected_claim_code(TEST_OWNER_SECRET)
+        self._claim(first, code)
+        assert first.db.has_write_authority()
+        sibling = self.restored("sibling")
+        try:
+            self._claim(sibling, code)
+        except Exception:
+            pass
+        return sibling.db.has_write_authority()
 
     def older_backup_resubmits(self) -> bool:
         old = self.restored(self.before_dispatch)
-        ws = old.db.workspace()
-        manifest = build_manifest(operation="workspace.claim_write_authority", subject_type="workspace", subject_id=ws["workspace_id"], actor_role="owner",
-                                  bindings={"authority_epoch": ws["authority_epoch"], "recovery_epoch": ws["recovery_epoch"]})
-        ap = old.approvals.request(manifest, requested_by="test")
-        old.approvals.grant(ap["id"], approver="test-controller")
-        old.approvals.consume(ap["id"], current_manifest=manifest, consumer="test-controller")
-        old.claim_write_authority(approval_ref=ap["id"], actor="test")
+        self._claim(old, old.db.expected_claim_code(TEST_OWNER_SECRET))
         start = len(self.live.provider.submissions)
         old.complete_recovery(actor="test")
         try:
@@ -198,20 +263,23 @@ class RestoreScenario:
         return len(self.live.provider.submissions) > start
 
 
-# key -> (probe name, evidence fragment the gate must print while the gap is present)
-CORE_GAPS = {
+# key -> (probe name, evidence fragment the gate prints while the gap is present)
+FORMER_GAPS = {
     "g1.nonfinite_refused": ("nonfinite", "to_money('NaN') ACCEPTED, returning NaN"),
     "g1.allocation_bounded": ("allocation", "allocate 0.05 over 1:1:1:1:1:1:1 gives a part of -0.01"),
     "g3.insert_line_on_posted_refused": ("insert_line", "that journal is now Dr 101.00 / Cr 100.00 over 3 lines (fingerprint CHANGED)"),
     "g4.reopen_requires_recorded_approval": ("reopen_reference", "'apr_gate_unrecorded_reopen' (a recorded approval: False) was ACCEPTED"),
     "g4.raw_unlock_refused": ("raw_unlock", "raw UPDATE setting locked period G4-SVC back to open was ACCEPTED"),
     "g8.restored_copy_refuses_mutations": ("restored_mutation", "record_collection action for 4500.00 was ACCEPTED"),
-    "g8.claim_requires_recorded_approval": ("claim_reference", "'apr_gate_unrecorded_claim' (a recorded approval: False) was ACCEPTED"),
+    # cipher-core-gates/2 called this check g8.claim_requires_recorded_approval
+    "g8.claim_requires_attestation": ("claim_attestation", "a fabricated credential 'apr_gate_unrecorded_claim' was ACCEPTED"),
     "g8.older_backup_no_resubmission": ("older_backup", "(1 resubmission(s))"),
 }
 
 
-def probe_core_gaps() -> dict[str, bool]:
+def probe_core() -> dict[str, bool]:
+    """Every direct probe: the eight former gaps (True = present) and the two
+    write-authority claim scopes behind the G8 advisories (True = claim accepted)."""
     present = {
         "nonfinite": gap_nonfinite_money(),
         "allocation": gap_unbounded_allocation(),
@@ -222,21 +290,154 @@ def probe_core_gaps() -> dict[str, bool]:
     scenario = RestoreScenario()
     try:
         present["restored_mutation"] = scenario.restored_copy_mutates()
-        present["claim_reference"] = scenario.claim_with_unrecorded_reference()
+        present["claim_attestation"] = scenario.claim_without_valid_code_succeeds()
         present["older_backup"] = scenario.older_backup_resubmits()
+        present["default_config_claim"] = scenario.claim_without_secret_succeeds()
+        present["sibling_claim"] = scenario.sibling_copy_accepts_used_code()
     finally:
         scenario.close()
-    return {key: present[name] for key, (name, _) in CORE_GAPS.items()}
+    return present
 
 
 # --------------------------------------------------------------------------- #
-# Test adapters                                                                #
+# Test adapters: each former gap re-opened                                     #
+# --------------------------------------------------------------------------- #
+
+class NonFiniteMoney(NativeCipherAdapter):
+    """Money parsing that lets NaN, sNaN and Infinity through (floats and bools are
+    still refused by the core)."""
+
+    candidate = "gap_nonfinite_money"
+
+    @staticmethod
+    def _lenient(value):
+        if isinstance(value, (float, bool)):
+            return money(value)
+        d = value if isinstance(value, Decimal) else Decimal(str(value))
+        return d if not d.is_finite() else d.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def to_money(self, value):
+        return self._lenient(value)
+
+    def add_money(self, a, b):
+        return self._lenient(self._lenient(a) + self._lenient(b))
+
+    def sum_money(self, values):
+        return self._lenient(sum((self._lenient(v) for v in values), Decimal(0)))
+
+    def allocate(self, amount, weights):
+        amt = self._lenient(amount)
+        return [amt for _ in weights] if not amt.is_finite() else allocate(amt, weights)
+
+
+class ResidualOnFirstPart(NativeCipherAdapter):
+    """Allocation that rounds each part and puts the whole residual on the first one."""
+
+    candidate = "gap_unbounded_allocation"
+
+    def allocate(self, amount, weights):
+        amt = money(amount)
+        ws = [D(w) for w in weights]
+        parts = [money(amt * w / sum(ws)) for w in ws]
+        parts[0] += amt - sum(parts)
+        return parts
+
+
+class UnsealedPostedJournal(NativeCipherAdapter):
+    """The journal seal is missing when a privileged session adds a line to a posted journal."""
+
+    candidate = "gap_unsealed_journal"
+
+    def privileged_insert_line(self, journal_id):
+        with without_triggers(self, "journal_lines_sealed"):
+            super().privileged_insert_line(journal_id)
+
+
+class UnverifiedReopenReference(NativeCipherAdapter):
+    """A ledger reopen that takes any non-empty reference at face value."""
+
+    candidate = "gap_unverified_reopen"
+
+    def reopen_period(self, period_id, approval_ref):
+        if approval_ref and not self.approval_exists(approval_ref):
+            with without_triggers(self, "periods_reopen_requires_approval", "periods_reopen_logged"):
+                self.raw_sql("UPDATE periods SET status='open', closed_at=NULL, closed_by=NULL WHERE id=?", (period_id,))
+            return
+        super().reopen_period(period_id, approval_ref)
+
+
+class UnlockableLockedPeriod(NativeCipherAdapter):
+    """No locked-period trigger when a privileged session unlocks a locked period."""
+
+    candidate = "gap_raw_unlock"
+
+    def privileged_unlock_period(self, period_id):
+        with without_triggers(self, "periods_locked_immutable"):
+            super().privileged_unlock_period(period_id)
+
+
+class WritableRestoredCopy(NativeCipherAdapter):
+    """Restored copies whose connection stays writable: write authority is checked only
+    at the command boundary, as before the SQLite read-only guard existed."""
+
+    candidate = "gap_writable_restored_copy"
+
+    def open_restored(self, path):
+        other = super().open_restored(path)
+        other.c.db._refresh_suspended += 1  # keep the mode below until a claim decides it
+        other.c.db._set_query_only(False)
+        return other
+
+
+class UnattestedClaim(NativeCipherAdapter):
+    """A write-authority claim that never checks its credential."""
+
+    candidate = "gap_unattested_claim"
+
+    def claim_write_authority(self, credential):
+        self.claim_write_authority_default_config(credential)
+
+
+class RecoveryIgnoresQueuedIntents(NativeCipherAdapter):
+    """Recovery that does not look queued intents up at the provider before the
+    quarantine is lifted, so an older backup's queued intent is dispatched again."""
+
+    candidate = "gap_queued_recovery"
+
+    def open_restored(self, path):
+        other = super().open_restored(path)
+        other.c.payments._resolve_queued_after_restore = lambda provider, *, actor: ([], [])
+        return other
+
+
+# gate check key -> (adapter, every hard check the re-opened gap must fail)
+REINTRODUCED = {
+    "g1.nonfinite_refused": (NonFiniteMoney, {"g1.nonfinite_refused"}),
+    "g1.allocation_bounded": (ResidualOnFirstPart, {"g1.allocation_bounded"}),
+    "g3.insert_line_on_posted_refused": (UnsealedPostedJournal, {"g3.insert_line_on_posted_refused"}),
+    "g4.reopen_requires_recorded_approval": (UnverifiedReopenReference, {"g4.reopen_requires_recorded_approval"}),
+    "g4.raw_unlock_refused": (UnlockableLockedPeriod, {"g4.raw_unlock_refused"}),
+    "g8.restored_copy_refuses_mutations": (WritableRestoredCopy, {"g8.restored_copy_refuses_mutations", "g8.restored_copy_refuses_privileged_writes"}),
+    "g8.claim_requires_attestation": (UnattestedClaim, {"g8.claim_requires_attestation", "g8.claim_credential_single_use"}),
+    "g8.older_backup_no_resubmission": (RecoveryIgnoresQueuedIntents, {"g8.older_backup_no_resubmission"}),
+}
+
+
+# --------------------------------------------------------------------------- #
+# Deliberately broken candidates                                               #
 # --------------------------------------------------------------------------- #
 
 class SkipsBalanceCheck(NativeCipherAdapter):
-    """A candidate whose posting path writes journal rows without validating that they balance."""
+    """A candidate with no balance check at any layer: its posting path writes journal rows
+    without validating them, and its schema has no journal seal.  (The native schema seals
+    journals and refuses an unbalanced one by itself, so the seal is removed here too.)"""
 
     candidate = "broken_skips_balance_check"
+
+    def reset(self, path=None):
+        super().reset(path)
+        for trigger in ("journals_declare_line_count", "journal_lines_sealed"):
+            self.c.db.execute(f"DROP TRIGGER IF EXISTS {trigger}")
 
     def post_journal(self, *, period_id, lines, source_id, description="core gate journal"):
         jid = new_id("jrn")
@@ -375,79 +576,6 @@ class RecordingUnavailable(ERPNextAdapter):
         raise AssertionError("an unavailable adapter must not be driven")
 
 
-def _largest_remainder(amount: Decimal, weights) -> list[Decimal]:
-    cent = Decimal("0.01")
-    ws = [D(w) for w in weights]
-    exact = [amount * w / sum(ws) for w in ws]
-    parts = [e.quantize(cent, rounding=ROUND_DOWN) for e in exact]
-    for i in sorted(range(len(ws)), key=lambda i: exact[i] - parts[i], reverse=True)[: int((amount - sum(parts)) / cent)]:
-        parts[i] += cent
-    return parts
-
-
-class SimulatedCoreFixes(NativeCipherAdapter):
-    """TEST ONLY: the native adapter with each documented core gap closed inside the
-    adapter, standing in for the core fixes.  It shows that every hard gate can be
-    passed and that the gates do not fail by construction.  It is not evidence about
-    the native core."""
-
-    candidate = "simulated_core_fixes"
-
-    def reset(self, path=None):
-        super().reset(path)
-        self.c.db.execute("CREATE TRIGGER IF NOT EXISTS sim_periods_locked BEFORE UPDATE ON periods WHEN OLD.status = 'locked' "
-                          "BEGIN SELECT RAISE(ABORT, 'locked periods are immutable'); END")
-
-    @staticmethod
-    def _finite(value: Decimal) -> Decimal:
-        if not value.is_finite():
-            raise MoneyError(f"non-finite amount {value}")
-        return value
-
-    def to_money(self, value):
-        return self._finite(super().to_money(value))
-
-    def add_money(self, a, b):
-        return self._finite(super().add_money(a, b))
-
-    def sum_money(self, values):
-        return self._finite(super().sum_money(values))
-
-    def allocate(self, amount, weights):
-        return _largest_remainder(self.to_money(amount), weights)
-
-    def privileged_insert_line(self, journal_id):
-        raise sqlite3.IntegrityError("posted journal lines are immutable")  # stands in for a sealed-journal trigger
-
-    def _guard(self):
-        self.c.db.require_write_authority()
-
-    def post_journal(self, **kwargs):
-        self._guard()
-        return super().post_journal(**kwargs)
-
-    def record_collection(self, *args, **kwargs):
-        self._guard()
-        return super().record_collection(*args, **kwargs)
-
-    def reopen_period(self, period_id, approval_ref):
-        if approval_ref and not self.approval_exists(approval_ref):
-            raise LedgerError(f"approval reference {approval_ref} is not a recorded approval")
-        super().reopen_period(period_id, approval_ref)
-
-    def claim_write_authority(self, approval_ref):
-        if approval_ref and not self.approval_exists(approval_ref):
-            raise WriteAuthorityError(f"approval reference {approval_ref} is not a recorded approval")
-        super().claim_write_authority(approval_ref)
-
-    def complete_recovery(self):
-        for intent in self.c.payments.list(status="queued"):  # ask the provider before anything is replayed
-            found = self.c.provider.lookup(intent["logical_op_id"])
-            if found["found"]:
-                self.c.payments._accept(intent["id"], provider_ref=found["provider_ref"], actor="gate-reconciler")
-        return super().complete_recovery()
-
-
 def _walk(value):
     if isinstance(value, dict):
         for v in value.values():
@@ -467,6 +595,10 @@ def _text(gate):
     return "\n".join(gate["evidence"])
 
 
+def _fails(result):
+    return "\n".join(e for g in result["gates"] for e in g["evidence"] if e.startswith("FAIL"))
+
+
 # --------------------------------------------------------------------------- #
 # Native core                                                                  #
 # --------------------------------------------------------------------------- #
@@ -474,44 +606,66 @@ def _text(gate):
 class NativeGateTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        cls.secret_before = os.environ.get(OWNER_SECRET_ENV)
         cls.adapter = NativeCipherAdapter()
         cls.result = evaluate_candidate(cls.adapter)
+        cls.secret_after = os.environ.get(OWNER_SECRET_ENV)
         cls.gates = {g["gate"]: g for g in cls.result["gates"]}
         cls.failed = set(cls.result["failed_checks"])
-        cls.gaps = probe_core_gaps()
+        cls.probes = probe_core()
 
     def evidence(self, gate_id):
         return _text(self.gates[gate_id])
 
-    def test_failures_are_limited_to_documented_core_gaps(self):
+    def test_native_core_passes_every_hard_gate(self):
         self.assertEqual([g["gate"] for g in self.result["gates"]], list(GATE_IDS))
-        self.assertLessEqual(self.failed, set(CORE_GAPS), "\n".join(e for g in self.result["gates"] for e in g["evidence"] if e.startswith("FAIL")))
-        gap_gates = {key.split(".")[0].upper() for key in CORE_GAPS}
+        self.assertEqual(self.result["hard_gate_summary"], {"pass": 9, "fail": 0, "not_run": 0}, _fails(self.result))
+        self.assertEqual(self.result["failed_checks"], [], _fails(self.result))
+        self.assertEqual(self.result["disqualified_by"], [])
+        self.assertEqual(self.result["status"], "scored")
         for gate_id in GATE_IDS:
-            if gate_id not in gap_gates:
-                with self.subTest(gate=gate_id):
-                    self.assertEqual(self.gates[gate_id]["status"], "pass", self.evidence(gate_id))
+            with self.subTest(gate=gate_id):
+                self.assertEqual(self.gates[gate_id]["status"], "pass", self.evidence(gate_id))
+        self.assertEqual(self.result["hard_check_summary"]["failed"], 0)
 
-    def test_each_documented_gap_is_reported_exactly_when_the_core_has_it(self):
-        for key, (_, fragment) in CORE_GAPS.items():
-            gate_id = key.split(".")[0].upper()
-            with self.subTest(check=key, present=self.gaps[key]):
-                self.assertEqual(key in self.failed, self.gaps[key], self.evidence(gate_id))
-                if self.gaps[key]:
-                    self.assertIn(fragment, self.evidence(gate_id))
-                    self.assertEqual(self.gates[gate_id]["status"], "fail")
+    def test_every_hard_check_ran(self):
+        """No check may silently disappear from a gate: the per-gate counts are pinned."""
+        probed = [name for name in PROBED_PLUGINS if f"plugin path {name}." in self.evidence("G4")]
+        expected = dict(CHECKS_PER_GATE, G4=CHECKS_PER_GATE["G4"] + 2 * len(probed))
+        self.assertEqual({g: self.gates[g]["checks"]["total"] for g in GATE_IDS}, expected)
+        self.assertEqual(self.result["hard_check_summary"]["total"], sum(expected.values()))
+        self.assertEqual(self.result["hard_check_summary"]["passed"], sum(expected.values()))
+
+    def test_each_former_gap_is_closed_in_the_core(self):
+        for key, (probe, fragment) in FORMER_GAPS.items():
+            with self.subTest(check=key):
+                self.assertFalse(self.probes[probe], f"the core has the {key} gap again")
+                self.assertNotIn(key, self.failed, self.evidence(key.split(".")[0].upper()))
+                self.assertNotIn(fragment, self.evidence(key.split(".")[0].upper()))
+
+    def test_the_native_core_is_scored_from_the_executed_checks(self):
+        rows = {row["criterion"]: row for row in self.result["scores"]}
+        self.assertEqual(set(rows), set(WEIGHTS))
+        hard = self.result["hard_check_summary"]
+        advisories = self.result["advisories"]
+        passed = hard["passed"] + sum(1 for adv in advisories if adv["status"] == "pass")
+        executed = hard["total"] + len(advisories)
+        control = (Decimal(5) * passed / executed).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        self.assertEqual(rows["accounting_control_fit"]["score"], f"{control:f}")
+        self.assertTrue(rows["accounting_control_fit"]["rationale"].startswith(f"COMPUTED from the gates: {passed} of {executed} executed control checks passed"))
+        expected = Decimal(0)
+        for row in rows.values():
+            self.assertEqual(row["basis"], "computed" if row["criterion"] == "accounting_control_fit" else "ASSUMPTION")
+            expected += Decimal(row["score"]) * row["weight"] / Decimal(100)
+        self.assertEqual(self.result["weighted_total"], f"{expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):f}")
+        if self.result["open_advisories"]:
+            self.assertLess(control, Decimal("5.00"))  # open advisories lower the control-fit score
 
     def test_status_follows_the_hard_gates(self):
         failing = [g["gate"] for g in self.result["gates"] if g["checks"]["failed"]]
         self.assertEqual(self.result["disqualified_by"], failing)
         self.assertEqual(self.result["hard_gate_summary"]["fail"], len(failing))
         self.assertEqual(self.result["hard_check_summary"]["failed"], len(self.result["failed_checks"]))
-        if failing:
-            self.assertEqual(self.result["status"], "disqualified")
-            self.assertIsNone(self.result["scores"])
-            self.assertIsNone(self.result["weighted_total"])
-        else:
-            self.assertEqual(self.result["status"], "scored")
 
     def test_gate_result_shape(self):
         for g in self.result["gates"]:
@@ -524,23 +678,40 @@ class NativeGateTests(unittest.TestCase):
                 self.assertTrue(line.startswith(("PASS: ", "FAIL: ", "INFO: ")), line)
 
     def test_evidence_carries_concrete_numbers_and_refusal_reasons(self):
-        self.assertIn("0.1 + 0.2 = 0.30 exactly", self.evidence("G1"))
-        self.assertIn("33.34 + 33.33 + 33.33 = 100.00", self.evidence("G1"))
-        self.assertIn("2.675 -> 2.68", self.evidence("G1"))
-        self.assertIn("debits 100.00, credits 99.99", self.evidence("G2"))
-        self.assertIn("journals 1 -> 1", self.evidence("G2"))
-        self.assertIn("UPDATE journal_lines SET debit=9999.00 refused (IntegrityError: posted journal lines are immutable)", self.evidence("G3"))
-        self.assertIn("period G4-SVC closed holding 1 journal; bill of 18000.00", self.evidence("G4"))
-        self.assertIn("service path: executing the granted bill approval into the closed period refused (PeriodNotOpen: period G4-SVC is closed); journals 1 -> 1",
-                      self.evidence("G4"))
-        self.assertIn("raw INSERT of a journal header into the locked period refused (IntegrityError: period is not open for posting)", self.evidence("G4"))
+        g1, g2, g3, g4, g7, g8 = (self.evidence(g) for g in ("G1", "G2", "G3", "G4", "G7", "G8"))
+        self.assertIn("0.1 + 0.2 = 0.30 exactly", g1)
+        self.assertIn("33.34 + 33.33 + 33.33 = 100.00", g1)
+        self.assertIn("0.01 + 0.01 + 0.01 + 0.01 + 0.01 + 0.00 + 0.00 = 0.05", g1)
+        self.assertIn("2.675 -> 2.68", g1)
+        self.assertIn("non-finite amounts are refused by the money control (0 of 7 accepted, 0 refused for another reason)", g1)
+        self.assertIn("to_money('sNaN') refused (MoneyError: non-finite monetary value is not allowed", g1)
+        self.assertIn("debits 100.00, credits 99.99", g2)
+        self.assertIn("journals 1 -> 1", g2)
+        self.assertIn("(Dr 5000 100.00, Cr 2000 99.99) in open period G2 refused (IntegrityError: journal does not balance: its sealed lines must carry equal debits and credits)", g2)
+        self.assertIn("holds fewer lines than its sealed line count", g2)
+        self.assertIn("UPDATE journal_lines SET debit=9999.00 refused (IntegrityError: posted journal lines are immutable)", g3)
+        self.assertRegex(g3, r"PASS: the correction went through the governed path: reversal \S+ carries approval apr_\w+ \(recorded: True, status consumed\)")
+        self.assertIn("refused (IntegrityError: posted journals are immutable: the journal already holds its sealed line count); "
+                      "that journal is now Dr 100.00 / Cr 100.00 over 2 lines (fingerprint unchanged)", g3)
+        self.assertIn("period G4-SVC closed holding 1 journal; bill of 18000.00", g4)
+        self.assertIn("service path: executing the granted bill approval into the closed period refused (PeriodNotOpen: period G4-SVC is closed); journals 1 -> 1", g4)
+        self.assertIn("raw INSERT of a journal header into the locked period refused (IntegrityError: period is not open for posting)", g4)
+        self.assertIn("raw UPDATE setting locked period G4-SVC back to open refused (IntegrityError: locked periods are immutable); the period is locked", g4)
+        self.assertIn("privileged path: a raw UPDATE reopening closed period G4-REOPEN citing 'apr_gate_unrecorded_reopen' refused "
+                      "(IntegrityError: reopening a closed period requires a consumed reopen_period approval", g4)
+        self.assertIn("recorded reopens of G4-REOPEN 1 -> 1", g4)
         self.assertIn("conflicts", self.evidence("G5"))
         self.assertIn("27000.00 -> 27000.01", self.evidence("G6"))
         self.assertIn("110000.00", self.evidence("G6"))
-        self.assertIn("8 of 8 required immutability/period-lock triggers", self.evidence("G7"))
-        self.assertRegex(self.evidence("G7"), r"the export holds every audit row: (\d+) exported, chain count \1, \1 rows in the audit log")
-        self.assertIn("provider transfers 1 -> 1, submissions 1 -> 1 (no resubmission)", self.evidence("G8"))
-        self.assertIn("refused (WriteAuthorityError", self.evidence("G8"))
+        self.assertIn(f"{len(REQUIRED_TRIGGERS)} of {len(REQUIRED_TRIGGERS)} required control triggers", g7)
+        self.assertRegex(g7, r"the export holds every audit row: (\d+) exported, chain count \1, \1 rows in the audit log")
+        self.assertIn("record_collection action for 4500.00 refused (WriteAuthorityError: write refused: this workspace connection is read-only", g8)
+        self.assertIn("switching the read-only guard off from that session refused (WriteAuthorityError: PRAGMA query_only is managed by the write-authority controls", g8)
+        self.assertIn("a fabricated credential 'apr_gate_unrecorded_claim' refused (WriteAuthorityError: claiming write authority requires a valid owner claim code", g8)
+        self.assertIn("credential verified True) gives write authority True", g8)
+        self.assertIn("provider transfers 1 -> 1, submissions 1 -> 1 (no resubmission)", g8)
+        self.assertIn("(intent statuses now accepted)", g8)
+        self.assertIn("(0 resubmission(s))", g8)
         self.assertIn("AP: open-bill subledger 18000.00 = GL 2000 18000.00", self.evidence("G9"))
         self.assertIn("AR: open prime-bill subledger 54000.00 = GL 1100 54000.00", self.evidence("G9"))
 
@@ -561,39 +732,46 @@ class NativeGateTests(unittest.TestCase):
     def test_workspaces_are_released_and_the_drill_cleans_up(self):
         self.assertIsNone(self.adapter.c)
         self.assertIn("temporary workspace removed after the drill: True", self.evidence("G8"))
+        self.assertEqual(self.secret_after, self.secret_before)  # the drill's owner secret is never left configured
 
     def test_g5_advisory_attributes_transfers_correctly(self):
         adv = next(a for a in self.result["advisories"] if a["gate"] == "G5")
         self.assertIn("1 is the bill's first, legitimate release", adv["observed"])
         self.assertEqual(self.result["open_advisories"], sum(1 for a in self.result["advisories"] if a["status"] == "open"))
 
+    def test_g8_advisories_match_direct_probes_of_the_claim(self):
+        g8 = [a for a in self.result["advisories"] if a["gate"] == "G8"]
+        self.assertEqual(len(g8), 2, g8)
+        default, sibling = g8
+        self.assertIn("even in the default configuration", default["check"])
+        self.assertIn("cannot authorise a sibling copy", sibling["check"])
+        for adv, probe in ((default, "default_config_claim"), (sibling, "sibling_claim")):
+            with self.subTest(advisory=adv["check"]):
+                self.assertEqual(adv["status"], "open" if self.probes[probe] else "pass", adv["observed"])
+                if self.probes[probe]:
+                    self.assertIn("was ACCEPTED; effective write authority afterwards True", adv["observed"])
+
     def test_result_has_no_binary_floats(self):
         self.assertFalse([v for v in _walk(self.result) if isinstance(v, float)])
         json.dumps(self.result)  # serialisable as is
 
 
-class SimulatedFixTests(unittest.TestCase):
-    """With the documented gaps closed (inside a test adapter), every hard gate passes."""
+class ReintroducedGapTests(unittest.TestCase):
+    """The native core passes, so prove the gates still fail: re-open each former gap in a
+    test adapter and the gate must fail exactly the checks that gap breaks."""
 
-    def test_every_hard_gate_passes_when_the_gaps_are_closed(self):
-        result = evaluate_candidate(SimulatedCoreFixes())
-        for g in result["gates"]:
-            with self.subTest(gate=g["gate"]):
-                self.assertEqual(g["status"], "pass", _text(g))
-        self.assertEqual(result["hard_gate_summary"], {"pass": 9, "fail": 0, "not_run": 0})
-        self.assertEqual(result["status"], "scored")
-        self.assertEqual(result["failed_checks"], [])
-        rows = {row["criterion"]: row for row in result["scores"]}
-        self.assertEqual(set(rows), set(WEIGHTS))
-        self.assertTrue(rows["accounting_control_fit"]["rationale"].startswith("COMPUTED"))
-        expected = Decimal(0)
-        for row in rows.values():
-            self.assertEqual(row["basis"], "computed" if row["criterion"] == "accounting_control_fit" else "ASSUMPTION")
-            expected += Decimal(row["score"]) * row["weight"] / Decimal(100)
-        self.assertEqual(result["weighted_total"], f"{expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP):f}")
-        g8 = _text(_gate(result, "G8"))
-        self.assertIn("record_collection action for 4500.00 refused (WriteAuthorityError", g8)
-        self.assertIn("(0 resubmission(s))", g8)
+    def test_each_reintroduced_gap_fails_its_gate_with_the_documented_evidence(self):
+        secret_before = os.environ.get(OWNER_SECRET_ENV)
+        self.assertEqual(set(REINTRODUCED), set(FORMER_GAPS))
+        for key, (adapter_cls, expected) in REINTRODUCED.items():
+            gate_id = key.split(".")[0].upper()
+            with self.subTest(check=key, adapter=adapter_cls.candidate):
+                g = run_gate(gate_id, adapter_cls())
+                self.assertEqual(g["status"], "fail", _text(g))
+                self.assertEqual(set(g["failed_checks"]), expected, _text(g))
+                self.assertIn(FORMER_GAPS[key][1], _text(g))
+                self.assertNotIn(f"{gate_id.lower()}.aborted", g["failed_checks"])
+        self.assertEqual(os.environ.get(OWNER_SECRET_ENV), secret_before)
 
 
 # --------------------------------------------------------------------------- #
@@ -624,6 +802,10 @@ class ERPNextAdapterTests(unittest.TestCase):
             ERPNextAdapter().reset()
         with self.assertRaises(NotImplementedError):
             ERPNextAdapter().post_journal(period_id="P1", lines=[], source_id="x")
+        with self.assertRaises(NotImplementedError):
+            ERPNextAdapter().claim_write_authority("x")
+        with self.assertRaises(NotImplementedError):
+            ERPNextAdapter().privileged_insert_raw_journal("P1", [], None)
         self.assertEqual(ERPNextAdapter().refusal_markers(), {})
 
 
@@ -646,6 +828,8 @@ class BrokenAdapterTests(unittest.TestCase):
         self.assertIsNone(result["scores"])
         g2 = _gate(result, "G2")
         self.assertTrue(any(e.startswith("FAIL: unbalanced journal (debits 100.00, credits 99.99)") for e in g2["evidence"]), g2["evidence"])
+        self.assertFailedWith(g2, ["g2.invalid.1", "g2.raw_header_only_refused", "g2.raw_unbalanced_refused", "g2.all_balanced"],
+                              "privileged path: a raw journal of 2 lines that does not balance (Dr 5000 100.00, Cr 2000 99.99) in open period G2 was ACCEPTED")
 
     def test_adapter_that_allows_an_update_fails_g3(self):
         result = evaluate_candidate(AllowsJournalUpdate())
@@ -675,7 +859,12 @@ class BrokenAdapterTests(unittest.TestCase):
 
     def test_malformed_raw_insert_is_not_counted_as_a_period_lock(self):
         g4 = run_gate("G4", MalformedInsertWithoutPeriodTriggers())
-        self.assertFailedWith(g4, ["g4.raw_header_closed", "g4.raw_line_closed"], "table journals has no column named period_idd")
+        self.assertFailedWith(g4, ["g4.raw_header_closed", "g4.raw_header_locked"], "table journals has no column named period_idd")
+        # With the period triggers gone, the raw line INSERT onto the closed period's posted
+        # journal is still refused, by the journal seal: an expected (immutability) control.
+        self.assertNotIn("g4.raw_line_closed", g4["failed_checks"], _text(g4))
+        self.assertIn("raw INSERT of a line onto the closed period's journal refused (IntegrityError: posted journals are immutable: "
+                      "the journal already holds its sealed line count)", _text(g4))
 
     def test_plugin_probe_on_a_missing_subject_fails(self):
         g4 = run_gate("G4", PluginProbeOnMissingSubject())
@@ -777,21 +966,18 @@ class ScorecardTests(unittest.TestCase):
         finally:
             shutil.rmtree(out_dir, ignore_errors=True)
         native = written["candidates"][0]
-        passes = written["native_passes_all_hard_gates"]
-        self.assertEqual(code, 0 if passes else 1)
+        self.assertTrue(written["native_passes_all_hard_gates"], native["failed_checks"])
+        self.assertEqual(code, 0)
+        self.assertEqual(written["version"], "cipher-core-gates/3")
         self.assertEqual(printed["weights_total"], 100)
         self.assertEqual([c["candidate"] for c in written["candidates"]], ["native_cipher", "erpnext"])
-        self.assertEqual([c["status"] for c in written["candidates"]], ["scored" if passes else "disqualified", "not_evaluated"])
-        self.assertEqual(written["native_failed_checks"], native["failed_checks"])
+        self.assertEqual([c["status"] for c in written["candidates"]], ["scored", "not_evaluated"])
+        self.assertEqual(written["native_failed_checks"], [])
         self.assertEqual([g["gate"] for g in written["hard_gates"]], list(GATE_IDS))
         self.assertTrue(written["does_not_prove"])
-        if passes:
-            self.assertIn("ASSUMPTIONS", written["decision_note"])
-        else:
-            self.assertIsNone(native["scores"])
-            self.assertIn("No foundation can be selected", written["decision_note"])
-            for gate_id in native["disqualified_by"]:
-                self.assertIn(gate_id, written["decision_note"])
+        self.assertIn("ASSUMPTIONS", written["decision_note"])
+        self.assertIn("only native_cipher was scored", written["decision_note"])
+        self.assertIsNotNone(native["weighted_total"])
 
     def test_cli_exits_zero_when_every_hard_gate_passes(self):
         def passing(adapter, recorder):
@@ -824,6 +1010,7 @@ class ScorecardTests(unittest.TestCase):
         self.assertEqual(printed["candidates"][0]["status"], "disqualified")
         self.assertEqual(printed["candidates"][0]["disqualified_by"], ["G3"])
         self.assertEqual(printed["native_failed_checks"], ["g3.stub"])
+        self.assertIn("No foundation can be selected", printed["decision_note"])
 
 
 if __name__ == "__main__":

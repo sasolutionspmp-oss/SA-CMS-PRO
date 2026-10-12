@@ -4,21 +4,25 @@ Payments leave through the core payment outbox: executing ``reimbursement.pay``
 queues a payment intent (the payment is ``in_flight``); ``c.dispatch_payments()``
 lets the simulated provider accept it (Dr 2100 / Cr 1200, payment ``booked``);
 a settlement event then moves the bank (Dr 1200 / Cr 1000)."""
+import os
+import shutil
 import sqlite3
+import tempfile
 import unittest
 from decimal import Decimal
 
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.ledger import PeriodNotOpen
+from apps.cipher.domain.payments import ReleaseQuarantined
 from apps.cipher.domain.reimbursements import PLUGIN_NAME, ReimbursementError
 from apps.cipher.service import Cipher
 
 
 class Scenario:
-    """Fresh in-memory workspace: employee with a verified destination, supplier, customer, project, open period P1."""
+    """Fresh workspace (in memory unless ``path`` is given): employee with a verified destination, supplier, customer, project, open period P1."""
 
-    def __init__(self):
-        self.c = Cipher()
+    def __init__(self, path: str = ":memory:"):
+        self.c = Cipher(path)
         self.r = self.c.plugin(PLUGIN_NAME)
         self.employee = self.c.add_party(kind="employee", name="Field Engineer", destination="ACH-EMP-1")
         self.employee = self.c.verify_destination(self.employee["id"], destination="ACH-EMP-1", verified_by="owner")
@@ -469,7 +473,9 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         self.assertEqual(sorted(i["claim_id"] for i in rec["items"]), sorted([a["id"], b["id"]]))
 
         st = self.r.state(self.s.project["id"])
-        self.assertEqual(set(st), {"claims", "payments", "billings", "reconciliation"})
+        self.assertEqual(set(st), {"claims", "payments", "billings", "collections", "reconciliation", "receivable"})
+        self.assertEqual((st["receivable"]["subledger_total"], st["receivable"]["ledger_postings"], st["receivable"]["reconciled_to_postings"]), ("120.00", "120.00", True))
+        self.assertEqual(st["collections"], [])
         self.assertEqual([c["id"] for c in st["claims"]], [a["id"], b["id"], pending["id"]])
         first = st["claims"][0]
         self.assertEqual(first["outstanding"], "80.00")
@@ -490,7 +496,10 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         self.assertTrue(full["audit_chain"]["ok"])
         # an empty project reconciles trivially
         empty = self.c.create_project(name="Empty", entity="E", budget="0")
-        self.assertEqual(self.r.state(empty["id"]), {"claims": [], "payments": [], "billings": [], "reconciliation": {"items": [], "subledger_total": "0.00", "in_flight_total": "0.00", "control_balance": "0.00", "reconciled": True}})
+        empty_state = self.r.state(empty["id"])
+        self.assertEqual({k: v for k, v in empty_state.items() if k != "receivable"},
+                         {"claims": [], "payments": [], "billings": [], "collections": [], "reconciliation": {"items": [], "subledger_total": "0.00", "in_flight_total": "0.00", "control_balance": "0.00", "reconciled": True}})
+        self.assertEqual((empty_state["receivable"]["items"], empty_state["receivable"]["subledger_total"], empty_state["receivable"]["reconciled_to_postings"]), ([], "0.00", True))
 
     def test_claim_status_transitions_are_enforced_by_schema(self):
         submitted = self.s.claim("10.00")
@@ -750,6 +759,313 @@ class ReimbursementVoidTests(unittest.TestCase):
         self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
         self.assertTrue(self.c.ledger.trial_balance()["balanced"])
         self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+
+class ReimbursementReceivableTests(unittest.TestCase):
+    """Billings debit 1100; collections (and only collections, or a reversal of the billing
+    journal) clear them, so the AR items reconcile to the 1100 postings they made."""
+
+    def setUp(self):
+        self.s = Scenario()
+        self.c = self.s.c
+        self.r = self.s.r
+        self.pid = self.s.project["id"]
+
+    def billed(self, amount="120.00"):
+        cl = self.s.approved_claim(amount)
+        b = self.r.create_billing(cl["id"], amount, actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", b["id"], period_id="P1")
+        return self.r.billing(b["id"])
+
+    def assertReceivable(self, open_total):
+        ar = self.r.ar_open_items(self.pid)
+        self.assertEqual((ar["subledger_total"], ar["ledger_postings"], ar["reconciled_to_postings"]), (open_total, open_total, True))
+        self.assertEqual(self.c.ledger.balance("1100", project_id=self.pid), Decimal(open_total))
+        checks = {chk["check"]: chk for chk in self.r.close_checks("P1")}
+        self.assertTrue(checks["reimbursement billings receivable matches its 1100 postings"]["ok"])
+        rec = self.c.receivables.ar_open_items(self.pid)
+        if Decimal(rec["subledger_total"]) != 0:  # the receivables domain includes this source in its AR subledger
+            self.assertTrue(rec["reconciled"], rec)
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+        return ar
+
+    def test_collections_clear_the_billing_receivable(self):
+        b = self.billed("120.00")
+        ar = self.assertReceivable("120.00")
+        self.assertEqual([(i["kind"], i["billing_id"], i["amount_due"], i["received"], i["open"]) for i in ar["items"]],
+                         [("reimbursement_billing", b["id"], "120.00", "0.00", "120.00")])
+        col = self.r.record_billing_collection(b["id"], "50.00", period_id="P1", provider_ref="ach-sim-rb-0001", fee="1.00", actor="treasury")
+        self.assertEqual((col["amount"], col["fee"], col["billing_id"], col["period_id"]), ("50.00", "1.00", b["id"], "P1"))
+        j = self.c.ledger.journal(col["journal_id"])
+        self.assertEqual([(ln["account_code"], ln["debit"], ln["credit"]) for ln in j["lines"]],
+                         [("1000", "49.00", "0.00"), ("6000", "1.00", "0.00"), ("1100", "0.00", "50.00")])
+        self.assertTrue(all(ln["project_id"] == self.pid and ln["party_id"] == self.s.customer["id"] for ln in j["lines"]))
+        ar = self.assertReceivable("70.00")
+        self.assertEqual((ar["items"][0]["received"], ar["items"][0]["open"]), ("50.00", "70.00"))
+        self.assertEqual((self.c.ledger.balance("1000"), self.c.ledger.balance("6000")), (Decimal("49.00"), Decimal("1.00")))
+        bad = [
+            dict(amount="20.00", provider_ref="ach-sim-rb-0001"),  # the same receipt twice
+            dict(amount="70.01", provider_ref="ach-sim-rb-0002"),  # more than is open
+            dict(amount="10.00", provider_ref="ach-sim-rb-0003", fee="10.01"),  # fee above the receipt
+            dict(amount="10.00", provider_ref="ach-sim-rb-0004", fee="-0.01"),
+            dict(amount="0", provider_ref="ach-sim-rb-0005"),
+            dict(amount="10.00", provider_ref="  "),
+        ]
+        for kwargs in bad:
+            with self.assertRaises(ReimbursementError, msg=str(kwargs)):
+                self.r.record_billing_collection(b["id"], kwargs.pop("amount"), period_id="P1", actor="treasury", **kwargs)
+        self.assertReceivable("70.00")
+        self.r.record_billing_collection(b["id"], "70.00", period_id="P1", provider_ref="ach-sim-rb-0006", actor="treasury")
+        ar = self.assertReceivable("0.00")
+        self.assertEqual(ar["items"][0]["open"], "0.00")
+        with self.assertRaises(ReimbursementError):
+            self.r.record_billing_collection(b["id"], "0.01", period_id="P1", provider_ref="ach-sim-rb-0007", actor="treasury")
+        self.assertEqual(len(self.r.collections(self.pid)), 2)
+        self.assertEqual(self.r.ar_open_items(self.c.create_project(name="Other", entity="E", budget="0")["id"])["items"], [])
+
+    def test_only_posted_billings_in_open_periods_are_collected(self):
+        cl = self.s.approved_claim("80.00")
+        draft = self.r.create_billing(cl["id"], "80.00", actor="pm")
+        with self.assertRaises(ReimbursementError):
+            self.r.record_billing_collection(draft["id"], "10.00", period_id="P1", provider_ref="ach-sim-rb-0100", actor="treasury")
+        self.c.approve_and_execute("reimbursement.bill", draft["id"], period_id="P1")
+        self.c.close_period("P1")
+        journals = self.c.ledger.trial_balance()["journal_count"]
+        with self.assertRaises(PeriodNotOpen):
+            self.r.record_billing_collection(draft["id"], "10.00", period_id="P1", provider_ref="ach-sim-rb-0101", actor="treasury")
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], journals)
+        self.assertEqual(self.r.collections(self.pid), [])
+        self.c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        col = self.r.record_billing_collection(draft["id"], "80.00", period_id="P2", provider_ref="ach-sim-rb-0101", actor="treasury")
+        self.assertEqual(self.c.ledger.journal(col["journal_id"])["period_id"], "P2")
+        self.assertReceivable("0.00")
+
+    def test_collections_are_immutable_and_cite_their_own_journal(self):
+        b = self.billed("60.00")
+        col = self.r.record_billing_collection(b["id"], "60.00", period_id="P1", provider_ref="ach-sim-rb-0200", actor="treasury")
+        db = self.c.db
+        for sql, params in (
+            ("UPDATE reimbursement_collections SET amount='1.00' WHERE id=?", (col["id"],)),
+            ("DELETE FROM reimbursement_collections WHERE id=?", (col["id"],)),
+            ("INSERT INTO reimbursement_collections (id, billing_id, amount, fee, provider_ref, journal_id, period_id, received_at, recorded_by) "
+             "VALUES ('rcol_forged', ?, '5.00', '0.00', 'forged', ?, 'P1', 't', 'x')", (b["id"], col["journal_id"])),  # another collection's journal
+        ):
+            with self.assertRaises(sqlite3.DatabaseError, msg=sql):
+                db.execute(sql, params)
+        self.assertReceivable("0.00")
+
+    def test_a_reversed_billing_journal_clears_the_receivable(self):
+        b = self.billed("45.00")
+        self.c.ledger.reverse(b["journal_id"], period_id="P1", posted_by="controller", reason="billed to the wrong customer (synthetic)")
+        ar = self.assertReceivable("0.00")
+        self.assertEqual((ar["items"][0]["reversed"], ar["items"][0]["open"]), ("45.00", "0.00"))
+        with self.assertRaises(ReimbursementError):
+            self.r.record_billing_collection(b["id"], "45.00", period_id="P1", provider_ref="ach-sim-rb-0300", actor="treasury")
+
+
+class ReimbursementPaymentControlTests(unittest.TestCase):
+    """Reimbursement payments under the core payment controls: canceled intents, transfer
+    terms bound by the approval, and the kill switch."""
+
+    def setUp(self):
+        self.s = Scenario()
+        self.c = self.s.c
+        self.r = self.s.r
+
+    def test_canceled_intent_puts_the_payment_back_to_draft_and_keeps_the_claim_payable(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        res = self.s.release(p["id"])
+        released = self.r.payment(p["id"])
+        journals = self.c.ledger.trial_balance()["journal_count"]
+        self.assertEqual(self.r.outstanding(cl["id"]), Decimal("80.00"))
+        out = self.c.payments.cancel_intent(res.result["intent"], "employee asked for a single payment", "treasury")
+        self.assertEqual(out["status"], "canceled")
+        self.assertEqual((out["source_type"], out["source_id"]), ("reimbursement_payment", p["id"]))  # the canceled intent still names the payment
+        pay = self.r.payment(p["id"])
+        self.assertEqual((pay["status"], pay["intent_id"], pay["approval_id"], pay["journal_id"], pay["released_at"]), ("draft", None, None, None, None))
+        self.assertEqual(pay["version"], released["version"] + 1)
+        claim = self.r.claim(cl["id"])
+        self.assertEqual((claim["status"], claim["outstanding"], claim["in_flight"], claim["paid"]), ("approved", "120.00", "0.00", "0.00"))
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("120.00"))
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], journals)
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        self.assertTrue(all(chk["ok"] for chk in self.r.close_checks("P1")))
+        reopened = [e for e in self.c.audit.entries(entity_id=p["id"]) if e["action"] == "reimbursement.payment_reopened"]
+        self.assertEqual(len(reopened), 1)
+        self.assertEqual(self.c.dispatch_payments(), [])
+        self.assertEqual(len(self.c.provider.submissions), 0)
+        # the consumed approval cannot release it again: the reopened draft needs a fresh approval
+        first_approval = res.op_id.split(":", 1)[1]
+        self.assertTrue(self.c.execute(first_approval, actor="treasury", period_id="P1").replayed)  # a replay only returns the stored result
+        with self.assertRaises(ApprovalConsumed):
+            self.c.execute(first_approval, actor="treasury", op_id="exec-again-after-cancel", period_id="P1")
+        self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(len(self.c.commands.pending("payment")), 0)
+        # the drafted amount is reserved again, so nothing can overpay the claim
+        with self.assertRaises(ReimbursementError):
+            self.r.record_payment(cl["id"], "120.00", actor="treasury")
+        again = self.s.release(p["id"])
+        self.assertNotEqual(again.result["intent"], res.result["intent"])
+        self.assertEqual(self.r.payment(p["id"])["status"], "in_flight")
+        self.assertEqual([d["status"] for d in self.c.dispatch_payments()], ["accepted"])
+        self.assertEqual(self.r.payment(p["id"])["status"], "booked")
+        rest = self.r.record_payment(cl["id"], "80.00", actor="treasury")
+        self.s.pay(rest["id"])
+        self.s.settle(p["id"])
+        self.assertEqual(self.r.claim(cl["id"])["status"], "paid")
+        self.assertEqual((self.c.ledger.balance("2100"), self.c.ledger.balance("1000")), (Decimal("0.00"), Decimal("-120.00")))
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        self.assertTrue(all(chk["ok"] for chk in self.r.close_checks("P1")))
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_a_reopened_draft_can_be_canceled_and_raw_reopening_is_refused(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        self.s.release(p["id"])
+        db = self.c.db
+        # an in-flight payment cannot be reopened while its intent is still queued
+        with self.assertRaisesRegex(sqlite3.DatabaseError, "follow their payment intent"):
+            db.execute("UPDATE reimbursement_payments SET status='draft', intent_id=NULL, approval_id=NULL WHERE id=?", (p["id"],))
+        self.c.payments.cancel_intent(self.r.payment(p["id"])["intent_id"], "drill", "treasury")
+        self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(self.r.cancel_payment(p["id"], actor="treasury", reason="not needed")["status"], "canceled")
+        self.assertEqual(self.r.claim(cl["id"])["outstanding"], "120.00")
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+
+    def test_pay_manifest_binds_the_transfer_terms(self):
+        from apps.cipher.core.ids import utcnow
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        ap = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
+        m = ap["manifest"]
+        self.assertEqual((m["entity"], m["currency"]), ("E", "USD"))
+        self.assertEqual((m["bindings"]["fees"], m["bindings"]["value_date"]), ("0.00", utcnow().date().isoformat()))
+        self.c.approve(ap["id"], approver="treasury", approver_role="treasury")
+        self.c.provider.fee = "0.25"  # the provider's fee changes after the grant
+        with self.assertRaises(StaleApprovalError):
+            self.c.execute(ap["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(self.c.payments.list(), [])
+        res = self.s.release(p["id"])  # approved at the new fee
+        intent = self.c.payments.get(res.result["intent"])
+        self.assertEqual((intent["fee"], intent["entity"], intent["currency"]), ("0.25", "E", "USD"))
+        self.c.dispatch_payments()
+        self.s.settle(p["id"])
+        self.assertEqual((self.c.ledger.balance("2100"), self.c.ledger.balance("1000"), self.c.ledger.balance("6000")),
+                         (Decimal("80.00"), Decimal("-40.25"), Decimal("0.25")))
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+
+    def test_kill_switch_refuses_a_reimbursement_release(self):
+        from apps.cipher.domain.payments import KillSwitchEngaged
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        ap = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
+        self.c.approve(ap["id"], approver="treasury", approver_role="treasury")
+        self.c.payments.engage_kill_switch("treasury drill", "owner")
+        self.assertEqual(self.c.ricky.propose("reimbursement.pay", actor_role="treasury", context={"payment_id": p["id"]})["decision"], "abstained")
+        with self.assertRaises(KillSwitchEngaged):
+            self.c.execute(ap["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        self.c.approve_and_execute("payment.resume_releases", "payments", actor_role="treasury", actor="treasury")
+        self.assertEqual(self.c.execute(ap["id"], actor="treasury", period_id="P1").result["status"], "in_flight")
+        self.assertEqual([d["status"] for d in self.c.dispatch_payments()], ["accepted"])
+        self.assertEqual(self.r.payment(p["id"])["status"], "booked")
+
+
+class ReimbursementRestoreAdoptionTests(unittest.TestCase):
+    """A restored older backup whose provider holds a reimbursement transfer the copy never
+    recorded keeps the release quarantine until the transfer is adopted (payment.adopt_transfer)."""
+
+    def setUp(self):
+        d = tempfile.mkdtemp(prefix="cipher-rmb-restore-")
+        self.addCleanup(shutil.rmtree, d, True)
+        self.dir = d
+        self.s = Scenario(os.path.join(d, "live.sqlite"))
+        self.addCleanup(self.s.c.db.close)
+        self.c = self.s.c
+        self.r = self.s.r
+
+    def restored(self, name):
+        copy = Cipher.open_restored(self.c.snapshot(os.path.join(self.dir, name)), provider=self.c.provider)
+        self.addCleanup(copy.db.close)
+        copy.claim_write_authority(approval_ref="ext-ref-rmb-restore", actor="owner", reason="restore drill: claim the recovered copy")
+        return copy
+
+    def adopt(self, copy, provider_ref):
+        return copy.approve_and_execute("payment.adopt_transfer", provider_ref, actor_role="owner", actor="owner").result
+
+    def assert_clean(self, copy, project_id):
+        rr = copy.plugin(PLUGIN_NAME)
+        self.assertTrue(rr.employee_payable_reconciliation(project_id)["reconciled"])
+        self.assertTrue(all(chk["ok"] for chk in rr.close_checks("P1")), rr.close_checks("P1"))
+        self.assertTrue(copy.payments.clearing_items()["reconciled"])
+        self.assertTrue(copy.ledger.trial_balance()["balanced"])
+        self.assertTrue(copy.audit.verify_chain()["ok"])
+
+    def test_a_draft_in_the_backup_paid_by_the_live_workspace_is_adopted_not_paid_again(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        copy = self.restored("backup-draft.sqlite")  # the payment is still a draft here
+        self.s.pay(p["id"])  # live: released, accepted and settled
+        self.assertEqual((len(self.c.provider.submissions), len(self.c.provider.transfers)), (1, 1))
+        rr = copy.plugin(PLUGIN_NAME)
+        self.assertEqual(rr.payment(p["id"])["status"], "draft")
+        outcome = copy.complete_recovery(actor="reconciler")
+        self.assertFalse(outcome["quarantine_lifted"])
+        [t] = outcome["unrecorded_transfers"]
+        self.assertEqual((t["provider_ref"], t["amount"], t["status"], t["adoptable"], t["pays"]), ("sim_000001", "40.00", "settled", True, f"reimbursement_payment {p['id']}"))
+        # releasing the same payment from this copy is exactly the double payment the quarantine prevents
+        ap = copy.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
+        copy.approve(ap["id"], approver="treasury", approver_role="treasury")
+        with self.assertRaises(ReleaseQuarantined):
+            copy.execute(ap["id"], actor="treasury", period_id="P1")
+        result = self.adopt(copy, "sim_000001")
+        self.assertEqual((result["status"], result["source_id"], result["superseded"]), ("settled", p["id"], []))
+        self.assertEqual(rr.payment(p["id"])["status"], "booked")
+        claim = rr.claim(cl["id"])
+        self.assertEqual((claim["status"], claim["paid"], claim["outstanding"]), ("partially_paid", "40.00", "80.00"))
+        self.assertEqual((copy.ledger.balance("2100"), copy.ledger.balance("1000"), copy.ledger.balance("1200")), (Decimal("80.00"), Decimal("-40.00"), Decimal("0.00")))
+        self.assertEqual(copy.approvals.get(ap["id"])["status"], "invalidated")  # the payment is booked: that release is moot
+        lifted = copy.complete_recovery(actor="reconciler")
+        self.assertTrue(lifted["quarantine_lifted"], lifted["held"])
+        self.assertEqual(copy.dispatch_payments(), [])
+        self.assertEqual((len(self.c.provider.submissions), len(self.c.provider.transfers)), (1, 1))
+        self.assert_clean(copy, self.s.project["id"])
+
+    def test_a_queued_release_the_live_workspace_canceled_and_replaced_is_superseded(self):
+        cl = self.s.approved_claim("120.00")
+        p = self.r.record_payment(cl["id"], "40.00", actor="treasury")
+        first = self.s.release(p["id"]).result["intent"]
+        copy = self.restored("backup-in-flight.sqlite")  # in flight on a queued intent here
+        self.c.payments.cancel_intent(first, "wrong funding account", "treasury")  # live: back to draft ...
+        self.s.release(p["id"])  # ... and released again under a fresh approval
+        self.assertEqual([d["status"] for d in self.c.dispatch_payments()], ["accepted"])
+        submissions = len(self.c.provider.submissions)
+        rr = copy.plugin(PLUGIN_NAME)
+        outcome = copy.complete_recovery(actor="reconciler")
+        self.assertFalse(outcome["quarantine_lifted"])
+        self.assertEqual(outcome["queued"], [first])  # the provider never saw it, so it stays queued ...
+        self.assertEqual([(t["provider_ref"], t["supersedes"]) for t in outcome["unrecorded_transfers"]], [("sim_000001", [first])])  # ... but it is replaced
+        with self.assertRaises(ReleaseQuarantined):
+            copy.dispatch_payments()
+        result = self.adopt(copy, "sim_000001")
+        self.assertEqual((result["status"], result["superseded"]), ("accepted", [first]))
+        old = copy.payments.get(first)
+        self.assertEqual(old["status"], "canceled")
+        self.assertIn("superseded by provider transfer sim_000001", copy.commands.get(old["outbox_id"])["last_error"])
+        pay = rr.payment(p["id"])
+        self.assertEqual((pay["status"], pay["intent_id"]), ("booked", result["intent"]))
+        self.assertEqual(copy.ledger.balance("2100"), Decimal("80.00"))
+        lifted = copy.complete_recovery(actor="reconciler")
+        self.assertTrue(lifted["quarantine_lifted"], lifted["held"])
+        self.assertEqual(lifted["queued"], [])
+        self.assertEqual(copy.dispatch_payments(), [])
+        self.assertEqual(len(self.c.provider.submissions), submissions)  # nothing sent twice
+        self.assert_clean(copy, self.s.project["id"])
 
 
 if __name__ == "__main__":

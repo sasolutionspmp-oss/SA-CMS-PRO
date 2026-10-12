@@ -16,7 +16,13 @@ Period close
     date on or before this one's) is already closed or locked; plus every
     check returned by any other registered plugin's optional
     ``close_checks(period_id)`` hook (a hook that raises or returns a malformed
-    result yields a failing check naming the plugin).  Bank reconciliation
+    result yields a failing check naming the plugin).  The AR check uses the
+    core receivables subledger, which aggregates every plugin AR source (labor
+    T&M invoices among them).  The core subledger checks for retainage payable
+    (2050), stored materials (1300), retainage receivable (1150) and provider
+    clearing (1200) arrive once, through the ``core_reconciliation``
+    pseudo-plugin's hook; this module does not compute them again, and an
+    identical check reported twice is listed once.  Bank reconciliation
     arrives through the banking plugin's hook; without a banking plugin an
     informational, passing check says so.
 
@@ -31,7 +37,37 @@ Period close
     every check passes, closes the period through ``Ledger.close_period`` and
     stores an append-only close run with the checklist and statements snapshot.
     ``close.reopen_period`` (closed -> open, never from locked) needs a
-    controller (or the owner, who holds every role in the solo prototype).
+    controller (or the owner, who holds every role in the solo prototype), on
+    both sides: the request's acting role and the role the approval is granted
+    under.  The core role table also lets an accountant approve a reopen, and
+    the core approval row does not keep the approver's role, so this module
+    guards ``Cipher.approve`` for reopen approvals: an accountant's grant is
+    refused; an owner or controller grant is recorded (``close_reopen_grants``:
+    approver, role, and whether the role was declared or is the core's default
+    approver role) while the approval is still pending, in the transaction in
+    which the core grants it.  The database backs it
+    (``close_reopen_governance``): one of this module's reopen approvals moves
+    pending -> granted only with a grant row for its approver, a grant row is
+    never attached to an approval already granted, and a period reopens
+    against one of this module's approvals (from ``Ledger.reopen_period`` or a
+    raw UPDATE alike) only with that grant, only after its execution recorded
+    the reopen run, and only while every later period is open.  No reopen at
+    all, whatever ``*.reopen_period`` approval the core accepts, runs while a
+    later period is locked.  It is the governed reopen: ``Ledger.reopen_period`` (backed by a period
+    trigger) accepts a reopen only against a consumed ``*.reopen_period``
+    approval for that period, and execution hands it exactly the approval that
+    ``Cipher.execute`` consumed in the same transaction.  Limits: roles are
+    self-declared in the prototype (no identity directory), so a grant row is
+    the approver's claim, not a verified identity; and the core still accepts
+    a consumed approval of any other ``*.reopen_period`` operation (or of
+    ``close.reopen_period`` with another subject type) fabricated through
+    ``Approvals.request``; this module cannot refuse those without refusing the
+    core's own reopen path, so they are held only to the locked-later-period
+    rule.  Every ``apply`` path
+    refuses to run against anything but its own consumed approval, once; the
+    database backs it (``close_approval_guards``): a close run needs a consumed
+    approval of its action for its period and one approval yields one run, and
+    a WIP adjustment is posted or reversed only against its consumed approval.
     ``close.lock_period`` (closed -> locked) only locks a period whose current
     closed state came from a passing checklist close (the audit trail shows no
     later direct close) and whose figures still equal that close's snapshot.
@@ -44,12 +80,15 @@ Statements and aging
     ``statements(period_id)``: income statement for journals in the period,
     balance sheet cumulative through the period (every period whose start date
     is on or before this one's), cash movements on 1000 grouped by journal
-    source type.  ``aging(as_of)``: the AP and AR items open now, bucketed 0-30,
-    31-60, 61-90 and over 90 days from the record's created date to ``as_of``;
-    an item recorded after ``as_of`` is reported apart (``after_as_of``), never
-    as current, and buckets + after_as_of equal the subledger totals.  Open
-    balances are not reconstructed as of a past date; a historical ``as_of``
-    carries a warning saying so.
+    source type.  ``aging(as_of)``: the AP and AR items open now (AR includes
+    every source the core receivables subledger aggregates), bucketed 0-30,
+    31-60, 61-90 and over 90 days from the record's created date to ``as_of``
+    (looked up in the source record's own table: prime bills, retainage
+    invoices, labor invoices, reimbursement billings); an item recorded after
+    ``as_of`` is reported apart (``after_as_of``) and an item nothing dates is
+    reported apart (``undated``), never as current, and buckets + after_as_of +
+    undated equal the subledger totals.  Open balances are not reconstructed as
+    of a past date; a historical ``as_of`` carries a warning saying so.
 
 WIP (fixture policy, cost-to-cost percent complete)
     percent complete = cost to date (5000 + 5100 + 5300, cumulative, project)
@@ -80,13 +119,16 @@ cumulative 1160 / 2300 balances through it.
 from __future__ import annotations
 
 import datetime as _dt
+import inspect
 from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 from ..core.approvals import build_manifest
-from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow_iso
+from ..core.db import register_schema_version
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, total
 from .ledger import DEBIT_NORMAL
+from .ricky import Ricky
 
 SCHEMA_NAME = "close"
 PLUGIN_NAME = "close"
@@ -122,6 +164,14 @@ ONE = Decimal("1")
 
 AGING_BUCKETS = ("current", "31_60", "61_90", "over_90")
 AFTER_AS_OF = "after_as_of"  # recorded after as_of: not aged, reported apart
+UNDATED = "undated"  # no record dates the item: not aged, reported apart (never as current)
+# Where an AR item's created date lives, by the record id the item carries (the labor
+# ``invoice_id`` only for ``labor_invoice`` items).  Prime bills are looked up directly.
+AR_RECORD_TABLES = (
+    ("retainage_invoice_id", "prime_retainage_invoices"),
+    ("billing_id", "reimbursement_billings"),
+    ("invoice_id", "labor_invoices"),
+)
 UNPOSTED_BILL_STATES = ("draft", "approved")
 UNRESOLVED_PAYMENT_STATES = ("submitted", "outcome_unknown")
 
@@ -218,9 +268,138 @@ SCHEMA_STATEMENTS = [
         BEGIN SELECT RAISE(ABORT, 'reversed, superseded and cancelled WIP adjustments are immutable'); END""",
 ]
 
+# Approval guards, as their own catalog entry so a workspace that already applied
+# ``close`` upgrades in place (applied entries are append-only): a close run is recorded
+# only against a consumed close approval of the same action for that period, and one
+# approval yields at most one run; a WIP adjustment is posted or reversed only against a
+# consumed approval of that operation for that adjustment.
+GUARDS_SCHEMA_NAME = "close_approval_guards"
+GUARDS_SCHEMA_STATEMENTS = [
+    "CREATE UNIQUE INDEX close_runs_one_per_approval ON close_runs (approval_id)",
+    """CREATE TRIGGER close_runs_need_consumed_approval BEFORE INSERT ON close_runs
+        WHEN (SELECT status FROM approvals WHERE id = NEW.approval_id AND subject_type = 'accounting_period' AND subject_id = NEW.period_id
+              AND operation = (CASE NEW.action WHEN 'close' THEN 'close.close_period' WHEN 'reopen' THEN 'close.reopen_period' ELSE 'close.lock_period' END)) IS NOT 'consumed'
+        BEGIN SELECT RAISE(ABORT, 'a close run is recorded only against a consumed close approval of the same action for that period'); END""",
+    """CREATE TRIGGER close_wip_posting_needs_consumed_approval BEFORE UPDATE OF status ON close_wip
+        WHEN NEW.status = 'posted' AND OLD.status != 'posted'
+         AND (SELECT status FROM approvals WHERE id = NEW.approval_id AND operation = 'close.post_wip_adjustment'
+              AND subject_type = 'wip_adjustment' AND subject_id = NEW.id) IS NOT 'consumed'
+        BEGIN SELECT RAISE(ABORT, 'a WIP adjustment is posted only against a consumed close.post_wip_adjustment approval for it'); END""",
+    """CREATE TRIGGER close_wip_reversal_needs_consumed_approval BEFORE UPDATE OF status ON close_wip
+        WHEN NEW.status = 'reversed' AND OLD.status != 'reversed'
+         AND (SELECT status FROM approvals WHERE id = NEW.reversal_approval_id AND operation = 'close.reverse_wip_adjustment'
+              AND subject_type = 'wip_adjustment' AND subject_id = NEW.id) IS NOT 'consumed'
+        BEGIN SELECT RAISE(ABORT, 'a WIP adjustment is reversed only against a consumed close.reverse_wip_adjustment approval for it'); END""",
+]
+
+# Reopen authority, as its own catalog entry (applied entries are append-only).  The core
+# approval row records the approver's name, not the role they approved under, and the
+# core role table lets more roles approve ``close.reopen_period`` than plan section 6,
+# item 4 allows ("reopening requires a scoped controller approval").  The close module
+# therefore records, when ``Cipher.approve`` grants a reopen approval, who granted it and
+# under which role; only an owner or controller grant is admitted (CHECK), it is written
+# once for a reopen approval of that period, and a reopen run is recorded only against an
+# approval that carries such a grant.  (This entry first admitted the row after the core
+# grant; ``close_reopen_governance`` below replaces that insert trigger so the row is
+# written while the approval is pending, and adds the approval and period guards.)
+REOPEN_GRANTS_SCHEMA_NAME = "close_reopen_grant_roles"
+REOPEN_GRANTS_SCHEMA_STATEMENTS = [
+    """CREATE TABLE close_reopen_grants (
+        approval_id TEXT PRIMARY KEY REFERENCES approvals(id),
+        period_id TEXT NOT NULL REFERENCES periods(id),
+        approver TEXT NOT NULL,
+        approver_role TEXT NOT NULL CHECK (approver_role IN ('owner','controller')),
+        granted_at TEXT NOT NULL
+    )""",
+    """CREATE TRIGGER close_reopen_grants_granted_reopen_only BEFORE INSERT ON close_reopen_grants
+        WHEN (SELECT status FROM approvals WHERE id = NEW.approval_id AND operation = 'close.reopen_period'
+              AND subject_type = 'accounting_period' AND subject_id = NEW.period_id) IS NOT 'granted'
+        BEGIN SELECT RAISE(ABORT, 'a reopen grant is recorded only for a granted close.reopen_period approval of that period'); END""",
+    "CREATE TRIGGER close_reopen_grants_no_update BEFORE UPDATE ON close_reopen_grants BEGIN SELECT RAISE(ABORT, 'reopen grants are append-only'); END",
+    "CREATE TRIGGER close_reopen_grants_no_delete BEFORE DELETE ON close_reopen_grants BEGIN SELECT RAISE(ABORT, 'reopen grants are append-only'); END",
+    """CREATE TRIGGER close_runs_reopen_needs_controller_grant BEFORE INSERT ON close_runs
+        WHEN NEW.action = 'reopen'
+         AND NOT EXISTS (SELECT 1 FROM close_reopen_grants g WHERE g.approval_id = NEW.approval_id AND g.period_id = NEW.period_id)
+        BEGIN SELECT RAISE(ABORT, 'a reopen run needs the owner or controller grant recorded for its approval'); END""",
+]
+
+# Reopen governance in the database, as its own catalog entry (the entries above are
+# applied history and stay as they are).  The guards above held only on the close.apply
+# path: an approval granted around ``Cipher.approve`` and consumed directly could still
+# reopen through ``Ledger.reopen_period`` or a raw UPDATE, under a closed later period
+# too, and a grant row could be attached to an approval someone else had already
+# granted.  From this entry on:
+#
+# * the role claim is made at grant time: a grant row is written only while its
+#   ``close.reopen_period`` approval is still pending (``Cipher.approve`` writes it and
+#   lets the core grant in the same transaction), it records whether the role was
+#   declared by the caller or is the core's default approver role (``role_basis``), and
+#   the approval moves pending -> granted only when a grant row for its approver exists;
+# * a period reopens against one of the close module's approvals (operation
+#   ``close.reopen_period``, subject type ``accounting_period``) only with that grant, only
+#   after the reopen run of its execution was recorded, and only while every later
+#   period is open;
+# * no reopen at all, whatever approval the core accepts, runs while a later period is
+#   locked: a locked balance sheet includes every earlier period.
+#
+# Each period trigger fires only when the core's own reopen trigger
+# (``periods_reopen_requires_approval``) would accept the transition, so the refusal
+# reason never depends on trigger firing order.
+_CORE_ACCEPTED_REOPEN = """EXISTS (SELECT 1 FROM approvals a WHERE a.id = NEW.reopen_approval_id AND a.status = 'consumed' AND a.subject_id = NEW.id
+                   AND length(a.operation) > 14 AND substr(a.operation, -14) = '.reopen_period')
+         AND NOT EXISTS (SELECT 1 FROM period_reopens r WHERE r.approval_id = NEW.reopen_approval_id)"""
+_LATER_LOCKED = """EXISTS (SELECT 1 FROM periods l WHERE l.id <> NEW.id AND l.start_date >= min(OLD.start_date, NEW.start_date) AND l.status = 'locked')"""
+REOPEN_GOVERNANCE_SCHEMA_NAME = "close_reopen_governance"
+REOPEN_GOVERNANCE_SCHEMA_STATEMENTS = [
+    "ALTER TABLE close_reopen_grants ADD COLUMN role_basis TEXT CHECK (role_basis IS NULL OR role_basis IN ('declared','core_default'))",
+    "DROP TRIGGER close_reopen_grants_granted_reopen_only",
+    """CREATE TRIGGER close_reopen_grants_recorded_at_grant BEFORE INSERT ON close_reopen_grants
+        WHEN NEW.role_basis IS NULL
+          OR (SELECT status FROM approvals WHERE id = NEW.approval_id AND operation = 'close.reopen_period'
+              AND subject_type = 'accounting_period' AND subject_id = NEW.period_id) IS NOT 'pending'
+        BEGIN SELECT RAISE(ABORT, 'a reopen grant is recorded only by Cipher.approve, while it grants a pending close.reopen_period approval of that period'); END""",
+    """CREATE TRIGGER close_reopen_approval_granted_with_grant BEFORE UPDATE OF status ON approvals
+        WHEN NEW.status = 'granted' AND OLD.status IS NOT 'granted'
+         AND NEW.operation = 'close.reopen_period' AND NEW.subject_type = 'accounting_period'
+         AND NOT EXISTS (SELECT 1 FROM close_reopen_grants g WHERE g.approval_id = NEW.id AND g.period_id = NEW.subject_id AND g.approver IS NEW.approver)
+        BEGIN SELECT RAISE(ABORT, 'a close.reopen_period approval is granted only through Cipher.approve by an owner or controller, which records the grant for that approver'); END""",
+    f"""CREATE TRIGGER close_periods_no_reopen_under_a_locked_period BEFORE UPDATE ON periods
+        WHEN OLD.status = 'closed' AND NEW.status = 'open'
+         AND {_CORE_ACCEPTED_REOPEN}
+         AND {_LATER_LOCKED}
+        BEGIN SELECT RAISE(ABORT, 'a period cannot be reopened while a later period is locked: the locked balance sheet includes it'); END""",
+    f"""CREATE TRIGGER close_periods_reopen_through_close_only BEFORE UPDATE ON periods
+        WHEN OLD.status = 'closed' AND NEW.status = 'open'
+         AND {_CORE_ACCEPTED_REOPEN}
+         AND EXISTS (SELECT 1 FROM approvals a WHERE a.id = NEW.reopen_approval_id AND a.operation = 'close.reopen_period' AND a.subject_type = 'accounting_period')
+         AND NOT {_LATER_LOCKED}
+        BEGIN
+            SELECT CASE
+                WHEN NOT EXISTS (SELECT 1 FROM close_reopen_grants g WHERE g.approval_id = NEW.reopen_approval_id AND g.period_id = NEW.id)
+                THEN RAISE(ABORT, 'a close.reopen_period approval reopens a period only with the owner or controller grant recorded by Cipher.approve')
+                WHEN NOT EXISTS (SELECT 1 FROM close_runs r WHERE r.approval_id = NEW.reopen_approval_id AND r.period_id = NEW.id AND r.action = 'reopen')
+                THEN RAISE(ABORT, 'a close.reopen_period approval reopens a period only through its execution (Cipher.execute), which records the reopen run first')
+                WHEN EXISTS (SELECT 1 FROM periods l WHERE l.id <> NEW.id AND l.start_date >= min(OLD.start_date, NEW.start_date) AND l.status <> 'open')
+                THEN RAISE(ABORT, 'a period reopens only while every later period is open: their cumulative balance sheets include it')
+            END;
+        END""",
+]
+
+# Registered here, in this order, so the follow-on entries always sit after the objects
+# they guard; the plugin loader's own registration of SCHEMA_NAME is then a no-op.
+register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
+register_schema_version(GUARDS_SCHEMA_NAME, GUARDS_SCHEMA_STATEMENTS)
+register_schema_version(REOPEN_GRANTS_SCHEMA_NAME, REOPEN_GRANTS_SCHEMA_STATEMENTS)
+register_schema_version(REOPEN_GOVERNANCE_SCHEMA_NAME, REOPEN_GOVERNANCE_SCHEMA_STATEMENTS)
+
 
 class CloseError(RuntimeError):
     """Invalid close/statement/WIP input or an operation the current state does not allow."""
+
+
+class ReopenAuthorityError(CloseError, PermissionError):
+    """A role that the core lets approve ``close.reopen_period`` but that is not a
+    controller (or the owner) tried to grant a reopen."""
 
 
 # --------------------------------------------------------------------------- #
@@ -278,6 +457,88 @@ class Plugin:
         self.audit = cipher.audit
         self.ledger = cipher.ledger
         self.approvals = cipher.approvals
+        self._install_reopen_grant_guard()
+
+    # ---- reopen authority ------------------------------------------------------ #
+
+    def _install_reopen_grant_guard(self) -> None:
+        """Guard ``Cipher.approve`` for ``close.reopen_period`` approvals (every surface,
+        the HTTP server and ``approve_and_execute`` included, grants through it).
+
+        A role without any reopen authority is refused by the core itself
+        (``RoleNotAuthorised``).  A role the core lets approve a reopen that is not in
+        ``REOPEN_ROLES`` (an accountant) is refused here with ``ReopenAuthorityError``.
+        For an owner or controller, the grant row (approver, role, and whether the role
+        was declared or is the core's default approver role) is written while the
+        approval is still pending and the core grants it in the same transaction; if the
+        core refuses, neither is kept.  The database admits the pending -> granted move of
+        a close reopen approval only with that row, and a period reopens against one only
+        with it (``close_reopen_governance``), so an approval granted around
+        ``Cipher.approve`` (``Approvals.grant`` directly, or a raw UPDATE) cannot be
+        granted at all, let alone reopen through ``Ledger.reopen_period``.
+
+        Roles are declared by the caller everywhere in the solo-first prototype (there is
+        no identity directory; the owner holds every role), so the row is what the
+        approver claimed, not a verified identity: ``role_basis`` says whether the claim
+        was made (``declared``) or the core's default approver role applied
+        (``core_default``, e.g. ``approve_and_execute``, which passes no role)."""
+        inner = getattr(self.c, "approve", None)
+        if not callable(inner) or getattr(inner, "_close_reopen_guard", False):
+            return
+        defaults = {"approver": "owner", "approver_role": "owner"}
+        try:  # follow the core's own defaults rather than restating them
+            for name, param in inspect.signature(inner).parameters.items():
+                if name in defaults and param.default is not inspect.Parameter.empty:
+                    defaults[name] = param.default
+        except (TypeError, ValueError):
+            pass
+        plugin = self
+
+        def approve(approval_id, **kwargs):
+            row = plugin.db.one(
+                "SELECT operation, subject_type, subject_id, status, expires_at FROM approvals WHERE id=?", (approval_id,)
+            ) if isinstance(approval_id, str) else None
+            if row is None or row["operation"] != OP_REOPEN:
+                return inner(approval_id, **kwargs)
+            declared = kwargs.get("approver_role") is not None
+            role = kwargs["approver_role"] if declared else defaults["approver_role"]
+            approver = kwargs.get("approver") if kwargs.get("approver") is not None else defaults["approver"]
+            if not Ricky.can(role, OP_REOPEN):
+                return inner(approval_id, **kwargs)  # the core refuses a role with no reopen authority
+            if role not in REOPEN_ROLES:
+                raise ReopenAuthorityError(
+                    f"reopening a period needs a scoped controller approval; role {role!r} may not grant {OP_REOPEN} "
+                    f"(allowed: {', '.join(REOPEN_ROLES)})"
+                )
+            if row["subject_type"] != PERIOD_SUBJECT or row["status"] != "pending" or parse_iso(row["expires_at"]) <= utcnow():
+                # not one of this module's pending approvals: the core refuses it (or records its expiry)
+                return inner(approval_id, **kwargs)
+            with plugin.db.transaction():
+                plugin._record_reopen_grant(approval_id, row["subject_id"], approver, role, "declared" if declared else "core_default")
+                return inner(approval_id, **kwargs)  # the core grants; its trigger finds the grant row for this approver
+
+        approve._close_reopen_guard = True  # type: ignore[attr-defined]
+        self.c.approve = approve
+
+    def _record_reopen_grant(self, approval_id: str, period_id: str, approver: str, role: str, role_basis: str) -> None:
+        with self.db.transaction() as conn:
+            conn.execute(
+                "INSERT INTO close_reopen_grants (approval_id, period_id, approver, approver_role, granted_at, role_basis) VALUES (?,?,?,?,?,?)",
+                (approval_id, period_id, str(approver), role, utcnow_iso(), role_basis),
+            )
+            self.audit.record(str(approver), "close.reopen_grant_recorded", "approval", approval_id,
+                              {"period_id": period_id, "approver_role": role, "role_basis": role_basis})
+
+    def reopen_grant(self, approval_id: str) -> dict[str, Any] | None:
+        """Who granted a reopen approval, under which role, and whether that role was
+        declared or the core's default (None when no owner or controller grant was
+        recorded for it)."""
+        return self.db.one("SELECT * FROM close_reopen_grants WHERE approval_id=?", (approval_id,)) if isinstance(approval_id, str) else None
+
+    def reopen_grants(self, period_id: str | None = None) -> list[dict[str, Any]]:
+        if period_id:
+            return self.db.query("SELECT * FROM close_reopen_grants WHERE period_id=? ORDER BY granted_at, approval_id", (period_id,))
+        return self.db.query("SELECT * FROM close_reopen_grants ORDER BY granted_at, approval_id")
 
     # ---- lookups -------------------------------------------------------------- #
 
@@ -368,7 +629,13 @@ class Plugin:
 
         def ar():
             r = self.c.receivables.ar_open_items()
-            add("ar_reconciled", bool(r["reconciled"]), f"AR subledger {r['subledger_total']} vs control 1100 {r['control_balance']}", "receivables")
+            detail = f"AR subledger {r['subledger_total']} vs control 1100 {r['control_balance']}"
+            errors = r.get("errors") or []
+            if errors:  # a source that raised or did not add up is named, not hidden behind the totals
+                detail += "; source errors: " + "; ".join(
+                    f"{e.get('source', '?')}: {e.get('error', e)}" if isinstance(e, dict) else str(e) for e in errors
+                )
+            add("ar_reconciled", bool(r["reconciled"]), detail, "receivables")
 
         def supplier_drafts():
             rows = self.db.query(
@@ -443,12 +710,22 @@ class Plugin:
                 add("employee_payable_reconciled", not bad, detail, "reimbursement")
             guarded("employee_payable_reconciled", "reimbursement", employee_payable)
 
+        # Every other registered hook, including the core subledger checks (retainage payable
+        # 2050, stored materials 1300, retainage receivable 1150, provider clearing 1200) that
+        # the ``core_reconciliation`` pseudo-plugin contributes.  This module computes none of
+        # those itself, and a check identical to one already listed (same name, result and
+        # detail, e.g. the same hook registered under two names) is reported once.
+        seen = {(ch["check"], ch["ok"], ch["detail"]) for ch in checks}
+        seen_hooks: set[int] = set()
         for name, plugin in list(self.c._plugins.items()):
             if plugin is self or name == PLUGIN_NAME:
                 continue
             hook = getattr(plugin, "close_checks", None)
             if not callable(hook):
                 continue
+            if id(plugin) in seen_hooks:
+                continue
+            seen_hooks.add(id(plugin))
             try:
                 result = hook(pid)
             except Exception as exc:
@@ -463,7 +740,11 @@ class Plugin:
                 if not isinstance(item, dict) or "check" not in item or "ok" not in item:
                     add(f"{name}.close_checks", False, f"plugin {name} returned a malformed check: {item!r}", name)
                     continue
-                add(str(item["check"]), item["ok"] is True, str(item.get("detail", "")), name)
+                key = (str(item["check"]), item["ok"] is True, str(item.get("detail", "")))
+                if key in seen:
+                    continue
+                seen.add(key)
+                add(key[0], key[1], key[2], name)
 
         if self._banking_plugin_name() is None:
             add("bank_reconciliation", True, "bank reconciliation is not configured: no banking plugin is registered (informational)", PLUGIN_NAME)
@@ -599,10 +880,13 @@ class Plugin:
 
     def aging(self, as_of: str) -> dict[str, Any]:
         """The AP and AR items open now, bucketed by age at ``as_of`` (YYYY-MM-DD).  The
-        age runs from the record's created date (UTC).  An item recorded after
-        ``as_of`` is not aged: it is reported apart under ``after_as_of`` so that
-        buckets + after_as_of still equal the subledger totals.  Open balances are not
-        reconstructed as of a past date, so a historical ``as_of`` carries a warning."""
+        age runs from the record's created date (UTC), looked up in the source record's
+        own table for every AR source the core subledger aggregates.  An item recorded
+        after ``as_of`` is not aged: it is reported apart under ``after_as_of``; an item
+        no record dates is reported apart under ``undated`` (never as current), so
+        buckets + after_as_of + undated still equal the subledger totals.  Open balances
+        are not reconstructed as of a past date, so a historical ``as_of`` carries a
+        warning."""
         as_of_date = _parse_date(as_of, "as_of")
         today = _parse_date(utcnow_iso()[:10], "today")
         ap = self.c.bills.ap_open_items()
@@ -619,17 +903,17 @@ class Plugin:
                 r = self.db.one(
                     "SELECT MAX(j.posted_at) AS ts FROM journals j JOIN commitments c ON c.id = j.source_id "
                     "WHERE j.source_type='retainage_release' AND c.supplier_id=?",
-                    (item["supplier_id"],),
+                    (item.get("supplier_id"),),
                 )
-                dated, ref, kind = ((r and r["ts"]) or as_of)[:10], None, item.get("kind", "retainage_release")
+                stamp = item.get("created_at") or (r and r["ts"])
+                dated, ref, kind = (stamp[:10] if stamp else None), item.get("id"), item.get("kind", "retainage_release")
             ap_items.append({"ref": ref, "kind": kind, "party_id": item.get("supplier_id"), "sequence": item.get("sequence"), "date": dated, "open": open_amt})
         ar_items = []
         for item in ar["items"]:
             open_amt = money(item["open"])
             if open_amt == ZERO:
                 continue
-            b = self.db.one("SELECT created_at, customer_id FROM prime_bills WHERE id=?", (item["prime_bill_id"],))
-            ar_items.append({"ref": item["prime_bill_id"], "kind": "prime_bill", "party_id": b["customer_id"], "sequence": item.get("sequence"), "date": b["created_at"][:10], "open": open_amt})
+            ar_items.append(self._ar_aging_item(item, open_amt, as_of))
         warning = None
         if as_of_date < today:
             warning = (f"as_of {as_of} is before today ({today.isoformat()}): these are today's open items aged at as_of; items settled since "
@@ -637,34 +921,85 @@ class Plugin:
         return {
             "as_of": as_of,
             "buckets": list(AGING_BUCKETS),
-            "basis": "items open now; days from the record's created date (UTC) to as_of; 0-30 current; items recorded after as_of are reported under after_as_of",
+            "basis": ("items open now; days from the record's created date (UTC) to as_of; 0-30 current; items recorded after as_of are reported "
+                      "under after_as_of; items no record dates are reported under undated"),
             "warning": warning,
             "ap": self._age(ap_items, ap, as_of_date),
             "ar": self._age(ar_items, ar, as_of_date),
             "label": SHADOW,
         }
 
+    def _table_exists(self, table: str) -> bool:
+        return self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)) is not None
+
+    def _ar_record_date(self, item: dict[str, Any], kind: str) -> str | None:
+        """The created date of the record behind a receivable: looked up in the source's own
+        table when the item names a known record, else the item's own date, else the posting
+        time of the journal it names.  None when nothing dates it (never as_of)."""
+        for key, table in AR_RECORD_TABLES:
+            ident = item.get(key)
+            if not ident or (key == "invoice_id" and kind != "labor_invoice") or not self._table_exists(table):
+                continue
+            row = self.db.one(f"SELECT created_at FROM {table} WHERE id=?", (ident,))
+            if row is not None and row["created_at"]:
+                return row["created_at"]
+        dated = item.get("created_at") or item.get("date") or item.get("billed_at")
+        if isinstance(dated, str) and dated:
+            return dated
+        if item.get("journal_id"):
+            row = self.db.one("SELECT posted_at FROM journals WHERE id=?", (item["journal_id"],))
+            if row is not None:
+                return row["posted_at"]
+        return None
+
+    def _ar_aging_item(self, item: dict[str, Any], open_amt: Decimal, as_of: str) -> dict[str, Any]:
+        """One open receivable for aging.  The core AR subledger lists prime bills and the
+        items of every plugin source it aggregates (labor T&M invoices, reimbursement
+        billings, ...); each is dated from the record that created it.  An item no record
+        dates is reported as ``undated``: never aged as current."""
+        if item.get("prime_bill_id"):
+            b = self.db.one("SELECT created_at, customer_id FROM prime_bills WHERE id=?", (item["prime_bill_id"],))
+            return {"ref": item["prime_bill_id"], "kind": "prime_bill", "party_id": b["customer_id"], "sequence": item.get("sequence"),
+                    "date": b["created_at"][:10], "open": open_amt}
+        ref = item.get("invoice_id") or item.get("retainage_invoice_id") or item.get("billing_id") or item.get("id") or item.get("ref")
+        kind = item.get("kind") or item.get("source") or "receivable"
+        dated = self._ar_record_date(item, kind)
+        day = None
+        if dated:
+            try:
+                day = _dt.date.fromisoformat(dated[:10]).isoformat()
+            except ValueError:
+                day = None
+        return {"ref": ref, "kind": kind, "source": item.get("source"), "party_id": item.get("customer_id") or item.get("party_id"),
+                "sequence": item.get("sequence"), "date": day, "open": open_amt}
+
     @staticmethod
     def _age(items: list[dict[str, Any]], source: dict[str, Any], as_of_date: _dt.date) -> dict[str, Any]:
         buckets = {k: ZERO for k in AGING_BUCKETS}
         after = ZERO
+        undated = ZERO
         out = []
         for it in items:
-            days = (as_of_date - _dt.date.fromisoformat(it["date"])).days
-            if days < 0:
-                b = AFTER_AS_OF
-                after += it["open"]
+            if it.get("date") is None:
+                days, b = None, UNDATED
+                undated += it["open"]
             else:
-                b = _bucket(days)
-                buckets[b] += it["open"]
+                days = (as_of_date - _dt.date.fromisoformat(it["date"])).days
+                if days < 0:
+                    b = AFTER_AS_OF
+                    after += it["open"]
+                else:
+                    b = _bucket(days)
+                    buckets[b] += it["open"]
             out.append({**it, "days": days, "bucket": b, "open": fmt(it["open"])})
         aged = total(buckets.values())
-        grand = money(aged + after)
+        grand = money(aged + after + undated)
         return {
             "items": out,
             "buckets": {k: fmt(v) for k, v in buckets.items()},
             "aged_total": fmt(aged),
             AFTER_AS_OF: fmt(after),
+            UNDATED: fmt(undated),
             "total": fmt(grand),
             "subledger_total": source["subledger_total"],
             "control_balance": source["control_balance"],
@@ -1115,6 +1450,9 @@ class Plugin:
     # ---- apply ----------------------------------------------------------------------------- #
 
     def apply(self, operation: str, subject_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
+        if operation not in OPERATIONS:
+            raise CloseError(f"unknown close operation {operation}")
+        self._require_consumed(approval_id, operation, PERIOD_SUBJECT if operation in (OP_CLOSE, OP_REOPEN, OP_LOCK) else WIP_SUBJECT, subject_id)
         if operation == OP_CLOSE:
             return self._apply_close(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
         if operation == OP_REOPEN:
@@ -1131,6 +1469,19 @@ class Plugin:
     def _same_period(subject_id: str, period_id: str | None) -> None:
         if period_id and period_id != subject_id:
             raise CloseError(f"the approval is for period {subject_id}, not {period_id}")
+
+    def _require_consumed(self, approval_id: str, operation: str, subject_type: str, subject_id: str) -> None:
+        """``apply`` runs inside ``Cipher.execute`` right after the approval was consumed in the
+        same transaction; refuse anything else (a direct call with an arbitrary reference, or
+        an approval whose effect is already on record)."""
+        ap = self.db.one("SELECT status, operation, subject_type, subject_id FROM approvals WHERE id=?", (approval_id,)) if approval_id else None
+        if ap is None or ap["status"] != "consumed" or ap["operation"] != operation or ap["subject_type"] != subject_type or ap["subject_id"] != subject_id:
+            raise CloseError(f"{operation} on {subject_id} runs only against its own consumed approval; {approval_id!r} is not one")
+        used = self.db.one("SELECT id FROM close_runs WHERE approval_id=?", (approval_id,)) or self.db.one(
+            "SELECT id FROM close_wip WHERE approval_id=? OR reversal_approval_id=?", (approval_id, approval_id)
+        )
+        if used is not None:
+            raise CloseError(f"approval {approval_id} was already executed ({used['id']}); an approval takes effect once")
 
     def _apply_close(self, pid: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
         self._same_period(pid, period_id)
@@ -1168,6 +1519,12 @@ class Plugin:
                 raise CloseError(f"period {pid} is locked and can never be reopened")
             if p["status"] != "closed":
                 raise CloseError(f"period {pid} is {p['status']}; only a closed period can be reopened")
+            grant = self.reopen_grant(approval_id)
+            if grant is None or grant["period_id"] != pid or grant["approver_role"] not in REOPEN_ROLES:
+                raise CloseError(
+                    f"reopen approval {approval_id} carries no recorded owner or controller grant for {pid}; "
+                    "a reopen needs a scoped controller approval granted through Cipher.approve"
+                )
             later = [e for e in self._later_periods(p) if e["status"] != "open"]
             if later:
                 raise CloseError(
@@ -1175,11 +1532,21 @@ class Plugin:
                     f"are not open: their cumulative balance sheets include {pid}; reopen them first (a locked one never reopens)"
                 )
             tb = self.ledger.trial_balance(pid)
-            self.ledger.reopen_period(pid, actor=actor, approval_ref=approval_id)
+            # The reopen run is recorded first, in the same transaction: the period trigger
+            # (close_reopen_governance) lets one of this module's approvals reopen a period
+            # only once its run exists, so a reopen outside this execution path is refused.
             run_id = self._record_run(period_id=pid, action="reopen", status_before="closed", status_after="open", approval_id=approval_id, actor=actor, tb=tb)
+            # the ledger (and the core period trigger) accept a reopen only against a consumed
+            # "*.reopen_period" approval for this period: this one, consumed by Cipher.execute
+            # inside the same transaction just before apply ran
+            self.ledger.reopen_period(pid, actor=actor, approval_ref=approval_id)
             invalidated = self.approvals.invalidate_for_subject(PERIOD_SUBJECT, pid, reason=f"period {pid} reopened", actor=actor)
-            self.audit.record(actor, "close.period_reopened", PERIOD_SUBJECT, pid, {"approval_id": approval_id, "close_run_id": run_id, "approvals_invalidated": invalidated})
-        return {"period_id": pid, "status": "open", "close_run_id": run_id}
+            self.audit.record(actor, "close.period_reopened", PERIOD_SUBJECT, pid, {
+                "approval_id": approval_id, "close_run_id": run_id, "approvals_invalidated": invalidated,
+                "granted_by": grant["approver"], "granted_as": grant["approver_role"], "role_basis": grant.get("role_basis"),
+            })
+        return {"period_id": pid, "status": "open", "close_run_id": run_id, "granted_by": grant["approver"], "granted_as": grant["approver_role"],
+                "role_basis": grant.get("role_basis")}
 
     def _apply_lock(self, pid: str, *, approval_id: str, actor: str, period_id: str | None) -> dict[str, Any]:
         self._same_period(pid, period_id)
@@ -1284,6 +1651,31 @@ class Plugin:
         return {
             "wip_adjustment": wip_id, "status": "reversed", "journal_id": row["journal_id"], "reversal_journal_id": j["id"],
             "period_id": target["id"], "amount": row["amount"],
+        }
+
+    # ---- audit export ---------------------------------------------------------------------------- #
+
+    def audit_export(self) -> dict[str, Any]:
+        """Close runs (with their checklist and statements snapshots), the recorded reopen
+        grants (who granted each reopen approval, under which role), every WIP adjustment
+        with its inputs, contract value history and the WIP register reconciliation per
+        project, for an independent reviewer (JSON-serialisable; money as strings)."""
+        projects = {r["project_id"] for r in self.db.query("SELECT DISTINCT project_id FROM close_wip")}
+        projects |= {r["project_id"] for r in self.db.query("SELECT DISTINCT project_id FROM close_contract_values")}
+        projects |= {r["project_id"] for r in self.db.query(
+            "SELECT DISTINCT project_id FROM journal_lines WHERE account_code IN (?,?) AND project_id IS NOT NULL",
+            (UNDERBILLINGS_ACCOUNT, OVERBILLINGS_ACCOUNT),
+        )}
+        wip_rows = [self.wip_adjustment(r["id"]) for r in self.db.query("SELECT id FROM close_wip ORDER BY created_at, id")]
+        return {
+            "label": SHADOW,
+            "posting_rule": POSTING_RULE,
+            "wip_policy": WIP_POLICY,
+            "close_runs": self.close_runs(),
+            "reopen_grants": self.db.query("SELECT * FROM close_reopen_grants ORDER BY granted_at, approval_id"),
+            "wip_adjustments": wip_rows,
+            "contract_values": self.db.query("SELECT * FROM close_contract_values ORDER BY project_id, version"),
+            "wip_reconciliation": {pid: self.wip_reconciliation(pid) for pid in sorted(projects)},
         }
 
     # ---- state --------------------------------------------------------------------------------- #

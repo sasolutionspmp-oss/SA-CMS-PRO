@@ -1,15 +1,19 @@
 """EPC field controls: RFIs, submittals, hold points, punch list and closeout."""
 import json
+import os
 import sqlite3
+import tempfile
 import unittest
 from decimal import Decimal
+from unittest import mock
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import sha256_hex
 from apps.cipher.domain.commitments import CommitmentError
-from apps.cipher.domain.field import CLOSEOUT_ITEMS, PLUGIN_NAME, SCHEMA_NAME, FieldError
+from apps.cipher.domain.field import CLOSEOUT_ITEMS, DISTRIBUTION_SCHEMA_NAME, PLUGIN_NAME, SCHEMA_NAME, FieldError
+from apps.cipher.domain.field import _recipients as field_recipients
 from apps.cipher.domain.ledger import PeriodNotOpen
-from apps.cipher.service import Cipher
+from apps.cipher.service import Cipher, CipherError, RoleNotAuthorised
 
 STALE = (StaleApprovalError, ApprovalNotGranted)
 
@@ -70,8 +74,13 @@ class Scene:
         self.c.approve_and_execute("field.respond_rfi", r["id"], actor_role="pm")
         return self.f.rfi(r["id"])
 
+    def distribute(self, rfi_id, recipients):
+        """Record the list, then distribute through the approval; returns the distribution row."""
+        self.f.set_distribution_list(rfi_id, recipients, "pm")
+        return self.c.approve_and_execute("field.distribute_rfi", rfi_id, actor_role="pm").result
+
     def submittal(self, title="Pinch valves", tag="PV-101"):
-        return self.f.create_submittal(self.pid, "40 05 61", title, "pm", equipment_tag=tag)
+        return self.f.create_submittal(self.pid, "XX 05 61", title, "pm", equipment_tag=tag)
 
     def decide(self, revision_id, decision, comments=""):
         self.f.set_decision(revision_id, decision, comments, "eor")
@@ -137,9 +146,15 @@ class FieldGoldenTests(unittest.TestCase):
         self.assertEqual((rfi["status"], rfi["response"], rfi["cost_impact"], rfi["schedule_impact_days"]), ("answered", "Reroute below the beam per sketch SK-1.", "10000.00", 5))
         self.assertEqual(rfi["version"], 4)
 
-        # distribution is a separate step to the mail sink; nothing is queued for sending
-        dist = f.distribute_rfi(rfi["id"], ["Synthetic Engineer of Record", "Synthetic Owner Rep"], actor="pm")
-        self.assertEqual((dist["channel"], dist["recipients"], dist["response_hash"]), ("mail-sink", ["Synthetic Engineer of Record", "Synthetic Owner Rep"], rfi["response_hash"]))
+        # distribution is its own approval-bound step to the mail sink; nothing is queued for sending
+        recipients = ["Synthetic Engineer of Record", "Synthetic Owner Rep"]
+        rfi = f.set_distribution_list(rfi["id"], recipients, actor="pm")
+        self.assertEqual((rfi["version"], rfi["distribution_list"], rfi["distribution_pending"]), (5, recipients, True))
+        res = c.approve_and_execute("field.distribute_rfi", rfi["id"], actor_role="pm")
+        dist = res.result
+        self.assertEqual((dist["channel"], dist["recipients"], dist["response_hash"], dist["rfi_version"]), ("mail-sink", recipients, rfi["response_hash"], 5))
+        self.assertEqual(c.approvals.get(dist["approval_id"])["operation"], "field.distribute_rfi")
+        self.assertFalse(f.rfi(rfi["id"])["distribution_pending"])
         self.assertEqual(c.commands.pending(), [])
 
         # the cost impact becomes a pending change; only change.execute moves the commitment
@@ -202,12 +217,18 @@ class FieldGoldenTests(unittest.TestCase):
         f.submit_closeout_item(cm["id"], "training", ev_hash("training sign-in sheet"), "pm")
         self.assertTrue(f.closeout(cm["id"])["ready_for_acceptance"])
 
-        # before acceptance Ricky abstains on retainage release
+        # before acceptance Ricky abstains on retainage release and the commitment cannot be closed directly
         self.assertEqual(c.ricky.propose("retainage.release", actor_role="owner", context={"commitment_id": cm["id"]})["decision"], "abstained")
+        self.assertFalse(f.closeout_accepted(cm["id"]))
+        with self.assertRaises(CipherError):
+            c.close_commitment(cm["id"])
+        self.assertEqual(c.commitments.get(cm["id"])["status"], "executed")
         res = c.approve_and_execute("field.accept_closeout", cm["id"], actor_role="pm", period_id="P1")
         self.assertEqual((res.result["status"], res.result["commitment_status"], res.result["period_id"]), ("accepted", "closed", "P1"))
         self.assertEqual(c.commitments.get(cm["id"])["status"], "closed")
         self.assertEqual(f.closeout(cm["id"])["status"], "accepted")
+        self.assertTrue(f.closeout_accepted(cm["id"]))
+        self.assertEqual(c.close_commitment(cm["id"])["status"], "closed")  # the interactive close now finds the accepted closeout
 
         prop = c.ricky.propose("retainage.release", actor_role="owner", context={"commitment_id": cm["id"]})
         self.assertEqual(prop["decision"], "proposed")
@@ -233,7 +254,10 @@ class RfiTests(unittest.TestCase):
 
     def test_schema_registered_and_empty_state_shape(self):
         status = self.c.db.schema_status()
-        self.assertIn(SCHEMA_NAME, [v["name"] for v in status["versions"]])
+        names = [v["name"] for v in status["versions"]]
+        self.assertIn(SCHEMA_NAME, names)
+        self.assertIn(DISTRIBUTION_SCHEMA_NAME, names)
+        self.assertLess(names.index(SCHEMA_NAME), names.index(DISTRIBUTION_SCHEMA_NAME))  # the follow-on entry sits after the tables it alters
         self.assertTrue(all(v["applied"] for v in status["versions"]))
         tables = {r["name"] for r in self.c.db.query("SELECT name FROM sqlite_master WHERE type='table' AND name LIKE 'field_%'")}
         self.assertEqual(tables, {
@@ -371,24 +395,167 @@ class RfiTests(unittest.TestCase):
         self.assertEqual(self.c.approvals.get(a2["id"])["status"], "invalidated")
         self.assertEqual(self.f.rfi(r["id"])["approval_id"], a1["id"])
 
+    def test_direct_distribution_is_retired_and_points_to_the_approval(self):
+        r = self.s.answered_rfi()
+        for args in ((r["id"], ["EOR"], "pm"), (r["id"],), ("rfi_missing", ["EOR"], "pm")):
+            with self.subTest(args=args), self.assertRaisesRegex(FieldError, "field.distribute_rfi"):
+                self.f.distribute_rfi(*args)
+        self.assertEqual(self.f.rfi(r["id"])["distributions"], [])
+        self.assertEqual(self.c.db.scalar("SELECT COUNT(*) FROM field_rfi_distributions"), 0)
+
     def test_distribution_only_after_answer_and_never_duplicated(self):
         r = self.s.rfi()
         self.f.draft_response(r["id"], "Use detail 4.", actor="pm")
+        with self.assertRaises(FieldError):  # an open RFI has no distribution list yet
+            self.f.set_distribution_list(r["id"], ["EOR"], "pm")
         with self.assertRaises(FieldError):
-            self.f.distribute_rfi(r["id"], ["EOR"], actor="pm")
+            self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
         self.c.approve_and_execute("field.respond_rfi", r["id"], actor_role="pm")
-        for bad in ([], "EOR", ["EOR", " eor "], ["EOR", 7], [""]):
+        with self.assertRaises(FieldError):  # answered, but nobody to send it to yet
+            self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.assertEqual(self.c.ricky.propose("field.distribute_rfi", actor_role="pm", context={"rfi_id": r["id"]})["decision"], "abstained")
+        for bad in ([], "EOR", ["EOR", " eor "], ["EOR", 7], [""], None, ("EOR", "EOR")):
             with self.subTest(bad=bad), self.assertRaises(FieldError):
-                self.f.distribute_rfi(r["id"], bad, actor="pm")
-        d1 = self.f.distribute_rfi(r["id"], ["EOR", "Owner rep"], actor="pm")
-        with self.assertRaises(FieldError):  # same recipients again, any order or case
-            self.f.distribute_rfi(r["id"], ["owner rep", "eor"], actor="pm")
-        d2 = self.f.distribute_rfi(r["id"], ["Superintendent"], actor="pm")
+                self.f.set_distribution_list(r["id"], bad, "pm")
+        with self.assertRaises(FieldError):
+            self.f.set_distribution_list(r["id"], ["EOR"], "")
+        with self.assertRaises(FieldError):
+            self.f.set_distribution_list("rfi_missing", ["EOR"], "pm")
+        self.assertEqual(self.f.rfi(r["id"])["version"], 3)  # nothing invalid was recorded
+
+        d1 = self.s.distribute(r["id"], ["EOR", "Owner rep"])
+        self.assertEqual((d1["rfi_version"], d1["recipients"], d1["channel"]), (4, ["EOR", "Owner rep"], "mail-sink"))
+        with self.assertRaises(FieldError):  # the same list again is not a change
+            self.f.set_distribution_list(r["id"], ["owner rep", "EOR"], "pm")
+        with self.assertRaises(FieldError):  # already distributed to exactly this list: nothing to approve
+            self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        d2 = self.s.distribute(r["id"], ["Superintendent"])
+        self.assertEqual(d2["rfi_version"], 5)
+        with self.assertRaises(FieldError):  # back to a list that already received this response, any order or case
+            self.f.set_distribution_list(r["id"], ["owner rep", "eor"], "pm")
         rfi = self.f.rfi(r["id"])
         self.assertEqual([d["id"] for d in rfi["distributions"]], [d1["id"], d2["id"]])
-        self.assertEqual(rfi["version"], 3)  # distribution does not edit the RFI
+        self.assertEqual((rfi["version"], rfi["status"], rfi["distribution_list"], rfi["distribution_pending"]), (5, "answered", ["Superintendent"], False))
+        self.assertEqual(len({d["approval_id"] for d in rfi["distributions"]}), 2)  # one approval per distribution
         self.assertEqual(self.c.commands.pending(), [])
-        self.assertIn("field.rfi_distributed", [e["action"] for e in self.c.audit.entries(entity_type="field_rfi", entity_id=r["id"])])
+        actions = [e["action"] for e in self.c.audit.entries(entity_type="field_rfi", entity_id=r["id"])]
+        self.assertEqual(actions.count("field.rfi_distribution_list_set"), 2)
+        self.assertEqual(actions.count("field.rfi_distributed"), 2)
+
+    def test_distribution_approval_binds_version_response_and_recipients(self):
+        r = self.s.answered_rfi()
+        rfi = self.f.set_distribution_list(r["id"], ["EOR", "Owner rep"], "pm")
+        ap = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        b = ap["manifest"]["bindings"]
+        self.assertEqual((b["rfi_version"], b["response_hash"], b["recipients_hash"], b["recipients"], b["channel"]),
+                         (rfi["version"], rfi["response_hash"], rfi["distribution_recipients_hash"], ["EOR", "Owner rep"], "mail-sink"))
+        self.assertEqual((ap["manifest"]["amounts"], ap["manifest"]["entity"]), ({}, self.s.project["entity"]))
+        self.c.approve(ap["id"])
+
+        # a recipients change after the grant makes the approval stale (proactively and at execution)
+        self.f.set_distribution_list(r["id"], ["EOR", "Owner rep", "Superintendent"], "pm")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises(STALE):
+            self.c.execute(ap["id"])
+        self.assertEqual(self.f.rfi(r["id"])["distributions"], [])
+
+        # a raw edit that bumps the version without telling anyone is still caught: the list is
+        # rebuilt and re-hashed from the stored JSON, so a hash that is not its own refuses it
+        ap2 = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.c.approve(ap2["id"])
+        self.c.db.execute("UPDATE field_rfis SET distribution_recipients_json=?, distribution_recipients_hash='forged', version=version+1 WHERE id=?", ('["Someone else"]', r["id"]))
+        self.assertEqual(self.c.approvals.get(ap2["id"])["status"], "granted")
+        with self.assertRaises(StaleApprovalError):
+            self.c.execute(ap2["id"])
+        ap2 = self.c.approvals.get(ap2["id"])
+        self.assertEqual(ap2["status"], "invalidated")
+        self.assertIn("does not match its recipients hash", ap2["invalidated_reason"])
+        self.assertEqual(self.f.rfi(r["id"])["distributions"], [])
+        # a consistent raw edit (the list's own hash, version bumped) is caught by the bound version and list
+        self.f.set_distribution_list(r["id"], ["EOR", "Owner rep"], "pm")
+        ap2b = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.c.approve(ap2b["id"])
+        _, other_hash = field_recipients(["Owner rep"])
+        self.c.db.execute("UPDATE field_rfis SET distribution_recipients_json=?, distribution_recipients_hash=?, version=version+1 WHERE id=?", ('["Owner rep"]', other_hash, r["id"]))
+        with self.assertRaises(StaleApprovalError):
+            self.c.execute(ap2b["id"])
+        self.assertIn("bindings", self.c.approvals.get(ap2b["id"])["invalidated_reason"])
+        self.assertEqual(self.f.rfi(r["id"])["distributions"], [])
+
+        # roles: the pm and the owner hold the authority; a viewer or estimator does not
+        self.f.set_distribution_list(r["id"], ["EOR"], "pm")
+        for role in ("viewer", "estimator", "treasury"):
+            with self.subTest(role=role), self.assertRaises(RoleNotAuthorised):
+                self.c.request_approval("field.distribute_rfi", r["id"], actor_role=role)
+        ap3 = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        with self.assertRaises(RoleNotAuthorised):
+            self.c.approve(ap3["id"], approver="someone", approver_role="estimator")
+        self.c.approve(ap3["id"], approver="pm-user", approver_role="pm")
+        dist = self.c.execute(ap3["id"], actor="pm").result
+        self.assertEqual((dist["recipients"], dist["approval_id"]), (["EOR"], ap3["id"]))
+        replay = self.c.execute(ap3["id"], actor="pm")  # same op id: the stored result, no second row
+        self.assertTrue(replay.replayed)
+        self.assertEqual(len(self.f.rfi(r["id"])["distributions"]), 1)
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_second_distribution_approval_on_the_same_list_goes_stale(self):
+        r = self.s.answered_rfi()
+        self.f.set_distribution_list(r["id"], ["EOR"], "pm")
+        a1 = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        a2 = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.c.approve(a1["id"])
+        self.c.approve(a2["id"])
+        self.c.execute(a1["id"])
+        self.assertEqual(self.c.approvals.get(a2["id"])["status"], "invalidated")
+        with self.assertRaises(STALE):
+            self.c.execute(a2["id"])
+        self.assertEqual(len(self.f.rfi(r["id"])["distributions"]), 1)
+
+    def test_forged_or_malformed_stored_list_is_never_distributed(self):
+        """The once-only rule rests on the stored recipients hash, which SQLite cannot verify;
+        the module rebuilds the list and its hash from the stored JSON and refuses a mismatch."""
+        r = self.s.answered_rfi()
+        d1 = self.s.distribute(r["id"], ["EOR"])
+        forge = "UPDATE field_rfis SET distribution_recipients_json=?, distribution_recipients_hash=?, version=version+1 WHERE id=?"
+
+        # the probe: the same recipients under a hash that is not theirs (every trigger accepts it)
+        self.f.set_distribution_list(r["id"], ["Superintendent"], "pm")
+        granted = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.c.approve(granted["id"])
+        self.c.db.execute(forge, ('["EOR"]', "forged-x", r["id"]))
+        rfi = self.f.rfi(r["id"])
+        self.assertEqual((rfi["distribution_list"], rfi["distribution_list_intact"], rfi["distribution_pending"]), (["EOR"], False, False))
+        with self.assertRaisesRegex(FieldError, "does not match its recipients hash"):
+            self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        with self.assertRaises(STALE):  # the approval granted before the forgery cannot use it either
+            self.c.execute(granted["id"])
+        self.assertEqual(self.c.approvals.get(granted["id"])["status"], "invalidated")
+        self.assertEqual([d["id"] for d in self.f.rfi(r["id"])["distributions"]], [d1["id"]])
+        with self.assertRaisesRegex(FieldError, "already distributed"):  # and the list cannot be "repaired" into a second copy
+            self.f.set_distribution_list(r["id"], ["eor"], "pm")
+
+        # a value that is not a recipient list at all, and a non-canonical list under its own hash
+        _, owner_hash = field_recipients(["Owner rep"])
+        for raw, h, why in (('"not a list"', "forged-y", "not a valid recipient list"), ("{not json", "forged-z", "not a valid recipient list"),
+                            ('["  Owner rep "]', owner_hash, "does not match its recipients hash"), ('["Owner rep","owner REP"]', "forged-w", "not a valid recipient list")):
+            with self.subTest(raw=raw):
+                self.c.db.execute(forge, (raw, h, r["id"]))
+                self.assertFalse(self.f.rfi(r["id"])["distribution_list_intact"])
+                with self.assertRaisesRegex(FieldError, why):
+                    self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
+        self.assertEqual(self.f.rfi(r["id"])["distribution_list"], ["Owner rep", "owner REP"])
+        json.dumps(self.f.audit_export())  # the export still renders a tampered list, flagged
+        self.assertEqual([x["distribution_list_intact"] for x in self.f.audit_export()["rfis"]], [False])
+
+        # recording a proper list through the module repairs it; the distribution goes to exactly that list
+        self.f.set_distribution_list(r["id"], ["Owner rep"], "pm")
+        d2 = self.c.approve_and_execute("field.distribute_rfi", r["id"], actor_role="pm").result
+        self.assertEqual((d2["recipients"], d2["recipients_hash"]), (["Owner rep"], owner_hash))
+        rows = self.c.db.query("SELECT recipients_json, recipients_hash FROM field_rfi_distributions WHERE rfi_id=? ORDER BY distributed_at, id", (r["id"],))
+        self.assertEqual([(x["recipients_json"], x["recipients_hash"]) for x in rows],
+                         [('["EOR"]', field_recipients(["EOR"])[1]), ('["Owner rep"]', owner_hash)])
+        self.assertEqual(self.c.commands.pending(), [])
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
 
     def test_link_change_guards(self):
         cm = self.s.commitment()
@@ -432,14 +599,14 @@ class SubmittalTests(unittest.TestCase):
         b = self.s.submittal(title="Check valves", tag=None)
         self.assertEqual((a["number"], b["number"], a["equipment_tag"], b["equipment_tag"]), ("SUB-001", "SUB-002", "PV-101", None))
         with self.assertRaises(FieldError):
-            self.f.create_submittal(self.s.pid, "40 05 61", "pinch VALVES", "pm", equipment_tag="pv-101")
+            self.f.create_submittal(self.s.pid, "XX 05 61", "pinch VALVES", "pm", equipment_tag="pv-101")
         with self.assertRaises(FieldError):
             self.f.create_submittal(self.s.pid, "", "T", "pm")
         with self.assertRaises(FieldError):
-            self.f.create_submittal(self.s.pid, "40 05 61", None, "pm")
+            self.f.create_submittal(self.s.pid, "XX 05 61", None, "pm")
         with self.assertRaises(FieldError):
-            self.f.create_submittal("prj_missing", "40 05 61", "T", "pm")
-        self.assertEqual(self.f.create_submittal(self.s.pid, "40 05 61", "Pinch valves", "pm", equipment_tag="PV-102")["number"], "SUB-003")
+            self.f.create_submittal("prj_missing", "XX 05 61", "T", "pm")
+        self.assertEqual(self.f.create_submittal(self.s.pid, "XX 05 61", "Pinch valves", "pm", equipment_tag="PV-102")["number"], "SUB-003")
 
     def test_one_revision_under_review_and_evidence_of_same_project(self):
         sub = self.s.submittal()
@@ -744,7 +911,45 @@ class CloseoutTests(unittest.TestCase):
         self.assertTrue(details["field.open_rfis"].startswith("1 "))
         self.assertTrue(details["field.submittals_under_review"].startswith("1 "))
         self.assertTrue(details["field.open_punch_items"].startswith("1 "))
+        self.assertTrue(details["field.rfis_awaiting_distribution"].startswith("0 "))
         self.assertTrue(all(set(ch) == {"check", "ok", "detail"} for ch in checks))
+        answered = self.s.answered_rfi(subject="Answered one")
+        self.assertTrue({ch["check"]: ch["detail"] for ch in self.f.close_checks("P1")}["field.rfis_awaiting_distribution"].startswith("1 "))
+        self.s.distribute(answered["id"], ["EOR"])
+        self.assertTrue({ch["check"]: ch["detail"] for ch in self.f.close_checks("P1")}["field.rfis_awaiting_distribution"].startswith("0 "))
+
+    def test_closeout_accepted_only_after_the_acceptance_approval(self):
+        cid = self.cm["id"]
+        for bad in (None, "", "   ", 7, "cmt_missing"):
+            with self.subTest(bad=bad):
+                self.assertFalse(self.f.closeout_accepted(bad))
+        self.assertFalse(self.f.closeout_accepted(cid))  # closeout not started
+        self.s.ready_closeout(cid)
+        self.assertTrue(self.f.closeout(cid)["ready_for_acceptance"])
+        self.assertFalse(self.f.closeout_accepted(cid))  # ready is not accepted
+        with self.assertRaisesRegex(CipherError, "field.accept_closeout"):
+            self.c.close_commitment(cid)
+        # a granted approval that goes stale does not accept anything
+        ap = self.c.request_approval("field.accept_closeout", cid, actor_role="pm")
+        self.c.approve(ap["id"])
+        self.assertFalse(self.f.closeout_accepted(cid))
+        self.f.submit_closeout_item(cid, "warranties", ev_hash("corrected"), "pm")
+        with self.assertRaises(STALE):
+            self.c.execute(ap["id"], period_id="P1")
+        self.assertFalse(self.f.closeout_accepted(cid))
+        # raw SQL cannot fake an acceptance either
+        with self.assertRaises(sqlite3.IntegrityError):
+            self.c.db.execute("UPDATE field_closeouts SET status='accepted', approval_id=?, accepted_by='x', accepted_at='t', acceptance_hash='h', "
+                              "accepted_period_id='P1', version=version+1 WHERE commitment_id=?", (ap["id"], cid))
+        self.assertFalse(self.f.closeout_accepted(cid))
+        self.assertEqual(self.c.commitments.get(cid)["status"], "executed")
+
+        self.c.approve_and_execute("field.accept_closeout", cid, actor_role="pm", period_id="P1")
+        self.assertTrue(self.f.closeout_accepted(cid))
+        self.assertTrue(self.f.closeout_accepted(f"  {cid} "))
+        self.assertEqual(self.c.close_commitment(cid)["status"], "closed")
+        other = self.s.commitment()
+        self.assertFalse(self.f.closeout_accepted(other["id"]))  # per commitment
 
 
 class FieldIntegrityTests(unittest.TestCase):
@@ -855,7 +1060,7 @@ class FieldIntegrityTests(unittest.TestCase):
         rfi = self.s.rfi(drawing_revision_ids=[r1["id"]])
         self.f.draft_response(rfi["id"], "Answer", cost_impact="500", schedule_impact_days=1, actor="pm")
         self.c.approve_and_execute("field.respond_rfi", rfi["id"], actor_role="pm")
-        self.f.distribute_rfi(rfi["id"], ["EOR"], actor="pm")
+        self.s.distribute(rfi["id"], ["EOR"])
         self.f.link_change(rfi["id"], cm["id"], "pm")
         sub = self.s.approved_submittal()
         self.f.add_hold_point(self.s.pid, "Hold", sub["id"], "super")
@@ -876,10 +1081,110 @@ class FieldIntegrityTests(unittest.TestCase):
         self.assertTrue(self.c.audit.verify_chain()["ok"])
         actions = {e["action"] for e in self.c.audit.entries() if e["action"].startswith("field.")}
         self.assertTrue({
-            "field.rfi_created", "field.rfi_response_drafted", "field.rfi_answered", "field.rfi_distributed", "field.rfi_change_linked",
-            "field.submittal_created", "field.submittal_revision_added", "field.submittal_decision_drafted", "field.submittal_decided",
-            "field.hold_point_added", "field.punch_item_added", "field.closeout_requirements_set",
+            "field.rfi_created", "field.rfi_response_drafted", "field.rfi_answered", "field.rfi_distribution_list_set", "field.rfi_distributed",
+            "field.rfi_change_linked", "field.submittal_created", "field.submittal_revision_added", "field.submittal_decision_drafted",
+            "field.submittal_decided", "field.hold_point_added", "field.punch_item_added", "field.closeout_requirements_set",
         } <= actions)
+
+    def test_audit_export_lists_every_field_record(self):
+        cm = self.s.commitment()
+        rfi = self.s.answered_rfi(cost="500")
+        dist = self.s.distribute(rfi["id"], ["EOR", "Owner rep"])
+        self.f.link_change(rfi["id"], cm["id"], "pm")
+        sub = self.s.approved_submittal()
+        self.f.add_hold_point(self.s.pid, "Hold", sub["id"], "super")
+        self.f.add_punch_item(self.s.pid, cm["id"], "Item", "super")
+        self.f.set_closeout_requirements(cm["id"], ["as_builts"], "pm")
+        exp = self.f.audit_export()
+        self.assertEqual(json.loads(json.dumps(exp)), exp)  # plain JSON
+        self.assertEqual(set(exp), {"rfis", "rfi_links", "rfi_distributions", "submittals", "submittal_revisions", "hold_points",
+                                    "punch_items", "closeouts", "closeout_requirements"})
+        self.assertEqual([(r["number"], r["status"], r["distribution_list"]) for r in exp["rfis"]], [("RFI-001", "answered", ["EOR", "Owner rep"])])
+        self.assertEqual([(d["id"], d["recipients"], d["approval_id"]) for d in exp["rfi_distributions"]], [(dist["id"], ["EOR", "Owner rep"], dist["approval_id"])])
+        self.assertEqual([l["link_type"] for l in exp["rfi_links"]], ["change"])
+        self.assertEqual((len(exp["submittals"]), len(exp["submittal_revisions"]), len(exp["hold_points"]), len(exp["punch_items"])), (1, 1, 1, 1))
+        self.assertEqual([(co["commitment_id"], co["status"]) for co in exp["closeouts"]], [(cm["id"], "open")])
+        self.assertEqual([r["item"] for r in exp["closeout_requirements"]], ["as_builts"])
+        whole = self.c.audit_export()
+        self.assertEqual(whole["modules"][PLUGIN_NAME]["rfi_distributions"][0]["id"], dist["id"])
+
+    def test_workspace_with_the_original_field_schema_upgrades_in_place(self):
+        """A file-backed workspace created before the distribution entry existed keeps its
+        legacy distribution row and gains the approval-bound path on reopening."""
+        from apps.cipher.core import db as core_db
+        path = os.path.join(tempfile.mkdtemp(), "field-upgrade.sqlite")
+        legacy_catalog = [entry for entry in core_db.SCHEMA_CATALOG if entry[1] != DISTRIBUTION_SCHEMA_NAME]
+        with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy_catalog):
+            old = Cipher(path)
+            self.assertNotIn(DISTRIBUTION_SCHEMA_NAME, [v["name"] for v in old.db.schema_status()["versions"]])
+            customer = old.add_party(kind="customer", name="Synthetic Utility Board")
+            project = old.create_project(name="Upgrade project", entity="S&A Solutions LLC (synthetic)", budget="1000", customer_id=customer["id"])
+            f_old = old.plugin(PLUGIN_NAME)
+            r = f_old.create_rfi(project["id"], "Legacy RFI", "Answered before the upgrade?", "pm")
+            f_old.draft_response(r["id"], "Yes.", actor="pm")
+            old.approve_and_execute("field.respond_rfi", r["id"], actor_role="pm")
+            row = old.db.one("SELECT version, response_hash FROM field_rfis WHERE id=?", (r["id"],))
+            old.db.execute(  # the old direct path wrote rows like this one
+                "INSERT INTO field_rfi_distributions (id, rfi_id, rfi_version, response_hash, recipients_json, recipients_hash, channel, distributed_by, distributed_at) "
+                "VALUES ('rfid_legacy', ?, ?, ?, '[\"EOR\"]', 'legacy-hash', 'mail-sink', 'pm', 't')", (r["id"], row["version"], row["response_hash"]))
+            old.db.close()
+        c = Cipher(path)
+        try:
+            status = c.db.schema_status()
+            self.assertEqual(status["pending"], [])
+            self.assertTrue(all(v["checksum_matches"] for v in status["versions"] if v["applied"]))
+            f = c.plugin(PLUGIN_NAME)
+            rfi = f.rfi(r["id"])
+            self.assertEqual([(d["id"], d["approval_id"]) for d in rfi["distributions"]], [("rfid_legacy", None)])
+            self.assertIsNone(rfi["distribution_list"])
+            f.set_distribution_list(r["id"], ["Owner rep"], "pm")
+            dist = c.approve_and_execute("field.distribute_rfi", r["id"], actor_role="pm").result
+            self.assertEqual(dist["recipients"], ["Owner rep"])
+            self.assertEqual(len(f.rfi(r["id"])["distributions"]), 2)
+            self.assertTrue(c.audit.verify_chain()["ok"])
+        finally:
+            c.db.close()
+
+    def test_database_guards_on_distribution(self):
+        db = self.c.db
+        open_rfi = self.s.rfi(subject="Still open")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "only on an answered RFI"):
+            db.execute("UPDATE field_rfis SET distribution_recipients_json='[\"x\"]', distribution_recipients_hash='h', version=version+1 WHERE id=?", (open_rfi["id"],))
+        r = self.s.answered_rfi()
+        rfi = self.f.set_distribution_list(r["id"], ["EOR"], "pm")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "bump the RFI version"):  # a list change rides on a version bump
+            db.execute("UPDATE field_rfis SET distribution_recipients_json='[\"x\"]', distribution_recipients_hash='h2' WHERE id=?", (r["id"],))
+        # the response stays fixed, and a list is never cleared (either guard may fire first)
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "except for a new distribution list|written once"):
+            db.execute("UPDATE field_rfis SET response='edited', distribution_recipients_hash='h3', version=version+1 WHERE id=?", (r["id"],))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "except for a new distribution list|never cleared"):
+            db.execute("UPDATE field_rfis SET distribution_recipients_json=NULL, distribution_recipients_hash=NULL, version=version+1 WHERE id=?", (r["id"],))
+        self.assertEqual(self.f.rfi(r["id"])["distribution_list"], ["EOR"])
+
+        insert = ("INSERT INTO field_rfi_distributions (id, rfi_id, rfi_version, response_hash, recipients_json, recipients_hash, channel, distributed_by, distributed_at, approval_id) "
+                  "VALUES (?,?,?,?,?,?,'mail-sink','x','t',?)")
+        row = (r["id"], rfi["version"], rfi["response_hash"], '["EOR"]', rfi["distribution_recipients_hash"])
+        # no approval, or a consumed approval of another operation on this RFI
+        for approval_id in (None, rfi["approval_id"]):
+            with self.subTest(approval_id=approval_id), self.assertRaisesRegex(sqlite3.IntegrityError, "consumed field.distribute_rfi approval for that RFI"):
+                db.execute(insert, ("rfid_raw1",) + row + (approval_id,))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "current distribution list"):
+            db.execute(insert, ("rfid_raw2", r["id"], rfi["version"], rfi["response_hash"], '["Someone else"]', "other-hash", None))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "official response"):
+            db.execute(insert, ("rfid_raw3", r["id"], rfi["version"] - 1, rfi["response_hash"], '["EOR"]', rfi["distribution_recipients_hash"], None))
+
+        # a consumed distribution approval cannot be reused for a second row, nor stretched to another list
+        dist = self.c.approve_and_execute("field.distribute_rfi", r["id"], actor_role="pm").result
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute(insert, ("rfid_raw4",) + row + (dist["approval_id"],))
+        rfi = self.f.set_distribution_list(r["id"], ["Superintendent"], "pm")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "its approval bound"):
+            db.execute(insert, ("rfid_raw5", r["id"], rfi["version"], rfi["response_hash"], '["Superintendent"]', rfi["distribution_recipients_hash"], dist["approval_id"]))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("UPDATE field_rfi_distributions SET recipients_json='[]' WHERE id=?", (dist["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            db.execute("DELETE FROM field_rfi_distributions WHERE id=?", (dist["id"],))
+        self.assertEqual([d["id"] for d in self.f.rfi(r["id"])["distributions"]], [dist["id"]])
 
 
 if __name__ == "__main__":

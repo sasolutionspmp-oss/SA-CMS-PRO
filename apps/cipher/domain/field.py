@@ -11,11 +11,16 @@ feed the commercial core through its existing authority paths:
   ``draft_response`` records a proposed response (text, optional cost impact
   >= 0, optional schedule impact in whole days >= 0) and bumps the RFI
   version.  The official response is issued only by the approval-bound
-  ``field.respond_rfi`` operation; distributing the answered RFI is a separate
-  step that writes a mail-sink row (nothing is sent).  ``link_change`` turns
-  an answered RFI's positive cost impact into one PENDING core change on an
-  executed commitment of the same project; executing that change remains the
-  core ``change.execute`` approval.
+  ``field.respond_rfi`` operation.  Distributing the answered RFI is its own
+  authority: ``set_distribution_list`` records who receives it (bumping the RFI
+  version) and the approval-bound ``field.distribute_rfi`` operation, whose
+  manifest binds the RFI version, the response hash and the recipients hash,
+  writes the mail-sink row (nothing is sent).  The same response never goes to
+  the same recipient set twice; the old direct ``distribute_rfi`` refuses and
+  points to the approval.  ``link_change`` turns an answered RFI's positive
+  cost impact into one PENDING core change on an executed commitment of the
+  same project; executing that change remains the core ``change.execute``
+  approval.
 * **Submittal** ``SUB-001``... per project with numbered revisions, each bound
   to a core evidence revision and its content hash.  Only one revision is
   under review at a time.  ``set_decision`` records the reviewer's proposed
@@ -34,7 +39,9 @@ feed the commercial core through its existing authority paths:
   submitted, zero open punch items and no pending (unexecuted, unrejected)
   core change on the commitment, is recorded against an open period and
   closes the commitment through the core, which in turn lets the core Ricky
-  ``retainage.release`` workflow propose a release.  The pending-change rule
+  ``retainage.release`` workflow propose a release.  ``closeout_accepted`` is
+  what ``Cipher.close_commitment`` asks before it lets a commitment count as
+  closed from an interactive surface.  The pending-change rule
   is stricter than the bare spec on purpose: a commitment closed with a
   pending change (for example one raised by ``link_change``) could still grow
   through ``change.execute`` after retainage is released.  ``link_change``
@@ -55,9 +62,12 @@ conditions under the write lock and raises the same error.
 
 Database guards back the rules without the plugin: identity, binding and
 lifecycle columns are immutable or written once on their own transition;
-status machines admit only the documented transitions; an RFI is answered, a
-submittal revision decided and a closeout accepted only against a consumed
-approval of the matching operation for that subject; hold point release needs
+status machines admit only the documented transitions; an RFI is answered or
+distributed, a submittal revision decided and a closeout accepted only against
+a consumed approval of the matching operation for that subject (a distribution
+also only to the recipients, response and RFI version that approval bound, and
+once per approval); an answered RFI changes only by a new distribution list
+with a version bump; hold point release needs
 an approved submittal; closeout acceptance needs zero open punch items, every
 required item submitted, no pending change on the commitment and an open
 period; a closeout requirement row is written only at the closeout's current
@@ -73,6 +83,7 @@ from decimal import Decimal
 from typing import Any
 
 from ..core.approvals import StaleApprovalError, build_manifest
+from ..core.db import register_schema_version
 from ..core.ids import hash_json, new_id, sha256_hex, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, total
 from .commitments import CommitmentError
@@ -84,7 +95,8 @@ PLUGIN_NAME = "field"
 OP_RESPOND_RFI = "field.respond_rfi"
 OP_DECIDE_SUBMITTAL = "field.decide_submittal"
 OP_ACCEPT_CLOSEOUT = "field.accept_closeout"
-OPERATIONS = (OP_RESPOND_RFI, OP_DECIDE_SUBMITTAL, OP_ACCEPT_CLOSEOUT)
+OP_DISTRIBUTE_RFI = "field.distribute_rfi"
+OPERATIONS = (OP_RESPOND_RFI, OP_DECIDE_SUBMITTAL, OP_ACCEPT_CLOSEOUT, OP_DISTRIBUTE_RFI)
 
 RFI_SUBJECT = "field_rfi"
 SUBMITTAL_SUBJECT = "field_submittal"
@@ -492,6 +504,67 @@ SCHEMA_STATEMENTS = [
     "CREATE TRIGGER field_closeout_requirements_no_delete BEFORE DELETE ON field_closeout_requirements BEGIN SELECT RAISE(ABORT, 'closeout requirements are never deleted'); END",
 ]
 
+# Approval-bound RFI distribution, as its own catalog entry so a workspace that already
+# applied ``field`` upgrades in place (applied entries are append-only):
+# * an answered RFI carries a distribution list; setting it is the only change an answered
+#   RFI still accepts, and it must bump the RFI version (so a granted distribution approval,
+#   which binds that version and the list hash, goes stale);
+# * a new distribution row needs a consumed ``field.distribute_rfi`` approval for that RFI
+#   whose manifest bound exactly this RFI version, response hash and recipients hash, and
+#   goes to exactly the RFI's current list; one distribution per approval.
+DISTRIBUTION_SCHEMA_NAME = "field_rfi_distribution_approvals"
+DISTRIBUTION_SCHEMA_STATEMENTS = [
+    "ALTER TABLE field_rfis ADD COLUMN distribution_recipients_json TEXT",
+    "ALTER TABLE field_rfis ADD COLUMN distribution_recipients_hash TEXT",
+    "ALTER TABLE field_rfi_distributions ADD COLUMN approval_id TEXT REFERENCES approvals(id)",
+    "CREATE UNIQUE INDEX field_rfi_distributions_one_per_approval ON field_rfi_distributions (approval_id) WHERE approval_id IS NOT NULL",
+    """CREATE TRIGGER field_rfis_born_without_distribution_list BEFORE INSERT ON field_rfis
+        WHEN NEW.distribution_recipients_json IS NOT NULL OR NEW.distribution_recipients_hash IS NOT NULL
+        BEGIN SELECT RAISE(ABORT, 'an RFI gets a distribution list only once it is answered'); END""",
+    """CREATE TRIGGER field_rfis_distribution_list_answered_only BEFORE UPDATE OF distribution_recipients_json, distribution_recipients_hash ON field_rfis
+        WHEN OLD.status != 'answered' OR NEW.status != 'answered'
+          OR NEW.distribution_recipients_json IS NULL OR NEW.distribution_recipients_hash IS NULL
+        BEGIN SELECT RAISE(ABORT, 'a distribution list is set only on an answered RFI, and never cleared'); END""",
+    "DROP TRIGGER field_rfis_answered_immutable",
+    """CREATE TRIGGER field_rfis_answered_immutable BEFORE UPDATE ON field_rfis
+        WHEN OLD.status = 'answered' AND NOT (
+            NEW.status = 'answered'
+            AND NEW.distribution_recipients_json IS NOT NULL AND NEW.distribution_recipients_hash IS NOT NULL
+            AND NEW.distribution_recipients_hash IS NOT OLD.distribution_recipients_hash
+            AND NEW.draft_response IS OLD.draft_response AND NEW.draft_cost_impact IS OLD.draft_cost_impact
+            AND NEW.draft_schedule_impact_days IS OLD.draft_schedule_impact_days AND NEW.draft_response_hash IS OLD.draft_response_hash
+            AND NEW.response IS OLD.response AND NEW.cost_impact IS OLD.cost_impact AND NEW.schedule_impact_days IS OLD.schedule_impact_days
+            AND NEW.response_hash IS OLD.response_hash AND NEW.approval_id IS OLD.approval_id
+            AND NEW.answered_by IS OLD.answered_by AND NEW.answered_at IS OLD.answered_at
+        )
+        BEGIN SELECT RAISE(ABORT, 'an answered RFI is immutable except for a new distribution list; distribute it through field.distribute_rfi or link a change instead'); END""",
+    "DROP TRIGGER field_rfi_distributions_answered_only",
+    """CREATE TRIGGER field_rfi_distributions_answered_only BEFORE INSERT ON field_rfi_distributions
+        BEGIN
+            SELECT CASE
+                WHEN (SELECT status FROM field_rfis WHERE id = NEW.rfi_id) IS NOT 'answered'
+                THEN RAISE(ABORT, 'only an answered RFI is distributed')
+                WHEN (SELECT response_hash FROM field_rfis WHERE id = NEW.rfi_id) IS NOT NEW.response_hash
+                     OR (SELECT version FROM field_rfis WHERE id = NEW.rfi_id) IS NOT NEW.rfi_version
+                THEN RAISE(ABORT, 'a distribution carries the official response of the RFI it distributes')
+                WHEN (SELECT distribution_recipients_hash FROM field_rfis WHERE id = NEW.rfi_id) IS NOT NEW.recipients_hash
+                     OR (SELECT distribution_recipients_json FROM field_rfis WHERE id = NEW.rfi_id) IS NOT NEW.recipients_json
+                THEN RAISE(ABORT, 'a distribution goes to exactly the current distribution list of the RFI')
+                WHEN (SELECT status FROM approvals WHERE id = NEW.approval_id AND operation = 'field.distribute_rfi' AND subject_type = 'field_rfi' AND subject_id = NEW.rfi_id) IS NOT 'consumed'
+                THEN RAISE(ABORT, 'an RFI is distributed only against a consumed field.distribute_rfi approval for that RFI')
+                WHEN (SELECT json_extract(manifest_json, '$.bindings.recipients_hash') FROM approvals WHERE id = NEW.approval_id) IS NOT NEW.recipients_hash
+                     OR (SELECT json_extract(manifest_json, '$.bindings.response_hash') FROM approvals WHERE id = NEW.approval_id) IS NOT NEW.response_hash
+                     OR (SELECT json_extract(manifest_json, '$.bindings.rfi_version') FROM approvals WHERE id = NEW.approval_id) IS NOT NEW.rfi_version
+                THEN RAISE(ABORT, 'a distribution matches the RFI version, response and recipients its approval bound')
+            END;
+        END""",
+]
+
+# Registered here, in this order, so the follow-on entry always sits after the objects it
+# changes; the plugin loader's own registration of SCHEMA_NAME is then a no-op.
+register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
+register_schema_version(DISTRIBUTION_SCHEMA_NAME, DISTRIBUTION_SCHEMA_STATEMENTS)
+
 
 class FieldError(RuntimeError):
     """Invalid field-control input or an action the record's state does not allow."""
@@ -559,6 +632,22 @@ def _days(value: Any) -> int | None:
 
 def _response_hash(text: str, cost: Decimal | None, days: int | None) -> str:
     return hash_json({"response": text, "cost_impact": fmt(cost) if cost is not None else None, "schedule_impact_days": days})
+
+
+def _recipients(recipients: Any) -> tuple[list[str], str]:
+    """A non-empty list of distinct (case-insensitively) recipient names, in the
+    order given, and the order- and case-insensitive hash that identifies the set."""
+    if isinstance(recipients, (str, bytes)) or not isinstance(recipients, (list, tuple)) or not recipients:
+        raise FieldError("recipients must be a non-empty list of strings")
+    clean: list[str] = []
+    seen: set[str] = set()
+    for raw in recipients:
+        t = _text(raw, "recipient")
+        if t.lower() in seen:
+            raise FieldError(f"recipient {t} is listed twice")
+        seen.add(t.lower())
+        clean.append(t)
+    return clean, hash_json(sorted(seen))
 
 
 def _closeout_items(items: Any) -> list[str]:
@@ -732,42 +821,75 @@ class Plugin:
             })
         return self.rfi(r["id"])
 
-    def distribute_rfi(self, rfi_id: str, recipients, actor: str) -> dict[str, Any]:
-        """Distribute the answered RFI's official response to a mail sink.
-        Nothing leaves the prototype; the distribution row is the record."""
+    def set_distribution_list(self, rfi_id: str, recipients, actor: str) -> dict[str, Any]:
+        """Record who receives an answered RFI's official response.  Bumps the RFI
+        version and invalidates every open approval on the RFI; the distribution
+        itself is the approval-bound ``field.distribute_rfi`` operation."""
         actor = _text(actor, "actor")
-        if isinstance(recipients, (str, bytes)) or not isinstance(recipients, (list, tuple)):
-            raise FieldError("recipients must be a non-empty list of strings")
-        if not recipients:
-            raise FieldError("recipients must be a non-empty list of strings")
-        clean: list[str] = []
-        seen: set[str] = set()
-        for raw in recipients:
-            t = _text(raw, "recipient")
-            if t.lower() in seen:
-                raise FieldError(f"recipient {t} is listed twice")
-            seen.add(t.lower())
-            clean.append(t)
-        recipients_hash = hash_json(sorted(seen))
-        dist_id = new_id("rfid")
+        clean, recipients_hash = _recipients(recipients)
         with self.db.transaction() as conn:
             r = self._rfi_row(rfi_id)
             if r["status"] != "answered":
-                raise FieldError(f"{r['number']} is {r['status']}; only an answered RFI is distributed")
-            dup = conn.execute(
-                "SELECT id FROM field_rfi_distributions WHERE rfi_id=? AND response_hash=? AND recipients_hash=?", (r["id"], r["response_hash"], recipients_hash)
-            ).fetchone()
+                raise FieldError(f"{r['number']} is {r['status']}; its distribution list is set once the response is issued through {OP_RESPOND_RFI}")
+            if r["distribution_recipients_hash"] == recipients_hash:
+                try:
+                    self._stored_distribution_list(r)
+                except FieldStateError as exc:  # the stored list was tampered with and carries this list's hash
+                    raise FieldError(f"{exc}; it already carries the hash of these recipients, so record a different list") from exc
+                raise FieldError(f"{r['number']} already has exactly this distribution list")
+            dup = self._existing_distribution(r["id"], r["response_hash"], recipients_hash)
             if dup is not None:
                 raise FieldError(f"{r['number']} response was already distributed to these recipients ({dup['id']})")
-            conn.execute(
-                """INSERT INTO field_rfi_distributions (id, rfi_id, rfi_version, response_hash, recipients_json, recipients_hash, channel, distributed_by, distributed_at)
-                   VALUES (?,?,?,?,?,?,?,?,?)""",
-                (dist_id, r["id"], r["version"], r["response_hash"], json.dumps(clean), recipients_hash, MAIL_SINK, actor, utcnow_iso()),
+            version = r["version"] + 1
+            cur = conn.execute(
+                "UPDATE field_rfis SET distribution_recipients_json=?, distribution_recipients_hash=?, version=?, updated_at=? WHERE id=? AND version=?",
+                (json.dumps(clean), recipients_hash, version, utcnow_iso(), r["id"], r["version"]),
             )
-            self.audit.record(actor, "field.rfi_distributed", RFI_SUBJECT, r["id"], {
-                "number": r["number"], "distribution_id": dist_id, "channel": MAIL_SINK, "recipients": clean, "response_hash": r["response_hash"], "rfi_version": r["version"],
+            if cur.rowcount != 1:
+                raise FieldError(f"{r['number']} changed concurrently; retry")
+            invalidated = self.approvals.invalidate_for_subject(RFI_SUBJECT, r["id"], reason=f"{r['number']} distribution list changed (version {version})", actor=actor)
+            self.audit.record(actor, "field.rfi_distribution_list_set", RFI_SUBJECT, r["id"], {
+                "number": r["number"], "version": version, "recipients": clean, "recipients_hash": recipients_hash,
+                "previous_recipients_hash": r["distribution_recipients_hash"], "approvals_invalidated": invalidated,
             })
-        return self._distribution(dist_id)
+        return self.rfi(r["id"])
+
+    def distribute_rfi(self, rfi_id: str, recipients=None, actor: str | None = None) -> dict[str, Any]:
+        """Retired direct path: distribution is approval-bound now."""
+        raise FieldError(
+            f"RFIs are no longer distributed directly: record the recipients with set_distribution_list(rfi_id, recipients, actor), "
+            f"then request, grant and execute the {OP_DISTRIBUTE_RFI} approval for the RFI (it binds the RFI version, the response and the recipients)"
+        )
+
+    @staticmethod
+    def _stored_distribution_list(r: dict[str, Any]) -> tuple[list[str], str]:
+        """The RFI's stored distribution list, rebuilt and re-hashed from the stored JSON.
+
+        The database cannot hash, so the once-only rule (one distribution per response
+        and recipient set) is only as good as the stored hash: a list whose JSON is not
+        a canonical recipient list, or whose hash is not the hash of that list, is
+        refused here instead of being distributed (or distributed twice)."""
+        raw, stored_hash = r.get("distribution_recipients_json"), r.get("distribution_recipients_hash")
+        if raw is None or stored_hash is None:
+            raise FieldStateError(f"{r['number']} has no distribution list; record one with set_distribution_list first")
+        try:
+            parsed = json.loads(raw)
+            clean, recipients_hash = _recipients(parsed)
+        except (TypeError, ValueError, FieldError) as exc:
+            raise FieldStateError(f"{r['number']} stored distribution list is not a valid recipient list ({exc}); record it again with set_distribution_list") from exc
+        if json.dumps(clean) != raw or recipients_hash != stored_hash:
+            raise FieldStateError(
+                f"{r['number']} stored distribution list does not match its recipients hash; it was changed outside set_distribution_list. "
+                "Record the list again with set_distribution_list"
+            )
+        return clean, recipients_hash
+
+    def _existing_distribution(self, rfi_id: str, response_hash: str | None, recipients_hash: str | None) -> dict[str, Any] | None:
+        if response_hash is None or recipients_hash is None:
+            return None
+        return self.db.one(
+            "SELECT id FROM field_rfi_distributions WHERE rfi_id=? AND response_hash=? AND recipients_hash=?", (rfi_id, response_hash, recipients_hash)
+        )
 
     def link_change(self, rfi_id: str, commitment_id: str, actor: str, sov_line_id: str | None = None) -> dict[str, Any]:
         """Turn an answered RFI's positive cost impact into one PENDING core change
@@ -832,6 +954,21 @@ class Plugin:
         row["change"] = self.c.commitments.change(change_link["target_id"]) if change_link else None
         row["distributions"] = [self._distribution(d["id"]) for d in self.db.query("SELECT id FROM field_rfi_distributions WHERE rfi_id=? ORDER BY distributed_at, id", (row["id"],))]
         row["has_draft_response"] = row["draft_response_hash"] is not None
+        listed_hash = row.setdefault("distribution_recipients_hash", None)
+        intact = None
+        if listed_hash is not None:
+            try:
+                self._stored_distribution_list(row)
+                intact = True
+            except FieldStateError:
+                intact = False
+        listed = row.pop("distribution_recipients_json", None)
+        try:
+            row["distribution_list"] = json.loads(listed) if listed is not None else None
+        except ValueError:  # not JSON at all: shown as stored, and flagged as not intact
+            row["distribution_list"] = listed
+        row["distribution_list_intact"] = intact
+        row["distribution_pending"] = bool(intact) and self._existing_distribution(row["id"], row["response_hash"], listed_hash) is None
         return row
 
     def rfis(self, project_id: str) -> list[dict[str, Any]]:
@@ -1262,6 +1399,18 @@ class Plugin:
             "acceptance_hash": co["acceptance_hash"] if co else None,
         }
 
+    def closeout_accepted(self, commitment_id: Any) -> bool:
+        """True only once ``field.accept_closeout`` executed for the commitment (the
+        database admits an accepted closeout only against that consumed approval).
+        ``Cipher.close_commitment`` asks this before treating a commitment as closed."""
+        if not isinstance(commitment_id, str) or not commitment_id.strip():
+            return False
+        row = self.db.one("SELECT status, approval_id FROM field_closeouts WHERE commitment_id=?", (commitment_id.strip(),))
+        if row is None or row["status"] != "accepted" or not row["approval_id"]:
+            return False
+        ap = self.db.one("SELECT status, operation FROM approvals WHERE id=?", (row["approval_id"],))
+        return ap is not None and ap["status"] == "consumed" and ap["operation"] == OP_ACCEPT_CLOSEOUT
+
     # ---- approvals: manifests ------------------------------------------------------------------------ #
 
     def manifest_for(self, operation: str, subject_id: str, *, actor_role: str) -> dict[str, Any]:
@@ -1271,7 +1420,40 @@ class Plugin:
             return self._decide_manifest(subject_id, actor_role=actor_role)
         if operation == OP_ACCEPT_CLOSEOUT:
             return self._closeout_manifest(subject_id, actor_role=actor_role)
+        if operation == OP_DISTRIBUTE_RFI:
+            return self._distribute_manifest(subject_id, actor_role=actor_role)
         raise FieldError(f"unknown field operation {operation}")
+
+    def _distribute_manifest(self, rfi_id: str, *, actor_role: str) -> dict[str, Any]:
+        r = self._rfi_row(rfi_id)
+        if r["status"] != "answered":
+            raise FieldStateError(f"{r['number']} is {r['status']}; only an answered RFI is distributed")
+        # rebuilt from the stored list, so a hash that does not belong to it is refused
+        recipients, recipients_hash = self._stored_distribution_list(r)
+        dup = self._existing_distribution(r["id"], r["response_hash"], recipients_hash)
+        if dup is not None:
+            raise FieldStateError(f"{r['number']} response was already distributed to these recipients ({dup['id']})")
+        project = self._project(r["project_id"])
+        return build_manifest(
+            operation=OP_DISTRIBUTE_RFI,
+            subject_type=RFI_SUBJECT,
+            subject_id=r["id"],
+            actor_role=actor_role,
+            amounts={},
+            entity=project["entity"],
+            bindings={
+                "project_id": r["project_id"],
+                "rfi_number": r["number"],
+                "rfi_version": r["version"],
+                "rfi_status": r["status"],
+                "rfi_content_hash": r["content_hash"],
+                "response_hash": r["response_hash"],
+                "recipients_hash": recipients_hash,
+                "recipients": recipients,
+                "channel": MAIL_SINK,
+                "leaves_the_prototype": False,
+            },
+        )
 
     def _respond_manifest(self, rfi_id: str, *, actor_role: str) -> dict[str, Any]:
         r = self._rfi_row(rfi_id)
@@ -1377,7 +1559,38 @@ class Plugin:
             return self._apply_decide(subject_id, approval_id=approval_id, manifest=manifest, actor=actor)
         if operation == OP_ACCEPT_CLOSEOUT:
             return self._apply_accept(subject_id, approval_id=approval_id, manifest=manifest, actor=actor, period_id=period_id)
+        if operation == OP_DISTRIBUTE_RFI:
+            return self._apply_distribute(subject_id, approval_id=approval_id, manifest=manifest, actor=actor)
         raise FieldError(f"unknown field operation {operation}")
+
+    def _apply_distribute(self, rfi_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
+        """Write the mail-sink distribution row; nothing leaves the prototype."""
+        with self.db.transaction() as conn:
+            r = self._rfi_row(rfi_id)
+            if r["status"] != "answered":
+                raise FieldStateError(f"{r['number']} is {r['status']}; the approval can no longer distribute it")
+            # the list and its hash are rebuilt from the stored JSON, never taken on trust
+            recipients, recipients_hash = self._stored_distribution_list(r)
+            bound = manifest.get("bindings") or {}
+            if (bound.get("recipients_hash") != recipients_hash or bound.get("recipients") != recipients
+                    or bound.get("rfi_version") != r["version"] or bound.get("response_hash") != r["response_hash"]):
+                raise FieldStateError(f"{r['number']} distribution list or response no longer matches the approved distribution")
+            dup = self._existing_distribution(r["id"], r["response_hash"], recipients_hash)
+            if dup is not None:
+                raise FieldStateError(f"{r['number']} response was already distributed to these recipients ({dup['id']})")
+            dist_id = new_id("rfid")
+            conn.execute(
+                """INSERT INTO field_rfi_distributions (id, rfi_id, rfi_version, response_hash, recipients_json, recipients_hash, channel, distributed_by, distributed_at, approval_id)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
+                (dist_id, r["id"], r["version"], r["response_hash"], json.dumps(recipients), recipients_hash, MAIL_SINK, actor, utcnow_iso(), approval_id),
+            )
+            invalidated = self.approvals.invalidate_for_subject(RFI_SUBJECT, r["id"], reason=f"{r['number']} already distributed to this list", actor=actor)
+            self.audit.record(actor, "field.rfi_distributed", RFI_SUBJECT, r["id"], {
+                "number": r["number"], "distribution_id": dist_id, "channel": MAIL_SINK, "recipients": recipients,
+                "recipients_hash": recipients_hash, "response_hash": r["response_hash"], "rfi_version": r["version"],
+                "approval_id": approval_id, "approvals_invalidated": invalidated,
+            })
+        return self._distribution(dist_id)
 
     def _apply_respond(self, rfi_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
         with self.db.transaction() as conn:
@@ -1486,13 +1699,51 @@ class Plugin:
         held = self.db.scalar("SELECT COUNT(*) FROM field_hold_points WHERE status='held'")
         open_punch = self.db.scalar("SELECT COUNT(*) FROM field_punch_items WHERE status='open'")
         open_closeouts = self.db.scalar("SELECT COUNT(*) FROM field_closeouts WHERE status='open'")
+        undistributed = self.db.scalar(
+            "SELECT COUNT(*) FROM field_rfis r WHERE r.status='answered' AND NOT EXISTS "
+            "(SELECT 1 FROM field_rfi_distributions d WHERE d.rfi_id = r.id AND d.response_hash = r.response_hash)"
+        )
         return [
             {"check": "field.open_rfis", "ok": True, "detail": f"{open_rfis} open RFI(s) (informational; field records post no journals)"},
+            {"check": "field.rfis_awaiting_distribution", "ok": True, "detail": f"{undistributed} answered RFI(s) not yet distributed (informational)"},
             {"check": "field.submittals_under_review", "ok": True, "detail": f"{under_review} submittal revision(s) under review (informational)"},
             {"check": "field.hold_points_held", "ok": True, "detail": f"{held} hold point(s) still held (informational)"},
             {"check": "field.open_punch_items", "ok": True, "detail": f"{open_punch} open punch item(s) (informational)"},
             {"check": "field.closeouts_pending", "ok": True, "detail": f"{open_closeouts} closeout(s) not yet accepted (informational)"},
         ]
+
+    def audit_export(self) -> dict[str, Any]:
+        """Every field record, workspace-wide, for an independent reviewer (JSON-serialisable)."""
+        q = self.db.query
+        rfis = q("SELECT * FROM field_rfis ORDER BY project_id, sequence")
+        for r in rfis:
+            intact = None
+            if r.get("distribution_recipients_hash") is not None:
+                try:
+                    self._stored_distribution_list(r)
+                    intact = True
+                except FieldStateError:
+                    intact = False
+            listed = r.pop("distribution_recipients_json", None)
+            try:
+                r["distribution_list"] = json.loads(listed) if listed is not None else None
+            except ValueError:
+                r["distribution_list"] = listed
+            r["distribution_list_intact"] = intact
+        distributions = q("SELECT * FROM field_rfi_distributions ORDER BY distributed_at, id")
+        for d in distributions:
+            d["recipients"] = json.loads(d.pop("recipients_json"))
+        return {
+            "rfis": rfis,
+            "rfi_links": q("SELECT * FROM field_rfi_links ORDER BY created_at, id"),
+            "rfi_distributions": distributions,
+            "submittals": q("SELECT * FROM field_submittals ORDER BY project_id, sequence"),
+            "submittal_revisions": q("SELECT * FROM field_submittal_revisions ORDER BY submittal_id, revision"),
+            "hold_points": q("SELECT * FROM field_hold_points ORDER BY created_at, id"),
+            "punch_items": q("SELECT * FROM field_punch_items ORDER BY project_id, sequence"),
+            "closeouts": q("SELECT * FROM field_closeouts ORDER BY created_at, id"),
+            "closeout_requirements": q("SELECT * FROM field_closeout_requirements ORDER BY commitment_id, item"),
+        }
 
     def state(self, project_id: str) -> dict[str, Any]:
         """RFIs with links and distributions, submittals with revisions, hold

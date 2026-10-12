@@ -4,6 +4,7 @@ import sqlite3
 import tempfile
 import unittest
 from decimal import Decimal
+from unittest import mock
 
 from apps.cipher.core.approvals import (ApprovalConsumed, ApprovalExpired, ApprovalNotGranted, Approvals, StaleApprovalError, build_manifest, material_hash)
 from apps.cipher.core.audit import Audit
@@ -32,6 +33,41 @@ class MoneyTests(unittest.TestCase):
         parts = allocate("100", [1, 1, 1])
         self.assertEqual(sum(parts), Decimal("100.00"))
         self.assertEqual(parts, [Decimal("33.34"), Decimal("33.33"), Decimal("33.33")])
+
+    def test_allocation_spreads_the_residual_cent_by_cent(self):
+        self.assertEqual([str(p) for p in allocate("0.05", [1] * 7)], ["0.01", "0.01", "0.01", "0.01", "0.01", "0.00", "0.00"])
+        self.assertEqual([str(p) for p in allocate("-0.05", [1] * 7)], ["-0.01", "-0.01", "-0.01", "-0.01", "-0.01", "0.00", "0.00"])
+        # equal remainders (.5 and .5): the larger weight wins the tie, then the lower index
+        self.assertEqual([str(p) for p in allocate("0.02", [1, 3])], ["0.00", "0.02"])
+        self.assertEqual([str(p) for p in allocate("0.02", [3, 1])], ["0.02", "0.00"])
+        self.assertEqual([str(p) for p in allocate("0.01", [1, 1])], ["0.01", "0.00"])
+        self.assertEqual([str(p) for p in allocate("0.03", [1, 2, 1])], ["0.01", "0.01", "0.01"])  # .75/.5/.75: indices 0 and 2
+        self.assertEqual([str(p) for p in allocate("10.00", [0, 0])], ["10.00", "0.00"])  # all-zero weights: first part
+        with self.assertRaises(MoneyError):
+            allocate("1.00", ["-1", "2"])
+        with self.assertRaises(MoneyError):
+            allocate("1.00", [])
+
+    def test_non_finite_and_out_of_range_values_are_rejected(self):
+        for bad in ("NaN", "nan", "sNaN", "-sNaN", "Infinity", "-Infinity", "inf", Decimal("NaN"), Decimal("sNaN"), Decimal("-Infinity"),
+                    "10000000000000", "-10000000000000.00", "1E+13", 10 ** 13, -(10 ** 13), Decimal("1e20")):
+            with self.subTest(value=bad), self.assertRaises(MoneyError):
+                money(bad)
+        self.assertEqual(money("9999999999999.99"), Decimal("9999999999999.99"))
+        self.assertEqual(money("-9999999999999.99"), Decimal("-9999999999999.99"))
+        with self.assertRaises(MoneyError):
+            total(["9999999999999.99", "0.01"])  # the running total leaves the range
+        with self.assertRaises(MoneyError):
+            allocate("NaN", [1, 1])
+        with self.assertRaises(MoneyError):
+            allocate("1.00", ["Infinity", "1"])
+        # the range check is exact even past the 28-digit context
+        self.assertEqual(money("9999999999999.994999999999999999"), Decimal("9999999999999.99"))
+
+    def test_allocation_ranks_remainders_exactly(self):
+        # remainders that differ only beyond 28 significant digits are still ranked exactly
+        self.assertEqual([str(p) for p in allocate("0.02", [3, Decimal("3E-28"), 1])], ["0.01", "0.00", "0.01"])
+        self.assertEqual(sum(allocate("1000.00", ["0.333333333333333333333333333333"] * 3)), Decimal("1000.00"))
 
     def test_rate_bounds(self):
         self.assertEqual(rate("0.10"), Decimal("0.100000"))
@@ -104,39 +140,88 @@ class SchemaTests(unittest.TestCase):
         names = {o["name"] for o in m["objects"]}
         self.assertIn("journals_no_update", names)
         self.assertIn("journals_period_open", names)
+        for name in ("journal_lines_sealed", "journals_reversed_once", "periods_locked_immutable", "periods_reopen_requires_approval", "period_reopens",
+                     "journal_unsealed", "journals_no_replace", "journal_lines_no_replace", "periods_insert_guard", "approvals_insert_guard",
+                     "approvals_lifecycle", "audit_log_no_replace"):
+            self.assertIn(name, names)
+        entries = [v["name"] for v in m["schema_status"]["versions"]]
+        self.assertEqual(entries[:4], ["foundation", "ledger_integrity", "period_integrity", "integrity_hardening"])
+
+    def test_failed_commit_is_rolled_back_not_left_open(self):
+        db = Database()
+        db.execute("INSERT INTO periods (id, name, start_date, end_date, status) VALUES ('P1','P1','2026-10-01','2026-10-31','open')")
+        db.execute("INSERT INTO accounts (code, name, type) VALUES ('5000','Cost','expense')")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "fewer lines than its sealed line count"):
+            with db.transaction() as conn:
+                conn.execute("INSERT INTO journals (id, period_id, posted_at, description, source_type, source_id, source_version, rule_version, posted_by, line_count) "
+                             "VALUES ('jrn_short','P1','t','short','t','t','1','r','t',2)")
+        self.assertFalse(db.conn.in_transaction)
+        self.assertFalse(db.in_transaction)
+        self.assertEqual(db.scalar("SELECT COUNT(*) FROM journals"), 0)
+        with db.transaction() as conn:  # the connection is usable again
+            conn.execute("INSERT INTO accounts (code, name, type) VALUES ('2000','AP','liability')")
 
 
 class WriteAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.dir = tempfile.mkdtemp()
+        env = mock.patch.dict(os.environ)
+        env.start()
+        self.addCleanup(env.stop)
+        os.environ.pop("CIPHER_OWNER_SECRET", None)
+
+    def open(self, name):
+        db = Database(os.path.join(self.dir, name))  # an absolute path (a snapshot) is used as given
+        self.addCleanup(db.close)
+        return db
 
     def test_fresh_file_db_has_authority(self):
-        db = Database(os.path.join(self.dir, "a.sqlite"))
+        db = self.open("a.sqlite")
         self.assertTrue(db.has_write_authority())
         self.assertTrue(os.path.exists(db.path + ".authority"))
+        self.assertFalse(db.authority_status()["read_only"])
+        memory = Database()
+        self.assertFalse(memory.authority_status()["read_only"])  # in-memory workspaces hold authority ...
+        with self.assertRaises(WriteAuthorityError):
+            memory.release_write_authority()  # ... always: there is nothing to release
+        self.assertTrue(memory.has_write_authority())
+        self.assertFalse(memory.read_only)
 
     def test_restored_copy_is_quarantined_until_claimed(self):
-        db = Database(os.path.join(self.dir, "a.sqlite"))
-        snap = db.snapshot(os.path.join(self.dir, "restore.sqlite"))
-        restored = Database(snap)
+        db = self.open("a.sqlite")
+        restored = self.open(db.snapshot(os.path.join(self.dir, "restore.sqlite")))
         self.assertFalse(restored.has_write_authority())
+        self.assertTrue(restored.authority_status()["read_only"])
         cmds = Commands(restored, Audit(restored))
         with self.assertRaises(WriteAuthorityError):
             cmds.run("op", {}, lambda: 1, actor="owner")
         with self.assertRaises(WriteAuthorityError):
-            restored.claim_write_authority(approval_ref="")
-        status = restored.claim_write_authority(approval_ref="apr_controller")
+            Audit(restored).record("owner", "x", "t", "1", {})  # SQLite itself refuses the write
+        for approver, reason in (("", "restore drill"), ("owner", ""), ("  ", "restore drill"), (None, "restore drill")):
+            with self.subTest(approver=approver, reason=reason), self.assertRaises(WriteAuthorityError):
+                restored.claim_write_authority(approver=approver, reason=reason)
+        self.assertTrue(restored.read_only)
+        status = restored.claim_write_authority(approver="owner", reason="restore drill", approval_ref="apr_controller")
         self.assertTrue(status["effective_write_authority"])
+        self.assertFalse(status["read_only"])
         self.assertEqual(status["recovery_epoch"], 1)
         self.assertTrue(status["release_quarantined"])
         self.assertEqual(cmds.run("op", {}, lambda: 1, actor="owner").result, 1)
+        claim = Audit(restored).entries(entity_type="workspace")[-1]
+        self.assertEqual(claim["actor"], "owner")
+        self.assertIn('"approval_ref":"apr_controller"', claim["payload_json"])
+        self.assertTrue(Audit(restored).verify_chain()["ok"])
 
     def test_release_then_reclaim(self):
-        db = Database(os.path.join(self.dir, "b.sqlite"))
-        db.release_write_authority()
+        db = self.open("b.sqlite")
+        status = db.release_write_authority()
         self.assertFalse(db.has_write_authority())
-        db.claim_write_authority(approval_ref="apr_x")
+        self.assertTrue(status["read_only"])
+        with self.assertRaises(WriteAuthorityError):
+            db.release_write_authority()  # nothing left to release
+        db.claim_write_authority(approver="owner", reason="resume work")
         self.assertTrue(db.has_write_authority())
+        self.assertFalse(db.read_only)
 
 
 class AuditTests(unittest.TestCase):

@@ -37,7 +37,7 @@ class Scenario:
         self.c.open_period("P1", "P1", "2026-10-01", "2026-10-31")
 
     def equipment(self, tag, required="2027-03-01", *, description="Raw water pump", long_lead=True, project_id=None):
-        return self.p.add_equipment(project_id or self.pid, tag, description, "43 21 13", required, long_lead=long_lead, actor="pm")
+        return self.p.add_equipment(project_id or self.pid, tag, description, "XX 21 13", required, long_lead=long_lead, actor="pm")
 
     def golden_requisition(self):
         """Two pumps, three quotes: 52,000 non-compliant, 55,000 compliant 30 wk, 58,000 compliant 20 wk."""
@@ -185,11 +185,11 @@ class EquipmentAndRequisitionTests(unittest.TestCase):
         with self.assertRaises(ProcurementError):
             self.s.equipment("   ")
         with self.assertRaises(ProcurementError):
-            self.p.add_equipment(self.s.pid, "P-2", "Pump", "43 21 13", "2027-03-01", long_lead="yes")
+            self.p.add_equipment(self.s.pid, "P-2", "Pump", "XX 21 13", "2027-03-01", long_lead="yes")
         with self.assertRaises(ProcurementError):
             self.p.add_equipment(self.s.pid, "P-3", "Pump", "", "2027-03-01")
         with self.assertRaises(ProcurementError):
-            self.p.add_equipment("prj_missing", "P-4", "Pump", "43 21 13", "2027-03-01")
+            self.p.add_equipment("prj_missing", "P-4", "Pump", "XX 21 13", "2027-03-01")
         self.assertEqual(self.p.state(self.s.pid)["summary"]["equipment"], 0)
 
     def test_requisition_rules_and_cancellation(self):

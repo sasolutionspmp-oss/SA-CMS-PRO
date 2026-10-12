@@ -20,10 +20,22 @@ Posting rules (fixture policy ``cipher-posting-rules/1``):
                              settlement           Dr 1200 / Cr 1000 operating bank
                              a provider return    Dr 1000 (or 1200 before settlement) / Cr 2100, reinstating the payable
 * ``reimbursement.bill``     Dr 1100 accounts receivable (party = project customer) / Cr 4000 contract revenue
+* billing collection        Dr 1000 operating bank (net of fee) / Dr 6000 fee / Cr 1100 (``record_billing_collection``:
+                             a bank fact like a prime-bill collection, so it needs no approval; one per provider reference)
 * ``reimbursement.void``     reversal of the approval journal (Dr 2100 / Cr 5100); only while nothing
                              has been paid, is in flight or has been billed on the claim
 
-Record lifecycle (schema triggers reject every other change):
+Accounts receivable from billings (``ar_open_items``): each posted billing is open for its
+billed amount less the collections recorded against it whose journal still stands; a reversal
+of the billing journal (for example through ``journal.reverse``) clears whatever it billed,
+and a reversal of a collection journal (a customer receipt returned unpaid) reinstates what
+that collection cleared, so the billing can be collected again under a new provider reference.
+Nothing else clears a billing.  The receivables domain adds these items to the AR subledger it reconciles to 1100
+(``receivables.extra_ar_sources``), and ``close_checks`` confirms the items match the 1100
+postings made by billings, their collections and their reversals.
+
+Record lifecycle (schema triggers reject every other change, including an ``INSERT OR
+REPLACE`` that would overwrite a stored row: ``reimbursements_no_replace``):
 
 * claim:    submitted -> approved -> partially_paid -> paid   (only with a booked payment on it)
                          approved -> voided                   (only with nothing booked or in flight)
@@ -31,11 +43,24 @@ Record lifecycle (schema triggers reject every other change):
             approved when no booked payment remains, otherwise to partially_paid
 * payment:  draft -> in_flight -> booked -> returned
                      in_flight -> failed
+                     in_flight -> draft   (its intent was canceled before dispatch)
             draft -> canceled
   A payment's status follows its payment intent: queued / submitted / outcome unknown = in_flight,
-  accepted / settled = booked, failed = failed (the obligation stays open), returned = returned.
+  accepted / settled = booked, failed = failed (the obligation stays open: the in-flight
+  reservation is released, so the claim's outstanding balance is payable again through a new
+  payment and a fresh approval), returned = returned.  A canceled intent puts the payment back
+  to ``draft``: the link to the canceled intent and its approval are cleared (the canceled intent
+  still names this payment as its source, and the audit log records the cancel), the version
+  bumps, and the same payment can be approved and released again (or canceled as a draft).
+  An intent is canceled only while it is still queued (``Payments.cancel_intent``), so a canceled
+  intent never posted anything.  (Payments whose intents were canceled before
+  ``reimbursements_cancel_reopens`` was applied stay ``failed``.)
   Its approval is the one its intent was created under; its journal and period are the intent's
   acceptance journal and that journal's period.
+  Restore recovery: a provider transfer for one of these payments that the restored copy never
+  recorded is adopted through the core ``payment.adopt_transfer`` approval; this module checks the
+  payment (draft, or in flight on a queued intent the adoption supersedes), the amount, the payee
+  and the claim's outstanding balance, then links the adopted intent like a release would.
   The core payment module notifies this module inside the transaction that changes the intent.
   Should this module's handler fail there, the core still commits the intent change (the provider
   has acted) and audits the failure; the payment is then out of step with its intent, which
@@ -51,7 +76,8 @@ Amounts on an approved claim:
 
 Approvals bind the record version and content hash of the subject, the amount,
 the employee, the receipt hash and (for payments) the claim's outstanding
-balance and the employee's verified destination and its version, so any
+balance, the employee's verified destination and its version, the project's
+entity and currency, the value date and the provider fee, so any
 material change after an approval was granted invalidates it instead of
 executing something the approver did not see.  Editing a submitted claim,
 releasing a payment, posting a billing or voiding the claim also proactively
@@ -286,11 +312,110 @@ OUTBOX_GUARDS_SCHEMA_STATEMENTS = [
         BEGIN SELECT RAISE(ABORT, 'illegal reimbursement claim status transition'); END""",
 ]
 
+# Customer collections against posted billings, so the receivable a billing creates
+# can be cleared and the AR subledger reconciles to 1100.  Each row cites its own
+# posted journal; rows are immutable (a correction is a reversal, never an edit).
+BILLING_AR_SCHEMA_NAME = "reimbursements_billing_collections"
+BILLING_AR_SCHEMA_STATEMENTS = [
+    """CREATE TABLE reimbursement_collections (
+        id TEXT PRIMARY KEY,
+        billing_id TEXT NOT NULL REFERENCES reimbursement_billings(id),
+        amount TEXT NOT NULL,
+        fee TEXT NOT NULL DEFAULT '0.00',
+        provider_ref TEXT NOT NULL UNIQUE,
+        journal_id TEXT NOT NULL REFERENCES journals(id),
+        period_id TEXT NOT NULL REFERENCES periods(id),
+        received_at TEXT NOT NULL,
+        recorded_by TEXT NOT NULL
+    )""",
+    "CREATE INDEX reimbursement_collections_billing ON reimbursement_collections(billing_id)",
+    """CREATE TRIGGER reimbursement_collections_cite_their_journal BEFORE INSERT ON reimbursement_collections
+        WHEN NOT EXISTS (
+            SELECT 1 FROM journals j WHERE j.id = NEW.journal_id AND j.source_type = 'reimbursement_collection'
+            AND j.source_id = NEW.id AND j.period_id = NEW.period_id)
+          OR NOT EXISTS (SELECT 1 FROM reimbursement_billings b WHERE b.id = NEW.billing_id AND b.status = 'billed')
+        BEGIN SELECT RAISE(ABORT, 'a reimbursement collection must cite its own posted journal against a billed reimbursement billing'); END""",
+    "CREATE TRIGGER reimbursement_collections_no_update BEFORE UPDATE ON reimbursement_collections BEGIN SELECT RAISE(ABORT, 'reimbursement collections are immutable'); END",
+    "CREATE TRIGGER reimbursement_collections_no_delete BEFORE DELETE ON reimbursement_collections BEGIN SELECT RAISE(ABORT, 'reimbursement collections are immutable'); END",
+]
+
+# SQLite's REPLACE conflict resolution deletes the conflicting row without firing
+# DELETE or UPDATE triggers (recursive_triggers is off), so ``INSERT OR REPLACE`` /
+# ``REPLACE INTO`` could rewrite an "immutable" collection (reusing its own id and
+# journal passes the cite-their-journal check), an approved claim, a booked payment
+# or a posted billing.  BEFORE INSERT triggers fire before REPLACE deletes anything:
+# refuse every insert that collides with a stored row on any unique key (which also
+# covers OR IGNORE and upserts).  A payment's ``intent_id`` needs no check here:
+# payments are inserted as drafts with no intent (``reimbursement_payments_start_as_draft``).
+# A separate entry, because applied entries are append-only.
+NO_REPLACE_SCHEMA_NAME = "reimbursements_no_replace"
+NO_REPLACE_SCHEMA_STATEMENTS = [
+    """CREATE TRIGGER reimbursement_claims_no_replace BEFORE INSERT ON reimbursement_claims
+        WHEN EXISTS (SELECT 1 FROM reimbursement_claims r
+                     WHERE r.id = NEW.id OR (r.receipt_hash = NEW.receipt_hash AND r.status != 'voided' AND NEW.status != 'voided'))
+        BEGIN SELECT RAISE(ABORT, 'reimbursement claims are never replaced: a stored claim already has this id or live receipt'); END""",
+    """CREATE TRIGGER reimbursement_payments_no_replace BEFORE INSERT ON reimbursement_payments
+        WHEN EXISTS (SELECT 1 FROM reimbursement_payments p WHERE p.id = NEW.id)
+        BEGIN SELECT RAISE(ABORT, 'reimbursement payments are never replaced: a stored payment already has this id'); END""",
+    """CREATE TRIGGER reimbursement_billings_no_replace BEFORE INSERT ON reimbursement_billings
+        WHEN EXISTS (SELECT 1 FROM reimbursement_billings b WHERE b.id = NEW.id)
+        BEGIN SELECT RAISE(ABORT, 'reimbursement billings are never replaced: a stored billing already has this id'); END""",
+    """CREATE TRIGGER reimbursement_collections_no_replace BEFORE INSERT ON reimbursement_collections
+        WHEN EXISTS (SELECT 1 FROM reimbursement_collections k WHERE k.id = NEW.id OR k.provider_ref = NEW.provider_ref)
+        BEGIN SELECT RAISE(ABORT, 'reimbursement collections are immutable: a stored collection already has this id or provider reference'); END""",
+]
+
+# A payment whose intent was canceled before dispatch goes back to ``draft`` (an open state)
+# instead of the terminal ``failed``: the trigger below is ``reimbursements_outbox_guards``'
+# lifecycle plus exactly one transition, in_flight -> draft, allowed only when the payment's
+# own intent is canceled and never posted, and only while clearing the intent link and the
+# approval (so the next release needs a fresh approval and a new intent).  A separate entry,
+# because applied entries are append-only; it replaces the trigger by name.
+REOPEN_SCHEMA_NAME = "reimbursements_cancel_reopens"
+REOPEN_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER IF EXISTS reimbursement_payments_follow_intent",
+    """CREATE TRIGGER reimbursement_payments_follow_intent BEFORE UPDATE ON reimbursement_payments
+        WHEN NEW.id IS NOT OLD.id OR NEW.claim_id IS NOT OLD.claim_id OR NEW.amount IS NOT OLD.amount OR NEW.created_at IS NOT OLD.created_at
+          OR (OLD.intent_id IS NOT NULL AND NEW.intent_id IS NOT OLD.intent_id
+              AND NOT (OLD.status = 'in_flight' AND NEW.status = 'draft' AND NEW.intent_id IS NULL))
+          OR (OLD.status != 'draft' AND NEW.approval_id IS NOT OLD.approval_id
+              AND NOT (OLD.status = 'in_flight' AND NEW.status = 'draft' AND NEW.approval_id IS NULL))
+          OR (NOT (OLD.status = 'in_flight' AND NEW.status = 'booked')
+              AND (NEW.journal_id IS NOT OLD.journal_id OR NEW.period_id IS NOT OLD.period_id))
+          OR NOT (
+            (OLD.status = 'draft' AND NEW.status = 'canceled' AND NEW.intent_id IS NULL AND NEW.approval_id IS OLD.approval_id)
+            OR (OLD.status = 'draft' AND NEW.status = 'in_flight' AND EXISTS (
+                SELECT 1 FROM payment_intents i WHERE i.id = NEW.intent_id AND i.source_type = 'reimbursement_payment'
+                AND i.source_id = NEW.id AND i.amount = NEW.amount AND i.payable_account = '2100' AND i.approval_id = NEW.approval_id))
+            OR (OLD.status = 'in_flight' AND NEW.status = 'booked' AND EXISTS (
+                SELECT 1 FROM payment_intents i JOIN journals j ON j.id = i.journal_id
+                WHERE i.id = NEW.intent_id AND i.status IN ('accepted','settled','returned')
+                AND NEW.journal_id = i.journal_id AND NEW.period_id = j.period_id))
+            OR (OLD.status = 'in_flight' AND NEW.status = 'failed' AND EXISTS (
+                SELECT 1 FROM payment_intents i WHERE i.id = NEW.intent_id AND i.status IN ('failed','canceled')))
+            OR (OLD.status = 'in_flight' AND NEW.status = 'draft' AND NEW.intent_id IS NULL AND NEW.approval_id IS NULL
+                AND NEW.journal_id IS NULL AND NEW.period_id IS NULL AND EXISTS (
+                SELECT 1 FROM payment_intents i WHERE i.id = OLD.intent_id AND i.status = 'canceled' AND i.journal_id IS NULL
+                AND i.source_type = 'reimbursement_payment' AND i.source_id = OLD.id))
+            OR (OLD.status = 'booked' AND NEW.status = 'returned' AND EXISTS (
+                SELECT 1 FROM payment_intents i WHERE i.id = NEW.intent_id AND i.status = 'returned'))
+          )
+        BEGIN SELECT RAISE(ABORT, 'reimbursement payments follow their payment intent: draft -> in_flight or canceled, in_flight -> booked (on the acceptance journal), failed or (intent canceled) draft, booked -> returned'); END""",
+]
+
 # Registered here, in this order, so each follow-on entry always sits after the
 # objects it changes; the plugin loader's own registration of SCHEMA_NAME is then a no-op.
 register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
 register_schema_version(OUTBOX_SCHEMA_NAME, OUTBOX_SCHEMA_STATEMENTS)
 register_schema_version(OUTBOX_GUARDS_SCHEMA_NAME, OUTBOX_GUARDS_SCHEMA_STATEMENTS)
+register_schema_version(BILLING_AR_SCHEMA_NAME, BILLING_AR_SCHEMA_STATEMENTS)
+register_schema_version(NO_REPLACE_SCHEMA_NAME, NO_REPLACE_SCHEMA_STATEMENTS)
+register_schema_version(REOPEN_SCHEMA_NAME, REOPEN_SCHEMA_STATEMENTS)
+
+AR_ACCOUNT = "1100"
+BANK_ACCOUNT = "1000"
+FEE_ACCOUNT = "6000"
+COLLECTION_SOURCE = "reimbursement_collection"
 
 
 class ReimbursementError(RuntimeError):
@@ -325,13 +450,16 @@ def _claim_content_hash(row: dict[str, Any]) -> str:
 
 
 def _payment_status_for_intent(intent_status: str) -> str:
-    """The reimbursement payment status an intent status implies."""
+    """The reimbursement payment status an intent status implies.  A canceled intent
+    (withdrawn before dispatch) returns the payment to an open draft."""
     if intent_status in ("accepted", "settled"):
         return "booked"
     if intent_status == "returned":
         return "returned"
-    if intent_status in ("failed", "canceled"):
+    if intent_status == "failed":
         return "failed"
+    if intent_status == "canceled":
+        return "draft"
     return "in_flight"  # approved, queued, submitted, outcome_unknown
 
 
@@ -347,6 +475,11 @@ class Plugin:
         self.approvals = cipher.approvals
         # the core payment path tells us, inside its own transaction, when one of our intents moves
         cipher.payments.subscribe(PAYMENT_SUBJECT, self._on_intent_change)
+        # restore recovery: a provider transfer for one of our payments that this copy never
+        # recorded is adopted through the core payment.adopt_transfer approval
+        register = getattr(cipher.payments, "register_adoption", None)
+        if register is not None:
+            register(PAYMENT_SUBJECT, plan=self._adoption_plan, link=self._link_adopted_intent, label="reimbursement payment")
 
     # ---- claims ----------------------------------------------------------- #
 
@@ -554,6 +687,9 @@ class Plugin:
             if p["status"] == "in_flight" and target == "failed":
                 self._fail_payment(p, intent, actor=actor)
                 moved.append("failed")
+            elif p["status"] == "in_flight" and target == "draft":
+                self._reopen_payment(p, intent, actor=actor)
+                moved.append("draft")
             elif p["status"] == "booked" and target == "returned" and p["intent_id"]:
                 self._return_payment(p, intent, actor=actor)
                 moved.append("returned")
@@ -580,11 +716,28 @@ class Plugin:
         })
 
     def _fail_payment(self, p: dict[str, Any], intent: dict[str, Any], *, actor: str) -> None:
+        """The intent failed (refused at dispatch, by the provider or by reconciliation): the
+        in-flight reservation is released and the claim's outstanding balance is open again.
+        The failed payment itself is finished; the balance is paid through a new payment."""
         self.db.execute("UPDATE reimbursement_payments SET status='failed', resolved_at=?, version=version+1 WHERE id=?", (utcnow_iso(), p["id"]))
         row = self._claim_row(p["claim_id"])
         self.audit.record(actor, "reimbursement.payment_failed", PAYMENT_SUBJECT, p["id"], {
-            "claim_id": row["id"], "intent_id": intent["id"], "amount": p["amount"], "reason": intent["note"],
+            "claim_id": row["id"], "intent_id": intent["id"], "intent_status": intent["status"], "amount": p["amount"], "reason": intent["note"],
             "outstanding_after": fmt(self._outstanding_row(row)),
+        })
+
+    def _reopen_payment(self, p: dict[str, Any], intent: dict[str, Any], *, actor: str) -> None:
+        """The intent was canceled before dispatch: the payment is an open draft again (its
+        intent link and approval are cleared, the version bumps), so the same payment can be
+        approved and released again; the claim's outstanding balance is open again."""
+        self.db.execute(
+            "UPDATE reimbursement_payments SET status='draft', intent_id=NULL, approval_id=NULL, released_at=NULL, version=version+1 WHERE id=?",
+            (p["id"],),
+        )
+        row = self._claim_row(p["claim_id"])
+        self.audit.record(actor, "reimbursement.payment_reopened", PAYMENT_SUBJECT, p["id"], {
+            "claim_id": row["id"], "canceled_intent_id": intent["id"], "released_under_approval": p["approval_id"], "amount": p["amount"],
+            "reason": intent["note"], "outstanding_after": fmt(self._outstanding_row(row)),
         })
 
     def _return_payment(self, p: dict[str, Any], intent: dict[str, Any], *, actor: str) -> None:
@@ -618,6 +771,56 @@ class Plugin:
                 if changes:
                     moved.append({"payment": p["id"], "intent": intent["id"], "intent_status": intent["status"], "moved": changes})
         return {"moved": moved}
+
+    # ---- payments: restore recovery (payment.adopt_transfer) ------------------------ #
+
+    def _adoption_plan(self, payment_id: str, *, amount, party_id: str | None, superseded: list[str], transfer_status: str) -> dict[str, Any]:
+        """Can a provider transfer this copy never recorded be booked as payment ``payment_id``?
+        The payment must be a draft, or in flight on a queued intent the adoption supersedes
+        (that intent is canceled first, which reopens the payment); the amounts must match
+        and the claim must still owe at least the transfer."""
+        try:
+            p = self.payment(payment_id)
+        except ReimbursementError:
+            raise ReimbursementError(f"reimbursement payment {payment_id} does not exist in this copy; draft it again and name it: "
+                                     f"'<provider_ref>={PAYMENT_SUBJECT}:<payment id>'") from None
+        reopening = p["status"] == "in_flight" and p["intent_id"] in superseded
+        if p["status"] != "draft" and not reopening:
+            raise ReimbursementError(f"reimbursement payment {payment_id} is {p['status']} in this copy; only a draft (or one in flight on a queued intent "
+                                     "the provider never saw) can take an adopted transfer")
+        if money(p["amount"]) != money(amount):
+            raise ReimbursementError(f"the transfer is for {fmt(amount)} but reimbursement payment {payment_id} is for {p['amount']}")
+        row = self._claim_row(p["claim_id"])
+        if row["status"] not in PAYABLE_STATES:
+            raise ReimbursementError(f"claim {row['id']} is {row['status']} in this copy; nothing is payable on it")
+        if party_id is not None and party_id != row["employee_id"]:
+            raise ReimbursementError(f"the transfer paid party {party_id}, but claim {row['id']} is owed to {row['employee_id']}")
+        outstanding = self._outstanding_row(row) + (money(p["amount"]) if reopening else ZERO)
+        if money(amount) > outstanding:
+            raise ReimbursementError(f"the transfer {fmt(amount)} exceeds what claim {row['id']} still owes in this copy ({fmt(outstanding)})")
+        return {
+            "project_id": row["project_id"], "party_id": row["employee_id"], "payable_account": EMPLOYEE_PAYABLE,
+            "binding": {"payment_version": p["version"], "payment_status": p["status"], "claim_id": row["id"], "claim_version": row["version"],
+                        "claim_hash": row["content_hash"], "claim_outstanding": fmt(outstanding)},
+        }
+
+    def _link_adopted_intent(self, intent: dict[str, Any], *, approval_id: str, actor: str) -> None:
+        """Called inside the adoption transaction: link the adopted intent the way a release
+        would (draft -> in_flight); the core then books its acceptance, which books the payment."""
+        p = self.payment(intent["source_id"])
+        if p["status"] != "draft":
+            raise ReimbursementError(f"reimbursement payment {p['id']} is {p['status']}; only a draft can take an adopted transfer")
+        if money(p["amount"]) != money(intent["amount"]):
+            raise ReimbursementError(f"the adopted transfer is for {intent['amount']} but reimbursement payment {p['id']} is for {p['amount']}")
+        self.db.execute(
+            "UPDATE reimbursement_payments SET status='in_flight', intent_id=?, approval_id=?, released_at=?, version=version+1 WHERE id=?",
+            (intent["id"], approval_id, utcnow_iso(), p["id"]),
+        )
+        self.approvals.invalidate_for_subject(PAYMENT_SUBJECT, p["id"], reason="payment matched to a provider transfer adopted in recovery", actor=actor)
+        self.approvals.invalidate_for_subject(CLAIM_SUBJECT, p["claim_id"], reason=f"payment {p['id']} matched to an adopted provider transfer", actor=actor)
+        self.audit.record(actor, "reimbursement.payment_adopted", PAYMENT_SUBJECT, p["id"], {
+            "claim_id": p["claim_id"], "intent_id": intent["id"], "approval_id": approval_id, "amount": p["amount"], "logical_op_id": intent["logical_op_id"],
+        })
 
     # ---- billings ------------------------------------------------------------ #
 
@@ -672,6 +875,129 @@ class Plugin:
             (project_id,),
         )
 
+    # ---- billings: customer collections ------------------------------------------ #
+
+    def _billing_balance(self, b: dict[str, Any]) -> dict[str, Decimal]:
+        """Billed, collected and reversed amounts of a posted billing, and what stays open.
+
+        A collection clears the receivable only while its own journal stands: a reversal
+        of the collection journal (for example a customer receipt returned unpaid, through
+        ``journal.reverse``) puts its amount back on 1100, so it counts as ``returned`` and
+        the billing is open (and collectable) for it again.  A reversal of the billing
+        journal clears the whole billing."""
+        billed = money(b["amount"]) if b["status"] == "billed" else ZERO
+        rows = self.db.query(
+            """SELECT k.amount, EXISTS (SELECT 1 FROM journals r WHERE r.reversal_of = k.journal_id) AS reversed
+               FROM reimbursement_collections k WHERE k.billing_id=?""",
+            (b["id"],),
+        )
+        collected = total(r["amount"] for r in rows if not r["reversed"])
+        returned = total(r["amount"] for r in rows if r["reversed"])
+        reversed_ = bool(b.get("journal_id")) and self.db.one("SELECT id FROM journals WHERE reversal_of=?", (b["journal_id"],)) is not None
+        cleared_by_reversal = billed if reversed_ else ZERO
+        return {"billed": billed, "collected": collected, "returned": returned, "reversed": cleared_by_reversal,
+                "open": money(billed - collected - cleared_by_reversal)}
+
+    def record_billing_collection(self, billing_id: str, amount, *, period_id: str, provider_ref: str, fee="0", actor: str) -> dict[str, Any]:
+        """Record the customer's payment of a posted billing: Dr 1000 (net of the fee) /
+        Dr 6000 fee / Cr 1100.  Partial collections are allowed; collecting more than
+        is open, collecting a reversed billing, reusing a provider reference or posting
+        into a period that is not open are refused."""
+        amt = _positive_amount(amount, "collection amount")
+        try:
+            f = money(fee)
+        except MoneyError as exc:
+            raise ReimbursementError(f"fee is not exact money: {exc}") from exc
+        if f < 0 or f > amt:
+            raise ReimbursementError(f"fee {fmt(f)} must be between 0.00 and the collected amount {fmt(amt)}")
+        ref = _non_empty(provider_ref, "provider_ref")
+        with self.db.transaction() as conn:
+            b = self.billing(billing_id)
+            if b["status"] != "billed":
+                raise ReimbursementError(f"billing {billing_id} is {b['status']}; only posted billings can be collected")
+            if self.db.one("SELECT id FROM reimbursement_collections WHERE provider_ref=?", (ref,)) is not None:
+                raise ReimbursementError(f"collection {ref} was already recorded")
+            bal = self._billing_balance(b)
+            if bal["reversed"] > 0:
+                raise ReimbursementError(f"billing {billing_id} was reversed; nothing is receivable on it")
+            if amt > bal["open"]:
+                raise ReimbursementError(f"collection {fmt(amt)} exceeds the open receivable {fmt(bal['open'])} on billing {billing_id}")
+            self.ledger.require_open(period_id)
+            row = self._claim_row(b["claim_id"])
+            collection_id = new_id("rcol")
+            scope = {"project_id": row["project_id"], "party_id": b["customer_id"]}
+            lines = []
+            if amt - f > 0:
+                lines.append({"account": BANK_ACCOUNT, "debit": amt - f, **scope, "memo": f"customer receipt {ref} (simulated)"})
+            if f > 0:
+                lines.append({"account": FEE_ACCOUNT, "debit": f, **scope, "memo": "processing fee"})
+            lines.append({"account": AR_ACCOUNT, "credit": amt, **scope, "memo": f"reimbursement billing {billing_id} collected"})
+            j = self.ledger.post(
+                period_id=period_id, description=f"Collection on reimbursement billing {billing_id}", lines=lines,
+                source_type=COLLECTION_SOURCE, source_id=collection_id, source_version="1", posted_by=actor,
+            )
+            conn.execute(
+                "INSERT INTO reimbursement_collections (id, billing_id, amount, fee, provider_ref, journal_id, period_id, received_at, recorded_by) VALUES (?,?,?,?,?,?,?,?,?)",
+                (collection_id, billing_id, fmt(amt), fmt(f), ref, j["id"], period_id, utcnow_iso(), actor),
+            )
+            self.audit.record(actor, "reimbursement.billing_collected", BILLING_SUBJECT, billing_id, {
+                "collection_id": collection_id, "provider_ref": ref, "amount": fmt(amt), "fee": fmt(f), "journal_id": j["id"],
+                "period_id": period_id, "open_after": fmt(bal["open"] - amt),
+            })
+        return self.collection(collection_id)
+
+    def collection(self, collection_id: str) -> dict[str, Any]:
+        row = self.db.one("SELECT * FROM reimbursement_collections WHERE id=?", (collection_id,))
+        if row is None:
+            raise ReimbursementError(f"unknown reimbursement collection {collection_id}")
+        return row
+
+    def collections(self, project_id: str) -> list[dict[str, Any]]:
+        return self.db.query(
+            """SELECT k.* FROM reimbursement_collections k JOIN reimbursement_billings b ON b.id=k.billing_id
+               JOIN reimbursement_claims c ON c.id=b.claim_id WHERE c.project_id=? ORDER BY k.received_at, k.id""",
+            (project_id,),
+        )
+
+    def ar_open_items(self, project_id: str | None = None) -> dict[str, Any]:
+        """Receivables created by reimbursement billings (which debit 1100): billed less
+        collected, and nothing open once the billing journal is reversed.  The receivables
+        domain adds ``items``/``subledger_total`` to its AR subledger; ``ledger_postings``
+        is this source's own share of 1100 (billings, their reversals and collections), and
+        ``reconciled_to_postings`` says the items explain it exactly."""
+        sql = ("SELECT b.*, c.project_id FROM reimbursement_billings b JOIN reimbursement_claims c ON c.id=b.claim_id "
+               "WHERE b.status='billed'")
+        params: tuple = ()
+        if project_id:
+            sql += " AND c.project_id=?"
+            params = (project_id,)
+        items = []
+        open_total = ZERO
+        for b in self.db.query(sql + " ORDER BY b.billed_at, b.id", params):
+            bal = self._billing_balance(b)
+            items.append({
+                "kind": BILLING_SUBJECT, "billing_id": b["id"], "claim_id": b["claim_id"], "project_id": b["project_id"], "customer_id": b["customer_id"],
+                "amount_due": fmt(bal["billed"]), "received": fmt(bal["collected"]), "returned": fmt(bal["returned"]),
+                "reversed": fmt(bal["reversed"]), "open": fmt(bal["open"]),
+            })
+            open_total += bal["open"]
+        postings_sql = ("SELECT l.debit, l.credit FROM journal_lines l JOIN journals j ON j.id=l.journal_id "
+                        "WHERE l.account_code=? AND j.source_type IN (?, ?)")
+        postings_params: list[Any] = [AR_ACCOUNT, BILLING_SUBJECT, COLLECTION_SOURCE]
+        if project_id:
+            postings_sql += " AND l.project_id=?"
+            postings_params.append(project_id)
+        postings = ZERO
+        for ln in self.db.query(postings_sql, tuple(postings_params)):
+            postings += money(ln["debit"]) - money(ln["credit"])
+        subledger = money(open_total)
+        return {
+            "source": "reimbursement_billings",
+            "items": items, "subledger_total": fmt(subledger), "ledger_postings": fmt(postings), "reconciled_to_postings": subledger == money(postings),
+            "cleared_by": ("collections recorded with record_billing_collection whose journal has not been reversed (a reversed collection "
+                           "puts its amount back on the receivable); a reversal of the billing journal clears the whole billing"),
+        }
+
     # ---- approvals: manifests ------------------------------------------------ #
 
     def manifest_for(self, operation: str, subject_id: str, *, actor_role: str) -> dict[str, Any]:
@@ -725,10 +1051,12 @@ class Plugin:
         if row["status"] not in PAYABLE_STATES:
             raise ReimbursementError(f"claim {row['id']} is {row['status']}; nothing is payable")
         employee = self._verified_employee(row["employee_id"])
+        # the transfer terms the core payment path quotes: entity, currency, value date, provider fee
+        terms = self.c.payments.payment_terms(p["amount"], row["project_id"])
         # The claim's status is deliberately not bound: an earlier in-flight payment being
         # accepted moves it (approved -> partially_paid) without changing anything this
         # approval covers.  What could matter -- the outstanding balance after reservations,
-        # the claim content and the destination -- is bound.
+        # the claim content, the destination and the transfer terms -- is bound.
         return build_manifest(
             operation=OP_PAY,
             subject_type=PAYMENT_SUBJECT,
@@ -746,9 +1074,13 @@ class Plugin:
                 "payable_account": EMPLOYEE_PAYABLE,
                 "route": PAYMENT_ROUTE,
                 "funding_source": "operating-bank-simulated",
+                "fees": terms["fee"],
+                "value_date": terms["value_date"],
                 "posting_rule": POSTING_RULE,
             },
             destination={"party_id": employee["id"], "destination": employee["destination"], "destination_version": employee["destination_version"]},
+            entity=terms["entity"],
+            currency=terms["currency"],
         )
 
     def _bill_manifest(self, billing_id: str, *, actor_role: str) -> dict[str, Any]:
@@ -998,12 +1330,15 @@ class Plugin:
         module already checks the 2100 reconciliation and unresolved payment intents."""
         out_of_sync = self._out_of_sync()
         moving = self.db.query("SELECT amount FROM reimbursement_payments WHERE status='in_flight'")
+        ar = self.ar_open_items()
         return [
             {"check": "reimbursement payments follow their payment intents", "ok": not out_of_sync,
              "detail": (f"{len(out_of_sync)} payment(s) out of step with their intent: " + ", ".join(p["id"] for p in out_of_sync) + "; run sync_payments"
                         if out_of_sync else "every released reimbursement payment matches its payment intent")},
             {"check": "reimbursement payments in flight", "ok": True,
              "detail": f"{len(moving)} in flight ({fmt(total(m['amount'] for m in moving))}); they post when the provider accepts them"},
+            {"check": "reimbursement billings receivable matches its 1100 postings", "ok": ar["reconciled_to_postings"],
+             "detail": f"open billings {ar['subledger_total']} vs 1100 postings by billings, reversals and collections {ar['ledger_postings']}"},
         ]
 
     def state(self, project_id: str) -> dict[str, Any]:
@@ -1011,5 +1346,19 @@ class Plugin:
             "claims": self.claims(project_id),
             "payments": self.payments(project_id),
             "billings": self.billings(project_id),
+            "collections": self.collections(project_id),
             "reconciliation": self.employee_payable_reconciliation(project_id),
+            "receivable": self.ar_open_items(project_id),
+        }
+
+    def audit_export(self) -> dict[str, Any]:
+        q = self.db.query
+        return {
+            "claims": q("SELECT * FROM reimbursement_claims ORDER BY created_at, id"),
+            "payments": q("SELECT * FROM reimbursement_payments ORDER BY created_at, id"),
+            "billings": q("SELECT * FROM reimbursement_billings ORDER BY created_at, id"),
+            "collections": q("SELECT * FROM reimbursement_collections ORDER BY received_at, id"),
+            "receivable": self.ar_open_items(),
+            "employee_payable": {p["project_id"]: self.employee_payable_reconciliation(p["project_id"])
+                                 for p in q("SELECT DISTINCT project_id FROM reimbursement_claims ORDER BY project_id")},
         }

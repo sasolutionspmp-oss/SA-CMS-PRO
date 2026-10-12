@@ -1,5 +1,8 @@
 """HTTP boundary tests: the console API cannot bypass approvals and reports errors cleanly."""
 import json
+import os
+import shutil
+import tempfile
 import unittest
 import urllib.error
 import urllib.request
@@ -107,6 +110,72 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(status, 400)
         status, body = _post(self.base + "/api/action/module_call", {"plugin": name, "method": mods[name][0], "kwargs": "not-an-object"})
         self.assertEqual(status, 400)
+
+
+class GovernedActionTests(unittest.TestCase):
+    """Authorities that became approval-bound stay approval-bound over HTTP."""
+
+    def test_prime_bill_send_is_approval_bound_over_http(self):
+        with BackgroundServer(Cipher()) as s:
+            ok = lambda name, body: _post(s.url + f"/api/action/{name}", body)  # noqa: E731
+            status, cust = ok("add_party", {"kind": "customer", "name": "Synthetic Owner Agency (HTTP)"})
+            self.assertEqual(status, 200, cust)
+            status, prj = ok("create_project", {"name": "HTTP project", "budget": "50000", "customer_id": cust["result"]["id"]})
+            self.assertEqual(status, 200, prj)
+            self.assertEqual(ok("open_period", {"period_id": "P1", "name": "P1", "start_date": "2026-10-01", "end_date": "2026-10-31"})[0], 200)
+            status, prime = ok("certify_prime_bill", {"project_id": prj["result"]["id"], "period_id": "P1", "certified_cumulative": "10000"})
+            self.assertEqual(status, 200, prime)
+            pid = prime["result"]["id"]
+            ap = ok("request_approval", {"operation": "prime_bill.approve", "subject_id": pid, "actor_role": "accountant"})[1]["result"]["id"]
+            ok("approve", {"approval_id": ap})
+            self.assertEqual(ok("execute", {"approval_id": ap, "actor": "accountant"})[0], 200)
+            # the direct send action is refused: sending is its own authority
+            status, body = ok("send_prime_bill", {"prime_bill_id": pid})
+            self.assertEqual((status, body["type"]), (400, "ReceivableError"))
+            self.assertIn("prime_bill.send", body["error"])
+            status, body = ok("request_approval", {"operation": "prime_bill.send", "subject_id": pid, "actor_role": "pm"})
+            self.assertEqual(status, 200, body)
+            send_ap = body["result"]["id"]
+            self.assertEqual(body["result"]["manifest"]["amounts"], {"amount_due": "9000.00"})
+            self.assertEqual(ok("execute", {"approval_id": send_ap, "actor": "pm"})[0], 400)  # not granted yet
+            ok("approve", {"approval_id": send_ap})
+            status, body = ok("execute", {"approval_id": send_ap, "actor": "pm"})
+            self.assertEqual((status, body["result"]["result"]["status"], body["result"]["result"]["channel"]), (200, "sent", "mail-sink"), body)
+            self.assertTrue(ok("execute", {"approval_id": send_ap, "actor": "pm"})[1]["result"]["replayed"])
+            self.assertEqual(ok("request_approval", {"operation": "prime_bill.send", "subject_id": pid, "actor_role": "pm"})[0], 400)  # sent once
+            # an ACH collection without the customer's recorded mandate is refused
+            status, body = ok("record_collection", {"prime_bill_id": pid, "period_id": "P1", "amount": "9000", "provider_ref": "ach_sim_http_0001"})
+            self.assertEqual(status, 400)
+            self.assertIn("missing mandate", body["error"])
+            state = _get(s.url + "/api/state?project_id=" + prj["result"]["id"])[1]
+            self.assertTrue(state["trial_balance"]["balanced"])
+            self.assertEqual(state["ar"]["subledger_total"], "9000.00")
+
+    def test_restored_copy_is_read_only_over_http_until_claimed(self):
+        d = tempfile.mkdtemp(prefix="cipher-http-restore-")
+        self.addCleanup(shutil.rmtree, d, True)
+        live = Cipher(os.path.join(d, "live.sqlite"))
+        self.addCleanup(live.db.close)
+        live.add_party(kind="supplier", name="Synthetic Subcontractor (HTTP)", destination="ACH-SIM-HTTP-0001")
+        restored = Cipher.open_restored(live.snapshot(os.path.join(d, "backup.sqlite")), provider=live.provider)
+        self.addCleanup(restored.db.close)
+        with BackgroundServer(restored) as s:
+            status, health = _get(s.url + "/api/health")
+            self.assertEqual((status, health["authority"]["effective_write_authority"]), (200, False))
+            status, body = _post(s.url + "/api/action/add_party", {"kind": "supplier", "name": "Injected payee", "destination": "ACH-SIM-INJECTED"})
+            self.assertEqual((status, body["type"]), (400, "WriteAuthorityError"))
+            status, body = _post(s.url + "/api/action/dispatch_payments", {})
+            self.assertEqual((status, body["type"]), (400, "ReleaseQuarantined"))
+            status, body = _post(s.url + "/api/action/claim_authority", {"approval_ref": "ext-ref-http-restore-drill"})
+            self.assertEqual(status, 200, body)
+            self.assertEqual((body["result"]["effective_write_authority"], body["result"]["release_quarantined"]), (True, True))
+            status, body = _post(s.url + "/api/action/dispatch_payments", {})
+            self.assertEqual((status, body["type"]), (400, "ReleaseQuarantined"))
+            status, body = _post(s.url + "/api/action/complete_recovery", {"actor": "reconciler"})
+            self.assertEqual((status, body["result"]["quarantine_lifted"]), (200, True), body)
+            self.assertEqual(_post(s.url + "/api/action/dispatch_payments", {}), (200, {"ok": True, "result": []}))
+            self.assertEqual(_post(s.url + "/api/action/add_party", {"kind": "supplier", "name": "Claimed copy payee"})[0], 200)
+        self.assertEqual([p["name"] for p in restored.parties()], ["Synthetic Subcontractor (HTTP)", "Claimed copy payee"])
 
 
 def _raw(url, method="GET", body=None, headers=None):

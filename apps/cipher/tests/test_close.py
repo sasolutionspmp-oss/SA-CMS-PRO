@@ -1,35 +1,45 @@
 """Period close, statements, aging and WIP: golden sequence and adversarial variants."""
 import datetime as dt
 import json
+import os
 import sqlite3
+import tempfile
 import unittest
 from decimal import Decimal
+from unittest import mock
 
-from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
-from apps.cipher.domain.close import PLUGIN_NAME, SCHEMA_NAME, CloseError, percent_complete
+from apps.cipher.core.approvals import ApprovalConsumed, ApprovalExpired, ApprovalNotGranted, StaleApprovalError, build_manifest
+from apps.cipher.core.ids import hash_json
+from apps.cipher.domain.close import (
+    GUARDS_SCHEMA_NAME, PLUGIN_NAME, REOPEN_GOVERNANCE_SCHEMA_NAME, REOPEN_GRANTS_SCHEMA_NAME, SCHEMA_NAME, CloseError, ReopenAuthorityError,
+    percent_complete,
+)
 from apps.cipher.domain.ledger import PeriodNotOpen
-from apps.cipher.service import Cipher
+from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthorised
 
 D = Decimal
 
 # Sibling plugins are built independently and may contribute their own blocking close
-# checks; the scenarios keep only this module and the reimbursement plugin (whose
-# employee-payable reconciliation the checklist reads) so the expected checklist is
-# deterministic.  Aggregation of other plugins' hooks is tested with fakes below; the
-# golden close (with a banking reconciliation, a stale close approval, the WIP
-# adjustment, its reversal and the lock) also runs with every registered plugin, and
-# one more test checks the checklist shape against every registered plugin.
-KEEP_PLUGINS = ("close", "reimbursement")
+# checks; the scenarios keep only this module, the reimbursement plugin (whose
+# employee-payable reconciliation the checklist reads) and the core subledger checks
+# ("core_reconciliation": retainage payable 2050, stored materials 1300, retainage
+# receivable 1150, provider clearing 1200), so the expected checklist is deterministic.
+# Aggregation of other plugins' hooks is tested with fakes below; the golden close (with
+# a banking reconciliation, a stale close approval, the WIP adjustment, its reversal and
+# the lock) also runs with every registered plugin, and one more test checks the
+# checklist shape against every registered plugin.
+KEEP_PLUGINS = ("close", "reimbursement", "core_reconciliation")
+CORE_SOURCE = "core_reconciliation"
 
 
 class Scenario:
     """Fresh in-memory workspace: verified supplier, customer, project, open periods P1 and P2."""
 
-    def __init__(self, *, isolate: bool = True):
+    def __init__(self, *, isolate: bool = True, keep: tuple[str, ...] = ()):
         self.c = Cipher()
         if isolate:
             for name in list(self.c._plugins):
-                if name not in KEEP_PLUGINS:
+                if name not in KEEP_PLUGINS + keep:
                     del self.c._plugins[name]
         self.close = self.c.plugin(PLUGIN_NAME)
         self.supplier = self.c.add_party(kind="supplier", name="Synthetic Subcontractor", destination="ACH-SIM-SUB")
@@ -60,6 +70,18 @@ class Scenario:
         if post:
             self.c.approve_and_execute("prime_bill.approve", pb["id"])
         return self.c.receivables.get(pb["id"])
+
+    def send(self, prime):
+        """Sending a prime bill is its own approval-bound authority."""
+        return self.c.approve_and_execute("prime_bill.send", prime["id"])
+
+    def ach_collection(self, prime, amount, *, fee="0", ref, period="P1"):
+        """ACH receipt on a prime bill, backed by the customer's recorded debit mandate."""
+        if not self.c.receivables.active_mandate(self.customer["id"]):
+            doc = self.c.evidence.register_document(project_id=self.pid, kind="ach_mandate", title="Customer ACH debit authorization (synthetic)", actor="owner")
+            rev = self.c.evidence.add_revision(document_id=doc["id"], content=b"synthetic ACH debit authorization", note="signed authorization", actor="owner")
+            self.c.receivables.record_mandate(self.customer["id"], "MANDATE-SIM-CLOSE", rev["content_hash"], actor="owner")
+        return self.c.receivables.record_collection(prime_bill_id=prime["id"], period_id=period, amount=amount, fee=fee, provider_ref=ref, actor="owner")
 
     def journal(self, lines, *, period="P1", source_type="test_setup"):
         self._ref += 1
@@ -113,8 +135,8 @@ class CloseGoldenTests(unittest.TestCase):
         prime = s.prime_bill("60000", post=False)
         self.assertEqual(cl.checklist_report("P1")["failing"], ["no_draft_prime_bills"])
         c.approve_and_execute("prime_bill.approve", prime["id"])
-        c.receivables.send(prime["id"], actor="owner")
-        c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_rcv_0001", actor="owner")
+        s.send(prime)
+        s.ach_collection(prime, "54000", fee="5", ref="ach_sim_rcv_0001")
         s.owner_contribution("10000")
         checks = s.checks()
         for name in ("trial_balance_balanced", "earlier_periods_closed", "ap_reconciled", "ar_reconciled", "no_draft_supplier_bills", "no_draft_prime_bills",
@@ -219,8 +241,8 @@ class CloseGoldenTests(unittest.TestCase):
         self.assertIn("no_draft_supplier_bills", cl.checklist_report("P1")["failing"])
         c.approve_and_execute("bill.approve", bill["id"])
         prime = s.prime_bill("60000")
-        c.receivables.send(prime["id"], actor="owner")
-        c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_rcv_0001", actor="owner")
+        s.send(prime)
+        s.ach_collection(prime, "54000", fee="5", ref="ach_sim_rcv_0001")
         s.owner_contribution("10000")
 
         bank = c._plugins.get("banking")
@@ -523,17 +545,18 @@ class PeriodCloseTests(unittest.TestCase):
         self.assertEqual(c.ledger.period("P1")["status"], "closed")
         self.assertEqual(cl.close_runs("P1"), [])
 
-        # reopen and close through the checklist; then a direct reopen / re-close is caught too
+        # reopen and close through the checklist; then a governed reopen followed by a direct
+        # re-close (outside the checklist) is caught too, with or without a change in between
         c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
         c.bills.void(draft["id"], actor="owner", reason="entered in error")
         s.owner_contribution("500")
         c.approve_and_execute("close.close_period", "P1")
-        c.ledger.reopen_period("P1", actor="owner", approval_ref="direct ledger path")
+        c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
         s.owner_contribution("1")
         c.close_period("P1")
         with self.assertRaises(CloseError):
             c.approve_and_execute("close.lock_period", "P1")
-        c.ledger.reopen_period("P1", actor="owner", approval_ref="direct ledger path")
+        c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
         c.close_period("P1")  # re-closed directly with no change in between: still not a checklist close
         with self.assertRaises(CloseError):
             c.approve_and_execute("close.lock_period", "P1")
@@ -542,7 +565,15 @@ class PeriodCloseTests(unittest.TestCase):
         c.approve_and_execute("close.close_period", "P1")
         res = c.approve_and_execute("close.lock_period", "P1")
         self.assertEqual(res.result["status"], "locked")
-        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["reopen", "close", "reopen", "close", "lock"])
+        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["reopen", "close", "reopen", "reopen", "reopen", "close", "lock"])
+        # every reopen rode on its own consumed controller approval, recorded by the ledger too
+        reopen_runs = [r for r in cl.close_runs("P1") if r["action"] == "reopen"]
+        self.assertEqual(len({r["approval_id"] for r in reopen_runs}), 4)
+        for run in reopen_runs:
+            ap = c.approvals.get(run["approval_id"])
+            self.assertEqual((ap["operation"], ap["subject_id"], ap["status"], ap["actor_role"]), ("close.reopen_period", "P1", "consumed", "controller"))
+        payloads = [json.loads(e["payload_json"]) for e in c.audit.entries(entity_type="period", entity_id="P1") if e["action"] == "period.reopened"]
+        self.assertEqual([p.get("approval_ref") or p.get("approval_id") for p in payloads], [r["approval_id"] for r in reopen_runs])
         self.assertTrue(c.audit.verify_chain()["ok"])
 
 
@@ -827,8 +858,9 @@ class WipTests(unittest.TestCase):
         res = c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P3")
         self.assertEqual(res.result["period_id"], "P3")
 
-        # P2 reopened: the P1 adjustment is still on its books, so P2 takes no second one
-        c.ledger.reopen_period("P2", actor="owner", approval_ref="test reopen")
+        # P2 reopened (a governed controller reopen): the P1 adjustment is still on its books, so P2 takes no second one
+        c.approve_and_execute("close.reopen_period", "P2", actor_role="controller", actor="controller")
+        self.assertEqual(c.ledger.period("P2")["status"], "open")
         with self.assertRaises(CloseError):
             cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")
         p2_assets = {ln["code"]: ln["amount"] for ln in cl.statements("P2")["balance_sheet"]["assets"]}
@@ -954,11 +986,442 @@ class AgingAndStateTests(unittest.TestCase):
         self.assertEqual((accounts["1160"]["name"], accounts["1160"]["type"]), ("Contract asset - underbillings", "asset"))
         self.assertEqual((accounts["2300"]["name"], accounts["2300"]["type"]), ("Contract liability - overbillings", "liability"))
         status = c.db.schema_status()
-        self.assertIn(SCHEMA_NAME, [v["name"] for v in status["versions"]])
+        names = [v["name"] for v in status["versions"]]
+        self.assertIn(SCHEMA_NAME, names)
+        self.assertLess(names.index(SCHEMA_NAME), names.index(GUARDS_SCHEMA_NAME))  # the guards sit after the tables they guard
+        # the reopen authority entries follow, each after the objects it changes
+        self.assertLess(names.index(GUARDS_SCHEMA_NAME), names.index(REOPEN_GRANTS_SCHEMA_NAME))
+        self.assertLess(names.index(REOPEN_GRANTS_SCHEMA_NAME), names.index(REOPEN_GOVERNANCE_SCHEMA_NAME))
         self.assertEqual(status["pending"], [])
         tables = {r["name"] for r in c.db.query("SELECT name FROM sqlite_master WHERE type='table'")}
-        self.assertTrue({"close_contract_values", "close_runs", "close_wip"} <= tables)
+        self.assertTrue({"close_contract_values", "close_runs", "close_wip", "close_reopen_grants"} <= tables)
+        triggers = {r["name"]: r["tbl_name"] for r in c.db.query("SELECT name, tbl_name FROM sqlite_master WHERE type='trigger'")}
+        self.assertNotIn("close_reopen_grants_granted_reopen_only", triggers)  # replaced: a grant is claimed while pending
+        for name, table in (("close_reopen_grants_recorded_at_grant", "close_reopen_grants"), ("close_runs_reopen_needs_controller_grant", "close_runs"),
+                            ("close_reopen_approval_granted_with_grant", "approvals"), ("close_periods_no_reopen_under_a_locked_period", "periods"),
+                            ("close_periods_reopen_through_close_only", "periods")):
+            self.assertEqual(triggers.get(name), table, name)
+        self.assertIn("role_basis", {r["name"] for r in c.db.query("PRAGMA table_info(close_reopen_grants)")})
         self.assertEqual(c.ledger.trial_balance()["journal_count"], 0)
+
+    def test_audit_export_lists_close_runs_and_wip_rows(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        closed = c.approve_and_execute("close.close_period", "P1")
+        c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        self.assertEqual(cl.audit_export()["reopen_grants"], [])
+        # a governed controller reopen: the export carries who granted it and under which role
+        reopen_ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        c.approve(reopen_ap["id"], approver="controller-1", approver_role="controller")
+        reopened = c.execute(reopen_ap["id"], actor="controller-1")
+        exp = cl.audit_export()
+        self.assertEqual(json.loads(json.dumps(exp)), exp)  # plain JSON, money as strings
+        self.assertEqual(set(exp), {"label", "posting_rule", "wip_policy", "close_runs", "reopen_grants", "wip_adjustments", "contract_values", "wip_reconciliation"})
+        self.assertEqual(exp["label"], "SHADOW - not authoritative")
+        self.assertEqual([(r["id"], r["action"], r["period_id"]) for r in exp["close_runs"]],
+                         [(closed.result["close_run_id"], "close", "P1"), (reopened.result["close_run_id"], "reopen", "P1")])
+        self.assertEqual([(g["approval_id"], g["period_id"], g["approver"], g["approver_role"], g["role_basis"]) for g in exp["reopen_grants"]],
+                         [(reopen_ap["id"], "P1", "controller-1", "controller", "declared")])
+        self.assertEqual(exp["close_runs"][1]["approval_id"], exp["reopen_grants"][0]["approval_id"])
+        run = exp["close_runs"][0]
+        self.assertTrue(run["checklist"] and all(ch["ok"] for ch in run["checklist"]))
+        self.assertEqual((run["statements_hash"], run["checklist_hash"]), (hash_json(run["statements"]), hash_json(run["checklist"])))  # re-performable
+        self.assertEqual(run["statements"]["balance_sheet"]["total_assets"], cl.statements("P1")["balance_sheet"]["total_assets"])
+        self.assertEqual([(w["id"], w["status"], w["amount"], w["reversal_period_id"]) for w in exp["wip_adjustments"]], [(row["id"], "reversed", "7500.00", "P2")])
+        self.assertEqual(hash_json(exp["wip_adjustments"][0]["inputs"]), exp["wip_adjustments"][0]["inputs_hash"])
+        self.assertEqual([(v["version"], v["contract_value"]) for v in exp["contract_values"]], [(1, "150000.00")])
+        self.assertTrue(exp["wip_reconciliation"][s.pid]["reconciled"])
+        self.assertEqual(c.audit_export()["modules"][PLUGIN_NAME]["close_runs"][0]["id"], closed.result["close_run_id"])
+
+
+class CoreSubledgerCheckTests(unittest.TestCase):
+    def test_core_subledger_checks_are_listed_once_and_block_the_close(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        s.supplier_bill(cmt, "20000")  # 2,000 retainage payable
+        s.prime_bill("30000")  # 3,000 retainage receivable
+        s.owner_contribution("1000")
+        expected = [label for label, domain, method in CoreReconciliationChecks.CHECKS if hasattr(getattr(c, domain), method)]
+        report = cl.checklist_report("P1")
+        self.assertEqual([ch["check"] for ch in report["checks"] if ch["source"] == CORE_SOURCE], expected)
+        names = [ch["check"] for ch in report["checks"]]
+        self.assertEqual(len(names), len(set(names)), names)  # nothing is reported twice
+        self.assertTrue(report["all_ok"], report["failing"])
+        # the same hook registered under a second name is still reported once
+        c.register_plugin("core_reconciliation_alias", c.plugin(CORE_SOURCE))
+        self.assertEqual(cl.checklist_report("P1")["checks"], report["checks"])
+        del c._plugins["core_reconciliation_alias"]
+
+        # a core subledger that stops tying out fails its check (wherever the method lives),
+        # makes a granted close approval stale and blocks the close
+        label = CoreReconciliationChecks.CHECKS[0][0]  # retainage payable (2050)
+        ap = c.request_approval("close.close_period", "P1")
+        c.approve(ap["id"])
+        c.bills.retainage_open_items = lambda: {"reconciled": False, "subledger_total": "2000.00", "control_balance": "2000.01"}
+        try:
+            report = cl.checklist_report("P1")
+            self.assertEqual(report["failing"], [label])
+            failing = next(ch for ch in report["checks"] if ch["check"] == label)
+            self.assertEqual(failing["source"], CORE_SOURCE)
+            self.assertIn("2000.01", failing["detail"])
+            with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+                c.execute(ap["id"])
+            self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+            with self.assertRaises(CloseError):
+                c.approve_and_execute("close.close_period", "P1")
+            self.assertEqual(c.ledger.period("P1")["status"], "open")
+        finally:
+            del c.bills.retainage_open_items
+
+        res = c.approve_and_execute("close.close_period", "P1")
+        run = cl.close_run(res.result["close_run_id"])
+        self.assertEqual([ch["check"] for ch in run["checklist"] if ch["source"] == CORE_SOURCE], expected)
+        st = cl.statements("P1")
+        self.assertTrue(st["balance_sheet"]["balanced"])
+        self.assertEqual(D(st["income_statement"]["net"]), D(st["income_statement"]["revenue"]) - D(st["income_statement"]["expense"]))
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_ar_with_labor_invoices_reconciles_in_the_checklist(self):
+        s = Scenario(keep=("labor",))
+        c, cl = s.c, s.close
+        lab = c.plugin("labor")
+        emp = c.add_party(kind="employee", name="Design Engineer")
+        lab.set_rate(emp["id"], "2026-10-01", "50.00", "120.00", actor="owner")
+        phase = lab.add_phase(s.pid, "DD", "Design development", "100", "6000.00", True, actor="pm")
+        lab.log_time(emp["id"], s.pid, phase["id"], "2026-10-15", "8", "", actor="emp")  # cost 400.00, bill 960.00
+        ts = lab.submit_timesheet(emp["id"], "P1", actor="emp")
+        c.approve_and_execute("labor.approve_timesheet", ts["id"], period_id="P1")
+        inv = lab.prepare_invoice(s.pid, "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        prime = s.prime_bill("30000")  # 27,000 receivable + 3,000 retainage
+        self.assertEqual(c.ledger.balance("1100"), D("27960.00"))
+
+        ar = s.checks()["ar_reconciled"]
+        self.assertTrue(ar["ok"], ar["detail"])
+        self.assertEqual(ar["detail"], "AR subledger 27960.00 vs control 1100 27960.00")
+        self.assertTrue(cl.checklist_report("P1")["all_ok"], cl.checklist_report("P1")["failing"])
+        # without the labor source the same 1100 balance no longer ties
+        del c._plugins["labor"]
+        try:
+            ar = s.checks()["ar_reconciled"]
+            self.assertFalse(ar["ok"])
+            self.assertEqual(ar["detail"], "AR subledger 27000.00 vs control 1100 27960.00")
+        finally:
+            c.register_plugin("labor", lab)
+
+        # WIP and statements count the labor cost (5300) and fee revenue (4100)
+        s.commitment()  # forecast at completion 100,000
+        cl.set_contract_value(s.pid, "100000", actor="owner")
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["cost_to_date"], w["percent_complete"], w["earned_revenue"], w["billed_to_date"], w["over_under"], w["position"]),
+                         ("400.00", "0.0040", "400.00", "30960.00", "30560.00", "overbilled"))
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        st = cl.statements("P1")
+        inc = st["income_statement"]
+        self.assertEqual((inc["revenue"], inc["expense"], inc["net"]), ("400.00", "400.00", "0.00"))
+        self.assertEqual({ln["code"]: ln["amount"] for ln in inc["revenue_lines"]}, {"4000": "-560.00", "4100": "960.00"})
+        bs = st["balance_sheet"]
+        self.assertEqual({ln["code"]: ln["amount"] for ln in bs["assets"]}, {"1100": "27960.00", "1150": "3000.00"})
+        self.assertEqual({ln["code"]: ln["amount"] for ln in bs["liabilities"]}, {"2200": "400.00", "2300": "30560.00"})
+        self.assertTrue(bs["balanced"])
+
+        report = cl.checklist_report("P1")
+        self.assertTrue(report["all_ok"], report["failing"])
+        res = c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(res.result["status"], "closed")
+        aging = cl.aging(prime["created_at"][:10])
+        self.assertEqual((aging["ar"]["total"], aging["ar"]["subledger_total"], aging["ar"]["ties_to_subledger"]), ("27960.00", "27960.00", True))
+        self.assertEqual(sorted((it["kind"], it["ref"], it["open"]) for it in aging["ar"]["items"]),
+                         sorted([("prime_bill", prime["id"], "27000.00"), ("labor_invoice", inv["id"], "960.00")]))
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+
+class GovernedReopenTests(unittest.TestCase):
+    def test_reopen_runs_only_against_its_own_consumed_approval(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.owner_contribution("100")
+        closed = c.approve_and_execute("close.close_period", "P1")
+        close_approval = cl.close_run(closed.result["close_run_id"])["approval_id"]
+
+        # a direct call with a fabricated, empty or foreign (consumed close) approval reopens nothing
+        for ref in ("apr_fabricated", "", close_approval):
+            with self.subTest(ref=ref), self.assertRaises(CloseError):
+                cl.apply("close.reopen_period", "P1", approval_id=ref, manifest={}, actor="x", period_id=None)
+        # nor does the ledger take a bare reference
+        with self.assertRaises((RuntimeError, sqlite3.DatabaseError)):
+            c.ledger.reopen_period("P1", actor="x", approval_ref="apr_fabricated")
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+
+        # a granted but not yet consumed reopen approval is not enough either
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        with self.assertRaises(RoleNotAuthorised):  # a project role cannot grant it
+            c.approve(ap["id"], approver="pm-user", approver_role="pm")
+        c.approve(ap["id"], approver="controller", approver_role="controller")
+        with self.assertRaises(CloseError):
+            cl.apply("close.reopen_period", "P1", approval_id=ap["id"], manifest=ap["manifest"], actor="controller", period_id=None)
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+
+        # the governed path consumes it and reopens, once
+        res = c.execute(ap["id"], actor="controller")
+        self.assertEqual(res.result["status"], "open")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "consumed")
+        run = cl.close_run(res.result["close_run_id"])
+        self.assertEqual((run["action"], run["approval_id"], run["status_before"], run["status_after"]), ("reopen", ap["id"], "closed", "open"))
+        self.assertTrue(c.execute(ap["id"], actor="controller").replayed)  # the replay returns the stored result
+        c.approve_and_execute("close.close_period", "P1")
+        with self.assertRaises(ApprovalConsumed):  # the consumed approval cannot reopen the period a second time
+            c.execute(ap["id"], actor="controller", op_id="reopen-again")
+        with self.assertRaises(CloseError):
+            cl.apply("close.reopen_period", "P1", approval_id=ap["id"], manifest=ap["manifest"], actor="controller", period_id=None)
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["close", "reopen", "close"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_database_guards_on_close_runs_and_wip_postings(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        run_sql = ("INSERT INTO close_runs (id, period_id, action, status_before, status_after, approval_id, actor, total_debit, total_credit, journal_count, created_at) "
+                   "VALUES (?, ?, ?, 'open', 'closed', ?, 'raw', '0.00', '0.00', 0, 't')")
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        post_ap = c.request_approval("close.post_wip_adjustment", row["id"])
+        c.approve(post_ap["id"])  # granted, not consumed
+        for approval_id in (None, "apr_fabricated", post_ap["id"]):
+            with self.subTest(approval_id=approval_id), self.assertRaisesRegex(sqlite3.IntegrityError, "consumed close approval"):
+                c.db.execute(run_sql, ("crun_raw", "P1", "close", approval_id))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed close.post_wip_adjustment approval"):
+            c.db.execute("UPDATE close_wip SET status='posted', approval_id=?, version=version+1 WHERE id=?", (post_ap["id"], row["id"]))
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+        c.execute(post_ap["id"], period_id="P1")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed close.reverse_wip_adjustment approval"):
+            c.db.execute("UPDATE close_wip SET status='reversed', reversal_approval_id=?, version=version+1 WHERE id=?", (post_ap["id"], row["id"]))
+        res = c.approve_and_execute("close.close_period", "P1")
+        used = cl.close_run(res.result["close_run_id"])["approval_id"]
+        with self.assertRaises(sqlite3.IntegrityError):  # a consumed close approval yields one run, not two
+            c.db.execute(run_sql, ("crun_raw2", "P1", "close", used))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed close approval"):  # nor a run of another action or period
+            c.db.execute(run_sql, ("crun_raw3", "P2", "close", used))
+        self.assertEqual([r["action"] for r in cl.close_runs()], ["close"])
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "posted")
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+
+RAW_REOPEN = "UPDATE periods SET status='open', closed_at=NULL, closed_by=NULL, reopen_approval_id=? WHERE id=?"
+GRANT_SQL = "INSERT INTO close_reopen_grants (approval_id, period_id, approver, approver_role, granted_at, role_basis) VALUES (?,?,?,?,?,?)"
+
+
+class ReopenAuthorityTests(unittest.TestCase):
+    """Who may grant a reopen, what is recorded about it, and the database paths around it."""
+
+    def closed_p1(self):
+        s = Scenario()
+        s.owner_contribution("1000")
+        s.c.approve_and_execute("close.close_period", "P1")
+        return s, s.c, s.close
+
+    def test_grant_role_is_recorded_and_an_accountant_cannot_grant(self):
+        s, c, cl = self.closed_p1()
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        with self.assertRaises(ReopenAuthorityError):  # the core lets an accountant approve a reopen; this module does not
+            c.approve(ap["id"], approver="accountant-amy", approver_role="accountant")
+        with self.assertRaises(RoleNotAuthorised):  # a project role has no reopen authority at all
+            c.approve(ap["id"], approver="pm-paul", approver_role="pm")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
+        self.assertIsNone(cl.reopen_grant(ap["id"]))
+        self.assertEqual([e for e in c.audit.entries(entity_type="approval", entity_id=ap["id"]) if e["action"] == "close.reopen_grant_recorded"], [])
+
+        granted = c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        self.assertEqual((granted["status"], granted["approver"]), ("granted", "controller-1"))
+        g = cl.reopen_grant(ap["id"])
+        self.assertEqual((g["period_id"], g["approver"], g["approver_role"], g["role_basis"]), ("P1", "controller-1", "controller", "declared"))
+        res = c.execute(ap["id"], actor="controller-1")
+        self.assertEqual((res.result["status"], res.result["granted_by"], res.result["granted_as"], res.result["role_basis"]),
+                         ("open", "controller-1", "controller", "declared"))
+
+        # approve_and_execute names no approver role: the grant is recorded under the core's default
+        # approver role and says so, rather than passing for a declared owner or controller grant
+        c.approve_and_execute("close.close_period", "P1")
+        res = c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="accountant-bob")
+        self.assertEqual((res.result["granted_by"], res.result["granted_as"], res.result["role_basis"]), ("accountant-bob", "owner", "core_default"))
+        self.assertEqual([(r["approver"], r["approver_role"], r["role_basis"]) for r in cl.reopen_grants("P1")],
+                         [("controller-1", "controller", "declared"), ("accountant-bob", "owner", "core_default")])
+        payloads = [json.loads(e["payload_json"]) for e in c.audit.entries() if e["action"] == "close.reopen_grant_recorded"]
+        self.assertEqual([(p["period_id"], p["approver_role"], p["role_basis"]) for p in payloads], [("P1", "controller", "declared"), ("P1", "owner", "core_default")])
+        reopened = [json.loads(e["payload_json"]) for e in c.audit.entries(entity_type="accounting_period", entity_id="P1") if e["action"] == "close.period_reopened"]
+        self.assertEqual([(p["granted_by"], p["granted_as"], p["role_basis"]) for p in reopened],
+                         [("controller-1", "controller", "declared"), ("accountant-bob", "owner", "core_default")])
+        for sql in ("UPDATE close_reopen_grants SET approver_role='controller'", "DELETE FROM close_reopen_grants"):
+            with self.subTest(sql=sql), self.assertRaisesRegex(sqlite3.IntegrityError, "append-only"):
+                c.db.execute(sql)
+        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["close", "reopen", "close", "reopen"])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_an_approval_granted_around_cipher_approve_never_reopens(self):
+        s, c, cl = self.closed_p1()
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        # it cannot even be granted outside Cipher.approve: not through Approvals.grant, not by a raw UPDATE
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "granted only through Cipher.approve"):
+            c.approvals.grant(ap["id"], approver="controller")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "granted only through Cipher.approve"):
+            c.db.execute("UPDATE approvals SET status='granted', approver='controller', granted_at='t' WHERE id=?", (ap["id"],))
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
+
+        # raw role claims: never for an accountant, never without a basis, never for another period
+        for label, params, message in (
+            ("accountant", (ap["id"], "P1", "accountant-amy", "accountant", "t", "declared"), "CHECK constraint"),
+            ("no basis", (ap["id"], "P1", "controller", "controller", "t", None), "recorded only by Cipher.approve"),
+            ("other period", (ap["id"], "P2", "controller", "controller", "t", "declared"), "recorded only by Cipher.approve"),
+        ):
+            with self.subTest(claim=label), self.assertRaisesRegex(sqlite3.IntegrityError, message):
+                c.db.execute(GRANT_SQL, params)
+        self.assertIsNone(cl.reopen_grant(ap["id"]))
+
+        # granted properly; no second claim can be attached afterwards, nor one to an approval that is not pending
+        c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute(GRANT_SQL, (ap["id"], "P1", "controller-2", "controller", "t", "declared"))
+        withdrawn = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        c.reject(withdrawn["id"], approver="owner", reason="not needed")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "recorded only by Cipher.approve"):
+            c.db.execute(GRANT_SQL, (withdrawn["id"], "P1", "controller", "controller", "t", "declared"))
+
+        # consumed outside Cipher.execute: the ledger and a raw UPDATE are both refused, because
+        # one of this module's approvals reopens only through its execution (the reopen run)
+        c.approvals.consume(ap["id"], current_manifest=ap["manifest"], consumer="controller-1")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "only through its execution"):
+            c.ledger.reopen_period("P1", actor="controller-1", approval_ref=ap["id"])
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "only through its execution"):
+            c.db.execute(RAW_REOPEN, (ap["id"], "P1"))
+        with self.assertRaises(ApprovalConsumed):
+            c.execute(ap["id"], actor="controller-1")
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+        self.assertEqual(c.ledger.reopens(), [])
+        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["close"])
+
+        # the governed path still reopens, against a fresh approval, and the ledger logs that approval
+        res = c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+        run = cl.close_run(res.result["close_run_id"])
+        self.assertEqual([r["approval_id"] for r in c.ledger.reopens("P1")], [run["approval_id"]])
+        self.assertEqual(cl.reopen_grant(run["approval_id"])["period_id"], "P1")
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_no_reopen_under_a_closed_or_locked_later_period_on_any_path(self):
+        s, c, cl = self.closed_p1()
+        c.approve_and_execute("close.close_period", "P2")
+        # a granted (controller) close approval consumed outside Cipher.execute, with a raw reopen run:
+        # the closed P2 still blocks P1's reopen on the ledger and raw paths, as on the governed one
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        c.approvals.consume(ap["id"], current_manifest=ap["manifest"], consumer="controller-1")
+        c.db.execute(
+            "INSERT INTO close_runs (id, period_id, action, status_before, status_after, approval_id, actor, total_debit, total_credit, journal_count, created_at) "
+            "VALUES ('crun_raw_reopen', 'P1', 'reopen', 'closed', 'open', ?, 'raw', '1000.00', '1000.00', 1, 't')", (ap["id"],))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "every later period is open"):
+            c.db.execute(RAW_REOPEN, (ap["id"], "P1"))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "every later period is open"):
+            c.ledger.reopen_period("P1", actor="controller-1", approval_ref=ap["id"])
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+
+        # P2 locked straight through the ledger while P1 is only closed: no approval the core accepts,
+        # not even a fabricated non-close "*.reopen_period" one, reopens P1 under the locked P2
+        c.ledger.lock_period("P2", actor="owner")
+        m = build_manifest(operation="zz.reopen_period", subject_type="accounting_period", subject_id="P1", actor_role="controller", bindings={"probe": "fabricated"})
+        fake = c.approvals.request(m, requested_by="probe")
+        c.approvals.grant(fake["id"], approver="probe")
+        c.approvals.consume(fake["id"], current_manifest=m, consumer="probe")
+        for label, attempt in (("raw", lambda ref: c.db.execute(RAW_REOPEN, (ref, "P1"))),
+                               ("ledger", lambda ref: c.ledger.reopen_period("P1", actor="probe", approval_ref=ref))):
+            for ref in (fake["id"], ap["id"]):
+                with self.subTest(path=label, approval=ref), self.assertRaisesRegex(sqlite3.IntegrityError, "later period is locked"):
+                    attempt(ref)
+        self.assertEqual([c.ledger.period(p)["status"] for p in ("P1", "P2")], ["closed", "locked"])
+        self.assertEqual(c.ledger.reopens(), [])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_the_grant_record_is_atomic_with_the_core_grant(self):
+        s, c, cl = self.closed_p1()
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+
+        def core_down(*args, **kwargs):
+            raise RuntimeError("approval store unavailable")
+
+        c.approvals.grant = core_down
+        try:
+            with self.assertRaisesRegex(RuntimeError, "unavailable"):
+                c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        finally:
+            del c.approvals.grant
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
+        self.assertIsNone(cl.reopen_grant(ap["id"]))  # the grant row rolled back with the failed core grant
+
+        # an expired approval: the core records the expiry and refuses; no grant is recorded
+        c.db.execute("UPDATE approvals SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (ap["id"],))
+        with self.assertRaises(ApprovalExpired):
+            c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "expired")
+        with self.assertRaises(RuntimeError):  # no longer pending
+            c.approve(ap["id"], approver="controller-1", approver_role="controller")
+        self.assertEqual(cl.reopen_grants(), [])
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_workspace_with_the_original_reopen_grants_upgrades_in_place(self):
+        """A file-backed workspace that applied the first reopen-grant entry (grant row written after the core
+        grant) keeps its rows and its granted reopen approval, and gains the reopen governance on reopening
+        (applied catalog entries are append-only)."""
+        from apps.cipher.core import db as core_db
+        path = os.path.join(tempfile.mkdtemp(), "close-upgrade.sqlite")
+        legacy_catalog = [entry for entry in core_db.SCHEMA_CATALOG if entry[1] != REOPEN_GOVERNANCE_SCHEMA_NAME]
+        with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy_catalog):
+            old = Cipher(path)
+            try:
+                applied = [v["name"] for v in old.db.schema_status()["versions"]]
+                self.assertIn(REOPEN_GRANTS_SCHEMA_NAME, applied)
+                self.assertNotIn(REOPEN_GOVERNANCE_SCHEMA_NAME, applied)
+                old.open_period("P1", "P1", "2026-10-01", "2026-10-31")
+                old.close_period("P1")
+                ap = old.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+                # what the original guard did: the core grant first, the grant row after it
+                old.approvals.grant(ap["id"], approver="controller-1")
+                old.db.execute("INSERT INTO close_reopen_grants (approval_id, period_id, approver, approver_role, granted_at) VALUES (?,?,?,?,?)",
+                               (ap["id"], "P1", "controller-1", "controller", "2026-10-31T00:00:00Z"))
+            finally:
+                old.db.close()
+        c = Cipher(path)
+        try:
+            status = c.db.schema_status()
+            self.assertEqual(status["pending"], [])
+            applied = [v["name"] for v in status["versions"] if v["applied"]]
+            self.assertLess(applied.index(REOPEN_GRANTS_SCHEMA_NAME), applied.index(REOPEN_GOVERNANCE_SCHEMA_NAME))
+            cl = c.plugin(PLUGIN_NAME)
+            legacy = cl.reopen_grant(ap["id"])
+            self.assertEqual((legacy["approver"], legacy["approver_role"], legacy["role_basis"]), ("controller-1", "controller", None))
+            res = c.execute(ap["id"], actor="controller-1")  # granted before the upgrade, with its grant: it still executes
+            self.assertEqual((res.result["status"], res.result["granted_as"], res.result["role_basis"]), ("open", "controller", None))
+            c.close_period("P1")
+            fresh = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+            with self.assertRaisesRegex(sqlite3.IntegrityError, "granted only through Cipher.approve"):  # the upgraded workspace refuses the old order
+                c.approvals.grant(fresh["id"], approver="controller-1")
+            res = c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+            self.assertEqual((res.result["status"], res.result["role_basis"]), ("open", "core_default"))
+            self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["reopen", "reopen"])
+            self.assertEqual(len(c.ledger.reopens("P1")), 2)
+            self.assertTrue(c.audit.verify_chain()["ok"])
+        finally:
+            c.db.close()
 
 
 if __name__ == "__main__":

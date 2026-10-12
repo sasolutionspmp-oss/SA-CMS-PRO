@@ -8,19 +8,62 @@ is enforced by triggers, not by convention.
 
 Write authority: a database file carries an instance token in a sidecar file.
 A copied or restored database has no matching sidecar, so it opens read-only
-until an explicit, approved claim.  That is the control the plan describes as
+until an explicit, attested claim.  That is the control the plan describes as
 "a copied workspace gains write authority only through fresh approval and
-explicit release".
+explicit release".  Read-only is enforced by SQLite itself: a connection
+without effective write authority runs ``PRAGMA query_only=ON``, and every
+write attempt (any table, any code path, any cursor, raw SQL included) surfaces
+as ``WriteAuthorityError``.  Only the ``Database``'s own write-authority methods
+can change ``query_only``: SQLite's authorizer refuses every other assignment,
+whatever its spelling (comments, quotes, schema prefix) or cursor.  Every
+connection to the same file follows a release or claim made on another one: it
+re-evaluates authority whenever ``PRAGMA data_version`` shows that another
+connection committed.  In-memory databases always hold authority.
+
+Later catalog entries seal posted journals (a header-held line count enforced
+by an insert trigger, exact integer-cent balance when the last line lands, and a
+deferred check that refuses to commit a journal holding fewer lines than it
+declares), give accounting periods their own integrity triggers (a locked period
+never changes; closed -> open needs a consumed, unused ``*.reopen_period``
+approval), refuse ``INSERT OR REPLACE`` on every core table whose rows are
+immutable (with ``recursive_triggers`` off the delete that REPLACE performs would
+fire no delete trigger), and give approvals a forward-only lifecycle.
 """
 from __future__ import annotations
 
+import hashlib
+import hmac
 import os
+import re
+import secrets
 import sqlite3
 import threading
+import weakref
 from contextlib import contextmanager
 from typing import Any, Iterator
 
 from .ids import new_id, sha256_hex, utcnow_iso, canonical_json
+
+OWNER_SECRET_ENV = "CIPHER_OWNER_SECRET"
+_SQLITE_READONLY = 8
+_SQLITE_AUTH = 23
+_PLAIN_SELECT = re.compile(r"\s*select\b", re.IGNORECASE)  # cannot write, so it needs no authority refresh
+# Pragmas whose assignment would lift a control.  The authorizer refuses them unless the
+# Database itself issues the statement (query_only through the write-authority methods,
+# foreign_keys once at connect).  It sees the normalised pragma name for every statement
+# on every cursor, so no spelling of the statement gets past it.
+_GUARDED_PRAGMAS = {
+    "query_only": "write authority",
+    "foreign_keys": "referential integrity (it also keeps an incomplete journal from committing)",
+    "ignore_check_constraints": "CHECK constraints",
+}
+# sqlite3 connection switches (Connection.setconfig) that must keep these values
+_LOCKED_DBCONFIG = (
+    ("SQLITE_DBCONFIG_ENABLE_FKEY", True),
+    ("SQLITE_DBCONFIG_ENABLE_TRIGGER", True),
+    ("SQLITE_DBCONFIG_WRITABLE_SCHEMA", False),
+    ("SQLITE_DBCONFIG_RESET_DATABASE", False),
+)
 
 
 class SchemaError(RuntimeError):
@@ -29,6 +72,149 @@ class SchemaError(RuntimeError):
 
 class WriteAuthorityError(PermissionError):
     """The workspace does not currently hold write authority."""
+
+
+_READ_ONLY_MESSAGE = (
+    "write refused: this workspace connection is read-only because it does not hold write authority "
+    "(a restored or copied workspace, or authority was released); claim write authority with an attested "
+    "owner approval before mutating records"
+)
+
+
+def _is_readonly_error(exc: sqlite3.Error) -> bool:
+    code = getattr(exc, "sqlite_errorcode", None)
+    if code is not None:
+        return (code & 0xFF) == _SQLITE_READONLY
+    return "readonly" in str(exc).lower()
+
+
+def _is_auth_error(exc: sqlite3.Error) -> bool:
+    code = getattr(exc, "sqlite_errorcode", None)
+    if code is not None:
+        return (code & 0xFF) == _SQLITE_AUTH
+    return "not authorized" in str(exc).lower()
+
+
+def _authorizer_for(conn: "AuthorityConnection"):
+    """SQLite authorizer: refuse assignments to the guarded pragmas unless the current
+    thread is running one of the Database's own internal statements."""
+    ref = weakref.ref(conn)
+
+    def authorize(action, arg1, arg2, db_name, source):
+        if action == sqlite3.SQLITE_PRAGMA and arg1 is not None and arg2 is not None:
+            name = arg1.lower()
+            if name in _GUARDED_PRAGMAS:
+                c = ref()
+                if c is None or not c._is_internal():
+                    if c is not None:
+                        c._denied_pragma = name
+                    return sqlite3.SQLITE_DENY
+        return sqlite3.SQLITE_OK
+
+    return authorize
+
+
+class AuthorityCursor(sqlite3.Cursor):
+    """Cursor that brings the connection's authority up to date before a top-level
+    statement and reports refused writes as ``WriteAuthorityError``.  Every cursor of an
+    ``AuthorityConnection`` is one, including those behind ``Connection.execute``."""
+
+    def _guarded(self, run, *args):
+        conn = self.connection
+        before = getattr(conn, "_before_statement", None)
+        if before is not None:
+            before(args[0])
+            conn._denied_pragma = None
+        try:
+            return run(*args)
+        except sqlite3.DatabaseError as exc:
+            translate = getattr(conn, "_translate", None)
+            translated = exc if translate is None else translate(exc)
+            if translated is exc:
+                raise
+            raise translated from exc
+
+    def execute(self, sql, parameters=(), /):  # type: ignore[override]
+        return self._guarded(super().execute, sql, parameters)
+
+    def executemany(self, sql, parameters, /):  # type: ignore[override]
+        return self._guarded(super().executemany, sql, parameters)
+
+    def executescript(self, sql_script, /):  # type: ignore[override]
+        return self._guarded(super().executescript, sql_script)
+
+
+class AuthorityConnection(sqlite3.Connection):
+    """SQLite connection whose every cursor reports writes refused by ``PRAGMA
+    query_only`` as ``WriteAuthorityError``.  ``query_only`` (and the other guarded
+    pragmas) can be assigned only by the ``Database`` that owns the connection: the
+    authorizer refuses any other assignment, on any cursor and in any spelling."""
+
+    _authority_owner: int | None = None  # thread running a Database-internal statement
+    _authority_hook = None  # Database._refresh_authority (weakly bound), run before top-level statements
+    _denied_pragma: str | None = None
+
+    def _is_internal(self) -> bool:
+        return self._authority_owner == threading.get_ident()
+
+    def cursor(self, factory=None):  # type: ignore[override]
+        return super().cursor(factory or AuthorityCursor)
+
+    def execute(self, sql, parameters=(), /):  # type: ignore[override]
+        return self.cursor().execute(sql, parameters)
+
+    def executemany(self, sql, parameters, /):  # type: ignore[override]
+        return self.cursor().executemany(sql, parameters)
+
+    def executescript(self, sql_script, /):  # type: ignore[override]
+        return self.cursor().executescript(sql_script)
+
+    def setconfig(self, op, enable=True, /):  # type: ignore[override]
+        """The connection-level switches behind the same controls (foreign keys, triggers,
+        schema writes) stay fixed, so ``setconfig`` cannot side-step the guarded pragmas."""
+        for name, required in _LOCKED_DBCONFIG:
+            if op == getattr(sqlite3, name, None) and bool(enable) != required:
+                raise sqlite3.IntegrityError(f"{name} is fixed by the integrity controls on this connection")
+        return super().setconfig(op, enable)
+
+    def _before_statement(self, sql: Any) -> None:
+        """Before a top-level statement that may write (anything but a plain SELECT),
+        let the Database follow a release or claim committed by another connection."""
+        hook = self._authority_hook
+        if hook is None or self.in_transaction or self._is_internal():
+            return
+        if isinstance(sql, str) and _PLAIN_SELECT.match(sql):
+            return
+        hook()
+
+    def _translate(self, exc: sqlite3.DatabaseError) -> BaseException:
+        denied, self._denied_pragma = self._denied_pragma, None
+        if denied is not None and _is_auth_error(exc):
+            if denied == "query_only":
+                return WriteAuthorityError(
+                    "PRAGMA query_only is managed by the write-authority controls; use claim_write_authority / release_write_authority"
+                )
+            return sqlite3.IntegrityError(f"PRAGMA {denied} is fixed by the integrity controls ({_GUARDED_PRAGMAS[denied]}); it cannot be changed on this connection")
+        if isinstance(exc, sqlite3.OperationalError) and _is_readonly_error(exc):
+            return WriteAuthorityError(f"{_READ_ONLY_MESSAGE} (sqlite: {exc})")
+        return exc
+
+
+def _hook_for(db: "Database"):
+    ref = weakref.ref(db)
+
+    def hook() -> None:
+        d = ref()
+        if d is not None:
+            d._refresh_authority()
+
+    return hook
+
+
+def _required_text(value: Any, label: str) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise WriteAuthorityError(f"claiming write authority requires a non-empty {label}")
+    return value.strip()
 
 
 # --------------------------------------------------------------------------- #
@@ -373,8 +559,314 @@ _V1_FOUNDATION = [
     )""",
 ]
 
+# Sealed journals and governed corrections.  Every journal header declares how many
+# lines it holds; a line can only be inserted while the journal holds fewer, and the
+# line that completes the journal must leave it balanced (amounts compared in integer
+# cents, exact for every value money() accepts).  A raw INSERT onto a posted journal is
+# therefore refused.  journals_no_update is dropped only for the one-time backfill and
+# recreated with its original statement.  A journal can be reversed once (unique
+# reversal_of), and a governed reversal ("journal.reverse") binds a recorded request.
+_LEDGER_INTEGRITY = [
+    "ALTER TABLE journals ADD COLUMN line_count INTEGER",
+    "DROP TRIGGER journals_no_update",
+    "UPDATE journals SET line_count = (SELECT COUNT(*) FROM journal_lines l WHERE l.journal_id = journals.id)",
+    "CREATE TRIGGER journals_no_update BEFORE UPDATE ON journals BEGIN SELECT RAISE(ABORT, 'posted journals are immutable'); END",
+    "CREATE INDEX IF NOT EXISTS journal_lines_by_journal ON journal_lines(journal_id, line_no)",
+    """CREATE TRIGGER journals_declare_line_count BEFORE INSERT ON journals
+        WHEN (NEW.line_count IS NULL OR NEW.line_count < 2)
+             AND (SELECT status FROM periods WHERE id = NEW.period_id) IS 'open'
+        BEGIN
+            SELECT RAISE(ABORT, 'a journal must declare its sealed line count (at least 2 lines) when it is posted');
+        END""",
+    """CREATE TRIGGER journal_lines_sealed BEFORE INSERT ON journal_lines
+        BEGIN
+            SELECT CASE
+                WHEN (SELECT line_count FROM journals WHERE id = NEW.journal_id) IS NULL
+                THEN RAISE(ABORT, 'posted journals are immutable: the journal declares no sealed line count, so no line can be added')
+                WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = NEW.journal_id) >= (SELECT line_count FROM journals WHERE id = NEW.journal_id)
+                THEN RAISE(ABORT, 'posted journals are immutable: the journal already holds its sealed line count')
+                WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = NEW.journal_id) + 1 = (SELECT line_count FROM journals WHERE id = NEW.journal_id)
+                     AND (SELECT COALESCE(SUM(CAST(ROUND(CAST(debit AS REAL) * 100) AS INTEGER) - CAST(ROUND(CAST(credit AS REAL) * 100) AS INTEGER)), 0)
+                          FROM journal_lines WHERE journal_id = NEW.journal_id)
+                         + CAST(ROUND(CAST(NEW.debit AS REAL) * 100) AS INTEGER) - CAST(ROUND(CAST(NEW.credit AS REAL) * 100) AS INTEGER) <> 0
+                THEN RAISE(ABORT, 'journal does not balance: its sealed lines must carry equal debits and credits')
+            END;
+        END""",
+    "CREATE UNIQUE INDEX journals_reversed_once ON journals(reversal_of) WHERE reversal_of IS NOT NULL",
+    """CREATE TABLE journal_reversal_requests (
+        id TEXT PRIMARY KEY,
+        journal_id TEXT NOT NULL REFERENCES journals(id),
+        reason TEXT NOT NULL CHECK (length(trim(reason)) > 0),
+        status TEXT NOT NULL CHECK (status IN ('pending','executed','cancelled')),
+        requested_by TEXT NOT NULL,
+        requested_at TEXT NOT NULL,
+        approval_id TEXT REFERENCES approvals(id),
+        reversal_journal_id TEXT REFERENCES journals(id),
+        resolved_by TEXT,
+        resolved_at TEXT,
+        resolution_note TEXT NOT NULL DEFAULT ''
+    )""",
+    "CREATE UNIQUE INDEX journal_reversal_requests_one_pending ON journal_reversal_requests(journal_id) WHERE status = 'pending'",
+    """CREATE TRIGGER journal_reversal_requests_insert_pending BEFORE INSERT ON journal_reversal_requests
+        WHEN NEW.status <> 'pending' OR NEW.approval_id IS NOT NULL OR NEW.reversal_journal_id IS NOT NULL
+        BEGIN
+            SELECT RAISE(ABORT, 'a journal reversal request starts pending, with no approval or reversal journal');
+        END""",
+    """CREATE TRIGGER journal_reversal_requests_resolve_once BEFORE UPDATE ON journal_reversal_requests
+        WHEN OLD.status <> 'pending' OR NEW.status = 'pending'
+             OR NEW.id IS NOT OLD.id OR NEW.journal_id IS NOT OLD.journal_id OR NEW.reason IS NOT OLD.reason
+             OR NEW.requested_by IS NOT OLD.requested_by OR NEW.requested_at IS NOT OLD.requested_at
+        BEGIN
+            SELECT RAISE(ABORT, 'journal reversal requests are immutable once resolved; only pending -> executed or cancelled is allowed');
+        END""",
+    """CREATE TRIGGER journal_reversal_requests_executed_link BEFORE UPDATE ON journal_reversal_requests
+        WHEN NEW.status = 'executed'
+             AND (NEW.approval_id IS NULL OR NEW.reversal_journal_id IS NULL
+                  OR (SELECT reversal_of FROM journals WHERE id = NEW.reversal_journal_id) IS NOT NEW.journal_id)
+        BEGIN
+            SELECT RAISE(ABORT, 'an executed reversal request must carry its approval and the journal that reverses it');
+        END""",
+    "CREATE TRIGGER journal_reversal_requests_no_delete BEFORE DELETE ON journal_reversal_requests BEGIN SELECT RAISE(ABORT, 'journal reversal requests are append-only'); END",
+]
+
+# Period integrity.  A locked period never changes again; status moves only
+# open -> closed, closed -> locked or closed -> open; closed -> open needs a consumed
+# "*.reopen_period" approval scoped to that period that has not reopened anything
+# before (period_reopens logs every reopen and is append-only).  The conditions are
+# disjoint, so the refusal reason does not depend on trigger firing order.
+_PERIOD_INTEGRITY = [
+    "ALTER TABLE periods ADD COLUMN reopen_approval_id TEXT",
+    """CREATE TABLE period_reopens (
+        approval_id TEXT PRIMARY KEY REFERENCES approvals(id),
+        period_id TEXT NOT NULL REFERENCES periods(id),
+        reopened_at TEXT NOT NULL
+    )""",
+    "CREATE TRIGGER period_reopens_no_update BEFORE UPDATE ON period_reopens BEGIN SELECT RAISE(ABORT, 'period reopen log is append-only'); END",
+    "CREATE TRIGGER period_reopens_no_delete BEFORE DELETE ON period_reopens BEGIN SELECT RAISE(ABORT, 'period reopen log is append-only'); END",
+    """CREATE TRIGGER periods_status_transitions BEFORE UPDATE ON periods
+        WHEN OLD.status <> 'locked' AND NEW.status IS NOT OLD.status
+             AND NOT ((OLD.status = 'open' AND NEW.status = 'closed')
+                      OR (OLD.status = 'closed' AND NEW.status = 'locked')
+                      OR (OLD.status = 'closed' AND NEW.status = 'open'))
+        BEGIN
+            SELECT RAISE(ABORT, 'period status may only move open -> closed, closed -> locked, or closed -> open with a consumed reopen approval');
+        END""",
+    """CREATE TRIGGER periods_reopen_approval_id_guard BEFORE UPDATE ON periods
+        WHEN OLD.status <> 'locked' AND NEW.reopen_approval_id IS NOT OLD.reopen_approval_id
+             AND NOT (OLD.status = 'closed' AND NEW.status = 'open')
+        BEGIN
+            SELECT RAISE(ABORT, 'a period reopen approval is recorded only by the closed -> open transition it authorises');
+        END""",
+    """CREATE TRIGGER periods_reopen_requires_approval BEFORE UPDATE ON periods
+        WHEN OLD.status = 'closed' AND NEW.status = 'open'
+        BEGIN
+            SELECT CASE
+                WHEN NEW.reopen_approval_id IS NULL
+                THEN RAISE(ABORT, 'reopening a closed period requires a consumed reopen_period approval for that period')
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM approvals a
+                    WHERE a.id = NEW.reopen_approval_id AND a.status = 'consumed' AND a.subject_id = NEW.id
+                      AND length(a.operation) > 14 AND substr(a.operation, -14) = '.reopen_period')
+                THEN RAISE(ABORT, 'reopening a closed period requires a consumed reopen_period approval for that period; the referenced approval is not one')
+                WHEN EXISTS (SELECT 1 FROM period_reopens r WHERE r.approval_id = NEW.reopen_approval_id)
+                THEN RAISE(ABORT, 'that reopen approval was already used to reopen a period; each reopen needs a fresh approval')
+            END;
+        END""",
+    """CREATE TRIGGER periods_reopen_logged AFTER UPDATE ON periods
+        WHEN OLD.status = 'closed' AND NEW.status = 'open'
+        BEGIN
+            INSERT INTO period_reopens (approval_id, period_id, reopened_at)
+            VALUES (NEW.reopen_approval_id, NEW.id, strftime('%Y-%m-%dT%H:%M:%SZ', 'now'));
+        END""",
+    "CREATE TRIGGER periods_closed_no_delete BEFORE DELETE ON periods WHEN OLD.status <> 'open' BEGIN SELECT RAISE(ABORT, 'closed and locked periods are immutable and cannot be deleted'); END",
+    "CREATE TRIGGER periods_locked_immutable BEFORE UPDATE ON periods WHEN OLD.status = 'locked' BEGIN SELECT RAISE(ABORT, 'locked periods are immutable'); END",
+]
+
+
+def _canonical_money_sql(col: str) -> str:
+    """SQL test that ``col`` is canonical stored money as ``fmt`` writes it: non-negative,
+    no sign or exponent, no leading zero, exactly two decimals, below 10**13."""
+    return (f"({col} GLOB '[0-9]*.[0-9][0-9]' AND NOT {col} GLOB '*[^0-9.]*' "
+            f"AND length({col}) - length(replace({col}, '.', '')) = 1 AND NOT {col} GLOB '0[0-9]*' AND length({col}) <= 16)")
+
+
+def _cents_sql(col: str) -> str:
+    """Exact integer cents of a canonical money string (no floating point)."""
+    return f"CAST(replace({col}, '.', '') AS INTEGER)"
+
+
+# Integrity hardening (an append-only follow-up to the two entries above; their triggers
+# that change are dropped and recreated here under the same names).
+#
+# * Journal lines carry canonical money text and exactly one side; the balance check on
+#   the line that completes a journal works in exact integer cents.
+# * A journal must be complete when its transaction commits: every new header gets a
+#   completion marker whose deferred foreign key points at a table that stays empty, and
+#   the line that completes the journal removes the marker.  A header committed with
+#   fewer lines than it declares fails the commit (or the autocommit statement).
+# * INSERT OR REPLACE is refused on the core tables whose rows are immutable: with
+#   recursive_triggers off, the delete that REPLACE performs fires no delete trigger, so a
+#   BEFORE INSERT trigger refuses any row that collides with a stored one.
+# * Periods are created open; the reopen log is written only by the reopen it records.
+# * Approvals are recorded pending and move forward only; their request and manifest
+#   never change, the grant and the consumption are each recorded once with who and when,
+#   and a reopen needs a period-scoped approval that was granted and consumed.
+_INTEGRITY_HARDENING = [
+    "DROP TRIGGER journal_lines_sealed",
+    f"""CREATE TRIGGER journal_lines_sealed BEFORE INSERT ON journal_lines
+        BEGIN
+            SELECT CASE
+                WHEN (SELECT line_count FROM journals WHERE id = NEW.journal_id) IS NULL
+                THEN RAISE(ABORT, 'posted journals are immutable: the journal declares no sealed line count, so no line can be added')
+                WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = NEW.journal_id) >= (SELECT line_count FROM journals WHERE id = NEW.journal_id)
+                THEN RAISE(ABORT, 'posted journals are immutable: the journal already holds its sealed line count')
+                WHEN NOT {_canonical_money_sql('NEW.debit')} OR NOT {_canonical_money_sql('NEW.credit')}
+                THEN RAISE(ABORT, 'journal line amounts must be canonical money text: non-negative, two decimals, no sign, exponent or leading zero (for example 1250.00)')
+                WHEN ({_cents_sql('NEW.debit')} > 0) = ({_cents_sql('NEW.credit')} > 0)
+                THEN RAISE(ABORT, 'a journal line carries exactly one of debit or credit')
+                WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = NEW.journal_id) + 1 = (SELECT line_count FROM journals WHERE id = NEW.journal_id)
+                     AND (SELECT COALESCE(SUM({_cents_sql('debit')} - {_cents_sql('credit')}), 0) FROM journal_lines WHERE journal_id = NEW.journal_id)
+                         + {_cents_sql('NEW.debit')} - {_cents_sql('NEW.credit')} <> 0
+                THEN RAISE(ABORT, 'journal does not balance: its sealed lines must carry equal debits and credits')
+            END;
+        END""",
+    "CREATE TABLE journal_seal_never (id TEXT PRIMARY KEY)",
+    "CREATE TRIGGER journal_seal_never_stays_empty BEFORE INSERT ON journal_seal_never BEGIN SELECT RAISE(ABORT, 'journal_seal_never stays empty: it is what keeps an incomplete journal from committing'); END",
+    """CREATE TABLE journal_unsealed (
+        journal_id TEXT PRIMARY KEY REFERENCES journals(id),
+        pending_completion TEXT NOT NULL REFERENCES journal_seal_never(id) DEFERRABLE INITIALLY DEFERRED
+    )""",
+    """CREATE TRIGGER journals_mark_unsealed AFTER INSERT ON journals WHEN NEW.line_count IS NOT NULL
+        BEGIN
+            INSERT INTO journal_unsealed (journal_id, pending_completion) VALUES (NEW.id, NEW.id);
+        END""",
+    """CREATE TRIGGER journal_lines_mark_complete AFTER INSERT ON journal_lines
+        WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = NEW.journal_id) = (SELECT line_count FROM journals WHERE id = NEW.journal_id)
+        BEGIN
+            DELETE FROM journal_unsealed WHERE journal_id = NEW.journal_id;
+        END""",
+    """CREATE TRIGGER journal_unsealed_guard BEFORE DELETE ON journal_unsealed
+        WHEN (SELECT COUNT(*) FROM journal_lines WHERE journal_id = OLD.journal_id) < COALESCE((SELECT line_count FROM journals WHERE id = OLD.journal_id), 0)
+        BEGIN
+            SELECT RAISE(ABORT, 'posted journals are immutable: a journal is complete only when it holds its sealed line count');
+        END""",
+    "CREATE TRIGGER journal_unsealed_no_update BEFORE UPDATE ON journal_unsealed BEGIN SELECT RAISE(ABORT, 'journal completion markers are immutable'); END",
+    """CREATE TRIGGER journals_no_replace BEFORE INSERT ON journals
+        BEGIN
+            SELECT CASE
+                WHEN EXISTS (SELECT 1 FROM journals WHERE id = NEW.id)
+                THEN RAISE(ABORT, 'posted journals are immutable: a journal id is never reused or replaced')
+                WHEN NEW.reversal_of IS NOT NULL AND EXISTS (SELECT 1 FROM journals WHERE reversal_of = NEW.reversal_of)
+                THEN RAISE(ABORT, 'a journal is reversed once: that journal already has a reversal')
+            END;
+        END""",
+    """CREATE TRIGGER journal_lines_no_replace BEFORE INSERT ON journal_lines
+        WHEN EXISTS (SELECT 1 FROM journal_lines WHERE id = NEW.id)
+        BEGIN
+            SELECT RAISE(ABORT, 'posted journal lines are immutable: a line id is never reused or replaced');
+        END""",
+    """CREATE TRIGGER periods_insert_guard BEFORE INSERT ON periods
+        BEGIN
+            SELECT CASE
+                WHEN EXISTS (SELECT 1 FROM periods WHERE id = NEW.id)
+                THEN RAISE(ABORT, 'accounting periods are never replaced: that period id already exists (closed and locked periods are immutable)')
+                WHEN NEW.status IS NOT 'open' OR NEW.reopen_approval_id IS NOT NULL OR NEW.closed_at IS NOT NULL OR NEW.closed_by IS NOT NULL
+                THEN RAISE(ABORT, 'a period is created open; it is closed, locked or reopened only through its governed transitions')
+            END;
+        END""",
+    """CREATE TRIGGER period_reopens_insert_guard BEFORE INSERT ON period_reopens
+        BEGIN
+            SELECT CASE
+                WHEN EXISTS (SELECT 1 FROM period_reopens WHERE approval_id = NEW.approval_id)
+                THEN RAISE(ABORT, 'period reopen log is append-only: that reopen approval was already used')
+                WHEN (SELECT status FROM periods WHERE id = NEW.period_id) IS NOT 'open'
+                     OR (SELECT reopen_approval_id FROM periods WHERE id = NEW.period_id) IS NOT NEW.approval_id
+                THEN RAISE(ABORT, 'period reopen log is append-only: a row is written only by the reopen it records')
+            END;
+        END""",
+    """CREATE TRIGGER journal_reversal_requests_no_replace BEFORE INSERT ON journal_reversal_requests
+        BEGIN
+            SELECT CASE
+                WHEN EXISTS (SELECT 1 FROM journal_reversal_requests WHERE id = NEW.id)
+                THEN RAISE(ABORT, 'journal reversal requests are append-only: a request id is never reused or replaced')
+                WHEN EXISTS (SELECT 1 FROM journal_reversal_requests WHERE journal_id = NEW.journal_id AND status = 'pending')
+                THEN RAISE(ABORT, 'journal reversal requests are append-only: that journal already has a pending reversal request')
+                WHEN EXISTS (SELECT 1 FROM journals WHERE reversal_of = NEW.journal_id)
+                THEN RAISE(ABORT, 'a journal is reversed once: that journal already has a reversal')
+            END;
+        END""",
+    """CREATE TRIGGER audit_log_no_replace BEFORE INSERT ON audit_log
+        WHEN EXISTS (SELECT 1 FROM audit_log WHERE seq = NEW.seq) OR EXISTS (SELECT 1 FROM audit_log WHERE entry_hash = NEW.entry_hash)
+        BEGIN
+            SELECT RAISE(ABORT, 'audit log is append-only: an entry is never replaced');
+        END""",
+    """CREATE TRIGGER document_revisions_no_replace BEFORE INSERT ON document_revisions
+        WHEN EXISTS (SELECT 1 FROM document_revisions WHERE id = NEW.id)
+          OR EXISTS (SELECT 1 FROM document_revisions WHERE document_id = NEW.document_id AND revision = NEW.revision)
+        BEGIN
+            SELECT RAISE(ABORT, 'document revisions are immutable: a revision is never replaced');
+        END""",
+    """CREATE TRIGGER approvals_insert_guard BEFORE INSERT ON approvals
+        BEGIN
+            SELECT CASE
+                WHEN EXISTS (SELECT 1 FROM approvals WHERE id = NEW.id) OR EXISTS (SELECT 1 FROM approvals WHERE nonce = NEW.nonce)
+                THEN RAISE(ABORT, 'approvals are append-only: an approval id or manifest nonce is never reused or replaced')
+                WHEN NEW.status IS NOT 'pending' OR NEW.approver IS NOT NULL OR NEW.granted_at IS NOT NULL
+                     OR NEW.consumed_at IS NOT NULL OR NEW.consumed_by IS NOT NULL OR NEW.invalidated_reason IS NOT NULL
+                THEN RAISE(ABORT, 'an approval is recorded pending, with no approver, grant or consumption; the approval workflow records those')
+            END;
+        END""",
+    """CREATE TRIGGER approvals_request_immutable BEFORE UPDATE ON approvals
+        WHEN NEW.id IS NOT OLD.id OR NEW.operation IS NOT OLD.operation OR NEW.subject_type IS NOT OLD.subject_type
+          OR NEW.subject_id IS NOT OLD.subject_id OR NEW.actor_role IS NOT OLD.actor_role OR NEW.manifest_json IS NOT OLD.manifest_json
+          OR NEW.manifest_hash IS NOT OLD.manifest_hash OR NEW.material_hash IS NOT OLD.material_hash
+          OR NEW.policy_version IS NOT OLD.policy_version OR NEW.nonce IS NOT OLD.nonce OR NEW.requested_by IS NOT OLD.requested_by
+          OR NEW.requested_at IS NOT OLD.requested_at OR NEW.expires_at IS NULL OR NEW.expires_at > OLD.expires_at
+        BEGIN
+            SELECT RAISE(ABORT, 'an approval request and its bound manifest are immutable (its expiry can only be brought forward)');
+        END""",
+    """CREATE TRIGGER approvals_lifecycle BEFORE UPDATE ON approvals
+        BEGIN
+            SELECT CASE
+                WHEN OLD.status = 'consumed'
+                  OR NOT (NEW.status = OLD.status
+                          OR (OLD.status = 'pending' AND NEW.status IN ('granted', 'expired', 'invalidated'))
+                          OR (OLD.status = 'granted' AND NEW.status IN ('consumed', 'expired', 'invalidated'))
+                          OR (OLD.status = 'expired' AND NEW.status = 'invalidated'))
+                THEN RAISE(ABORT, 'approval status moves forward only (pending -> granted -> consumed, or to expired or invalidated); a consumed approval never changes')
+                WHEN (NEW.status IN ('granted', 'consumed') AND (NEW.approver IS NULL OR NEW.granted_at IS NULL))
+                  OR (NEW.status = 'consumed' AND (NEW.consumed_at IS NULL OR NEW.consumed_by IS NULL))
+                  OR ((NEW.approver IS NOT OLD.approver OR NEW.granted_at IS NOT OLD.granted_at) AND NOT (OLD.status = 'pending' AND NEW.status = 'granted'))
+                  OR ((NEW.consumed_at IS NOT OLD.consumed_at OR NEW.consumed_by IS NOT OLD.consumed_by) AND NOT (OLD.status = 'granted' AND NEW.status = 'consumed'))
+                THEN RAISE(ABORT, 'an approval records its approver and grant time when granted, and its consumer and time when consumed, each exactly once')
+            END;
+        END""",
+    "CREATE TRIGGER approvals_no_delete BEFORE DELETE ON approvals BEGIN SELECT RAISE(ABORT, 'approvals are append-only'); END",
+    "DROP TRIGGER periods_reopen_requires_approval",
+    """CREATE TRIGGER periods_reopen_requires_approval BEFORE UPDATE ON periods
+        WHEN OLD.status = 'closed' AND NEW.status = 'open'
+        BEGIN
+            SELECT CASE
+                WHEN NEW.reopen_approval_id IS NULL
+                THEN RAISE(ABORT, 'reopening a closed period requires a consumed reopen_period approval for that period')
+                WHEN NOT EXISTS (
+                    SELECT 1 FROM approvals a
+                    WHERE a.id = NEW.reopen_approval_id AND a.status = 'consumed' AND a.subject_id = NEW.id
+                      AND a.subject_type IN ('period', 'accounting_period')
+                      AND a.approver IS NOT NULL AND a.granted_at IS NOT NULL AND a.consumed_at IS NOT NULL AND a.consumed_by IS NOT NULL
+                      AND length(a.operation) > 14 AND substr(a.operation, -14) = '.reopen_period')
+                THEN RAISE(ABORT, 'reopening a closed period requires a consumed reopen_period approval for that period; the referenced approval is not one (it must be a granted and consumed *.reopen_period approval scoped to this period)')
+                WHEN EXISTS (SELECT 1 FROM period_reopens r WHERE r.approval_id = NEW.reopen_approval_id)
+                THEN RAISE(ABORT, 'that reopen approval was already used to reopen a period; each reopen needs a fresh approval')
+            END;
+        END""",
+]
+
 SCHEMA_CATALOG: list[tuple[int, str, list[str]]] = [
     (1, "foundation", _V1_FOUNDATION),
+    (2, "ledger_integrity", _LEDGER_INTEGRITY),
+    (3, "period_integrity", _PERIOD_INTEGRITY),
+    (4, "integrity_hardening", _INTEGRITY_HARDENING),
 ]
 
 
@@ -411,37 +903,94 @@ class Database:
     def __init__(self, path: str = ":memory:", *, migrate: bool = True):
         self.path = path
         self.in_memory = path == ":memory:"
-        self.conn = sqlite3.connect(path, isolation_level=None, check_same_thread=False)
+        self._lock = threading.RLock()
+        self._depth = 0
+        self._read_only = False
+        self._refresh_suspended = 0
+        self._data_version: int | None = None
+        self.conn = sqlite3.connect(path, isolation_level=None, check_same_thread=False, factory=AuthorityConnection)
+        self.conn.set_authorizer(_authorizer_for(self.conn))
         self.conn.row_factory = sqlite3.Row
-        self.conn.execute("PRAGMA foreign_keys = ON")
+        with self._internal() as conn:
+            conn.execute("PRAGMA foreign_keys = ON")
         if not self.in_memory:
             self.conn.execute("PRAGMA journal_mode = WAL")
             self.conn.execute("PRAGMA synchronous = NORMAL")
-        self._lock = threading.RLock()
-        self._depth = 0
         if migrate:
             self.migrate()
+        if not self.in_memory:
+            if self._data_version is None:
+                self._data_version = self._read_data_version()
+            # from here on, a commit by any other connection to this file makes this one
+            # re-evaluate its write authority before its next top-level statement
+            self.conn._authority_hook = _hook_for(self)
+
+    @contextmanager
+    def _internal(self) -> Iterator[sqlite3.Connection]:
+        """Run the enclosed statements as the Database's own (the authorizer lets the
+        current thread assign the guarded pragmas, and no authority refresh runs)."""
+        with self._lock:
+            conn = self.conn
+            previous = conn._authority_owner
+            conn._authority_owner = threading.get_ident()
+            try:
+                yield conn
+            finally:
+                conn._authority_owner = previous
 
     # ---- transactions ---------------------------------------------------- #
 
     @contextmanager
     def transaction(self) -> Iterator[sqlite3.Connection]:
+        """One explicit transaction (nested calls join the outermost one).  A
+        read-only connection opens a deferred transaction so reads still work;
+        its first write is refused by SQLite and raised as WriteAuthorityError.
+        Authority is re-checked once the write lock is held, so a release committed
+        by another connection is honoured.  A commit that fails (for example a journal
+        holding fewer lines than it declares) is rolled back, never left open."""
         with self._lock:
             outermost = self._depth == 0
             if outermost:
-                self.conn.execute("BEGIN IMMEDIATE")
+                self._refresh_authority()
+                if self._read_only:
+                    self.conn.execute("BEGIN")
+                else:
+                    self.conn.execute("BEGIN IMMEDIATE")
+                    try:
+                        self._refresh_authority()  # the write lock is held: no other connection can commit now
+                    except BaseException:
+                        self.conn.execute("ROLLBACK")
+                        raise
             self._depth += 1
             try:
                 yield self.conn
             except BaseException:
                 self._depth -= 1
-                if outermost:
+                if outermost and self.conn.in_transaction:
                     self.conn.execute("ROLLBACK")
                 raise
             else:
                 self._depth -= 1
                 if outermost:
-                    self.conn.execute("COMMIT")
+                    self._commit()
+
+    def _commit(self) -> None:
+        try:
+            self.conn.execute("COMMIT")
+        except sqlite3.Error as exc:
+            unsealed: list[str] = []
+            if self.conn.in_transaction:
+                try:
+                    unsealed = [r[0] for r in self.conn.execute("SELECT journal_id FROM journal_unsealed ORDER BY journal_id LIMIT 5")]
+                except sqlite3.Error:
+                    unsealed = []
+                self.conn.execute("ROLLBACK")
+            if unsealed:
+                raise sqlite3.IntegrityError(
+                    f"journal {', '.join(unsealed)} holds fewer lines than its sealed line count; a journal must be complete "
+                    f"and balanced when its transaction commits, so nothing was committed ({exc})"
+                ) from exc
+            raise
 
     @property
     def in_transaction(self) -> bool:
@@ -479,7 +1028,40 @@ class Database:
         this database's own application sequence.  An applied entry whose
         statements changed is refused (history is append-only); an applied
         entry no longer in the catalog is reported as orphaned and left alone.
+        Schema application is structural, so it runs with ``query_only`` lifted;
+        afterwards the connection is read-only again unless this copy holds
+        effective write authority.  A copy without write authority that receives
+        pending entries (an older backup opened by a newer release) records the
+        migration in its audit log, because those entries may backfill data.
         Returns the entries applied now."""
+        with self._lock:
+            self._refresh_suspended += 1
+            try:
+                unclaimed_copy = self._lacks_authority()
+                was_read_only = self._read_only
+                if was_read_only:
+                    self._set_query_only(False)
+                try:
+                    return self._migrate(unclaimed_copy=unclaimed_copy)
+                finally:
+                    self._sync_data_version()
+                    if not self._apply_authority_mode() and was_read_only:
+                        self._set_query_only(True)
+            finally:
+                self._refresh_suspended -= 1
+
+    def _lacks_authority(self) -> bool:
+        """True for an existing file workspace that does not hold write authority (a new
+        file has no workspace row yet and is not an unclaimed copy)."""
+        if self.in_memory:
+            return False
+        try:
+            with self._internal():
+                return not self.has_write_authority()
+        except (SchemaError, sqlite3.Error):
+            return False
+
+    def _migrate(self, *, unclaimed_copy: bool = False) -> list[dict[str, Any]]:
         applied_now: list[dict[str, Any]] = []
         with self.transaction() as conn:
             conn.execute(
@@ -512,6 +1094,15 @@ class Database:
                 applied_now.append({"version": next_seq, "name": name, "statement_count": len(statements), "checksum": checksum})
                 next_seq += 1
             self._ensure_workspace(conn)
+            if unclaimed_copy and applied_now:
+                ws = conn.execute("SELECT workspace_id FROM workspace WHERE id = 1").fetchone()
+                conn.execute(
+                    "INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json, payload_hash, prev_hash, entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+                    self._audit_tuple("system", "workspace.schema_migrated_without_authority", "workspace", ws[0], {
+                        "entries": [{"name": e["name"], "version": e["version"], "checksum": e["checksum"]} for e in applied_now],
+                        "note": "schema entries applied to a copy that holds no write authority; they may backfill data, so the migration is recorded",
+                    }),
+                )
         return applied_now
 
     def schema_status(self) -> dict[str, Any]:
@@ -592,10 +1183,68 @@ class Database:
         return row
 
     def has_write_authority(self) -> bool:
+        """Effective write authority of this physical copy: the workspace row grants it
+        and the sidecar matches its instance token.  In-memory databases always hold it."""
+        if self.in_memory:
+            return True
         ws = self.workspace()
         if not ws["write_authority"]:
             return False
         return self._read_sidecar() == ws["instance_token"]
+
+    @property
+    def read_only(self) -> bool:
+        """Whether SQLite currently refuses writes on this connection (``PRAGMA query_only``)."""
+        with self._lock:
+            return bool(self.conn.execute("PRAGMA query_only").fetchone()[0])
+
+    def _set_query_only(self, on: bool) -> None:
+        # A fresh comment makes every internal statement text unique, so a raw statement can
+        # never be served from the statement cache entry of one the authorizer allowed.
+        with self._internal() as conn:
+            conn.execute(f"PRAGMA query_only = {'ON' if on else 'OFF'} /* write-authority {secrets.token_hex(8)} */")
+            self._read_only = on
+
+    def _read_data_version(self) -> int:
+        with self._internal() as conn:
+            return conn.execute("PRAGMA data_version").fetchone()[0]
+
+    def _sync_data_version(self) -> None:
+        if self.in_memory:
+            return
+        try:
+            self._data_version = self._read_data_version()
+        except sqlite3.Error:
+            pass
+
+    def _refresh_authority(self) -> None:
+        """Follow a release or claim committed by another connection to this file:
+        when ``PRAGMA data_version`` moved, re-evaluate authority and set ``query_only``
+        to match.  Cheap when nothing changed (one pragma read)."""
+        if self.in_memory:
+            return
+        with self._lock:
+            if self._refresh_suspended:
+                return
+            with self._internal() as conn:
+                version = conn.execute("PRAGMA data_version").fetchone()[0]
+                if version == self._data_version:
+                    return
+                self._data_version = version
+                self._apply_authority_mode()
+
+    def _apply_authority_mode(self) -> bool:
+        """Make the connection read-only exactly when this copy lacks effective write
+        authority.  Returns False (changing nothing) when authority cannot be
+        evaluated yet, e.g. before the workspace row exists."""
+        with self._internal():
+            try:
+                writable = self.has_write_authority()
+            except (SchemaError, sqlite3.Error):
+                return False
+            if self._read_only != (not writable):
+                self._set_query_only(not writable)
+            return True
 
     def authority_status(self) -> dict[str, Any]:
         ws = self.workspace()
@@ -609,6 +1258,7 @@ class Database:
             "recovery_epoch": ws["recovery_epoch"],
             "reconciled_epoch": ws["reconciled_epoch"],
             "release_quarantined": ws["recovery_epoch"] != ws["reconciled_epoch"],
+            "read_only": self.read_only,
         }
 
     def require_write_authority(self) -> None:
@@ -617,41 +1267,102 @@ class Database:
                 "this workspace copy does not hold write authority; claim it with an explicit approval before mutating records"
             )
 
-    def claim_write_authority(self, *, approval_ref: str, note: str = "") -> dict[str, Any]:
-        """Grant write authority to this physical copy.  The caller must pass a
-        consumed approval reference for operation ``workspace.claim_write_authority``;
-        the claim is recorded with a new instance token and a bumped epoch."""
-        if not approval_ref:
-            raise WriteAuthorityError("claiming write authority requires an approval reference")
-        with self.transaction() as conn:
-            ws = self.workspace()
-            token = new_id("inst")
-            was_restored = self._read_sidecar() != ws["instance_token"]
-            recovery_epoch = ws["recovery_epoch"] + (1 if was_restored else 0)
-            conn.execute(
-                "UPDATE workspace SET instance_token=?, write_authority=1, authority_epoch=authority_epoch+1, recovery_epoch=?, updated_at=? WHERE id=1",
-                (token, recovery_epoch, utcnow_iso()),
-            )
-            self._write_sidecar(token)
-            conn.execute(
-                "INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json, payload_hash, prev_hash, entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
-                self._audit_tuple("system", "workspace.claim_write_authority", "workspace", ws["workspace_id"], {"approval_ref": approval_ref, "note": note, "restored_copy": was_restored, "recovery_epoch": recovery_epoch}),
-            )
+    def expected_claim_code(self, secret: str) -> str:
+        """The owner claim code for this workspace at its current authority epoch:
+        ``hmac-sha256(secret, f"{workspace_id}:{authority_epoch}")`` as hex.  Every
+        successful claim bumps the epoch, so a code works for one claim only."""
+        if not isinstance(secret, str) or not secret:
+            raise WriteAuthorityError("an owner secret is required to compute a claim code")
+        ws = self.workspace()
+        message = f"{ws['workspace_id']}:{ws['authority_epoch']}"
+        return hmac.new(secret.encode("utf-8"), message.encode("utf-8"), hashlib.sha256).hexdigest()
+
+    def claim_write_authority(self, *, approver: str, reason: str, approval_ref: str | None = None,
+                              claim_code: str | None = None, note: str = "") -> dict[str, Any]:
+        """Grant write authority to this physical copy as an attested owner action.
+
+        A read-only copy cannot record an approval of its own, so the claim is
+        governed here: a non-empty ``approver`` and ``reason`` are required and, when
+        ``CIPHER_OWNER_SECRET`` is configured, ``claim_code`` must equal
+        ``expected_claim_code(secret)`` (compared in constant time).  ``approval_ref``
+        is an optional external reference recorded with the claim.  The claim lifts
+        ``query_only`` only for its own writes (new instance token, bumped authority
+        epoch, recovery epoch bumped for a restored copy, audit entry) and then
+        leaves the connection writable.  A failed claim leaves it read-only."""
+        who = _required_text(approver, "approver")
+        why = _required_text(reason, "reason")
+        if approval_ref is not None and not isinstance(approval_ref, str):
+            raise WriteAuthorityError("approval_ref must be a string when given")
+        ref = approval_ref.strip() if approval_ref and approval_ref.strip() else None
+        if not isinstance(note, str):
+            raise WriteAuthorityError("note must be a string")
+        secret = os.environ.get(OWNER_SECRET_ENV) or None
+        with self._lock:
+            self._refresh_authority()
+            if secret is not None:
+                expected = self.expected_claim_code(secret)
+                supplied = "" if claim_code is None else str(claim_code).strip()
+                if not supplied or not hmac.compare_digest(supplied.encode("utf-8"), expected.encode("utf-8")):
+                    raise WriteAuthorityError(
+                        f"claiming write authority requires a valid owner claim code because {OWNER_SECRET_ENV} is configured; "
+                        "the code is bound to this workspace and its current authority epoch"
+                    )
+            self._refresh_suspended += 1  # the claim itself decides the mode until it is done
+            try:
+                if self._read_only:
+                    self._set_query_only(False)
+                with self.transaction() as conn:
+                    ws = self.workspace()
+                    token = new_id("inst")
+                    was_restored = self._read_sidecar() != ws["instance_token"]
+                    recovery_epoch = ws["recovery_epoch"] + (1 if was_restored else 0)
+                    authority_epoch = ws["authority_epoch"] + 1
+                    conn.execute(
+                        "UPDATE workspace SET instance_token=?, write_authority=1, authority_epoch=?, recovery_epoch=?, updated_at=? WHERE id=1",
+                        (token, authority_epoch, recovery_epoch, utcnow_iso()),
+                    )
+                    conn.execute(
+                        "INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json, payload_hash, prev_hash, entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+                        self._audit_tuple(who, "workspace.claim_write_authority", "workspace", ws["workspace_id"], {
+                            "approver": who, "reason": why, "approval_ref": ref, "note": note,
+                            "restored_copy": was_restored, "recovery_epoch": recovery_epoch, "authority_epoch": authority_epoch,
+                            "owner_claim_code": "verified" if secret is not None else "not_configured",
+                        }),
+                    )
+                    # the sidecar is written last: if the transaction then fails, the token
+                    # mismatch leaves this copy without authority rather than with it
+                    self._write_sidecar(token)
+            finally:
+                self._refresh_suspended -= 1
+                self._sync_data_version()
+                self._apply_authority_mode()
         return self.authority_status()
 
     def release_write_authority(self, *, note: str = "") -> dict[str, Any]:
-        with self.transaction() as conn:
-            ws = self.workspace()
-            conn.execute("UPDATE workspace SET write_authority=0, updated_at=? WHERE id=1", (utcnow_iso(),))
-            p = self._authority_path()
-            if p and os.path.exists(p):
-                os.remove(p)
-            if p is None:
-                self._memory_token = None
-            conn.execute(
-                "INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json, payload_hash, prev_hash, entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
-                self._audit_tuple("system", "workspace.release_write_authority", "workspace", ws["workspace_id"], {"note": note}),
-            )
+        """Give up write authority on this copy; the connection becomes read-only, and so
+        does every other connection to the same file before its next statement.  An
+        in-memory database always holds authority, so it has nothing to release."""
+        with self._lock:
+            if self.in_memory:
+                raise WriteAuthorityError("an in-memory workspace always holds write authority; there is nothing to release")
+            if not self.has_write_authority():
+                raise WriteAuthorityError("this workspace copy does not hold write authority; there is nothing to release")
+            self._refresh_suspended += 1
+            try:
+                with self.transaction() as conn:
+                    ws = self.workspace()
+                    conn.execute("UPDATE workspace SET write_authority=0, updated_at=? WHERE id=1", (utcnow_iso(),))
+                    conn.execute(
+                        "INSERT INTO audit_log (ts, actor, action, entity_type, entity_id, payload_json, payload_hash, prev_hash, entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+                        self._audit_tuple("system", "workspace.release_write_authority", "workspace", ws["workspace_id"], {"note": note}),
+                    )
+                    p = self._authority_path()
+                    if p is not None and os.path.exists(p):
+                        os.remove(p)
+            finally:
+                self._refresh_suspended -= 1
+                self._sync_data_version()
+                self._apply_authority_mode()
         return self.authority_status()
 
     def _audit_tuple(self, actor: str, action: str, entity_type: str, entity_id: str, payload: dict) -> tuple:

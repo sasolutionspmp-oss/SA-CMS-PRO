@@ -40,11 +40,26 @@ overdrawn at the end of P or of any later period (payroll already recorded in a
 later period may have settled that time).  The 2200 reconciliation used by the
 close checklist is cut off at the period too.
 
-Accounts receivable: T&M invoices debit control account 1100, which the core
-receivables subledger (prime bills only) does not count.  ``ar_open_items`` exposes
-the labor T&M subledger (billed less collected) in the same shape as
-``Receivables.ar_open_items`` so the core reconciliation, the close checklist and
-Ricky can add it; that integration belongs to the receivables module.
+Accounts receivable: T&M invoices debit control account 1100 next to prime bills.
+``ar_open_items(project_id)`` exposes the labor T&M subledger (billed less collected)
+in the shape of ``Receivables.ar_open_items``; the core receivables subledger
+aggregates it (``Receivables.extra_ar_sources``), so the AR reconciliation behind
+the close checklist, aging and Ricky ties prime bills plus T&M invoices to 1100.
+The module does not report the 1100 control itself (that would be reported twice);
+its own close check ``tm_receivable_reconciliation`` only proves that the T&M
+subledger agrees with the 1100 lines its own invoice and collection journals posted,
+cumulatively through the period, which tells a reviewer which source is off.
+A billed invoice is corrected only by reversing its billing journal (the governed
+``journal.reverse``): the reversal clears the whole receivable it posted, so the
+subledger and 1100 still agree, and no receipt can be recorded against the invoice
+afterwards.  A reversed collection journal no longer counts as collected.
+``record_collection`` refuses a receipt reference already used, ignoring case, in this
+module's collections or in any other 1100 receipt table (prime bill, prime retainage
+and reimbursement collections); the database backs only the labor table's own
+uniqueness (``labor_collections.provider_ref`` UNIQUE NOCASE).  The other direction
+belongs to the other modules: ``Receivables.record_collection`` checks labor
+references, while the reimbursement module's collection checks only its own table at
+the time of writing, so a reimbursement receipt can still reuse a labor reference.
 
 Record lifecycles (SQLite triggers reject every other transition):
 
@@ -56,7 +71,14 @@ Record lifecycles (SQLite triggers reject every other transition):
 * payroll:    draft -> posted | canceled.  A reference is never reused, even after a cancel.
 * invoice:    draft -> billed | void.  An entry is reserved by at most one live invoice line
               (partial UNIQUE index); voiding a draft invoice releases its lines.
-* collection: immutable once recorded, only against a billed invoice, never above its open amount.
+* collection: immutable once recorded; only against a billed invoice of its project and customer
+              (``labor_collections_billed_invoice_only``); and, from ``labor_collection_guards`` on,
+              with exact two-place amount and fee, never in a period that starts before the
+              invoice's billing period, never after the billing journal was reversed, only with its
+              own collection journal crediting 1100 by exactly its amount, and never above the
+              invoice's open amount (billed total less unreversed collections).  ``record_collection``
+              checks the same rules first, with clear messages, plus the open receipt period and the
+              receipt reference.
 
 Approvals bind the subject's version, a content hash recomputed from the CURRENT
 records, the exact amounts and allocation, the period and the counterparties, so
@@ -71,6 +93,7 @@ from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from typing import Any
 
 from ..core.approvals import build_manifest
+from ..core.db import register_schema_version
 from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, total
 
@@ -102,6 +125,13 @@ ZERO_HOURS = Decimal("0.00")
 MAX_RATE = Decimal("1000000.00")            # per hour
 MAX_AMOUNT = Decimal("1000000000000.00")    # budgets, payroll runs, receipts
 MAX_BUDGET_HOURS = Decimal("10000000.00")
+
+# Receipt tables of the other receivables sources that credit control account 1100 (prime
+# bills, prime retainage invoices, reimbursement billings).  ``record_collection`` refuses a
+# reference already used in any of them or in labor_collections, ignoring case; a table that
+# does not exist (its module is not loaded) is skipped.  The reverse check is each other
+# module's own (see the module docstring).
+OTHER_RECEIPT_TABLES = ("collections", "prime_retainage_collections", "reimbursement_collections")
 
 LIVE_ENTRY_STATUSES = ("draft", "submitted", "approved", "billed")
 UTILIZATION_STATUSES = ("submitted", "approved", "billed")
@@ -376,6 +406,55 @@ SCHEMA_STATEMENTS = [
           OR (SELECT customer_id FROM labor_invoices WHERE id = NEW.invoice_id) IS NOT NEW.customer_id
         BEGIN SELECT RAISE(ABORT, 'a collection is recorded only against a billed labor invoice, for its project and customer'); END""",
 ]
+
+
+def _cents(expr: str) -> str:
+    """SQL integer cents of a two-place money string (exact; never REAL arithmetic)."""
+    return f"CAST(REPLACE({expr}, '.', '') AS INTEGER)"
+
+
+def _two_place(expr: str) -> str:
+    """SQL test that a value is a non-negative money string with exactly two decimals."""
+    return f"(typeof({expr}) = 'text' AND {expr} GLOB '[0-9]*.[0-9][0-9]' AND {expr} NOT GLOB '*[^0-9.]*' AND {expr} NOT GLOB '*.*.*')"
+
+
+# Collection rules in the database, as their own catalog entry (``labor`` is applied history).
+# ``record_collection`` already enforces them in Python; this makes a raw INSERT obey them
+# too: exact two-place amount and fee (amount positive, fee below it), never in a period
+# that starts before the invoice's billing period, never on an invoice whose billing
+# journal was reversed, only with the row's own collection journal crediting 1100 by
+# exactly its amount, and never above the invoice's open amount (billed total less the
+# collections whose journals were not reversed).
+COLLECTION_GUARDS_SCHEMA_NAME = "labor_collection_guards"
+COLLECTION_GUARDS_SCHEMA_STATEMENTS = [
+    f"""CREATE TRIGGER labor_collections_within_the_invoice BEFORE INSERT ON labor_collections
+        BEGIN
+            SELECT CASE
+                WHEN NOT {_two_place('NEW.amount')} OR NOT {_two_place('NEW.fee')}
+                  OR {_cents('NEW.amount')} <= 0 OR {_cents('NEW.fee')} >= {_cents('NEW.amount')}
+                THEN RAISE(ABORT, 'a labor collection amount and fee are exact two-place money, the amount positive and the fee below it')
+                WHEN (SELECT start_date FROM periods WHERE id = NEW.period_id)
+                     < (SELECT p.start_date FROM labor_invoices i JOIN periods p ON p.id = i.period_id WHERE i.id = NEW.invoice_id)
+                THEN RAISE(ABORT, 'a labor collection is never recorded in a period that starts before the invoice billing period')
+                WHEN EXISTS (SELECT 1 FROM labor_invoices i JOIN journals r ON r.reversal_of = i.journal_id WHERE i.id = NEW.invoice_id)
+                THEN RAISE(ABORT, 'a labor collection is never recorded against an invoice whose billing journal was reversed')
+                WHEN (SELECT source_type FROM journals WHERE id = NEW.journal_id) IS NOT '{COLLECTION_SUBJECT}'
+                  OR (SELECT source_id FROM journals WHERE id = NEW.journal_id) IS NOT NEW.id
+                  OR (SELECT SUM({_cents('credit')}) - SUM({_cents('debit')}) FROM journal_lines
+                      WHERE journal_id = NEW.journal_id AND account_code = '{ACCOUNT_AR}') IS NOT {_cents('NEW.amount')}
+                THEN RAISE(ABORT, 'a labor collection carries its own collection journal, which credits 1100 by exactly its amount')
+                WHEN {_cents('NEW.amount')} + COALESCE((SELECT SUM({_cents('c.amount')}) FROM labor_collections c
+                         WHERE c.invoice_id = NEW.invoice_id AND NOT EXISTS (SELECT 1 FROM journals r WHERE r.reversal_of = c.journal_id)), 0)
+                     > (SELECT {_cents('total')} FROM labor_invoices WHERE id = NEW.invoice_id)
+                THEN RAISE(ABORT, 'a labor collection never exceeds the open amount of its invoice')
+            END;
+        END""",
+]
+
+# Registered here, in this order, so the guard entry always sits after the table it guards;
+# the plugin loader's own registration of SCHEMA_NAME is then a no-op.
+register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
+register_schema_version(COLLECTION_GUARDS_SCHEMA_NAME, COLLECTION_GUARDS_SCHEMA_STATEMENTS)
 
 
 class LaborError(RuntimeError):
@@ -1236,10 +1315,60 @@ class Plugin:
         for ln in row["lines"]:
             ln["released"] = bool(ln["released"])
         row["collections"] = self.db.query("SELECT * FROM labor_collections WHERE invoice_id=? ORDER BY received_at, id", (invoice_id,))
-        collected = total(c["amount"] for c in row["collections"])
-        row["collected"] = fmt(collected)
-        row["open"] = fmt(money(row["total"]) - collected) if row["status"] == "billed" else fmt(ZERO)
+        bal = self._invoice_balance(row)
+        row["collected"] = fmt(bal["collected"])
+        row["billing_reversed"] = bal["reversal_journal_id"] is not None
+        row["reversal_journal_id"] = bal["reversal_journal_id"]
+        row["cleared_by_reversal"] = fmt(bal["reversed"])
+        row["reversed_collections"] = bal["reversed_collections"]
+        row["open"] = fmt(bal["open"])
         return row
+
+    def _reversal(self, journal_id: str | None, *, through: str | None = None) -> dict[str, Any] | None:
+        """The journal that reverses ``journal_id`` (``journal.reverse`` or ``Ledger.reverse``),
+        if any; with ``through`` only a reversal posted in a period starting on or before it."""
+        if not journal_id:
+            return None
+        sql = "SELECT j.id, j.period_id FROM journals j JOIN periods p ON p.id = j.period_id WHERE j.reversal_of = ?"
+        params: tuple = (journal_id,)
+        if through is not None:
+            sql += " AND p.start_date <= ?"
+            params = (journal_id, through)
+        return self.db.one(sql, params)
+
+    def _invoice_balance(self, inv: dict[str, Any], *, through: str | None = None) -> dict[str, Any]:
+        """What a T&M invoice leaves in 1100: billed less the collections still on the books,
+        and nothing billed once the billing journal itself is reversed (a reversal clears the
+        whole receivable it posted, exactly as it clears the 1100 debit).  A reversed
+        collection journal no longer counts as collected.  With ``through`` (a period start
+        date) only journals of periods starting on or before it count, which is the cut the
+        cumulative reconciliation uses."""
+        billed = ZERO
+        if inv["status"] == "billed" and inv.get("journal_id"):
+            if through is None:
+                billed = money(inv["total"])
+            else:
+                start = self.db.scalar("SELECT p.start_date FROM journals j JOIN periods p ON p.id = j.period_id WHERE j.id=?", (inv["journal_id"],))
+                billed = money(inv["total"]) if start is not None and start <= through else ZERO
+        reversal = self._reversal(inv.get("journal_id"), through=through) if billed > 0 else None
+        cleared = billed if reversal is not None else ZERO
+        sql = "SELECT c.id, c.amount, c.journal_id FROM labor_collections c JOIN periods p ON p.id = c.period_id WHERE c.invoice_id=?"
+        params: tuple = (inv["id"],)
+        if through is not None:
+            sql += " AND p.start_date <= ?"
+            params = (inv["id"], through)
+        collected = ZERO
+        reversed_collections: list[str] = []
+        for col in self.db.query(sql + " ORDER BY c.received_at, c.id", params):
+            if self._reversal(col["journal_id"], through=through) is not None:
+                reversed_collections.append(col["id"])
+                continue
+            collected += money(col["amount"])
+        return {
+            "billed": money(billed), "collected": money(collected), "reversed": money(cleared),
+            "reversal_journal_id": reversal["id"] if reversal is not None else None,
+            "reversed_collections": reversed_collections, "open": money(billed - collected - cleared),
+        }
 
     def invoices(self, project_id: str) -> list[dict[str, Any]]:
         rows = self.db.query("SELECT id FROM labor_invoices WHERE project_id=? ORDER BY sequence", (project_id,))
@@ -1257,13 +1386,26 @@ class Plugin:
         ref = _text(provider_ref, "provider reference")
         collection_id = new_id("lcol")
         with self.db.transaction() as conn:
-            self._period(period_id, require_open=True, purpose="receipts can no longer be recorded in it")
+            receipt_period = self._period(period_id, require_open=True, purpose="receipts can no longer be recorded in it")
             inv = self.invoice(invoice_id)
             if inv["status"] != "billed":
                 raise LaborError(f"invoice {invoice_id} is {inv['status']}; only a billed invoice can be collected")
+            billed_period = self._period(inv["period_id"])
+            if receipt_period["start_date"] < billed_period["start_date"]:
+                raise LaborError(
+                    f"invoice {invoice_id} is billed in period {inv['period_id']}; a receipt cannot be recorded in the earlier period {period_id}, "
+                    "where the receivable does not exist yet"
+                )
+            if inv["billing_reversed"]:
+                raise LaborError(
+                    f"invoice {invoice_id} billing journal {inv['journal_id']} was reversed by {inv['reversal_journal_id']}; "
+                    "nothing is receivable on it, so no receipt can be recorded against it"
+                )
             dup = self.db.one("SELECT id FROM labor_collections WHERE provider_ref = ? COLLATE NOCASE", (ref,))
-            if dup is None:
-                dup = self.db.one("SELECT id FROM collections WHERE provider_ref = ?", (ref,))
+            # a receipt reference is unique across every receivables source sharing control account 1100
+            for table in OTHER_RECEIPT_TABLES:
+                if dup is None and self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name=?", (table,)) is not None:
+                    dup = self.db.one(f"SELECT id FROM {table} WHERE provider_ref = ? COLLATE NOCASE", (ref,))
             if dup is not None:
                 raise LaborError(f"receipt {ref!r} was already recorded as {dup['id']}")
             open_amt = money(inv["open"])
@@ -1298,8 +1440,13 @@ class Plugin:
 
     def ar_open_items(self, project_id: str | None = None) -> dict[str, Any]:
         """The labor T&M receivables subledger (billed invoices less collections), in the shape
-        of ``Receivables.ar_open_items``.  These balances sit in control account 1100 next to
-        prime bills; the core AR reconciliation must add this subledger to tie out."""
+        of ``Receivables.ar_open_items``: ``{"items": [...], "subledger_total": "<money>"}``.
+        These balances sit in control account 1100 next to prime bills; the core receivables
+        subledger aggregates this source so 1100 reconciles.  ``project_id=None`` covers every
+        project.  Fully collected invoices are listed with ``open`` 0.00, as prime bills are.
+        An invoice whose billing journal was reversed (``journal.reverse``) is cleared by
+        that reversal: nothing stays open on it beyond any receipt that must be refunded
+        (a negative open amount), exactly what the reversal left in 1100."""
         sql = "SELECT id FROM labor_invoices WHERE status='billed'"
         params: tuple = ()
         if project_id:
@@ -1310,12 +1457,46 @@ class Plugin:
         for r in self.db.query(sql + " ORDER BY project_id, sequence", params):
             inv = self.invoice(r["id"])
             items.append({
-                "kind": "labor_invoice", "invoice_id": inv["id"], "project_id": inv["project_id"], "customer_id": inv["customer_id"],
-                "sequence": inv["sequence"], "period_id": inv["period_id"], "billed_at": inv["billed_at"],
-                "amount_due": inv["total"], "received": inv["collected"], "open": inv["open"],
+                "kind": "labor_invoice", "source": PLUGIN_NAME, "invoice_id": inv["id"], "project_id": inv["project_id"], "customer_id": inv["customer_id"],
+                "sequence": inv["sequence"], "period_id": inv["period_id"], "created_at": inv["created_at"], "billed_at": inv["billed_at"],
+                "journal_id": inv["journal_id"], "amount_due": inv["total"], "received": inv["collected"],
+                "reversed": inv["cleared_by_reversal"], "reversal_journal_id": inv["reversal_journal_id"], "open": inv["open"],
             })
             open_total += money(inv["open"])
-        return {"source": "labor T&M invoices", "control_account": ACCOUNT_AR, "items": items, "subledger_total": fmt(open_total)}
+        return {"source": "labor T&M invoices", "control_account": ACCOUNT_AR, "project_id": project_id, "items": items, "subledger_total": fmt(open_total)}
+
+    def tm_receivable_reconciliation(self, period_id: str | None = None) -> dict[str, Any]:
+        """The T&M subledger (billed invoices less collections) against the 1100 lines this
+        module's own invoice and collection journals posted, all time or cumulatively through
+        ``period_id`` (journals of periods starting on or before it).  This is a source-level
+        tie, not the 1100 control reconciliation, which the core AR subledger performs with
+        every source included.  Any open balance below zero is reported as overcollected.
+        Reversals of invoice or collection journals carry the original source type, so they
+        are in the postings and clear the subledger in the same cut."""
+        through = self._period(period_id)["start_date"] if period_id is not None else None
+        cut = " AND p.start_date <= ?" if through is not None else ""
+        args: tuple = (through,) if through is not None else ()
+        # collections exist only on billed invoices (trigger), and a billed invoice never changes status
+        by_invoice: dict[str, Decimal] = {}
+        for inv in self.db.query("SELECT * FROM labor_invoices WHERE status='billed' ORDER BY project_id, sequence"):
+            bal = self._invoice_balance(inv, through=through)
+            if bal["billed"] > 0 or bal["collected"] != 0:
+                by_invoice[inv["id"]] = bal["open"]
+        subledger = total(by_invoice.values()) if by_invoice else ZERO
+        lines = self.db.query(
+            "SELECT l.debit, l.credit FROM journal_lines l JOIN journals j ON j.id = l.journal_id JOIN periods p ON p.id = j.period_id"
+            " WHERE l.account_code = ? AND j.source_type IN (?, ?)" + cut,
+            (ACCOUNT_AR, INVOICE_SUBJECT, COLLECTION_SUBJECT) + args,
+        )
+        postings = money(total(r["debit"] for r in lines) - total(r["credit"] for r in lines))
+        overcollected = sorted(k for k, v in by_invoice.items() if v < 0)
+        return {
+            "period_id": period_id,
+            "basis": f"cumulative through period {period_id}" if period_id is not None else "all periods",
+            "subledger_total": fmt(subledger), "labor_postings_1100": fmt(postings),
+            "reconciled": money(subledger) == postings and not overcollected,
+            "overcollected": overcollected,
+        }
 
     # ---- approvals: manifests ------------------------------------------------- #
 
@@ -1647,6 +1828,7 @@ class Plugin:
         draft_invoices = self.db.query("SELECT id FROM labor_invoices WHERE period_id=? AND status='draft' ORDER BY sequence, id", (period_id,))
         draft_payroll = self.db.query("SELECT id FROM labor_payroll WHERE period_id=? AND status='draft' ORDER BY created_at, id", (period_id,))
         rec = self.accrued_payroll_reconciliation(period_id)
+        tm = self.tm_receivable_reconciliation(period_id)
         return [
             {
                 "check": "labor: submitted timesheets approved or rejected",
@@ -1682,7 +1864,42 @@ class Plugin:
                 "detail": (f"payroll exceeds approved time through {period_id} for {', '.join(rec['overdrawn'])}" if rec["overdrawn"]
                            else f"no accrued payroll balance is a debit through {period_id}"),
             },
+            {
+                "check": "labor: T&M receivables agree with the labor postings to 1100",
+                "ok": tm["reconciled"],
+                "detail": (f"through {period_id}: T&M subledger {tm['subledger_total']} (billed less collected) vs labor invoice and collection "
+                           f"lines on 1100 {tm['labor_postings_1100']}"
+                           + (f"; overcollected: {', '.join(tm['overcollected'])}" if tm["overcollected"] else "")
+                           + " (the 1100 control itself is reconciled by the core AR check, which includes this subledger)"),
+            },
         ]
+
+    def audit_export(self) -> dict[str, Any]:
+        """Every labor record, workspace-wide, plus the module's reconciliations, for an
+        independent reviewer (JSON-serialisable; money as canonical strings)."""
+        q = self.db.query
+        timesheets = q("SELECT * FROM labor_timesheets ORDER BY submitted_at, id")
+        for ts in timesheets:
+            ts["lines"] = loads(ts.pop("lines_json"))
+        invoice_lines = q("SELECT * FROM labor_invoice_lines ORDER BY invoice_id, work_date, entry_id")
+        for ln in invoice_lines:
+            ln["released"] = bool(ln["released"])
+        return {
+            "posting_rule": POSTING_RULE,
+            "rates": q("SELECT * FROM labor_rates ORDER BY employee_id, effective_from"),
+            "phases": q("SELECT * FROM labor_phases ORDER BY project_id, code"),
+            "entries": q("SELECT * FROM labor_entries ORDER BY employee_id, work_date, id"),
+            "timesheets": timesheets,
+            "payroll": q("SELECT * FROM labor_payroll ORDER BY created_at, id"),
+            "invoices": q("SELECT * FROM labor_invoices ORDER BY project_id, sequence"),
+            "invoice_lines": invoice_lines,
+            "collections": q("SELECT * FROM labor_collections ORDER BY received_at, id"),
+            "reconciliations": {
+                "accrued_payroll_2200": self.accrued_payroll_reconciliation(),
+                "tm_receivables_1100": self.tm_receivable_reconciliation(),
+                "ar_open_items": self.ar_open_items(),
+            },
+        }
 
     def state(self, project_id: str) -> dict[str, Any]:
         entries = self.entries(project_id)

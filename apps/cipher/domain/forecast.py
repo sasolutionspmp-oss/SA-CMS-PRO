@@ -1,4 +1,8 @@
-"""Project cost forecast: budget, authorised commitments, pending exposure, billed and paid."""
+"""Project cost forecast: budget, authorised commitments, pending exposure, billed and paid.
+
+``paid_to_date`` sums the provider-accepted and settled payment intents whose
+project is this project (supplier bills, released retainage and staff
+reimbursements alike); a returned, failed or canceled intent pays nothing."""
 from __future__ import annotations
 
 from typing import Any
@@ -35,9 +39,15 @@ class Forecast:
             billed_net += money(b["cumulative_net"])
             billed_gross += money(b["cumulative_gross"])
             retainage_held += money(b["cumulative_retainage"])
+        # Paid to date: provider-accepted (and settled) intents of *this* project only.  Every
+        # intent records its project; an intent created before intents carried one is attributed
+        # through the bill it paid, never through the absence of a bill (that leaked retainage and
+        # reimbursement payments of every other project into this one).
         paid = self.db.query(
-            "SELECT p.amount FROM payment_intents p LEFT JOIN bills b ON b.id=p.bill_id LEFT JOIN commitments c ON c.id=b.commitment_id WHERE p.status IN ('accepted','settled') AND (c.project_id=? OR p.bill_id IS NULL)",
-            (project_id,),
+            """SELECT p.amount FROM payment_intents p
+               LEFT JOIN bills b ON b.id=p.bill_id LEFT JOIN commitments c ON c.id=b.commitment_id
+               WHERE p.status IN ('accepted','settled') AND (p.project_id=? OR (p.project_id IS NULL AND c.project_id=?))""",
+            (project_id, project_id),
         )
         paid_total = total(p["amount"] for p in paid) if paid else ZERO
         ar = self.db.one("SELECT COALESCE(MAX(certified_cumulative),'0.00') AS certified FROM prime_bills WHERE project_id=? AND status IN ('posted','sent','collected')", (project_id,))

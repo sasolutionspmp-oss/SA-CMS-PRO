@@ -21,8 +21,9 @@ each ``test_stepNN`` runs every earlier step it depends on exactly once, so a si
 step can be run on its own; a step whose prerequisite failed is skipped, not
 re-run.  ``VerticalV1VariantTests`` adds focused adversarial variants that the module
 suites do not already cover.  ``VerticalV1KnownDefectTests`` asserts the plan's
-behaviour where a module currently falls short; each is an expected failure and
-names the defect, so a fix shows up as an unexpected success.
+behaviour where a module once fell short; every named defect has since been fixed,
+so these are regression tests now.  The plan's full adversarial-variant list is in
+``test_adversarial_variants.py``.
 """
 import json
 import os
@@ -32,24 +33,26 @@ import tempfile
 import unittest
 from decimal import Decimal
 
-from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError, build_manifest
+from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import hash_json, sha256_hex
 from apps.cipher.domain.banking import BankingError
 from apps.cipher.domain.bills import BillError
 from apps.cipher.domain.close import CloseError
+from apps.cipher.domain.estimates import EstimateError
 from apps.cipher.domain.field import FieldError
 from apps.cipher.domain.labor import LaborError
 from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
 from apps.cipher.domain.payments import PaymentError, ReleaseQuarantined
 from apps.cipher.domain.receivables import ReceivableError
-from apps.cipher.service import Cipher, CipherError
+from apps.cipher.service import Cipher
 
 D = Decimal
 STALE = (StaleApprovalError, ApprovalNotGranted)
 SHADOW = "SHADOW - not authoritative"
 PERIODS = {"P1": ("2026-10-01", "2026-10-31"), "P2": ("2026-11-01", "2026-11-30"), "P3": ("2026-12-01", "2026-12-31")}
 SUPPLIER_DESTINATION = "ACH-SIM-V1-SUB-0001"
+MEASUREMENT_BASIS_A = "Drawing A rev 0 at 1:100, scale verified against the dimensioned grid"
 CLOSEOUT_DELIVERABLES = (
     ("as_builts", "As-built drawings"),
     ("om_manuals", "O&M manuals"),
@@ -68,17 +71,31 @@ def pick(record, keys):
     return {k: record[k] for k in keys}
 
 
-def claim_with_recorded_approval(restored):
-    """Claim write authority on a restored copy against a recorded, consumed approval."""
-    ws = restored.db.workspace()
-    manifest = build_manifest(
-        operation="workspace.claim_write_authority", subject_type="workspace", subject_id=ws["workspace_id"], actor_role="controller",
-        bindings={"authority_epoch": ws["authority_epoch"], "recovery_epoch": ws["recovery_epoch"]},
-    )
-    ap = restored.approvals.request(manifest, requested_by="controller")
-    restored.approvals.grant(ap["id"], approver="owner")
-    restored.approvals.consume(ap["id"], current_manifest=manifest, consumer="owner")
-    return restored.claim_write_authority(approval_ref=ap["id"], actor="owner")
+def claim_restored_copy(restored, *, reason="V1 restore drill: claim the recovered copy"):
+    """Claim write authority on a restored copy as the attested owner action.  A read-only
+    copy cannot record an approval of its own, so the claim records its approver and
+    reason (and, when CIPHER_OWNER_SECRET is configured, needs the owner claim code)."""
+    return restored.claim_write_authority(approval_ref="ext-ref-v1-restore-drill", actor="owner", reason=reason)
+
+
+def send_prime_bill(c, prime_bill_id, *, role="pm"):
+    """Sending a prime bill is its own approval-bound authority (``prime_bill.send``)."""
+    ap = c.request_approval("prime_bill.send", prime_bill_id, actor_role=role, requested_by=role)
+    c.approve(ap["id"], approver="owner")
+    return ap, c.execute(ap["id"], actor=role).result
+
+
+def record_mandate(c, project_id, customer_id, ref):
+    """The customer's signed ACH debit authorization, filed as evidence on its project."""
+    doc = c.evidence.register_document(project_id=project_id, kind="ach_mandate", title=f"Customer ACH debit authorization {ref} (synthetic)", actor="treasury")
+    rev = c.evidence.add_revision(document_id=doc["id"], content=f"V1 synthetic signed ACH debit authorization {ref}".encode(), actor="treasury")
+    return c.receivables.record_mandate(customer_id=customer_id, mandate_ref=ref, evidence_hash=rev["content_hash"], actor="treasury")
+
+
+def stored_evidence(c, project_id, label):
+    """A stored-material evidence revision (title/control, insurance, location, delivery) on the project."""
+    doc = c.evidence.register_document(project_id=project_id, kind="stored_material_evidence", title=f"{label} (synthetic)", actor="pm")
+    return c.evidence.add_revision(document_id=doc["id"], content=f"V1 synthetic title, insurance, location and delivery evidence: {label}".encode(), actor="pm")
 
 
 # --------------------------------------------------------------------------- #
@@ -213,15 +230,23 @@ class VerticalV1:
         tc.assertEqual((self.dwr_a["status"], self.dwr_a["content_hash"]), ("issued", self.ev_a["content_hash"]))
         tc.assertEqual(self.drawings.usable_revision(self.dwg_a["id"])["id"], rev["id"])
 
-        # estimate priced from that exact revision: quantities, units, price-book edition, exclusions
+        # estimate priced from that exact revision: quantities, units, price-book edition, exclusions;
+        # a measured unit (SF) states how it was taken off the drawing (unit/scale control)
+        with tc.assertRaises(EstimateError):
+            c.estimates.create(project_id=self.pid, document_revision_id=self.ev_a["id"], lines=[
+                {"description": "PZ-27 sheet pile cofferdam incl. dewatering", "quantity": "1200", "unit": "SF", "unit_price": "50.00"},
+            ], actor="estimator")
         est = c.estimates.create(project_id=self.pid, document_revision_id=self.ev_a["id"], lines=[
             {"description": "PZ-27 sheet pile cofferdam incl. dewatering (price book PB-2026.1; excludes rock excavation)", "quantity": "1200", "unit": "SF", "unit_price": "50.00"},
             {"description": "Pump station (price book PB-2026.1; excludes electrical service)", "quantity": "1", "unit": "LS", "unit_price": "40000.00"},
-        ], actor="estimator")
+        ], actor="estimator", price_book_ref="PB-2026.1", exclusions=["rock excavation", "electrical service"],
+            measurement_basis=MEASUREMENT_BASIS_A)
         tc.assertEqual(est["total"], "100000.00")
         tc.assertEqual([(ln["quantity"], ln["unit"], ln["amount"]) for ln in est["lines"]], [("1200", "SF", "60000.00"), ("1", "LS", "40000.00")])
         ap = c.request_approval("estimate.approve", est["id"], actor_role="estimator", requested_by="estimator")
         tc.assertEqual(ap["manifest"]["bindings"]["document_hash"], self.ev_a["content_hash"])
+        tc.assertEqual((ap["manifest"]["bindings"]["price_book_ref"], ap["manifest"]["bindings"]["exclusions"], ap["manifest"]["bindings"]["measurement_basis"]),
+                       ("PB-2026.1", ["rock excavation", "electrical service"], MEASUREMENT_BASIS_A))
         c.approve(ap["id"], approver="owner")
         tc.assertEqual(c.execute(ap["id"], actor="estimator").result["status"], "approved")
         self.estimate = c.estimates.get(est["id"])
@@ -231,8 +256,8 @@ class VerticalV1:
         # the PM proposes the exact agreement; the authorised signer executes it
         cmt = c.commitments.create(
             project_id=self.pid, supplier_id=self.supplier["id"], title="V1 subcontract - cofferdam and pump station",
-            sov_lines=[{"description": "Sheet pile cofferdam and dewatering", "amount": "60000", "cost_code": "31 41 16"},
-                       {"description": "Pump station", "amount": "40000", "cost_code": "33 32 00"}],
+            sov_lines=[{"description": "Sheet pile cofferdam and dewatering", "amount": "60000", "cost_code": "XX 10 00"},
+                       {"description": "Pump station", "amount": "40000", "cost_code": "XX 20 00"}],
             retainage_rate="0.10", estimate_id=est["id"], actor="pm",
         )
         self.cid = cmt["id"]
@@ -278,20 +303,34 @@ class VerticalV1:
         # the official response is approved on its own; approving it sends nothing
         f.draft_response(rfi["id"], "Confirmed: add 40 LF of PZ-27 sheet piling with dewatering at the PB-2026.1 unit rates.",
                          cost_impact="10000", schedule_impact_days=5, actor="engineer")
-        with tc.assertRaises(FieldError):  # nothing can be distributed before the official response exists
-            f.distribute_rfi(rfi["id"], ["Synthetic Owner Agency representative"], actor="pm")
+        recipients = ["Synthetic Owner Agency representative", "Synthetic subcontractor project manager"]
+        # nothing can be distributed before the official response exists
+        with tc.assertRaises(FieldError):
+            f.set_distribution_list(rfi["id"], recipients, "pm")
+        with tc.assertRaises(FieldError):
+            c.request_approval("field.distribute_rfi", rfi["id"], actor_role="pm", requested_by="pm")
+        with tc.assertRaises(FieldError):  # the retired direct path refuses and points at the approval
+            f.distribute_rfi(rfi["id"], recipients, actor="pm")
         ap = c.request_approval("field.respond_rfi", rfi["id"], actor_role="pm", requested_by="pm")
         tc.assertEqual(ap["manifest"]["amounts"], {"cost_impact": "10000.00"})
         c.approve(ap["id"], approver="owner")
         res = c.execute(ap["id"], actor="pm")
         tc.assertEqual(pick(res.result, ("status", "cost_impact", "schedule_impact_days")), {"status": "answered", "cost_impact": "10000.00", "schedule_impact_days": 5})
         tc.assertEqual(f.rfi(rfi["id"])["distributions"], [])
-        # distribution is a separate step, to the mail sink only, and never repeated
-        recipients = ["Synthetic Owner Agency representative", "Synthetic subcontractor project manager"]
-        dist = f.distribute_rfi(rfi["id"], recipients, actor="pm")
-        tc.assertEqual((dist["channel"], dist["recipients"], dist["response_hash"]), ("mail-sink", recipients, f.rfi(rfi["id"])["response_hash"]))
+        # distribution is a separate, approval-bound step, to the mail sink only, and never repeated
+        f.set_distribution_list(rfi["id"], recipients, "pm")
+        ap = c.request_approval("field.distribute_rfi", rfi["id"], actor_role="pm", requested_by="pm")
+        tc.assertEqual((ap["manifest"]["bindings"]["recipients"], ap["manifest"]["bindings"]["channel"], ap["manifest"]["bindings"]["leaves_the_prototype"]),
+                       (recipients, "mail-sink", False))
+        c.approve(ap["id"], approver="owner")
+        dist = c.execute(ap["id"], actor="pm").result
+        tc.assertEqual((dist["channel"], dist["recipients"], dist["response_hash"], dist["approval_id"]),
+                       ("mail-sink", recipients, f.rfi(rfi["id"])["response_hash"], ap["id"]))
+        tc.assertEqual(len(f.rfi(rfi["id"])["distributions"]), 1)
         with tc.assertRaises(FieldError):
-            f.distribute_rfi(rfi["id"], recipients, actor="pm")
+            c.request_approval("field.distribute_rfi", rfi["id"], actor_role="pm", requested_by="pm")
+        with tc.assertRaises(FieldError):
+            f.set_distribution_list(rfi["id"], recipients, "pm")
 
         # the RFI's cost impact becomes a pending change; only change.execute moves the commitment
         ch = f.link_change(rfi["id"], self.cid, "pm", sov_line_id=self.line1)
@@ -506,10 +545,22 @@ class VerticalV1:
         """Mail sink; 54,000 collected with a 5.00 fee; bank statement reconciled; P2 closes; a late
         return lands in the open period and the original receipt is preserved."""
         c = self.c
-        tc.assertEqual(c.receivables.send(self.prime1["id"], actor="pm")["status"], "sent")
+        with tc.assertRaises(ReceivableError):  # sending is its own approval-bound authority, never a direct call
+            c.receivables.send(self.prime1["id"], actor="pm")
+        send_ap, sent_result = send_prime_bill(c, self.prime1["id"])
+        tc.assertEqual((sent_result["status"], sent_result["channel"]), ("sent", "mail-sink"))
+        tc.assertEqual((send_ap["manifest"]["amounts"], send_ap["manifest"]["bindings"]["bill_hash"]), ({"amount_due": "54000.00"}, self.prime1["content_hash"]))
+        tc.assertEqual(c.receivables.get(self.prime1["id"])["status"], "sent")
         sent = [e for e in c.audit.entries(entity_type="prime_bill", entity_id=self.prime1["id"]) if e["action"] == "prime_bill.sent"]
         tc.assertEqual(len(sent), 1)
         tc.assertEqual(json.loads(sent[0]["payload_json"])["channel"], "mail-sink")
+        with tc.assertRaises(ReceivableError):  # an approved send is delivered once
+            c.request_approval("prime_bill.send", self.prime1["id"], actor_role="pm", requested_by="pm")
+        # an ACH debit needs the customer's recorded mandate, backed by owned evidence
+        with tc.assertRaises(ReceivableError):
+            c.receivables.record_collection(prime_bill_id=self.prime1["id"], period_id="P2", amount="54000", fee="5.00",
+                                            provider_ref="ach_sim_rcv_0001", actor="treasury")
+        record_mandate(c, self.pid, self.customer["id"], "MANDATE-SIM-V1-0001")
         col = c.receivables.record_collection(prime_bill_id=self.prime1["id"], period_id="P2", amount="54000", fee="5.00",
                                               provider_ref="ach_sim_rcv_0001", actor="treasury")
         tc.assertEqual((col["amount"], col["fee"], col["status"]), ("54000.00", "5.00", "received"))
@@ -572,8 +623,9 @@ class VerticalV1:
         tc.assertEqual(pick(prime, expected), expected)
         res = c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant", actor="accountant")
         tc.assertEqual(lines_of(c.ledger.journal(res.result["journal_id"])), [("1100", "64800.00", "0.00"), ("1150", "7200.00", "0.00"), ("4000", "0.00", "72000.00")])
-        c.receivables.send(prime["id"], actor="pm")
+        send_prime_bill(c, prime["id"])
         self.prime2 = c.receivables.get(prime["id"])
+        tc.assertEqual(self.prime2["status"], "sent")
 
         # closeout: required deliverables, punch closure and no pending change
         f.set_closeout_requirements(self.cid, [item for item, _ in CLOSEOUT_DELIVERABLES], "pm")
@@ -700,19 +752,35 @@ class VerticalV1:
             restored.approve(attempt["ap"]["id"], approver="treasury")
             restored.execute(attempt["ap"]["id"], actor="treasury")
         tc.assertEqual(len(restored.payments.list()), 1)
-        status = claim_with_recorded_approval(restored)
+        with tc.assertRaises(WriteAuthorityError):  # nor can the copy change any other record before the claim
+            restored.add_party(kind="supplier", name="Injected payee (restored copy)", destination="ACH-SIM-INJECTED")
+        tc.assertIn("authority", {it["kind"] for it in restored.ricky.brief(self.pid, actor_role="owner")["items"] if it["level"] == "blocker"})
+        status = claim_restored_copy(restored)
         tc.assertTrue(status["effective_write_authority"])
         tc.assertTrue(status["release_quarantined"])
+        claim = [e for e in restored.audit.entries(entity_type="workspace") if e["action"] == "workspace.claim_write_authority"]
+        tc.assertEqual(len(claim), 1)
+        tc.assertEqual({k: json.loads(claim[0]["payload_json"])[k] for k in ("approver", "restored_copy")}, {"approver": "owner", "restored_copy": True})
         if "ap" in attempt:
             restored.reject(attempt["ap"]["id"], approver="owner", reason="attempted from a restored copy")
         with tc.assertRaises(ReleaseQuarantined):
             restored.dispatch_payments()
+        # recovery finds the transfer the backup only knew as "outcome unknown" without resubmitting it,
+        # and holds the quarantine: the live workspace made three more transfers the older backup never recorded
         outcome = restored.complete_recovery(actor="reconciler")
-        tc.assertTrue(outcome["quarantine_lifted"])
+        tc.assertFalse(outcome["quarantine_lifted"])
         tc.assertEqual([(r["status"], r["provider_ref"]) for r in outcome["results"]], [("accepted", "sim_000001")])
-        tc.assertEqual(restored.payments.get(self.bill1_intent)["status"], "accepted")
-        tc.assertFalse(restored.db.authority_status()["release_quarantined"])
-        tc.assertEqual(restored.dispatch_payments(), [])
+        # the settlement callback the backup never saw is caught up exactly once, as a signed reconciliation event
+        tc.assertEqual([(cb["status"], cb["caught_up_event"]) for cb in outcome["callbacks"]], [("settled", "recon_sim_000001_settled")])
+        tc.assertEqual(restored.payments.get(self.bill1_intent)["status"], "settled")
+        tc.assertEqual(len(restored.ledger.journals(source_type="payment_intent", source_id=self.bill1_intent)), 1)
+        tc.assertEqual([t["provider_ref"] for t in outcome["unrecorded_transfers"]], ["sim_000002", "sim_000003", "sim_000004"])
+        tc.assertTrue(any("payment.adopt_transfer" in h for h in outcome["held"]), outcome["held"])
+        tc.assertTrue(restored.db.authority_status()["release_quarantined"])
+        # the open quarantine is routed to its owner: Ricky's brief carries it as a blocker
+        tc.assertIn("quarantine", {it["kind"] for it in restored.ricky.brief(self.pid, actor_role="owner")["items"] if it["level"] == "blocker"})
+        with tc.assertRaises(ReleaseQuarantined):
+            restored.dispatch_payments()
         tc.assertEqual({k: v["provider_ref"] for k, v in c.provider.transfers.items()}, transfers_before)  # no payment sent twice
         tc.assertEqual(len(c.provider.submissions), submissions_before)
         tc.assertTrue(restored.ledger.trial_balance()["balanced"])
@@ -771,10 +839,11 @@ class VerticalV1:
         # every consequential action is recorded as a consumed approval
         consumed = c.approvals.list(status="consumed")
         ops = {a["operation"] for a in consumed}
-        for op in ("estimate.approve", "commitment.execute", "drawing.issue", "field.respond_rfi", "change.execute", "labor.approve_timesheet",
-                   "labor.post_payroll", "bill.approve", "payment.release", "prime_bill.approve", "banking.lock_reconciliation", "close.close_period",
+        for op in ("estimate.approve", "commitment.execute", "drawing.issue", "field.respond_rfi", "field.distribute_rfi", "change.execute", "labor.approve_timesheet",
+                   "labor.post_payroll", "bill.approve", "payment.release", "prime_bill.approve", "prime_bill.send", "banking.lock_reconciliation", "close.close_period",
                    "field.accept_closeout", "retainage.release", "payment.release_retainage", "close.lock_period"):
             tc.assertIn(op, ops)
+        tc.assertEqual(sum(1 for a in consumed if a["operation"] == "prime_bill.send"), 2)
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "bill.approve"), 3)
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "payment.release"), 3)
         tc.assertEqual(sum(1 for a in consumed if a["operation"] == "close.close_period"), 3)
@@ -897,8 +966,12 @@ class VerticalV1VariantTests(unittest.TestCase):
         alt = c.commitments.propose_change(w.cid, amount="12000", reason="Alternative (not executed)", sov_line_id=w.line1, actor="pm")
         with self.assertRaises(BillError):  # line 1 is still 60,000; the pending 12,000 cannot be billed
             c.bills.certify(commitment_id=w.cid, period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "65000"}], actor="pm")
+        with self.assertRaises(BillError):  # a hash Cipher never stored is not evidence
+            c.bills.add_stored_material(commitment_id=w.cid, sov_line_id=w.line1, description="Stored sheet piling", eligible_amount="5000",
+                                        evidence_hash=sha256_hex(b"V1 variant stored material evidence"), location="Laydown yard B (synthetic)", actor="pm")
+        ev = stored_evidence(c, w.pid, "Stored sheet piling, laydown yard B")
         c.bills.add_stored_material(commitment_id=w.cid, sov_line_id=w.line1, description="Stored sheet piling", eligible_amount="5000",
-                                    evidence_hash=sha256_hex(b"V1 variant stored material evidence"), actor="pm")
+                                    evidence_hash=ev["content_hash"], location="Laydown yard B (synthetic)", actor="pm")
         with self.assertRaises(BillError):  # 100,000 installed + 5,000 stored would overbill the executed 100,000
             c.bills.certify(commitment_id=w.cid, period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "60000"},
                                                                             {"sov_line_id": w.line2, "cumulative_installed": "40000"}], actor="pm")
@@ -919,7 +992,8 @@ class VerticalV1VariantTests(unittest.TestCase):
         bank, close = c.plugin("banking"), c.plugin("close")
         prime = c.receivables.certify(project_id=w.pid, period_id="P1", certified_cumulative="60000", retainage_rate="0.10", actor="pm")
         c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant")
-        c.receivables.send(prime["id"], actor="pm")
+        send_prime_bill(c, prime["id"])
+        record_mandate(c, w.pid, w.customer["id"], "MANDATE-SIM-V1-VAR-9001")
         c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_rcv_9001", actor="treasury")
         st = bank.import_statement(statement_ref="SIM-BANK-VAR-2026-10", period_id="P1", opening_balance="0.00", closing_balance="53970.00", actor="reconciler", lines=[
             {"date": "2026-10-20", "amount": "53995.00", "description": "ACH receipt net of processing fee", "reference": "ach_sim_rcv_9001"},
@@ -1000,7 +1074,7 @@ class VerticalV1VariantTests(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# Plan behaviour a module does not deliver yet (expected failures)             #
+# Former known defects (now regression tests)                                  #
 # --------------------------------------------------------------------------- #
 
 def queued_payment_backup(tc):
@@ -1022,72 +1096,72 @@ def queued_payment_backup(tc):
 
 
 class VerticalV1KnownDefectTests(unittest.TestCase):
-    """Each test asserts the plan's behaviour and is expected to fail until the named module is fixed."""
+    """Each test asserts the plan's behaviour where a module once fell short.  All of them
+    were expected failures; each named defect is now fixed, so they are plain regression
+    tests (the class keeps its name so test ids stay stable)."""
 
-    @unittest.expectedFailure
     def test_retainage_release_requires_an_accepted_closeout(self):
-        """bills/service: ``retainage.release`` executes before closeout acceptance.  Its
-        manifest binds ``closeout_required: True`` but nothing enforces it (only Ricky
-        abstains); plan step 10 releases retainage only on approved closeout evidence."""
+        """Fixed (bills/service): ``retainage.release`` executed before closeout acceptance;
+        plan step 10 releases retainage only on approved closeout evidence."""
         w = World()
         c = w.c
         w.posted_bill("30000")
         self.assertEqual(c.ledger.balance("2050"), D("3000.00"))
         self.assertEqual(c.plugin("field").closeout(w.cid)["status"], "not_started")
-        try:
+        with self.assertRaises(BillError):
             c.approve_and_execute("retainage.release", w.cid, actor_role="accountant", period_id="P1")
-        except (BillError, CipherError, FieldError, StaleApprovalError, ApprovalNotGranted):
-            pass
         self.assertEqual(c.ledger.balance("2050"), D("3000.00"))
         self.assertEqual(c.ledger.journals(source_type="retainage_release"), [])
+        self.assertEqual(c.ricky.propose("retainage.release", actor_role="accountant", context={"commitment_id": w.cid})["decision"], "abstained")
 
-    @unittest.expectedFailure
     def test_restored_copy_refuses_record_writes_before_authority_is_claimed(self):
-        """core db/service: a restored copy without write authority still accepts record
-        writes; only ``Commands.run`` checks authority (core gate g8.restored_copy_refuses_mutations)."""
+        """Fixed (core db/service): a restored copy without write authority accepted record
+        writes (core gate g8.restored_copy_refuses_mutations)."""
         w = World()
         d = tempfile.mkdtemp(prefix="cipher-v1-restore-")
         self.addCleanup(shutil.rmtree, d, True)
         restored = Cipher.open_restored(w.c.snapshot(os.path.join(d, "backup.sqlite")), provider=w.c.provider)
         self.addCleanup(restored.db.close)
         self.assertFalse(restored.db.has_write_authority())
+        parties = len(restored.parties())
         with self.assertRaises(WriteAuthorityError):
             restored.add_party(kind="supplier", name="Injected payee (restored copy)", destination="ACH-SIM-INJECTED")
+        with self.assertRaises(WriteAuthorityError):
+            restored.ledger.post(period_id="P1", description="injected", lines=[{"account": "5000", "debit": "1"}, {"account": "2000", "credit": "1"}],
+                                 source_type="injected", source_id="x", source_version="1", posted_by="intruder")
+        self.assertEqual(len(restored.parties()), parties)
+        self.assertEqual(restored.ledger.journals(source_type="injected"), [])
 
-    @unittest.expectedFailure
     def test_restored_copy_cannot_dispatch_a_queued_payment_before_recovery(self):
-        """payments: release is quarantined only after ``claim_write_authority`` bumps the
-        recovery epoch; an unclaimed restored copy dispatches its queued outbox row to the
-        rail again (plan section 6: quarantine external execution after restore)."""
+        """Fixed (payments): an unclaimed restored copy dispatched its queued outbox row to
+        the rail again (plan section 6: quarantine external execution after restore)."""
         w, restored = queued_payment_backup(self)
         self.assertFalse(restored.db.has_write_authority())
-        try:
+        with self.assertRaises(ReleaseQuarantined):
             restored.dispatch_payments()
-        except (ReleaseQuarantined, WriteAuthorityError):
-            pass
         self.assertEqual(len(w.c.provider.submissions), 1)
+        self.assertEqual(restored.payments.list()[0]["status"], "queued")
 
-    @unittest.expectedFailure
     def test_older_backup_recovery_never_resubmits_a_queued_payment(self):
-        """payments: recovery reconciliation looks up only submitted/outcome-unknown intents,
-        lifts the quarantine and the queued intent is submitted a second time (core gate
+        """Fixed (payments): recovery looked up only submitted/outcome-unknown intents, lifted
+        the quarantine and the queued intent was submitted a second time (core gate
         g8.older_backup_no_resubmission); plan: reconcile external receipts first."""
         w, restored = queued_payment_backup(self)
-        status = claim_with_recorded_approval(restored)
+        status = claim_restored_copy(restored)
         self.assertTrue(status["release_quarantined"])
         with self.assertRaises(ReleaseQuarantined):
             restored.dispatch_payments()
-        restored.complete_recovery(actor="reconciler")
-        try:
-            restored.dispatch_payments()
-        except ReleaseQuarantined:
-            pass
+        outcome = restored.complete_recovery(actor="reconciler")
+        self.assertTrue(outcome["quarantine_lifted"], outcome["held"])
+        self.assertEqual([(r["status"], r.get("recovered_from")) for r in outcome["results"]], [("accepted", "queued")])
+        self.assertEqual(restored.dispatch_payments(), [])
         self.assertEqual((len(w.c.provider.transfers), len(w.c.provider.submissions)), (1, 1))
+        self.assertEqual(len(restored.ledger.journals(source_type="payment_intent")), 1)
+        self.assertTrue(restored.ledger.trial_balance()["balanced"])
 
-    @unittest.expectedFailure
     def test_raw_sql_cannot_unlock_a_locked_period(self):
-        """core db: the period lock is enforced on journal inserts, but a raw UPDATE sets a
-        locked period back to open (core gate g4.raw_unlock_refused)."""
+        """Fixed (core db): a raw UPDATE set a locked period back to open (core gate
+        g4.raw_unlock_refused)."""
         w = World()
         c = w.c
         w.posted_bill("20000")
@@ -1096,23 +1170,27 @@ class VerticalV1KnownDefectTests(unittest.TestCase):
         self.assertEqual(c.ledger.period("P1")["status"], "locked")
         with self.assertRaises(sqlite3.DatabaseError):
             c.db.execute("UPDATE periods SET status='open' WHERE id='P1'")
+        self.assertEqual(c.ledger.period("P1")["status"], "locked")
 
-    @unittest.expectedFailure
     def test_prime_retainage_is_released_after_final_acceptance(self):
-        """receivables: no operation releases or bills prime retainage receivable (1150), so
-        plan step 10 ("complete prime final billing/retainage") cannot finish; the natural
-        operation name ``prime_bill.release_retainage`` is refused as unknown."""
+        """Fixed (receivables): no operation released prime retainage receivable (1150), so
+        plan step 10 ("complete prime final billing/retainage") could not finish.  The
+        approval-bound ``prime_retainage.release`` now invoices it (Dr 1100 / Cr 1150)."""
         w = World()
         c = w.c
         prime = c.receivables.certify(project_id=w.pid, period_id="P1", certified_cumulative="132000", retainage_rate="0.10", actor="pm")
         c.approve_and_execute("prime_bill.approve", prime["id"], actor_role="accountant")
         self.assertEqual(c.ledger.balance("1150"), D("13200.00"))
-        try:
-            c.approve_and_execute("prime_bill.release_retainage", w.pid, actor_role="accountant", period_id="P1")
-        except CipherError:
-            pass
+        res = c.approve_and_execute("prime_retainage.release", w.pid, actor_role="accountant", period_id="P1")
+        self.assertEqual((res.result["amount"], res.result["status"]), ("13200.00", "open"))
+        self.assertEqual(lines_of(c.ledger.journal(res.result["journal_id"])), [("1100", "13200.00", "0.00"), ("1150", "0.00", "13200.00")])
         self.assertEqual(c.ledger.balance("1150"), D("0.00"))
         self.assertEqual(c.ledger.balance("1100"), D("132000.00"))
+        with self.assertRaises(ReceivableError):  # nothing is left to release
+            c.request_approval("prime_retainage.release", w.pid, actor_role="accountant")
+        ar = c.receivables.ar_open_items(w.pid)
+        self.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("132000.00", "132000.00", True))
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
 
 
 if __name__ == "__main__":

@@ -1,11 +1,13 @@
-"""Golden synthetic workflow and the adversarial variants from plan section 10."""
+"""Golden synthetic workflow and focused adversarial cases.  The plan section 10
+adversarial-variant list, one test per variant, is ``test_adversarial_variants.py``."""
 import os
+import sqlite3
 import tempfile
 import unittest
 from decimal import Decimal
 
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
-from apps.cipher.core.ids import sha256_hex
+from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.domain.bills import BillError
 from apps.cipher.domain.commitments import CommitmentError
 from apps.cipher.domain.estimates import EstimateError
@@ -44,6 +46,13 @@ class GoldenFixtureTests(unittest.TestCase):
     def test_lot_balances(self):
         remaining = sorted(l["remaining_amount"] for l in self.r["lots"])
         self.assertEqual(remaining, ["0.00", "5000.00"])
+        # every lot rests on the current revision of its own evidence document and names its location
+        for lot in self.r["lots"]:
+            self.assertEqual(lot["evidence_status"], "current")
+            self.assertFalse(lot["eligibility_confirmation_required"])
+            self.assertTrue(lot["billed"])
+            self.assertEqual(self.c.evidence.revision(lot["evidence_revision_id"])["content_hash"], lot["evidence_hash"])
+            self.assertEqual(lot["location"], "laydown yard")
 
     def test_payment_timeout_reconciliation_and_replay(self):
         p = self.r["payment"]
@@ -90,6 +99,11 @@ class GoldenFixtureTests(unittest.TestCase):
         self.assertTrue(self.r["ap"]["reconciled"])
         self.assertTrue(self.r["ar"]["reconciled"])
         self.assertTrue(self.r["audit"]["ok"])
+        # retainage payable (2050): 3,000 + 2,000 withheld on the two posted bills; stored materials (1300): 5,000 carried
+        ret = self.c.bills.retainage_open_items(self.r["project_id"])
+        self.assertEqual((ret["subledger_total"], ret["control_balance"], ret["reconciled"]), ("5000.00", "5000.00", True))
+        stored = self.c.bills.stored_material_items(self.r["project_id"])
+        self.assertEqual((stored["subledger_total"], stored["control_balance"], stored["reconciled"]), ("5000.00", "5000.00", True))
 
     def test_state_and_export(self):
         state = self.c.project_state(self.r["project_id"])
@@ -98,6 +112,20 @@ class GoldenFixtureTests(unittest.TestCase):
         export = self.c.audit_export()
         self.assertIn("schema", export)
         self.assertTrue(export["audit"]["chain"]["ok"])
+
+
+def send_prime_bill(tc, c, prime_bill_id):
+    """Sending is its own approval-bound authority (``prime_bill.send``); the direct call is refused."""
+    with tc.assertRaises(ReceivableError):
+        c.receivables.send(prime_bill_id, actor="o")
+    return c.approve_and_execute("prime_bill.send", prime_bill_id, actor_role="owner").result
+
+
+def record_ach_mandate(c, project_id, customer_id):
+    """ACH collection needs the customer's recorded debit mandate, backed by an evidence revision on its project."""
+    doc = c.evidence.register_document(project_id=project_id, kind="ach_mandate", title="Customer ACH debit authorization (synthetic)", actor="o")
+    rev = c.evidence.add_revision(document_id=doc["id"], content=b"synthetic ACH debit authorization (workflow tests)", actor="o")
+    return c.receivables.record_mandate(customer_id=customer_id, mandate_ref="MANDATE-SIM-WF-0001", evidence_hash=rev["content_hash"], actor="o")
 
 
 class Scenario:
@@ -120,6 +148,16 @@ class Scenario:
         self.line1 = self.cmt["sov"][0]["id"]
         self.line2 = self.cmt["sov"][1]["id"]
 
+    def stored_evidence(self, label: str) -> dict:
+        """A title/control, insurance, location and delivery evidence revision on the project."""
+        doc = self.c.evidence.register_document(project_id=self.project["id"], kind="stored_material_evidence", title=f"Stored material evidence: {label}", actor="o")
+        return self.c.evidence.add_revision(document_id=doc["id"], content=f"synthetic stored-material evidence: {label}".encode(), actor="o")
+
+    def add_lot(self, label: str, amount: str, line: str | None = None) -> dict:
+        ev = self.stored_evidence(label)
+        return self.c.bills.add_stored_material(commitment_id=self.cmt["id"], sov_line_id=line or self.line1, description=label, eligible_amount=amount,
+                                                evidence_hash=ev["content_hash"], location="synthetic laydown yard", actor="o")
+
 
 class AdversarialTests(unittest.TestCase):
     def setUp(self):
@@ -140,20 +178,77 @@ class AdversarialTests(unittest.TestCase):
             self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "19000"}], actor="o")
 
     def test_stored_transfer_cannot_exceed_lot(self):
-        lot = self.c.bills.add_stored_material(commitment_id=self.s.cmt["id"], sov_line_id=self.s.line1, description="pipe", eligible_amount="10000", evidence_hash="h", actor="o")
+        lot = self.s.add_lot("pipe", "10000")
         with self.assertRaises(BillError):
             self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], transfers=[{"lot_id": lot["id"], "amount": "10001"}], actor="o")
+        with self.assertRaises(BillError):  # the same lot cannot be transferred twice in one bill either
+            self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}],
+                                 transfers=[{"lot_id": lot["id"], "amount": "5000"}, {"lot_id": lot["id"], "amount": "5000"}], actor="o")
+        self.assertEqual(self.c.bills.list(commitment_id=self.s.cmt["id"]), [])
+        self.assertEqual(self.c.bills.lot(lot["id"])["remaining_amount"], "10000.00")
 
     def test_stored_material_requires_evidence(self):
+        cid, line = self.s.cmt["id"], self.s.line1
         with self.assertRaises(BillError):
-            self.c.bills.add_stored_material(commitment_id=self.s.cmt["id"], sov_line_id=self.s.line1, description="pipe", eligible_amount="10000", evidence_hash="", actor="o")
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe", eligible_amount="10000", evidence_hash="", location="yard", actor="o")
+        with self.assertRaises(BillError):  # a hash Cipher never stored is not evidence
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe", eligible_amount="10000", evidence_hash="h", location="yard", actor="o")
+        with self.assertRaises(BillError):  # a stored revision, but of a drawing: not stored-material evidence
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe", eligible_amount="10000", evidence_hash=self.s.rev["content_hash"], location="yard", actor="o")
+        ev = self.s.stored_evidence("pipe")
+        with self.assertRaises(BillError):  # real evidence, but no storage location
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe", eligible_amount="10000", evidence_hash=ev["content_hash"], actor="o")
+        lot = self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe", eligible_amount="10000", evidence_hash=ev["content_hash"], location="yard", actor="o")
+        self.assertEqual((lot["evidence_revision_id"], lot["evidence_status"], lot["remaining_amount"]), (ev["id"], "current", "10000.00"))
+        with self.assertRaises(BillError):  # one evidence revision supports one lot
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe again", eligible_amount="1000", evidence_hash=ev["content_hash"], location="yard", actor="o")
+        rev2 = self.c.evidence.add_revision(document_id=ev["document_id"], content=b"synthetic stored-material evidence: pipe (reissued)", actor="o")
+        with self.assertRaises(BillError):  # nor does a newer revision of the same document: it re-confirms the lot instead
+            self.c.bills.add_stored_material(commitment_id=cid, sov_line_id=line, description="pipe again", eligible_amount="1000", evidence_hash=rev2["content_hash"], location="yard", actor="o")
+        self.assertEqual(len(self.c.bills.lots(cid)), 1)
+        self.assertTrue(self.c.bills.lot(lot["id"])["frozen"])
+        self.assertEqual(self.c.bills.confirm_lot_evidence(lot["id"], rev2["content_hash"], "o")["evidence_revision_id"], rev2["id"])
 
     def test_void_draft_restores_lot(self):
-        lot = self.c.bills.add_stored_material(commitment_id=self.s.cmt["id"], sov_line_id=self.s.line1, description="pipe", eligible_amount="10000", evidence_hash="h", actor="o")
+        lot = self.s.add_lot("pipe", "10000")
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], transfers=[{"lot_id": lot["id"], "amount": "4000"}], actor="o")
         self.assertEqual(self.c.bills.lot(lot["id"])["remaining_amount"], "6000.00")
+        self.assertEqual(self.c.bills.lot(lot["id"])["billed_bill_id"], b["id"])
         self.c.bills.void(b["id"], actor="o", reason="redo")
         self.assertEqual(self.c.bills.lot(lot["id"])["remaining_amount"], "10000.00")
+        self.assertIsNone(self.c.bills.lot(lot["id"])["billed_bill_id"])  # the voided draft no longer counts as its billing history
+
+    def test_stored_material_respects_the_sov_line_cap(self):
+        b1 = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "55000"}], actor="o")
+        self.c.approve_and_execute("bill.approve", b1["id"])
+        with self.assertRaises(BillError) as cm:  # 55,000 installed + 6,000 stored would exceed line 1 (60,000)
+            self.s.add_lot("pipe", "6000")
+        self.assertIn("SOV line 1", str(cm.exception))
+        self.s.add_lot("valves", "5000")  # exactly the line value is allowed
+        self.assertEqual(self.c.ledger.balance("2050"), Decimal("5500.00"))
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+
+    def test_bill_manifest_binds_entity_currency_and_journal_preview(self):
+        lot = self.s.add_lot("pipe", "10000")
+        b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
+        ap = self.c.request_approval("bill.approve", b["id"], actor_role="accountant")
+        m = ap["manifest"]
+        self.assertEqual((m["entity"], m["currency"]), ("E", "USD"))
+        preview = m["bindings"]["journal_preview"]
+        self.assertEqual([[(ln["account"], ln["debit"], ln["credit"]) for ln in j["lines"]] for j in preview],
+                         [[("5000", "20000.00", "0.00"), ("1300", "10000.00", "0.00"), ("2000", "0.00", "27000.00"), ("2050", "0.00", "3000.00")]])
+        self.assertEqual(m["bindings"]["stored_lots"], [{"lot_id": lot["id"], "evidence_revision_id": lot["evidence_revision_id"], "evidence_status": "current"}])
+        self.c.approve(ap["id"], approver="controller", approver_role="controller")
+        res = self.c.execute(ap["id"], actor="accountant")
+        posted = self.c.ledger.journals(source_type="bill", source_id=b["id"])
+        self.assertEqual([[{k: ln[k if k != "account" else "account_code"] for k in ("account", "debit", "credit", "project_id", "party_id", "memo")} for ln in j["lines"]] for j in posted],
+                         [j["lines"] for j in preview])
+        self.assertEqual(res.result["journal_id"], posted[-1]["id"])
+        # commitment and change approvals bind the project's entity and currency too
+        self.assertEqual(self.c.approvals.get(self.s.cmt["approval_id"])["manifest"]["entity"], "E")
+        ch =self.c.commitments.propose_change(self.s.cmt["id"], amount="1000", reason="x", sov_line_id=self.s.line2, actor="o")
+        cm = self.c.request_approval("change.execute", ch["id"], actor_role="pm")["manifest"]
+        self.assertEqual((cm["entity"], cm["currency"], cm["bindings"]["change_status"]), ("E", "USD", "pending"))
 
     def test_bill_approval_invalidated_when_commitment_changes(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
@@ -241,7 +336,10 @@ class AdversarialTests(unittest.TestCase):
     def test_closed_period_rejects_posting_and_late_correction_goes_to_open_period(self):
         prime = self.c.receivables.certify(project_id=self.s.project["id"], period_id="P1", certified_cumulative="60000", actor="o")
         self.c.approve_and_execute("prime_bill.approve", prime["id"])
-        self.c.receivables.send(prime["id"], actor="o")
+        self.assertEqual(send_prime_bill(self, self.c, prime["id"])["status"], "sent")
+        with self.assertRaises(ReceivableError):  # an ACH debit without the customer's mandate is refused
+            self.c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="rcv1", actor="o")
+        record_ach_mandate(self.c, self.s.project["id"], self.s.customer["id"])
         col = self.c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="rcv1", actor="o")
         self.c.close_period("P1")
         with self.assertRaises(Exception):
@@ -267,12 +365,27 @@ class AdversarialTests(unittest.TestCase):
         self.c.approve_and_execute("bill.approve", b["id"])
         self.assertEqual(self.c.ledger.balance("2050"), Decimal("10000.00"))
         self.assertEqual(self.c.ricky.propose("retainage.release", actor_role="owner", context={"commitment_id": self.s.cmt["id"]})["decision"], "abstained")
+        with self.assertRaises(BillError):  # the service refuses too, not only Ricky: no release before closeout
+            self.c.approve_and_execute("retainage.release", self.s.cmt["id"], period_id="P1")
+        self.assertEqual(self.c.ledger.journals(source_type="retainage_release"), [])
+        self.assertEqual(self.c.bills.retainage_open_items()["subledger_total"], "10000.00")
+        with self.assertRaises(sqlite3.DatabaseError):  # a raw status edit does not close a commitment
+            self.c.db.execute("UPDATE commitments SET status='closed' WHERE id=?", (self.s.cmt["id"],))
+        self.assertEqual(self.c.commitments.get(self.s.cmt["id"])["status"], "executed")
         self.c.commitments.close(self.s.cmt["id"], actor="o")
+        self.assertEqual(self.c.commitments.closure(self.s.cmt["id"])["basis"], "direct")  # no field closeout was ever opened
         self.assertEqual(self.c.ricky.propose("retainage.release", actor_role="owner", context={"commitment_id": self.s.cmt["id"]})["decision"], "proposed")
-        self.c.approve_and_execute("retainage.release", self.s.cmt["id"], period_id="P1")
+        released = self.c.approve_and_execute("retainage.release", self.s.cmt["id"], period_id="P1")
+        used = self.c.ledger.journal(released.result["journal_id"])["approval_id"]
+        with self.assertRaises(BillError):  # nothing is held now, and the consumed approval already took effect once
+            self.c.bills.release_retainage(commitment_id=self.s.cmt["id"], period_id="P1", approval_id=used, actor="o")
         self.assertEqual(self.c.ledger.balance("2050"), Decimal("0.00"))
         self.assertEqual(self.c.ledger.balance("2000"), Decimal("100000.00"))
         self.assertTrue(self.c.bills.ap_open_items()["reconciled"])
+        ret = self.c.bills.retainage_open_items()
+        self.assertEqual((ret["subledger_total"], ret["control_balance"], ret["reconciled"]), ("0.00", "0.00", True))
+        with self.assertRaises(BillError):  # nothing is left to release a second time
+            self.c.approve_and_execute("retainage.release", self.s.cmt["id"], period_id="P1")
         r = self.c.approve_and_execute("payment.release_retainage", self.s.cmt["id"], actor_role="treasury", actor="treasury")
         self.assertEqual(r.result["amount"], "10000.00")
 
@@ -281,6 +394,7 @@ class RestoreQuarantineTests(unittest.TestCase):
     def test_restore_quarantines_releases_until_reconciled(self):
         d = tempfile.mkdtemp()
         c = Cipher(os.path.join(d, "live.sqlite"))
+        self.addCleanup(c.db.close)
         s_sup = c.add_party(kind="supplier", name="Sub", destination="ACH-1")
         c.verify_destination(s_sup["id"], destination="ACH-1", verified_by="o")
         prj = c.create_project(name="P", entity="E", budget="1000")
@@ -295,9 +409,14 @@ class RestoreQuarantineTests(unittest.TestCase):
         c.dispatch_payments()  # transfer exists at the provider, Cipher does not know
         snap = c.snapshot(os.path.join(d, "backup.sqlite"))
         restored = Cipher.open_restored(snap, provider=c.provider)
+        self.addCleanup(restored.db.close)
         restored.provider.mode = "accept"
         self.assertFalse(restored.db.has_write_authority())
-        restored.claim_write_authority(approval_ref="apr_controller")
+        with self.assertRaises(WriteAuthorityError):  # read-only until the owner claims it
+            restored.add_party(kind="supplier", name="Injected payee", destination="ACH-INJECTED")
+        # the claim is an attested owner action: approver and reason are recorded
+        restored.claim_write_authority(approval_ref="apr_controller", actor="owner", reason="restore drill: claim the recovered copy")
+        self.assertTrue(restored.db.has_write_authority())
         self.assertTrue(restored.db.authority_status()["release_quarantined"])
         with self.assertRaises(ReleaseQuarantined):
             restored.dispatch_payments()

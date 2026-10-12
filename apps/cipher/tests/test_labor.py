@@ -6,7 +6,7 @@ from decimal import Decimal
 from unittest import mock
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
-from apps.cipher.domain.labor import PLUGIN_NAME, SCHEMA_NAME, LaborError
+from apps.cipher.domain.labor import COLLECTION_GUARDS_SCHEMA_NAME, PLUGIN_NAME, SCHEMA_NAME, LaborError
 from apps.cipher.domain.ledger import PeriodNotOpen
 from apps.cipher.service import Cipher
 
@@ -346,7 +346,9 @@ class LaborTimeEntryTests(unittest.TestCase):
             self.lab.update_entry(nov["id"], actor="emp", work_date="2026-10-30")  # nor moved into it
         self.assertEqual(self.lab.entry(nov["id"])["work_date"], "2026-11-03")
         self.s.log("2026-12-01", "4")  # no period covers December yet: allowed
-        c.ledger.reopen_period("P1", actor="controller", approval_ref="ctl-reopen-002")
+        # reopening is a consumed controller approval, never a bare reference
+        c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
         self.assertEqual(self.s.log("2026-10-15", "8")["status"], "draft")
 
     def test_daily_cap_spans_projects_and_edits(self):
@@ -544,7 +546,7 @@ class LaborTimesheetTests(unittest.TestCase):
         self.assertEqual(s.bal("5300"), Decimal("0.00"))
         self.assertEqual(self.lab.timesheet(ts["id"])["status"], "submitted")
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")  # nothing was consumed
-        self.c.ledger.reopen_period("P1", actor="controller", approval_ref="ctl-reopen-001")
+        self.c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
         res = self.c.execute(ap["id"], period_id="P1")
         self.assertEqual(res.result["total_cost"], "1060.00")
         self.assertEqual(s.bal("2200"), Decimal("1060.00"))
@@ -824,10 +826,12 @@ class LaborInvoiceTests(unittest.TestCase):
         c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
         labor_ar = lab.ar_open_items(s.project["id"])
         self.assertEqual((labor_ar["subledger_total"], [(i["invoice_id"], i["open"]) for i in labor_ar["items"]]), ("2000.00", [(inv["id"], "2000.00")]))
-        # the core receivables subledger counts prime bills only; adding the labor subledger ties 1100 out
+        # the core receivables subledger aggregates the labor source, so 1100 ties out with no prime bill at all
         core = c.receivables.ar_open_items()
-        self.assertEqual((core["subledger_total"], core["control_balance"]), ("0.00", "2000.00"))
-        self.assertEqual(Decimal(core["subledger_total"]) + Decimal(lab.ar_open_items()["subledger_total"]), Decimal(core["control_balance"]))
+        self.assertEqual((core["subledger_total"], core["control_balance"], core["reconciled"]), ("2000.00", "2000.00", True))
+        self.assertEqual(c.receivables.ar_open_items(s.project["id"])["subledger_total"], "2000.00")
+        self.assertIn(lab, c.receivables.extra_ar_sources())
+        self.assertEqual(lab.tm_receivable_reconciliation("P1")["reconciled"], True)
 
         c.close_period("P1")
         with self.assertRaises(LaborError):
@@ -859,6 +863,10 @@ class LaborInvoiceTests(unittest.TestCase):
         lab.record_collection(inv["id"], "P2", "500.00", "ACH-7", actor="ar")
         self.assertEqual((lab.invoice(inv["id"])["open"], lab.ar_open_items()["subledger_total"], s.bal("1100")), ("0.00", "0.00", Decimal("0.00")))
         self.assertTrue(c.receivables.ar_open_items()["reconciled"])
+        tm = lab.tm_receivable_reconciliation()
+        self.assertEqual((tm["subledger_total"], tm["labor_postings_1100"], tm["reconciled"]), ("0.00", "0.00", True))
+        tm_p1 = lab.tm_receivable_reconciliation("P1")  # cut off at P1: billed, nothing collected yet
+        self.assertEqual((tm_p1["subledger_total"], tm_p1["labor_postings_1100"], tm_p1["reconciled"]), ("2000.00", "2000.00", True))
         with self.assertRaises(LaborError):
             lab.record_collection(inv["id"], "P2", "0.01", "ACH-8", actor="ar")
         for sql in ("UPDATE labor_collections SET amount='1.00' WHERE id=?", "DELETE FROM labor_collections WHERE id=?"):
@@ -953,19 +961,20 @@ class LaborCloseAndStateTests(unittest.TestCase):
         c, lab = s.c, s.lab
         c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
         s.golden_entries()
-        ALL = [True] * 6
+        ALL = [True] * 7
 
         def oks(period):
-            # order: timesheets awaiting approval, draft time, draft invoices, draft payroll, 2200 reconciliation, overdrawn accrual
+            # order: timesheets awaiting approval, draft time, draft invoices, draft payroll, 2200 reconciliation, overdrawn accrual,
+            # T&M receivables against the labor postings to 1100
             checks = lab.close_checks(period)
             for chk in checks:
                 self.assertEqual(set(chk), {"check", "ok", "detail"})
             return [chk["ok"] for chk in checks]
 
-        self.assertEqual(oks("P1"), [True, False, True, True, True, True])  # unsubmitted draft time dated in October
+        self.assertEqual(oks("P1"), [True, False, True, True, True, True, True])  # unsubmitted draft time dated in October
         self.assertIn("3 draft time entries", lab.close_checks("P1")[1]["detail"])
         ts = lab.submit_timesheet(s.emp["id"], "P1", actor="emp")
-        self.assertEqual(oks("P1"), [False, True, True, True, True, True])
+        self.assertEqual(oks("P1"), [False, True, True, True, True, True, True])
         self.assertEqual(oks("P2"), ALL)  # the pending timesheet belongs to P1
         brief = c.ricky.brief(s.project["id"], actor_role="owner")
         self.assertTrue(any(it["kind"] == "close_check" and "labor" in it["text"] for it in brief["items"]))
@@ -974,21 +983,22 @@ class LaborCloseAndStateTests(unittest.TestCase):
         self.assertEqual(oks("P1"), ALL)
         # a draft payroll left in the period would hold the accrual after close and could never post there
         pr = lab.record_payroll("P1", s.emp["id"], "400.00", "PR-CLOSE-1", actor="payroll")
-        self.assertEqual(oks("P1"), [True, True, True, False, True, True])
+        self.assertEqual(oks("P1"), [True, True, True, False, True, True, True])
         self.assertIn(pr["id"], lab.close_checks("P1")[3]["detail"])
         self.assertEqual(oks("P2"), ALL)
         lab.cancel_payroll(pr["id"], actor="payroll", reason="belongs to the November run")
         self.assertEqual(oks("P1"), ALL)
         inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
-        self.assertEqual(oks("P1"), [True, True, False, True, True, True])
+        self.assertEqual(oks("P1"), [True, True, False, True, True, True, True])
         c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
         self.assertEqual(oks("P1"), ALL)
+        self.assertIn("2000.00", lab.close_checks("P1")[6]["detail"])
 
         # a direct control-account journal that bypasses the subledger breaks the reconciliation
         c.ledger.post(period_id="P1", description="manual accrual (bypasses labor subledger)",
                       lines=[{"account": "3000", "debit": "10.00"}, {"account": "2200", "credit": "10.00", "party_id": s.emp["id"]}],
                       source_type="manual", source_id="manual-1", source_version="1", posted_by="owner")
-        self.assertEqual(oks("P1"), [True, True, True, True, False, True])
+        self.assertEqual(oks("P1"), [True, True, True, True, False, True, True])
         self.assertIn("1070.00", lab.close_checks("P1")[4]["detail"])
         self.assertFalse(lab.accrued_payroll_reconciliation()["reconciled"])
         # a payment that debits another employee's accrual with nothing approved leaves it overdrawn
@@ -996,9 +1006,89 @@ class LaborCloseAndStateTests(unittest.TestCase):
         c.ledger.post(period_id="P1", description="manual payroll (bypasses labor subledger)",
                       lines=[{"account": "2200", "debit": "25.00", "party_id": emp2["id"]}, {"account": "1000", "credit": "25.00"}],
                       source_type="manual", source_id="manual-2", source_version="1", posted_by="owner")
-        self.assertEqual(oks("P1"), [True, True, True, True, False, False])
+        self.assertEqual(oks("P1"), [True, True, True, True, False, False, True])
         self.assertIn(emp2["id"], lab.close_checks("P1")[5]["detail"])
         self.assertEqual(lab.accrued_payroll_reconciliation("P1")["overdrawn"], [emp2["id"]])
+        # a journal dressed up as a labor invoice that no T&M invoice backs breaks the source-level tie
+        c.ledger.post(period_id="P1", description="raw receivable posted under the labor source type",
+                      lines=[{"account": "1100", "debit": "30.00", "project_id": s.project["id"]}, {"account": "4100", "credit": "30.00", "project_id": s.project["id"]}],
+                      source_type="labor_invoice", source_id="linv_forged", source_version="1", posted_by="owner")
+        self.assertEqual(oks("P1")[6], False)
+        self.assertIn("2030.00", lab.close_checks("P1")[6]["detail"])
+        self.assertEqual(oks("P2")[6], False)  # cumulative: the forged line is on P2's books too
+        self.assertFalse(c.receivables.ar_open_items()["reconciled"])  # and the core AR control no longer ties either
+
+    def test_tm_receivables_join_the_core_ar_subledger_and_the_close_checklist(self):
+        s = Scenario()
+        c, lab = s.c, s.lab
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        s.approved_timesheet()
+        inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        # a prime bill on the same project sits in 1100 too
+        prime = c.receivables.certify(project_id=s.project["id"], period_id="P1", certified_cumulative="10000", retainage_rate="0.10", actor="pm")
+        c.approve_and_execute("prime_bill.approve", prime["id"])
+        self.assertEqual(s.bal("1100"), Decimal("11000.00"))  # 9,000 prime + 2,000 T&M
+        ar = c.receivables.ar_open_items()
+        self.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("11000.00", "11000.00", True))
+        per_project = c.receivables.ar_open_items(s.project["id"])
+        self.assertEqual((per_project["subledger_total"], per_project["reconciled"]), ("11000.00", True))
+        labor_items = [it for it in ar["items"] if it.get("invoice_id") == inv["id"]]
+        self.assertEqual(len(labor_items), 1)  # counted once, not once per caller
+        self.assertEqual(labor_items[0]["open"], "2000.00")
+
+        # the close checklist's AR check sees both sources; the labor module does not report 1100 a second time
+        report = c.plugin("close").checklist_report("P1")
+        checks = {ch["check"]: ch for ch in report["checks"]}
+        self.assertTrue(checks["ar_reconciled"]["ok"], checks["ar_reconciled"]["detail"])
+        self.assertIn("11000.00", checks["ar_reconciled"]["detail"])
+        self.assertEqual(sum(1 for ch in report["checks"] if "1100" in ch["check"] and ch["source"] == PLUGIN_NAME), 1)  # only the source-level tie
+        self.assertFalse([ch for ch in report["checks"] if ch["source"] == PLUGIN_NAME and not ch["ok"]])
+
+        # partial collection in P2: still reconciled, and a receipt cannot be dated before the billing period
+        c.open_period("P0", "P0", "2026-09-01", "2026-09-30")
+        with self.assertRaisesRegex(LaborError, "earlier period"):
+            lab.record_collection(inv["id"], "P0", "100.00", "ACH-EARLY", actor="ar")
+        lab.record_collection(inv["id"], "P2", "1500.00", "ACH-TM-1", actor="ar")
+        ar = c.receivables.ar_open_items()
+        self.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("9500.00", "9500.00", True))
+        # one receipt reference across every 1100 source, either way round and in any case
+        c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P2", amount="1000.00", provider_ref="CHK-SHARED-1", method="check", actor="ar")
+        with self.assertRaisesRegex(LaborError, "already recorded"):
+            lab.record_collection(inv["id"], "P2", "1.00", "chk-shared-1", actor="ar")
+        with self.assertRaises(Exception):
+            c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P2", amount="1.00", provider_ref="ach-tm-1", method="check", actor="ar")
+        ar = c.receivables.ar_open_items()
+        self.assertEqual((ar["subledger_total"], ar["control_balance"], ar["reconciled"]), ("8500.00", "8500.00", True))
+        aging = c.plugin("close").aging("2026-12-31")
+        self.assertTrue(aging["ar"]["ties_to_subledger"], aging["ar"])
+        self.assertEqual(aging["ar"]["total"], "8500.00")  # 8,000 prime + 500 T&M
+        self.assertIn(inv["id"], [it["ref"] for it in aging["ar"]["items"]])
+        _assert_books_ok(self, c)
+
+    def test_audit_export(self):
+        s = Scenario()
+        c, lab = s.c, s.lab
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        ts, entries = s.approved_timesheet()
+        pr = lab.record_payroll("P1", s.emp["id"], "1060.00", "PR-EXP-1", actor="payroll")
+        c.approve_and_execute("labor.post_payroll", pr["id"], actor_role="treasury", period_id="P1")
+        inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        col = lab.record_collection(inv["id"], "P2", "500.00", "ACH-EXP-1", actor="ar")
+        exp = lab.audit_export()
+        self.assertEqual(json.loads(json.dumps(exp)), exp)  # plain JSON, money as strings
+        self.assertEqual(set(exp), {"posting_rule", "rates", "phases", "entries", "timesheets", "payroll", "invoices", "invoice_lines", "collections", "reconciliations"})
+        self.assertEqual((len(exp["rates"]), len(exp["phases"]), len(exp["entries"])), (2, 2, 3))
+        self.assertEqual([(t["id"], t["status"], len(t["lines"])) for t in exp["timesheets"]], [(ts["id"], "approved", 3)])
+        self.assertEqual([(p["id"], p["status"], p["gross_amount"]) for p in exp["payroll"]], [(pr["id"], "posted", "1060.00")])
+        self.assertEqual([(i["id"], i["status"], i["total"]) for i in exp["invoices"]], [(inv["id"], "billed", "2000.00")])
+        self.assertEqual({ln["entry_id"] for ln in exp["invoice_lines"]}, {entries[0]["id"], entries[1]["id"]})
+        self.assertEqual([(x["id"], x["amount"]) for x in exp["collections"]], [(col["id"], "500.00")])
+        rec = exp["reconciliations"]
+        self.assertTrue(rec["accrued_payroll_2200"]["reconciled"] and rec["tm_receivables_1100"]["reconciled"])
+        self.assertEqual((rec["tm_receivables_1100"]["subledger_total"], rec["ar_open_items"]["subledger_total"]), ("1500.00", "1500.00"))
+        self.assertEqual(c.audit_export()["modules"][PLUGIN_NAME]["invoices"][0]["id"], inv["id"])
 
     def test_state_shape_and_project_state(self):
         s = Scenario()
@@ -1082,6 +1172,74 @@ class LaborIntegrityTests(unittest.TestCase):
         self.assertEqual(lab.invoice(inv["id"])["total"], "2000.00")
         self.assertEqual(len(lab.entries(s.project["id"])), 3)
         _assert_books_ok(self, c)
+
+    def test_raw_collection_inserts_obey_the_collection_rules(self):
+        """The database, not only record_collection, holds a T&M receipt to its invoice."""
+        s = Scenario()
+        c, lab = s.c, s.lab
+        c.open_period("P0", "P0", "2026-09-01", "2026-09-30")
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        s.approved_timesheet()
+        inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        self.assertEqual(lab.invoice(inv["id"])["open"], "2000.00")
+        seq = iter(range(1, 100))
+
+        def raw(amount, *, fee="0.00", period="P2", journal_amount=None, source_type="labor_collection", own_journal=True):
+            """Post a journal and insert a collection row with no Python checks, atomically."""
+            row_id = f"lcol_raw_{next(seq)}"
+            with c.db.transaction():
+                amt = journal_amount or amount
+                j = c.ledger.post(period_id=period, description="raw receipt", source_type=source_type,
+                                  source_id=row_id if own_journal else "elsewhere", source_version="1", posted_by="raw",
+                                  lines=[{"account": "1000", "debit": amt, "project_id": s.project["id"], "party_id": s.customer["id"]},
+                                         {"account": "1100", "credit": amt, "project_id": s.project["id"], "party_id": s.customer["id"]}])
+                c.db.execute(
+                    "INSERT INTO labor_collections (id, invoice_id, project_id, customer_id, period_id, amount, fee, provider_ref, journal_id, created_by, received_at) "
+                    "VALUES (?,?,?,?,?,?,?,?,?,'raw','2026-11-02T00:00:00Z')",
+                    (row_id, inv["id"], s.project["id"], s.customer["id"], period, amount, fee, f"RAW-{row_id}", j["id"]),
+                )
+            return row_id
+
+        probes = (
+            ("no decimals", dict(amount="960", journal_amount="960.00"), "exact two-place money"),
+            ("three decimals", dict(amount="1.005", journal_amount="1.01"), "exact two-place money"),
+            ("negative", dict(amount="-5.00", journal_amount="5.00"), "exact two-place money"),
+            ("fee not below the amount", dict(amount="10.00", fee="10.00"), "fee below it"),
+            ("before the billing period", dict(amount="960.00", period="P0"), "starts before the invoice billing period"),
+            ("unrelated journal", dict(amount="960.00", source_type="test_raw"), "its own collection journal"),
+            ("someone else's collection journal", dict(amount="960.00", own_journal=False), "its own collection journal"),
+            ("journal for another amount", dict(amount="960.00", journal_amount="900.00"), "exactly its amount"),
+            ("above the open amount", dict(amount="2000.01"), "never exceeds the open amount"),
+        )
+        for label, kwargs, message in probes:
+            with self.subTest(probe=label), self.assertRaisesRegex(sqlite3.IntegrityError, message):
+                raw(**kwargs)
+        self.assertEqual(lab.invoice(inv["id"])["collections"], [])
+        self.assertEqual((lab.invoice(inv["id"])["open"], s.bal("1100")), ("2000.00", Decimal("2000.00")))  # every refused probe rolled back
+
+        # a raw row that obeys every rule is a consistent record: subledger and 1100 still agree
+        raw("960.00")
+        self.assertEqual((lab.invoice(inv["id"])["open"], s.bal("1100")), ("1040.00", Decimal("1040.00")))
+        lab.record_collection(inv["id"], "P2", "1040.00", "ACH-FULL", actor="ar")
+        self.assertEqual((lab.invoice(inv["id"])["open"], s.bal("1100")), ("0.00", Decimal("0.00")))
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "never exceeds the open amount"):  # a fully collected invoice takes nothing more
+            raw("0.01")
+        # once the billing journal is reversed nothing more is receivable on the invoice
+        c.ledger.reverse(lab.invoice(inv["id"])["journal_id"], period_id="P2", posted_by="owner", reason="billed in error")
+        with self.assertRaisesRegex(sqlite3.IntegrityError, "billing journal was reversed"):
+            raw("1.00")
+        self.assertEqual(len(lab.invoice(inv["id"])["collections"]), 2)
+        self.assertTrue(c.receivables.ar_open_items()["reconciled"])
+        _assert_books_ok(self, c)
+
+    def test_collection_guard_schema_entry_follows_the_labor_tables(self):
+        c = Cipher()
+        names = [v["name"] for v in c.db.schema_status()["versions"] if v["applied"]]
+        self.assertLess(names.index(SCHEMA_NAME), names.index(COLLECTION_GUARDS_SCHEMA_NAME))
+        triggers = {r["name"]: r["tbl_name"] for r in c.db.query("SELECT name, tbl_name FROM sqlite_master WHERE type='trigger'")}
+        self.assertEqual(triggers.get("labor_collections_within_the_invoice"), "labor_collections")
+        self.assertEqual(triggers.get("labor_collections_billed_invoice_only"), "labor_collections")
 
 
 if __name__ == "__main__":
