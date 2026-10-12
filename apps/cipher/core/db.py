@@ -1267,14 +1267,54 @@ class Database:
                 "this workspace copy does not hold write authority; claim it with an explicit approval before mutating records"
             )
 
+    def _challenge_path(self) -> str | None:
+        if self.in_memory:
+            return None
+        return self.path + ".claim-challenge"
+
+    def claim_challenge(self) -> str:
+        """A random challenge bound to this physical copy (kept in a file beside it,
+        because a read-only copy cannot store it in the database).  Sibling copies
+        restored from the same backup get different challenges, so a claim code
+        computed for one copy can never open another.  The challenge is retired by
+        a successful claim."""
+        p = self._challenge_path()
+        if p is None:
+            if not getattr(self, "_memory_challenge", None):
+                self._memory_challenge = secrets.token_hex(16)
+            return self._memory_challenge
+        try:
+            with open(p, "r", encoding="utf-8") as fh:
+                value = fh.read().strip()
+            if value:
+                return value
+        except FileNotFoundError:
+            pass
+        value = secrets.token_hex(16)
+        with open(p, "w", encoding="utf-8") as fh:
+            fh.write(value)
+        return value
+
+    def _retire_challenge(self) -> None:
+        p = self._challenge_path()
+        if p is None:
+            self._memory_challenge = None
+            return
+        try:
+            os.remove(p)
+        except FileNotFoundError:
+            pass
+
     def expected_claim_code(self, secret: str) -> str:
-        """The owner claim code for this workspace at its current authority epoch:
-        ``hmac-sha256(secret, f"{workspace_id}:{authority_epoch}")`` as hex.  Every
-        successful claim bumps the epoch, so a code works for one claim only."""
+        """The owner claim code for this copy at its current authority epoch:
+        ``hmac-sha256(secret, f"{workspace_id}:{authority_epoch}:{challenge}")`` as hex,
+        where the challenge belongs to this physical copy (see claim_challenge).
+        Every successful claim bumps the epoch and retires the challenge, so a code
+        works for one claim on one copy only."""
         if not isinstance(secret, str) or not secret:
             raise WriteAuthorityError("an owner secret is required to compute a claim code")
         ws = self.workspace()
-        message = f"{ws['workspace_id']}:{ws['authority_epoch']}"
+        message = f"{ws['workspace_id']}:{ws['authority_epoch']}:{self.claim_challenge()}"
         return hmac.new(secret.encode("utf-8"), message.encode("utf-8"), hashlib.sha256).hexdigest()
 
     def claim_write_authority(self, *, approver: str, reason: str, approval_ref: str | None = None,
@@ -1284,7 +1324,9 @@ class Database:
         A read-only copy cannot record an approval of its own, so the claim is
         governed here: a non-empty ``approver`` and ``reason`` are required and, when
         ``CIPHER_OWNER_SECRET`` is configured, ``claim_code`` must equal
-        ``expected_claim_code(secret)`` (compared in constant time).  ``approval_ref``
+        ``expected_claim_code(secret)`` for this copy's challenge (compared in
+        constant time).  Without the secret the claim is attestation only and is
+        recorded as such (Ricky's brief flags it).  ``approval_ref``
         is an optional external reference recorded with the claim.  The claim lifts
         ``query_only`` only for its own writes (new instance token, bumped authority
         epoch, recovery epoch bumped for a restored copy, audit entry) and then
@@ -1332,6 +1374,7 @@ class Database:
                     # the sidecar is written last: if the transaction then fails, the token
                     # mismatch leaves this copy without authority rather than with it
                     self._write_sidecar(token)
+                self._retire_challenge()
             finally:
                 self._refresh_suspended -= 1
                 self._sync_data_version()

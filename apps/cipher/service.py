@@ -17,7 +17,7 @@ import os
 import tempfile
 from typing import Any
 
-from .core.approvals import Approvals, StaleApprovalError
+from .core.approvals import ApprovalExpired, Approvals, StaleApprovalError
 from .core.db import register_schema_version
 
 log = logging.getLogger("cipher")
@@ -148,7 +148,7 @@ class Cipher:
         self.receivables = Receivables(self.db, self.audit, self.ledger)
         self.payments = Payments(self.db, self.audit, self.commands, self.ledger)
         self.forecast = Forecast(self.db, self.commitments, self.ledger)
-        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins, forecast=self.forecast)
+        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins, forecast=self.forecast, core_owner=lambda op: self._core_owner(op))
         self.provider = provider or SimulatedProvider()
         # provider callbacks are verified against the provider's webhook secret when it has one
         self.payments.webhook_secret = getattr(self.provider, "webhook_secret", None)
@@ -159,6 +159,9 @@ class Cipher:
             except Exception as exc:
                 log.warning("plugin %s failed to initialise: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
         self.register_plugin("core_reconciliation", CoreReconciliationChecks(self))
+        # Ricky's typed tool surface (registers itself as the "ricky_sdk" module)
+        from .ricky_sdk import RickySDK
+        self.sdk = RickySDK(self)
         # Plugins that post to accounts receivable (1100) expose ar_open_items(project_id)
         # so the AR subledger covers every source, not only prime bills.
         self.receivables.extra_ar_sources = lambda: [p for n, p in sorted(self._plugins.items()) if hasattr(p, "ar_open_items")]
@@ -305,6 +308,11 @@ class Cipher:
             if self.approvals.get(approval_id)["status"] == "granted":
                 self.approvals.invalidate(approval_id, reason=str(exc), actor=actor)
             raise
+        except ApprovalExpired:
+            # likewise make the expiry durable, so the approval leaves every execute list
+            if self.approvals.get(approval_id)["status"] == "granted":
+                self.approvals.mark_expired(approval_id, actor=actor)
+            raise
 
     def _apply(self, operation: str, subject_id: str, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
         owner = self._core_owner(operation)
@@ -439,6 +447,14 @@ class Cipher:
             fn = getattr(getattr(self, domain_name), method, None)
             if fn is not None:
                 reconciliations[label] = fn()
+        core_exports: dict[str, Any] = {}
+        for domain in self._core_domains():
+            fn = getattr(domain, "audit_export", None)
+            if fn is not None:
+                try:
+                    core_exports[type(domain).__name__.lower()] = fn()
+                except Exception as exc:
+                    core_exports[type(domain).__name__.lower()] = {"error": f"{type(exc).__name__}: {exc}"}
         close_checks: dict[str, Any] = {}
         for period in self.db.query("SELECT id FROM periods WHERE status='open' ORDER BY start_date"):
             checks = []
@@ -484,10 +500,34 @@ class Cipher:
             },
             "reconciliations": reconciliations,
             "open_period_close_checks": close_checks,
+            "core_domains": core_exports,
             "modules": modules,
+            "tables": self._export_tables(),
             "ricky_proposals": q("SELECT id, workflow, actor_role, decision, reason, created_at FROM ricky_proposals ORDER BY created_at"),
             "audit": self.audit.export(),
         }
+
+    SECRET_TABLE_MARKERS = ("redaction_key", "secret")
+    REDACTED_COLUMNS = ("destination", "key_hex", "secret", "token")
+
+    def _export_tables(self) -> dict[str, Any]:
+        """Every table's rows, so nothing a module records can be missing from the
+        export.  Tables holding keys are listed without rows; payee destinations and
+        any key or token column are replaced by their SHA-256 fingerprint."""
+        out: dict[str, Any] = {}
+        for t in self.db.query("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' ORDER BY name"):
+            name = t["name"]
+            count = self.db.scalar(f'SELECT COUNT(*) FROM "{name}"')
+            if any(m in name for m in self.SECRET_TABLE_MARKERS):
+                out[name] = {"row_count": count, "rows": "withheld: holds key material"}
+                continue
+            rows = self.db.query(f'SELECT * FROM "{name}"')
+            for r in rows:
+                for col in list(r):
+                    if r[col] is not None and any(m in col for m in self.REDACTED_COLUMNS):
+                        r[col] = "sha256:" + sha256_hex(str(r[col]))
+            out[name] = {"row_count": count, "rows": rows}
+        return out
 
     # ---- restore ---------------------------------------------------------------------------------- #
 

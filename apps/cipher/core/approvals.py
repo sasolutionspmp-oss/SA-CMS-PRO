@@ -31,8 +31,8 @@ class ApprovalNotGranted(ApprovalError):
     pass
 
 
-class ApprovalExpired(ApprovalError):
-    pass
+class ApprovalExpired(ApprovalNotGranted):
+    """Not granted because it passed its expiry (before or after it was granted)."""
 
 
 class ApprovalConsumed(ApprovalError):
@@ -171,6 +171,8 @@ class Approvals:
         row = self.get(approval_id)
         if row["status"] == "consumed":
             raise ApprovalConsumed(f"approval {approval_id} was already consumed by {row['consumed_by']}")
+        if row["status"] == "expired":
+            raise ApprovalExpired(f"approval {approval_id} expired")
         if row["status"] != "granted":
             raise ApprovalNotGranted(f"approval {approval_id} is {row['status']}, not granted")
         if parse_iso(row["expires_at"]) <= now:
@@ -194,6 +196,28 @@ class Approvals:
             conn.execute("UPDATE approvals SET status='consumed', consumed_at=?, consumed_by=? WHERE id=?", (utcnow_iso(), consumer, approval_id))
             self.audit.record(consumer, "approval.consumed", "approval", approval_id, {"operation": row["operation"], "material_hash": current})
         return self.get(approval_id)
+
+    def mark_expired(self, approval_id: str, *, actor: str = "system", now: _dt.datetime | None = None) -> dict[str, Any]:
+        """Record that a pending or granted approval has passed its expiry.  Used when
+        an execution attempt found it expired inside a transaction that rolled back,
+        and by sweeps; an approval that has not expired is left unchanged."""
+        now = now or utcnow()
+        row = self.get(approval_id)
+        if row["status"] in ("pending", "granted") and parse_iso(row["expires_at"]) <= now:
+            with self.db.transaction() as conn:
+                conn.execute("UPDATE approvals SET status='expired' WHERE id=? AND status IN ('pending','granted')", (approval_id,))
+                self.audit.record(actor, "approval.expired", "approval", approval_id, {"expires_at": row["expires_at"]})
+        return self.get(approval_id)
+
+    def expire_due(self, *, actor: str = "system", now: _dt.datetime | None = None) -> int:
+        """Mark every pending or granted approval past its expiry as expired."""
+        now = now or utcnow()
+        n = 0
+        for r in self.db.query("SELECT id, expires_at FROM approvals WHERE status IN ('pending','granted')"):
+            if parse_iso(r["expires_at"]) <= now:
+                self.mark_expired(r["id"], actor=actor, now=now)
+                n += 1
+        return n
 
     def invalidate_for_subject(self, subject_type: str, subject_id: str, *, reason: str, actor: str = "system") -> int:
         """Invalidate every open approval on a subject whose state just changed."""

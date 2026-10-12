@@ -17,6 +17,7 @@ import hmac
 import inspect
 import json
 import os
+import re
 import threading
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -53,8 +54,13 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "certify_bill": lambda d: c.bills.certify(commitment_id=d["commitment_id"], period_id=d["period_id"], installed=d["installed"], transfers=d.get("transfers"), actor=d.get("actor", "owner")),
         "void_bill": lambda d: c.bills.void(d["bill_id"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
         "certify_prime_bill": lambda d: c.receivables.certify(project_id=d["project_id"], period_id=d["period_id"], certified_cumulative=d["certified_cumulative"], retainage_rate=d.get("retainage_rate", "0.10"), actor=d.get("actor", "owner")),
-        "send_prime_bill": lambda d: c.receivables.send(d["prime_bill_id"], actor=d.get("actor", "owner")),
-        "record_collection": lambda d: c.receivables.record_collection(prime_bill_id=d["prime_bill_id"], period_id=d["period_id"], amount=d["amount"], fee=d.get("fee", "0"), provider_ref=d["provider_ref"], actor=d.get("actor", "owner")),
+        # sending is its own authority: this opens the prime_bill.send approval
+        "send_prime_bill": lambda d: c.request_approval("prime_bill.send", d["prime_bill_id"], actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner")),
+        "record_collection": lambda d: c.receivables.record_collection(
+            prime_bill_id=d.get("prime_bill_id"), retainage_invoice_id=d.get("retainage_invoice_id"), period_id=d["period_id"], amount=d["amount"],
+            fee=d.get("fee", "0"), provider_ref=d["provider_ref"], actor=d.get("actor", "owner"), method=d.get("method", "ach"), mandate_ref=d.get("mandate_ref")),
+        "record_mandate": lambda d: c.receivables.record_mandate(d["customer_id"], d["mandate_ref"], d["evidence_hash"], actor=d.get("actor", "owner")),
+        "revoke_mandate": lambda d: c.receivables.revoke_mandate(d["customer_id"], d["mandate_ref"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
         "record_return": lambda d: c.receivables.record_return(collection_id=d["collection_id"], period_id=d["period_id"], reason=d.get("reason", ""), actor=d.get("actor", "owner")),
         "request_approval": lambda d: c.request_approval(d["operation"], d["subject_id"], actor_role=d.get("actor_role", "owner"), requested_by=d.get("actor", "owner")),
         "approve": lambda d: c.approve(d["approval_id"], approver=d.get("actor", "owner"), approver_role=d.get("approver_role", "owner")),
@@ -68,9 +74,12 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "replay_last_event": lambda d: _replay_last_event(c, d["intent_id"]),
         "ricky_propose": lambda d: c.ricky.propose(d["workflow"], actor_role=d.get("actor_role", "owner"), context=d.get("context", {})),
         "ricky_brief": lambda d: c.ricky.brief(d["project_id"], actor_role=d.get("actor_role", "owner")),
-        "run_demo": lambda d: {k: v for k, v in run_golden_fixture(c).items() if k in ("project_id", "commitment_id", "executed_amount", "bill1", "bill2", "payment", "prime")},
-        "snapshot": lambda d: {"path": c.snapshot(d["path"])},
-        "claim_authority": lambda d: c.claim_write_authority(approval_ref=d["approval_ref"], actor=d.get("actor", "owner")),
+        "run_demo": lambda d: _run_demo(c),
+        "snapshot": lambda d: {"path": _snapshot(c, d.get("name", ""))},
+        "claim_challenge": lambda d: _claim_challenge(c),
+        "claim_authority": lambda d: c.claim_write_authority(approval_ref=d.get("approval_ref"), actor=d.get("actor", "owner"), reason=d.get("reason"), claim_code=d.get("claim_code")),
+        "ricky_tools": lambda d: c.sdk.catalog(),
+        "ricky_tool": lambda d: c.sdk.invoke(d["tool"], d.get("args", {}), actor=d.get("actor", "owner"), actor_role=d.get("actor_role", "owner"), idempotency_key=d.get("idempotency_key")),
         "complete_recovery": lambda d: c.complete_recovery(actor=d.get("actor", "owner")),
         "selftest_report": lambda d: _store_selftest(c, d),
         "module_call": lambda d: _module_call(c, d),
@@ -115,6 +124,44 @@ def _store_selftest(c: Cipher, report: dict[str, Any]) -> dict[str, Any]:
     """The console's browser self-test posts its outcome here so a headless run can be read back."""
     setattr(c, "_selftest_report", {"result": report.get("result"), "nonce": report.get("nonce"), "steps": report.get("steps", []), "user_agent": report.get("user_agent", "")})
     return {"stored": True}
+
+
+SNAPSHOT_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,80}$")
+
+
+def _run_demo(c: Cipher) -> dict[str, Any]:
+    """Seed the golden fixture, but only into an empty workspace."""
+    if c.projects():
+        raise ValueError("the demo fixture can only be seeded into an empty workspace")
+    return {k: v for k, v in run_golden_fixture(c).items() if k in ("project_id", "commitment_id", "executed_amount", "bill1", "bill2", "payment", "prime")}
+
+
+def _snapshot(c: Cipher, name: str) -> str:
+    """Snapshot into a 'snapshots' folder beside the workspace file.  The request names
+    the file only; it can never choose a path elsewhere on the machine."""
+    if c.db.in_memory:
+        raise ValueError("an in-memory workspace has no file to snapshot")
+    if not SNAPSHOT_NAME.match(name or "") or ".." in name:
+        raise ValueError("snapshot name must be a plain file name (letters, digits, '.', '_', '-')")
+    folder = os.path.join(os.path.dirname(os.path.abspath(c.db.path)), "snapshots")
+    os.makedirs(folder, exist_ok=True)
+    target = os.path.join(folder, name if name.endswith(".sqlite") else name + ".sqlite")
+    if os.path.exists(target):
+        raise ValueError("a snapshot with that name already exists")
+    return c.snapshot(target)
+
+
+def _claim_challenge(c: Cipher) -> dict[str, Any]:
+    """The values an owner needs to compute this copy's claim code offline with the
+    owner secret.  The code itself is never returned by the server."""
+    ws = c.db.workspace()
+    return {
+        "workspace_id": ws["workspace_id"],
+        "authority_epoch": ws["authority_epoch"],
+        "challenge": c.db.claim_challenge(),
+        "code_required": bool(os.environ.get("CIPHER_OWNER_SECRET")),
+        "how": "claim code = hex(hmac_sha256(owner_secret, f'{workspace_id}:{authority_epoch}:{challenge}')); `python -m apps.cipher claim-code --db PATH` computes it with CIPHER_OWNER_SECRET set",
+    }
 
 
 def _governed_close(c: Cipher, d: dict[str, Any]) -> dict[str, Any]:

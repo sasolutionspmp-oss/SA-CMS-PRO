@@ -119,5 +119,102 @@ class ExportAndHookTests(unittest.TestCase):
         self.assertTrue(all(hasattr(s, "ar_open_items") for s in sources))
 
 
+class ClaimChallengeTests(unittest.TestCase):
+    def _restored_pair(self):
+        import os
+        import tempfile
+        d = tempfile.mkdtemp()
+        live = Cipher(os.path.join(d, "live.sqlite"))
+        live.create_project(name="P", entity="E", budget="0")
+        a = Cipher.open_restored(live.snapshot(os.path.join(d, "copy_a.sqlite")))
+        b = Cipher.open_restored(live.snapshot(os.path.join(d, "copy_b.sqlite")))
+        return a, b
+
+    def test_claim_codes_are_bound_to_one_copy_and_retired(self):
+        import os
+        from unittest import mock
+        from apps.cipher.core.db import WriteAuthorityError
+        a, b = self._restored_pair()
+        self.assertNotEqual(a.db.claim_challenge(), b.db.claim_challenge())
+        with mock.patch.dict(os.environ, {"CIPHER_OWNER_SECRET": "owner-secret-for-tests-0123"}):
+            code_a = a.db.expected_claim_code("owner-secret-for-tests-0123")
+            self.assertNotEqual(code_a, b.db.expected_claim_code("owner-secret-for-tests-0123"))
+            with self.assertRaises(WriteAuthorityError):  # copy A's code cannot open sibling copy B
+                b.claim_write_authority(actor="owner", reason="restore drill", claim_code=code_a)
+            self.assertFalse(b.db.has_write_authority())
+            a.claim_write_authority(actor="owner", reason="restore drill", claim_code=code_a)
+            self.assertTrue(a.db.has_write_authority())
+            self.assertFalse(os.path.exists(a.db.path + ".claim-challenge"))  # retired
+
+    def test_attested_claim_is_flagged_in_the_brief(self):
+        a, _ = self._restored_pair()
+        a.claim_write_authority(actor="owner", reason="restore drill without owner secret")
+        pid = a.projects()[0]["id"]
+        self.assertIn("claim_unsecured", [it["kind"] for it in a.ricky.brief(pid)["items"]])
+
+
+class GovernedSurfaceTests(unittest.TestCase):
+    def test_http_send_opens_an_approval_and_unsafe_actions_are_refused(self):
+        import json
+        import os
+        import tempfile
+        import urllib.error
+        import urllib.request
+        c = Cipher(os.path.join(tempfile.mkdtemp(), "ws.sqlite"))
+
+        def post(base, name, body):
+            req = urllib.request.Request(base + "/api/action/" + name, data=json.dumps(body).encode(), headers={"Content-Type": "application/json"}, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=20) as r:
+                    return r.status, json.loads(r.read())
+            except urllib.error.HTTPError as e:
+                return e.code, json.loads(e.read())
+
+        with BackgroundServer(c) as s:
+            status, body = post(s.url, "run_demo", {})
+            self.assertEqual(status, 200, body)
+            status, body = post(s.url, "run_demo", {})
+            self.assertEqual(status, 400)  # never re-seeded into a non-empty workspace
+            prime = c.receivables.certify(project_id=c.projects()[0]["id"], period_id="2026-11", certified_cumulative="70000", actor="o")
+            c.approve_and_execute("prime_bill.approve", prime["id"])
+            status, body = post(s.url, "send_prime_bill", {"prime_bill_id": prime["id"]})
+            self.assertEqual(status, 200, body)
+            self.assertEqual(body["result"]["operation"], "prime_bill.send")
+            self.assertEqual(body["result"]["status"], "pending")
+            for bad in ("../escape", "C:/Windows/x", "a/b", ""):
+                status, _ = post(s.url, "snapshot", {"name": bad})
+                self.assertEqual(status, 400, bad)
+            status, body = post(s.url, "snapshot", {"name": "drill-1"})
+            self.assertEqual(status, 200, body)
+            self.assertTrue(body["result"]["path"].endswith(os.path.join("snapshots", "drill-1.sqlite")))
+            status, body = post(s.url, "ricky_tool", {"tool": "read_brief", "args": {"project_id": c.projects()[0]["id"]}, "actor_role": "owner"})
+            self.assertEqual(status, 200, body)
+            self.assertEqual(body["result"]["status"], "ok")
+            status, body = post(s.url, "claim_challenge", {})
+            self.assertEqual(status, 200)
+            self.assertNotIn("code", body["result"])
+
+    def test_ricky_previews_core_owned_operations(self):
+        c = Cipher()
+        r = run_golden_fixture(c)
+        prime = c.receivables.certify(project_id=r["project_id"], period_id="2026-11", certified_cumulative="70000", actor="o")
+        c.approve_and_execute("prime_bill.approve", prime["id"])
+        p = c.ricky.propose("prime_bill.send", actor_role="owner", context={"prime_bill_id": prime["id"]})
+        self.assertEqual(p["decision"], "proposed", p["reason"])
+        self.assertEqual(c.ricky.propose("prime_bill.send", actor_role="estimator", context={"prime_bill_id": prime["id"]})["decision"], "abstained")
+
+    def test_export_tables_redact_destinations_and_withhold_keys(self):
+        c = Cipher()
+        run_golden_fixture(c)
+        tables = c.audit_export()["tables"]
+        self.assertIn("parties", tables)
+        for row in tables["parties"]["rows"]:
+            if row.get("destination"):
+                self.assertTrue(row["destination"].startswith("sha256:"))
+        withheld = [n for n, t in tables.items() if t["rows"] == "withheld: holds key material"]
+        self.assertTrue(withheld)
+        self.assertEqual(tables["journals"]["row_count"], c.db.scalar("SELECT COUNT(*) FROM journals"))
+
+
 if __name__ == "__main__":
     unittest.main()

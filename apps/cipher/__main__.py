@@ -38,6 +38,18 @@ def main(argv: list[str] | None = None) -> int:
     sc = sub.add_parser("schema", help="schema lifecycle status")
     sc.add_argument("--db", default=os.environ.get("CIPHER_DB", "data/cipher.sqlite"))
 
+    ch = sub.add_parser("claim-challenge", help="show this workspace copy's claim challenge")
+    ch.add_argument("--db", required=True)
+
+    cc = sub.add_parser("claim-code", help="compute this copy's claim code from CIPHER_OWNER_SECRET (run where the secret lives)")
+    cc.add_argument("--db", required=True)
+
+    cl = sub.add_parser("claim", help="claim write authority for a restored or copied workspace")
+    cl.add_argument("--db", required=True)
+    cl.add_argument("--approver", required=True)
+    cl.add_argument("--reason", required=True)
+    cl.add_argument("--code", default=None, help="owner claim code (required when CIPHER_OWNER_SECRET is set)")
+
     args = parser.parse_args(argv)
 
     if args.command == "serve":
@@ -85,6 +97,33 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "schema":
         from .core.db import Database
         print(json.dumps(Database(args.db).schema_status(), indent=2))
+        return 0
+
+    if args.command in ("claim-challenge", "claim-code", "claim"):
+        from .core.db import WriteAuthorityError
+        from .service import Cipher
+        if not os.path.exists(args.db):
+            print(f"cipher: no workspace at {args.db}", file=sys.stderr)
+            return 2
+        c = Cipher(args.db)
+        ws = c.db.workspace()
+        if args.command == "claim-challenge":
+            print(json.dumps({"workspace_id": ws["workspace_id"], "authority_epoch": ws["authority_epoch"], "challenge": c.db.claim_challenge(),
+                              "effective_write_authority": c.db.has_write_authority()}, indent=2))
+            return 0
+        if args.command == "claim-code":
+            secret = os.environ.get("CIPHER_OWNER_SECRET")
+            if not secret:
+                print("cipher: CIPHER_OWNER_SECRET is not set", file=sys.stderr)
+                return 2
+            print(c.db.expected_claim_code(secret))
+            return 0
+        try:
+            status = c.claim_write_authority(actor=args.approver, reason=args.reason, claim_code=args.code)
+        except WriteAuthorityError as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 1
+        print(json.dumps(status, indent=2))
         return 0
 
     return 2

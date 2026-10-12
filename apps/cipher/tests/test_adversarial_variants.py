@@ -840,14 +840,11 @@ class AdversarialVariantTests(unittest.TestCase):
 class AdversarialVariantDefectTests(unittest.TestCase):
     """Each test asserts the plan's behaviour and is expected to fail until the named module is fixed."""
 
-    @unittest.expectedFailure
     def test_v04_an_approval_that_expired_at_execution_is_recorded_expired_and_leaves_the_brief(self):
-        """Variant: expired approver.  core approvals/service: ``Approvals.consume`` records
-        the expiry inside the command transaction that ``Cipher.execute`` rolls back on
-        ``ApprovalExpired`` (only ``StaleApprovalError`` is made durable), so the approval
-        stays ``granted`` and ``Ricky.brief`` (which never checks ``expires_at``) keeps
-        routing treasury to execute it.  Execution itself still fails safely (see
-        ``AdversarialVariantTests.test_v04_expired_approver``)."""
+        """Variant: expired approver.  An approval found expired at execution is recorded
+        ``expired`` durably (``Cipher.execute`` re-records the expiry after the command
+        transaction rolls back) and no longer appears as something to execute in
+        ``Ricky.brief``, which also checks ``expires_at`` for approvals still open."""
         w = World()
         c = w.c
         bill = w.posted_bill("20000")

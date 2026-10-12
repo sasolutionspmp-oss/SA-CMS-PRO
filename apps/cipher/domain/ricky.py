@@ -52,7 +52,8 @@ BRIEF_LEVELS = ("blocker", "decide", "execute", "reconcile", "review", "info")
 
 
 class Ricky:
-    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger, plugins=None, forecast=None):
+    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger, plugins=None, forecast=None, core_owner=None):
+        self._core_owner = core_owner or (lambda op: None)
         self.db = db
         self.audit = audit
         self.estimates = estimates
@@ -97,8 +98,16 @@ class Ricky:
         if not tb["balanced"]:
             add("blocker", "trial_balance", f"Trial balance does not balance: debits {tb['total_debit']} vs credits {tb['total_credit']}.")
 
-        for ap in self.db.query("SELECT id, operation, subject_type, subject_id, status, manifest_json FROM approvals WHERE status IN ('pending','granted') ORDER BY requested_at"):
+        claim = self.db.one("SELECT payload_json FROM audit_log WHERE action='workspace.claim_write_authority' ORDER BY seq DESC LIMIT 1")
+        if claim and (json.loads(claim["payload_json"]) or {}).get("owner_claim_code") == "not_configured":
+            add("review", "claim_unsecured", "Write authority on this copy was last claimed by attestation only; set CIPHER_OWNER_SECRET so a restored copy needs an owner claim code.")
+
+        now_iso = utcnow_iso()
+        for ap in self.db.query("SELECT id, operation, subject_type, subject_id, status, manifest_json, expires_at FROM approvals WHERE status IN ('pending','granted') ORDER BY requested_at"):
             if not self.can(actor_role, ap["operation"]):
+                continue
+            if ap["expires_at"] <= now_iso:
+                add("review", "approval_expired", f"{ap['operation']} on {ap['subject_type']} {ap['subject_id']} expired before it was executed; request a fresh approval.", ap["id"], ap["operation"])
                 continue
             amounts = ", ".join(f"{k} {v}" for k, v in ((json.loads(ap["manifest_json"]) or {}).get("amounts") or {}).items())
             suffix = f" ({amounts})" if amounts else ""
@@ -254,6 +263,18 @@ class Ricky:
             if c["status"] != "closed":
                 raise _Abstain("retainage is released only after closeout acceptance (commitment closed)")
             return self.bills.retainage_manifest(c["id"], actor_role=actor_role), "release withheld retainage to ordinary payables"
+
+        # operations owned by a core domain (prime_bill.send, journal.reverse, ...): the
+        # owner builds the manifest from current state; Ricky gates the role first.
+        owner = self._core_owner(workflow)
+        if owner is not None:
+            self._require_role(actor_role, workflow)
+            subject_id = ctx.get("subject_id") or next((v for k, v in ctx.items() if k.endswith("_id")), None)
+            if not subject_id:
+                raise _Abstain("no subject id supplied")
+            manifest = owner.manifest_for(workflow, subject_id, actor_role=actor_role)
+            amounts = ", ".join(f"{k} {v}" for k, v in (manifest.get("amounts") or {}).items())
+            return manifest, f"{workflow} on {subject_id}{(' for ' + amounts) if amounts else ''}"
 
         # v2 plugin operations: the plugin builds the manifest from current state and
         # raises if the subject is not in a proposable state; Ricky still gates the role.

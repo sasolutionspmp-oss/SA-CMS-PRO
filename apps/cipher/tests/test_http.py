@@ -129,10 +129,11 @@ class GovernedActionTests(unittest.TestCase):
             ap = ok("request_approval", {"operation": "prime_bill.approve", "subject_id": pid, "actor_role": "accountant"})[1]["result"]["id"]
             ok("approve", {"approval_id": ap})
             self.assertEqual(ok("execute", {"approval_id": ap, "actor": "accountant"})[0], 200)
-            # the direct send action is refused: sending is its own authority
+            # the console's send action never sends: it opens the prime_bill.send approval
             status, body = ok("send_prime_bill", {"prime_bill_id": pid})
-            self.assertEqual((status, body["type"]), (400, "ReceivableError"))
-            self.assertIn("prime_bill.send", body["error"])
+            self.assertEqual(status, 200, body)
+            self.assertEqual((body["result"]["operation"], body["result"]["status"]), ("prime_bill.send", "pending"))
+            self.assertNotEqual(c_status(s.url, pid), "sent")
             status, body = ok("request_approval", {"operation": "prime_bill.send", "subject_id": pid, "actor_role": "pm"})
             self.assertEqual(status, 200, body)
             send_ap = body["result"]["id"]
@@ -176,6 +177,12 @@ class GovernedActionTests(unittest.TestCase):
             self.assertEqual(_post(s.url + "/api/action/dispatch_payments", {}), (200, {"ok": True, "result": []}))
             self.assertEqual(_post(s.url + "/api/action/add_party", {"kind": "supplier", "name": "Claimed copy payee"})[0], 200)
         self.assertEqual([p["name"] for p in restored.parties()], ["Synthetic Subcontractor (HTTP)", "Claimed copy payee"])
+
+
+def c_status(base, prime_bill_id):
+    """Status of a prime bill as the console sees it."""
+    status, state = _get(base + "/api/state")
+    return next((b["status"] for b in state.get("prime_bills", []) if b["id"] == prime_bill_id), None)
 
 
 def _raw(url, method="GET", body=None, headers=None):

@@ -93,7 +93,11 @@ function render() {
   const p = s.project;
   const parts = [];
   if (auth.release_quarantined) parts.push(`<div class="banner bad">This workspace was restored from a backup. Payment release stays quarantined until recovery reconciliation completes. <button onclick="api('complete_recovery')">Run recovery reconciliation</button></div>`);
-  if (!auth.effective_write_authority) parts.push(`<div class="banner bad">Read-only copy: claim write authority with a controller approval reference before changing records. <form style="display:inline" onsubmit="event.preventDefault(); api('claim_authority', {approval_ref:this.ref.value})"><input name="ref" placeholder="approval reference" required><button>Claim</button></form></div>`);
+  if (!auth.effective_write_authority) parts.push(`<div class="banner bad">Read-only copy: records cannot change until the owner claims write authority for this copy.
+    <button onclick="showChallenge()">Show claim challenge</button>
+    <form style="display:inline" onsubmit="event.preventDefault(); api('claim_authority', {actor:this.who.value, reason:this.why.value, claim_code:this.code.value || null, approval_ref:this.ref.value || null})">
+      <input name="who" placeholder="approver" required><input name="why" placeholder="reason" required><input name="code" placeholder="claim code (if owner secret is set)"><input name="ref" placeholder="external reference (optional)"><button>Claim</button></form>
+    <span id="challenge" class="muted"></span></div>`);
 
   parts.push(`<section><h2>${p.name} <span class="muted">${p.entity} · ${p.currency}</span></h2>
     <div class="kv">
@@ -164,10 +168,12 @@ function render() {
   parts.push(`<section><h2>Prime billing</h2><table><tr><th>#</th><th class="num">Certified</th><th class="num">Due</th><th>Status</th><th></th></tr>
     ${s.prime_bills.map(b=>`<tr><td>${b.sequence}</td><td class="num">${money(b.certified_cumulative)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}</td>
       <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'prime_bill.approve',subject_id:'${b.id}'})">Request approval</button>`:''}
-          ${b.status==='posted'?`<button onclick="api('send_prime_bill',{prime_bill_id:'${b.id}'})">Send (mail sink)</button>`:''}
-          ${(b.status==='sent')?`<button onclick="api('record_collection',{prime_bill_id:'${b.id}',period_id:'${openPeriod()}',amount:'${b.amount_due}',fee:'5',provider_ref:'rcv_'+Date.now()})">Record ACH collection (fee 5)</button>`:''}
+          ${b.status==='posted'?`<button onclick="api('send_prime_bill',{prime_bill_id:'${b.id}'})">Request send approval (mail sink)</button>`:''}
+          ${(b.status==='sent')?`<button onclick="api('record_collection',{prime_bill_id:'${b.id}',period_id:'${openPeriod()}',amount:'${b.amount_due}',fee:'5',method:'ach',provider_ref:'rcv_'+Date.now()})">Record ACH collection (fee 5)</button>
+            <button onclick="api('record_collection',{prime_bill_id:'${b.id}',period_id:'${openPeriod()}',amount:'${b.amount_due}',fee:'0',method:'check',provider_ref:'chk_'+Date.now()})">Record check</button>`:''}
           ${b.collections.filter(x=>x.status==='received').map(x=>`<button onclick="api('record_return',{collection_id:'${x.id}',period_id:'${openPeriod()}',reason:'simulated late return'})">Return ${money(x.amount)}</button>`).join('')}</td></tr>`).join('')}</table>
     <form onsubmit="event.preventDefault(); api('certify_prime_bill',{project_id:'${p.id}',period_id:this.period.value,certified_cumulative:this.c.value,retainage_rate:this.r.value})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select><input name="c" placeholder="certified cumulative" required><input name="r" value="0.10"><button>Certify prime bill</button></form>
+    ${p.customer_id ? `<form onsubmit="event.preventDefault(); api('record_mandate',{customer_id:'${p.customer_id}',mandate_ref:this.ref.value,evidence_hash:this.ev.value})"><input name="ref" placeholder="ACH mandate reference" required><input name="ev" placeholder="evidence revision content hash (signed authorization)" required style="min-width:300px"><button>Record ACH mandate</button></form>` : ''}
     <p class="muted">AR subledger ${money(s.ar.subledger_total)} vs control ${money(s.ar.control_balance)} · ${s.ar.reconciled?'reconciled':'<span class="status bad">NOT reconciled</span>'}</p></section>`);
 
   // payments
@@ -301,6 +307,14 @@ async function loadBrief(role) {
   const j = await r.json();
   if (!j.ok) { toast('brief: ' + j.error, true); return; }
   $('#brief-body').innerHTML = renderBrief(j.result);
+}
+
+async function showChallenge() {
+  const r = await fetch('/api/action/claim_challenge', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+  const j = await r.json();
+  if (!j.ok) { toast('challenge: ' + j.error, true); return; }
+  const c = j.result;
+  $('#challenge').textContent = `workspace ${c.workspace_id} · epoch ${c.authority_epoch} · challenge ${c.challenge}` + (c.code_required ? ' · claim code required' : ' · no owner secret configured: claim is attestation only');
 }
 
 function openPeriod() { const o = (STATE.periods||[]).filter(x=>x.status==='open'); return o.length ? o[o.length-1].id : ''; }
