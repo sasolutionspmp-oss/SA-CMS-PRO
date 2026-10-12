@@ -8,6 +8,7 @@ destination is unverified, or when releases are quarantined after a restore.
 """
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from ..core.audit import Audit
@@ -38,8 +39,11 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
 }
 
 
+BRIEF_LEVELS = ("blocker", "decide", "execute", "reconcile", "review", "info")
+
+
 class Ricky:
-    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger, plugins=None):
+    def __init__(self, db: Database, audit: Audit, estimates: Estimates, commitments: Commitments, bills: Bills, receivables: Receivables, payments: Payments, ledger: Ledger, plugins=None, forecast=None):
         self.db = db
         self.audit = audit
         self.estimates = estimates
@@ -48,7 +52,112 @@ class Ricky:
         self.receivables = receivables
         self.payments = payments
         self.ledger = ledger
+        self.forecast = forecast
         self._plugins = plugins or (lambda: {})
+
+    @staticmethod
+    def can(actor_role: str, operation: str) -> bool:
+        allowed = ROLE_AUTHORITY.get(actor_role)
+        return bool(allowed) and ("*" in allowed or operation in allowed)
+
+    # ---- read tool: attention brief ------------------------------------------- #
+
+    def brief(self, project_id: str, *, actor_role: str = "owner") -> dict[str, Any]:
+        """Deterministic, read-only list of what needs this role's attention.
+
+        Nothing here changes state or records a proposal; every item points at the
+        record and, where a decision is involved, the operation that would need an
+        approval.  Decision and execution items are shown only to roles that hold
+        that authority.  Approvals are entity-wide (one entity in the prototype)."""
+        if actor_role not in ROLE_AUTHORITY:
+            raise ValueError(f"unknown role {actor_role!r}")
+        items: list[dict[str, Any]] = []
+
+        def add(level: str, kind: str, text: str, ref: str | None = None, operation: str | None = None) -> None:
+            items.append({"level": level, "kind": kind, "text": text, "ref": ref, "operation": operation})
+
+        auth = self.db.authority_status()
+        if not auth["effective_write_authority"]:
+            add("blocker", "authority", "This workspace copy holds no write authority; claim it with a controller approval before changing records.")
+        if auth["release_quarantined"]:
+            add("blocker", "quarantine", "Payment release is quarantined after a restore; run recovery reconciliation before any release.", operation="payment.release")
+        chain = self.audit.verify_chain()
+        if not chain["ok"]:
+            add("blocker", "audit_chain", f"Audit hash chain is broken at entry {chain.get('broken_at_seq')}.")
+        tb = self.ledger.trial_balance()
+        if not tb["balanced"]:
+            add("blocker", "trial_balance", f"Trial balance does not balance: debits {tb['total_debit']} vs credits {tb['total_credit']}.")
+
+        for ap in self.db.query("SELECT id, operation, subject_type, subject_id, status, manifest_json FROM approvals WHERE status IN ('pending','granted') ORDER BY requested_at"):
+            if not self.can(actor_role, ap["operation"]):
+                continue
+            amounts = ", ".join(f"{k} {v}" for k, v in ((json.loads(ap["manifest_json"]) or {}).get("amounts") or {}).items())
+            suffix = f" ({amounts})" if amounts else ""
+            if ap["status"] == "pending":
+                add("decide", "approval_pending", f"{ap['operation']} on {ap['subject_type']} {ap['subject_id']} awaits a decision{suffix}.", ap["id"], ap["operation"])
+            else:
+                add("execute", "approval_granted", f"{ap['operation']} on {ap['subject_type']} {ap['subject_id']} is approved and not yet executed{suffix}.", ap["id"], ap["operation"])
+
+        if self.can(actor_role, "payment.release"):
+            for p in self.db.query("SELECT id, status, amount, note FROM payment_intents WHERE status IN ('submitted','outcome_unknown') ORDER BY created_at"):
+                add("reconcile", "payment_unknown", f"Payment {p['id']} for {p['amount']} has an unknown outcome; reconcile with the provider before any retry.", p["id"], "payment.release")
+            pending = self.db.scalar("SELECT COUNT(*) FROM outbox WHERE status='pending'") or 0
+            if pending:
+                add("execute", "outbox", f"{pending} approved payment(s) are queued in the outbox for dispatch.")
+            for p in self.db.query("SELECT id, amount, note FROM payment_intents WHERE status IN ('failed','returned') ORDER BY created_at"):
+                add("review", "payment_failed", f"Payment {p['id']} for {p['amount']} failed or was returned; the obligation is open again ({p['note'] or 'no note'}).", p["id"])
+
+        ap_items = self.bills.ap_open_items(project_id)
+        if not ap_items["reconciled"]:
+            add("blocker", "ap_unreconciled", f"AP subledger {ap_items['subledger_total']} does not match the control account {ap_items['control_balance']}.")
+        ar_items = self.receivables.ar_open_items(project_id)
+        if not ar_items["reconciled"]:
+            add("blocker", "ar_unreconciled", f"AR subledger {ar_items['subledger_total']} does not match the control account {ar_items['control_balance']}.")
+
+        for b in self.bills.list(project_id=project_id):
+            if b["status"] != "draft":
+                continue
+            if b["stale"]:
+                add("review", "bill_stale", f"Supplier bill {b['sequence']} was certified before its commitment changed; void and re-certify it.", b["id"], "bill.approve")
+            elif self.can(actor_role, "bill.approve"):
+                add("decide", "bill_draft", f"Supplier bill {b['sequence']} ({b['amount_due']} due) is certified and needs approval.", b["id"], "bill.approve")
+        if self.can(actor_role, "prime_bill.approve"):
+            for b in self.receivables.list(project_id):
+                if b["status"] == "draft":
+                    add("decide", "prime_bill_draft", f"Prime bill {b['sequence']} ({b['amount_due']} due) needs approval.", b["id"], "prime_bill.approve")
+        for est in self.estimates.list(project_id):
+            if est["status"] in ("draft", "approved") and est["stale"]:
+                add("review", "estimate_stale", f"Estimate revision {est['revision']} is priced from a superseded document revision.", est["id"], "estimate.approve")
+        for c in self.commitments.list(project_id):
+            if c["status"] == "draft" and self.can(actor_role, "commitment.execute"):
+                blocked = c["estimate"] and c["estimate"]["stale"]
+                add("review" if blocked else "decide", "commitment_draft", f"Commitment '{c['title']}' ({c['original_amount']}) is drafted" + (" but its estimate is stale." if blocked else " and needs execution approval."), c["id"], "commitment.execute")
+            for ch in c["changes"]:
+                if ch["status"] == "pending" and self.can(actor_role, "change.execute"):
+                    add("decide", "change_pending", f"Change of {ch['amount']} on '{c['title']}' is pending ({ch['reason']}).", ch["id"], "change.execute")
+
+        if self.forecast is not None:
+            f = self.forecast.project(project_id)
+            if f["over_budget"]:
+                add("review", "over_budget", f"Forecast at completion {f['forecast_at_completion']} exceeds the budget {f['budget']} by {f['variance_to_budget'].lstrip('-')} (pending exposure {f['pending_exposure']}).")
+
+        for period in self.db.query("SELECT id FROM periods WHERE status='open' ORDER BY start_date"):
+            for name, plugin in sorted(self._plugins().items()):
+                if not hasattr(plugin, "close_checks"):
+                    continue
+                try:
+                    checks = plugin.close_checks(period["id"]) or []
+                except Exception as exc:  # a broken module must still be visible
+                    add("review", "close_check_error", f"{name} close checks for {period['id']} raised: {exc}")
+                    continue
+                for chk in checks:
+                    if not chk.get("ok", True):
+                        add("review", "close_check", f"{period['id']} · {name}: {chk.get('check')} — {chk.get('detail', '')}")
+
+        order = {lvl: i for i, lvl in enumerate(BRIEF_LEVELS)}
+        items.sort(key=lambda it: order.get(it["level"], len(order)))
+        counts = {lvl: sum(1 for it in items if it["level"] == lvl) for lvl in BRIEF_LEVELS}
+        return {"project_id": project_id, "role": actor_role, "items": items, "counts": counts, "read_only": True}
 
     def propose(self, workflow: str, *, actor_role: str, context: dict[str, Any]) -> dict[str, Any]:
         try:

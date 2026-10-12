@@ -67,6 +67,7 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "return_payment": lambda d: c.payments.ingest_event(c.provider.return_payment(c.payments.get(d["intent_id"])["logical_op_id"], d.get("reason", "returned")), actor="webhook"),
         "replay_last_event": lambda d: _replay_last_event(c, d["intent_id"]),
         "ricky_propose": lambda d: c.ricky.propose(d["workflow"], actor_role=d.get("actor_role", "owner"), context=d.get("context", {})),
+        "ricky_brief": lambda d: c.ricky.brief(d["project_id"], actor_role=d.get("actor_role", "owner")),
         "run_demo": lambda d: {k: v for k, v in run_golden_fixture(c).items() if k in ("project_id", "commitment_id", "executed_amount", "bill1", "bill2", "payment", "prime")},
         "snapshot": lambda d: {"path": c.snapshot(d["path"])},
         "claim_authority": lambda d: c.claim_write_authority(approval_ref=d["approval_ref"], actor=d.get("actor", "owner")),

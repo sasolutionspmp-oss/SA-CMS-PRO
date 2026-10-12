@@ -118,6 +118,15 @@ function render() {
           ${a.status==='granted'?`<button class="lime" onclick="api('execute',{approval_id:'${a.id}'})">Execute</button>`:''}</td></tr>`).join('')}
     </table></section>`);
 
+  // ricky brief
+  if (s.ricky_brief) {
+    const b = s.ricky_brief;
+    const lvlClass = l => ({blocker:'bad', decide:'warn', execute:'warn', reconcile:'warn', review:'', info:''})[l] || '';
+    parts.unshift(`<section class="wide" id="ricky-brief"><h2>Ricky brief <span class="muted">what needs attention · role
+      <select onchange="loadBrief(this.value)">${['owner','pm','accountant','treasury','estimator','viewer'].map(r=>`<option ${r===b.role?'selected':''}>${r}</option>`).join('')}</select></span></h2>
+      <div id="brief-body">${renderBrief(b)}</div></section>`);
+  }
+
   // ricky
   parts.push(`<section><h2>Ricky <span class="muted">proposes · never executes</span></h2>
     <form onsubmit="event.preventDefault(); rickyAsk(this)">
@@ -181,7 +190,7 @@ function render() {
     <p class="muted">Audit chain: ${s.audit_chain.ok?`ok · ${s.audit_chain.entries} entries`:'<span class="status bad">BROKEN</span>'}</p></section>`);
 
   // v2 modules: any extra top-level state key is rendered generically
-  const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','audit_chain','outbox_pending']);
+  const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','ricky_brief','audit_chain','outbox_pending']);
   for (const key of Object.keys(s).filter(k => !CORE_KEYS.has(k))) {
     parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}
       <form onsubmit="event.preventDefault(); moduleCall(this, '${key}')"><input name="method" placeholder="method, e.g. register_asset" required style="min-width:200px"><input name="kwargs" placeholder='kwargs JSON, e.g. {"project_id":"…","description":"Excavator","cost":"12000","in_service_date":"2026-10-01","useful_life_months":"12"}' style="min-width:420px"><button>Call</button>
@@ -273,6 +282,26 @@ async function selfTest() {
   try { await post('selftest_report', {result: out.dataset.selftest, nonce, steps, user_agent: navigator.userAgent}); } catch (e) {}
 }
 if (location.search.includes('selftest')) { refresh().then(selfTest); }
+
+function renderBrief(b) {
+  if (!b.items.length) return '<p class="muted">Nothing needs attention for this role.</p>';
+  const cls = l => ({blocker:'bad', decide:'warn', execute:'warn', reconcile:'warn'})[l] || '';
+  return `<p class="muted">${Object.entries(b.counts).filter(([,n])=>n).map(([k,n])=>`${n} ${k}`).join(' · ')}</p>
+    <table>${b.items.map(it=>`<tr><td><span class="status ${cls(it.level)}">${it.level}</span></td><td>${it.text}</td>
+      <td>${it.kind==='approval_pending'?`<button class="primary" onclick="api('approve',{approval_id:'${it.ref}'})">Approve</button>`:''}
+          ${it.kind==='approval_granted'?`<button class="lime" onclick="api('execute',{approval_id:'${it.ref}'})">Execute</button>`:''}
+          ${it.kind==='outbox'?`<button onclick="api('dispatch_payments')">Dispatch</button>`:''}
+          ${it.kind==='payment_unknown'?`<button onclick="api('reconcile_payments')">Reconcile</button>`:''}
+          ${it.kind==='quarantine'?`<button onclick="api('complete_recovery')">Recovery reconciliation</button>`:''}
+          ${['bill_draft','prime_bill_draft','commitment_draft','change_pending'].includes(it.kind) && it.operation ? `<button onclick="api('request_approval',{operation:'${it.operation}',subject_id:'${it.ref}'})">Request approval</button>`:''}</td></tr>`).join('')}</table>`;
+}
+
+async function loadBrief(role) {
+  const r = await fetch('/api/action/ricky_brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({project_id: STATE.project.id, actor_role: role})});
+  const j = await r.json();
+  if (!j.ok) { toast('brief: ' + j.error, true); return; }
+  $('#brief-body').innerHTML = renderBrief(j.result);
+}
 
 function openPeriod() { const o = (STATE.periods||[]).filter(x=>x.status==='open'); return o.length ? o[o.length-1].id : ''; }
 

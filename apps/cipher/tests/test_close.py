@@ -1,0 +1,965 @@
+"""Period close, statements, aging and WIP: golden sequence and adversarial variants."""
+import datetime as dt
+import json
+import sqlite3
+import unittest
+from decimal import Decimal
+
+from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
+from apps.cipher.domain.close import PLUGIN_NAME, SCHEMA_NAME, CloseError, percent_complete
+from apps.cipher.domain.ledger import PeriodNotOpen
+from apps.cipher.service import Cipher
+
+D = Decimal
+
+# Sibling plugins are built independently and may contribute their own blocking close
+# checks; the scenarios keep only this module and the reimbursement plugin (whose
+# employee-payable reconciliation the checklist reads) so the expected checklist is
+# deterministic.  Aggregation of other plugins' hooks is tested with fakes below; the
+# golden close (with a banking reconciliation, a stale close approval, the WIP
+# adjustment, its reversal and the lock) also runs with every registered plugin, and
+# one more test checks the checklist shape against every registered plugin.
+KEEP_PLUGINS = ("close", "reimbursement")
+
+
+class Scenario:
+    """Fresh in-memory workspace: verified supplier, customer, project, open periods P1 and P2."""
+
+    def __init__(self, *, isolate: bool = True):
+        self.c = Cipher()
+        if isolate:
+            for name in list(self.c._plugins):
+                if name not in KEEP_PLUGINS:
+                    del self.c._plugins[name]
+        self.close = self.c.plugin(PLUGIN_NAME)
+        self.supplier = self.c.add_party(kind="supplier", name="Synthetic Subcontractor", destination="ACH-SIM-SUB")
+        self.c.verify_destination(self.supplier["id"], destination="ACH-SIM-SUB", verified_by="owner")
+        self.customer = self.c.add_party(kind="customer", name="Synthetic Owner Agency")
+        self.project = self.c.create_project(name="Synthetic WWTP upgrade", entity="S&A Solutions LLC (synthetic)", budget="100000", customer_id=self.customer["id"])
+        self.pid = self.project["id"]
+        self.c.open_period("P1", "P1", "2026-10-01", "2026-10-31")
+        self.c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        self._ref = 0
+
+    def commitment(self, amounts=("60000", "40000")):
+        cmt = self.c.commitments.create(
+            project_id=self.pid, supplier_id=self.supplier["id"], title="Subcontract - piping and pump station",
+            sov_lines=[{"description": f"Line {i}", "amount": a} for i, a in enumerate(amounts, start=1)], retainage_rate="0.10", actor="owner",
+        )
+        self.c.approve_and_execute("commitment.execute", cmt["id"])
+        return self.c.commitments.get(cmt["id"])
+
+    def supplier_bill(self, cmt, cumulative_installed, *, period="P1", post=True):
+        bill = self.c.bills.certify(commitment_id=cmt["id"], period_id=period, installed=[{"sov_line_id": cmt["sov"][0]["id"], "cumulative_installed": cumulative_installed}], actor="owner")
+        if post:
+            self.c.approve_and_execute("bill.approve", bill["id"])
+        return self.c.bills.get(bill["id"])
+
+    def prime_bill(self, certified, *, period="P1", post=True):
+        pb = self.c.receivables.certify(project_id=self.pid, period_id=period, certified_cumulative=certified, retainage_rate="0.10", actor="owner")
+        if post:
+            self.c.approve_and_execute("prime_bill.approve", pb["id"])
+        return self.c.receivables.get(pb["id"])
+
+    def journal(self, lines, *, period="P1", source_type="test_setup"):
+        self._ref += 1
+        return self.c.ledger.post(period_id=period, description="synthetic setup", lines=lines, source_type=source_type,
+                                  source_id=f"setup-{self._ref}", source_version="1", posted_by="owner")
+
+    def owner_contribution(self, amount, *, period="P1"):
+        return self.journal([{"account": "1000", "debit": amount}, {"account": "3000", "credit": amount}], period=period, source_type="owner_contribution")
+
+    def cost(self, amount, *, period="P1"):
+        """Reimbursable project cost paid straight from the bank (touches no subledger control)."""
+        return self.journal([{"account": "5100", "debit": amount, "project_id": self.pid}, {"account": "1000", "credit": amount, "project_id": self.pid}], period=period, source_type="expense_paid")
+
+    def checks(self, period="P1"):
+        return {ch["check"]: ch for ch in self.close.checklist(period)}
+
+    def wip_ready(self, contract="150000"):
+        """45,000 cost on a 100,000 forecast, 60,000 billed, contract value set."""
+        cmt = self.commitment()
+        self.supplier_bill(cmt, "45000")
+        self.prime_bill("60000")
+        self.close.set_contract_value(self.pid, contract, actor="owner")
+        return cmt
+
+
+class CloseGoldenTests(unittest.TestCase):
+    def test_golden_close_sequence(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        cv = cl.set_contract_value(s.pid, "150000.00", actor="owner")
+        self.assertEqual((cv["version"], cv["contract_value"]), (1, "150000.00"))
+
+        # a draft supplier bill in P1 blocks the close
+        bill = s.supplier_bill(cmt, "45000", post=False)
+        checks = s.checks()
+        for ch in checks.values():
+            self.assertEqual(set(ch), {"check", "ok", "detail", "source"})
+            self.assertIsInstance(ch["ok"], bool)
+        self.assertFalse(checks["no_draft_supplier_bills"]["ok"])
+        self.assertIn(bill["id"], checks["no_draft_supplier_bills"]["detail"])
+        self.assertEqual(cl.checklist_report("P1")["failing"], ["no_draft_supplier_bills"])
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+
+        c.approve_and_execute("bill.approve", bill["id"])
+        self.assertTrue(cl.checklist_report("P1")["all_ok"])
+
+        # a draft prime bill blocks it too
+        prime = s.prime_bill("60000", post=False)
+        self.assertEqual(cl.checklist_report("P1")["failing"], ["no_draft_prime_bills"])
+        c.approve_and_execute("prime_bill.approve", prime["id"])
+        c.receivables.send(prime["id"], actor="owner")
+        c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_rcv_0001", actor="owner")
+        s.owner_contribution("10000")
+        checks = s.checks()
+        for name in ("trial_balance_balanced", "earlier_periods_closed", "ap_reconciled", "ar_reconciled", "no_draft_supplier_bills", "no_draft_prime_bills",
+                     "no_unresolved_payments", "no_draft_wip_adjustments", "wip_reconciled", "employee_payable_reconciled", "bank_reconciliation"):
+            self.assertTrue(checks[name]["ok"], name)
+        self.assertIn("not configured", checks["bank_reconciliation"]["detail"])
+
+        # WIP: 45,000 / 100,000 = 0.4500 of 150,000 = 67,500 earned against 60,000 billed
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual(w["contract_value"], "150000.00")
+        self.assertEqual(w["estimated_total_cost"], "100000.00")
+        self.assertEqual(w["estimated_total_cost_basis"], "forecast_at_completion")
+        self.assertEqual(w["cost_to_date"], "45000.00")
+        self.assertEqual(w["percent_complete"], "0.4500")
+        self.assertEqual(w["earned_revenue"], "67500.00")
+        self.assertEqual(w["billed_to_date"], "60000.00")
+        self.assertEqual(w["over_under"], "-7500.00")
+        self.assertEqual(w["position"], "underbilled")
+        self.assertEqual(w["label"], "SHADOW - not authoritative")
+
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual((row["status"], row["direction"], row["amount"]), ("draft", "underbilled", "7500.00"))
+        self.assertEqual((row["debit_account"], row["credit_account"]), ("1160", "4000"))
+        self.assertEqual(row["inputs_hash"], w["inputs_hash"])
+        res = c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        self.assertEqual(res.result["status"], "posted")
+        j = c.ledger.journal(res.result["journal_id"])
+        self.assertEqual(j["source_type"], "wip_adjustment")
+        self.assertEqual([(ln["account_code"], ln["debit"], ln["credit"]) for ln in j["lines"]], [("1160", "7500.00", "0.00"), ("4000", "0.00", "7500.00")])
+        self.assertEqual(c.ledger.balance("1160"), D("7500.00"))
+        self.assertEqual(c.ledger.balance("4000"), D("67500.00"))
+        self.assertEqual(cl.wip(s.pid, "P1")["billed_to_date"], "60000.00")  # adjustment journals are not billings
+        self.assertTrue(cl.wip_reconciliation(s.pid)["reconciled"])
+
+        # statements
+        st = cl.statements("P1")
+        inc = st["income_statement"]
+        self.assertEqual((inc["revenue"], inc["expense"], inc["net"]), ("67500.00", "45005.00", "22495.00"))
+        self.assertEqual(D(inc["net"]), D(inc["revenue"]) - D(inc["expense"]))
+        self.assertEqual({ln["code"]: ln["amount"] for ln in inc["expense_lines"]}, {"5000": "45000.00", "6000": "5.00"})
+        bs = st["balance_sheet"]
+        self.assertEqual({ln["code"]: ln["amount"] for ln in bs["assets"]}, {"1000": "63995.00", "1100": "0.00", "1150": "6000.00", "1160": "7500.00"})
+        self.assertEqual({ln["code"]: ln["amount"] for ln in bs["liabilities"]}, {"2000": "40500.00", "2050": "4500.00"})
+        self.assertEqual(bs["total_assets"], "77495.00")
+        self.assertEqual(bs["total_liabilities"], "45000.00")
+        self.assertEqual(bs["total_equity"], "10000.00")
+        self.assertEqual(bs["current_earnings"], "22495.00")
+        self.assertEqual(bs["total_liabilities_and_equity"], "77495.00")
+        self.assertTrue(bs["balanced"])
+        cash = st["cash"]
+        self.assertEqual({m["source_type"]: (m["inflow"], m["outflow"]) for m in cash["movements"]},
+                         {"collection": ("53995.00", "0.00"), "owner_contribution": ("10000.00", "0.00")})
+        self.assertEqual((cash["opening"], cash["net_change"], cash["closing"]), ("0.00", "63995.00", "63995.00"))
+        self.assertEqual(st["label"], "SHADOW - not authoritative")
+
+        # close P1 through an approval; the run keeps the checklist and statements snapshot
+        res = c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(res.result["status"], "closed")
+        self.assertEqual(res.result["net_income"], "22495.00")
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+        run = cl.close_run(res.result["close_run_id"])
+        self.assertEqual(run["action"], "close")
+        self.assertTrue(all(ch["ok"] for ch in run["checklist"]))
+        self.assertEqual(run["statements"]["balance_sheet"]["total_assets"], "77495.00")
+        self.assertEqual(run["statements_hash"], res.result["statements_hash"])
+        with self.assertRaises(PeriodNotOpen):
+            s.owner_contribution("1.00")
+
+        # reversal into P2 restores the contract asset
+        res = c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        self.assertEqual(res.result["status"], "reversed")
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+        self.assertEqual(c.ledger.journal(res.result["reversal_journal_id"])["reversal_of"], res.result["journal_id"])
+        self.assertEqual(c.ledger.journal(res.result["reversal_journal_id"])["period_id"], "P2")
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "reversed")
+        rec = cl.wip_reconciliation(s.pid)
+        self.assertTrue(rec["reconciled"])
+        by_period = {p["period_id"]: p for p in rec["periods"]}
+        self.assertEqual((by_period["P1"]["underbillings_register"], by_period["P1"]["underbillings_ledger"], by_period["P1"]["live_adjustments"]),
+                         ("7500.00", "7500.00", [row["id"]]))  # still on P1's books
+        self.assertEqual((by_period["P2"]["underbillings_register"], by_period["P2"]["underbillings_ledger"], by_period["P2"]["live_adjustments"]),
+                         ("0.00", "0.00", []))
+        self.assertEqual(cl.wip_reconciliation(s.pid, "P1")["underbillings_ledger"], "7500.00")
+
+        # aging ties to the subledgers
+        aging = cl.aging(bill["created_at"][:10])
+        self.assertEqual((aging["ap"]["total"], aging["ap"]["subledger_total"]), ("40500.00", "40500.00"))
+        self.assertEqual(aging["ap"]["buckets"], {"current": "40500.00", "31_60": "0.00", "61_90": "0.00", "over_90": "0.00"})
+        self.assertTrue(aging["ap"]["ties_to_subledger"] and aging["ar"]["ties_to_subledger"])
+        self.assertEqual(aging["ar"]["total"], "0.00")
+
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_golden_close_with_every_registered_plugin(self):
+        """The close sequence with banking, labor, procurement, field and the rest loaded."""
+        s = Scenario(isolate=False)
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        cl.set_contract_value(s.pid, "150000.00", actor="owner")
+        bill = s.supplier_bill(cmt, "45000", post=False)
+        self.assertIn("no_draft_supplier_bills", cl.checklist_report("P1")["failing"])
+        c.approve_and_execute("bill.approve", bill["id"])
+        prime = s.prime_bill("60000")
+        c.receivables.send(prime["id"], actor="owner")
+        c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_rcv_0001", actor="owner")
+        s.owner_contribution("10000")
+
+        bank = c._plugins.get("banking")
+        if bank is not None:  # bank activity in P1 needs a locked bank reconciliation
+            self.assertIn("bank reconciliation", cl.checklist_report("P1")["failing"])
+            st = bank.import_statement(
+                statement_ref="SIM-STMT-2026-10", period_id="P1", opening_balance="0.00", closing_balance="63995.00", actor="owner",
+                lines=[{"date": "2026-10-15", "amount": "53995.00", "description": "ACH receipt", "reference": "ach_sim_rcv_0001"},
+                       {"date": "2026-10-20", "amount": "10000.00", "description": "Owner contribution", "reference": "OWN-1"}],
+            )
+            bank.auto_match(st["id"], actor="owner")
+            c.approve_and_execute("banking.lock_reconciliation", st["id"], period_id="P1")
+        report = cl.checklist_report("P1")
+        self.assertTrue(report["all_ok"], report["failing"])
+        sources = {ch["source"] for ch in report["checks"]}
+        for name, plugin in c._plugins.items():
+            if name != PLUGIN_NAME and callable(getattr(plugin, "close_checks", None)) and plugin.close_checks("P1"):
+                self.assertIn(name, sources)
+
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual((row["direction"], row["amount"]), ("underbilled", "7500.00"))
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        self.assertEqual(c.ledger.balance("1160"), D("7500.00"))
+
+        # a close approval goes stale with every plugin loaded too (non-cash entry: the bank reconciliation stays valid)
+        ap = c.request_approval("close.close_period", "P1")
+        c.approve(ap["id"])
+        s.journal([{"account": "5100", "debit": "100", "project_id": s.pid}, {"account": "3000", "credit": "100"}], source_type="owner_paid_expense")
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap["id"])
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+
+        res = c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(res.result["status"], "closed")
+        self.assertEqual(res.result["net_income"], "22395.00")  # 67,500 - (45,000 + 5 + 100)
+        st = cl.statements("P1")
+        self.assertTrue(st["balance_sheet"]["balanced"])
+        self.assertEqual(D(st["income_statement"]["net"]), D(st["income_statement"]["revenue"]) - D(st["income_statement"]["expense"]))
+        with self.assertRaises(PeriodNotOpen):
+            s.owner_contribution("1.00")
+        c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+        self.assertTrue(cl.wip_reconciliation(s.pid)["reconciled"])
+        res = c.approve_and_execute("close.lock_period", "P1")
+        self.assertEqual(res.result["status"], "locked")
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+        json.dumps(c.project_state(s.pid), default=str)
+
+
+class PeriodCloseTests(unittest.TestCase):
+    def test_close_approval_goes_stale_when_a_journal_or_checklist_changes(self):
+        s = Scenario()
+        c = s.c
+        s.owner_contribution("5000")
+        ap = c.request_approval("close.close_period", "P1")
+        self.assertEqual(ap["manifest"]["amounts"], {"total_debit": "5000.00", "total_credit": "5000.00"})
+        self.assertTrue(ap["manifest"]["bindings"]["checklist_ok"])
+        c.approve(ap["id"])
+        s.owner_contribution("250")  # posted after the grant
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap["id"])
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+
+        # a checklist change alone (a new draft bill, no journal) also invalidates
+        cmt = s.commitment()
+        ap2 = c.request_approval("close.close_period", "P1")
+        c.approve(ap2["id"])
+        draft = s.supplier_bill(cmt, "1000", post=False)
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap2["id"])
+        self.assertEqual(c.approvals.get(ap2["id"])["status"], "invalidated")
+
+        c.bills.void(draft["id"], actor="owner", reason="entered in error")
+        res = c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(res.result["status"], "closed")
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_execution_refuses_while_the_checklist_fails(self):
+        s = Scenario()
+        c = s.c
+        cmt = s.commitment()
+        s.supplier_bill(cmt, "10000", post=False)
+        ap = c.request_approval("close.close_period", "P1")
+        self.assertFalse(ap["manifest"]["bindings"]["checklist_ok"])
+        self.assertEqual(ap["manifest"]["bindings"]["failing_checks"], ["no_draft_supplier_bills"])
+        c.approve(ap["id"])
+        with self.assertRaises(CloseError):
+            c.execute(ap["id"])
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "granted")  # the command rolled back; nothing consumed
+        self.assertEqual(s.close.close_runs("P1"), [])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_unresolved_payment_blocks_close_until_reconciled(self):
+        s = Scenario()
+        c = s.c
+        cmt = s.commitment()
+        bill = s.supplier_bill(cmt, "20000")
+        ap = c.request_approval("payment.release", bill["id"], actor_role="treasury")
+        c.approve(ap["id"])
+        c.execute(ap["id"], actor="treasury")
+        self.assertTrue(s.checks()["no_unresolved_payments"]["ok"])  # queued is not yet in doubt
+        c.provider.mode = "timeout_after_accept"
+        c.dispatch_payments()
+        check = s.checks()["no_unresolved_payments"]
+        self.assertFalse(check["ok"])
+        self.assertIn("outcome_unknown", check["detail"])
+        self.assertEqual(check["source"], "payments")
+        c.provider.mode = "accept"
+        c.reconcile_payments()
+        report = s.close.checklist_report("P1")
+        self.assertTrue(report["all_ok"], report["failing"])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+    def test_other_plugins_close_checks_are_aggregated(self):
+        s = Scenario()
+        c = s.c
+        self.assertFalse(hasattr(s.close, "close_checks"))  # the close module never checks itself
+
+        class FakeBank:
+            def __init__(self):
+                self.ok = False
+                self.calls = []
+
+            def close_checks(self, period_id):
+                self.calls.append(period_id)
+                return [{"check": "bank_statement_reconciled", "ok": self.ok, "detail": f"statement for {period_id}"}]
+
+        class Broken:
+            def close_checks(self, period_id):
+                raise ValueError("bank feed offline")
+
+        class Malformed:
+            def close_checks(self, period_id):
+                return [{"detail": "no check name"}]
+
+        class Truthy:
+            def close_checks(self, period_id):
+                return [{"check": "loose_flag", "ok": 1, "detail": ""}]
+
+        bank = FakeBank()
+        c.register_plugin("banking", bank)
+        checks = s.checks()
+        self.assertNotIn("bank_reconciliation", checks)  # a banking plugin is registered now
+        self.assertEqual((checks["bank_statement_reconciled"]["ok"], checks["bank_statement_reconciled"]["source"]), (False, "banking"))
+        self.assertEqual(bank.calls, ["P1"])
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.close_period", "P1")
+        bank.ok = True
+        self.assertTrue(s.close.checklist_report("P1")["all_ok"])
+
+        for name, plugin, expected in (("brokenmod", Broken(), "bank feed offline"), ("oddmod", Malformed(), "malformed"), ("loosemod", Truthy(), "")):
+            c.register_plugin(name, plugin)
+            failing = [ch for ch in s.close.checklist("P1") if not ch["ok"]]
+            self.assertEqual(len(failing), 1, failing)
+            self.assertEqual(failing[0]["source"], name)
+            self.assertIn(expected, failing[0]["detail"])
+            del c._plugins[name]
+        self.assertTrue(s.close.checklist_report("P1")["all_ok"])
+        res = c.approve_and_execute("close.close_period", "P1")
+        self.assertEqual(res.result["status"], "closed")
+
+    def test_employee_payable_check_uses_the_reimbursement_plugin(self):
+        s = Scenario()
+        c = s.c
+        emp = c.add_party(kind="employee", name="Field Engineer", destination="ACH-EMP-1")
+        r = c.plugin("reimbursement")
+        claim = r.submit_claim(project_id=s.pid, employee_id=emp["id"], description="Mileage to site", amount="120.00", receipt_hash="rcpt-0001", actor="emp")
+        c.approve_and_execute("reimbursement.approve", claim["id"], period_id="P1")
+        self.assertTrue(s.checks()["employee_payable_reconciled"]["ok"])
+        bad = s.journal([{"account": "5100", "debit": "50", "project_id": s.pid}, {"account": "2100", "credit": "50", "project_id": s.pid}])
+        check = s.checks()["employee_payable_reconciled"]
+        self.assertFalse(check["ok"])
+        self.assertIn(s.pid, check["detail"])
+        self.assertEqual(check["source"], "reimbursement")
+        c.ledger.reverse(bad["id"], period_id="P1", posted_by="owner", reason="direct control-account entry")
+        self.assertTrue(s.checks()["employee_payable_reconciled"]["ok"])
+
+        # a 2100 posting with no project is invisible per project but not company-wide
+        stray = s.journal([{"account": "6000", "debit": "75"}, {"account": "2100", "credit": "75"}])
+        check = s.checks()["employee_payable_reconciled"]
+        self.assertFalse(check["ok"])
+        self.assertIn("company-wide", check["detail"])
+        self.assertIn("75.00", check["detail"])
+        self.assertFalse(s.close.checklist_report("P1")["all_ok"])
+        c.ledger.reverse(stray["id"], period_id="P1", posted_by="owner", reason="direct control-account entry")
+        self.assertTrue(s.checks()["employee_payable_reconciled"]["ok"])
+
+    def test_reopen_and_lock_through_approvals(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.owner_contribution("1000")
+        c.approve_and_execute("close.close_period", "P1")
+        with self.assertRaises(PeriodNotOpen):
+            s.owner_contribution("1")
+        with self.assertRaises(CloseError):  # a project role cannot reopen the books
+            c.request_approval("close.reopen_period", "P1", actor_role="pm")
+        with self.assertRaises(CloseError):  # reopening needs a controller approval, not an accountant's
+            c.request_approval("close.reopen_period", "P1", actor_role="accountant")
+        ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
+        self.assertEqual(ap["manifest"]["actor_role"], "controller")
+        self.assertEqual(ap["manifest"]["bindings"]["approval_scope"], "controller reopen of a closed (not locked) period")
+        c.approve(ap["id"], approver="controller")
+        res = c.execute(ap["id"], actor="controller")
+        self.assertEqual(res.result["status"], "open")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+        s.owner_contribution("1")  # posting works again
+        c.approve_and_execute("close.close_period", "P1")
+
+        pending_reopen = c.request_approval("close.reopen_period", "P1")
+        res = c.approve_and_execute("close.lock_period", "P1")
+        self.assertEqual(res.result["status"], "locked")
+        self.assertEqual(c.approvals.get(pending_reopen["id"])["status"], "invalidated")
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.reopen_period", "P1")
+        with self.assertRaises(PeriodNotOpen):
+            s.owner_contribution("1")
+        runs = cl.close_runs("P1")
+        self.assertEqual([r["action"] for r in runs], ["close", "reopen", "close", "lock"])
+        self.assertEqual(runs[-1]["statements"]["balance_sheet"]["total_assets"], "1001.00")
+        self.assertIsNone(runs[1]["checklist"])
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("DELETE FROM close_runs")
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("UPDATE close_runs SET actor='someone else'")
+        # open periods cannot be locked or reopened
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.lock_period", "P2")
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.reopen_period", "P2")
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_invalid_close_requests_are_rejected(self):
+        s = Scenario()
+        c = s.c
+        with self.assertRaises(CloseError):
+            c.request_approval("close.close_period", "P1", actor_role="pm")
+        with self.assertRaises(CloseError):
+            c.request_approval("close.close_period", "P-unknown")
+        with self.assertRaises(CloseError):
+            c.request_approval("close.bogus", "P1")
+        with self.assertRaises(CloseError):
+            c.request_approval("close.post_wip_adjustment", "wip_missing")
+        with self.assertRaises(CloseError):
+            s.close.checklist("P-unknown")
+        with self.assertRaises(CloseError):
+            s.close.statements("")
+
+    def test_periods_close_lock_and_reopen_in_order(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.owner_contribution("100", period="P2")
+        check = s.checks("P2")["earlier_periods_closed"]
+        self.assertFalse(check["ok"])
+        self.assertIn("P1", check["detail"])
+        with self.assertRaises(CloseError):  # P2's balance sheet still moves with P1
+            c.approve_and_execute("close.close_period", "P2")
+        self.assertEqual(c.ledger.period("P2")["status"], "open")
+
+        c.approve_and_execute("close.close_period", "P1")
+        self.assertTrue(s.checks("P2")["earlier_periods_closed"]["ok"])
+        res = c.approve_and_execute("close.close_period", "P2")
+        self.assertEqual(res.result["status"], "closed")
+        with self.assertRaises(CloseError):  # P1 is only closed: it could still be reopened under a locked P2
+            c.approve_and_execute("close.lock_period", "P2")
+        with self.assertRaises(CloseError):  # reopening P1 would move the closed P2 balance sheet
+            c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+
+        # a lock approval granted while P1 was closed goes stale once P1 is locked
+        lock_p2 = c.request_approval("close.lock_period", "P2")
+        self.assertEqual(lock_p2["manifest"]["bindings"]["earlier_periods"], [["P1", "closed"]])
+        c.approve(lock_p2["id"])
+        c.approve_and_execute("close.lock_period", "P1")
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(lock_p2["id"])
+        res = c.approve_and_execute("close.lock_period", "P2")
+        self.assertEqual(res.result["status"], "locked")
+        snapshot = cl.close_runs("P2")[-1]["statements"]
+        with self.assertRaises(PeriodNotOpen):
+            s.owner_contribution("5000", period="P1")
+        self.assertEqual(cl.statements("P2"), snapshot)
+        self.assertEqual(snapshot["balance_sheet"]["total_assets"], "100.00")
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_lock_refuses_a_period_closed_outside_the_checklist(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        draft = s.supplier_bill(cmt, "5000", post=False)
+        self.assertEqual(cl.checklist_report("P1")["failing"], ["no_draft_supplier_bills"])
+        c.close_period("P1")  # straight through the ledger, bypassing the checklist
+        ap = c.request_approval("close.lock_period", "P1")
+        self.assertIsNone(ap["manifest"]["bindings"]["checklist_close_run"])
+        c.approve(ap["id"])
+        with self.assertRaises(CloseError):
+            c.execute(ap["id"])
+        self.assertEqual(c.ledger.period("P1")["status"], "closed")
+        self.assertEqual(cl.close_runs("P1"), [])
+
+        # reopen and close through the checklist; then a direct reopen / re-close is caught too
+        c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        c.bills.void(draft["id"], actor="owner", reason="entered in error")
+        s.owner_contribution("500")
+        c.approve_and_execute("close.close_period", "P1")
+        c.ledger.reopen_period("P1", actor="owner", approval_ref="direct ledger path")
+        s.owner_contribution("1")
+        c.close_period("P1")
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.lock_period", "P1")
+        c.ledger.reopen_period("P1", actor="owner", approval_ref="direct ledger path")
+        c.close_period("P1")  # re-closed directly with no change in between: still not a checklist close
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.lock_period", "P1")
+
+        c.approve_and_execute("close.reopen_period", "P1", actor_role="controller", actor="controller")
+        c.approve_and_execute("close.close_period", "P1")
+        res = c.approve_and_execute("close.lock_period", "P1")
+        self.assertEqual(res.result["status"], "locked")
+        self.assertEqual([r["action"] for r in cl.close_runs("P1")], ["reopen", "close", "reopen", "close", "lock"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+
+class StatementTests(unittest.TestCase):
+    def test_income_is_per_period_and_balance_sheet_is_cumulative(self):
+        s = Scenario()
+        s.owner_contribution("20000")
+        s.journal([{"account": "1000", "debit": "5000", "project_id": s.pid}, {"account": "4000", "credit": "5000", "project_id": s.pid}], source_type="cash_sale")
+        s.cost("1200")
+        s.journal([{"account": "1000", "debit": "3000", "project_id": s.pid}, {"account": "4000", "credit": "3000", "project_id": s.pid}], period="P2", source_type="cash_sale")
+        s.journal([{"account": "6000", "debit": "25"}, {"account": "1000", "credit": "25"}], period="P2", source_type="bank_fee")
+
+        p1 = s.close.statements("P1")
+        self.assertEqual((p1["income_statement"]["revenue"], p1["income_statement"]["expense"], p1["income_statement"]["net"]), ("5000.00", "1200.00", "3800.00"))
+        self.assertEqual(p1["balance_sheet"]["periods_included"], ["P1"])
+        self.assertEqual(p1["balance_sheet"]["total_assets"], "23800.00")
+        self.assertTrue(p1["balance_sheet"]["balanced"])
+        self.assertEqual({m["source_type"]: m["net"] for m in p1["cash"]["movements"]}, {"cash_sale": "5000.00", "expense_paid": "-1200.00", "owner_contribution": "20000.00"})
+
+        p2 = s.close.statements("P2")
+        inc = p2["income_statement"]
+        self.assertEqual((inc["revenue"], inc["expense"], inc["net"]), ("3000.00", "25.00", "2975.00"))
+        bs = p2["balance_sheet"]
+        self.assertEqual(bs["periods_included"], ["P1", "P2"])
+        self.assertEqual((bs["total_assets"], bs["total_equity"], bs["current_earnings"]), ("26775.00", "20000.00", "6775.00"))
+        self.assertTrue(bs["balanced"])
+        self.assertEqual((p2["cash"]["opening"], p2["cash"]["net_change"], p2["cash"]["closing"]), ("23800.00", "2975.00", "26775.00"))
+        self.assertEqual(p2["cash"]["closing"], f"{s.c.ledger.balance('1000'):f}")
+        self.assertEqual(json.loads(json.dumps(p2)), p2)  # plain JSON: money as strings
+
+
+class WipTests(unittest.TestCase):
+    def test_percent_complete_rounding_and_cap(self):
+        self.assertEqual(percent_complete("1.00", "3.00"), D("0.3333"))
+        self.assertEqual(percent_complete("2.00", "3.00"), D("0.6667"))
+        self.assertEqual(percent_complete("45000", "100000"), D("0.4500"))
+        self.assertEqual(percent_complete("120", "100"), D("1.0000"))
+        self.assertEqual(percent_complete("0", "100"), D("0.0000"))
+        self.assertEqual(percent_complete("5", "0"), D("0.0000"))
+
+    def test_overbilling_posts_to_contract_liability(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        s.supplier_bill(cmt, "20000")
+        s.prime_bill("30000")
+        cl.set_contract_value(s.pid, "100000", actor="owner")
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["percent_complete"], w["earned_revenue"], w["billed_to_date"], w["over_under"], w["position"]),
+                         ("0.2000", "20000.00", "30000.00", "10000.00", "overbilled"))
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual((row["direction"], row["amount"], row["debit_account"], row["credit_account"]), ("overbilled", "10000.00", "4000", "2300"))
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        self.assertEqual(c.ledger.balance("2300"), D("10000.00"))
+        self.assertEqual(c.ledger.balance("4000"), D("20000.00"))  # revenue now equals earned
+        self.assertEqual(cl.wip(s.pid, "P1")["billed_to_date"], "30000.00")
+        rec = cl.wip_reconciliation(s.pid)
+        self.assertEqual((rec["overbillings_register"], rec["overbillings_ledger"], rec["reconciled"]), ("10000.00", "10000.00", True))
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+    def test_estimate_falls_back_to_cost_and_percent_caps_at_one(self):
+        s = Scenario()
+        cl = s.close
+        s.cost("12000")
+        cl.set_contract_value(s.pid, "50000", actor="owner")
+        w = cl.wip(s.pid, "P1")  # no commitments: forecast is zero, cost to date is the estimate
+        self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["percent_complete"], w["earned_revenue"]),
+                         ("cost_to_date", "12000.00", "1.0000", "50000.00"))
+        s.commitment(amounts=("10000",))  # forecast 10,000 now, below cost: capped
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["percent_complete"]), ("forecast_at_completion", "10000.00", "1.0000"))
+        self.assertEqual(w["over_under"], "-50000.00")
+
+    def test_zero_adjustment_and_missing_contract_value_are_rejected(self):
+        s = Scenario()
+        cl = s.close
+        cmt = s.commitment()
+        s.supplier_bill(cmt, "45000")
+        s.prime_bill("45000")
+        with self.assertRaises(CloseError):
+            cl.wip(s.pid, "P1")  # no contract value yet
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        cl.set_contract_value(s.pid, "100000", actor="owner")
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["over_under"], w["position"], w["adjustment"]), ("0.00", "even", None))
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        with self.assertRaises(CloseError):
+            cl.wip("prj_missing", "P1")
+        with self.assertRaises(CloseError):
+            cl.wip(s.pid, "P9")
+
+    def test_duplicates_one_live_adjustment_cancel_and_schema_guards(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")  # identical draft
+        check = s.checks()["no_draft_wip_adjustments"]
+        self.assertFalse(check["ok"])
+        self.assertIn(row["id"], check["detail"])
+
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")  # one live adjustment per project per period
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")  # the P1 adjustment is still live
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted, CloseError)):
+            c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")  # posting twice
+        self.assertEqual(c.ledger.balance("1160"), D("7500.00"))
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("UPDATE close_wip SET amount='1.00' WHERE id=?", (row["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("UPDATE close_wip SET status='draft' WHERE id=?", (row["id"],))
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("DELETE FROM close_wip")
+
+        c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        again = cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")
+        self.assertEqual((again["period_id"], again["amount"]), ("P2", "7500.00"))
+        ap = c.request_approval("close.post_wip_adjustment", again["id"])
+        c.approve(ap["id"])
+        cancelled = cl.cancel_wip_adjustment(again["id"], actor="owner", reason="not needed")
+        self.assertEqual(cancelled["status"], "cancelled")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        with self.assertRaises(CloseError):
+            cl.cancel_wip_adjustment(again["id"], actor="owner")
+        with self.assertRaises(ApprovalNotGranted):
+            c.execute(ap["id"])
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+    def test_wip_approval_goes_stale_when_inputs_change(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        ap = c.request_approval("close.post_wip_adjustment", row["id"])
+        self.assertEqual(ap["manifest"]["amounts"]["amount"], "7500.00")
+        self.assertEqual(ap["manifest"]["bindings"]["inputs_hash"], row["inputs_hash"])
+        c.approve(ap["id"])
+        s.cost("1000")  # more cost after the grant changes percent complete
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap["id"], period_id="P1")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "draft")
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+        with self.assertRaises(CloseError):  # a fresh approval of the stale draft still refuses
+            c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+
+        row2 = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "superseded")
+        self.assertEqual((row2["percent_complete"], row2["earned_revenue"], row2["amount"]), ("0.4600", "69000.00", "9000.00"))
+        c.approve_and_execute("close.post_wip_adjustment", row2["id"], period_id="P1")
+        self.assertEqual(c.ledger.balance("1160"), D("9000.00"))
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_contract_value_is_versioned_validated_and_supersedes_drafts(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        v1 = cl.set_contract_value(s.pid, "100000", actor="owner")
+        self.assertEqual((v1["version"], v1["contract_value"], v1["previous_value"]), (1, "100000.00", None))
+        v2 = cl.set_contract_value(s.pid, "150000.00", actor="owner")
+        self.assertEqual((v2["version"], v2["contract_value"], v2["previous_value"]), (2, "150000.00", "100000.00"))
+        self.assertEqual([r["contract_value"] for r in cl.contract_values(s.pid)], ["100000.00", "150000.00"])
+        with self.assertRaises(CloseError):
+            cl.set_contract_value(s.pid, "150000", actor="owner")  # duplicate of the current value
+        for bad in ("0", "-5", 1.5, "abc", None, True, "NaN", "sNaN", "Infinity", "-Infinity", "1e30", "150000.004", "0.001"):
+            with self.assertRaises(CloseError, msg=repr(bad)):
+                cl.set_contract_value(s.pid, bad, actor="owner")
+        self.assertEqual(len(cl.contract_values(s.pid)), 2)  # nothing stored, nothing silently rounded
+        with self.assertRaises(CloseError):
+            cl.set_contract_value("prj_missing", "1000", actor="owner")
+        with self.assertRaises(CloseError):
+            cl.set_contract_value(s.pid, "1000", actor="")
+
+        cmt = s.commitment()
+        s.supplier_bill(cmt, "45000")
+        s.prime_bill("60000")
+        self.assertEqual(cl.wip(s.pid, "P1")["earned_revenue"], "67500.00")  # latest version wins
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        ap = c.request_approval("close.post_wip_adjustment", row["id"])
+        c.approve(ap["id"])
+        cl.set_contract_value(s.pid, "160000", actor="owner")
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "superseded")
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap["id"], period_id="P1")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        self.assertEqual(cl.wip(s.pid, "P1")["earned_revenue"], "72000.00")
+        with self.assertRaises(sqlite3.IntegrityError):
+            c.db.execute("UPDATE close_contract_values SET contract_value='1.00'")
+
+    def test_posting_into_a_closed_period_is_rejected(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.close_period("P1")  # closed directly through the ledger, bypassing the checklist
+        with self.assertRaises(PeriodNotOpen):
+            c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        with self.assertRaises(PeriodNotOpen):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual(cl.wip_adjustment(row["id"])["status"], "draft")
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+
+    def test_reversal_needs_an_open_later_period(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        c.open_period("P0", "P0", "2026-09-01", "2026-09-30")
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        for target in (None, "P1", "P0"):
+            with self.assertRaises(CloseError):
+                c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id=target)
+        c.close_period("P2")
+        with self.assertRaises(PeriodNotOpen):
+            c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        c.open_period("P3", "P3", "2026-12-01", "2026-12-31")
+        res = c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P3")
+        self.assertEqual(res.result["period_id"], "P3")
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+        self.assertEqual(cl.wip_adjustment(row["id"])["reversal_period_id"], "P3")
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted, CloseError)):
+            c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P3")  # already reversed
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+    def test_reprepare_after_a_reversal_cannot_double_count(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P2")
+        self.assertEqual(c.ledger.period("P1")["status"], "open")
+        with self.assertRaises(CloseError):  # reversed only in P2, so it is still on P1's books
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+
+        def assets(pid):
+            return {ln["code"]: ln["amount"] for ln in cl.statements(pid)["balance_sheet"]["assets"]}
+
+        self.assertEqual(assets("P1")["1160"], "7500.00")
+        self.assertEqual(cl.statements("P1")["income_statement"]["revenue"], "67500.00")  # earned, not more
+        self.assertTrue(cl.checklist_report("P1")["all_ok"])
+
+        # the next adjustment belongs to P2, where the earlier one is reversed
+        again = cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")
+        self.assertEqual(again["amount"], "7500.00")
+        c.approve_and_execute("close.post_wip_adjustment", again["id"], period_id="P2")
+        self.assertEqual((assets("P1")["1160"], assets("P2")["1160"]), ("7500.00", "7500.00"))
+        self.assertEqual(cl.statements("P2")["income_statement"]["revenue"], "0.00")  # reversal and re-accrual net out
+        rec = cl.wip_reconciliation(s.pid)
+        self.assertTrue(rec["reconciled"])
+        self.assertEqual({p["period_id"]: p["live_adjustments"] for p in rec["periods"]}, {"P1": [row["id"]], "P2": [again["id"]]})
+        with self.assertRaises(CloseError):  # P2's adjustment is live from P2 onwards, overlapping P1's
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+        self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_reversal_target_is_bound_to_the_first_open_later_period(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        c.open_period("P3", "P3", "2026-12-01", "2026-12-31")
+        s.wip_ready()
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        c.approve_and_execute("close.post_wip_adjustment", row["id"], period_id="P1")
+        ap = c.request_approval("close.reverse_wip_adjustment", row["id"])
+        self.assertEqual(ap["manifest"]["bindings"]["target_period"], "P2")
+        c.approve(ap["id"])
+        with self.assertRaises(CloseError):  # skipping P2 would leave the contract asset on P2's books
+            c.execute(ap["id"], period_id="P3")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "granted")  # the command rolled back
+        self.assertEqual(c.ledger.balance("1160"), D("7500.00"))
+
+        c.close_period("P2")  # the first open later period is now P3: the approval no longer matches
+        with self.assertRaises((StaleApprovalError, ApprovalNotGranted)):
+            c.execute(ap["id"], period_id="P2")
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
+        res = c.approve_and_execute("close.reverse_wip_adjustment", row["id"], period_id="P3")
+        self.assertEqual(res.result["period_id"], "P3")
+
+        # P2 reopened: the P1 adjustment is still on its books, so P2 takes no second one
+        c.ledger.reopen_period("P2", actor="owner", approval_ref="test reopen")
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P2", actor="owner")
+        p2_assets = {ln["code"]: ln["amount"] for ln in cl.statements("P2")["balance_sheet"]["assets"]}
+        self.assertEqual(p2_assets["1160"], "7500.00")
+        rec = cl.wip_reconciliation(s.pid, "P2")
+        self.assertEqual((rec["live_adjustments"], rec["underbillings_register"], rec["underbillings_ledger"], rec["reconciled"]),
+                         ([row["id"]], "7500.00", "7500.00", True))
+        again = cl.prepare_wip_adjustment(s.pid, "P3", actor="owner")
+        self.assertEqual(again["period_id"], "P3")
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
+
+    def test_contract_asset_postings_outside_the_register_block_wip_and_close(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        s.wip_ready()
+        manual = s.journal([{"account": "1160", "debit": "500", "project_id": s.pid}, {"account": "4000", "credit": "500", "project_id": s.pid}])
+        rec = cl.wip_reconciliation(s.pid, "P1")
+        self.assertEqual((rec["underbillings_register"], rec["underbillings_ledger"], rec["reconciled"]), ("0.00", "500.00", False))
+        self.assertEqual(cl.wip_reconciliation(s.pid)["unreconciled_periods"], ["P1", "P2", "all-time"])
+        check = s.checks()["wip_reconciled"]
+        self.assertFalse(check["ok"])
+        self.assertIn(s.pid, check["detail"])
+        with self.assertRaises(CloseError):
+            cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        with self.assertRaises(CloseError):
+            c.approve_and_execute("close.close_period", "P1")
+        c.ledger.reverse(manual["id"], period_id="P1", posted_by="owner", reason="manual contract asset entry")
+        self.assertTrue(s.checks()["wip_reconciled"]["ok"])
+
+        stray = s.journal([{"account": "4000", "debit": "40"}, {"account": "2300", "credit": "40"}])  # no project
+        check = s.checks()["wip_reconciled"]
+        self.assertFalse(check["ok"])
+        self.assertIn("company", check["detail"])
+        c.ledger.reverse(stray["id"], period_id="P1", posted_by="owner", reason="manual contract liability entry")
+        self.assertTrue(cl.checklist_report("P1")["all_ok"])
+        self.assertEqual(cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")["amount"], "7500.00")
+
+
+class AgingAndStateTests(unittest.TestCase):
+    def test_aging_buckets_tie_to_subledgers(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        cmt = s.commitment()
+        bill = s.supplier_bill(cmt, "20000")  # 18,000 payable, 2,000 retained
+        prime = s.prime_bill("30000")  # 27,000 receivable
+        c.commitments.close(cmt["id"], actor="owner")
+        c.approve_and_execute("retainage.release", cmt["id"], period_id="P1")  # 2,000 retainage now payable
+        bill_date = dt.date.fromisoformat(bill["created_at"][:10])
+        prime_date = dt.date.fromisoformat(prime["created_at"][:10])
+        for offset, bucket in ((-3, "after_as_of"), (0, "current"), (30, "current"), (31, "31_60"), (60, "31_60"), (61, "61_90"), (90, "61_90"), (91, "over_90"), (400, "over_90")):
+            ag = cl.aging((bill_date + dt.timedelta(days=offset)).isoformat())
+            ap, ar = ag["ap"], ag["ar"]
+            self.assertEqual((ap["total"], ap["subledger_total"]), ("20000.00", "20000.00"))
+            self.assertTrue(ap["ties_to_subledger"] and ap["reconciled"])
+            self.assertEqual(set(ap["buckets"]), {"current", "31_60", "61_90", "over_90"})
+            self.assertEqual(sum(D(v) for v in ap["buckets"].values()) + D(ap["after_as_of"]), D("20000.00"))
+            self.assertEqual(ap["aged_total"], "0.00" if offset < 0 else "20000.00")  # an item recorded after as_of is never "current"
+            self.assertEqual(ag["warning"] is not None, offset < 0)  # a historical as_of is flagged: open items are today's
+            bill_item = next(it for it in ap["items"] if it["ref"] == bill["id"])
+            self.assertEqual((bill_item["bucket"], bill_item["open"], bill_item["days"]), (bucket, "18000.00", offset))
+            self.assertTrue(any(it["kind"] == "retainage_release" and it["open"] == "2000.00" for it in ap["items"]))
+            self.assertEqual((ar["total"], ar["subledger_total"]), ("27000.00", "27000.00"))
+            self.assertTrue(ar["ties_to_subledger"])
+            ar_days = (bill_date + dt.timedelta(days=offset) - prime_date).days
+            self.assertEqual(ar["items"][0]["days"], ar_days)
+        for bad in ("2026-02-30", "2026/10/01", 20261001, ""):
+            with self.assertRaises(CloseError):
+                cl.aging(bad)
+
+    def test_state_shape_and_project_state(self):
+        s = Scenario()
+        c, cl = s.c, s.close
+        st = cl.state(s.pid)
+        self.assertIsNone(st["contract_value"])
+        self.assertIn("contract value", st["wip_error"])
+        s.wip_ready()
+        st = cl.state(s.pid)
+        self.assertEqual(set(st), {"project_id", "label", "contract_value", "contract_version", "contract_value_history", "checklists", "wip_period_id",
+                                   "wip", "wip_error", "wip_adjustments", "wip_reconciliation", "close_runs"})
+        self.assertEqual((st["contract_value"], st["contract_version"]), ("150000.00", 1))
+        self.assertEqual(set(st["checklists"]), {"P1", "P2"})
+        self.assertTrue(st["checklists"]["P1"]["all_ok"])
+        self.assertEqual(st["wip_period_id"], "P2")  # latest open period, cumulative through it
+        self.assertEqual((st["wip"]["percent_complete"], st["wip"]["over_under"]), ("0.4500", "-7500.00"))
+        self.assertIsNone(st["wip_error"])
+        self.assertTrue(st["wip_reconciliation"]["reconciled"])
+        self.assertEqual(st["label"], "SHADOW - not authoritative")
+        json.dumps(st)
+        c.approve_and_execute("close.close_period", "P1")
+        st = cl.state(s.pid)
+        self.assertEqual(set(st["checklists"]), {"P2"})
+        self.assertEqual([r["action"] for r in st["close_runs"]], ["close"])
+        full = c.project_state(s.pid)
+        self.assertIn(PLUGIN_NAME, full)
+        json.dumps(full, default=str)
+
+    def test_checklist_shape_with_every_registered_plugin(self):
+        s = Scenario(isolate=False)
+        checks = s.close.checklist("P1")
+        names = [ch["check"] for ch in checks]
+        for core in ("trial_balance_balanced", "ap_reconciled", "ar_reconciled", "no_draft_supplier_bills", "no_draft_prime_bills", "no_unresolved_payments", "no_draft_wip_adjustments"):
+            self.assertIn(core, names)
+        for ch in checks:
+            self.assertEqual(set(ch), {"check", "ok", "detail", "source"})
+            self.assertIsInstance(ch["ok"], bool)
+            self.assertIsInstance(ch["detail"], str)
+        sources = {ch["source"] for ch in checks}
+        for name, plugin in s.c._plugins.items():
+            if name == PLUGIN_NAME or not hasattr(plugin, "close_checks"):
+                continue
+            try:
+                contributed = bool(plugin.close_checks("P1"))
+            except Exception:
+                contributed = True  # a raising hook still yields a failing check naming it
+            if contributed:
+                self.assertIn(name, sources)
+        json.dumps(s.close.state(s.pid))
+
+    def test_schema_tables_and_accounts(self):
+        s = Scenario()
+        c = s.c
+        accounts = {a["code"]: a for a in c.ledger.accounts()}
+        self.assertEqual((accounts["1160"]["name"], accounts["1160"]["type"]), ("Contract asset - underbillings", "asset"))
+        self.assertEqual((accounts["2300"]["name"], accounts["2300"]["type"]), ("Contract liability - overbillings", "liability"))
+        status = c.db.schema_status()
+        self.assertIn(SCHEMA_NAME, [v["name"] for v in status["versions"]])
+        self.assertEqual(status["pending"], [])
+        tables = {r["name"] for r in c.db.query("SELECT name FROM sqlite_master WHERE type='table'")}
+        self.assertTrue({"close_contract_values", "close_runs", "close_wip"} <= tables)
+        self.assertEqual(c.ledger.trial_balance()["journal_count"], 0)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,4 +1,9 @@
-"""Staff expense reimbursements: golden sequence and adversarial variants."""
+"""Staff expense reimbursements: golden sequence and adversarial variants.
+
+Payments leave through the core payment outbox: executing ``reimbursement.pay``
+queues a payment intent (the payment is ``in_flight``); ``c.dispatch_payments()``
+lets the simulated provider accept it (Dr 2100 / Cr 1200, payment ``booked``);
+a settlement event then moves the bank (Dr 1200 / Cr 1000)."""
 import sqlite3
 import unittest
 from decimal import Decimal
@@ -10,12 +15,13 @@ from apps.cipher.service import Cipher
 
 
 class Scenario:
-    """Fresh in-memory workspace: employee, supplier, customer, project, open period P1."""
+    """Fresh in-memory workspace: employee with a verified destination, supplier, customer, project, open period P1."""
 
     def __init__(self):
         self.c = Cipher()
         self.r = self.c.plugin(PLUGIN_NAME)
         self.employee = self.c.add_party(kind="employee", name="Field Engineer", destination="ACH-EMP-1")
+        self.employee = self.c.verify_destination(self.employee["id"], destination="ACH-EMP-1", verified_by="owner")
         self.supplier = self.c.add_party(kind="supplier", name="Sub", destination="ACH-SUB-1")
         self.customer = self.c.add_party(kind="customer", name="Owner Agency")
         self.project = self.c.create_project(name="Pump station", entity="E", budget="50000", customer_id=self.customer["id"])
@@ -33,6 +39,22 @@ class Scenario:
         cl = self.claim(amount, billable=billable)
         self.c.approve_and_execute("reimbursement.approve", cl["id"], period_id="P1")
         return self.r.claim(cl["id"])
+
+    def release(self, payment_id: str):
+        """Approve and execute reimbursement.pay: the payment is queued in the outbox."""
+        return self.c.approve_and_execute("reimbursement.pay", payment_id, actor_role="treasury", actor="treasury", period_id="P1")
+
+    def settle(self, payment_id: str):
+        intent = self.c.payments.get(self.r.payment(payment_id)["intent_id"])
+        return self.c.payments.ingest_event(self.c.provider.settle(intent["logical_op_id"]), actor="webhook")
+
+    def pay(self, payment_id: str, *, settle: bool = True):
+        """Release, dispatch (provider accepts: payment booked) and optionally settle."""
+        res = self.release(payment_id)
+        self.c.dispatch_payments()
+        if settle:
+            self.settle(payment_id)
+        return res
 
 
 class ReimbursementGoldenTests(unittest.TestCase):
@@ -62,20 +84,34 @@ class ReimbursementGoldenTests(unittest.TestCase):
         self.assertEqual(self.c.ledger.balance("2100", party_id=self.s.employee["id"]), Decimal("120.00"))
         self.assertEqual(self.r.outstanding(cl["id"]), Decimal("120.00"))
 
-        # partial payment
+        # partial payment: executing it queues a payment intent; nothing is posted yet
         pay = self.r.record_payment(cl["id"], "40.00", actor="treasury")
         self.assertEqual(pay["status"], "draft")
         self.assertEqual(self.r.outstanding(cl["id"]), Decimal("120.00"))  # drafts do not reduce the payable
         res = self.c.approve_and_execute("reimbursement.pay", pay["id"], actor_role="treasury", actor="treasury", period_id="P1")
-        self.assertEqual(res.result["status"], "booked")
-        self.assertEqual(res.result["outstanding"], "80.00")
+        self.assertEqual(res.result["status"], "in_flight")
+        self.assertEqual(res.result["intent_status"], "queued")
+        self.assertEqual(res.result["outstanding"], "80.00")  # the in-flight 40.00 is reserved at once
+        self.assertEqual(self.r.payment(pay["id"])["status"], "in_flight")
+        self.assertEqual(self.r.claim(cl["id"])["status"], "approved")
+        self.assertEqual(self.r.outstanding(cl["id"]), Decimal("80.00"))
+        self.assertEqual(self.c.ledger.balance("2100"), Decimal("120.00"))
+        self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
+        with self.assertRaises(ReimbursementError):  # the reservation already blocks an overpayment
+            self.r.record_payment(cl["id"], "80.01", actor="treasury")
+        # the outbox dispatches it; the provider accepts: Dr 2100 / Cr 1200 and the payment is booked
+        self.assertEqual([d["status"] for d in self.c.dispatch_payments()], ["accepted"])
         self.assertEqual(self.r.payment(pay["id"])["status"], "booked")
         cl = self.r.claim(cl["id"])
         self.assertEqual(cl["status"], "partially_paid")
         self.assertEqual(cl["outstanding"], "80.00")
         self.assertEqual(self.r.outstanding(cl["id"]), Decimal("80.00"))
         self.assertEqual(self.c.ledger.balance("2100"), Decimal("80.00"))
+        self.assertEqual(self.c.ledger.balance("1200"), Decimal("-40.00"))
+        # settlement moves the bank
+        self.s.settle(pay["id"])
         self.assertEqual(self.c.ledger.balance("1000"), Decimal("-40.00"))
+        self.assertEqual(self.c.ledger.balance("1200"), Decimal("0.00"))
 
         # paying more than the outstanding balance is rejected
         with self.assertRaises(ReimbursementError):
@@ -160,11 +196,14 @@ class ReimbursementRecordTests(unittest.TestCase):
     def test_full_payment_marks_claim_paid(self):
         cl = self.s.approved_claim("120.00")
         p1 = self.r.record_payment(cl["id"], "40.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p1["id"], period_id="P1")
+        self.s.pay(p1["id"])
         self.assertEqual(self.r.claim(cl["id"])["status"], "partially_paid")
         p2 = self.r.record_payment(cl["id"], "80.00", actor="t")
-        res = self.c.approve_and_execute("reimbursement.pay", p2["id"], period_id="P1")
-        self.assertEqual(res.result["claim_status"], "paid")
+        res = self.s.release(p2["id"])
+        self.assertEqual(res.result["claim_status"], "partially_paid")  # still owed until the provider accepts
+        self.assertEqual(res.result["outstanding"], "0.00")
+        self.c.dispatch_payments()
+        self.s.settle(p2["id"])
         cl = self.r.claim(cl["id"])
         self.assertEqual(cl["status"], "paid")
         self.assertEqual(cl["outstanding"], "0.00")
@@ -278,16 +317,19 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         ap2 = self.c.request_approval("reimbursement.pay", p2["id"], actor_role="treasury")
         self.c.approve(ap1["id"])
         self.c.approve(ap2["id"])
+        # releasing the first reserves 40.00 at once, so the second's bound outstanding no longer holds
         self.c.execute(ap1["id"], actor="treasury", period_id="P1")
         self.assertEqual(self.c.approvals.get(ap2["id"])["status"], "granted")
         with self.assertRaises(StaleApprovalError):
             self.c.execute(ap2["id"], actor="treasury", period_id="P1")
         self.assertEqual(self.c.approvals.get(ap2["id"])["status"], "invalidated")
         self.assertEqual(self.r.payment(p2["id"])["status"], "draft")
+        self.c.dispatch_payments()
         self.assertEqual(self.c.ledger.balance("2100"), Decimal("80.00"))
         # re-approving the still-valid draft against the current state works
-        self.c.approve_and_execute("reimbursement.pay", p2["id"], actor_role="treasury", actor="treasury", period_id="P1")
+        self.s.pay(p2["id"])
         self.assertEqual(self.c.ledger.balance("2100"), Decimal("40.00"))
+        self.assertEqual(len(self.c.provider.transfers), 2)
         self.assertTrue(self.r.employee_payable_reconciliation(self.s.project["id"])["reconciled"])
 
     def test_closed_period_rejects_posting(self):
@@ -373,6 +415,10 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         self.assertEqual(self.c.approvals.get(pb["id"])["status"], "invalidated")
         with self.assertRaises(ReimbursementError):
             self.c.execute(pb["id"], actor="treasury", period_id="P1")
+        self.assertEqual(len(self.c.payments.list()), 1)  # one intent, one transfer
+        self.c.dispatch_payments()
+        self.s.settle(p["id"])
+        self.assertEqual(len(self.c.provider.transfers), 1)
         b = self.r.create_billing(cl["id"], "120.00", actor="pm")
         ba = self.c.request_approval("reimbursement.bill", b["id"])
         bb = self.c.request_approval("reimbursement.bill", b["id"])
@@ -384,8 +430,10 @@ class ReimbursementAdversarialTests(unittest.TestCase):
             self.c.execute(bb["id"], period_id="P1")
         self.assertEqual(self.c.ledger.balance("2100"), Decimal("0.00"))
         self.assertEqual(self.c.ledger.balance("1000"), Decimal("-120.00"))
+        self.assertEqual(self.c.ledger.balance("1200"), Decimal("0.00"))
         self.assertEqual(self.c.ledger.balance("1100"), Decimal("120.00"))
-        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 3)
+        # approval, provider acceptance, settlement, billing
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 4)
         self.assertEqual(self.c.approvals.list(status="granted"), [])
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
@@ -410,7 +458,7 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         b = self.s.approved_claim("30.00", billable=False)
         pending = self.s.claim("5.00")  # submitted: not part of the payable
         p = self.r.record_payment(a["id"], "40.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.s.pay(p["id"])
         bill = self.r.create_billing(a["id"], "120.00", actor="pm")
         self.c.approve_and_execute("reimbursement.bill", bill["id"], period_id="P1")
 
@@ -427,6 +475,7 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         self.assertEqual(first["outstanding"], "80.00")
         self.assertEqual(first["status"], "partially_paid")
         self.assertEqual([x["status"] for x in first["payments"]], ["booked"])
+        self.assertEqual([x["intent_status"] for x in first["payments"]], ["settled"])
         self.assertEqual([x["status"] for x in first["billings"]], ["billed"])
         self.assertEqual(st["claims"][2]["outstanding"], "0.00")
         self.assertEqual(len(st["payments"]), 1)
@@ -441,16 +490,16 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         self.assertTrue(full["audit_chain"]["ok"])
         # an empty project reconciles trivially
         empty = self.c.create_project(name="Empty", entity="E", budget="0")
-        self.assertEqual(self.r.state(empty["id"]), {"claims": [], "payments": [], "billings": [], "reconciliation": {"items": [], "subledger_total": "0.00", "control_balance": "0.00", "reconciled": True}})
+        self.assertEqual(self.r.state(empty["id"]), {"claims": [], "payments": [], "billings": [], "reconciliation": {"items": [], "subledger_total": "0.00", "in_flight_total": "0.00", "control_balance": "0.00", "reconciled": True}})
 
     def test_claim_status_transitions_are_enforced_by_schema(self):
         submitted = self.s.claim("10.00")
         paid = self.s.approved_claim("120.00")
         p = self.r.record_payment(paid["id"], "120.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.s.pay(p["id"])
         partial = self.s.approved_claim("50.00")
         p2 = self.r.record_payment(partial["id"], "20.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p2["id"], period_id="P1")
+        self.s.pay(p2["id"])
         self.assertEqual(self.r.claim(paid["id"])["status"], "paid")
         self.assertEqual(self.r.claim(partial["id"])["status"], "partially_paid")
         illegal = (
@@ -493,20 +542,26 @@ class ReimbursementAdversarialTests(unittest.TestCase):
         p = self.r.record_payment(cl["id"], "120.00", actor="t")
         ap = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
         self.assertEqual(ap["manifest"]["destination"]["party_id"], self.s.employee["id"])
-        self.assertFalse(ap["manifest"]["bindings"]["destination_verified"])
+        self.assertEqual(ap["manifest"]["destination"]["destination"], "ACH-EMP-1")
+        self.assertEqual(ap["manifest"]["destination"]["destination_version"], 2)
+        self.assertTrue(ap["manifest"]["bindings"]["destination_verified"])
         self.c.approve(ap["id"])
         self.c.verify_destination(self.s.employee["id"], destination="ACH-EMP-2", verified_by="owner")
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
         with self.assertRaises(ApprovalNotGranted):
             self.c.execute(ap["id"], actor="treasury", period_id="P1")
         self.assertEqual(self.r.payment(p["id"])["status"], "draft")
+        self.assertEqual(self.c.payments.list(), [])  # nothing reached the outbox
         self.assertEqual(self.c.ledger.balance("1000"), Decimal("0.00"))
-        # a fresh approval binds the verified destination and its new version
+        # a fresh approval binds the newly verified destination and its version
         ap2 = self.c.request_approval("reimbursement.pay", p["id"], actor_role="treasury")
         self.assertTrue(ap2["manifest"]["bindings"]["destination_verified"])
-        self.assertEqual(ap2["manifest"]["destination"]["destination_version"], 2)
+        self.assertEqual(ap2["manifest"]["destination"]["destination_version"], 3)
         self.c.approve(ap2["id"])
-        self.c.execute(ap2["id"], actor="treasury", period_id="P1")
+        res = self.c.execute(ap2["id"], actor="treasury", period_id="P1")
+        self.assertEqual(self.c.payments.get(res.result["intent"])["destination"], "ACH-EMP-2")
+        self.c.dispatch_payments()
+        self.s.settle(p["id"])
         self.assertEqual(self.r.claim(cl["id"])["status"], "paid")
         self.assertEqual(self.c.ledger.balance("2100"), Decimal("0.00"))
         self.assertEqual(self.c.ledger.balance("1000"), Decimal("-120.00"))
@@ -530,7 +585,7 @@ class ReimbursementAdversarialTests(unittest.TestCase):
     def test_billing_a_paid_claim_leaves_payable_at_zero(self):
         cl = self.s.approved_claim("120.00")
         p = self.r.record_payment(cl["id"], "120.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.s.pay(p["id"])
         self.assertEqual(self.r.claim(cl["id"])["status"], "paid")
         b = self.r.create_billing(cl["id"], "120.00", actor="pm")
         self.c.approve_and_execute("reimbursement.bill", b["id"], period_id="P1")
@@ -614,7 +669,12 @@ class ReimbursementVoidTests(unittest.TestCase):
             self.c.request_approval("reimbursement.void", submitted["id"])
         paid = self.s.approved_claim("50.00")
         p = self.r.record_payment(paid["id"], "20.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.s.release(p["id"])
+        self.assertEqual(self.r.claim(paid["id"])["status"], "approved")
+        with self.assertRaises(ReimbursementError):  # money is moving
+            self.c.request_approval("reimbursement.void", paid["id"])
+        self.c.dispatch_payments()
+        self.s.settle(p["id"])
         with self.assertRaises(ReimbursementError):  # money has moved
             self.c.request_approval("reimbursement.void", paid["id"])
         billed = self.s.approved_claim("60.00")
@@ -653,10 +713,12 @@ class ReimbursementVoidTests(unittest.TestCase):
         self.c.approve(ap["id"])
         self.assertEqual(ap["manifest"]["bindings"]["journal_id"], cl["journal_id"])
         self.assertEqual(ap["manifest"]["amounts"]["booked_payments"], "0.00")
-        # a payment booked after the void was granted makes the void meaningless
+        # a payment released after the void was granted makes the void meaningless
         p = self.r.record_payment(cl["id"], "40.00", actor="t")
-        self.c.approve_and_execute("reimbursement.pay", p["id"], period_id="P1")
+        self.s.release(p["id"])
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
+        self.c.dispatch_payments()
+        self.s.settle(p["id"])
         with self.assertRaises((ApprovalNotGranted, ReimbursementError)):
             self.c.execute(ap["id"], period_id="P1")
         self.assertEqual(self.r.claim(cl["id"])["status"], "partially_paid")

@@ -116,7 +116,7 @@ class Cipher:
         self.receivables = Receivables(self.db, self.audit, self.ledger)
         self.payments = Payments(self.db, self.audit, self.commands, self.ledger)
         self.forecast = Forecast(self.db, self.commitments, self.ledger)
-        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins)
+        self.ricky = Ricky(self.db, self.audit, self.estimates, self.commitments, self.bills, self.receivables, self.payments, self.ledger, plugins=lambda: self._plugins, forecast=self.forecast)
         self.provider = provider or SimulatedProvider()
         self._plugins: dict[str, Any] = {}
         for mod in _load_plugin_modules():
@@ -328,6 +328,7 @@ class Cipher:
             "trial_balance": self.ledger.trial_balance(),
             "income_statement": self.ledger.income_statement(),
             "ricky": self.ricky.history(20),
+            "ricky_brief": self.ricky.brief(project_id, actor_role="owner"),
             "audit_chain": self.audit.verify_chain(),
             "outbox_pending": self.commands.pending(),
         }
