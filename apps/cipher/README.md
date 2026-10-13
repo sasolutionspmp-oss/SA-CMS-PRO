@@ -4,6 +4,8 @@ Cipher is S&A Solutions' owned AEC/EPC project-controls and accounting system, o
 
 Nothing here touches production systems, real payment rails or live records. Standard library only; no package installation.
 
+Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
+
 ## Start
 
 ```bash

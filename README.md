@@ -9,6 +9,8 @@ SA-CMS Pro is S&A Solutions' command-and-control platform that unifies project i
 - **Desktop Shell** – PySide6 client (`ui/`) packaged with PyInstaller + Inno Setup.
 - **Automation** – PowerShell tooling under `install/`, `scripts/`, and `build/` to bootstrap, seed, and package the stack.
 
+> **Cipher** (`apps/cipher/`), S&A's project-controls and accounting prototype, is a separate standard-library Python project in this repository. See `AGENTS.md` and `apps/cipher/HANDOFF.md`.
+
 ## Repository Layout
 ```
 app/                  # Domain services shared by the legacy desktop client
