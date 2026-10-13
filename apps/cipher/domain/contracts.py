@@ -57,9 +57,10 @@ records the signed copy (the current revision of a ``signed_agreement`` document
 project), the signer (a login) and the signing date, which may not precede the agreement's
 approval or lie in the future.  ``contract.sign`` (role signer, or the owner; subject: the
 agreement) requires the agreement approval to have executed and still match: the same
-agreement revision (still current), commitment version, SOV, amount and requirements.  The
-manifest binds the signed copy, the signer and the signing date, and only the named signer
-can grant it -- a signature is a personal act, so nobody approves it on the signer's behalf.
+agreement revision (still current), commitment version, SOV, amount, retainage rate and
+requirements.  The manifest binds the signed copy, the signer and the signing date, and only
+the named signer can grant it -- a signature is a personal act, so nobody approves it on the
+signer's behalf.
 When the people registry enforces identities, the signer must be active, hold the signer (or
 owner) role on the project and not be an external party: an external accountant gives a sole
 owner independent controls, but never signs the company's subcontracts.
@@ -78,10 +79,11 @@ flows and workspaces behave exactly as before.
   the current hash of its document, the agreement approval id and material hash, and the
   signature id, hash, signed-copy hashes, signer and signing date (plus the requirements
   version and hash).  ``check_request`` and ``check_execute`` refuse until the agreement is
-  signed and still current (document revisions current, commitment version, amount and SOV
-  equal to what the agreement approval bound).  A database guard backs it: a commitment with
-  a live agreement, or any commitment while agreements are required, leaves draft only with a
-  signed agreement whose snapshot (version, amount, supplier, project) it still matches.
+  signed and still current (document revisions current, commitment version, amount, SOV and
+  retainage rate equal to what the agreement approval bound).  A database guard backs it: a
+  commitment with a live agreement, or any commitment while agreements are required, leaves
+  draft only with a signed agreement whose snapshot (version, amount, supplier, project) it
+  still matches.
 * ``bill.approve``, ``payment.release`` and ``payment.release_retainage`` on a commitment with
   requirements: ``approval_policy`` binds, per requirement, the certificates able to cover it
   -- the supplier's recorded certificates of that kind, not withdrawn, on the current revision
@@ -106,9 +108,11 @@ and belongs to one supplier.  A later revision of that document makes the certif
 
 Close checks and state.  ``close_checks`` reports (1) commitments with bills that need a
 signed agreement and lack one, (2) certificates of suppliers with open commitments expiring
-within 30 days with no later certificate recorded, and required coverage on executed open
-commitments not in force today, and (3) the integrity of every contract record.  ``state``
-lists agreements, requirements, coverage, certificates and the same findings.
+within 30 days with no later certificate recorded -- or none that continues the coverage
+without a gap at the highest minimum the supplier's open commitments require -- and required
+coverage on executed open commitments not in force today, and (3) the integrity of every
+contract record.  ``state`` lists agreements, requirements, coverage, certificates and the
+same findings.
 
 Integrity.  SQLite triggers make every record append-only or move it only through its
 lifecycle, each transition together with the audit entry this module writes first and, where
@@ -118,7 +122,15 @@ against a draft commitment and the current agreement revision, approved only by 
 signature under a consumed ``contract.sign``, superseded only while the commitment is a draft;
 signatures, certificates, requirement sets, the workspace policy and coverage checks are never
 replaced or deleted.  ``close_checks`` re-hashes every record and cross-checks approvals and
-audit entries, so tampering that drops a trigger is detected.
+audit entries, so tampering that drops a trigger is detected.  The audit log is the record of
+what happened, and a record that disagrees with it is never relied on: a certificate whose
+withdrawal or an agreement whose supersession was audited stays withdrawn or superseded
+whatever its row reads, an agreement the audit log registered still has to be signed if its
+row is deleted, the audited workspace switch stays on without its policy row, and a
+requirement set rewritten or deleted refuses bills and payments on its commitment (fail
+closed).  A governed bill or payment needs a coverage check when a commitment in its scope
+carried requirements as it executed (by the audited requirement sets), not when one acquired
+them later.
 """
 from __future__ import annotations
 
@@ -128,8 +140,8 @@ from decimal import Decimal
 from typing import Any
 
 from ..core.approvals import StaleApprovalError, build_manifest
-from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow, utcnow_iso
-from ..core.money import D, MoneyError, fmt, money
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow, utcnow_iso
+from ..core.money import D, ZERO, MoneyError, fmt, money
 
 SCHEMA_NAME = "contracts"
 PLUGIN_NAME = "contract"
@@ -530,7 +542,7 @@ def _amount(value: Any, label: str, *, allow_zero: bool = False) -> Decimal:
         raise ContractError(f"{label} must be in whole cents, got {value!r}")
     if amt < 0 or (amt == 0 and not allow_zero):
         raise ContractError(f"{label} must be {'zero or more' if allow_zero else 'positive'}, got {fmt(amt)}")
-    return amt
+    return amt + ZERO  # "-0" is stored and hashed as 0.00
 
 
 def _login_key(value: Any) -> str | None:
@@ -680,8 +692,53 @@ class Plugin:
         return row
 
     def agreements_required(self) -> bool:
-        """Whether ``contract.require_agreements`` has been executed in this workspace."""
-        return self.db.one("SELECT 1 AS x FROM contract_workspace_policy WHERE id=1") is not None
+        """Whether ``contract.require_agreements`` has been executed in this workspace.  The
+        audited switch counts even if its policy record went missing: there is no "off"."""
+        return (self.db.one("SELECT 1 AS x FROM contract_workspace_policy WHERE id=1") is not None
+                or self.db.one("SELECT 1 AS x FROM audit_log WHERE action='contract.agreements_required' LIMIT 1") is not None)
+
+    # ---- audited history (what the records must agree with) ---------------------------------- #
+
+    def _on_record(self, action: str, entity_type: str, entity_id: str) -> bool:
+        """Whether the audit log holds ``action`` on the entity."""
+        return self.db.one("SELECT 1 AS x FROM audit_log WHERE action=? AND entity_type=? AND entity_id=? LIMIT 1",
+                           (action, entity_type, entity_id)) is not None
+
+    def _audited_ids(self, action: str, entity_type: str) -> list[str]:
+        return [r["entity_id"] for r in self.db.query("SELECT DISTINCT entity_id FROM audit_log WHERE action=? AND entity_type=? ORDER BY entity_id",
+                                                      (action, entity_type))]
+
+    def _missing_agreements(self, commitment_id: str) -> list[str]:
+        """Agreements the audit log registered for the commitment whose records are gone."""
+        rows = self.db.query(
+            """SELECT DISTINCT g.entity_id FROM audit_log g WHERE g.action='contract.agreement_registered' AND g.entity_type=?
+                 AND json_extract(g.payload_json, '$.commitment_id') IS ?
+                 AND NOT EXISTS (SELECT 1 FROM contract_agreements a WHERE a.id = g.entity_id) ORDER BY g.entity_id""",
+            (AGREEMENT_SUBJECT, commitment_id))
+        return [r["entity_id"] for r in rows]
+
+    def _requirement_record_problems(self, commitment_id: str) -> list[str]:
+        """The commitment's requirement sets against their audited records: each set as audited
+        (version and hash), none missing."""
+        rows = self.db.query("SELECT * FROM contract_requirement_sets WHERE commitment_id=? ORDER BY version", (commitment_id,))
+        entries = {}
+        for g in self.db.query("SELECT payload_json FROM audit_log WHERE action='contract.requirements_set' AND entity_type='commitment' AND entity_id=? ORDER BY seq",
+                               (commitment_id,)):
+            payload = loads(g["payload_json"]) or {}
+            entries[payload.get("set_id")] = payload
+        problems = []
+        for r in rows:
+            g = entries.pop(r["id"], None)
+            try:
+                reqs = loads(r["requirements_json"])
+            except ValueError:
+                reqs = None
+            if (g is None or not isinstance(reqs, list) or hash_json(reqs) != r["requirements_hash"] or g.get("requirements_hash") != r["requirements_hash"]
+                    or g.get("version") != r["version"] or r["requirement_count"] != len(reqs)):
+                problems.append(f"requirement set {r['id']} (commitment {commitment_id} version {r['version']}) does not match its audited record")
+        for set_id, g in entries.items():
+            problems.append(f"requirement set {set_id} (commitment {commitment_id} version {g.get('version')}) is in the audit log but its record is missing")
+        return problems
 
     def policy(self) -> dict[str, Any] | None:
         return self.db.one("SELECT * FROM contract_workspace_policy WHERE id=1")
@@ -855,6 +912,8 @@ class Plugin:
         problems: list[str] = []
         if _hash_of(a, _AGREEMENT_KEYS) != a["content_hash"]:
             problems.append(f"agreement {a['id']} no longer hashes to its recorded content hash")
+        if a["status"] in LIVE_AGREEMENT and self._on_record("contract.agreement_superseded", AGREEMENT_SUBJECT, a["id"]):
+            problems.append(f"agreement {a['id']} was superseded (the audit log records it) although its record reads {a['status']}")
         c = self.db.one("SELECT * FROM commitments WHERE id=?", (a["commitment_id"],))
         if c is None:
             return problems + [f"commitment {a['commitment_id']} is missing"]
@@ -890,6 +949,10 @@ class Plugin:
             problems.append("the approval bound another commitment version or amount")
         if bound.get("sov_hash") != a["sov_hash"]:
             problems.append("the approval bound another schedule of values")
+        # the agreement record does not snapshot the retainage rate; the approval bound it
+        rate = self.db.scalar("SELECT retainage_rate FROM commitments WHERE id=?", (a["commitment_id"],))
+        if bound.get("retainage_rate") != rate:
+            problems.append(f"the commitment's retainage rate changed after the agreement was approved ({bound.get('retainage_rate')} approved, now {rate})")
         return problems
 
     def _signature_problems(self, sig: dict[str, Any] | None, a: dict[str, Any], *, signed: bool) -> list[str]:
@@ -1087,8 +1150,10 @@ class Plugin:
         intact = _hash_of(cert, _CERTIFICATE_KEYS) == cert["content_hash"]
         stale = cur is None or cur["id"] != cert["revision_id"]
         effective, expiry = _dt.date.fromisoformat(cert["effective_date"]), _dt.date.fromisoformat(cert["expiry_date"])
-        valid = cert["status"] == "recorded" and intact and not stale
-        return {"intact": intact, "stale": stale, "valid": valid, "in_force": valid and effective <= day <= expiry,
+        # an audited withdrawal stands even if the record was rewritten to read "recorded"
+        withdrawn = cert["status"] != "recorded" or self._on_record("contract.certificate_withdrawn", CERTIFICATE_SUBJECT, cert["id"])
+        valid = not withdrawn and intact and not stale
+        return {"intact": intact, "stale": stale, "withdrawn": withdrawn, "valid": valid, "in_force": valid and effective <= day <= expiry,
                 "expired": day > expiry, "not_yet_effective": day < effective, "days_to_expiry": (expiry - day).days}
 
     def certificate(self, certificate_id: str) -> dict[str, Any]:
@@ -1132,6 +1197,10 @@ class Plugin:
     def _coverage_facts(self, commitment_ids: list[str]) -> dict[str, Any] | None:
         sets, minimum, supplier = [], {}, None
         for cid in commitment_ids:
+            tampered = self._requirement_record_problems(cid)
+            if tampered:  # fail closed: a rewritten or deleted set never relaxes the requirements
+                raise ContractError(f"the insurance requirements of commitment {cid} do not match their audited record ({'; '.join(tampered)}); "
+                                    "bills and payments on it are refused until the records are restored")
             rs = self._requirement_set(cid)
             if rs is None or not rs["requirements"]:
                 continue
@@ -1156,8 +1225,8 @@ class Plugin:
         if cert is None:
             return f"certificate {bound['id']} is missing"
         st = self._certificate_state(cert, day)
-        if cert["status"] != "recorded":
-            return f"certificate {cert['id']} was withdrawn ({cert['withdrawn_reason']})"
+        if st["withdrawn"]:
+            return f"certificate {cert['id']} was withdrawn ({cert['withdrawn_reason'] or 'recorded in the audit log'})"
         if not st["intact"] or cert["content_hash"] != bound["content_hash"]:
             return f"certificate {cert['id']} changed after the approval bound it"
         if st["stale"]:
@@ -1240,9 +1309,12 @@ class Plugin:
         required = self.agreements_required()
         a = self._live_agreement(commitment_id)
         rs = self._requirement_set(commitment_id)
-        if not required and a is None and (rs is None or not rs["requirements"]):
+        missing = self._missing_agreements(commitment_id)
+        if not required and a is None and (rs is None or not rs["requirements"]) and not missing:
             return None
         facts: dict[str, Any] = {"agreements_required": required, "agreement": None, "requirements": None}
+        if missing:  # bound only then, so ordinary facts keep their shape
+            facts["missing_agreements"] = missing
         if rs is not None:
             facts["requirements"] = {"set_id": rs["id"], "version": rs["version"], "requirements_hash": rs["requirements_hash"]}
         if a is not None:
@@ -1262,6 +1334,10 @@ class Plugin:
 
     def _execution_problems(self, commitment_id: str, facts: dict[str, Any]) -> list[str]:
         """Why the commitment may not execute yet under its contract facts (empty when it may)."""
+        missing = self._missing_agreements(commitment_id)
+        if missing:  # a deleted agreement record never lifts the need for its signature
+            return [f"agreement(s) {', '.join(missing)} of the commitment are in the audit log but their records are missing; "
+                    "the commitment executes only once they are restored and signed"]
         if not facts.get("agreements_required") and facts.get("agreement") is None:
             return []  # requirements only: they are enforced on bills and payments
         a = self._live_agreement(commitment_id)
@@ -1317,6 +1393,9 @@ class Plugin:
 
     def check_execute(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
         operation = approval["operation"]
+        stored = self._approval(approval.get("id"))
+        if stored is not None and (stored["status"] != "granted" or parse_iso(stored["expires_at"]) <= utcnow()):
+            return  # consuming it raises the precise error (consumed, invalidated, expired), not a contract check
         facts = (manifest.get("governance") or {}).get(PLUGIN_NAME)
         if operation == EXECUTE_OPERATION and facts:
             problems = self._execution_problems(approval["subject_id"], facts)
@@ -1549,10 +1628,25 @@ class Plugin:
                 out.append({"commitment_id": c["id"], "title": c["title"], "status": c["status"], "bills": billed, "executed_at": c["executed_at"]})
         return out
 
+    @staticmethod
+    def _continuous_cover(certs: list[dict[str, Any]], day: _dt.date) -> tuple[_dt.date | None, dict[str, Any] | None]:
+        """The last day ``certs`` cover without a gap from ``day`` on, and the certificate whose
+        expiry ends that run ((None, None) when nothing covers ``day`` itself)."""
+        covered, last = day - _dt.timedelta(days=1), None
+        while True:
+            nxt = [x for x in certs if _dt.date.fromisoformat(x["effective_date"]) <= covered + _dt.timedelta(days=1)
+                   and _dt.date.fromisoformat(x["expiry_date"]) > covered]
+            if not nxt:
+                return (covered, last) if last is not None else (None, None)
+            last = max(nxt, key=lambda x: (x["expiry_date"], x["id"]))
+            covered = _dt.date.fromisoformat(last["expiry_date"])
+
     def coverage_findings(self, project_id: str | None = None) -> dict[str, list[dict[str, Any]]]:
         """``expiring``: certificates of suppliers with open commitments that expire within 30
-        days with no later certificate of that kind recorded; ``lapsed``: requirements of
-        executed open commitments with no certificate in force today."""
+        days with no later certificate of that kind recorded, or whose coverage no recorded
+        certificate continues without a gap (at or above the highest minimum the supplier's open
+        commitments require of that kind); ``lapsed``: requirements of executed open commitments
+        with no certificate in force today."""
         expiring: list[dict[str, Any]] = []
         lapsed: list[dict[str, Any]] = []
         certified = {r["party_id"] for r in self.db.query("SELECT DISTINCT party_id FROM contract_certificates")}
@@ -1563,6 +1657,12 @@ class Plugin:
         horizon = today + _dt.timedelta(days=EXPIRY_WARNING_DAYS)
         sql = "SELECT * FROM commitments WHERE status IN ('draft','approved','executed')" + (" AND project_id=?" if project_id else "") + " ORDER BY created_at, id"
         open_commitments = self.db.query(sql, (project_id,) if project_id else ())
+        floor: dict[tuple[str, str], Decimal] = {}
+        for c in open_commitments:
+            rs = self._requirement_set(c["id"]) if c["id"] in with_requirements else None
+            for req in (rs["requirements"] if rs else []):
+                key = (c["supplier_id"], req["kind"])
+                floor[key] = max(floor.get(key, ZERO), money(req["min_limit"]))
         for party_id in sorted({c["supplier_id"] for c in open_commitments} & certified):
             for kind in COVERAGE_KINDS:
                 valid = [x for x in self.db.query("SELECT * FROM contract_certificates WHERE party_id=? AND kind=? AND status='recorded'", (party_id, kind))
@@ -1570,10 +1670,15 @@ class Plugin:
                 if not valid:
                     continue
                 latest = max(valid, key=lambda x: (x["expiry_date"], x["effective_date"], x["id"]))
-                expiry = _dt.date.fromisoformat(latest["expiry_date"])
-                if today <= expiry <= horizon:
-                    expiring.append({"certificate_id": latest["id"], "party_id": party_id, "kind": kind, "expiry_date": latest["expiry_date"],
-                                     "carrier": latest["carrier"], "policy_number": latest["policy_number"]})
+                ending = latest if today <= _dt.date.fromisoformat(latest["expiry_date"]) <= horizon else None
+                if ending is None:  # a later certificate is no renewal if it leaves a gap or falls short
+                    minimum = floor.get((party_id, kind), ZERO)
+                    until, last = self._continuous_cover([x for x in valid if money(x["limit_amount"]) >= minimum], today)
+                    if last is not None and until <= horizon:
+                        ending = last
+                if ending is not None:
+                    expiring.append({"certificate_id": ending["id"], "party_id": party_id, "kind": kind, "expiry_date": ending["expiry_date"],
+                                     "carrier": ending["carrier"], "policy_number": ending["policy_number"]})
         for c in open_commitments:
             if c["status"] != "executed" or c["id"] not in with_requirements:
                 continue
@@ -1585,8 +1690,9 @@ class Plugin:
 
     def integrity_problems(self) -> list[str]:
         """Every contract record re-hashed and cross-checked against its approvals and audit
-        entries; governed bills and payments on commitments with requirements carry a coverage
-        check.  Detects tampering that went around the storage guards."""
+        entries (including its audited supersession or withdrawal, and records the audit log
+        created that are gone); governed bills and payments on commitments with requirements carry
+        a coverage check.  Detects tampering that went around the storage guards."""
         problems: list[str] = []
 
         def audited(action: str, entity_type: str, entity_id: str, key: str, value: Any) -> bool:
@@ -1607,15 +1713,31 @@ class Plugin:
                 ap = self._approval(sig["approval_id"]) if sig else None
                 if sig is None or sig["status"] != "signed" or ap is None or ap["status"] != "consumed" or ap["operation"] != OP_SIGN or ap["subject_id"] != a["id"]:
                     problems.append(f"agreement {a['id']} is signed without a signature executed under a consumed {OP_SIGN} approval")
+            superseded = self._on_record("contract.agreement_superseded", AGREEMENT_SUBJECT, a["id"])
+            if a["status"] in LIVE_AGREEMENT and superseded:
+                problems.append(f"agreement {a['id']} reads {a['status']} although its supersession was audited")
+            if a["status"] == "superseded" and not superseded:
+                problems.append(f"agreement {a['id']} reads superseded without an audited supersession")
         for s in self.db.query("SELECT * FROM contract_signatures ORDER BY prepared_at, id"):
             if _hash_of(s, _SIGNATURE_KEYS) != s["content_hash"] or not audited("contract.signature_prepared", SIGNATURE_SUBJECT, s["id"], "content_hash", s["content_hash"]):
                 problems.append(f"signature {s['id']} does not match its audited preparation")
         for x in self.db.query("SELECT * FROM contract_certificates ORDER BY recorded_at, id"):
             if _hash_of(x, _CERTIFICATE_KEYS) != x["content_hash"] or not audited("contract.certificate_recorded", CERTIFICATE_SUBJECT, x["id"], "content_hash", x["content_hash"]):
                 problems.append(f"certificate {x['id']} does not match its audited record")
-        for r in self.db.query("SELECT * FROM contract_requirement_sets ORDER BY set_at, id"):
-            if hash_json(loads(r["requirements_json"])) != r["requirements_hash"] or not audited("contract.requirements_set", "commitment", r["commitment_id"], "set_id", r["id"]):
-                problems.append(f"requirement set {r['id']} (commitment {r['commitment_id']} version {r['version']}) does not match its audited record")
+            withdrawn = self._on_record("contract.certificate_withdrawn", CERTIFICATE_SUBJECT, x["id"])
+            if x["status"] == "recorded" and withdrawn:
+                problems.append(f"certificate {x['id']} reads recorded although its withdrawal was audited")
+            if x["status"] == "withdrawn" and not withdrawn:
+                problems.append(f"certificate {x['id']} reads withdrawn without an audited withdrawal")
+        # a record the audit log created must still exist (a deletion is never silent)
+        for label, action, subject, table in (("agreement", "contract.agreement_registered", AGREEMENT_SUBJECT, "contract_agreements"),
+                                              ("signature", "contract.signature_prepared", SIGNATURE_SUBJECT, "contract_signatures"),
+                                              ("certificate", "contract.certificate_recorded", CERTIFICATE_SUBJECT, "contract_certificates")):
+            present = {r["id"] for r in self.db.query(f"SELECT id FROM {table}")}
+            problems += [f"{label} {rid} is in the audit log but its record is missing" for rid in self._audited_ids(action, subject) if rid not in present]
+        set_commitments = {r["commitment_id"] for r in self.db.query("SELECT DISTINCT commitment_id FROM contract_requirement_sets")}
+        for cid in sorted(set_commitments | set(self._audited_ids("contract.requirements_set", "commitment"))):
+            problems += self._requirement_record_problems(cid)
         policy = self.policy()
         if policy is None and self.db.one("SELECT 1 AS x FROM audit_log WHERE action='contract.agreements_required' LIMIT 1"):
             problems.append("the audit log records that agreements are required, but the workspace policy record is missing")
@@ -1628,20 +1750,30 @@ class Plugin:
                                   "checked_on": chk["checked_on"], "coverage": loads(chk["coverage_json"])})
             if expected != chk["coverage_hash"] or not audited("contract.coverage_verified", "approval", chk["approval_id"], "coverage_hash", chk["coverage_hash"]):
                 problems.append(f"coverage check {chk['id']} (approval {chk['approval_id']}) does not match its audited record")
-        # governed postings and payments on commitments with requirements rest on a coverage check
-        with_requirements = {r["commitment_id"] for r in self.db.query(
-            """SELECT s.commitment_id FROM contract_requirement_sets s
-               WHERE s.version = (SELECT MAX(version) FROM contract_requirement_sets t WHERE t.commitment_id = s.commitment_id) AND s.requirement_count > 0""")}
-        if with_requirements:
+        # governed postings and payments rest on a coverage check when a commitment in their scope
+        # carried requirements as they executed (by the audited requirement sets: a set recorded
+        # later -- say on the supplier's next subcontract -- does not reach back)
+        history: dict[str, list[tuple[int, int]]] = {}
+        for g in self.db.query("SELECT seq, entity_id, payload_json FROM audit_log WHERE action='contract.requirements_set' AND entity_type='commitment' ORDER BY seq"):
+            history.setdefault(g["entity_id"], []).append((g["seq"], len((loads(g["payload_json"]) or {}).get("requirements") or [])))
+        if any(count for entries in history.values() for _, count in entries):
             checked = {r["approval_id"] for r in self.db.query("SELECT approval_id FROM contract_coverage_checks")}
+            consumed = {r["entity_id"]: r["seq"] for r in self.db.query(
+                "SELECT entity_id, MIN(seq) AS seq FROM audit_log WHERE action='approval.consumed' AND entity_type='approval' GROUP BY entity_id")}
+
+            def required_at(cid: str, approval_id: str) -> bool:
+                at = consumed.get(approval_id)
+                before = [count for seq, count in history.get(cid, []) if at is None or seq < at]
+                return bool(before and before[-1])
+
             for b in self.db.query("""SELECT b.id, b.commitment_id, b.approval_id FROM bills b JOIN approvals a ON a.id = b.approval_id
                                       WHERE a.operation = 'bill.approve' AND b.status NOT IN ('draft','void') ORDER BY b.created_at, b.id"""):
-                if b["commitment_id"] in with_requirements and b["approval_id"] not in checked:
+                if required_at(b["commitment_id"], b["approval_id"]) and b["approval_id"] not in checked:
                     problems.append(f"bill {b['id']} was posted under approval {b['approval_id']} without a recorded coverage check")
             for p in self.db.query("""SELECT i.id, i.bill_id, i.approval_id, a.operation, a.subject_id FROM payment_intents i JOIN approvals a ON a.id = i.approval_id
                                       WHERE a.operation IN ('payment.release','payment.release_retainage') ORDER BY i.created_at, i.id"""):
                 scope = self._coverage_scope(p["operation"], p["subject_id"])
-                if any(cid in with_requirements for cid in scope) and p["approval_id"] not in checked:
+                if any(required_at(cid, p["approval_id"]) for cid in scope) and p["approval_id"] not in checked:
                     problems.append(f"payment {p['id']} was released under approval {p['approval_id']} without a recorded coverage check")
         return problems
 
@@ -1656,7 +1788,7 @@ class Plugin:
         exp, lap = findings["expiring"], findings["lapsed"]
         cov_detail_parts = []
         if exp:
-            cov_detail_parts.append(f"{len(exp)} certificate(s) expire within {EXPIRY_WARNING_DAYS} days with no renewal recorded: "
+            cov_detail_parts.append(f"{len(exp)} certificate(s) expire within {EXPIRY_WARNING_DAYS} days with no renewal recorded that continues the coverage without a gap: "
                                     + ", ".join(f"{e['kind']} {e['policy_number']} of {e['party_id']} (expires {e['expiry_date']})" for e in exp))
         if lap:
             cov_detail_parts.append(f"{len(lap)} required coverage(s) not in force on executed commitments: "
@@ -1668,7 +1800,7 @@ class Plugin:
              else "every billed commitment that needs a signed agreement has one"),
             (f"contract insurance certificates expiring within {EXPIRY_WARNING_DAYS} days", not exp and not lap,
              " | ".join(cov_detail_parts) if cov_detail_parts else
-             f"no certificate on a supplier with open commitments expires within {EXPIRY_WARNING_DAYS} days without a renewal, and required coverage is in force"),
+             f"no certificate on a supplier with open commitments expires within {EXPIRY_WARNING_DAYS} days without a gap-free renewal, and required coverage is in force"),
             ("contract records intact", not integrity, "; ".join(integrity) if integrity else
              "every agreement, signature, certificate and requirement set matches its audited record"),
         ]
@@ -1699,7 +1831,7 @@ class Plugin:
         integrity = self.integrity_problems()
         agreements = self.agreements(project_id)
         return {
-            "agreements_required": policy is not None, "policy": policy,
+            "agreements_required": self.agreements_required(), "policy": policy,
             "agreements": agreements, "commitments": commitments, "certificates": certificates,
             "expiring": findings["expiring"], "lapsed": findings["lapsed"], "unsigned_billed_commitments": unsigned,
             "integrity_problems": integrity,

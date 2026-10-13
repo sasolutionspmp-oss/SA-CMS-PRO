@@ -53,11 +53,12 @@ invalidates every open release approval (each is bound to the policy version it 
 under, so it would go stale at execution anyway) and every other open update approval.
 
 A draft that *weakens* the current policy -- raises a threshold, lengthens the step-up age,
-shortens the cooling-off, turns off the first-payment or co-sign-everything rule, or adds an
-independent party when the policy already names one -- needs a co-signature (``cosign``) by an
-independent party of the *current* policy, distinct from the requester, the approver and the
-executing login.  Without that an owner could lower the bar alone and then release alone.  The
-first version, and any change that only tightens the policy, need none.
+shortens the cooling-off, turns off the first-payment or co-sign-everything rule, adds an
+independent party when the policy already names one, or removes the last one named -- needs a
+co-signature (``cosign``) by an independent party of the *current* policy, distinct from the
+requester, the approver and the executing login.  Without that an owner could lower the bar
+alone and then release alone (or drop the outside party and name their own second login as the
+"first" one).  The first version, and any change that only tightens the policy, need none.
 
 Release rules (governor hooks)
 ------------------------------
@@ -538,7 +539,9 @@ def build_terms(*, high_risk_amount: Any, cosign_amount: Any, step_up_max_age_se
 def weakenings(old: dict[str, Any] | None, new: dict[str, Any]) -> list[str]:
     """How ``new`` loosens ``old`` (empty when ``old`` is None or ``new`` only tightens it).
     Adding an independent party loosens the policy (one more login that can co-sign) only when
-    the policy already names one; naming the first is how the control is set up."""
+    the policy already names one; naming the first is how the control is set up.  Removing the
+    last one loosens it too: otherwise the outside party could be dropped and a new "first" one
+    named in its place, with nobody independent co-signing either step."""
     if old is None:
         return []
     out = []
@@ -558,6 +561,8 @@ def weakenings(old: dict[str, Any] | None, new: dict[str, Any]) -> list[str]:
     added = sorted(p for p in new["independent_parties"] if _norm(p) not in old_parties)
     if added and old_parties:
         out.append("independent_party_added:" + ",".join(added))
+    if old_parties and not new["independent_parties"]:
+        out.append("independent_parties_removed:" + ",".join(sorted(old["independent_parties"])))
     return out
 
 

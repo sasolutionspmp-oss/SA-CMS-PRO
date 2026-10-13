@@ -1521,13 +1521,19 @@ class Plugin:
                          "VALUES (?,?,?,?,?,?,?)", (sid, approval["id"], approval["operation"], person["login"], approver_role, policy["version"], now))
 
     def self_approvals(self, *, awaiting_review: bool = False) -> list[dict[str, Any]]:
-        """Recorded solo-owner self-approvals whose approval was granted, with their review."""
+        """Recorded solo-owner self-approvals whose approval was granted, with their review.  The
+        approver is compared as the registry keys a login (``_norm``), never by SQL's narrower
+        ``lower(trim())``: an approver spelled with a tab or full-width letters is still the owner."""
         rows = self.db.query(
-            """SELECT s.*, a.status AS approval_status, a.subject_type, a.subject_id FROM people_self_approvals s
+            """SELECT s.*, a.status AS approval_status, a.subject_type, a.subject_id, a.approver AS granted_by FROM people_self_approvals s
                  JOIN approvals a ON a.id = s.approval_id
-                WHERE a.approver IS NOT NULL AND lower(trim(a.approver)) = s.login
+                WHERE a.approver IS NOT NULL
                 ORDER BY s.recorded_at, s.id""")
-        return [r for r in rows if not awaiting_review or r["reviewed_at"] is None]
+        out = []
+        for r in rows:
+            if _norm(r.pop("granted_by")) == r["login"] and (not awaiting_review or r["reviewed_at"] is None):
+                out.append(r)
+        return out
 
     def review_self_approval(self, approval_id: str, *, note: str, actor: str) -> dict[str, Any]:
         """The outside party (an active external person other than the approver, and never the

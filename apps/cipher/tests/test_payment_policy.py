@@ -288,6 +288,30 @@ class PolicyVersionTests(unittest.TestCase):
         w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")
         self.assertEqual(w.c.execute(ap["id"]).result["payment_policy_version"], 3)
 
+    def test_removing_the_last_independent_party_is_weakening(self):
+        """Otherwise the owner swaps the outside party alone in two steps: drop it (nothing named,
+        so nothing to co-sign) and name their own second login as the "first" party."""
+        w = World()
+        w.adopt(parties=("ext-accountant",))
+        d = w.pp.draft_policy(high_risk_amount="10000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
+                              first_payment_to_destination_is_high_risk=True, independent_parties=[], reason="drop the accountant", actor="owner")
+        ap = w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.assertEqual(ap["manifest"]["bindings"]["weakens"], ["independent_parties_removed:ext-accountant"])
+        self.assertEqual(ap["manifest"]["bindings"]["cosigners_allowed"], ["ext-accountant"])
+        w.c.approve(ap["id"])
+        with self.assertRaises(CosignatureRequired):
+            w.c.execute(ap["id"])
+        self.assertEqual(w.pp.policy()["terms"]["independent_parties"], ["ext-accountant"])
+        w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")  # the outside party agrees to step down
+        self.assertEqual(w.c.execute(ap["id"]).result["payment_policy_version"], 2)
+        # removing one of several named parties leaves the control in place and is not weakening
+        w2 = World()
+        w2.adopt(parties=("ext-accountant", "ext-auditor"))
+        d2 = w2.pp.draft_policy(high_risk_amount="10000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
+                                first_payment_to_destination_is_high_risk=True, independent_parties=["ext-accountant"], reason="auditor engagement ended",
+                                actor="owner")
+        self.assertEqual(w2.c.request_approval(OP_UPDATE, d2["id"], actor_role="owner")["manifest"]["bindings"]["weakens"], [])
+
     def test_withdrawing_a_draft_invalidates_its_approval(self):
         w = World()
         d = w.pp.draft_policy(high_risk_amount="10000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
