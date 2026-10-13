@@ -56,11 +56,13 @@ not a policy enforces):
   while its delegator still holds the role by grant and is active.
 * ``bootstrap_owner`` runs exactly once, only while no active person holds owner and identity
   enforcement is off.
-* Enabling enforcement needs at least one active owner; with segregation it also needs an
-  active person other than the requester (for a sole owner: the outside party); with solo-owner
-  self-approval it needs an active outside party to review the exceptions.
+* Enabling enforcement needs at least one active owner whose owner grant has no end date; with
+  segregation it also needs an active person other than the requester (for a sole owner: the
+  outside party); with solo-owner self-approval it needs an active outside party to review the
+  exceptions.
 * While a policy enforces, deactivating or revoking the last active owner is refused (the
-  workspace could not be governed afterwards).
+  workspace could not be governed afterwards), and so is removing the last active owner whose
+  owner grant has no end date: an owner grant with an end date lapses on its own.
 
 Authority.  ``holds(login, role, project_id=None)`` is true when the identity is active and
 holds the role by a live grant (entity scope, or the project's scope while a member), or by an
@@ -93,10 +95,14 @@ Integrity.  Triggers refuse raw SQL that would forge, rewrite, delete or replace
 policy version (a grant must name its consumed ``people.grant_role`` approval and pending
 request, which the grantee neither requested, approved nor executed; a policy version must name
 its consumed ``people.set_policy`` approval and pending draft; both extend their hash chain at
-its head).  What a trigger cannot see -- a row rewritten after its triggers were dropped -- the
-hash chains and the approval cross-checks detect: ``integrity_problems`` and the close check
-report it, and while enforcing every governor check fails closed.  A broken policy chain makes
-``enforcing()`` true, so dependent governors fail closed too.
+its head).  What a trigger cannot see -- a row rewritten or deleted after its triggers were
+dropped -- the hash chains and the cross-checks against approvals and the audit log detect: each
+stored policy version matches one audited adoption, in order (so deleted versions never read as
+a weaker policy or as none); a consumed revocation approval and each audited revocation revoked
+their grant; and a membership, a delegation and a self-approval review agree with their audited
+addition, end, revocation, cancellation or review.  ``integrity_problems`` and the close check
+report it, and while enforcing every governor check (and the Ricky SDK) fails closed.  A broken
+policy chain makes ``enforcing()`` true, so dependent governors fail closed too.
 """
 from __future__ import annotations
 
@@ -795,11 +801,14 @@ class Plugin:
         """The identity holds some role that carries ``operation`` (ROLE_AUTHORITY) in scope."""
         return any(Ricky.can(role, operation) and self.holds(login, role, project_id=project_id) for role in ROLE_AUTHORITY)
 
-    def _active_owners(self, day: _dt.date | None = None) -> list[dict[str, Any]]:
-        """Active persons holding a live, entity-scoped owner grant."""
+    def _active_owners(self, day: _dt.date | None = None, *, lasting: bool = False) -> list[dict[str, Any]]:
+        """Active persons holding a live, entity-scoped owner grant (``lasting``: one with no end
+        date, which never lapses on its own)."""
         day = day or self._today()
         out, seen = [], set()
         for g in self.db.query("SELECT * FROM people_grants WHERE role='owner' AND scope='entity' AND revoked_at IS NULL ORDER BY seq"):
+            if lasting and g["effective_to"] is not None:
+                continue
             p = self._person_by_id(g["person_id"])
             if p and p["status"] == "active" and p["kind"] == "person" and self._effective(g, day) and p["id"] not in seen:
                 seen.add(p["id"])
@@ -872,11 +881,25 @@ class Plugin:
 
     def _policy(self) -> tuple[dict[str, Any] | None, list[str]]:
         """The current identity policy version (None: no policy recorded) and every problem
-        found re-verifying the policy chain and each version's approval and draft."""
+        found re-verifying the policy chain and each version's approval and draft.  The chain is
+        anchored to the audit log -- one audited adoption per stored version, in order -- and to
+        the adopted drafts, so versions deleted with the triggers dropped (every one, or only the
+        newest) are problems too, and never read as no policy or as the weaker one before."""
         rows = self.db.query("SELECT * FROM people_policy_versions ORDER BY version")
-        if not rows:
-            return None, []
         problems: list[str] = []
+        adoptions = self.db.query("SELECT entity_id, payload_json FROM audit_log WHERE action='people.policy_adopted' ORDER BY seq")
+        if len(adoptions) != len(rows):
+            problems.append(f"the audit log records {len(adoptions)} identity policy adoption(s) but {len(rows)} version(s) are stored")
+        for v, entry in zip(rows, adoptions):
+            payload = loads(entry["payload_json"]) or {}
+            if entry["entity_id"] != v["id"] or payload.get("version") != v["version"] or payload.get("content_hash") != v["content_hash"]:
+                problems.append(f"identity policy version {v['version']} ({v['id']}) differs from its audited adoption")
+        stored = {v["id"] for v in rows}
+        for d in self.db.query("SELECT id, version_id FROM people_policy_drafts WHERE status='adopted' ORDER BY prepared_at, id"):
+            if d["version_id"] not in stored:
+                problems.append(f"identity policy draft {d['id']} is adopted, but its version {d['version_id']} is not stored")
+        if not rows:
+            return None, problems
         prev = GENESIS
         for n, v in enumerate(rows, start=1):
             label = f"identity policy version {v['version']} ({v['id']})"
@@ -924,6 +947,15 @@ class Plugin:
         return {"policy_version": policy["version"], "policy_hash": policy["content_hash"]}
 
     # ---- integrity ------------------------------------------------------------------------- #
+
+    def _audit_trail(self, *actions: str) -> dict[tuple[str, str], list[dict[str, Any]]]:
+        """The payloads of the audit log's ``actions`` entries by (action, entity id), oldest
+        first: the evidence a record changed through a record method is checked against."""
+        out: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        marks = ", ".join("?" for _ in actions)
+        for e in self.db.query(f"SELECT action, entity_id, payload_json FROM audit_log WHERE action IN ({marks}) ORDER BY seq", actions):
+            out.setdefault((e["action"], e["entity_id"]), []).append(loads(e["payload_json"]) or {})
+        return out
 
     def _person_problems(self) -> list[str]:
         out = []
@@ -975,6 +1007,20 @@ class Plugin:
             g = self.db.one("SELECT revoked_at, revocation_request_id FROM people_grants WHERE id=?", (rev["grant_id"],))
             if g is None or g["revoked_at"] is None or g["revocation_request_id"] != rev["id"]:
                 out.append(f"revocation {rev['id']} is executed but grant {rev['grant_id']} is not revoked by it")
+        # as must every consumed revocation approval and every audited revocation: a revocation
+        # undone with the triggers dropped (its request deleted, the grant's columns cleared) shows
+        for ap in self.db.query("SELECT id, subject_id FROM approvals WHERE operation=? AND status='consumed' ORDER BY id", (OP_REVOKE,)):
+            rev = self.db.one("SELECT * FROM people_revocation_requests WHERE id=?", (ap["subject_id"],))
+            g = self.db.one("SELECT * FROM people_grants WHERE id=?", (rev["grant_id"],)) if rev else None
+            if not (rev and g and rev["status"] == "executed" and rev["approval_id"] == ap["id"] and g["revoked_at"] is not None
+                    and g["revocation_request_id"] == rev["id"] and g["revocation_approval_id"] == ap["id"]):
+                out.append(f"people.revoke_role approval {ap['id']} was consumed, but its revocation {ap['subject_id']} did not revoke its grant")
+        for (_, grant_id), payloads in self._audit_trail("people.role_revoked").items():
+            g = self.db.one("SELECT * FROM people_grants WHERE id=?", (grant_id,))
+            for x in payloads:
+                if not (g and g["revoked_at"] == x.get("revoked_at") and g["revocation_request_id"] == x.get("revocation_id")
+                        and g["revocation_approval_id"] == x.get("approval_id")):
+                    out.append(f"role grant {grant_id} is not revoked as its audited revocation {x.get('revocation_id')} recorded")
         for req in self.db.query("SELECT * FROM people_grant_requests ORDER BY requested_at, id"):
             if self._request_hash(req) != req["content_hash"]:
                 out.append(f"grant request {req['id']} does not hash to its recorded content hash")
@@ -982,6 +1028,9 @@ class Plugin:
 
     def _delegation_problems(self) -> list[str]:
         out = []
+        # a delegation's status is not in its hash, and a revoked one keeps its consumed approval:
+        # its audited revocation or cancellation decides
+        ends = self._audit_trail("people.delegation_revoked", "people.request_cancelled")
         for d in self.db.query("SELECT * FROM people_delegations ORDER BY requested_at, id"):
             label = f"delegation {d['id']} ({d['from_login']} -> {d['to_login']}: {d['role']})"
             if self._delegation_hash(d) != d["content_hash"]:
@@ -994,16 +1043,67 @@ class Plugin:
                         and ((loads(ap["manifest_json"]) or {}).get("bindings") or {}).get("delegation_hash") == d["content_hash"]
                         and all(_norm(x) != d["to_login"] for x in (ap["requested_by"], ap["approver"], ap["consumed_by"]))):
                     out.append(f"{label} is active without a consumed people.delegate approval")
+            if ("people.delegation_revoked", d["id"]) in ends and d["status"] != "revoked":
+                out.append(f"{label} is {d['status']} although its revocation was recorded")
+            if ("people.request_cancelled", d["id"]) in ends and d["status"] != "cancelled":
+                out.append(f"{label} is {d['status']} although its cancellation was recorded")
+        return out
+
+    def _membership_problems(self) -> list[str]:
+        """Project memberships (what lets a project-scoped grant or delegation count) that their
+        audit entries do not back: one added without add_membership, or active after its end."""
+        out = []
+        trail = self._audit_trail("people.membership_added", "people.membership_ended")
+        for m in self.db.query("SELECT m.*, p.login FROM people_memberships m LEFT JOIN people_persons p ON p.id = m.person_id "
+                               "ORDER BY m.added_at, m.id"):
+            label = f"project membership {m['id']} ({m['login']} on {m['project_id']})"
+            if not any(x.get("person_id") == m["person_id"] and x.get("project_id") == m["project_id"]
+                       for x in trail.get(("people.membership_added", m["id"]), [])):
+                out.append(f"{label} is not backed by its audited addition")
+            if m["status"] != "ended" and ("people.membership_ended", m["id"]) in trail:
+                out.append(f"{label} is {m['status']} although its end was recorded")
         return out
 
     def _authority_problems(self) -> list[str]:
-        """Problems with the records that confer authority: identities, grants, delegations and
-        the policy chain.  While enforcing, any of them makes every governor check refuse."""
-        return self._person_problems() + self._grant_problems() + self._delegation_problems() + self._policy()[1]
+        """Problems with the records that confer authority: identities, project memberships,
+        grants and their revocations, delegations and the policy chain.  While enforcing, any of
+        them makes every governor check refuse."""
+        return (self._person_problems() + self._membership_problems() + self._grant_problems() + self._delegation_problems()
+                + self._policy()[1])
 
     def _self_approval_problems(self) -> list[str]:
-        """Self-approvals made under a segregating policy that were never recorded for review."""
+        """Self-approvals made under a segregating policy that were never recorded for review,
+        records that no longer match their audited recording or their approval's requester and
+        approver (so would not await review), and reviews the audit log does not record as made
+        by an outside party other than the approver (each written with a trigger dropped)."""
         out = []
+        recorded = self._audit_trail("people.self_approval_recorded")
+        granted: dict[str, set[str | None]] = {}
+        for e in self.db.query("SELECT entity_id, actor FROM audit_log WHERE action='approval.granted' AND entity_type='approval' "
+                               "AND entity_id IN (SELECT approval_id FROM people_self_approvals)"):
+            granted.setdefault(e["entity_id"], set()).add(_norm(e["actor"]))
+        for s in self.db.query("SELECT s.*, a.operation AS approval_operation, a.requested_by, a.approver FROM people_self_approvals s "
+                               "LEFT JOIN approvals a ON a.id = s.approval_id ORDER BY s.recorded_at, s.id"):
+            if not any(all(x.get(k) == s[k] for k in ("approval_id", "operation", "login", "approver_role", "policy_version"))
+                       for x in recorded.get(("people.self_approval_recorded", s["id"]), [])):
+                out.append(f"the self-approval of approval {s['approval_id']} reads as {s['operation']} by {s['login']} under identity policy "
+                           f"version {s['policy_version']}, which the audit log does not record")
+            # a record outlives a grant refused after it (the approval expiring first): the approver
+            # must be its login only once the audit log records the login granting it
+            if not (s["approval_operation"] == s["operation"] and _norm(s["requested_by"]) == s["login"]
+                    and (_norm(s["approver"]) == s["login"] or s["login"] not in granted.get(s["approval_id"], ()))):
+                out.append(f"the self-approval of approval {s['approval_id']} names {s['login']}, but the approval reads as requested by "
+                           f"{s['requested_by']} and approved by {s['approver']}")
+        reviews = self._audit_trail("people.self_approval_reviewed")
+        for s in self.db.query("SELECT * FROM people_self_approvals WHERE reviewed_at IS NOT NULL ORDER BY recorded_at, id"):
+            reviewer = self._person_row(s["reviewed_by"])
+            if not any(x.get("reviewed_by") == s["reviewed_by"] and x.get("reviewed_at") == s["reviewed_at"]
+                       and x.get("approval_id") == s["approval_id"] for x in reviews.get(("people.self_approval_reviewed", s["id"]), [])):
+                out.append(f"the self-approval of approval {s['approval_id']} reads as reviewed by {s['reviewed_by']} at {s['reviewed_at']}, "
+                           "which the audit log does not record")
+            elif not (reviewer and reviewer["kind"] == "person" and reviewer["external"] and reviewer["login"] != s["login"]):
+                out.append(f"the self-approval of approval {s['approval_id']} reads as reviewed by {s['reviewed_by']}, who is not an outside "
+                           "party other than its approver")
         rows = self.db.query("SELECT id, operation, requested_by, approver, manifest_json FROM approvals "
                              "WHERE approver IS NOT NULL AND json_extract(manifest_json, '$.governance.people.policy_version') IS NOT NULL")
         for a in rows:
@@ -1022,8 +1122,9 @@ class Plugin:
 
     def authority_problems(self) -> list[str]:
         """The problems that make every governor check fail closed while enforcing (identities,
-        grants, delegations and the policy chain), for other surfaces that answer to the
-        registry -- the Ricky SDK refuses every call on the same evidence."""
+        project memberships, grants and their revocations, delegations and the policy chain),
+        for other surfaces that answer to the registry -- the Ricky SDK refuses every call on the
+        same evidence."""
         return self._authority_problems()
 
     def _require_intact(self) -> None:
@@ -1117,7 +1218,8 @@ class Plugin:
         approval) and is audited: the identity stops requesting, approving and executing, its
         grants and delegations stop counting, and approvals it granted can no longer execute
         while enforcing.  Final -- a returning person gets a new login.  While enforcing, an
-        active owner (or the person themself) deactivates, and never the last active owner."""
+        active owner (or the person themself) deactivates, and never the last active owner, nor
+        the last one whose owner grant has no end date."""
         who = self._actor(actor)
         why = _text(reason, "a deactivation reason")
         with self.db.transaction() as conn:
@@ -1133,6 +1235,11 @@ class Plugin:
                 if owners and all(o["id"] == p["id"] for o in owners):
                     raise PeopleError(f"{p['login']} is the last active owner; while identity enforcement is on the workspace keeps one "
                                       "(grant owner to another person first, or turn enforcement off)")
+                lasting = self._active_owners(lasting=True)
+                if lasting and all(o["id"] == p["id"] for o in lasting):
+                    raise PeopleError(f"{p['login']} is the last active owner whose owner grant has no end date; while identity enforcement "
+                                      "is on the workspace keeps one, because an owner grant with an end date lapses on its own (grant owner "
+                                      "without an end date to another person first, or turn enforcement off)")
             now = self._stamp()
             # audited first: the storage guard admits a deactivation only with its audit entry
             self.audit.record(who, "people.person_deactivated", "people_person", p["id"], {"login": p["login"], "deactivated_at": now, "reason": why})
@@ -1306,8 +1413,12 @@ class Plugin:
             problems.append(f"grant {g['id']} is already revoked")
         if g["role"] == OWNER_ROLE and self.enforcing():
             owners = self._active_owners()
+            lasting = self._active_owners(lasting=True)
             if owners and all(o["id"] == g["person_id"] for o in owners):
                 problems.append(f"grant {g['id']} makes {g['login']} the last active owner; while identity enforcement is on the workspace keeps one")
+            elif g["effective_to"] is None and lasting and all(o["id"] == g["person_id"] for o in lasting):
+                problems.append(f"grant {g['id']} makes {g['login']} the last active owner whose owner grant has no end date; while identity "
+                                "enforcement is on the workspace keeps one, because an owner grant with an end date lapses on its own")
         return problems
 
     def grants(self, login: str | None = None) -> list[dict[str, Any]]:
@@ -1461,14 +1572,17 @@ class Plugin:
         return d
 
     def _policy_draft_problems(self, draft: dict[str, Any], *, requester: str | None = None) -> list[str]:
-        """Why the draft could not be adopted now: enforcement needs an active owner; with
-        segregation an active person other than the requester; with solo-owner self-approval an
-        active outside party to review the exceptions."""
+        """Why the draft could not be adopted now: enforcement needs an active owner whose owner
+        grant has no end date; with segregation an active person other than the requester; with
+        solo-owner self-approval an active outside party to review the exceptions."""
         problems = []
         rules = loads(draft["rules_json"]) or {}
         if rules.get("enforce"):
             if not self._active_owners():
                 problems.append("identity enforcement needs at least one active owner (bootstrap_owner, or grant owner first)")
+            elif not self._active_owners(lasting=True):
+                problems.append("identity enforcement needs an active owner whose owner grant has no end date (an owner grant with an end "
+                                "date lapses on its own, and the workspace could not be governed afterwards); grant owner without an end date first")
             if rules.get("segregate"):
                 others = [p for p in self.db.query("SELECT login FROM people_persons WHERE status='active' AND kind='person'")
                           if requester is None or p["login"] != requester]
@@ -1881,6 +1995,12 @@ class Plugin:
 
     # ---- reading, state, close checks and export ------------------------------------------- #
 
+    def _has_records(self) -> bool:
+        """The registry recorded something: an identity, a policy version or an audited people.*
+        action (so tables emptied with their triggers dropped are still verified)."""
+        return bool(self.db.scalar("SELECT COUNT(*) FROM people_persons") or self.db.scalar("SELECT COUNT(*) FROM people_policy_versions")
+                    or self.db.one("SELECT seq FROM audit_log WHERE action LIKE 'people.%' LIMIT 1"))
+
     def _expiring(self, day: _dt.date) -> list[dict[str, Any]]:
         """Live grants and active delegations whose window ends within EXPIRY_WARNING_DAYS."""
         start, end = day.isoformat(), (day + _dt.timedelta(days=EXPIRY_WARNING_DAYS)).isoformat()
@@ -1902,7 +2022,7 @@ class Plugin:
         awaiting outside review and integrity."""
         persons = self.db.query("SELECT * FROM people_persons ORDER BY created_at, id")
         awaiting = self.self_approvals(awaiting_review=True)
-        problems = self.integrity_problems() if persons or self.db.scalar("SELECT COUNT(*) FROM people_policy_versions") else []
+        problems = self.integrity_problems() if self._has_records() else []
         expiring = self._expiring(self._today())
         return {
             "policy": self.current_policy(),
@@ -1938,14 +2058,21 @@ class Plugin:
         * enforcement status (informational, always ok);
         * grants and delegations ending within 14 days (informational, always ok: an expiry is
           scheduled, not an exception -- renew it or let it lapse);
+        * an enforcing workspace keeps an owner without an end date (fails while no active owner
+          holds an owner grant without one: once the dated grants lapse, nothing could approve an
+          owner-only operation again);
         * solo-owner self-approvals awaiting the outside party's review (fails until reviewed);
-        * identity records intact (fails on any grant or policy chain break, unbacked grant or
-          delegation, or unrecorded self-approval)."""
+        * identity records intact (fails on any grant or policy chain break, a policy version
+          missing from the chain, unbacked grant, delegation or membership, a revocation, end or
+          review the audit log does not back, or unrecorded or rewritten self-approval)."""
         def check(name: str, ok: bool, detail: str) -> dict[str, Any]:
             return {"check": name, "name": name, "ok": ok, "detail": detail}
 
         policy = self.current_policy()
-        if policy is None:
+        enforcing = self.enforcing()
+        if policy is None and enforcing:
+            status = "no identity policy version is stored, but the identity records show one was adopted: identity checks fail closed"
+        elif policy is None:
             status = "identity enforcement is off: no identity policy is recorded, so roles are named by the caller (informational)"
         elif not policy["enforce"]:
             status = f"identity enforcement is off under identity policy version {policy['version']}: roles are named by the caller (informational)"
@@ -1959,11 +2086,22 @@ class Plugin:
         awaiting = self.self_approvals(awaiting_review=True)
         sa_detail = ("; ".join(f"approval {s['approval_id']} ({s['operation']}) self-approved by {s['login']} at {s['recorded_at']}" for s in awaiting)
                      + " -- awaiting review by the outside party") if awaiting else "no self-approval awaits outside review"
-        has_records = self.db.scalar("SELECT COUNT(*) FROM people_persons") or self.db.scalar("SELECT COUNT(*) FROM people_policy_versions")
-        problems = self.integrity_problems() if has_records else []
+        lasting = self._active_owners(day, lasting=True) if enforcing else []
+        if not enforcing:
+            owner_detail = "identity enforcement is off, so no owner is required (informational)"
+        elif lasting:
+            owner_detail = f"owner grant without an end date: {', '.join(o['login'] for o in lasting)}"
+        else:
+            ends = [f"{g['login']} until {g['effective_to']}" for o in self._active_owners(day) for g in self._live_grants(o["id"], day)
+                    if g["role"] == OWNER_ROLE]
+            owner_detail = (f"identity enforcement is on, but every owner grant ends ({', '.join(ends)}); after that no one could approve an "
+                            "owner-only operation (people.*) again -- grant owner without an end date to another internal person first" if ends
+                            else "identity enforcement is on, but no active person holds owner, so no owner-only operation (people.*) can be approved")
+        problems = self.integrity_problems() if self._has_records() else []
         return [
             check("people identity enforcement (informational)", True, status),
             check(f"people grants and delegations ending within {EXPIRY_WARNING_DAYS} days (informational)", True, exp_detail),
+            check("people enforcing workspace keeps an owner without an end date", not enforcing or bool(lasting), owner_detail),
             check("people self-approvals reviewed by an outside party", not awaiting, sa_detail),
             check("people identity records intact", not problems, "; ".join(problems) if problems else "identity, grant and policy records verify"),
         ]
