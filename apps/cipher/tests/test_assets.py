@@ -280,6 +280,25 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertTrue(self.c.ledger.trial_balance()["balanced"])
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
+    def test_reversal_cannot_be_dated_before_the_run_it_reverses(self):
+        run1 = self.p.schedule_run(self.a["id"], "P1", "owner")
+        self.c.approve_and_execute("asset.post_depreciation", run1["id"], period_id="P1")
+        ap = self.c.request_approval("asset.reverse_depreciation", run1["id"])
+        self.assertIn("2026-10-01", ap["manifest"]["bindings"]["target_rule"])
+        self.c.approve(ap["id"])
+        with self.assertRaises(AssetError) as ctx:  # P0 (September) starts before the October run
+            self.c.execute(ap["id"], period_id="P0")
+        self.assertIn("cannot be dated before", str(ctx.exception))
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")  # the failed command rolled back
+        self.assertEqual(self.p.get_run(run1["id"])["status"], "posted")
+        self.assertEqual(self.c.ledger.journals(period_id="P0"), [])
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
+        rev = self.c.execute(ap["id"], period_id="P2")  # a later period is fine
+        self.assertEqual((rev.result["status"], rev.result["period_id"]), ("reversed", "P2"))
+        self.assertEqual(self.c.ledger.journal(rev.result["reversal_journal_id"])["period_id"], "P2")
+        self.assertEqual(accumulated(self.c), Decimal("0.00"))
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+
     def test_reverse_requires_posted_run(self):
         run1 = self.p.schedule_run(self.a["id"], "P1", "owner")
         with self.assertRaises(AssetError):
@@ -644,6 +663,34 @@ class DisposalTests(unittest.TestCase):
         run_actions = [e["action"] for e in self.c.audit.entries(entity_type="asset_run", entity_id=run1["id"])]
         self.assertEqual(run_actions, ["asset.run_scheduled", "asset.depreciation_posted"])
         self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_disposal_cannot_be_dated_before_the_assets_journals(self):
+        # capitalized in October (P1): never derecognized in September (P0)
+        a = self.f.capitalized()
+        ap = self.c.request_approval("asset.dispose", a["id"])
+        self.assertIn("2026-10-01", ap["manifest"]["bindings"]["target_rule"])
+        self.c.approve(ap["id"])
+        with self.assertRaises(AssetError) as ctx:
+            self.c.execute(ap["id"], period_id="P0")
+        self.assertIn("cannot be dated before", str(ctx.exception))
+        self.assertEqual(self.p.get_asset(a["id"])["status"], "active")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        # nor before its latest depreciation journal: an October run reversed in November
+        b = self.f.capitalized(description="Plate compactor")
+        run1 = self.p.schedule_run(b["id"], "P1", "owner")
+        self.c.approve_and_execute("asset.post_depreciation", run1["id"], period_id="P1")
+        self.c.approve_and_execute("asset.reverse_depreciation", run1["id"], period_id="P2")
+        for early in ("P0", "P1"):
+            with self.assertRaises(AssetError):
+                self.c.approve_and_execute("asset.dispose", b["id"], period_id=early)
+        self.assertEqual(self.c.ledger.journals(period_id="P0"), [])
+        self.assertEqual(self.c.ledger.balance("1500"), Decimal("24000.00"))
+        r = self.c.approve_and_execute("asset.dispose", b["id"], period_id="P2")
+        self.assertEqual((r.result["status"], r.result["period_id"], r.result["net_book_value"]), ("disposed", "P2", "12000.00"))
+        r = self.c.execute(ap["id"], period_id="P1")  # the first asset's own month is fine
+        self.assertEqual((r.result["status"], r.result["period_id"]), ("disposed", "P1"))
+        self.assertEqual(self.c.ledger.balance("1500"), Decimal("0.00"))
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
 
     def test_dispose_requires_active_asset_without_open_drafts(self):
         registered = self.f.register(description="Unbought")

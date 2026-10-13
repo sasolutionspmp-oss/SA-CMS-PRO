@@ -98,8 +98,13 @@ Statements and aging
 
 WIP (fixture policy, cost-to-cost percent complete)
     percent complete = cost to date (5000 + 5100 + 5300, cumulative, project)
-    / estimated total cost (forecast at completion, or cost to date when the
-    forecast is zero), capped at 1, four decimal places half-up.  Earned
+    / estimated total cost (the forecast's ``fac_v2``: cost to date + estimate
+    to complete + pending exposure over the same three cost types; basis
+    ``fac_v2``), capped at 1, four decimal places half-up.  A project with no
+    estimate (``fac_v2`` zero, or no budget and nothing beyond cost to date)
+    has no WIP: computing it, and so preparing or posting an adjustment, is
+    refused.  The WIP approval shows the percent complete, cost to date,
+    estimate and basis.  Earned
     revenue = money(percent x contract value).  Billed to date = cumulative
     credit balance of 4000 + 4100 for the project, excluding WIP adjustment
     journals.  over/under = billed - earned (negative = underbilled).
@@ -1101,13 +1106,17 @@ class Plugin:
         if cv is None:
             raise CloseError(f"project {project_id} has no contract value; call set_contract_value first")
         contract = money(cv["contract_value"])
-        forecast_at_completion = money(self.c.forecast.project(project_id)["forecast_at_completion"])
+        # The estimate covers the same cost types as cost to date (5000, 5100, 5300): fac_v2,
+        # not the subcontract-only forecast_at_completion.
+        forecast = self.c.forecast.project(project_id)
+        estimated, basis = money(forecast["fac_v2"]), "fac_v2"
+        if estimated <= 0 or (money(forecast["budget"]) <= 0 and estimated <= money(forecast["cost_to_date_by_type"]["total"])):
+            raise CloseError(
+                f"project {project_id} has no estimate of total cost (forecast fac_v2 {fmt(estimated)}, budget {forecast['budget']}); "
+                "set a budget or execute a commitment before computing WIP"
+            )
         dr, cr = self._sum_lines(COST_ACCOUNTS, project_id=project_id, through_start=period["start_date"])
         cost_to_date = money(dr - cr)
-        if forecast_at_completion > 0:
-            estimated, basis = forecast_at_completion, "forecast_at_completion"
-        else:
-            estimated, basis = cost_to_date, "cost_to_date"
         pct = percent_complete(cost_to_date, estimated)
         earned = money(pct * contract)
         bdr, bcr = self._sum_lines(BILLING_ACCOUNTS, project_id=project_id, through_start=period["start_date"], exclude_source_types=(WIP_SOURCE_TYPE,))
@@ -1450,6 +1459,10 @@ class Plugin:
             "inputs_hash": row["inputs_hash"],
             "direction": row["direction"],
             "contract_version": row["contract_version"],
+            "percent_complete": row["percent_complete"],
+            "cost_to_date": row["cost_to_date"],
+            "estimated_total_cost": row["estimated_total_cost"],
+            "estimated_total_cost_basis": loads(row["inputs_json"]).get("estimated_total_cost_basis"),
             "posting_rule": POSTING_RULE,
             "policy": WIP_POLICY,
         }

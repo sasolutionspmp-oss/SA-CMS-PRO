@@ -148,7 +148,7 @@ class CloseGoldenTests(unittest.TestCase):
         w = cl.wip(s.pid, "P1")
         self.assertEqual(w["contract_value"], "150000.00")
         self.assertEqual(w["estimated_total_cost"], "100000.00")
-        self.assertEqual(w["estimated_total_cost_basis"], "forecast_at_completion")
+        self.assertEqual(w["estimated_total_cost_basis"], "fac_v2")
         self.assertEqual(w["cost_to_date"], "45000.00")
         self.assertEqual(w["percent_complete"], "0.4500")
         self.assertEqual(w["earned_revenue"], "67500.00")
@@ -634,18 +634,61 @@ class WipTests(unittest.TestCase):
         self.assertEqual((rec["overbillings_register"], rec["overbillings_ledger"], rec["reconciled"]), ("10000.00", "10000.00", True))
         self.assertTrue(c.ledger.trial_balance()["balanced"])
 
-    def test_estimate_falls_back_to_cost_and_percent_caps_at_one(self):
+    def test_estimate_without_commitments_is_the_forecast_never_cost_to_date(self):
         s = Scenario()
-        cl = s.close
+        c, cl = s.c, s.close
         s.cost("12000")
         cl.set_contract_value(s.pid, "50000", actor="owner")
-        w = cl.wip(s.pid, "P1")  # no commitments: forecast is zero, cost to date is the estimate
+        w = cl.wip(s.pid, "P1")  # no commitments: the 100,000 budget still estimates the remaining cost
         self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["percent_complete"], w["earned_revenue"]),
-                         ("cost_to_date", "12000.00", "1.0000", "50000.00"))
-        s.commitment(amounts=("10000",))  # forecast 10,000 now, below cost: capped
+                         ("fac_v2", "100000.00", "0.1200", "6000.00"))
+        s.commitment(amounts=("10000",))  # inside the budget: the estimate stays 100,000
         w = cl.wip(s.pid, "P1")
-        self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["percent_complete"]), ("forecast_at_completion", "10000.00", "1.0000"))
-        self.assertEqual(w["over_under"], "-50000.00")
+        self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["percent_complete"]), ("fac_v2", "100000.00", "0.1200"))
+        self.assertEqual(w["over_under"], "-6000.00")
+        # no budget and nothing committed: the forecast is cost to date itself, which is no estimate
+        bare = c.create_project(name="Synthetic unbudgeted job", entity="S&A Solutions LLC (synthetic)", budget="0", customer_id=s.customer["id"])
+        s.journal([{"account": "5100", "debit": "400", "project_id": bare["id"]}, {"account": "1000", "credit": "400", "project_id": bare["id"]}])
+        cl.set_contract_value(bare["id"], "50000", actor="owner")
+        for attempt in (lambda: cl.wip(bare["id"], "P1"), lambda: cl.prepare_wip_adjustment(bare["id"], "P1", actor="owner")):
+            with self.assertRaises(CloseError) as ctx:
+                attempt()
+            self.assertIn("no estimate of total cost", str(ctx.exception))
+        self.assertIn("no estimate of total cost", cl.state(bare["id"])["wip_error"])
+        self.assertEqual(c.ledger.balance("1160"), D("0.00"))
+
+    def test_percent_complete_counts_labor_and_reimbursables_on_both_sides(self):
+        # cost to date includes 5000, 5100 and 5300, so the estimate must too (fac_v2), not
+        # the subcontract-only forecast_at_completion that would put this job at 35%
+        s = Scenario(keep=("labor",))
+        c, cl = s.c, s.close
+        lab = c.plugin("labor")
+        emp = c.add_party(kind="employee", name="Design Engineer")
+        lab.set_rate(emp["id"], "2026-10-01", "2500.00", "3000.00", actor="owner")
+        phase = lab.add_phase(s.pid, "DD", "Design development", "100", "30000.00", True, actor="pm")
+        lab.log_time(emp["id"], s.pid, phase["id"], "2026-10-15", "8", "", actor="emp")  # labor cost 20,000.00
+        ts = lab.submit_timesheet(emp["id"], "P1", actor="emp")
+        c.approve_and_execute("labor.approve_timesheet", ts["id"], period_id="P1")
+        cmt = s.commitment()  # 100,000 subcontract
+        s.supplier_bill(cmt, "10000")
+        s.cost("5000")  # reimbursable
+        s.prime_bill("30000")
+        cl.set_contract_value(s.pid, "200000", actor="owner")
+        f = c.forecast.project(s.pid)
+        self.assertEqual((f["forecast_at_completion"], f["cost_to_date_by_type"]["total"], f["fac_v2"]), ("100000.00", "35000.00", "125000.00"))
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["cost_to_date"], w["estimated_total_cost"], w["estimated_total_cost_basis"], w["percent_complete"]),
+                         ("35000.00", "125000.00", "fac_v2", "0.2800"))
+        self.assertEqual((w["earned_revenue"], w["billed_to_date"], w["over_under"], w["position"]), ("56000.00", "30000.00", "-26000.00", "underbilled"))
+        row = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        ap = c.request_approval("close.post_wip_adjustment", row["id"])
+        self.assertEqual({k: ap["manifest"]["bindings"][k] for k in ("percent_complete", "cost_to_date", "estimated_total_cost", "estimated_total_cost_basis")},
+                         {"percent_complete": "0.2800", "cost_to_date": "35000.00", "estimated_total_cost": "125000.00", "estimated_total_cost_basis": "fac_v2"})
+        c.approve(ap["id"])
+        c.execute(ap["id"], period_id="P1")
+        self.assertEqual(c.ledger.balance("1160"), D("26000.00"))
+        self.assertEqual(c.ledger.balance("4000", project_id=s.pid), D("56000.00"))  # revenue now equals earned
+        self.assertTrue(c.ledger.trial_balance()["balanced"])
 
     def test_zero_adjustment_and_missing_contract_value_are_rejected(self):
         s = Scenario()
@@ -727,9 +770,10 @@ class WipTests(unittest.TestCase):
 
         row2 = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
         self.assertEqual(cl.wip_adjustment(row["id"])["status"], "superseded")
-        self.assertEqual((row2["percent_complete"], row2["earned_revenue"], row2["amount"]), ("0.4600", "69000.00", "9000.00"))
+        # 46,000 / 101,000: the extra 1,000 is cost beyond the 55,000 still committed, so the estimate grows too
+        self.assertEqual((row2["percent_complete"], row2["earned_revenue"], row2["amount"]), ("0.4554", "68310.00", "8310.00"))
         c.approve_and_execute("close.post_wip_adjustment", row2["id"], period_id="P1")
-        self.assertEqual(c.ledger.balance("1160"), D("9000.00"))
+        self.assertEqual(c.ledger.balance("1160"), D("8310.00"))
         self.assertTrue(c.audit.verify_chain()["ok"])
 
     def test_contract_value_is_versioned_validated_and_supersedes_drafts(self):
