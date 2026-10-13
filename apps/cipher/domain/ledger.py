@@ -23,15 +23,18 @@ open period that receives the reversal.  An approval can be requested only while
 the journal is unreversed and its latest request is pending; once either changes,
 executing an earlier approval invalidates it.  Journals whose source document is
 kept by a subledger that does not follow a bare ledger reversal (a bill stays
-payable, a payment stays settled, an asset stays capitalized) are refused: they
-are corrected through the owning module's own operation (``SUBLEDGER_OWNED_SOURCES``).
-A reversal journal is never itself reversed through ``journal.reverse``.
+payable, a payment stays settled, an asset stays capitalized, an approved timesheet
+stays accrued) are refused: they are corrected through the owning module's own
+operation (``SUBLEDGER_OWNED_SOURCES``).  A reversal journal is never itself
+reversed through ``journal.reverse``.  A module whose document follows a reversal
+with a change of its own registers a hook for its source type in
+``Ledger.reversal_hooks``; ``reverse`` runs it in the reversal's transaction.
 """
 from __future__ import annotations
 
 from datetime import date
 from decimal import Decimal
-from typing import Any
+from typing import Any, Callable
 
 from ..core.approvals import StaleApprovalError, build_manifest
 from ..core.audit import Audit
@@ -53,8 +56,9 @@ MAX_REASON_LENGTH = 500
 # release would still pay it).  journal.reverse refuses them and names the owning path.
 # Sources whose module derives its subledger from the journals themselves and treats a
 # reversal as clearing the document (prime bills, retainage invoices and collections in
-# receivables; labor invoices and collections; reimbursement billings and collections)
-# stay reversible.  A module that adapts can be dropped from Ledger.reversal_owners.
+# receivables; labor invoices, whose time a reversal frees to be billed again, and collections;
+# reimbursement billings and collections) stay reversible.  A module that adapts can be
+# dropped from Ledger.reversal_owners.
 SUBLEDGER_OWNED_SOURCES: dict[str, str] = {
     "bill": "the bills subledger (the bill would stay posted and payable)",
     "retainage_release": "the bills subledger (retainage.release)",
@@ -64,6 +68,8 @@ SUBLEDGER_OWNED_SOURCES: dict[str, str] = {
     "asset_run": "the asset register (asset.reverse_depreciation)",
     "wip_adjustment": "the close module (close.reverse_wip_adjustment)",
     "reimbursement_claim": "the reimbursements module (reimbursement.void)",
+    "labor_timesheet": "the labor module (an approved timesheet stays approved; its 2200 accrual and payroll follow the timesheet, not the journal)",
+    "labor_payroll": "the labor module (a posted payroll stays settled; the 2200 accrual follows payroll status, not the journal)",
 }
 
 # code, name, type, control kind
@@ -133,6 +139,10 @@ class Ledger:
         self.db = db
         self.audit = audit
         self.reversal_owners: dict[str, str] = dict(SUBLEDGER_OWNED_SOURCES)
+        # source type -> hook(original journal, reversal journal, actor), run by ``reverse``
+        # inside its transaction for a module whose document follows the reversal; a hook that
+        # raises rolls the reversal back.
+        self.reversal_hooks: dict[str, Callable[[dict[str, Any], dict[str, Any], str], None]] = {}
 
     # ---- chart and periods ------------------------------------------------ #
 
@@ -340,7 +350,8 @@ class Ledger:
         A journal is reversed at most once (also enforced by a unique index).  Any
         pending ``journal.reverse`` request for the journal is resolved in the same
         transaction: ``request_id`` (the governed path) becomes executed, any other
-        pending request is canceled as superseded."""
+        pending request is canceled as superseded.  A hook registered in
+        ``reversal_hooks`` for the journal's source type runs in that transaction too."""
         why = _text(reason, "a reversal reason")
         with self.db.transaction() as conn:
             original = self.journal(journal_id)
@@ -366,6 +377,9 @@ class Ledger:
                 approval_id=approval_id,
                 reversal_of=journal_id,
             )
+            hook = self.reversal_hooks.get(original["source_type"])
+            if hook is not None:
+                hook(original, rev, posted_by)
             now = utcnow_iso()
             for rid in pending:
                 if rid == request_id:

@@ -27,9 +27,10 @@ Posting rules (fixture policy ``cipher-posting-rules/1``):
 
 Accounts receivable from billings (``ar_open_items``): each posted billing is open for its
 billed amount less the collections recorded against it whose journal still stands; a reversal
-of the billing journal (for example through ``journal.reverse``) clears whatever it billed,
-and a reversal of a collection journal (a customer receipt returned unpaid) reinstates what
-that collection cleared, so the billing can be collected again under a new provider reference.
+of the billing journal (for example through ``journal.reverse``) clears whatever it billed
+(that amount of the claim can then be billed again, once), and a reversal of a collection
+journal (a customer receipt returned unpaid) reinstates what that collection cleared, so
+the billing can be collected again under a new provider reference.
 Nothing else clears a billing.  The receivables domain adds these items to the AR subledger it reconciles to 1100
 (``receivables.extra_ar_sources``), and ``close_checks`` confirms the items match the 1100
 postings made by billings, their collections and their reversals.
@@ -574,8 +575,14 @@ class Plugin:
         return self._payment_total(claim_id, "draft")
 
     def _billed_total(self, claim_id: str, *, include_drafts: bool) -> Decimal:
+        """What the claim's billings bill.  A billing whose journal was reversed is cleared by
+        that reversal and bills nothing, so its amount can be billed again, once."""
         statuses = "('draft','billed')" if include_drafts else "('billed')"
-        rows = self.db.query(f"SELECT amount FROM reimbursement_billings WHERE claim_id=? AND status IN {statuses}", (claim_id,))
+        rows = self.db.query(
+            f"SELECT amount FROM reimbursement_billings b WHERE claim_id=? AND status IN {statuses}"
+            " AND NOT EXISTS (SELECT 1 FROM journals r WHERE r.reversal_of = b.journal_id)",
+            (claim_id,),
+        )
         return total(r["amount"] for r in rows)
 
     def _payable_row(self, row: dict[str, Any]) -> Decimal:
@@ -826,7 +833,8 @@ class Plugin:
 
     def create_billing(self, claim_id: str, amount, *, actor: str) -> dict[str, Any]:
         """Draft a customer billing for a billable, approved claim.  Billings
-        (drafted or billed) may not exceed the claim amount in total."""
+        (drafted or billed, less those whose journal was reversed) may not exceed
+        the claim amount in total."""
         amt = _positive_amount(amount, "billing amount")
         with self.db.transaction() as conn:
             row = self._claim_row(claim_id)
