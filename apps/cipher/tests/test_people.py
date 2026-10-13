@@ -85,6 +85,16 @@ def _grant_insert(c, *, seq, prev_hash, request_id, person_id, login, role="cont
         (f"pgr_forged_{seq}_{role}", seq, request_id, person_id, login, role, origin, approval_id, prev_hash, f"forged-{seq}-{role}-{origin}"))
 
 
+def _assert_fails_closed(test, w, needle):
+    """The tampering is reported among the authority problems (what the Ricky SDK refuses on) and
+    by the close check, and the governor refuses while enforcing."""
+    problems = w.p.authority_problems()
+    test.assertTrue(any(needle in x for x in problems), problems)
+    test.assertFalse(w.check("people identity records intact")["ok"])
+    with test.assertRaises(IdentityIntegrityError):
+        w.c.request_approval("commitment.execute", w.commitment(), actor_role="pm", requested_by="pm.lee")
+
+
 # --------------------------------------------------------------------------- #
 # 1. no policy recorded: nothing changes                                       #
 # --------------------------------------------------------------------------- #
@@ -251,7 +261,9 @@ class BootstrapTests(unittest.TestCase):
         w2.p.now = clock(real)
         w2.p.register_person("olivia", "Synthetic owner", actor="setup")
         w2.grant("olivia", "owner", by="setup", approver="setup", effective_to=(real + _dt.timedelta(days=30)).isoformat())
+        w2.p._policy_draft_problems = lambda draft, requester=None: []  # enforcement adopted before it needed an owner without an end date
         w2.policy(enforce=True, segregate=False, by="setup", approver="setup")
+        del w2.p._policy_draft_problems
         w2.p.now = clock(real + _dt.timedelta(days=31))
         self.assertEqual(w2.p._active_owners(), [])
         with self.assertRaisesRegex(PeopleError, "enforcement is on"):
@@ -494,6 +506,49 @@ class GrantTamperingTests(unittest.TestCase):
         brief = c.ricky.brief(w.a)
         self.assertTrue(any(it["kind"] == "close_check" and "identity records intact" in it["text"] for it in brief["items"]))
 
+    def test_a_revocation_undone_past_its_triggers_is_detected(self):
+        """A revocation is anchored to its consumed approval and its audit entry: clearing the
+        grant's revocation and deleting the request behind it restores no authority."""
+        w = World().team()
+        c, p = w.c, w.p
+        kim = next(g for g in p.grants("ctrl.kim") if g["role"] == "controller")
+        rev = p.request_revocation(kim["id"], reason="left the company (synthetic)", actor="pm.ana")
+        w.run(OP_REVOKE, rev["id"], requester="pm.ana", approver="travis")
+        self.assertFalse(p.holds("ctrl.kim", "controller"))
+        for trigger in ("people_grants_update_guard", "people_revocation_requests_no_delete"):
+            c.db.execute(f"DROP TRIGGER {trigger}")
+        c.db.execute("UPDATE people_grants SET revoked_at=NULL, revoked_by=NULL, revocation_request_id=NULL, revocation_approval_id=NULL WHERE id=?",
+                     (kim["id"],))
+        c.db.execute("DELETE FROM people_revocation_requests WHERE id=?", (rev["id"],))
+        self.assertTrue(p.holds("ctrl.kim", "controller"))  # the row reads as live again ...
+        _assert_fails_closed(self, w, "did not revoke its grant")  # ... but nothing honors it
+        self.assertTrue(any("audited revocation" in x for x in p.integrity_problems()))
+
+    def test_an_ended_membership_revived_past_its_trigger_is_detected(self):
+        """Ending a project membership is anchored to its audit entry: revived with raw SQL, the
+        project-scoped authority it carried is honored neither by the governor nor by the SDK."""
+        from apps.cipher.ricky_sdk import RickySDK
+        w = World().team()
+        c, p = w.c, w.p
+        sdk = RickySDK(c)
+        def read():
+            return sdk.invoke("read_customer_deposits", {"project_id": w.a}, actor="pm.lee", actor_role="pm")
+        self.assertEqual(read()["status"], "ok")
+        p.end_membership("pm.lee", w.a, reason="moved off the job (synthetic)", actor="travis")
+        self.assertEqual(read()["status"], "refused")
+        c.db.execute("DROP TRIGGER people_memberships_update_guard")
+        c.db.execute("UPDATE people_memberships SET status='active', ended_by=NULL, ended_at=NULL, end_reason=NULL WHERE project_id=?", (w.a,))
+        self.assertTrue(p.holds("pm.lee", "pm", project_id=w.a))
+        _assert_fails_closed(self, w, "is active although its end was recorded")
+        refused = read()
+        self.assertEqual(refused["status"], "refused")
+        self.assertIn("not intact", refused["error"])
+        # a membership inserted without add_membership has no audited addition
+        c.db.execute("DROP TRIGGER people_memberships_insert_guard")
+        c.db.execute("INSERT INTO people_memberships (id, person_id, project_id, status, added_by, added_at) VALUES ('pmb_forged', ?, ?, 'active', 'travis', 't')",
+                     (p.person_for("pm.ana")["id"], w.b))
+        self.assertTrue(any("pmb_forged" in x and "audited addition" in x for x in p.authority_problems()))
+
 
 # --------------------------------------------------------------------------- #
 # 6. delegations                                                               #
@@ -569,6 +624,23 @@ class DelegationTests(unittest.TestCase):
         with self.assertRaisesRegex(sqlite3.DatabaseError, "final"):
             c.db.execute("UPDATE people_delegations SET status='active' WHERE id=?", (d["id"],))
 
+    def test_a_revoked_or_cancelled_delegation_revived_past_its_trigger_is_detected(self):
+        """A delegation's end is anchored to its audit entry: its status is not in its hash, and a
+        revoked delegation still has its consumed approval, so the audit log decides."""
+        w = World().team()
+        c, p = w.c, w.p
+        d, _ = self.delegate(w, "pm.ana", "ctrl.kim", "pm", by="pm.ana", effective_to="2026-10-30")
+        p.revoke_delegation(d["id"], reason="back from leave (synthetic)", actor="pm.ana")
+        pending = p.request_delegation("pm.ana", "ext.acct", "pm", effective_to="2026-10-30", reason="cover", actor="pm.ana")
+        p.cancel_request(pending["id"], reason="not needed (synthetic)", actor="pm.ana")
+        self.assertFalse(p.holds("ctrl.kim", "pm"))
+        c.db.execute("DROP TRIGGER people_delegations_update_guard")
+        c.db.execute("UPDATE people_delegations SET status='active', ended_by=NULL, ended_at=NULL, end_reason=NULL WHERE id=?", (d["id"],))
+        c.db.execute("UPDATE people_delegations SET status='pending', ended_by=NULL, ended_at=NULL, end_reason=NULL WHERE id=?", (pending["id"],))
+        self.assertTrue(p.holds("ctrl.kim", "pm"))
+        _assert_fails_closed(self, w, "is active although its revocation was recorded")
+        self.assertTrue(any(pending["id"] in x and "is pending although its cancellation was recorded" in x for x in p.authority_problems()))
+
 
 # --------------------------------------------------------------------------- #
 # 7. identity policy versions                                                  #
@@ -618,6 +690,20 @@ class PolicyTests(unittest.TestCase):
         w3.p.bootstrap_owner("travis", "Synthetic owner")
         self.assertEqual(w3.policy(enforce=True, segregate=False)["policy_version"], 1)
 
+    def test_enabling_enforcement_needs_an_owner_grant_without_an_end_date(self):
+        """An owner grant with an end date lapses on its own; an enforcing workspace whose only
+        owner lapsed could never approve an owner-only operation (people.*) again."""
+        w = World()
+        p, c = w.p, w.c
+        p.bootstrap_owner("travis", "Synthetic founding owner")
+        p.register_person("olivia", "Synthetic interim owner", actor="travis")
+        w.grant("olivia", "owner", effective_to="2026-11-11")
+        p.deactivate_person("travis", reason="founder left (synthetic)", actor="olivia")  # not enforcing: allowed
+        draft = p.prepare_policy(enforce=True, segregate=False, reason="enforce identities (synthetic)", actor="olivia")
+        with self.assertRaisesRegex(PeopleIneligible, "no end date"):
+            c.request_approval(OP_POLICY, draft["id"], actor_role="owner", requested_by="olivia")
+        self.assertFalse(p.enforcing())
+
     def test_raw_sql_cannot_forge_rewrite_or_delete_policy_versions(self):
         w = World().team()
         c = w.c
@@ -653,6 +739,39 @@ class PolicyTests(unittest.TestCase):
         self.assertEqual(p.approval_policy("commitment.execute", {}), {"integrity": "identity policy records are not intact"})
         with self.assertRaises(IdentityIntegrityError):
             c.request_approval("commitment.execute", cmt, actor_role="pm", requested_by="pm.lee")
+        self.assertFalse(w.check("people identity records intact")["ok"])
+
+    def test_policy_versions_deleted_past_their_trigger_fail_closed(self):
+        """Each stored version is anchored to its audited adoption: deleting every version with the
+        trigger dropped never reads as "no policy recorded" (enforcement off)."""
+        w = World().team()
+        c, p = w.c, w.p
+        c.db.execute("DROP TRIGGER people_policy_versions_no_delete")
+        c.db.execute("DELETE FROM people_policy_versions")
+        self.assertIsNone(p.current_policy())
+        self.assertTrue(p.enforcing())  # no version is stored, but the audit log records an adoption
+        self.assertEqual(p.approval_policy("commitment.execute", {}), {"integrity": "identity policy records are not intact"})
+        problems = p.integrity_problems()
+        self.assertTrue(any("records 1 identity policy adoption(s) but 0 version(s) are stored" in x for x in problems), problems)
+        self.assertTrue(any("is adopted, but its version" in x for x in problems), problems)
+        with self.assertRaises(IdentityIntegrityError):
+            c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="mallory")
+        self.assertFalse(w.check("people identity records intact")["ok"])
+        self.assertNotIn("enforcement is off", w.check("people identity enforcement (informational)")["detail"])
+
+    def test_deleting_the_newest_policy_version_past_its_trigger_is_detected(self):
+        """Deleting only the head would otherwise fall back to the weaker policy before it."""
+        w = World().team()  # version 1 segregates
+        c, p = w.c, w.p
+        w.policy(enforce=True, segregate=False, by="ctrl.kim", approver="travis")  # version 2 does not
+        w.policy(enforce=True, segregate=True, by="ctrl.kim", approver="travis")   # version 3 segregates again
+        c.db.execute("DROP TRIGGER people_policy_versions_no_delete")
+        c.db.execute("DELETE FROM people_policy_versions WHERE version=3")
+        self.assertEqual(p.current_policy()["version"], 2)
+        self.assertFalse(p.current_policy()["intact"])
+        self.assertTrue(any("records 3 identity policy adoption(s) but 2 version(s)" in x for x in p.integrity_problems()))
+        with self.assertRaises(IdentityIntegrityError):
+            c.request_approval("commitment.execute", w.commitment(), actor_role="pm", requested_by="pm.lee")
         self.assertFalse(w.check("people identity records intact")["ok"])
 
     def test_a_policy_change_invalidates_in_flight_approvals(self):
@@ -855,6 +974,32 @@ class EnforcementTests(unittest.TestCase):
         with self.assertRaisesRegex(PeopleError, "last active owner"):
             p.request_revocation(owner_grant["id"], reason="x", actor="ctrl.kim")
 
+    def test_the_owner_kept_while_enforcing_holds_an_owner_grant_without_an_end_date(self):
+        """An owner whose grant has an end date is no successor: once the date passes no one
+        holds owner, so removing the last owner without an end date is refused, at request and
+        again at execution."""
+        c, p, w = self.c, self.p, self.w
+        p.register_person("olivia", "Synthetic interim owner", actor="travis")
+        w.grant("olivia", "owner", by="ctrl.kim", effective_to="2026-11-11")
+        self.assertEqual([o["login"] for o in p._active_owners()], ["travis", "olivia"])
+        travis_owner = p.grants("travis")[0]
+        with self.assertRaisesRegex(PeopleError, "no end date"):
+            p.deactivate_person("travis", reason="founder leaving (synthetic)", actor="olivia")
+        with self.assertRaisesRegex(PeopleError, "no end date"):
+            p.request_revocation(travis_owner["id"], reason="founder leaving (synthetic)", actor="olivia")
+        # with a second owner without an end date the revocation may be requested and approved ...
+        p.register_person("omar", "Synthetic successor owner", actor="travis")
+        w.grant("omar", "owner", by="ctrl.kim")
+        rev = p.request_revocation(travis_owner["id"], reason="founder leaving (synthetic)", actor="ctrl.kim")
+        ap = c.request_approval(OP_REVOKE, rev["id"], actor_role="owner", requested_by="ctrl.kim")
+        c.approve(ap["id"], approver="olivia")
+        # ... but once that owner leaves, it can no longer execute
+        p.deactivate_person("omar", reason="left before the handover (synthetic)", actor="travis")
+        with self.assertRaisesRegex(StaleApprovalError, "no end date"):
+            c.execute(ap["id"], actor="olivia")
+        self.assertTrue(p.holds("travis", "owner"))
+        self.assertTrue(w.check("people enforcing workspace keeps an owner without an end date")["ok"])
+
 
 # --------------------------------------------------------------------------- #
 # 9. solo-owner mode and the outside party                                     #
@@ -950,6 +1095,26 @@ class SoloOwnerTests(unittest.TestCase):
         self.assertFalse(intact["ok"])  # ... but the omission is caught
         self.assertIn("without a self-approval record", intact["detail"])
 
+    def test_a_review_written_past_its_trigger_is_detected(self):
+        """A review counts only as the audit log records it, by an outside party other than the
+        approver: written with the trigger dropped, it fails the close check."""
+        at = "2026-10-12T12:00:00Z"
+        for reviewer, audited in (("ext.acct", False), ("travis", True)):
+            with self.subTest(reviewer=reviewer, audited=audited):
+                w = self.solo()
+                c = w.c
+                ap = c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="travis")
+                c.approve(ap["id"], approver="travis")
+                row = c.db.one("SELECT * FROM people_self_approvals WHERE approval_id=?", (ap["id"],))
+                if audited:  # the audit entry forged too: the reviewer is still not an outside party
+                    c.audit.record(reviewer, "people.self_approval_reviewed", "people_self_approval", row["id"],
+                                   {"approval_id": ap["id"], "reviewed_by": reviewer, "reviewed_at": at, "note": "fine"})
+                c.db.execute("DROP TRIGGER people_self_approvals_update_guard")
+                c.db.execute("UPDATE people_self_approvals SET reviewed_by=?, reviewed_at=?, review_note='fine' WHERE id=?", (reviewer, at, row["id"]))
+                intact = w.check("people identity records intact")
+                self.assertFalse(intact["ok"])
+                self.assertIn(ap["id"], intact["detail"])
+
 
 # --------------------------------------------------------------------------- #
 # 10. close checks, state and export                                           #
@@ -989,6 +1154,28 @@ class CloseCheckAndStateTests(unittest.TestCase):
         self.assertEqual(len(export["policy_versions"]), 1)
         self.assertEqual(export["integrity_problems"], [])
         self.assertTrue(c.audit.verify_chain()["ok"])
+
+    def test_an_enforcing_workspace_whose_owner_grants_all_end_fails_the_close_check(self):
+        """A workspace that turned enforcement on before it needed an owner without an end date:
+        its only owner grant lapses on its own, so the close check fails before and after."""
+        name = "people enforcing workspace keeps an owner without an end date"
+        real = _dt.datetime.now(_dt.timezone.utc).date()  # the policy table's storage guard reads the real date
+        w = World()
+        p = w.p
+        p.now = clock(real)
+        p.register_person("olivia", "Synthetic owner", actor="setup")
+        w.grant("olivia", "owner", by="setup", approver="setup", effective_to=(real + _dt.timedelta(days=30)).isoformat())
+        self.assertTrue(w.check(name)["ok"])  # not enforcing: no owner is required
+        p._policy_draft_problems = lambda draft, requester=None: []  # the rule this workspace predates
+        w.policy(enforce=True, segregate=False, by="setup", approver="setup")
+        del p._policy_draft_problems
+        check = w.check(name)
+        self.assertFalse(check["ok"])
+        self.assertIn("olivia", check["detail"])
+        p.now = clock(real + _dt.timedelta(days=31))
+        self.assertFalse(w.check(name)["ok"])
+        brief = w.c.ricky.brief(w.a)
+        self.assertTrue(any(it["kind"] == "close_check" and name in it["text"] for it in brief["items"]))
 
 
 # --------------------------------------------------------------------------- #
