@@ -896,6 +896,19 @@ class SoloOwnerTests(unittest.TestCase):
             p.review_self_approval(ap["id"], note="again", actor="ext.acct")
         self.assertEqual(p.integrity_problems(), [])
 
+    def test_a_self_approval_awaits_review_however_the_approver_spells_the_login(self):
+        for spelled in ("\ttravis", "travis\n", "ＴＲＡＶＩＳ"):  # the same identity as the registry keys it
+            with self.subTest(approver=repr(spelled)):
+                w = self.solo()
+                c, p = w.c, w.p
+                ap = c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="travis")
+                c.approve(ap["id"], approver=spelled)
+                self.assertEqual(c.execute(ap["id"], actor="travis").result["status"], "executed")
+                self.assertEqual([r["approval_id"] for r in p.self_approvals(awaiting_review=True)], [ap["id"]])
+                self.assertFalse(w.check("people self-approvals reviewed by an outside party")["ok"])
+                p.review_self_approval(ap["id"], note="Reviewed against the synthetic subcontract file.", actor="ext.acct")
+                self.assertTrue(w.check("people self-approvals reviewed by an outside party")["ok"])
+
     def test_only_an_owner_self_approves_in_solo_mode(self):
         w = self.solo()
         c, p = w.c, w.p

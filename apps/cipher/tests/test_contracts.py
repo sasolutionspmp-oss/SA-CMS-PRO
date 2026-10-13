@@ -7,8 +7,8 @@ import datetime as _dt
 import sqlite3
 import unittest
 
-from apps.cipher.core.approvals import StaleApprovalError
-from apps.cipher.core.ids import utcnow
+from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
+from apps.cipher.core.ids import hash_json, utcnow
 from apps.cipher.domain.contracts import (
     COVERAGE_KINDS, OP_APPROVE, OP_REQUIRE, OP_SIGN, PLUGIN_NAME, SCHEMA_NAME, WORKSPACE_SUBJECT_ID, AgreementIneligible, ContractError,
     CoverageError,
@@ -305,6 +305,15 @@ class RequirementTests(unittest.TestCase):
         self.assertEqual(k.set_requirements(cid, [], "contracts-admin")["version"], 2)
         self.assertEqual(k.requirements(cid)["requirements"], [])
 
+    def test_a_negative_zero_minimum_is_stored_as_zero(self):
+        w = World()
+        k = w.k
+        cid = w.draft()
+        r = k.set_requirements(cid, [{"kind": "workers_comp", "min_limit": "-0"}], "contracts-admin")
+        self.assertEqual(r["requirements"], [{"kind": "workers_comp", "min_limit": "0.00"}])
+        with self.assertRaisesRegex(ContractError, "already carries exactly"):  # the same requirement, however it is spelled
+            k.set_requirements(cid, [{"kind": "workers_comp", "min_limit": "0"}], "contracts-admin")
+
     def test_requirements_are_bound_into_the_agreement_approval_and_fixed_once_it_executes(self):
         w = World()
         c, k = w.c, w.k
@@ -498,6 +507,23 @@ class ExecutionGovernanceTests(unittest.TestCase):
         c.db.execute("UPDATE commitments SET original_amount='105000.00', executed_amount='105000.00' WHERE id=?", (cid,))
         with self.assertRaisesRegex(sqlite3.DatabaseError, "only with its signed agreement"):
             c.db.execute("UPDATE commitments SET status='executed' WHERE id=?", (cid,))
+
+    def test_a_retainage_rate_changed_after_the_agreement_approval_blocks_signature_and_execution(self):
+        w = World()
+        c, k = w.c, w.k
+        cid = w.draft()
+        a, _ = w.register(cid)
+        w.approve_agreement(a["id"])  # the approver saw 10% retainage
+        c.db.execute("UPDATE commitments SET retainage_rate='0.000000' WHERE id=?", (cid,))  # raw edit of the draft's retainage
+        with self.assertRaisesRegex(ContractError, "retainage rate"):
+            w.prepare(a["id"])
+        c.db.execute("UPDATE commitments SET retainage_rate='0.100000' WHERE id=?", (cid,))
+        w.sign(a["id"])
+        c.db.execute("UPDATE commitments SET retainage_rate='0.000000' WHERE id=?", (cid,))
+        with self.assertRaisesRegex(ContractError, "retainage rate"):
+            c.request_approval("commitment.execute", cid, actor_role="pm")
+        self.assertTrue(any("retainage rate" in p for p in k.agreement(a["id"])["problems"]))
+        self.assertEqual(c.commitments.get(cid)["status"], "draft")
 
 
 class WorkspaceSwitchTests(unittest.TestCase):
@@ -716,6 +742,54 @@ class CoverageGovernanceTests(unittest.TestCase):
         self.assertEqual(res.result["amount"], "3000.00")
         self.assertEqual(c.db.scalar("SELECT operation FROM contract_coverage_checks ORDER BY checked_at DESC, id DESC LIMIT 1"), "payment.release_retainage")
 
+    def test_a_spent_or_rejected_approval_is_refused_as_such_not_by_the_contract_checks(self):
+        w = World()
+        c = w.c
+        w.certificate(limit="2000000", expiry=5)
+        cid = w.signed_commitment(requirements=GL)
+        bill = w.certify(cid)
+        ap = w.request_post(bill["id"])
+        c.execute(ap["id"], actor="accountant")
+        with self.assertRaises(ApprovalConsumed):  # a replay under another operation id
+            c.execute(ap["id"], actor="accountant", op_id="retry-bill-approve")
+        executed = next(a for a in c.approvals.list(status="consumed") if a["operation"] == "commitment.execute")
+        with self.assertRaises(ApprovalConsumed):
+            c.execute(executed["id"], actor="pm-pat", op_id="retry-commitment-execute")
+        rel = w.request_release(bill["id"])
+        c.reject(rel["id"], approver="owner", reason="held for the payment run")
+        w.clock(6)  # the certificate has expired too; the rejection is still the reason nothing runs
+        with self.assertRaises(ApprovalNotGranted):
+            c.execute(rel["id"], actor="treasury")
+        self.assertEqual((c.db.scalar("SELECT COUNT(*) FROM contract_coverage_checks"), c.payments.list()), (1, []))
+
+    def test_requirements_set_after_a_retainage_payment_do_not_make_it_ungoverned(self):
+        w = World()
+        c = w.c
+        first = w.draft("20000")
+        c.approve_and_execute("commitment.execute", first)
+        w.post(w.certify(first, "10000")["id"])
+        c.commitments.close(first, actor="pm-pat")
+        c.approve_and_execute("retainage.release", first, actor_role="accountant", period_id="P1")
+        c.approve_and_execute("payment.release_retainage", first, actor_role="treasury", actor="treasury")  # nothing required then
+        later = w.draft("5000")  # the supplier's next subcontract on the project carries requirements
+        w.k.set_requirements(later, GL, "contracts-admin")
+        self.assertTrue(w.checks()[INTEGRITY_CHECK]["ok"], w.checks()[INTEGRITY_CHECK]["detail"])
+        # a retainage payment made around the governor while those requirements stand is still caught
+        second = w.draft("10000")
+        c.approve_and_execute("commitment.execute", second)
+        w.post(w.certify(second, "5000")["id"])
+        c.commitments.close(second, actor="pm-pat")
+        c.approve_and_execute("retainage.release", second, actor_role="accountant", period_id="P1")
+        m = c.payments.manifest_for_retainage(second, actor_role="treasury")
+        m["operation"] = "payment.release_retainage"
+        ap = c.approvals.request(m, requested_by="ap-clerk")
+        c.approvals.grant(ap["id"], approver="owner")
+        c.approvals.consume(ap["id"], current_manifest=m, consumer="treasury")
+        intent = c.payments.create_intent(manifest=m, approval_id=ap["id"], bill_id=None, note="retainage release payment", actor="treasury")
+        detail = w.checks()[INTEGRITY_CHECK]["detail"]
+        self.assertIn(f"payment {intent['id']} was released under approval {ap['id']} without a recorded coverage check", detail)
+        self.assertEqual(detail.count("without a recorded coverage check"), 1)
+
 
 # --------------------------------------------------------------------------- #
 # Close checks, state, Ricky                                                   #
@@ -740,6 +814,30 @@ class CloseCheckAndStateTests(unittest.TestCase):
         w.certificate("umbrella", "5000000", effective=25, expiry=390)  # the renewal arrives
         self.assertTrue(w.checks()[COVERAGE_CHECK]["ok"])
         self.assertTrue(cid)
+
+    def test_a_renewal_that_leaves_a_gap_or_falls_short_of_the_minimum_does_not_silence_the_warning(self):
+        cases = (
+            ("renewal starts ten days after the policy ends", GL, "2000000", 20),
+            ("renewal below the required minimum", GL, "500000", 11),
+            ("renewal with a gap, nothing required", None, "2000000", 20),
+        )
+        for label, requirements, renewal_limit, renewal_effective in cases:
+            with self.subTest(case=label):
+                w = World()
+                current = w.certificate(limit="2000000", effective=-300, expiry=10)
+                w.certificate(limit=renewal_limit, effective=renewal_effective, expiry=385)
+                cid = w.signed_commitment(requirements=requirements)
+                bill = w.certify(cid)
+                if requirements:
+                    w.post(bill["id"])  # covered today
+                chk = w.checks()[COVERAGE_CHECK]
+                self.assertFalse(chk["ok"], chk)
+                self.assertIn(f"general_liability {current['policy_number']}", chk["detail"])
+                self.assertEqual([e["certificate_id"] for e in w.k.state(w.pid)["expiring"]], [current["id"]])
+                if requirements:
+                    w.clock(15)  # the warning was right: in fifteen days nothing covers the requirement
+                    with self.assertRaises(CoverageError):
+                        w.request_release(bill["id"])
 
     def test_a_billed_commitment_that_needs_a_signed_agreement_and_lacks_one_is_reported(self):
         w = World()
@@ -862,6 +960,98 @@ class TamperingTests(unittest.TestCase):
         detail = w.checks()[INTEGRITY_CHECK]["detail"]
         self.assertNotIn("without a recorded coverage check", detail)
         self.assertIn(f"coverage check ccov_x (approval {ap['id']}) does not match its audited record", detail)
+
+    def test_a_withdrawn_certificate_restored_around_the_triggers_covers_nothing_and_is_detected(self):
+        w = World()
+        c, k = w.c, w.k
+        cert = w.certificate(limit="2000000")
+        cid = w.signed_commitment(requirements=GL)
+        k.withdraw_certificate(cert["id"], "insurer cancellation notice (synthetic)", "contracts-admin")
+        bill = w.certify(cid)
+        c.db.execute("DROP TRIGGER contract_certificates_lifecycle")
+        c.db.execute("UPDATE contract_certificates SET status='recorded', withdrawn_by=NULL, withdrawn_at=NULL, withdrawn_reason=NULL WHERE id=?", (cert["id"],))
+        with self.assertRaisesRegex(CoverageError, "general_liability"):  # the audited withdrawal stands
+            c.request_approval("bill.approve", bill["id"], actor_role="accountant")
+        self.assertEqual((k.certificate(cert["id"])["valid"], k.certificate(cert["id"])["in_force"]), (False, False))
+        chk = w.checks()[INTEGRITY_CHECK]
+        self.assertFalse(chk["ok"])
+        self.assertIn(f"certificate {cert['id']} reads recorded although its withdrawal was audited", chk["detail"])
+
+    def test_a_superseded_agreement_revived_around_the_triggers_is_never_relied_on(self):
+        w = World()
+        c, k = w.c, w.k
+        cid = w.draft()
+        a, _ = w.register(cid)
+        w.approve_agreement(a["id"])
+        w.sign(a["id"])
+        b, _ = w.register(cid)  # another agreement document: the signed agreement is superseded
+        c.db.execute("DROP TRIGGER contract_agreements_lifecycle")
+        c.db.execute("UPDATE contract_agreements SET status='superseded', superseded_at='2026-10-13T00:00:00Z', superseded_reason='x' WHERE id=?", (b["id"],))
+        c.db.execute("UPDATE contract_agreements SET status='signed', superseded_at=NULL, superseded_reason=NULL WHERE id=?", (a["id"],))
+        with self.assertRaisesRegex(ContractError, "superseded"):
+            c.request_approval("commitment.execute", cid, actor_role="pm")
+        self.assertEqual(c.commitments.get(cid)["status"], "draft")
+        detail = w.checks()[INTEGRITY_CHECK]["detail"]
+        self.assertIn(f"agreement {a['id']} reads signed although its supersession was audited", detail)
+        self.assertIn(f"agreement {b['id']} reads superseded without an audited supersession", detail)
+
+    def test_requirements_rewritten_or_deleted_around_the_triggers_fail_closed_and_are_detected(self):
+        for mode in ("rewrite", "delete"):
+            with self.subTest(mode=mode):
+                w = World()
+                c = w.c
+                cid = w.signed_commitment(requirements=GL)  # no certificate on file: nothing may post or pay
+                bill = w.certify(cid)
+                if mode == "rewrite":
+                    c.db.execute("DROP TRIGGER contract_requirement_sets_no_update")
+                    c.db.execute("UPDATE contract_requirement_sets SET requirements_json='[]', requirements_hash=?, requirement_count=0 WHERE commitment_id=?",
+                                 (hash_json([]), cid))
+                else:
+                    c.db.execute("DROP TRIGGER contract_requirement_sets_no_delete")
+                    c.db.execute("DELETE FROM contract_requirement_sets WHERE commitment_id=?", (cid,))
+                with self.assertRaisesRegex(ContractError, "audited"):
+                    c.request_approval("bill.approve", bill["id"], actor_role="accountant")
+                self.assertEqual(c.bills.get(bill["id"])["status"], "draft")
+                chk = w.checks()[INTEGRITY_CHECK]
+                self.assertFalse(chk["ok"])
+                self.assertIn(f"(commitment {cid} version 1) " + ("does not match its audited record" if mode == "rewrite"
+                                                                  else "is in the audit log but its record is missing"), chk["detail"])
+
+    def test_records_deleted_around_the_triggers_are_detected_and_a_deleted_agreement_still_binds(self):
+        w = World()
+        c = w.c
+        cert = w.certificate()
+        cid = w.draft()
+        a, _ = w.register(cid)
+        w.approve_agreement(a["id"])  # approved, never signed
+        other = w.draft("1000")
+        o, _ = w.register(other)
+        w.approve_agreement(o["id"])
+        sig, _ = w.prepare(o["id"])
+        for trigger, sql, arg in (("contract_agreements_no_delete", "DELETE FROM contract_agreements WHERE id=?", a["id"]),
+                                  ("contract_certificates_no_delete", "DELETE FROM contract_certificates WHERE id=?", cert["id"]),
+                                  ("contract_signatures_no_delete", "DELETE FROM contract_signatures WHERE id=?", sig["id"])):
+            c.db.execute(f"DROP TRIGGER {trigger}")
+            c.db.execute(sql, (arg,))
+        with self.assertRaisesRegex(ContractError, "audit"):  # the agreement on record still has to be signed
+            c.request_approval("commitment.execute", cid, actor_role="pm")
+        self.assertEqual(c.commitments.get(cid)["status"], "draft")
+        detail = w.checks()[INTEGRITY_CHECK]["detail"]
+        for kind, rid in (("agreement", a["id"]), ("certificate", cert["id"]), ("signature", sig["id"])):
+            self.assertIn(f"{kind} {rid} is in the audit log but its record is missing", detail)
+
+    def test_a_deleted_workspace_policy_still_requires_agreements(self):
+        w = World()
+        c, k = w.c, w.k
+        c.approve_and_execute(OP_REQUIRE, WORKSPACE_SUBJECT_ID)
+        cid = w.draft()
+        c.db.execute("DROP TRIGGER contract_workspace_policy_no_delete")
+        c.db.execute("DELETE FROM contract_workspace_policy")
+        self.assertTrue(k.agreements_required())  # the audit log records the switch; it has no "off"
+        with self.assertRaisesRegex(ContractError, "agreements are required in this workspace"):
+            c.request_approval("commitment.execute", cid, actor_role="pm")
+        self.assertTrue(k.state(w.pid)["agreements_required"])
+        self.assertIn("workspace policy record is missing", w.checks()[INTEGRITY_CHECK]["detail"])
 
     def test_ricky_previews_contract_operations_only_for_roles_that_hold_them(self):
         w = World()
