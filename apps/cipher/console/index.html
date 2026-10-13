@@ -54,6 +54,14 @@
 <script>
 const $ = (s, el=document) => el.querySelector(s);
 const money = v => v == null ? '' : Number(v).toLocaleString('en-US', {style:'currency', currency:'USD'});
+// Everything the server returns is escaped once, on arrival, so templates can interpolate it into HTML.
+const ESC = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'};
+const esc = v => String(v ?? '').replace(/[&<>"'`]/g, c => ESC[c]);
+const unesc = v => String(v ?? '').replace(/&(amp|lt|gt|quot|#39|#96);/g, m => Object.keys(ESC).find(k => ESC[k] === m));
+const escDeep = v => typeof v === 'string' ? esc(v) : Array.isArray(v) ? v.map(escDeep)
+  : (v && typeof v === 'object') ? Object.fromEntries(Object.entries(v).map(([k, x]) => [esc(k), escDeep(x)])) : v;
+// An escaped value as a JavaScript string literal inside an event-handler attribute.
+const js = v => esc(JSON.stringify(unesc(v)));
 let STATE = null;
 
 function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.style.background = bad ? '#b3261e' : '#13202e'; t.style.display='block'; clearTimeout(t._h); t._h = setTimeout(()=> t.style.display='none', bad ? 7000 : 3500); }
@@ -69,7 +77,7 @@ async function api(name, body) {
 
 async function refresh() {
   const r = await fetch('/api/state');
-  STATE = await r.json();
+  STATE = escDeep(await r.json());
   render();
 }
 
@@ -111,15 +119,15 @@ function render() {
       <span>Paid to date</span><b>${money(f.paid_to_date)}</b>
       <span>Prime certified to date</span><b>${money(f.prime_certified_to_date)}</b>
     </div><p class="muted">${f.label}</p>
-    <form onsubmit="event.preventDefault(); api('set_budget', {project_id:'${p.id}', budget:this.budget.value})"><input name="budget" value="${f.budget}"><button>Set budget</button></form></section>`);
+    <form onsubmit="event.preventDefault(); api('set_budget', {project_id:${js(p.id)}, budget:this.budget.value})"><input name="budget" value="${f.budget}"><button>Set budget</button></form></section>`);
 
   // approvals
   const aps = (s.approvals||[]).slice().reverse();
   parts.push(`<section><h2>Approvals <span class="muted">${aps.filter(a=>a.status==='pending'||a.status==='granted').length} open</span></h2>
     <table><tr><th>Operation</th><th>Subject</th><th class="num">Amounts</th><th>Status</th><th></th></tr>
     ${aps.slice(0,25).map(a => `<tr><td>${a.operation}<br><span class="muted">${a.actor_role}</span></td><td><code>${a.subject_id.slice(0,14)}</code></td><td class="num">${Object.entries(a.manifest.amounts||{}).map(([k,v])=>`${k}: ${money(v)}`).join('<br>')}</td><td>${st(a.status)}${a.invalidated_reason?`<br><span class="muted">${a.invalidated_reason}</span>`:''}</td>
-      <td>${a.status==='pending'?`<button class="primary" onclick="api('approve',{approval_id:'${a.id}'})">Approve</button> <button onclick="api('reject',{approval_id:'${a.id}',reason:'rejected in console'})">Reject</button>`:''}
-          ${a.status==='granted'?`<button class="lime" onclick="api('execute',{approval_id:'${a.id}'})">Execute</button>`:''}</td></tr>`).join('')}
+      <td>${a.status==='pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(a.id)}})">Approve</button> <button onclick="api('reject',{approval_id:${js(a.id)},reason:'rejected in console'})">Reject</button>`:''}
+          ${a.status==='granted'?`<button class="lime" onclick="api('execute',{approval_id:${js(a.id)}})">Execute</button>`:''}</td></tr>`).join('')}
     </table></section>`);
 
   // ricky brief
@@ -146,19 +154,19 @@ function render() {
     const draftBillExists = c.bills.some(b=>b.status==='draft');
     parts.push(`<section class="wide"><h2>${c.title} <span>${st(c.status)} <span class="muted">v${c.version} · ${c.supplier.name} · retainage ${Number(c.retainage_rate)*100}%</span></span></h2>
       <div class="kv"><span>Original / executed</span><b>${money(c.original_amount)} / ${money(c.executed_amount)}</b><span>Pending exposure</span><b>${money(c.pending_exposure)}</b>${c.estimate?`<span>Estimate</span><b>${c.estimate.status}${c.estimate.stale?' · <span class="status bad">stale evidence</span>':''}</b>`:''}</div>
-      ${c.status==='draft'?`<p><button class="primary" onclick="api('request_approval',{operation:'commitment.execute',subject_id:'${c.id}'})">Request execution approval</button></p>`:''}
-      ${c.status==='executed'?`<p><button onclick="api('close_commitment',{commitment_id:'${c.id}'})">Close (closeout accepted)</button> <button onclick="api('request_approval',{operation:'retainage.release',subject_id:'${c.id}'})">Request retainage release</button></p>`:''}
-      ${c.status==='closed'?`<p><button onclick="api('request_approval',{operation:'retainage.release',subject_id:'${c.id}'})">Request retainage release</button> <button onclick="api('request_approval',{operation:'payment.release_retainage',subject_id:'${c.id}',actor_role:'treasury'})">Request retainage payment</button></p>`:''}
+      ${c.status==='draft'?`<p><button class="primary" onclick="api('request_approval',{operation:'commitment.execute',subject_id:${js(c.id)}})">Request execution approval</button></p>`:''}
+      ${c.status==='executed'?`<p><button onclick="api('close_commitment',{commitment_id:${js(c.id)}})">Close (closeout accepted)</button> <button onclick="api('request_approval',{operation:'retainage.release',subject_id:${js(c.id)}})">Request retainage release</button></p>`:''}
+      ${c.status==='closed'?`<p><button onclick="api('request_approval',{operation:'retainage.release',subject_id:${js(c.id)}})">Request retainage release</button> <button onclick="api('request_approval',{operation:'payment.release_retainage',subject_id:${js(c.id)},actor_role:'treasury'})">Request retainage payment</button></p>`:''}
       <details open><summary>Schedule of values</summary><table><tr><th>#</th><th>Description</th><th class="num">Amount</th><th>id</th></tr>${c.sov.map(l=>`<tr><td>${l.line_no}</td><td>${l.description}</td><td class="num">${money(l.amount)}</td><td><code>${l.id}</code></td></tr>`).join('')}</table></details>
-      <details><summary>Changes (${c.changes.length})</summary><table>${c.changes.map(ch=>`<tr><td>${ch.reason}</td><td class="num">${money(ch.amount)}</td><td>${st(ch.status)}</td><td>${ch.status==='pending'?`<button onclick="api('request_approval',{operation:'change.execute',subject_id:'${ch.id}'})">Request approval</button> <button onclick="api('reject_change',{change_id:'${ch.id}'})">Reject</button>`:''}</td></tr>`).join('')}</table>
-        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('propose_change',{commitment_id:'${c.id}',amount:this.amount.value,reason:this.reason.value,sov_line_id:this.line.value||null})"><input name="amount" placeholder="amount" required><input name="reason" placeholder="reason" required><select name="line"><option value="">new SOV line</option>${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><button>Propose change</button></form>`:''}</details>
+      <details><summary>Changes (${c.changes.length})</summary><table>${c.changes.map(ch=>`<tr><td>${ch.reason}</td><td class="num">${money(ch.amount)}</td><td>${st(ch.status)}</td><td>${ch.status==='pending'?`<button onclick="api('request_approval',{operation:'change.execute',subject_id:${js(ch.id)}})">Request approval</button> <button onclick="api('reject_change',{change_id:${js(ch.id)}})">Reject</button>`:''}</td></tr>`).join('')}</table>
+        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('propose_change',{commitment_id:${js(c.id)},amount:this.amount.value,reason:this.reason.value,sov_line_id:this.line.value||null})"><input name="amount" placeholder="amount" required><input name="reason" placeholder="reason" required><select name="line"><option value="">new SOV line</option>${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><button>Propose change</button></form>`:''}</details>
       <details><summary>Stored material lots (${c.stored_lots.length})</summary><table>${c.stored_lots.map(l=>`<tr><td>${l.description}</td><td class="num">${money(l.eligible_amount)}</td><td class="num">remaining ${money(l.remaining_amount)}</td><td><code>${l.id}</code></td></tr>`).join('')}</table>
-        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('add_stored_material',{commitment_id:'${c.id}',sov_line_id:this.line.value,description:this.d.value,eligible_amount:this.a.value,evidence_hash:this.e.value,location:this.loc.value})"><select name="line">${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><input name="d" placeholder="description" required><input name="a" placeholder="eligible amount" required><input name="e" placeholder="evidence hash" required><input name="loc" placeholder="location"><button>Add lot</button></form>`:''}</details>
+        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('add_stored_material',{commitment_id:${js(c.id)},sov_line_id:this.line.value,description:this.d.value,eligible_amount:this.a.value,evidence_hash:this.e.value,location:this.loc.value})"><select name="line">${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><input name="d" placeholder="description" required><input name="a" placeholder="eligible amount" required><input name="e" placeholder="evidence hash" required><input name="loc" placeholder="location"><button>Add lot</button></form>`:''}</details>
       <details open><summary>Bills (${c.bills.length})</summary><table><tr><th>#</th><th>Period</th><th class="num">Cum. gross</th><th class="num">Retainage</th><th class="num">Due</th><th>Status</th><th></th></tr>
         ${c.bills.map(b=>`<tr><td>${b.sequence}</td><td>${b.period_id}</td><td class="num">${money(b.cumulative_gross)}</td><td class="num">${money(b.cumulative_retainage)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}${b.stale?' <span class="status bad">stale</span>':''}</td>
-          <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'bill.approve',subject_id:'${b.id}'})">Request approval</button> <button onclick="api('void_bill',{bill_id:'${b.id}'})">Void</button>`:''}
-              ${b.status==='posted'?`<button onclick="api('request_approval',{operation:'payment.release',subject_id:'${b.id}',actor_role:'treasury'})">Request payment</button>`:''}</td></tr>`).join('')}</table>
-        ${c.status==='executed' && !draftBillExists ? `<form onsubmit="event.preventDefault(); certify(this,'${c.id}')"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select>
+          <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'bill.approve',subject_id:${js(b.id)}})">Request approval</button> <button onclick="api('void_bill',{bill_id:${js(b.id)}})">Void</button>`:''}
+              ${b.status==='posted'?`<button onclick="api('request_approval',{operation:'payment.release',subject_id:${js(b.id)},actor_role:'treasury'})">Request payment</button>`:''}</td></tr>`).join('')}</table>
+        ${c.status==='executed' && !draftBillExists ? `<form onsubmit="event.preventDefault(); certify(this,${js(c.id)})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select>
           ${c.sov.map(l=>`<input name="line:${l.id}" placeholder="cum. installed line ${l.line_no}">`).join('')}
           ${c.stored_lots.filter(l=>Number(l.remaining_amount)>0).map(l=>`<input name="lot:${l.id}" placeholder="transfer from ${l.description}">`).join('')}
           <button class="primary">Certify bill</button></form>`:''}</details></section>`);
@@ -167,13 +175,13 @@ function render() {
   // prime bills
   parts.push(`<section><h2>Prime billing</h2><table><tr><th>#</th><th class="num">Certified</th><th class="num">Due</th><th>Status</th><th></th></tr>
     ${s.prime_bills.map(b=>`<tr><td>${b.sequence}</td><td class="num">${money(b.certified_cumulative)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}</td>
-      <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'prime_bill.approve',subject_id:'${b.id}'})">Request approval</button>`:''}
-          ${b.status==='posted'?`<button onclick="api('send_prime_bill',{prime_bill_id:'${b.id}'})">Request send approval (mail sink)</button>`:''}
-          ${(b.status==='sent')?`<button onclick="api('record_collection',{prime_bill_id:'${b.id}',period_id:'${openPeriod()}',amount:'${b.amount_due}',fee:'5',method:'ach',provider_ref:'rcv_'+Date.now()})">Record ACH collection (fee 5)</button>
-            <button onclick="api('record_collection',{prime_bill_id:'${b.id}',period_id:'${openPeriod()}',amount:'${b.amount_due}',fee:'0',method:'check',provider_ref:'chk_'+Date.now()})">Record check</button>`:''}
-          ${b.collections.filter(x=>x.status==='received').map(x=>`<button onclick="api('record_return',{collection_id:'${x.id}',period_id:'${openPeriod()}',reason:'simulated late return'})">Return ${money(x.amount)}</button>`).join('')}</td></tr>`).join('')}</table>
-    <form onsubmit="event.preventDefault(); api('certify_prime_bill',{project_id:'${p.id}',period_id:this.period.value,certified_cumulative:this.c.value,retainage_rate:this.r.value})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select><input name="c" placeholder="certified cumulative" required><input name="r" value="0.10"><button>Certify prime bill</button></form>
-    ${p.customer_id ? `<form onsubmit="event.preventDefault(); api('record_mandate',{customer_id:'${p.customer_id}',mandate_ref:this.ref.value,evidence_hash:this.ev.value})"><input name="ref" placeholder="ACH mandate reference" required><input name="ev" placeholder="evidence revision content hash (signed authorization)" required style="min-width:300px"><button>Record ACH mandate</button></form>` : ''}
+      <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'prime_bill.approve',subject_id:${js(b.id)}})">Request approval</button>`:''}
+          ${b.status==='posted'?`<button onclick="api('send_prime_bill',{prime_bill_id:${js(b.id)}})">Request send approval (mail sink)</button>`:''}
+          ${(b.status==='sent')?`<button onclick="api('record_collection',{prime_bill_id:${js(b.id)},period_id:${js(openPeriod())},amount:${js(b.amount_due)},fee:'5',method:'ach',provider_ref:'rcv_'+Date.now()})">Record ACH collection (fee 5)</button>
+            <button onclick="api('record_collection',{prime_bill_id:${js(b.id)},period_id:${js(openPeriod())},amount:${js(b.amount_due)},fee:'0',method:'check',provider_ref:'chk_'+Date.now()})">Record check</button>`:''}
+          ${b.collections.filter(x=>x.status==='received').map(x=>`<button onclick="api('record_return',{collection_id:${js(x.id)},period_id:${js(openPeriod())},reason:'simulated late return'})">Return ${money(x.amount)}</button>`).join('')}</td></tr>`).join('')}</table>
+    <form onsubmit="event.preventDefault(); api('certify_prime_bill',{project_id:${js(p.id)},period_id:this.period.value,certified_cumulative:this.c.value,retainage_rate:this.r.value})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select><input name="c" placeholder="certified cumulative" required><input name="r" value="0.10"><button>Certify prime bill</button></form>
+    ${p.customer_id ? `<form onsubmit="event.preventDefault(); api('record_mandate',{customer_id:${js(p.customer_id)},mandate_ref:this.ref.value,evidence_hash:this.ev.value})"><input name="ref" placeholder="ACH mandate reference" required><input name="ev" placeholder="evidence revision content hash (signed authorization)" required style="min-width:300px"><button>Record ACH mandate</button></form>` : ''}
     <p class="muted">AR subledger ${money(s.ar.subledger_total)} vs control ${money(s.ar.control_balance)} · ${s.ar.reconciled?'reconciled':'<span class="status bad">NOT reconciled</span>'}</p></section>`);
 
   // payments
@@ -182,7 +190,7 @@ function render() {
       <button onclick="api('dispatch_payments')">Dispatch outbox (${(s.outbox_pending||[]).length})</button><button onclick="api('reconcile_payments')">Reconcile</button></form>
     <table><tr><th>Intent</th><th class="num">Amount</th><th>Status</th><th></th></tr>
     ${s.payments.map(i=>`<tr><td><code>${i.id.slice(0,14)}</code><br><span class="muted">${i.note} ${i.provider_ref||''}</span></td><td class="num">${money(i.amount)}</td><td>${st(i.status)}<br><span class="muted">${i.note && i.status!=='queued' ? '' : ''}</span></td>
-      <td>${i.status==='accepted'?`<button onclick="api('settle_payment',{intent_id:'${i.id}'})">Settle</button>`:''}${['accepted','settled'].includes(i.status)?` <button onclick="api('return_payment',{intent_id:'${i.id}'})">Return</button>`:''}${i.events.length?` <button onclick="api('replay_last_event',{intent_id:'${i.id}'})">Replay last event</button>`:''}</td></tr>`).join('')}</table>
+      <td>${i.status==='accepted'?`<button onclick="api('settle_payment',{intent_id:${js(i.id)}})">Settle</button>`:''}${['accepted','settled'].includes(i.status)?` <button onclick="api('return_payment',{intent_id:${js(i.id)}})">Return</button>`:''}${i.events.length?` <button onclick="api('replay_last_event',{intent_id:${js(i.id)}})">Replay last event</button>`:''}</td></tr>`).join('')}</table>
     <p class="muted">AP subledger ${money(s.ap.subledger_total)} vs control ${money(s.ap.control_balance)} · ${s.ap.reconciled?'reconciled':'<span class="status bad">NOT reconciled</span>'}</p></section>`);
 
   // ledger
@@ -191,7 +199,7 @@ function render() {
     <table><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr>${tb.rows.map(r=>`<tr><td>${r.code} ${r.name}</td><td class="num">${money(r.debit)}</td><td class="num">${money(r.credit)}</td><td class="num">${money(r.balance)}</td></tr>`).join('')}
     <tr><th>Total</th><th class="num">${money(tb.total_debit)}</th><th class="num">${money(tb.total_credit)}</th><th></th></tr></table>
     <p class="muted">Income (${s.income_statement.label}): revenue ${money(s.income_statement.revenue)} · expense ${money(s.income_statement.expense)} · net ${money(s.income_statement.net)}</p>
-    <h2>Periods</h2><table>${s.periods.map(x=>`<tr><td>${x.id} ${x.name}</td><td>${st(x.status)}</td><td>${x.status==='open'?`<button onclick="api('close_period',{period_id:'${x.id}'})">Close</button>`:''}</td></tr>`).join('')}</table>
+    <h2>Periods</h2><table>${s.periods.map(x=>`<tr><td>${x.id} ${x.name}</td><td>${st(x.status)}</td><td>${x.status==='open'?`<button onclick="api('close_period',{period_id:${js(x.id)}})">Close</button>`:''}</td></tr>`).join('')}</table>
     <form onsubmit="event.preventDefault(); api('open_period',{period_id:this.id.value,name:this.id.value,start_date:this.s.value,end_date:this.e.value})"><input name="id" placeholder="2026-12" required><input name="s" placeholder="2026-12-01" required><input name="e" placeholder="2026-12-31" required><button>Open period</button></form>
     <p class="muted">Audit chain: ${s.audit_chain.ok?`ok · ${s.audit_chain.entries} entries`:'<span class="status bad">BROKEN</span>'}</p></section>`);
 
@@ -199,7 +207,7 @@ function render() {
   const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','ricky_brief','audit_chain','outbox_pending']);
   for (const key of Object.keys(s).filter(k => !CORE_KEYS.has(k))) {
     parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}
-      <form onsubmit="event.preventDefault(); moduleCall(this, '${key}')"><input name="method" placeholder="method, e.g. register_asset" required style="min-width:200px"><input name="kwargs" placeholder='kwargs JSON, e.g. {"project_id":"…","description":"Excavator","cost":"12000","in_service_date":"2026-10-01","useful_life_months":"12"}' style="min-width:420px"><button>Call</button>
+      <form onsubmit="event.preventDefault(); moduleCall(this, ${js(key)})"><input name="method" placeholder="method, e.g. register_asset" required style="min-width:200px"><input name="kwargs" placeholder='kwargs JSON, e.g. {"project_id":"…","description":"Excavator","cost":"12000","in_service_date":"2026-10-01","useful_life_months":"12"}' style="min-width:420px"><button>Call</button>
       <input name="op" placeholder="approval operation, e.g. asset.post_depreciation" style="min-width:220px"><input name="subject" placeholder="subject id"><button type="button" onclick="api('request_approval',{operation:this.form.op.value,subject_id:this.form.subject.value})">Request approval</button></form>
       <p class="muted">Methods: <span id="methods-${key}">loading…</span></p></section>`);
   }
@@ -294,7 +302,7 @@ async function selfTest() {
     steps.push({label: String(e), ok: false});
     out.dataset.selftest = 'fail';
   }
-  out.innerHTML = `<h2>Browser self-test · <span class="status ${out.dataset.selftest==='pass'?'ok':'bad'}">${out.dataset.selftest}</span></h2><table>${steps.map(s=>`<tr><td>${s.ok?'✔':'✘'}</td><td>${s.label}</td></tr>`).join('')}</table>`;
+  out.innerHTML = `<h2>Browser self-test · <span class="status ${out.dataset.selftest==='pass'?'ok':'bad'}">${out.dataset.selftest}</span></h2><table>${steps.map(s=>`<tr><td>${s.ok?'✔':'✘'}</td><td>${esc(s.label)}</td></tr>`).join('')}</table>`;
   window.__selftest = {result: out.dataset.selftest, steps};
   const nonce = new URLSearchParams(location.search).get('selftest');
   try { await post('selftest_report', {result: out.dataset.selftest, nonce, steps, user_agent: navigator.userAgent}); } catch (e) {}
@@ -306,19 +314,19 @@ function renderBrief(b) {
   const cls = l => ({blocker:'bad', decide:'warn', execute:'warn', reconcile:'warn'})[l] || '';
   return `<p class="muted">${Object.entries(b.counts).filter(([,n])=>n).map(([k,n])=>`${n} ${k}`).join(' · ')}</p>
     <table>${b.items.map(it=>`<tr><td><span class="status ${cls(it.level)}">${it.level}</span></td><td>${it.text}</td>
-      <td>${it.kind==='approval_pending'?`<button class="primary" onclick="api('approve',{approval_id:'${it.ref}'})">Approve</button>`:''}
-          ${it.kind==='approval_granted'?`<button class="lime" onclick="api('execute',{approval_id:'${it.ref}'})">Execute</button>`:''}
+      <td>${it.kind==='approval_pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(it.ref)}})">Approve</button>`:''}
+          ${it.kind==='approval_granted'?`<button class="lime" onclick="api('execute',{approval_id:${js(it.ref)}})">Execute</button>`:''}
           ${it.kind==='outbox'?`<button onclick="api('dispatch_payments')">Dispatch</button>`:''}
           ${it.kind==='payment_unknown'?`<button onclick="api('reconcile_payments')">Reconcile</button>`:''}
           ${it.kind==='quarantine'?`<button onclick="api('complete_recovery')">Recovery reconciliation</button>`:''}
-          ${['bill_draft','prime_bill_draft','commitment_draft','change_pending'].includes(it.kind) && it.operation ? `<button onclick="api('request_approval',{operation:'${it.operation}',subject_id:'${it.ref}'})">Request approval</button>`:''}</td></tr>`).join('')}</table>`;
+          ${['bill_draft','prime_bill_draft','commitment_draft','change_pending'].includes(it.kind) && it.operation ? `<button onclick="api('request_approval',{operation:${js(it.operation)},subject_id:${js(it.ref)}})">Request approval</button>`:''}</td></tr>`).join('')}</table>`;
 }
 
 async function loadBrief(role) {
-  const r = await fetch('/api/action/ricky_brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({project_id: STATE.project.id, actor_role: role})});
+  const r = await fetch('/api/action/ricky_brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({project_id: unesc(STATE.project.id), actor_role: role})});
   const j = await r.json();
   if (!j.ok) { toast('brief: ' + j.error, true); return; }
-  $('#brief-body').innerHTML = renderBrief(j.result);
+  $('#brief-body').innerHTML = renderBrief(escDeep(j.result));
 }
 
 async function showChallenge() {
@@ -342,12 +350,12 @@ async function certify(form, commitmentId) {
 }
 
 async function rickyAsk(form) {
-  const wf = form.workflow.value; const id = form.id.value; const role = form.role.value;
-  const key = ({'commitment.execute':'commitment_id','change.execute':'change_id','bill.approve':'bill_id','prime_bill.approve':'prime_bill_id','payment.release':'bill_id','retainage.release':'commitment_id','estimate.approve':'estimate_id'})[wf];
-  const r = await api('ricky_propose', {workflow: wf, actor_role: role, context: {[key]: id}});
+  const [wf, id, role] = [form.workflow.value, form.id.value, form.role.value].map(esc);
+  const key = ({'commitment.execute':'commitment_id','change.execute':'change_id','bill.approve':'bill_id','prime_bill.approve':'prime_bill_id','payment.release':'bill_id','retainage.release':'commitment_id','estimate.approve':'estimate_id'})[unesc(wf)];
+  const r = escDeep(await api('ricky_propose', {workflow: unesc(wf), actor_role: unesc(role), context: {[key]: unesc(id)}}));
   const out = $('#ricky-out');
   out.innerHTML = r.decision === 'proposed'
-    ? `<p>${st('proposed')} ${r.reason} <button class="primary" onclick="api('request_approval',{operation:'${wf}',subject_id:'${id}',actor_role:'${role}'})">Request this approval</button></p><pre class="muted" style="white-space:pre-wrap">${JSON.stringify(r.manifest, null, 1)}</pre>`
+    ? `<p>${st('proposed')} ${r.reason} <button class="primary" onclick="api('request_approval',{operation:${js(wf)},subject_id:${js(id)},actor_role:${js(role)}})">Request this approval</button></p><pre class="muted" style="white-space:pre-wrap">${JSON.stringify(r.manifest, null, 1)}</pre>`
     : `<p>${st('abstained')} ${r.reason}</p>`;
 }
 

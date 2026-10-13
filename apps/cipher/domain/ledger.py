@@ -29,6 +29,7 @@ A reversal journal is never itself reversed through ``journal.reverse``.
 """
 from __future__ import annotations
 
+from datetime import date
 from decimal import Decimal
 from typing import Any
 
@@ -156,6 +157,17 @@ class Ledger:
         return row["code"]
 
     def open_period(self, period_id: str, name: str, start_date: str, end_date: str, *, actor: str = "system") -> dict[str, Any]:
+        # Aging, cutoffs, depreciation and close compare these as ISO date text, so only exact
+        # YYYY-MM-DD dates in order are accepted.
+        for label, value in (("start", start_date), ("end", end_date)):
+            try:
+                ok = isinstance(value, str) and date.fromisoformat(value).isoformat() == value
+            except ValueError:
+                ok = False
+            if not ok:
+                raise LedgerError(f"period {label} date must be a YYYY-MM-DD date, not {value!r}")
+        if end_date < start_date:
+            raise LedgerError(f"period {period_id} ends {end_date}, before it starts {start_date}")
         with self.db.transaction() as conn:
             if conn.execute("SELECT 1 FROM periods WHERE id=?", (period_id,)).fetchone() is not None:
                 raise LedgerError(f"period {period_id} already exists")

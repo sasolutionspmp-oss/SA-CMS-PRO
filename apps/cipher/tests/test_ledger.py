@@ -179,6 +179,14 @@ class LedgerTests(unittest.TestCase):
             self.ledger.open_period("P1", "Again", "2026-10-01", "2026-10-31")
         self.assertEqual([p["id"] for p in self.ledger.periods()], ["P1", "P2"])
 
+    def test_period_dates_must_be_iso_and_in_order(self):
+        for start, end in (("2026-12-31", "2026-12-01"), ("2026-12-1", "2026-12-31"), ("12/01/2026", "12/31/2026"),
+                           ("2026-12-01", "2026-12-32"), ("20261201", "20261231"), ("2026-12-01", None)):
+            with self.subTest(start=start, end=end), self.assertRaises(LedgerError):
+                self.ledger.open_period("P9", "Bad", start, end)
+        self.assertEqual([p["id"] for p in self.ledger.periods()], ["P1", "P2"])
+        self.assertEqual(self.ledger.open_period("P9", "One day", "2026-12-01", "2026-12-01")["status"], "open")
+
     def test_close_requires_balanced_books(self):
         self.post()
         p = self.ledger.close_period("P1", actor="o")

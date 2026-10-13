@@ -342,3 +342,21 @@ class BoundaryTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ConsoleEscapingTests(unittest.TestCase):
+    """Server text (names, reasons, notes, ids) must never reach innerHTML or a handler unescaped."""
+
+    def setUp(self):
+        with open(os.path.join(os.path.dirname(__file__), "..", "console", "index.html"), encoding="utf-8") as f:
+            self.html = f.read()
+
+    def test_server_data_is_escaped_on_arrival(self):
+        self.assertIn("STATE = escDeep(await r.json());", self.html)
+        self.assertIn("renderBrief(escDeep(j.result))", self.html)
+        self.assertIn("const r = escDeep(await api('ricky_propose'", self.html)
+        self.assertIn("${esc(s.label)}", self.html)
+
+    def test_handler_arguments_are_encoded_not_quoted(self):
+        # '${...}' inside an onclick lets a quote in the value end the string; js() encodes it instead.
+        self.assertNotRegex(self.html, r"'\$\{")
