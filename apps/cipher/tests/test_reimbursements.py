@@ -859,6 +859,20 @@ class ReimbursementReceivableTests(unittest.TestCase):
         self.assertEqual(self.c.ledger.journal(col["journal_id"])["period_id"], "P2")
         self.assertReceivable("0.00")
 
+    def test_a_collection_cannot_be_dated_before_the_billing_it_settles(self):
+        self.c.open_period("P0", "P0", "2026-09-01", "2026-09-30")
+        b = self.billed("300.00")  # billed in October (P1)
+        journals = self.c.ledger.trial_balance()["journal_count"]
+        with self.assertRaises(ReimbursementError) as ctx:  # September starts before the billing journal
+            self.r.record_billing_collection(b["id"], "300.00", period_id="P0", provider_ref="ach-sim-rb-0150", actor="treasury")
+        self.assertIn("cannot be dated before", str(ctx.exception))
+        self.assertEqual(self.c.ledger.trial_balance()["journal_count"], journals)
+        self.assertEqual(self.c.ledger.journals(period_id="P0"), [])
+        self.assertEqual(self.r.collections(self.pid), [])
+        col = self.r.record_billing_collection(b["id"], "300.00", period_id="P1", provider_ref="ach-sim-rb-0150", actor="treasury")
+        self.assertEqual(self.c.ledger.journal(col["journal_id"])["period_id"], "P1")
+        self.assertReceivable("0.00")
+
     def test_collections_are_immutable_and_cite_their_own_journal(self):
         b = self.billed("60.00")
         col = self.r.record_billing_collection(b["id"], "60.00", period_id="P1", provider_ref="ach-sim-rb-0200", actor="treasury")

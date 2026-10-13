@@ -101,11 +101,12 @@ WIP (fixture policy, cost-to-cost percent complete)
     / estimated total cost (the forecast's ``fac_v2``: cost to date + estimate
     to complete + pending exposure over the same three cost types; basis
     ``fac_v2``), capped at 1, four decimal places half-up.  A project with no
-    estimate (``fac_v2`` zero, or no budget and nothing beyond cost to date)
-    has no WIP: computing it, and so preparing or posting an adjustment, is
-    refused.  The WIP approval shows the percent complete, cost to date,
-    estimate and basis.  Earned
-    revenue = money(percent x contract value).  Billed to date = cumulative
+    estimate (``fac_v2`` zero, or no budget, no executed commitment and nothing
+    beyond cost to date) has no WIP: computing it, and so preparing or posting
+    an adjustment, is refused.  An executed commitment is an estimate, so an
+    unbudgeted job whose commitments are fully performed is 100% complete.
+    The WIP approval shows the percent complete, cost to date, estimate and
+    basis.  Earned revenue = money(percent x contract value).  Billed to date = cumulative
     credit balance of 4000 + 4100 for the project, excluding WIP adjustment
     journals.  over/under = billed - earned (negative = underbilled).
 
@@ -1107,10 +1108,13 @@ class Plugin:
             raise CloseError(f"project {project_id} has no contract value; call set_contract_value first")
         contract = money(cv["contract_value"])
         # The estimate covers the same cost types as cost to date (5000, 5100, 5300): fac_v2,
-        # not the subcontract-only forecast_at_completion.
+        # not the subcontract-only forecast_at_completion.  With neither a budget nor an executed
+        # commitment, a fac_v2 no larger than cost to date is cost to date itself, not an estimate;
+        # an executed commitment that is fully performed is (the job is complete).
         forecast = self.c.forecast.project(project_id)
         estimated, basis = money(forecast["fac_v2"]), "fac_v2"
-        if estimated <= 0 or (money(forecast["budget"]) <= 0 and estimated <= money(forecast["cost_to_date_by_type"]["total"])):
+        unestimated = money(forecast["budget"]) <= 0 and money(forecast["executed_commitments"]) <= 0
+        if estimated <= 0 or (unestimated and estimated <= money(forecast["cost_to_date_by_type"]["total"])):
             raise CloseError(
                 f"project {project_id} has no estimate of total cost (forecast fac_v2 {fmt(estimated)}, budget {forecast['budget']}); "
                 "set a budget or execute a commitment before computing WIP"

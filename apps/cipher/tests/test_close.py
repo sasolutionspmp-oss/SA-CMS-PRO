@@ -657,6 +657,24 @@ class WipTests(unittest.TestCase):
         self.assertIn("no estimate of total cost", cl.state(bare["id"])["wip_error"])
         self.assertEqual(c.ledger.balance("1160"), D("0.00"))
 
+    def test_an_unbudgeted_job_whose_commitments_are_fully_performed_is_complete(self):
+        # no budget, but the executed commitment is an estimate: once it is fully installed,
+        # fac_v2 equals cost to date and the job is 100% complete, not without an estimate
+        s = Scenario()
+        c, cl = s.c, s.close
+        c.set_budget(s.pid, "0")
+        cmt = s.commitment(amounts=("60000",))
+        s.supplier_bill(cmt, "60000")
+        s.prime_bill("80000")
+        cl.set_contract_value(s.pid, "100000", actor="owner")
+        w = cl.wip(s.pid, "P1")
+        self.assertEqual((w["estimated_total_cost_basis"], w["estimated_total_cost"], w["cost_to_date"], w["percent_complete"], w["earned_revenue"]),
+                         ("fac_v2", "60000.00", "60000.00", "1.0000", "100000.00"))
+        self.assertEqual((w["position"], w["over_under"]), ("underbilled", "-20000.00"))
+        self.assertIsNone(cl.state(s.pid)["wip_error"])
+        draft = cl.prepare_wip_adjustment(s.pid, "P1", actor="owner")
+        self.assertEqual((draft["direction"], draft["amount"]), ("underbilled", "20000.00"))
+
     def test_percent_complete_counts_labor_and_reimbursables_on_both_sides(self):
         # cost to date includes 5000, 5100 and 5300, so the estimate must too (fac_v2), not
         # the subcontract-only forecast_at_completion that would put this job at 35%
