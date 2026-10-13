@@ -61,7 +61,7 @@ Modules (each registers its own schema entry and approval-bound operations):
 | | `field` | RFIs bound to issued drawings, approved responses and distribution, submittals, hold points, punch list, closeout acceptance |
 | | `drawings` | register with working, issued and superseded revisions bound to evidence |
 | Governance | `rights` | content-rights registry consulted before AI retrieval of licensed documents |
-| Ricky | `ricky` (core), `ricky_sdk.py` | read-only attention brief, manifest previews with abstention, typed versioned tool catalog with schema validation and append-only receipts |
+| Ricky | `ricky` (core), `ricky_sdk.py` | read-only attention brief, manifest previews with abstention, typed versioned tool catalog with schema validation and append-only receipts; every approval-bound operation is reachable through it or excluded by name with a reason; callers resolve to registered identities while the people registry enforces |
 
 ## Controls
 
@@ -69,7 +69,7 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 
 - exact decimal money; floats, non-finite and out-of-range values are rejected; allocation is largest-remainder;
 - every consequential action binds a server-generated manifest (operation, subject, executing role, entity, currency, record versions and hashes, amounts, payee destination and version, journal preview where relevant, policy version, expiry, nonce); any material change invalidates the approval; expiry is recorded durably;
-- the executing role and the approver's role must hold the operation's authority;
+- the executing role and the approver's role must hold the operation's authority; while the people registry's identity policy enforces, a Ricky SDK caller must also be an active registered identity holding that role by grant or delegation, and Ricky never drafts, requests or executes a role, delegation or policy change;
 - commands are idempotent by logical operation id; a conflicting payload fails;
 - posted journals cannot be edited, extended, deleted or moved by any SQL path; corrections append reversals; locked periods never change; a period reopens only with a consumed, single-use reopen approval;
 - subledgers reconcile to control accounts: AP, AR (all sources), retainage payable and receivable, stored materials, provider clearing, employee payable, accrued payroll, bank;
