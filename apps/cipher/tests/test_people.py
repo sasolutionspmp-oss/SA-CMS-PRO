@@ -9,7 +9,7 @@ import sqlite3
 import unittest
 
 from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture  # load the service (and its plugins) first
-from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
+from apps.cipher.core.approvals import ApprovalExpired, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.people import (
     EXPIRY_WARNING_DAYS, OP_DELEGATE, OP_GRANT, OP_POLICY, OP_REVOKE, PLUGIN_NAME, SCHEMA_NAME, IdentityIntegrityError, IdentityRefused,
     PeopleError, PeopleIneligible, normalize_login,
@@ -1114,6 +1114,38 @@ class SoloOwnerTests(unittest.TestCase):
                 intact = w.check("people identity records intact")
                 self.assertFalse(intact["ok"])
                 self.assertIn(ap["id"], intact["detail"])
+
+    def test_a_self_approval_rewritten_past_its_triggers_is_detected(self):
+        """A self-approval record must match its audited recording and its approval's requester
+        and approver: rewritten with a trigger dropped (its login moved to the outside party,
+        so it no longer awaits review), it fails the integrity check."""
+        rewrites = (
+            ("the record's login", "people_self_approvals_update_guard", "UPDATE people_self_approvals SET login='ext.acct' WHERE approval_id=?"),
+            ("the record's policy version", "people_self_approvals_update_guard",
+             "UPDATE people_self_approvals SET policy_version=0 WHERE approval_id=?"),
+            ("the approval's approver", "approvals_lifecycle", "UPDATE approvals SET approver='ext.acct' WHERE id=?"),
+        )
+        for label, trigger, sql in rewrites:
+            with self.subTest(rewrite=label):
+                w = self.solo()
+                c, p = w.c, w.p
+                ap = c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="travis")
+                c.approve(ap["id"], approver="ＴＲＡＶＩＳ")
+                self.assertEqual(p.integrity_problems(), [])
+                c.db.execute(f"DROP TRIGGER {trigger}")
+                c.db.execute(sql, (ap["id"],))
+                intact = w.check("people identity records intact")
+                self.assertFalse(intact["ok"])
+                self.assertIn(ap["id"], intact["detail"])
+        # a self-approval whose approval expired before it was granted is recorded but never granted
+        w = self.solo()
+        c, p = w.c, w.p
+        ap = c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="travis")
+        c.db.execute("UPDATE approvals SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (ap["id"],))
+        with self.assertRaises(ApprovalExpired):
+            c.approve(ap["id"], approver="travis")
+        self.assertIsNotNone(c.db.one("SELECT id FROM people_self_approvals WHERE approval_id=?", (ap["id"],)))
+        self.assertEqual(p.integrity_problems(), [])
 
 
 # --------------------------------------------------------------------------- #

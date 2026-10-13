@@ -1073,9 +1073,27 @@ class Plugin:
 
     def _self_approval_problems(self) -> list[str]:
         """Self-approvals made under a segregating policy that were never recorded for review,
-        and reviews the audit log does not record as made by an outside party other than the
-        approver (written with the trigger dropped)."""
+        records that no longer match their audited recording or their approval's requester and
+        approver (so would not await review), and reviews the audit log does not record as made
+        by an outside party other than the approver (each written with a trigger dropped)."""
         out = []
+        recorded = self._audit_trail("people.self_approval_recorded")
+        granted: dict[str, set[str | None]] = {}
+        for e in self.db.query("SELECT entity_id, actor FROM audit_log WHERE action='approval.granted' AND entity_type='approval' "
+                               "AND entity_id IN (SELECT approval_id FROM people_self_approvals)"):
+            granted.setdefault(e["entity_id"], set()).add(_norm(e["actor"]))
+        for s in self.db.query("SELECT s.*, a.operation AS approval_operation, a.requested_by, a.approver FROM people_self_approvals s "
+                               "LEFT JOIN approvals a ON a.id = s.approval_id ORDER BY s.recorded_at, s.id"):
+            if not any(all(x.get(k) == s[k] for k in ("approval_id", "operation", "login", "approver_role", "policy_version"))
+                       for x in recorded.get(("people.self_approval_recorded", s["id"]), [])):
+                out.append(f"the self-approval of approval {s['approval_id']} reads as {s['operation']} by {s['login']} under identity policy "
+                           f"version {s['policy_version']}, which the audit log does not record")
+            # a record outlives a grant refused after it (the approval expiring first): the approver
+            # must be its login only once the audit log records the login granting it
+            if not (s["approval_operation"] == s["operation"] and _norm(s["requested_by"]) == s["login"]
+                    and (_norm(s["approver"]) == s["login"] or s["login"] not in granted.get(s["approval_id"], ()))):
+                out.append(f"the self-approval of approval {s['approval_id']} names {s['login']}, but the approval reads as requested by "
+                           f"{s['requested_by']} and approved by {s['approver']}")
         reviews = self._audit_trail("people.self_approval_reviewed")
         for s in self.db.query("SELECT * FROM people_self_approvals WHERE reviewed_at IS NOT NULL ORDER BY recorded_at, id"):
             reviewer = self._person_row(s["reviewed_by"])
@@ -2046,7 +2064,7 @@ class Plugin:
         * solo-owner self-approvals awaiting the outside party's review (fails until reviewed);
         * identity records intact (fails on any grant or policy chain break, a policy version
           missing from the chain, unbacked grant, delegation or membership, a revocation, end or
-          review the audit log does not back, or unrecorded self-approval)."""
+          review the audit log does not back, or unrecorded or rewritten self-approval)."""
         def check(name: str, ok: bool, detail: str) -> dict[str, Any]:
             return {"check": name, "name": name, "ok": ok, "detail": detail}
 
