@@ -15,6 +15,7 @@ python -m apps.cipher serve --db data/cipher.sqlite         # persistent workspa
 python -m apps.cipher export --db data/cipher.sqlite --out audit-export.json
 python -m apps.cipher schema --db data/cipher.sqlite
 python -m apps.cipher.tools.core_gates                      # accounting-core decision gates (scorecard JSON)
+python -m apps.cipher.tools.corpus                          # 20-bill corpus: approval-time metrics (report JSON)
 python -m apps.cipher.tools.browser_check                   # headless Chrome/Edge drives the console journey
 ```
 
@@ -90,7 +91,7 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 | ACH collection 54,000 less 5 fee, then a late return after close | bank 53,995, then the receivable restored in the open period |
 | Payment with provider timeout, reconciliation and replay | one transfer, one cash effect |
 
-The fixture then executes the 12,000 alternative to exercise stale approvals, so `demo` reports an executed commitment of 122,000. `tests/test_vertical_v1.py` runs the plan's full section-10 acceptance test across every module.
+The fixture then executes the 12,000 alternative to exercise stale approvals, so `demo` reports an executed commitment of 122,000. `tests/test_vertical_v1.py` runs the plan's full section-10 acceptance test across every module; `tests/test_vertical_extended.py` walks one job through procurement, contracts, identity and payment-release governance, intake, assets, rights, the hand-off and the close.
 
 ## Layout
 
@@ -103,9 +104,9 @@ apps/cipher/
   service.py     Cipher façade: request → approve → execute; core and module routing; golden fixture
   server.py      stdlib HTTP API and console host
   console/       owner console with a browser self-test
-  tools/         browser_check.py, core_gates.py
+  tools/         browser_check.py, core_gates.py, corpus.py
   docs/          CORE_COMPARISON.md (accounting-core decision)
-  tests/         unit, integrity, workflow, V1 acceptance, adversarial variants, HTTP and per-module tests
+  tests/         unit, integrity, workflow, V1 and extended acceptance, corpus, adversarial variants, HTTP and per-module tests
   Dockerfile
 ```
 
