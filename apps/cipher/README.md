@@ -62,6 +62,9 @@ Modules (each registers its own schema entry and approval-bound operations):
 | | `field` | RFIs bound to issued drawings, approved responses and distribution, submittals, hold points, punch list, closeout acceptance |
 | | `drawings` | register with working, issued and superseded revisions bound to evidence |
 | Governance | `rights` | content-rights registry consulted before AI retrieval of licensed documents |
+| | `people` | identity registry, role grants scoped to the entity or a project, delegations, memberships and a hash-chained identity policy; no self-granting; records are checked against the audit log; enforcement is opt-in |
+| | `payment_policy` | high-risk release rules: independent releaser, fresh step-up, co-signature by a named outside party and a cooling-off window after a new destination; weakening the rules needs that party's co-signature |
+| | `contracts` | agreement approval and signature as separate authorities, required insurance and bond certificates checked at bill approval and at release |
 | Ricky | `ricky` (core), `ricky_sdk.py` | read-only attention brief, manifest previews with abstention, typed versioned tool catalog with schema validation and append-only receipts; every approval-bound operation is reachable through it or excluded by name with a reason; callers resolve to registered identities while the people registry enforces |
 
 ## Controls
@@ -76,8 +79,9 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 - subledgers reconcile to control accounts: AP, AR (all sources), retainage payable and receivable, stored materials, provider clearing, employee payable, accrued payroll, bank;
 - a payment leaves only through a committed outbox row with Cipher's idempotency key, after the payee is re-verified; a timeout is *outcome unknown* until reconciliation; callbacks must be signed; duplicates are ignored; one provider reference never pairs with two payments; a kill switch stops releases immediately and resuming needs an approval;
 - a payee destination changes only through a request, independent evidence recorded by someone other than the requester, and a `party.verify_destination` approval;
+- once configured, the governor modules hold approvals other modules own: the people registry checks every approver and executor, the payment policy holds high-risk releases for an independent releaser, step-up, co-signature and cooling-off, and contracts hold commitment execution for a signed agreement and bills and releases for certificates in force;
 - a restored copy is read-only at the SQLite level until the owner claims it; claims bind to that copy's challenge when `CIPHER_OWNER_SECRET` is set (otherwise they are attestation only and Ricky flags it); releases stay quarantined until recovery reconciliation resolves every in-flight and queued payment;
-- the HTTP boundary requires JSON with a same-origin Origin (no CSRF), rejects foreign Host headers in loopback mode (no DNS rebinding), and needs a token for any non-loopback bind; period close and commitment close go through their checklists.
+- the HTTP boundary requires JSON with a same-origin Origin (no CSRF), rejects foreign Host headers in loopback mode (no DNS rebinding), and needs a token for any non-loopback bind; the console escapes every server value before rendering it; period close and commitment close go through their checklists.
 
 ## Golden fixture
 
@@ -100,12 +104,13 @@ apps/cipher/
   core/          money, ids, db (schema catalog by name, triggers, write authority), audit, approvals, commands/outbox
   domain/        core: ledger, evidence, estimates, commitments, bills, receivables, payments, forecast, ricky
                  modules: assets, schedule, drawings, reimbursements, banking, labor, procurement, field, close, handoff, rights, ap_intake
+                 governors: people, payment_policy, contracts
   ricky_sdk.py   typed tool catalog for Ricky
   service.py     Cipher façade: request → approve → execute; core and module routing; golden fixture
   server.py      stdlib HTTP API and console host
   console/       owner console with a browser self-test
   tools/         browser_check.py, core_gates.py, corpus.py
-  docs/          CORE_COMPARISON.md (accounting-core decision)
+  docs/          CORE_COMPARISON.md (accounting-core decision), UI_OVERHAUL_SPEC.md (UI overhaul spec awaiting owner decisions)
   tests/         unit, integrity, workflow, V1 and extended acceptance, corpus, adversarial variants, HTTP and per-module tests
   Dockerfile
 ```
