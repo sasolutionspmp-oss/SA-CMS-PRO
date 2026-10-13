@@ -1020,6 +1020,12 @@ class Plugin:
         """Everything that no longer verifies, as readable sentences (empty when intact)."""
         return self._authority_problems() + self._self_approval_problems()
 
+    def authority_problems(self) -> list[str]:
+        """The problems that make every governor check fail closed while enforcing (identities,
+        grants, delegations and the policy chain), for other surfaces that answer to the
+        registry -- the Ricky SDK refuses every call on the same evidence."""
+        return self._authority_problems()
+
     def _require_intact(self) -> None:
         problems = self._authority_problems()
         if problems:

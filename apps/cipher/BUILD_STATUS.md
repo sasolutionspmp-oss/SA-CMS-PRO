@@ -28,6 +28,14 @@ Tests per module: adversarial_variants 22, ap_intake 25, assets 30, banking 43, 
 - **Payee changes:** request, independent evidence recorded by a different person against a stored evidence revision, then a `party.verify_destination` approval for `bank_admin`. The one-call HTTP action is gone; the console self-test drives the governed flow.
 - **Payment states:** processing and bank-reconciled states; a payment processing past three days fails the close checklist and appears in Ricky's brief.
 
+## Round 4 integration: Ricky SDK coverage and identity (2026-10-13)
+
+- **Round-3 tools** (catalog 1.1.0) were already in `ricky_sdk.py` (committed with the American English pass): supplier invoice intake and matching, supplier credit notes and bill corrections, customer terms and deposits, credit memos, write-offs, budget revisions and forecast snapshots. Each draft is gated by the approval it leads to; the effects stay human-granted approvals.
+- **Round-4 tools** (catalog 1.2.0): `read_identities`, `read_release_rules`, `preview_release` (classification, co-signature, step-up and cooling-off a release would need; records nothing), `read_contracts`, `register_contract_agreement`, `prepare_contract_signature` (the caller can never name itself, or a service identity, as the signer) and `record_insurance_certificate`. A round-4 draft runs in one write transaction and is rolled back and refused when it would void an open approval that still held (agreement, signature, commitment execution, or a bill approval or release that bound coverage). Every `people.*` and `payment_policy.*` operation stays restricted.
+- **Routing completeness:** the catalog describes every classified operation (`operations`, covered by the catalog hash). The routing check now fails unless every approval-bound operation the service routes is reachable through the SDK (`ROUTABLE_OPERATIONS`, with its drafts, previews, `request_approval` and `execute_approved_action`) or listed by name in `RESTRICTED_OPERATIONS` with its reason.
+- **SDK identity:** while the people module's identity policy enforces, every call resolves the caller to an active registered identity holding the role by grant or active delegation in scope (revoked or expired grants, lapsed or revoked delegations, ended memberships and deactivated delegators all refuse); any identity record that fails verification refuses every call; a resolved call runs under the registry's login and its receipt records the identity and the grant or delegation it rests on. Unconfigured, nothing changes.
+- **Verified:** `python -m apps.cipher test` on Linux (Python 3.13): 1185 tests, OK (ricky_sdk 111, up from 92).
+
 ## What review found and fixed (highlights)
 
 - Assets could over-depreciate across duplicate period rows; banking could book a fee twice; WIP adjustments could double count. All fixed with month-keyed guards, live-journal checks and span rules.
@@ -40,10 +48,10 @@ Tests per module: adversarial_variants 22, ap_intake 25, assets 30, banking 43, 
 ## Not verified / remaining gaps
 
 - **Claim attestation (G8 advisory):** without `CIPHER_OWNER_SECRET`, claiming a restored copy is attestation only (recorded and flagged by Ricky's brief). The container run above sets the secret; every deployment that opens restored copies must too.
-- **Identity and roles:** roles are named by the caller; there is no people or role-grant registry yet (part of the production-identity gate).
+- **Identity and roles:** the people registry (round 4) checks roles once its identity policy enforces, and the Ricky SDK answers to it; nothing authenticates the caller yet. The HTTP `ricky_tool` action and the console still take the actor login from the request, so who is calling is asserted, not proven (part of the production-identity gate).
 - **High-risk payments:** no amount-based step-up, co-signature or new-payee cooling-off policy beyond the approval and the governed payee change.
 - **Contracts:** executing a commitment is one approval; contract signature as a separate authority with insurance and bond evidence is not built.
-- **Ricky SDK coverage:** the typed tool catalog covers the core and round-2 modules; AP intake, credits, deposits and budget revisions are reachable through approvals and the console but have no SDK tools yet.
+- **Ricky SDK coverage:** every approval-bound operation is reachable through the SDK or excluded by name with a reason. Deliberately not offered (a person's decision): recording a customer deposit, setting payment terms, clearing a duplicate flag, setting insurance requirements, withdrawing a certificate, co-signing a release, recording a step-up, and every identity and payment-policy change.
 - **V1 coverage:** the section-10 acceptance test does not yet walk procurement, hand-off, rights, assets or the SDK end to end, and there is no 20-bill corpus with approval-time metrics.
 - **Accounting policy:** posting rules for revenue recognition, stored materials and disposals are SHADOW assumptions awaiting controller approval.
 - **Core decision:** ERPNext has not been run against the same gates; this machine had about 4 GB free on 2026-10-12 against the owner's 250 GB free-space target, so a multi-GB ERP stack should not be pulled here.

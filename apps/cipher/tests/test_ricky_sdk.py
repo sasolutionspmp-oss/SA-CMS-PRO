@@ -7,7 +7,14 @@ The round-3 sections cover the tools for supplier invoice intake and matching,
 supplier credit notes and bill corrections, customer terms and deposits, credit
 memos, write-offs, budget versions and forecast snapshots: each draft is gated by
 the authority of the approval it leads to, and the effect itself stays a human-granted
-approval executed through execute_approved_action."""
+approval executed through execute_approved_action.
+
+The round-4 sections cover the governor modules (identities, payment release rules and
+release previews, contract agreements, signatures and insurance certificates), the
+completeness of operation routing (every approval-bound operation is reachable through the
+SDK or excluded with a reason) and SDK identity: while the people module's identity policy
+enforces, every caller resolves to a registered identity holding the role by grant or
+delegation, and Ricky can never grant anything."""
 import copy
 import datetime
 import itertools
@@ -28,6 +35,9 @@ from apps.cipher.domain.ricky import ROLE_AUTHORITY
 from apps.cipher import ricky_sdk as sdk_module
 from apps.cipher import service as cipher_service
 from apps.cipher.core.approvals import ApprovalExpired, build_manifest, material_hash
+from apps.cipher.domain import contracts as contracts_module, payment_policy as payment_policy_module
+from apps.cipher.domain.contracts import ContractError
+from apps.cipher.domain.people import IdentityRefused
 from apps.cipher.ricky_sdk import (
     APPROVAL_HUMAN, APPROVAL_NONE, APPROVAL_TYPES, AUTH_APPROVAL_OPERATION, AUTH_ARGS_OPERATION, AUTH_READ, AUTHORITY_KINDS, CATALOG,
     CATALOG_BY_NAME, CATALOG_HASH, CATALOG_VERSION, DYNAMIC_AUTHORITIES, FINGERPRINT_PREFIX, GENESIS, GOVERNED_ROUTABLE_OPERATIONS,
@@ -35,6 +45,9 @@ from apps.cipher.ricky_sdk import (
     RESERVATIONS_TABLE, RESTRICTED_OPERATIONS, RIGHTS_MODULE, ROUND3_TOOLS, ROUTABLE_OPERATIONS, SCHEMA_ENTRIES, SCHEMA_NAME, SIDE_EFFECTS,
     SUPPLIER_INVOICE_UNTRUSTED_FIELDS, UNTRUSTED_NOTICE, ReceiptStoreUnavailable, RickySDK, RickySDKError, SchemaDefinitionError, catalog,
     check_schema, operation_class, redact, validate, validate_args,
+    COVERAGE_KINDS, COVERAGE_OPERATIONS, OP_CONTRACT_APPROVE, OP_CONTRACT_SIGN, OPERATION_TOOLS, PREVIEW_UNEVALUATED, RELEASE_OPERATIONS, ROUND4_TOOLS,
+    ROUTE_TOOLS,
+    operation_route,
 )
 from apps.cipher.service import Cipher
 
@@ -47,7 +60,11 @@ ROUND3 = {
     "read_customer_terms", "read_customer_deposits", "draft_deposit_application", "draft_credit_memo", "draft_write_off",
     "read_budget_versions", "draft_budget_revision", "record_forecast_snapshot", "read_forecast_snapshots",
 }
-EXPECTED_TOOLS = CORE_TOOLS | ROUND3
+ROUND4 = {
+    "read_identities", "read_release_rules", "preview_release", "read_contracts", "register_contract_agreement", "prepare_contract_signature",
+    "record_insurance_certificate",
+}
+EXPECTED_TOOLS = CORE_TOOLS | ROUND3 | ROUND4
 KNOWN_OPERATIONS = set().union(*ROLE_AUTHORITY.values()) - {"*"}
 FORBIDDEN_NAME_FRAGMENTS = ("grant", "reject", "edit_approval", "policy", "secret", "sql", "destination", "role", "authority", "claim")
 
@@ -237,6 +254,76 @@ def round3_calls(w, fx):
 
 
 # --------------------------------------------------------------------------- #
+# Round-4 fixtures: identities, release rules and contracts people set up      #
+# --------------------------------------------------------------------------- #
+
+def fixed_people_clock(w, day=datetime.date(2026, 10, 12)):
+    """Pin the identity registry's calendar so grant and delegation windows do not depend on the run date."""
+    p = w.c.plugin("people")
+    p.now = lambda: datetime.datetime(day.year, day.month, day.day, 12, 0, tzinfo=datetime.timezone.utc)
+    return p
+
+
+def draft_commitment(w, amount="12000", title="Synthetic cofferdam subcontract"):
+    """A draft commitment on the project: agreements are registered against drafts."""
+    return w.c.commitments.create(project_id=w.project["id"], supplier_id=w.supplier["id"], title=title, sov_lines=[
+        {"description": "Placeholder work item", "cost_code": "XX 40 00", "amount": amount}], retainage_rate="0.10", actor="contracts-admin")["id"]
+
+
+def contract_day(w, offset=0):
+    """A calendar date by the contract module's own clock (signing dates, certificate windows)."""
+    return (w.c.plugin("contract")._today() + datetime.timedelta(days=offset)).isoformat()
+
+
+def adopt_release_rules(w, *, high="1000.00", cosign="5000.00", cooling=10, parties=("ext-accountant",)):
+    """A first payment release policy, adopted by the owner outside the SDK."""
+    pp = w.c.plugin("payment_policy")
+    d = pp.draft_policy(high_risk_amount=high, cosign_amount=cosign, step_up_max_age_seconds=300, new_destination_cooling_days=cooling,
+                        first_payment_to_destination_is_high_risk=False, independent_parties=list(parties),
+                        reason="Synthetic owner and external accountant release control", actor="owner")
+    w.c.approve_and_execute("payment_policy.update", d["id"])
+    return pp.policy()
+
+
+def certificate_args(w, kind="general_liability", limit="2000000", number="POL-SIM-0001", party_id=None, pdf=None):
+    return {"party_id": party_id or w.supplier["id"], "kind": kind, "carrier": "Synthetic Mutual Insurance Co", "policy_number": number,
+            "limit": limit, "effective_date": contract_day(w, -30), "expiry_date": contract_day(w, 335),
+            "evidence_hash": pdf or evidence(w, "insurance_certificate")}
+
+
+def round4_fixture(w):
+    """Everything the round-4 tools act on, created by people outside the SDK: an identity registry that does not
+    enforce, an adopted release policy and a posted bill to preview (1,800 due), a draft commitment and its agreement
+    document, an agreement a person approved with its signed copy, and an insurance certificate document."""
+    p = fixed_people_clock(w)
+    p.bootstrap_owner("owner-1", "Synthetic owner")
+    p.register_person("pm-lee", "Synthetic PM", actor="owner-1")
+    p.add_membership("pm-lee", w.project["id"], actor="owner-1")
+    adopt_release_rules(w)
+    release_bill = posted_supplier_bill(w, subcontract(w, "8000", "Synthetic wellpoint subcontract"), "2000")
+    signed_draft = draft_commitment(w, "9000", "Synthetic sheet pile subcontract")
+    a = w.c.plugin("contract").register_agreement(signed_draft, evidence(w, "agreement"), "contracts-admin")
+    w.c.approve_and_execute("contract.approve_agreement", a["id"], actor_role="pm", actor="legal-lin")
+    return SimpleNamespace(release_bill=release_bill, draft=draft_commitment(w), agreement_pdf=evidence(w, "agreement"), approved_agreement=a["id"],
+                           signed_copy=evidence(w, "signed_agreement"), certificate_pdf=evidence(w, "insurance_certificate"))
+
+
+def round4_calls(w, fx):
+    """One successful call of every round-4 tool, each by a role that holds its authority."""
+    pid = w.project["id"]
+    return {
+        "read_identities": call(w, "read_identities", {"project_id": pid}, role="viewer"),
+        "read_release_rules": call(w, "read_release_rules", {"project_id": pid}, role="viewer"),
+        "preview_release": call(w, "preview_release", {"operation": "payment.release", "subject_id": fx.release_bill["id"]}, role="treasury"),
+        "read_contracts": call(w, "read_contracts", {"project_id": pid}, role="viewer"),
+        "register_contract_agreement": call(w, "register_contract_agreement", {"commitment_id": fx.draft, "evidence_hash": fx.agreement_pdf}, role="pm"),
+        "prepare_contract_signature": call(w, "prepare_contract_signature", {
+            "agreement_id": fx.approved_agreement, "evidence_hash": fx.signed_copy, "signer": "signer-sam", "signing_date": contract_day(w)}, role="signer"),
+        "record_insurance_certificate": call(w, "record_insurance_certificate", certificate_args(w, pdf=fx.certificate_pdf), role="legal"),
+    }
+
+
+# --------------------------------------------------------------------------- #
 # Catalog                                                                      #
 # --------------------------------------------------------------------------- #
 
@@ -248,10 +335,13 @@ class CatalogTests(unittest.TestCase):
         self.assertEqual(cat["catalog_version"], CATALOG_VERSION)
         self.assertEqual(RickySDK.catalog(), cat)
         self.assertEqual(RickySDK.tool("read_brief")["name"], "read_brief")
-        # round 3 is additive: the catalog's minor version moved, each new tool starts at 1.0.0
-        self.assertEqual(CATALOG_VERSION, "1.1.0")
+        # rounds 3 and 4 are additive: the catalog's minor version moved, each new tool starts at 1.0.0
+        self.assertEqual(CATALOG_VERSION, "1.2.0")
         self.assertEqual(set(ROUND3_TOOLS), ROUND3)
-        self.assertEqual({t["name"]: t["version"] for t in cat["tools"] if t["name"] in ROUND3}, dict.fromkeys(ROUND3, "1.0.0"))
+        self.assertEqual(set(ROUND4_TOOLS), ROUND4)
+        self.assertEqual({t["name"]: t["version"] for t in cat["tools"] if t["name"] in ROUND3 | ROUND4}, dict.fromkeys(ROUND3 | ROUND4, "1.0.0"))
+        # the catalog also says how every classified operation is reached, or why it is not
+        self.assertEqual([o["operation"] for o in cat["operations"]], sorted(ROUTABLE_OPERATIONS | set(RESTRICTED_OPERATIONS)))
         # the two tools whose contract tightened in 1.1.0 (routable operations, posting periods, stale open approvals)
         self.assertEqual({t["name"]: t["version"] for t in cat["tools"] if t["name"] in CORE_TOOLS},
                          {**dict.fromkeys(CORE_TOOLS, "1.0.0"), "request_approval": "1.1.0", "execute_approved_action": "1.1.0"})
@@ -318,6 +408,15 @@ class CatalogTests(unittest.TestCase):
             "draft_budget_revision": ("draft", "budget.revise", APPROVAL_NONE),
             "record_forecast_snapshot": ("draft", "budget.revise", APPROVAL_NONE),
             "read_forecast_snapshots": ("none", AUTH_READ, APPROVAL_NONE),
+            # round 4: the governors' own operations are restricted, so identities and release rules are read and releases
+            # previewed; contract drafts are gated by the approval they lead to (a certificate by the subcontract reviewer's)
+            "read_identities": ("none", AUTH_READ, APPROVAL_NONE),
+            "read_release_rules": ("none", AUTH_READ, APPROVAL_NONE),
+            "preview_release": ("none", AUTH_ARGS_OPERATION, APPROVAL_NONE),
+            "read_contracts": ("none", AUTH_READ, APPROVAL_NONE),
+            "register_contract_agreement": ("draft", "contract.approve_agreement", APPROVAL_NONE),
+            "prepare_contract_signature": ("draft", "contract.sign", APPROVAL_NONE),
+            "record_insurance_certificate": ("draft", "contract.approve_agreement", APPROVAL_NONE),
         }
         self.assertEqual(set(expected), set(by_name))  # every tool's class is pinned here
         for name, (effects, authority, approval) in expected.items():
@@ -329,10 +428,14 @@ class CatalogTests(unittest.TestCase):
     def test_catalog_hash_pins_every_spec(self):
         cat = catalog()
         self.assertRegex(CATALOG_HASH, r"^[0-9a-f]{64}$")
-        self.assertEqual(CATALOG_HASH, hash_json({"catalog_version": cat["catalog_version"], "tools": cat["tools"]}))
+        self.assertEqual(CATALOG_HASH, hash_json({"catalog_version": cat["catalog_version"], "tools": cat["tools"], "operations": cat["operations"]}))
         altered = copy.deepcopy(cat["tools"])
         altered[0]["timeout_seconds"] += 1
-        self.assertNotEqual(CATALOG_HASH, hash_json({"catalog_version": cat["catalog_version"], "tools": altered}))
+        self.assertNotEqual(CATALOG_HASH, hash_json({"catalog_version": cat["catalog_version"], "tools": altered, "operations": cat["operations"]}))
+        # so is how operations are routed: moving one from restricted to routable changes the hash
+        routes = copy.deepcopy(cat["operations"])
+        routes[0]["class"] = "restricted" if routes[0]["class"] == "routable" else "routable"
+        self.assertNotEqual(CATALOG_HASH, hash_json({"catalog_version": cat["catalog_version"], "tools": cat["tools"], "operations": routes}))
         # describe() hands out copies: mutating one cannot change the catalog
         cat["tools"][0]["input_schema"]["additionalProperties"] = True
         self.assertIs(catalog()["tools"][0]["input_schema"]["additionalProperties"], False)
@@ -797,7 +900,8 @@ class ExecutionTests(unittest.TestCase):
 
     def test_no_tool_call_reaches_grant_reject_destination_or_authority_paths(self):
         w = world()
-        fx = round3_fixture(w)  # the people's side of round 3, before any path is trapped
+        fx = round3_fixture(w)  # the people's side of rounds 3 and 4, before any path is trapped
+        fx4 = round4_fixture(w)
         bill_id = draft_bill(w)["result"]["bill_id"]
         ap_bill = call(w, "request_approval", {"operation": "bill.approve", "subject_id": bill_id}, role="pm")["result"]["approval_id"]
         w.c.approve(ap_bill)  # granted by the human before the model acts
@@ -830,7 +934,8 @@ class ExecutionTests(unittest.TestCase):
         results["reconcile_payments"] = call(w, "reconcile_payments", {}, role="treasury")
         approvals = count(w.c, "approvals")
         results.update(round3_calls(w, fx))
-        self.assertEqual(count(w.c, "approvals"), approvals)  # no round-3 tool requests, let alone grants, an approval
+        results.update(round4_calls(w, fx4))
+        self.assertEqual(count(w.c, "approvals"), approvals)  # no round-3 or round-4 tool requests, let alone grants, an approval
         self.assertEqual(set(results), EXPECTED_TOOLS)
         for name, r in results.items():
             self.assertEqual(r["status"], "ok", (name, r))
@@ -2133,6 +2238,7 @@ class Round3BoundaryTests(Round3Case):
             with self.subTest(draft=name):
                 step = results[name]["result"]["next_step"]
                 self.assertEqual((step["tool"], step["operation"]), ("request_approval", operation))
+                self.assertIn(name, OPERATION_TOOLS[operation])  # the catalog routes the operation through this draft
         self.assertEqual(results["compute_invoice_match"]["result"]["exceptions"], ["no_certified_bill"])
         audited = [e["action"] for e in w.c.audit.entries(entity_type="ricky_tool_receipt")][-len(ROUND3):]
         self.assertEqual(audited, ["ricky_sdk.ok"] * len(ROUND3))
@@ -2209,13 +2315,6 @@ def service_operations(c):
     return {op for op in candidates if routed(op)}
 
 
-def fixed_people_clock(w, day=datetime.date(2026, 10, 12)):
-    """Pin the identity registry's calendar so grant and delegation windows do not depend on the run date."""
-    p = w.c.plugin("people")
-    p.now = lambda: datetime.datetime(day.year, day.month, day.day, 12, 0, tzinfo=datetime.timezone.utc)
-    return p
-
-
 class OperationRoutingTests(Round3Case):
     def test_every_operation_the_service_routes_is_classified(self):
         w = world()
@@ -2231,15 +2330,75 @@ class OperationRoutingTests(Round3Case):
                     self.assertEqual(operation_class(op), "routable")
                 elif op in EXPECTED_RESTRICTED or op.startswith(("people.", "payment_policy.")):
                     self.assertEqual(operation_class(op), "restricted")
-                else:  # an operation added after this list was written: refused until someone classifies it
+                else:  # an operation added after this list was written: refused at run time, and this check fails until it is classified
                     self.assertEqual(operation_class(op), "unlisted")
                     self.assertRefused(call(w, "request_approval", {"operation": op, "subject_id": "subject-x"}, role="owner"),
                                        "not on the SDK's list of operations Ricky may route")
+                    self.fail(f"{op} is approval-bound but neither reachable through the SDK (ROUTABLE_OPERATIONS) nor listed as "
+                              "intentionally excluded with a reason (RESTRICTED_OPERATIONS)")
         # a governor module's operations are restricted unless listed as one of its business operations
         for name, _governor in w.c._governors():
             for op in sorted(o for o in ops if o.split(".", 1)[0] == name and o not in GOVERNED_ROUTABLE_OPERATIONS):
                 with self.subTest(governor=name, operation=op):
                     self.assertEqual(operation_class(op), "restricted")
+
+    def test_every_approval_bound_operation_is_reachable_or_excluded_with_a_reason(self):
+        w = world()
+        ops = service_operations(w.c)
+        routes = {o["operation"]: o for o in catalog()["operations"]}
+        self.assertEqual(set(routes), ROUTABLE_OPERATIONS | set(RESTRICTED_OPERATIONS))
+        self.assertEqual(set(routes) - ops, set())  # no stale or misspelt name in the catalog
+        for op in sorted(ops):
+            with self.subTest(operation=op):
+                route = operation_route(op)
+                self.assertEqual(routes.get(op), route, "the catalog describes every approval-bound operation")
+                if route["reachable"]:
+                    # reached through the SDK: its own drafts and previews, then a request a person grants and an execution
+                    self.assertEqual((route["class"], route["reason"]), ("routable", None))
+                    self.assertEqual(route["tools"], list(OPERATION_TOOLS.get(op, ())) + ([] if op in PREVIEW_UNEVALUATED else ["preview"])
+                                     + list(ROUTE_TOOLS))
+                    self.assertEqual(route["tools"][-2:], ["request_approval", "execute_approved_action"])
+                    self.assertTrue(set(route["tools"]) <= set(CATALOG_BY_NAME))
+                    # preview is listed only where Ricky evaluates the operation (an abstention about the subject, never
+                    # "unknown workflow"); an operation it does not evaluate has a preview of its own
+                    preview = self.assertOk(call(w, "preview", {"workflow": op, "context": {"subject_id": "subject-x"}}, role="owner"))
+                    self.assertEqual(preview["decision"], "abstained")
+                    if op in PREVIEW_UNEVALUATED:
+                        self.assertIn("unknown workflow", preview["reason"])
+                        self.assertTrue(set(OPERATION_TOOLS[op]) - {"preview"})
+                    else:
+                        self.assertNotIn("unknown workflow", preview["reason"])
+                else:
+                    # excluded explicitly, by name, with the reason the refusal gives -- never only by a prefix or a term
+                    self.assertEqual(route["class"], "restricted")
+                    self.assertIn(op, RESTRICTED_OPERATIONS)
+                    self.assertEqual(route["reason"], RESTRICTED_OPERATIONS[op])
+                    self.assertGreater(len(route["reason"]), 5)
+                    self.assertEqual(route["tools"], [])
+                    self.assertRefused(call(w, "request_approval", {"operation": op, "subject_id": "subject-x"}, role="owner"),
+                                       RESTRICTED_OPERATIONS[op], "never requests or executes")
+        # a tool specific to an operation is gated by it (a release preview by the operation named in its arguments)
+        for op, tools in OPERATION_TOOLS.items():
+            for tool in tools:
+                spec = CATALOG_BY_NAME[tool]
+                with self.subTest(operation=op, tool=tool):
+                    self.assertIn(spec.authority, (op, AUTH_ARGS_OPERATION))
+                    if spec.authority == AUTH_ARGS_OPERATION:
+                        self.assertIn(op, spec.input_schema["properties"]["operation"]["enum"])
+        # every draft gated by an operation is listed for it, except the two that record evidence leading to no approval of its own
+        evidence_only = {"record_forecast_snapshot", "record_insurance_certificate"}
+        for spec in CATALOG:
+            if spec.side_effects == "draft" and spec.authority_kind == "operation" and spec.name not in evidence_only:
+                with self.subTest(draft=spec.name):
+                    self.assertIn(spec.name, OPERATION_TOOLS.get(spec.authority, ()))
+        # the governor constants the SDK restates are the modules' own
+        self.assertEqual(RELEASE_OPERATIONS, payment_policy_module.GOVERNED_OPERATIONS)
+        self.assertEqual(COVERAGE_OPERATIONS, contracts_module.COVERAGE_OPERATIONS)
+        self.assertEqual(COVERAGE_KINDS, contracts_module.COVERAGE_KINDS)
+        self.assertEqual((OP_CONTRACT_APPROVE, OP_CONTRACT_SIGN), (contracts_module.OP_APPROVE, contracts_module.OP_SIGN))
+        # an operation nobody classified is described as unreachable, never as routable
+        self.assertEqual({k: operation_route("zzfake.do_thing")[k] for k in ("class", "reachable", "tools")},
+                         {"class": "unlisted", "reachable": False, "tools": []})
 
     def test_restricted_operations_are_refused_for_every_role_on_request(self):
         w = world()
@@ -2618,6 +2777,623 @@ class TextShapeAndSchemaTests(Round3Case):
         app = {"deposit_id": fx.deposit["id"], "prime_bill_id": fx.prime["id"], "amount": "2000"}
         self.assertOk(call(w, "draft_deposit_application", app, role="accountant"))
         self.assertRefused(call(w, "draft_deposit_application", app, role="accountant"), "duplicates are refused")
+
+
+# --------------------------------------------------------------------------- #
+# Round 4: identities (people)                                                 #
+# --------------------------------------------------------------------------- #
+
+class IdentityToolTests(Round3Case):
+    def test_identities_are_read_never_changed(self):
+        w = world()
+        empty = self.assertOk(call(w, "read_identities", {}, role="viewer"))
+        self.assertEqual((empty["enforcing"], empty["identities"], empty["policy"]), (False, [], None))
+        self.assertEqual(empty["caller"], {"actor": "ricky-test", "actor_role": "viewer", "enforcing": False, "registered": False, "active": False,
+                                           "holds_role": False, "identity": None})
+        fx = round4_fixture(w)
+        people_tables = ("people_persons", "people_grants", "people_grant_requests", "people_delegations", "people_policy_versions")
+        before = {t: count(w.c, t) for t in people_tables} | {"approvals": count(w.c, "approvals")}
+        read = self.assertOk(call(w, "read_identities", {"project_id": w.project["id"]}, role="viewer"))
+        self.assertEqual({p["login"] for p in read["identities"]}, {"owner-1", "pm-lee"})
+        owner = next(p for p in read["identities"] if p["login"] == "owner-1")
+        self.assertEqual([(a["role"], a["via"]) for a in owner["authorities"]], [("owner", "grant")])
+        self.assertEqual([m["person_id"] for m in read["members"]], [next(p["id"] for p in read["identities"] if p["login"] == "pm-lee")])
+        self.assertEqual((read["integrity"], read["content_handling"]), ({"intact": True, "problems": []}, UNTRUSTED_NOTICE))
+        self.assertIn("identities[].display_name", read["untrusted_fields"])
+        # one identity by login, keyed as the registry keys it; an unknown login is an error, not an empty answer
+        one = self.assertOk(call(w, "read_identities", {"login": "PM-Lee"}, role="viewer"))
+        self.assertEqual([p["login"] for p in one["identities"]], ["pm-lee"])
+        self.assertFailed(call(w, "read_identities", {"login": "nobody"}, role="viewer"), "unknown identity 'nobody'")
+        self.assertFailed(call(w, "read_identities", {"project_id": "prj_missing"}, role="viewer"), "unknown project")
+        # how the caller resolves: the owner holds every role by its grant, before any policy enforces
+        me = self.assertOk(call(w, "read_identities", {}, role="controller", actor="owner-1"))["caller"]
+        self.assertEqual((me["registered"], me["holds_role"], me["identity"]["via"], me["identity"]["held_role"]), (True, True, "grant", "owner"))
+        self.assertEqual({t: count(w.c, t) for t in people_tables} | {"approvals": count(w.c, "approvals")}, before)
+        # schema: a login is plain text, never an instruction or a hidden character
+        for login in ("pm lee", "pm-lee" + chr(0x200B), "'; DROP TABLE people_persons; --", "x" * 65):
+            with self.subTest(login=login):
+                self.assertRefused(call(w, "read_identities", {"login": login}, role="viewer"), "invalid arguments", "$.login")
+        self.assertRefused(call(w, "read_identities", {"grant": "owner"}, role="viewer"), "unexpected property 'grant'")
+        # a deployment without the people module refuses, having run nothing
+        w.c._plugins.pop("people")
+        self.assertRefused(call(w, "read_identities", {}, role="viewer"), "the people module is not loaded", "nothing ran")
+        self.assertIsNotNone(fx)
+
+
+# --------------------------------------------------------------------------- #
+# Round 4: payment release rules (payment_policy)                              #
+# --------------------------------------------------------------------------- #
+
+class ReleaseRuleToolTests(Round3Case):
+    def release_snapshot(self, w):
+        tables = ("approvals", "ricky_proposals", "payment_intents", "payment_policy_versions", "payment_policy_drafts", "payment_policy_step_ups",
+                  "payment_policy_cosignatures", "payment_policy_clearances")
+        return {t: count(w.c, t) for t in tables}
+
+    def test_release_rules_are_read_and_releases_previewed_without_recording_anything(self):
+        w = world()
+        big = posted_supplier_bill(w, subcontract(w, "8000", "Synthetic wellpoint subcontract"), "2000")    # 1,800 due
+        small = posted_supplier_bill(w, subcontract(w, "6000", "Synthetic shoring subcontract"), "500")     # 450 due
+        rules = self.assertOk(call(w, "read_release_rules", {}, role="viewer"))
+        self.assertEqual((rules["configured"], rules["policy"], rules["awaiting_controls"]), (False, None, []))
+        self.assertIn("no payment release policy has been adopted", rules["note"])
+        before = self.release_snapshot(w)
+        bare = self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": big["id"]}, role="treasury"))
+        self.assertEqual((bare["governed"], bare["classification"], bare["requires"], bare["amount"]), (False, "ungoverned", [], "1800.00"))
+        self.assertEqual(bare["releases_allowed"], {"ok": True, "reason": None})
+        self.assertIn("follows the approval rules alone", bare["note"])
+        adopt_release_rules(w)
+        before = self.release_snapshot(w)
+        high = self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": big["id"]}, role="treasury"))
+        self.assertEqual((high["governed"], high["classification"], high["reasons"], high["policy_version"]),
+                         (True, "high_risk", ["amount_at_or_over_high_risk_amount"], 1))
+        self.assertEqual((high["cosign_required"], high["requires"]), (False, ["independent_approval", "independent_release", "fresh_step_up"]))
+        self.assertEqual((high["independent_parties"], high["step_up_max_age_seconds"], high["cooling_off"]), (["ext-accountant"], 300, None))
+        low = self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": small["id"]}, role="treasury"))
+        self.assertEqual((low["classification"], low["reasons"], low["requires"]), ("standard", [], []))
+        # the destination is masked in the previewed manifest, and its hashes are keyed fingerprints
+        self.assertTrue(high["manifest"]["destination"]["destination"].startswith("[redacted"))
+        self.assertNotIn("ACH-SIM-7001", canonical_json(w.sdk.receipts()))
+        # a preview records nothing: no approval, proposal, step-up, co-signature, clearance or payment
+        self.assertEqual(self.release_snapshot(w), before)
+        # only roles that may release preview a release; the operation must be one the policy governs
+        self.assertRefused(call(w, "preview_release", {"operation": "payment.release", "subject_id": big["id"]}, role="viewer"),
+                           "not authorized for payment.release")
+        self.assertRefused(call(w, "preview_release", {"operation": "payment.release", "subject_id": big["id"]}, role="pm"),
+                           "not authorized for payment.release")
+        self.assertRefused(call(w, "preview_release", {"operation": "bill.approve", "subject_id": big["id"]}, role="owner"),
+                           "$.operation: 'bill.approve' is not one of")
+        self.assertFailed(call(w, "preview_release", {"operation": "payment.release", "subject_id": "bill_missing"}, role="treasury"), "unknown bill")
+        # a release requested through the SDK is a high-risk approval awaiting its controls
+        req = self.assertOk(call(w, "request_approval", {"operation": "payment.release", "subject_id": big["id"]}, role="treasury"))
+        rules = self.assertOk(call(w, "read_release_rules", {"project_id": w.project["id"]}, role="viewer"))
+        self.assertEqual((rules["configured"], rules["policy"]["version"], rules["policy"]["terms"]["high_risk_amount"]), (True, 1, "1000.00"))
+        self.assertEqual([(a["approval_id"], a["waiting_for"]) for a in rules["awaiting_controls"]], [(req["approval_id"], ["independent approval"])])
+        self.assertTrue(rules["integrity"]["ok"])
+        self.assertIn("pending_drafts[].reason", rules["untrusted_fields"])
+        self.assertBooks(w)
+
+    def test_a_cooling_off_hold_after_a_destination_change_is_previewed_and_never_lifted_by_ricky(self):
+        w = world()
+        bill = posted_supplier_bill(w, subcontract(w, "8000", "Synthetic wellpoint subcontract"), "500")  # 450 due: standard by amount
+        adopt_release_rules(w)
+        p = w.c.payments
+        change = p.request_destination_change(w.supplier["id"], "ACH-SIM-7002", "ap-clerk", "supplier letter announcing a new bank account", "ap-clerk")
+        p.record_verification_evidence(change["id"], "call-back to number on file", "ext-accountant", evidence(w, "destination_verification"), "bank-admin")
+        ap = w.c.request_approval("party.verify_destination", change["id"], actor_role="bank_admin", requested_by="bank-admin")
+        w.c.approve(ap["id"], approver="owner", approver_role="owner")
+        w.c.execute(ap["id"], actor="bank-admin")  # a person's governed change, outside the SDK
+        held = self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": bill["id"]}, role="treasury"))
+        self.assertEqual((held["classification"], held["reasons"]), ("high_risk", ["new_destination_from_change"]))
+        self.assertEqual((held["cooling_off"]["change_id"], held["cooling_off"]["running"]), (change["id"], True))
+        self.assertNotIn("ACH-SIM-7002", canonical_json(w.sdk.receipts()))
+        rules = w.c.plugin("payment_policy")
+        later = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(days=11)
+        rules.now = lambda: later
+        self.assertFalse(self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": bill["id"]}, role="treasury"))
+                         ["cooling_off"]["running"])
+        # nothing in the catalog co-signs, records a step-up or changes the rules; the update stays a person's approval
+        for name in (t["name"] for t in catalog()["tools"]):
+            for fragment in ("cosign", "step_up", "stepup", "policy", "kill", "resume"):
+                self.assertNotIn(fragment, name)
+        d = rules.draft_policy(high_risk_amount="900000.00", cosign_amount="900000.00", step_up_max_age_seconds=3600, new_destination_cooling_days=0,
+                               first_payment_to_destination_is_high_risk=False, independent_parties=["ext-accountant"],
+                               reason="Synthetic loosening attempt", actor="owner")
+        self.assertRefused(call(w, "request_approval", {"operation": "payment_policy.update", "subject_id": d["id"]}, role="owner"),
+                           "changes the payment release policy", "never requests or executes")
+        upd = w.c.request_approval("payment_policy.update", d["id"], actor_role="owner", requested_by="owner")
+        w.c.approve(upd["id"], approver="owner", approver_role="owner")  # granted by a person; it still needs the outside co-signature
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": upd["id"]}, role="owner"), "never requests or executes")
+        self.assertEqual((rules.policy()["version"], w.c.approvals.get(upd["id"])["status"]), (1, "granted"))
+        self.assertEqual(count(w.c, "payment_policy_cosignatures"), 0)
+
+    def test_without_the_policy_module_rules_are_refused_and_previews_are_ungoverned(self):
+        w = world()
+        bill = posted_supplier_bill(w, subcontract(w, "8000", "Synthetic wellpoint subcontract"), "2000")
+        w.c._plugins.pop("payment_policy")
+        self.assertRefused(call(w, "read_release_rules", {}, role="viewer"), "the payment_policy module is not loaded", "nothing ran")
+        r = self.assertOk(call(w, "preview_release", {"operation": "payment.release", "subject_id": bill["id"]}, role="treasury"))
+        self.assertEqual((r["governed"], r["classification"]), (False, "ungoverned"))
+
+
+# --------------------------------------------------------------------------- #
+# Round 4: contract agreements, signatures and insurance (contract)            #
+# --------------------------------------------------------------------------- #
+
+class ContractToolTests(Round3Case):
+    def register(self, w, cid, role="pm", pdf=None):
+        return self.assertOk(call(w, "register_contract_agreement", {"commitment_id": cid, "evidence_hash": pdf or evidence(w, "agreement")}, role=role))
+
+    def approve_agreement(self, w, agreement_id):
+        req = self.assertOk(call(w, "request_approval", {"operation": "contract.approve_agreement", "subject_id": agreement_id}, role="pm"))
+        w.c.approve(req["approval_id"], approver="legal-lin", approver_role="legal")  # a person's decision, outside the SDK
+        return self.assertOk(call(w, "execute_approved_action", {"approval_id": req["approval_id"]}, role="pm"))
+
+    def signature_args(self, w, agreement_id, signer="signer-sam"):
+        return {"agreement_id": agreement_id, "evidence_hash": evidence(w, "signed_agreement"), "signer": signer, "signing_date": contract_day(w)}
+
+    def test_an_agreement_is_registered_approved_signed_and_executed_only_through_human_grants(self):
+        w = world()
+        cid = draft_commitment(w)
+        approvals = count(w.c, "approvals")
+        a = self.register(w, cid)
+        self.assertEqual((a["status"], a["commitment_id"], a["commitment_amount"], a["supersedes"], a["problems"]), ("registered", cid, "12000.00", None, []))
+        self.assertEqual((a["next_step"]["operation"], a["next_step"]["subject_id"]), ("contract.approve_agreement", a["agreement_id"]))
+        self.assertEqual(count(w.c, "approvals"), approvals)  # a draft requests nothing
+        req = self.assertOk(call(w, "request_approval", {"operation": "contract.approve_agreement", "subject_id": a["agreement_id"]}, role="legal"))
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": req["approval_id"]}, role="legal"), "a human has not granted it")
+        w.c.approve(req["approval_id"], approver="legal-lin", approver_role="legal")
+        done = self.assertOk(call(w, "execute_approved_action", {"approval_id": req["approval_id"]}, role="legal"))
+        self.assertEqual(done["command_result"]["status"], "approved")
+        sig = self.assertOk(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role="signer"))
+        self.assertEqual((sig["status"], sig["signer"], sig["next_step"]["operation"]), ("prepared", "signer-sam", "contract.sign"))
+        self.assertIn("only the named signer 'signer-sam' can grant contract.sign", sig["next_step"]["note"])
+        sign = self.assertOk(call(w, "request_approval", {"operation": "contract.sign", "subject_id": a["agreement_id"]}, role="signer"))
+        with self.assertRaisesRegex(ContractError, "only the named signer"):
+            w.c.approve(sign["approval_id"], approver="owner", approver_role="owner")  # nobody signs on the signer's behalf
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": sign["approval_id"]}, role="signer"), "is pending")
+        w.c.approve(sign["approval_id"], approver="signer-sam", approver_role="signer")
+        self.assertEqual(self.assertOk(call(w, "execute_approved_action", {"approval_id": sign["approval_id"]}, role="signer"))
+                         ["command_result"]["status"], "signed")
+        exe = self.assertOk(call(w, "request_approval", {"operation": "commitment.execute", "subject_id": cid}, role="pm"))
+        w.c.approve(exe["approval_id"], approver="owner", approver_role="owner")
+        self.assertOk(call(w, "execute_approved_action", {"approval_id": exe["approval_id"]}, role="pm"))
+        self.assertEqual(w.c.commitments.get(cid)["status"], "executed")
+        state = self.assertOk(call(w, "read_contracts", {"project_id": w.project["id"]}, role="viewer"))
+        row = next(x for x in state["commitments"] if x["commitment_id"] == cid)
+        self.assertEqual((row["agreement"]["status"], state["summary"]["signed"], state["integrity_problems"]), ("signed", 1, []))
+        self.assertIn("certificates[].carrier", state["untrusted_fields"])
+        self.assertBooks(w)
+
+    def test_contract_tools_need_their_authority_their_arguments_and_the_module(self):
+        w = world()
+        cid = draft_commitment(w)
+        pdf = evidence(w, "agreement")
+        for role in ("viewer", "accountant", "signer", "treasury"):
+            with self.subTest(role=role):
+                self.assertRefused(call(w, "register_contract_agreement", {"commitment_id": cid, "evidence_hash": pdf}, role=role),
+                                   "not authorized for contract.approve_agreement")
+                self.assertRefused(call(w, "record_insurance_certificate", certificate_args(w), role=role), "not authorized for contract.approve_agreement")
+        a = self.register(w, cid, role="legal", pdf=pdf)
+        self.approve_agreement(w, a["agreement_id"])
+        for role in ("pm", "legal", "viewer"):
+            with self.subTest(role=role):
+                self.assertRefused(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role=role),
+                                   "not authorized for contract.sign")
+        good = self.signature_args(w, a["agreement_id"])
+        for label, args, fragment in (
+            ("signer with a space", {**good, "signer": "signer sam"}, "$.signer: does not match pattern"),
+            ("signer with a zero-width space", {**good, "signer": "signer-sam" + chr(0x200B)}, "$.signer: does not match pattern"),
+            ("malformed date", {**good, "signing_date": "10/13/2026"}, "$.signing_date"),
+            ("short evidence hash", {**good, "evidence_hash": "abc"}, "$.evidence_hash: shorter than minLength 64"),
+            ("signature status smuggled in", {**good, "status": "signed"}, "unexpected property 'status'"),
+        ):
+            with self.subTest(case=label):
+                self.assertRefused(call(w, "prepare_contract_signature", args, role="signer"), "invalid arguments", fragment)
+        cert = certificate_args(w)
+        for label, args, fragment in (
+            ("unknown kind", {**cert, "kind": "pollution"}, "$.kind: 'pollution' is not one of"),
+            ("float limit", {**cert, "limit": 2000000.0}, "$.limit: expected string, got number"),
+            ("zero limit", {**cert, "limit": "0"}, "$.limit: does not match pattern"),
+            ("carrier with an override", {**cert, "carrier": "Synthetic " + chr(0x202E) + "Mutual"}, "$.carrier: does not match pattern"),
+            ("quoted policy number", {**cert, "policy_number": 'POL"1'}, "$.policy_number: does not match pattern"),
+        ):
+            with self.subTest(case=label):
+                self.assertRefused(call(w, "record_insurance_certificate", args, role="pm"), "invalid arguments", fragment)
+        self.assertEqual((count(w.c, "contract_signatures"), count(w.c, "contract_certificates")), (0, 0))
+        # evidence that is not on file, or is not an agreement, is the contract module's business-rule error
+        self.assertFailed(call(w, "register_contract_agreement", {"commitment_id": draft_commitment(w), "evidence_hash": "f" * 64}, role="pm"),
+                          "matches no stored document revision")
+        self.assertFailed(call(w, "register_contract_agreement", {"commitment_id": draft_commitment(w), "evidence_hash": evidence(w, "drawing")},
+                               role="pm"), "backed only by a 'agreement' document")
+        # registering the same revision twice is refused by the module (status error, nothing committed)
+        again = draft_commitment(w)
+        twice = evidence(w, "agreement")
+        self.register(w, again, pdf=twice)
+        self.assertFailed(call(w, "register_contract_agreement", {"commitment_id": again, "evidence_hash": twice}, role="pm"), "already binds revision")
+        # a deployment without the contract module refuses every contract tool, having run nothing
+        w.c._plugins.pop("contract")
+        for tool, args, role in (("read_contracts", {"project_id": w.project["id"]}, "viewer"),
+                                 ("register_contract_agreement", {"commitment_id": cid, "evidence_hash": pdf}, "pm"),
+                                 ("prepare_contract_signature", good, "signer"), ("record_insurance_certificate", cert, "pm")):
+            with self.subTest(tool=tool):
+                self.assertRefused(call(w, tool, args, role=role), "the contract module is not loaded", "nothing ran")
+
+    def test_the_caller_never_names_itself_or_a_service_identity_as_the_signer(self):
+        w = world()
+        cid = draft_commitment(w)
+        a = self.register(w, cid)
+        self.approve_agreement(w, a["agreement_id"])
+        for signer in ("ricky-test", "Ricky-Test"):
+            with self.subTest(signer=signer):
+                self.assertRefused(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"], signer=signer), role="signer"),
+                                   "cannot name itself as the signer", "nothing ran")
+        p = fixed_people_clock(w)
+        p.bootstrap_owner("owner-1", "Synthetic owner")
+        p.register_person("ricky-svc", "Synthetic Ricky service", actor="owner-1", kind="service")
+        self.assertRefused(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"], signer="ricky-svc"), role="signer"),
+                           "'ricky-svc' is a service identity", "services never sign")
+        self.assertEqual(count(w.c, "contract_signatures"), 0)
+        self.assertOk(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role="signer"))
+
+    def test_a_contract_draft_never_voids_a_decision_a_person_made(self):
+        w = world()
+        cid = draft_commitment(w)
+        a = self.register(w, cid)
+        req = self.assertOk(call(w, "request_approval", {"operation": "contract.approve_agreement", "subject_id": a["agreement_id"]}, role="pm"))
+        agreements = count(w.c, "contract_agreements")
+        for state in ("pending", "granted"):
+            with self.subTest(approval=state):
+                if state == "granted":
+                    w.c.approve(req["approval_id"], approver="legal-lin", approver_role="legal")
+                self.assertRefused(call(w, "register_contract_agreement", {"commitment_id": cid, "evidence_hash": evidence(w, "agreement")}, role="pm"),
+                                   f"would void contract.approve_agreement approval {req['approval_id']} ({state})", "the draft was rolled back")
+                self.assertEqual(w.c.approvals.get(req["approval_id"])["status"], state)
+                self.assertEqual((count(w.c, "contract_agreements"), w.c.plugin("contract").agreement(a["agreement_id"])["status"]),
+                                 (agreements, "registered"))
+        self.assertOk(call(w, "execute_approved_action", {"approval_id": req["approval_id"]}, role="pm"))
+        # an approved (and later a signed) agreement is a person's decision: never superseded here
+        self.assertRefused(call(w, "register_contract_agreement", {"commitment_id": cid, "evidence_hash": evidence(w, "agreement")}, role="pm"),
+                           "is approved: a person approved it", "superseding it with another revision is a person's decision")
+        # a prepared signature with an open contract.sign approval is not replaced
+        first = self.assertOk(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role="signer"))
+        sign = self.assertOk(call(w, "request_approval", {"operation": "contract.sign", "subject_id": a["agreement_id"]}, role="signer"))
+        self.assertRefused(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role="signer"),
+                           f"would void contract.sign approval {sign['approval_id']} (pending)")
+        self.assertEqual((w.c.plugin("contract").signature(first["signature_id"])["status"], w.c.approvals.get(sign["approval_id"])["status"]),
+                         ("prepared", "pending"))
+        # a commitment.execute approval on a draft commitment without an agreement is not voided by registering one
+        plain = draft_commitment(w, "7000", "Synthetic dewatering subcontract")
+        exe = self.assertOk(call(w, "request_approval", {"operation": "commitment.execute", "subject_id": plain}, role="pm"))
+        self.assertRefused(call(w, "register_contract_agreement", {"commitment_id": plain, "evidence_hash": evidence(w, "agreement")}, role="pm"),
+                           f"would void commitment.execute approval {exe['approval_id']} (pending)")
+        self.assertEqual((w.c.approvals.get(exe["approval_id"])["status"], w.c.plugin("contract").agreement_for(plain)), ("pending", None))
+        # once a person rejects the approval, the draft runs
+        w.c.reject(exe["approval_id"], approver="owner", reason="synthetic: the agreement comes first")
+        self.assertEqual(self.register(w, plain)["status"], "registered")
+        self.assertBooks(w)
+
+    def test_insurance_certificates_are_evidence_that_never_voids_a_bound_approval(self):
+        w = world()
+        k = w.c.plugin("contract")
+        cid = draft_commitment(w)
+        k.set_requirements(cid, [{"kind": "general_liability", "min_limit": "1000000"}], "contracts-admin")  # a person's commercial decision
+        a = self.register(w, cid)
+        self.assertEqual(a["requirements"]["requirements"], [{"kind": "general_liability", "min_limit": "1000000.00"}])
+        self.approve_agreement(w, a["agreement_id"])
+        self.assertOk(call(w, "prepare_contract_signature", self.signature_args(w, a["agreement_id"]), role="signer"))
+        sign = self.assertOk(call(w, "request_approval", {"operation": "contract.sign", "subject_id": a["agreement_id"]}, role="signer"))
+        w.c.approve(sign["approval_id"], approver="signer-sam", approver_role="signer")
+        self.assertOk(call(w, "execute_approved_action", {"approval_id": sign["approval_id"]}, role="signer"))
+        w.c.approve_and_execute("commitment.execute", cid)
+        cert = self.assertOk(call(w, "record_insurance_certificate", certificate_args(w), role="pm"))
+        self.assertEqual((cert["status"], cert["in_force"], cert["limit_amount"], cert["next_step"]), ("recorded", True, "2000000.00", None))
+        self.assertIn("evidence only", cert["note"])
+        line = w.c.commitments.get(cid)["sov"][0]["id"]
+        bill = w.c.bills.certify(commitment_id=cid, period_id="2026-10", installed=[{"sov_line_id": line, "cumulative_installed": "3000"}], actor="pm")
+        post = self.assertOk(call(w, "request_approval", {"operation": "bill.approve", "subject_id": bill["id"]}, role="accountant"))
+        self.assertIn("contract", post["manifest"]["governance"])  # the approval binds the coverage its approver sees
+        certificates = count(w.c, "contract_certificates")
+        renewal = certificate_args(w, number="POL-SIM-0002")
+        self.assertRefused(call(w, "record_insurance_certificate", renewal, role="pm"),
+                           f"would void bill.approve approval {post['approval_id']} (pending)", "the draft was rolled back")
+        self.assertEqual((count(w.c, "contract_certificates"), w.c.approvals.get(post["approval_id"])["status"]), (certificates, "pending"))
+        # evidence the approval does not rely on (a kind no requirement names, another supplier) changes nothing it bound
+        self.assertOk(call(w, "record_insurance_certificate", certificate_args(w, kind="workers_comp", limit="1000", number="WC-SIM-0001"), role="pm"))
+        other = w.c.add_party(kind="supplier", name="Synthetic dewatering supplier", destination="ACH-SIM-7003")
+        self.assertOk(call(w, "record_insurance_certificate", certificate_args(w, party_id=other["id"], number="POL-SIM-0100"), role="pm"))
+        w.c.approve(post["approval_id"], approver="controller", approver_role="controller")
+        self.assertRefused(call(w, "record_insurance_certificate", renewal, role="pm"), f"would void bill.approve approval {post['approval_id']} (granted)")
+        posted = self.assertOk(call(w, "execute_approved_action", {"approval_id": post["approval_id"]}, role="accountant"))
+        self.assertEqual(posted["command_result"]["status"], "posted")
+        self.assertEqual(count(w.c, "contract_coverage_checks"), 1)
+        # with nothing open that relied on the evidence, the renewal is recorded; the same revision and kind again is the module's error
+        self.assertOk(call(w, "record_insurance_certificate", renewal, role="pm"))
+        self.assertFailed(call(w, "record_insurance_certificate", renewal, role="pm"), "already carries general_liability certificate")
+        self.assertBooks(w)
+
+
+# --------------------------------------------------------------------------- #
+# Round 4: receipts and boundaries                                             #
+# --------------------------------------------------------------------------- #
+
+class Round4BoundaryTests(Round3Case):
+    def test_every_round4_call_is_receipted_in_its_class_and_requests_no_approval(self):
+        w = world()
+        fx = round4_fixture(w)
+        approvals, before = count(w.c, "approvals"), len(w.sdk.receipts())
+        results = round4_calls(w, fx)
+        self.assertEqual(set(results), ROUND4)
+        for name, r in results.items():
+            spec = CATALOG_BY_NAME[name]
+            with self.subTest(tool=name):
+                self.assertOk(r)
+                self.assertEqual((r["tool"], r["version"], r["catalog_hash"], r["side_effects"]), (name, "1.0.0", CATALOG_HASH, spec.side_effects))
+                self.assertEqual(r["effect_applied"], spec.side_effects != "none")
+                self.assertEqual(r["args_hash"], hash_json(stored_args(w, r["id"])))
+                self.assertNotIn("identity", r)  # no identity policy enforces here
+                self.assertEqual(w.sdk.receipt(r["id"]), r)
+        self.assertEqual(len(w.sdk.receipts()), before + len(ROUND4))
+        self.assertEqual(count(w.c, "approvals"), approvals)  # drafts and previews never request, let alone grant, an approval
+        for name, operation in (("register_contract_agreement", "contract.approve_agreement"), ("prepare_contract_signature", "contract.sign")):
+            with self.subTest(draft=name):
+                step = results[name]["result"]["next_step"]
+                self.assertEqual((step["tool"], step["operation"]), ("request_approval", operation))
+                self.assertIn(name, OPERATION_TOOLS[operation])
+        self.assertIn("preview_release", OPERATION_TOOLS["payment.release"])
+        self.assertTrue(w.sdk.verify_receipts()["ok"])
+        self.assertBooks(w)
+
+    def test_round4_drafts_replay_by_idempotency_key(self):
+        w = world()
+        fx = round4_fixture(w)
+        args = {"commitment_id": fx.draft, "evidence_hash": fx.agreement_pdf}
+        first = call(w, "register_contract_agreement", args, role="pm", idempotency_key="agr-1")
+        again = call(w, "register_contract_agreement", args, role="pm", idempotency_key="agr-1")
+        self.assertEqual((again["status"], again["replay_of"], again["result"]), ("ok", first["id"], first["result"]))
+        self.assertEqual(count(w.c, "contract_agreements", "commitment_id=?", (fx.draft,)), 1)
+        self.assertRefused(call(w, "register_contract_agreement", {**args, "evidence_hash": evidence(w, "agreement")}, role="pm", idempotency_key="agr-1"),
+                           "already used for register_contract_agreement with different arguments")
+
+
+# --------------------------------------------------------------------------- #
+# SDK identity (people module enforcing)                                       #
+# --------------------------------------------------------------------------- #
+
+def grant_role(w, login, role, **kw):
+    """A role grant a person (owner-1) requests, approves and executes outside the SDK."""
+    p = w.c.plugin("people")
+    req = p.request_grant(login, role, reason="synthetic staffing", actor="owner-1", **kw)
+    ap = w.c.request_approval("people.grant_role", req["id"], actor_role="owner", requested_by="owner-1")
+    w.c.approve(ap["id"], approver="owner-1", approver_role="owner")
+    w.c.execute(ap["id"], actor="owner-1")
+    return next(g for g in p.grants(login) if g["request_id"] == req["id"])
+
+
+def delegate_role(w, frm, to, role, **kw):
+    """A delegation a person (owner-1) requests, approves and executes outside the SDK."""
+    p = w.c.plugin("people")
+    d = p.request_delegation(frm, to, role, reason="synthetic leave cover", actor="owner-1", **kw)
+    ap = w.c.request_approval("people.delegate", d["id"], actor_role="owner", requested_by="owner-1")
+    w.c.approve(ap["id"], approver="owner-1", approver_role="owner")
+    w.c.execute(ap["id"], actor="owner-1")
+    return d
+
+
+def enforce_identities(w):
+    p = w.c.plugin("people")
+    draft = p.prepare_policy(enforce=True, segregate=False, reason="synthetic identity policy", actor="owner-1")
+    ap = w.c.request_approval("people.set_policy", draft["id"], actor_role="owner", requested_by="owner-1")
+    w.c.approve(ap["id"], approver="owner-1", approver_role="owner")
+    w.c.execute(ap["id"], actor="owner-1")
+    return p
+
+
+class SDKIdentityTests(Round3Case):
+    def identity_world(self):
+        """The round-3 records, then an enforcing identity policy: ricky-svc (service identity, controller), ctl-kim and
+        ctl-ray (controllers), ctl-ann (controller until 2026-10-20), acct-1 (external accountant, nothing of its own) and
+        pm-lee (pm on the project only)."""
+        w = world()
+        fx = round3_fixture(w)
+        p = fixed_people_clock(w)
+        p.bootstrap_owner("owner-1", "Synthetic owner")
+        p.register_person("ricky-svc", "Synthetic Ricky service", actor="owner-1", kind="service")
+        for login, name in (("ctl-kim", "Synthetic controller"), ("ctl-ray", "Synthetic second controller"), ("ctl-ann", "Synthetic temp controller"),
+                            ("pm-lee", "Synthetic PM")):
+            p.register_person(login, name, actor="owner-1")
+        p.register_person("acct-1", "Synthetic external accountant", actor="owner-1", external=True)
+        p.add_membership("pm-lee", w.project["id"], actor="owner-1")
+        w.grants = {"ricky-svc": grant_role(w, "ricky-svc", "controller"), "ctl-kim": grant_role(w, "ctl-kim", "controller"),
+                    "ctl-ray": grant_role(w, "ctl-ray", "controller"), "ctl-ann": grant_role(w, "ctl-ann", "controller", effective_to="2026-10-20"),
+                    "pm-lee": grant_role(w, "pm-lee", "pm", project_id=w.project["id"])}
+        enforce_identities(w)
+        self.assertTrue(p.enforcing())
+        return w, fx, p
+
+    def write_off(self, fx, amount="1000"):
+        return {"prime_bill_id": fx.prime["id"], "amount": amount, "reason": "Synthetic uncollectable portion"}
+
+    def test_a_resolved_caller_runs_under_its_registered_login_and_its_receipt_names_the_grant(self):
+        w, fx, p = self.identity_world()
+        r = call(w, "draft_write_off", self.write_off(fx), role="controller", actor=" Ricky-SVC ")
+        self.assertOk(r)
+        self.assertEqual(r["actor"], "ricky-svc")  # the registry's login, whatever spelling the caller used
+        self.assertEqual(r["identity"], {"login": "ricky-svc", "person_id": p.person_for("ricky-svc")["id"], "kind": "service", "external": False,
+                                         "role": "controller", "scope": "entity", "project_id": None, "via": "grant", "held_role": "controller",
+                                         "grant_id": w.grants["ricky-svc"]["id"], "delegation_id": None, "from": None, "until": None, "policy_version": 1})
+        self.assertEqual(w.c.db.one("SELECT created_by FROM receivable_write_offs WHERE id=?", (r["result"]["write_off_id"],))["created_by"], "ricky-svc")
+        # one identity, one idempotency namespace: another spelling of the same login replays the stored call
+        snap = {"project_id": w.project["id"], "label": "Keyed snapshot"}
+        first = call(w, "record_forecast_snapshot", snap, role="controller", actor="RICKY-svc", idempotency_key="snap-1")
+        again = call(w, "record_forecast_snapshot", snap, role="controller", actor="ricky-svc", idempotency_key="snap-1")
+        self.assertEqual((again["status"], again["replay_of"], again["identity"]["login"]), ("ok", first["id"], "ricky-svc"))
+        self.assertEqual(count(w.c, "forecast_snapshots"), 1)
+        # an owner's grant carries every role; a project-scoped grant names its project
+        owner = self.assertOk(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="accountant", actor="owner-1"))
+        self.assertIsNotNone(owner)
+        pm = call(w, "record_forecast_snapshot", {"project_id": w.project["id"], "label": "PM snapshot"}, role="pm", actor="pm-lee")
+        self.assertEqual((pm["identity"]["scope"], pm["identity"]["project_id"], pm["identity"]["grant_id"]),
+                         ("project", w.project["id"], w.grants["pm-lee"]["id"]))
+        last = w.sdk.receipts()[-2]
+        self.assertEqual((last["identity"]["via"], last["identity"]["held_role"], last["identity"]["role"]), ("grant", "owner", "accountant"))
+        for receipt in w.sdk.receipts()[-4:]:
+            self.assertEqual(validate(receipt, RECEIPT_SCHEMA), [])
+        self.assertTrue(w.sdk.verify_receipts()["ok"])
+
+    def test_delegated_authority_counts_for_its_window_and_lapses_with_the_delegator(self):
+        w, fx, p = self.identity_world()
+        self.assertRefused(call(w, "draft_write_off", self.write_off(fx), role="controller", actor="acct-1"),
+                           "'acct-1' does not hold role 'controller'", "nothing ran")
+        d = delegate_role(w, "ctl-kim", "acct-1", "controller", effective_to="2026-10-31")
+        r = call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="acct-1")
+        self.assertOk(r)
+        self.assertEqual({k: r["identity"][k] for k in ("via", "delegation_id", "from", "until", "grant_id", "held_role")},
+                         {"via": "delegation", "delegation_id": d["id"], "from": "ctl-kim", "until": "2026-10-31", "grant_id": None,
+                          "held_role": "controller"})
+        # past its window the delegation counts for nothing
+        fixed_people_clock(w, datetime.date(2026, 11, 1))
+        self.assertRefused(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="acct-1"),
+                           "does not hold role 'controller'")
+        fixed_people_clock(w)
+        # revoking it is immediate
+        p.revoke_delegation(d["id"], reason="synthetic early return", actor="owner-1")
+        self.assertRefused(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="acct-1"),
+                           "does not hold role 'controller'")
+        # a delegation lapses when its delegator stops holding the role
+        delegate_role(w, "ctl-ray", "acct-1", "controller", effective_to="2026-10-31")
+        self.assertOk(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="acct-1"))
+        p.deactivate_person("ctl-ray", reason="synthetic departure", actor="owner-1")
+        self.assertRefused(call(w, "draft_write_off", self.write_off(fx), role="controller", actor="acct-1"), "does not hold role 'controller'")
+        self.assertEqual(count(w.c, "receivable_write_offs"), 0)
+
+    def test_a_revoked_or_expired_grant_and_an_ended_membership_refuse_the_caller(self):
+        w, fx, p = self.identity_world()
+        snap = {"project_id": w.project["id"], "label": "PM snapshot"}
+        self.assertOk(call(w, "record_forecast_snapshot", snap, role="pm", actor="pm-lee"))
+        p.end_membership("pm-lee", w.project["id"], reason="synthetic reassignment", actor="owner-1")
+        self.assertRefused(call(w, "record_forecast_snapshot", {**snap, "label": "Second"}, role="pm", actor="pm-lee"),
+                           f"does not hold role 'pm' at entity scope or on project {w.project['id']}")
+        # a revoked grant (a person's people.revoke_role approval)
+        self.assertOk(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="ctl-kim"))
+        rev = p.request_revocation(w.grants["ctl-kim"]["id"], reason="synthetic role change", actor="owner-1")
+        ap = w.c.request_approval("people.revoke_role", rev["id"], actor_role="owner", requested_by="owner-1")
+        w.c.approve(ap["id"], approver="owner-1", approver_role="owner")
+        w.c.execute(ap["id"], actor="owner-1")
+        self.assertRefused(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="ctl-kim"),
+                           "'ctl-kim' does not hold role 'controller'")
+        # an expired grant
+        self.assertOk(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="ctl-ann"))
+        fixed_people_clock(w, datetime.date(2026, 10, 21))
+        self.assertRefused(call(w, "read_customer_deposits", {"project_id": w.project["id"]}, role="controller", actor="ctl-ann"),
+                           "'ctl-ann' does not hold role 'controller'")
+        # unknown, deactivated and blank-looking identities
+        for actor in ("ghost-session", "ricky", "ctl-kim.backup"):
+            with self.subTest(actor=actor):
+                self.assertRefused(call(w, "read_brief", {"project_id": w.project["id"]}, role="viewer", actor=actor),
+                                   f"{actor!r} is not an active registered identity")
+        self.assertEqual(count(w.c, "forecast_snapshots"), 1)
+
+    def test_ricky_can_never_grant_itself_or_anyone_authority(self):
+        w, fx, p = self.identity_world()
+        # requesting its own grant is refused by the registry (no self-granting) and offered by no tool
+        with self.assertRaisesRegex(IdentityRefused, "no self-granting"):
+            p.request_grant("ricky-svc", "treasury", reason="synthetic", actor="ricky-svc")
+        req = p.request_grant("ricky-svc", "treasury", reason="synthetic payment run", actor="owner-1")
+        for role in ("controller", "owner"):
+            with self.subTest(role=role):
+                self.assertRefused(call(w, "request_approval", {"operation": "people.grant_role", "subject_id": req["id"]}, role=role, actor="ricky-svc"),
+                                   "people.grant_role grants a role", "never requests or executes")
+        ap = w.c.request_approval("people.grant_role", req["id"], actor_role="owner", requested_by="owner-1")
+        w.c.approve(ap["id"], approver="owner-1", approver_role="owner")  # a person granted it; only a person runs it
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap["id"]}, role="owner", actor="owner-1"), "never requests or executes")
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap["id"]}, role="controller", actor="ricky-svc"), "never requests or executes")
+        self.assertEqual((w.c.approvals.get(ap["id"])["status"], p.holds("ricky-svc", "treasury")), ("granted", False))
+        # a service identity never approves, so an approval Ricky requested waits for a person and cannot be executed before
+        draft = self.assertOk(call(w, "draft_write_off", self.write_off(fx), role="controller", actor="ricky-svc"))
+        wo = self.assertOk(call(w, "request_approval", {"operation": "receivable.write_off", "subject_id": draft["write_off_id"]}, role="controller",
+                                actor="ricky-svc"))
+        with self.assertRaisesRegex(IdentityRefused, "service identities never approve"):
+            w.c.approve(wo["approval_id"], approver="ricky-svc", approver_role="controller")
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": wo["approval_id"]}, role="controller", actor="ricky-svc"),
+                           "a human has not granted it", "Ricky cannot grant approvals")
+        # no tool reaches a grant: nothing in the catalog decides or changes authority
+        self.assertEqual([t for t in CATALOG_BY_NAME if t.startswith(("approve", "grant", "reject")) or "delegat" in t or "role" in t], [])
+        # a grant forged past the triggers (a self-granted widening) makes every call fail closed, reads included
+        w.c.db.execute("DROP TRIGGER people_grants_update_guard")
+        w.c.db.execute("UPDATE people_grants SET role='treasury' WHERE login='ricky-svc'")
+        for actor, role, tool, args in (("ricky-svc", "treasury", "reconcile_payments", {}), ("ricky-svc", "controller", "read_brief", {"project_id": w.project["id"]}),
+                                        ("owner-1", "owner", "read_brief", {"project_id": w.project["id"]})):
+            with self.subTest(actor=actor, tool=tool):
+                self.assertRefused(call(w, tool, args, role=role, actor=actor), "identity records are not intact", "nothing ran")
+        self.assertEqual(count(w.c, "payment_intents"), 0)
+
+    def test_executions_need_a_human_grant_and_an_identity_that_still_holds_the_role(self):
+        w, fx, p = self.identity_world()
+        draft = self.assertOk(call(w, "draft_write_off", self.write_off(fx), role="controller", actor="ricky-svc"))
+        req = self.assertOk(call(w, "request_approval", {"operation": "receivable.write_off", "subject_id": draft["write_off_id"]}, role="controller",
+                                 actor="ricky-svc"))
+        ap_id = req["approval_id"]
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap_id}, role="controller", actor="ricky-svc"), "is pending")
+        w.c.approve(ap_id, approver="ctl-kim", approver_role="controller")
+        # the role must be the approval's bound one, and held by the caller
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap_id}, role="accountant", actor="ricky-svc"),
+                           "not authorized for receivable.write_off")
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap_id}, role="controller", actor="pm-lee"),
+                           "'pm-lee' does not hold role 'controller'")
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap_id}, role="controller", actor="nobody-here"),
+                           "not an active registered identity")
+        self.assertEqual(w.c.approvals.get(ap_id)["status"], "granted")
+        # a granted approval past its expiry is refused before anything runs (and no longer blocks a new request)
+        w.c.db.execute("UPDATE approvals SET expires_at=? WHERE id=?", ("2000-01-01T00:00:00Z", ap_id))
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": ap_id}, role="controller", actor="ricky-svc"), "granted but expired")
+        ap_id = self.assertOk(call(w, "request_approval", {"operation": "receivable.write_off", "subject_id": draft["write_off_id"]}, role="controller",
+                                   actor="ricky-svc"))["approval_id"]
+        w.c.approve(ap_id, approver="ctl-kim", approver_role="controller")
+        # an approver who left before execution: the registry invalidates the approval
+        p.deactivate_person("ctl-kim", reason="synthetic departure", actor="owner-1")
+        stale = call(w, "execute_approved_action", {"approval_id": ap_id}, role="controller", actor="ricky-svc")
+        self.assertRefused(stale, "StaleApprovalError", "no longer an active identity")
+        self.assertEqual(w.c.approvals.get(ap_id)["status"], "invalidated")
+        # a fresh request granted by an active person runs once, under the caller's identity
+        again = self.assertOk(call(w, "request_approval", {"operation": "receivable.write_off", "subject_id": draft["write_off_id"]}, role="controller",
+                                   actor="ricky-svc"))
+        w.c.approve(again["approval_id"], approver="ctl-ray", approver_role="controller")
+        done = call(w, "execute_approved_action", {"approval_id": again["approval_id"]}, role="controller", actor="ricky-svc")
+        self.assertEqual((done["status"], done["identity"]["login"], done["result"]["command_result"]["status"]), ("ok", "ricky-svc", "posted"), done)
+        self.assertEqual(w.c.approvals.get(again["approval_id"])["consumed_by"], "ricky-svc")
+        self.assertBooks(w)
+
+    def test_round4_tools_answer_to_the_registry_too(self):
+        w, fx, p = self.identity_world()
+        me = self.assertOk(call(w, "read_identities", {}, role="controller", actor="ricky-svc"))
+        self.assertEqual((me["enforcing"], me["caller"]["holds_role"], me["caller"]["identity"]["grant_id"]),
+                         (True, True, w.grants["ricky-svc"]["id"]))
+        self.assertRefused(call(w, "read_identities", {}, role="viewer", actor="mallory"), "'mallory' is not an active registered identity")
+        cid = draft_commitment(w)
+        # a project-scoped pm registers agreements on its project only; the agreement names the project
+        a = self.assertOk(call(w, "register_contract_agreement", {"commitment_id": cid, "evidence_hash": evidence(w, "agreement")}, role="pm",
+                               actor="pm-lee"))
+        self.assertEqual(w.sdk.receipts()[-1]["identity"]["project_id"], w.project["id"])
+        self.assertRefused(call(w, "prepare_contract_signature", {"agreement_id": a["agreement_id"], "evidence_hash": evidence(w, "signed_agreement"),
+                                                                  "signer": "owner-1", "signing_date": contract_day(w)}, role="signer", actor="pm-lee"),
+                           "'pm-lee' does not hold role 'signer'")
+        self.assertRefused(call(w, "record_insurance_certificate", certificate_args(w), role="pm", actor="pm-lee"),
+                           "does not hold role 'pm' at entity scope")  # certificates are supplier-wide: entity scope
+        self.assertEqual(count(w.c, "contract_certificates"), 0)
+
+    def test_without_an_enforcing_policy_receipts_carry_no_identity_and_nothing_else_changes(self):
+        w = world()
+        p = fixed_people_clock(w)
+        p.bootstrap_owner("owner-1", "Synthetic owner")
+        r = call(w, "read_brief", {"project_id": w.project["id"]}, role="viewer", actor="Unregistered-Session")
+        self.assertOk(r)
+        self.assertEqual(r["actor"], "Unregistered-Session")  # not resolved, so stored as given
+        self.assertNotIn("identity", r)
+        w.c._plugins.pop("people")
+        bare = call(w, "read_brief", {"project_id": w.project["id"]}, role="viewer")
+        self.assertOk(bare)
+        self.assertNotIn("identity", bare)
 
 
 if __name__ == "__main__":
