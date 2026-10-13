@@ -1056,13 +1056,15 @@ class Plugin:
         # The claim's status is deliberately not bound: an earlier in-flight payment being
         # accepted moves it (approved -> partially_paid) without changing anything this
         # approval covers.  What could matter -- the outstanding balance after reservations,
-        # the claim content, the destination and the transfer terms -- is bound.
+        # the claim content, the destination and the transfer terms -- is bound.  The claim's
+        # approved amount is bound too: the payment release policy classifies a part payment on
+        # the whole claim, so paying in parts cannot lower the controls a release needs.
         return build_manifest(
             operation=OP_PAY,
             subject_type=PAYMENT_SUBJECT,
             subject_id=payment_id,
             actor_role=actor_role,
-            amounts={"amount": p["amount"], "claim_outstanding": self._outstanding_row(row)},
+            amounts={"amount": p["amount"], "claim_amount": row["amount"], "claim_outstanding": self._outstanding_row(row)},
             bindings={
                 "payment_version": p["version"],
                 "claim_id": row["id"],

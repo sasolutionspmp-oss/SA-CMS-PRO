@@ -41,8 +41,11 @@ Policy versions (``payment_policy.update``)
   received a settled payment makes the release high risk;
 * ``cosign_all_high_risk`` -- every high-risk release needs a co-signature, whatever its amount;
 * ``independent_parties`` -- logins of the outside parties for the solo-owner control (the
-  external accountant).  When the people plugin exists and enforces identity,
-  ``people.is_external(login)`` also qualifies a login (and an inactive login never qualifies).
+  external accountant).  A policy that names parties names all of them: a login the owner
+  registers as external in the people plugin does not become one (adding a party is a governed,
+  co-signed update).  Only while the policy names none does ``people.is_external(login)`` of an
+  enforcing people plugin qualify a login.  With an enforcing people plugin an inactive login or
+  a service identity never qualifies.
 
 The approval-bound operation ``payment_policy.update`` (subject: the draft; owner authority
 only -- no other role holds it in ``ROLE_AUTHORITY``) binds the draft hash, the version it was
@@ -78,6 +81,10 @@ the policy version and hash, the amount, the payee destination facts and the cla
   and the executed change that set it (change id, executed-at and the end of its cooling-off
   window, ``executed_at + new_destination_cooling_days``).
 
+``reimbursement.pay`` pays a part of an approved claim that the requester chooses, so its
+manifest also binds the claim's approved amount (``claim_amount``) and the release is classified
+on the larger of the two: paying a high-risk claim in parts does not lower its controls.
+
 Every fact is derived from recorded state, never from a clock reading, so an unchanged world
 re-derives exactly the same facts at execution; any difference (a new policy version, a payment
 that settled, a new destination change) invalidates the approval.  Whether a cooling-off window
@@ -91,9 +98,11 @@ For a high-risk release:
 * ``check_execute`` (inside the execution transaction, before the approval is consumed):
   the request and grant must be in the audit log as recorded (a raw-SQL rewrite of the
   approver is refused); the executing login (the releaser) must differ from the approver and the
-  requester; when a co-signature is required, ``cosign(approval_id, cosigner, actor)`` must
-  have been recorded by an independent party distinct from requester, approver and releaser,
-  under the current policy version; and the releaser needs a fresh step-up authentication
+  requester and, with an enforcing people plugin, be an active person (a service identity may
+  request a high-risk release but never releases one or records a step-up, so the approver and
+  the releaser are two people); when a co-signature is required, ``cosign(approval_id, cosigner,
+  actor)`` must have been recorded by an independent party distinct from requester, approver and
+  releaser, under the current policy version; and the releaser needs a fresh step-up authentication
   recorded with ``record_step_up(login, method, assertion_hash, actor)`` no more than
   ``step_up_max_age_seconds`` ago.  The step-up is used once: execution ties it to the approval,
   inside the same transaction, so a release that fails later (kill switch, quarantine) leaves
@@ -133,6 +142,13 @@ hash, so dropping the triggers and deleting the versions is detected too).  A po
 fails verification refuses every governed request and execution (fail closed), and
 ``close_checks`` reports it, together with any governed release queued since the policy was
 adopted that carries no clearance (a release that bypassed the governor).
+
+Step-ups, co-signatures and clearances are likewise re-checked against the audit entries that
+recorded them, where a trigger cannot: a step-up without its ``record_step_up`` entry is not a
+step-up; a co-signature without its ``cosign`` entry refuses the release or update it would
+allow (``PolicyIntegrityError``); and ``close_checks`` reports any co-signature without its
+audited record and any governed release whose clearance does not re-hash, differs from the
+facts its approval bound, or lacks its audited release check, step-up or co-signature.
 """
 from __future__ import annotations
 
@@ -154,6 +170,7 @@ GENESIS_HASH = "0" * 64
 ADOPTED_ACTION = "payment_policy.version_adopted"
 COSIGNED_ACTION = "payment_policy.cosigned"
 CLEARED_ACTION = "payment_policy.release_cleared"
+STEP_UP_ACTION = "payment_policy.step_up_recorded"
 # Phishing-resistant or possession factors only: SMS and e-mail codes are not step-up here.
 STEP_UP_METHODS = ("webauthn", "security_key", "totp", "push_approval")
 MAX_STEP_UP_AGE_SECONDS = 3600
@@ -642,24 +659,38 @@ class Plugin:
             return False
         return ka is not None and ka == kb
 
+    @staticmethod
+    def _is_person(people: Any, login: str) -> bool:
+        """Whether an enforcing people plugin says ``login`` is an active identity of kind person.
+        A service identity (Ricky, a payment worker) is never a second person, and an identity
+        the registry does not describe as a person is not trusted to be one."""
+        try:
+            person = people.person_for(login) if people.is_active(login) is True else None
+        except Exception:
+            return False
+        return isinstance(person, dict) and person.get("kind") == "person"
+
     def is_independent(self, login: str, policy: dict[str, Any] | None = None) -> bool:
-        """Whether ``login`` is an independent party under ``policy`` (default: the current one):
-        listed in its ``independent_parties``, or external per an enforcing people plugin.  With
-        an enforcing people plugin an inactive login never qualifies."""
+        """Whether ``login`` is an independent party under ``policy`` (default: the current one).
+        A policy that names independent parties names all of them: only those logins count, so a
+        co-signer is added only by a governed update (a weakening once one is named).  A policy
+        that names none falls back to an enforcing people plugin's external persons.  With an
+        enforcing people plugin an inactive login or a service identity never qualifies."""
         policy = policy if policy is not None else self._policy()
         if policy is None:
             return False
-        listed = _norm(login) in {_norm(p) for p in policy["terms"]["independent_parties"]}
+        named = {_norm(p) for p in policy["terms"]["independent_parties"]}
         people = self._people()
-        if people is not None:
-            try:
-                if people.is_active(login) is not True:
-                    return False
-                if not listed:
-                    listed = people.is_external(login) is True
-            except Exception:
-                return False
-        return listed
+        if people is None:
+            return _norm(login) in named
+        if not self._is_person(people, login):
+            return False
+        if named:
+            return _norm(login) in named
+        try:
+            return people.is_external(login) is True
+        except Exception:
+            return False
 
     # ---- policy record ------------------------------------------------------------------ #
 
@@ -864,6 +895,13 @@ class Plugin:
         return {"payment_policy_version": version, "hash": record["hash"], "prev_hash": record["prev_hash"], "draft": row["id"],
                 "weakens": bound.get("weakens") or [], "superseded_drafts": superseded, "invalidated_approvals": invalidated}
 
+    @staticmethod
+    def _update_allows(ap: dict[str, Any], login: str) -> bool:
+        """Whether a policy update's approval allows ``login`` to co-sign it: one of the
+        ``cosigners_allowed`` it bound (the parties the approver saw), when it bound any."""
+        allowed = (ap["manifest"].get("bindings") or {}).get("cosigners_allowed") or []
+        return not allowed or _norm(login) in {_norm(p) for p in allowed}
+
     def _require_update_cosignature(self, approval_id: str, current: dict[str, Any] | None, actor: str) -> None:
         ap = self.approvals.get(approval_id)
         sig = self.db.one("SELECT * FROM payment_policy_cosignatures WHERE approval_id=?", (approval_id,))
@@ -874,6 +912,10 @@ class Plugin:
                                       f"independent party of the current policy ({allowed}) before it is executed")
         if sig["approval_manifest_hash"] != ap["manifest_hash"] or sig["policy_version"] != current["version"]:
             raise PolicyIntegrityError(f"the co-signature on approval {approval_id} does not match the approval or the current policy version")
+        if not self._cosignature_stands(sig):
+            raise PolicyIntegrityError(f"the co-signature {sig['id']} on approval {approval_id} does not match its audited record; the update is refused")
+        if not self._update_allows(ap, sig["cosigner"]):
+            raise CosignatureRequired(f"{sig['cosigner']!r} is not among the co-signers this update's approval allows")
         if not self.is_independent(sig["cosigner"], current):
             raise CosignatureRequired(f"{sig['cosigner']!r} is no longer an independent party of payment policy version {current['version']}")
         for role, login in (("requester", ap["requested_by"]), ("approver", ap["approver"]), ("executing login", actor)):
@@ -887,10 +929,16 @@ class Plugin:
 
     def _classify(self, policy: dict[str, Any], manifest: dict[str, Any]) -> dict[str, Any]:
         terms = policy["terms"]
+        amounts = manifest.get("amounts") or {}
         try:
-            amount = money((manifest.get("amounts") or {})["amount"])
+            amount = money(amounts["amount"])
+            # A part payment of an approved claim (reimbursement.pay) is classified on the whole
+            # claim: the requester chooses each part, so the part alone would let them choose the
+            # classification too.
+            claim = money(amounts["claim_amount"]) if amounts.get("claim_amount") is not None else None
         except (KeyError, TypeError, MoneyError) as exc:
             raise PaymentPolicyError(f"a release manifest must carry its exact amount: {exc}") from exc
+        classified = max(amount, claim) if claim is not None else amount
         dest = manifest.get("destination") or {}
         party_id, version = dest.get("party_id"), dest.get("destination_version")
         if not party_id or version is None:
@@ -906,7 +954,7 @@ class Plugin:
                 until = parse_iso(row["executed_at"]) + _dt.timedelta(days=terms["new_destination_cooling_days"])
                 change = {"change_id": row["id"], "executed_at": row["executed_at"], "cooling_off_until": _iso(_utc(until))}
         reasons = []
-        if amount >= D(terms["high_risk_amount"]):
+        if classified >= D(terms["high_risk_amount"]):
             reasons.append(REASON_AMOUNT)
         if terms["first_payment_to_destination_is_high_risk"] and not settled:
             reasons.append(REASON_FIRST_PAYMENT)
@@ -914,7 +962,7 @@ class Plugin:
             reasons.append(REASON_CHANGED_DESTINATION)
         high = bool(reasons)
         cosign_reasons = []
-        if amount >= D(terms["cosign_amount"]):
+        if classified >= D(terms["cosign_amount"]):
             cosign_reasons.append(COSIGN_AMOUNT)
         if high and terms["cosign_all_high_risk"]:
             cosign_reasons.append(COSIGN_ALL)
@@ -925,6 +973,8 @@ class Plugin:
             "amount": fmt(amount),
             "destination": {"party_id": party_id, "destination_version": version, "has_settled_payment": settled, "change": change},
         }
+        if claim is not None:
+            facts["claim_amount"] = fmt(claim)
         if high:
             facts["requires"] = ["independent_approval", "independent_release", "fresh_step_up"] + (["independent_cosignature"] if cosign_reasons else [])
         return facts
@@ -995,6 +1045,8 @@ class Plugin:
         unused = self.db.query("SELECT * FROM payment_policy_step_ups WHERE login_key=? AND approval_id IS NULL ORDER BY recorded_at DESC, id DESC", (_norm(login),))
         newest_age = None
         for row in unused:
+            if not self._step_up_stands(row):
+                continue  # not recorded through record_step_up (no audit entry): not an authentication
             age = (now - _utc(parse_iso(row["recorded_at"]))).total_seconds()
             if age < 0:
                 continue  # recorded "after" the clock's now: not evidence of a fresh authentication
@@ -1018,6 +1070,8 @@ class Plugin:
                                       f"independent parties: {parties}) before it is released")
         if sig["approval_manifest_hash"] != ap["manifest_hash"] or sig["operation"] != ap["operation"]:
             raise PolicyIntegrityError(f"the co-signature on approval {ap['id']} does not match the approval as requested")
+        if not self._cosignature_stands(sig):
+            raise PolicyIntegrityError(f"the co-signature {sig['id']} on approval {ap['id']} does not match its audited record; the release is refused")
         if sig["policy_version"] != policy["version"]:
             raise CosignatureRequired(f"the co-signature on approval {ap['id']} was given under policy version {sig['policy_version']}; co-sign again")
         if not self.is_independent(sig["cosigner"], policy):
@@ -1060,6 +1114,10 @@ class Plugin:
                 if self.same_person(releaser, login):
                     raise IndependenceRequired(f"the releasing login {releaser!r} is also the {role} of this high-risk release; "
                                                "release it from an independent login")
+            people = self._people()
+            if people is not None and not self._is_person(people, releaser):
+                raise IndependenceRequired(f"the releasing login {releaser!r} is not an active person in the people registry; a service identity "
+                                           "never releases a high-risk payment")
             if facts["cosign_required"]:
                 sig = self._valid_cosignature(ap, policy, releaser, facts)
             step = self._fresh_step_up(releaser, policy, now)
@@ -1097,13 +1155,8 @@ class Plugin:
             raise PaymentPolicyError("assertion_hash must be the 64-character hex SHA-256 of the authenticator assertion")
         assertion_hash = assertion_hash.strip().lower()
         people = self._people()
-        if people is not None:
-            try:
-                active = people.is_active(login) is True
-            except Exception:
-                active = False
-            if not active:
-                raise PolicyRefused(f"{login!r} is not an active person in the people registry")
+        if people is not None and not self._is_person(people, login):
+            raise PolicyRefused(f"{login!r} is not an active person in the people registry (a service identity never steps up)")
         step_id = new_id("psu")
         recorded_at = _iso(self._now())
         with self.db.transaction() as conn:
@@ -1113,7 +1166,7 @@ class Plugin:
                 "INSERT INTO payment_policy_step_ups (id, login, login_key, method, assertion_hash, recorded_by, recorded_at) VALUES (?,?,?,?,?,?,?)",
                 (step_id, login, _norm(login), method, assertion_hash, actor, recorded_at),
             )
-            self.audit.record(actor, "payment_policy.step_up_recorded", "payment_policy_step_up", step_id, {"login": login, "method": method, "recorded_at": recorded_at})
+            self.audit.record(actor, STEP_UP_ACTION, "payment_policy_step_up", step_id, {"login": login, "method": method, "recorded_at": recorded_at})
         return self.db.one("SELECT * FROM payment_policy_step_ups WHERE id=?", (step_id,))
 
     def step_ups(self, login: str | None = None) -> list[dict[str, Any]]:
@@ -1150,6 +1203,9 @@ class Plugin:
             elif ap["operation"] == OP_UPDATE:
                 if not (ap["manifest"].get("bindings") or {}).get("cosign_required"):
                     raise PaymentPolicyError(f"policy update {approval_id} does not weaken the policy and needs no co-signature")
+                if not self._update_allows(ap, cosigner):
+                    raise IndependenceRequired(f"{cosigner!r} is not among the co-signers policy update {approval_id}'s approval allows "
+                                               f"({', '.join(ap['manifest']['bindings']['cosigners_allowed'])})")
             else:
                 raise PaymentPolicyError(f"{ap['operation']} is not governed by the payment release policy")
             if not self.is_independent(cosigner, policy):
@@ -1179,6 +1235,61 @@ class Plugin:
         for r in rows:
             r["facts"] = loads(r.pop("facts_json"))
         return rows
+
+    # ---- audit anchoring ---------------------------------------------------------------------- #
+    # The insert triggers admit a step-up, co-signature or clearance only with the audit entry the
+    # module wrote for it.  These re-check that entry where a trigger cannot: a row written with
+    # the trigger dropped (or, for step-ups, by raw SQL at all) is not a control that was given.
+
+    def _audited(self, action: str, entity_id: str | None = None) -> dict[str, list[tuple[str, dict[str, Any]]]]:
+        """The audit entries of ``action`` (all, or one entity's) as (actor, payload) pairs by entity id."""
+        sql, params = "SELECT entity_id, actor, payload_json FROM audit_log WHERE action=?", [action]
+        if entity_id is not None:
+            sql, params = sql + " AND entity_id=?", params + [entity_id]
+        out: dict[str, list[tuple[str, dict[str, Any]]]] = {}
+        for e in self.db.query(sql + " ORDER BY seq", tuple(params)):
+            out.setdefault(e["entity_id"], []).append((e["actor"], loads(e["payload_json"]) or {}))
+        return out
+
+    @staticmethod
+    def _one_entry(entries: list[tuple[str, dict[str, Any]]], actor: str, expected: dict[str, Any]) -> bool:
+        return len(entries) == 1 and entries[0][0] == actor and all(entries[0][1].get(k) == v for k, v in expected.items())
+
+    def _step_up_stands(self, step: dict[str, Any], audited: dict[str, Any] | None = None) -> bool:
+        entries = (audited if audited is not None else self._audited(STEP_UP_ACTION, step["id"])).get(step["id"], [])
+        return self._one_entry(entries, step["recorded_by"], {"login": step["login"], "method": step["method"], "recorded_at": step["recorded_at"]})
+
+    def _cosignature_stands(self, sig: dict[str, Any], audited: dict[str, Any] | None = None) -> bool:
+        entries = (audited if audited is not None else self._audited(COSIGNED_ACTION, sig["approval_id"])).get(sig["approval_id"], [])
+        return self._one_entry([e for e in entries if e[1].get("cosignature_id") == sig["id"]], sig["recorded_by"], {
+            "cosigner": sig["cosigner"], "operation": sig["operation"], "manifest_hash": sig["approval_manifest_hash"], "policy_version": sig["policy_version"]})
+
+    def _clearance_problem(self, k: dict[str, Any], manifest: dict[str, Any], audited: dict[str, dict[str, Any]]) -> str | None:
+        """Why a stored clearance is not the record the release check wrote, or None: its facts
+        re-hash and are the ones its approval bound, it matches its audited release check, and
+        the step-up and co-signature it names are audited and used for this release."""
+        facts = loads(k["facts_json"])
+        if sha256_hex(k["facts_json"]) != k["facts_hash"] or facts != self._facts(manifest):
+            return "has a payment-policy clearance whose facts do not match their hash or the facts its approval bound"
+        if not self._one_entry(audited[CLEARED_ACTION].get(k["approval_id"], []), k["releaser"], {
+                "operation": k["operation"], "classification": k["classification"], "facts_hash": k["facts_hash"], "policy_version": k["policy_version"],
+                "releaser": k["releaser"], "step_up_id": k["step_up_id"], "cosignature_id": k["cosignature_id"]}):
+            return f"has a payment-policy clearance that does not match its audited release check ({CLEARED_ACTION})"
+        step = self.db.one("SELECT * FROM payment_policy_step_ups WHERE id=?", (k["step_up_id"],)) if k["step_up_id"] else None
+        if (k["step_up_id"] or k["classification"] == "high_risk") and (
+                step is None or step["approval_id"] != k["approval_id"] or not self._step_up_stands(step, audited[STEP_UP_ACTION])):
+            return "has a payment-policy clearance without an audited step-up used for it"
+        sig = self.db.one("SELECT * FROM payment_policy_cosignatures WHERE id=?", (k["cosignature_id"],)) if k["cosignature_id"] else None
+        if (k["cosignature_id"] or facts.get("cosign_required")) and (
+                sig is None or sig["approval_id"] != k["approval_id"] or not self._cosignature_stands(sig, audited[COSIGNED_ACTION])):
+            return "has a payment-policy clearance without an audited co-signature on its approval"
+        return None
+
+    def _unaudited_cosignatures(self) -> list[dict[str, Any]]:
+        """Co-signatures that do not match the audited ``cosign`` that would have recorded them."""
+        sigs = self.cosignatures()
+        audited = self._audited(COSIGNED_ACTION) if sigs else {}
+        return [s for s in sigs if not self._cosignature_stands(s, audited)]
 
     # ---- reporting -------------------------------------------------------------------------- #
 
@@ -1222,8 +1333,10 @@ class Plugin:
         return awaiting, holds
 
     def _uncleared_releases(self) -> list[dict[str, Any]]:
-        """Governed releases queued since the first policy adoption that carry no clearance: a
-        payment intent created outside the governed execution path."""
+        """Governed releases queued since the first policy adoption without a clearance that
+        stands, each with its ``problem``: no clearance (a payment intent created outside the
+        governed execution path) or one that is not the record the release check wrote
+        (``_clearance_problem``)."""
         first = self.db.scalar("SELECT MIN(seq) FROM audit_log WHERE action=?", (ADOPTED_ACTION,))
         if first is None:
             return []
@@ -1231,22 +1344,33 @@ class Plugin:
         if not queued:
             return []
         rows = self.db.query(
-            f"""SELECT i.id AS intent_id, i.approval_id, i.amount, a.operation FROM payment_intents i JOIN approvals a ON a.id = i.approval_id
-                WHERE a.operation IN {_GOV_SQL} AND NOT EXISTS (SELECT 1 FROM payment_policy_clearances k WHERE k.approval_id = i.approval_id)
-                ORDER BY i.created_at, i.id""")
-        return [r for r in rows if r["intent_id"] in queued]
+            f"""SELECT i.id AS intent_id, i.approval_id, i.amount, a.operation, a.manifest_json FROM payment_intents i JOIN approvals a ON a.id = i.approval_id
+                WHERE a.operation IN {_GOV_SQL} ORDER BY i.created_at, i.id""")
+        clearances = {k["approval_id"]: k for k in self.db.query("SELECT * FROM payment_policy_clearances")}
+        audited = {action: self._audited(action) for action in (CLEARED_ACTION, STEP_UP_ACTION, COSIGNED_ACTION)} if clearances else {}
+        out = []
+        for r in rows:
+            if r["intent_id"] not in queued:
+                continue
+            k = clearances.get(r["approval_id"])
+            problem = "was queued without a payment-policy clearance" if k is None else self._clearance_problem(k, loads(r["manifest_json"]) or {}, audited)
+            if problem:
+                out.append({"intent_id": r["intent_id"], "approval_id": r["approval_id"], "amount": r["amount"], "operation": r["operation"], "problem": problem})
+        return out
 
     def close_checks(self, period_id: str) -> list[dict[str, Any]]:
         """Nothing while no policy was ever adopted.  Otherwise: the policy record and every
-        release since adoption are intact (fails on tampering or an uncleared release), plus
-        informational counts of high-risk approvals waiting for a control and of releases held
-        in cooling-off (approvals are entity-wide, so they are not limited to ``period_id``)."""
+        release since adoption are intact (fails on tampering, on a release without a clearance
+        that stands, or on a co-signature without its audited record), plus informational counts
+        of high-risk approvals waiting for a control and of releases held in cooling-off
+        (approvals are entity-wide, so they are not limited to ``period_id``)."""
         if not self._configured():
             return []
         chain = self.verify_chain()
         uncleared = self._uncleared_releases()
-        problems = list(chain["problems"]) + [f"payment intent {u['intent_id']} ({u['operation']}, {u['amount']}) was queued without a payment-policy clearance"
-                                              for u in uncleared]
+        problems = (list(chain["problems"]) + [f"payment intent {u['intent_id']} ({u['operation']}, {u['amount']}) {u['problem']}" for u in uncleared]
+                    + [f"co-signature {s['id']} by {s['cosigner']!r} on approval {s['approval_id']} does not match its audited record ({COSIGNED_ACTION})"
+                       for s in self._unaudited_cosignatures()])
         detail = ("; ".join(problems[:5]) if problems
                   else f"{chain['versions']} hash-chained policy version(s) verified; every governed release since adoption was cleared")
         awaiting, holds = self._open_items()
@@ -1270,8 +1394,10 @@ class Plugin:
             out["note"] = "no payment release policy has been adopted; releases follow the approval rules alone"
             return out
         uncleared = self._uncleared_releases()
+        unaudited = self._unaudited_cosignatures()
         out["integrity"]["uncleared_releases"] = uncleared
-        out["integrity"]["ok"] = chain["ok"] and not uncleared
+        out["integrity"]["unaudited_cosignatures"] = unaudited
+        out["integrity"]["ok"] = chain["ok"] and not uncleared and not unaudited
         awaiting, holds = self._open_items(project_id)
         out["awaiting_controls"] = awaiting
         out["cooling_off_holds"] = holds
@@ -1287,6 +1413,7 @@ class Plugin:
             "governed_operations": list(GOVERNED_OPERATIONS),
             "integrity": self.verify_chain(),
             "uncleared_releases": self._uncleared_releases(),
+            "unaudited_cosignatures": self._unaudited_cosignatures(),
             "versions": self.db.query("SELECT * FROM payment_policy_versions ORDER BY version"),
             "drafts": self.db.query("SELECT * FROM payment_policy_drafts ORDER BY drafted_at, id"),
             "step_ups": self.step_ups(),

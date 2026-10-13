@@ -12,7 +12,7 @@ import sqlite3
 import unittest
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
-from apps.cipher.core.ids import sha256_hex, utcnow
+from apps.cipher.core.ids import canonical_json, hash_json, sha256_hex, utcnow
 from apps.cipher.domain import payment_policy as pp_mod
 from apps.cipher.domain.payment_policy import (
     GOVERNED_OPERATIONS, OP_UPDATE, PLUGIN_NAME, CoolingOffHold, CosignatureRequired, DraftStale, IndependenceRequired, PaymentPolicyError,
@@ -112,8 +112,8 @@ class PeopleStub:
     """The shared identity interface the people plugin implements (is_active, holds, is_external,
     person_for, enforcing), with fixed answers."""
 
-    def __init__(self, persons: dict, *, externals=(), inactive=(), enforce=True):
-        self.persons, self.externals, self.inactive, self.enforce = persons, set(externals), set(inactive), enforce
+    def __init__(self, persons: dict, *, externals=(), inactive=(), services=(), enforce=True):
+        self.persons, self.externals, self.inactive, self.services, self.enforce = persons, set(externals), set(inactive), set(services), enforce
 
     def enforcing(self):
         return self.enforce
@@ -128,7 +128,26 @@ class PeopleStub:
         return self.is_active(login) and login in self.externals
 
     def person_for(self, login):
-        return {"id": self.persons[login], "login": login} if login in self.persons else None
+        if login not in self.persons:
+            return None
+        return {"id": self.persons[login], "login": login, "kind": "service" if login in self.services else "person"}
+
+
+STAFF = (("ap-clerk", "person", False), ("treasury", "person", False), ("ext-accountant", "person", True))
+
+
+def enforce_identity(w: World, persons=STAFF, *, treasury=("treasury",)):
+    """Turn the real people registry on: the owner bootstrapped, each (login, kind, external) of
+    ``persons`` registered by the owner, treasury granted to the ``treasury`` logins, and an
+    enforcing identity policy adopted.  Returns the people plugin."""
+    people = w.c.plugin("people")
+    people.bootstrap_owner("owner", "Synthetic owner")
+    for login, kind, external in persons:
+        people.register_person(login, f"Synthetic {login}", actor="owner", kind=kind, external=external)
+    for login in treasury:
+        w.c.approve_and_execute("people.grant_role", people.request_grant(login, "treasury", reason="releases payments", actor="owner")["id"])
+    w.c.approve_and_execute("people.set_policy", people.prepare_policy(enforce=True, segregate=False, reason="identity enforcement", actor="owner")["id"])
+    return people
 
 
 # --------------------------------------------------------------------------- #
@@ -392,6 +411,30 @@ class ClassificationTests(unittest.TestCase):
         self.assertEqual(w.c.execute(ret["id"], actor="treasury").result["amount"], "6000.00")
         self.assertEqual({k["operation"] for k in w.pp.clearances()}, {"reimbursement.pay", "payment.release_retainage"})
 
+    def test_a_reimbursement_paid_in_parts_is_classified_on_the_whole_claim(self):
+        """reimbursement.pay releases a part the requester chooses.  Classified on the part alone,
+        a high-risk claim paid in parts below the threshold would need no independent control."""
+        w = World()
+        emp = w.c.add_party(kind="employee", name="Site Engineer (synthetic)", destination="ACH-SIM-EMP-0002")
+        w.c.verify_destination(emp["id"], destination="ACH-SIM-EMP-0002", verified_by="owner")
+        r = w.c.plugin("reimbursement")
+        big = r.submit_claim(project_id=w.pid, employee_id=emp["id"], description="Dewatering pump hire, full season", amount="60000.00",
+                             receipt_hash="rcpt-0002", billable=False, actor="emp")
+        small = r.submit_claim(project_id=w.pid, employee_id=emp["id"], description="Site radios", amount="900.00", receipt_hash="rcpt-0003",
+                               billable=False, actor="emp")
+        for claim in (big, small):
+            w.c.approve_and_execute("reimbursement.approve", claim["id"], period_id="P1")
+        w.adopt(high="10000.00", cosign="50000.00", first=False)
+        part = r.record_payment(big["id"], "9999.99", actor="treasury")
+        ap = w.request(part["id"], op="reimbursement.pay", requested_by="owner")
+        f = w.facts(ap)
+        self.assertEqual((f["classification"], f["reasons"], f["cosign_required"], f["amount"], f["claim_amount"]),
+                         ("high_risk", ["amount_at_or_over_high_risk_amount"], True, "9999.99", "60000.00"))
+        with self.assertRaises(IndependenceRequired):  # one login cannot release a part of it alone
+            w.c.approve(ap["id"], approver="owner")
+        f = w.facts(w.request(r.record_payment(small["id"], "400.00", actor="treasury")["id"], op="reimbursement.pay"))
+        self.assertEqual((f["classification"], f["amount"], f["claim_amount"]), ("standard", "400.00", "900.00"))
+
 
 # --------------------------------------------------------------------------- #
 # 4. independent approval and release, step-up                                 #
@@ -430,6 +473,27 @@ class IndependentReleaseTests(unittest.TestCase):
             self.c.approve(ap["id"], approver="owner-phone", approver_role="owner")
         self.c.register_plugin("people", PeopleStub({"owner": "p-owner", "owner-phone": "p-owner"}, enforce=False))
         self.c.approve(ap["id"], approver="owner-phone", approver_role="owner")  # not enforcing: logins are compared as logins
+
+    def test_service_identities_never_step_up_release_or_stand_as_independent(self):
+        """A service identity (Ricky, a payment worker) is not a second person.  It may request a
+        high-risk release, but it never receives a step-up or releases one, so the release
+        always involves two people: the approver and a different releaser."""
+        b = self.w.bill(20000)
+        early = self.w.step_up("pay-worker")  # recorded before identity enforcement
+        enforce_identity(self.w, STAFF + (("ricky", "service", False), ("pay-worker", "service", False)), treasury=("treasury", "pay-worker"))
+        with self.assertRaisesRegex(PolicyRefused, "not an active person"):
+            self.w.step_up("pay-worker")
+        ap = self.w.granted(b["id"], requested_by="ricky")
+        with self.assertRaisesRegex(IndependenceRequired, "service identity"):
+            self.c.execute(ap["id"], actor="pay-worker")
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        self.assertIsNone([s for s in self.pp.step_ups() if s["id"] == early["id"]][0]["approval_id"])
+        policy = self.pp.policy()
+        self.assertFalse(self.pp.is_independent("ricky", dict(policy, terms=dict(policy["terms"], independent_parties=["ricky"]))))
+        self.w.step_up()
+        self.assertEqual(self.c.execute(ap["id"], actor="treasury").result["amount"], "20000.00")
+        k = self.pp.clearances()[-1]
+        self.assertEqual((k["requested_by"], k["approver"], k["releaser"]), ("ricky", "owner", "treasury"))
 
     def test_independent_release_needs_a_fresh_step_up_by_the_releaser(self):
         b = self.w.bill(20000)
@@ -550,17 +614,58 @@ class CosignatureTests(unittest.TestCase):
         with self.assertRaises(CosignatureRequired):
             w.request(w.bill(60000)["id"])
 
-    def test_people_registry_externals_qualify_and_inactive_parties_do_not(self):
+    def test_people_registry_externals_qualify_only_while_the_policy_names_no_party(self):
+        persons = {"audit-firm": "p-af", "ext-accountant": "p-x", "ap-clerk": "p-c", "owner": "p-o", "treasury": "p-t"}
         w = World()
         w.adopt(high="10000.00", cosign="50000.00", first=False, parties=("ext-accountant",))
         ap = w.request(w.bill(60000)["id"])
-        w.c.register_plugin("people", PeopleStub({"audit-firm": "p-af", "ext-accountant": "p-x", "ap-clerk": "p-c", "owner": "p-o", "treasury": "p-t"},
-                                                 externals={"audit-firm"}, inactive={"ext-accountant"}))
+        w.c.register_plugin("people", PeopleStub(persons, externals={"audit-firm"}, inactive={"ext-accountant"}))
         with self.assertRaises(IndependenceRequired):  # listed, but no longer active
             w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")
+        with self.assertRaises(IndependenceRequired):  # external in the registry, but the policy names its parties
+            w.pp.cosign(ap["id"], "audit-firm", "audit-firm")
+        w = World()
+        w.adopt(high="10000.00", cosign="50000.00", first=False, parties=())
+        w.c.register_plugin("people", PeopleStub(persons, externals={"audit-firm"}))
+        ap = w.request(w.bill(60000)["id"])
         sig = w.pp.cosign(ap["id"], "audit-firm", "audit-firm")  # an external person in the registry
         self.assertEqual(sig["cosigner"], "audit-firm")
         w.c.approve(ap["id"], approver="owner")
+        w.step_up()
+        self.assertEqual(w.c.execute(ap["id"], actor="treasury").result["amount"], "60000.00")
+
+    def test_an_outside_party_the_owner_registers_alone_cannot_stand_in_for_the_named_one(self):
+        """The policy names its independent parties.  A login the owner registers as external
+        (no approval, no co-signature) is not one of them, or the owner could add a co-signer
+        alone where the governed route treats the same change as a weakening."""
+        w = World()
+        w.adopt(high="10000.00", cosign="50000.00", first=False, parties=("ext-accountant",))
+        b = w.bill(60000)
+        people = enforce_identity(w)
+        people.register_person("owner-alt", "The owner's second login", actor="owner", external=True)
+        self.assertTrue(people.is_external("owner-alt"))
+        self.assertEqual((w.pp.is_independent("owner-alt"), w.pp.is_independent("ext-accountant")), (False, True))
+        ap = w.granted(b["id"])
+        with self.assertRaises(IndependenceRequired):
+            w.pp.cosign(ap["id"], "owner-alt", "owner-alt")
+        d = w.pp.draft_policy(high_risk_amount="900000", cosign_amount="900000", step_up_max_age_seconds=3600, new_destination_cooling_days=0,
+                              first_payment_to_destination_is_high_risk=False, independent_parties=["ext-accountant"], reason="loosen", actor="owner")
+        upd = w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.assertEqual(upd["manifest"]["bindings"]["cosigners_allowed"], ["ext-accountant"])
+        w.c.approve(upd["id"])
+        with self.assertRaises(IndependenceRequired):
+            w.pp.cosign(upd["id"], "owner-alt", "owner-alt")
+        with self.assertRaises(CosignatureRequired):
+            w.c.execute(upd["id"])
+        self.assertEqual(w.pp.policy()["version"], 1)
+        # the co-signers the approval binds hold even if the independence check accepted another login
+        w.pp.is_independent = lambda login, policy=None: True
+        try:
+            with self.assertRaisesRegex(IndependenceRequired, "allows"):
+                w.pp.cosign(upd["id"], "owner-alt", "owner-alt")
+        finally:
+            del w.pp.is_independent
+        w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")  # the named outside party still co-signs
         w.step_up()
         self.assertEqual(w.c.execute(ap["id"], actor="treasury").result["amount"], "60000.00")
 
@@ -803,6 +908,56 @@ class TamperTests(unittest.TestCase):
         self.assertFalse(intact["ok"])
         self.assertIn(intent["id"], intact["detail"])
         self.assertEqual([u["intent_id"] for u in self.pp.state(self.w.pid)["integrity"]["uncleared_releases"]], [intent["id"]])
+
+    def test_a_clearance_written_past_its_trigger_does_not_hide_a_release_that_bypassed_the_governor(self):
+        ap = self.w.granted(self.w.bill(20000)["id"])
+        current = self.c._manifest("payment.release", ap["subject_id"], "treasury")
+        self.c.approvals.consume(ap["id"], current_manifest=current, consumer="treasury")
+        intent = self.c.payments.create_intent(manifest=current, approval_id=ap["id"], bill_id=ap["subject_id"], note="bill payment", actor="treasury")
+        self.c.db.execute("DROP TRIGGER payment_policy_clearances_recorded")
+        facts = self.w.facts(ap)  # even the facts bound into the approval, correctly hashed
+        self.c.db.execute("INSERT INTO payment_policy_clearances (approval_id, operation, classification, facts_json, facts_hash, policy_version, requested_by, "
+                          "approver, releaser, cleared_at) VALUES (?, 'payment.release', 'high_risk', ?, ?, 1, 'ap-clerk', 'owner', 'treasury', '2026-10-12T00:00:00Z')",
+                          (ap["id"], canonical_json(facts), hash_json(facts)))
+        intact = self.pp.close_checks("P1")[0]
+        self.assertFalse(intact["ok"])
+        self.assertIn(intent["id"], intact["detail"])
+        self.assertEqual([u["intent_id"] for u in self.pp.state(self.w.pid)["integrity"]["uncleared_releases"]], [intent["id"]])
+        self.assertEqual([u["intent_id"] for u in self.pp.audit_export()["uncleared_releases"]], [intent["id"]])
+
+    def test_a_co_signature_written_past_its_trigger_is_refused_and_reported(self):
+        db = self.c.db
+        ap = self.w.granted(self.w.bill(60000)["id"])
+        self.w.step_up()
+        d = self.pp.draft_policy(high_risk_amount="900000", cosign_amount="900000", step_up_max_age_seconds=3600, new_destination_cooling_days=0,
+                                 first_payment_to_destination_is_high_risk=False, independent_parties=["ext-accountant"], reason="loosen", actor="owner")
+        upd = self.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.c.approve(upd["id"])
+        db.execute("DROP TRIGGER payment_policy_cosignatures_recorded")
+        for sig_id, target in (("pcs_forged_release", ap), ("pcs_forged_update", upd)):
+            db.execute("INSERT INTO payment_policy_cosignatures (id, approval_id, operation, approval_manifest_hash, policy_version, cosigner, recorded_by, cosigned_at) "
+                       "VALUES (?, ?, ?, ?, 1, 'ext-accountant', 'ext-accountant', '2026-10-12T00:00:00Z')", (sig_id, target["id"], target["operation"], target["manifest_hash"]))
+        with self.assertRaisesRegex(PolicyIntegrityError, "audited"):
+            self.c.execute(ap["id"], actor="treasury")
+        with self.assertRaisesRegex(PolicyIntegrityError, "audited"):  # nor does it loosen the policy
+            self.c.execute(upd["id"])
+        self.assertEqual((self.c.approvals.get(ap["id"])["status"], self.c.payments.list(), self.pp.policy()["version"]), ("granted", [], 1))
+        intact = self.pp.close_checks("P1")[0]
+        self.assertFalse(intact["ok"])
+        self.assertTrue("pcs_forged_release" in intact["detail"] and "pcs_forged_update" in intact["detail"])
+        self.assertFalse(self.pp.state(self.w.pid)["integrity"]["ok"])
+
+    def test_a_step_up_written_by_raw_sql_is_not_a_step_up(self):
+        """The step-up insert trigger checks only that it is born unused: the audited record_step_up is what counts."""
+        ap = self.w.granted(self.w.bill(20000)["id"])
+        self.c.db.execute("INSERT INTO payment_policy_step_ups (id, login, login_key, method, assertion_hash, recorded_by, recorded_at) "
+                          "VALUES ('psu_forged', 'treasury', 'treasury', 'webauthn', ?, 'sign-in-service', ?)", (sha256_hex("forged"), pp_mod._iso(self.pp._now())))
+        with self.assertRaises(StepUpRequired):
+            self.c.execute(ap["id"], actor="treasury")
+        self.assertEqual(self.c.payments.list(), [])
+        self.w.step_up()
+        self.assertEqual(self.c.execute(ap["id"], actor="treasury").result["amount"], "20000.00")
+        self.assertNotEqual(self.pp.clearances()[0]["step_up_id"], "psu_forged")
 
 
 # --------------------------------------------------------------------------- #
