@@ -49,7 +49,7 @@ Modules (each registers its own schema entry and approval-bound operations):
 | Accounting | `ledger` (core) | immutable journals with sealed line counts, period locks and single-use reopen approvals enforced by triggers, governed `journal.reverse` |
 | | `banking` | statement import with line fingerprints, matching, fees, in-transit items, locked reconciliations |
 | | `close` | checklist across every module, governed close/reopen/lock, shadow statements, aging, WIP adjustments |
-| | `assets` | capitalisation, monthly straight-line depreciation (never past the base), reversal, disposal |
+| | `assets` | capitalization, monthly straight-line depreciation (never past the base), reversal, disposal |
 | | `handoff` | shadow-finance package for the incumbent books with accountant receipt and omission checks |
 | AP / AR | `bills`, `payments`, `receivables` (core) | stored-material evidence and per-line caps, retainage after closeout, supplier credit notes and corrections, kill switch, signed callbacks, governed payee changes, processing and bank-reconciled states, recovery after restore, prime contracts, terms and due dates, mandates, deposits (2400), credit memos, write-offs, AR from every source |
 | | `ap_intake` | supplier invoices with number, dates and terms, duplicate refusal and near-duplicate review, approval-bound match to a certified bill or to received purchase-order lines |
@@ -111,4 +111,4 @@ apps/cipher/
 
 ## Gates that remain closed
 
-Authoritative accounting (the native-vs-ERPNext comparison, controller-approved policies, migration, parallel closes), production identity and authentication, real payment providers and bank connectivity, licensed-content ingestion, multi-entity and CAD automation are later gates in the plan. The fixture's posting rules (certified progress billed = earned, stored-material and disposal treatment) are labelled SHADOW assumptions awaiting controller approval.
+Authoritative accounting (the native-vs-ERPNext comparison, controller-approved policies, migration, parallel closes), production identity and authentication, real payment providers and bank connectivity, licensed-content ingestion, multi-entity and CAD automation are later gates in the plan. The fixture's posting rules (certified progress billed = earned, stored-material and disposal treatment) are labeled SHADOW assumptions awaiting controller approval.

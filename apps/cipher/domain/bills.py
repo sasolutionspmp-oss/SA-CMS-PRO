@@ -1613,10 +1613,10 @@ class Bills:
         with self.db.transaction() as conn:
             n = self.credit_note(credit_note_id)
             if n["status"] != "draft":
-                raise BillError(f"supplier credit note {credit_note_id} is {n['status']}; only a draft is cancelled")
+                raise BillError(f"supplier credit note {credit_note_id} is {n['status']}; only a draft is canceled")
             conn.execute("UPDATE bill_credit_notes SET status='cancelled', cancelled_by=?, cancelled_at=?, cancel_reason=? WHERE id=?",
                          (who, utcnow_iso(), why, credit_note_id))
-            invalidated = self.approvals.invalidate_for_subject(CREDIT_NOTE_SUBJECT, credit_note_id, reason=f"credit note cancelled: {why}", actor=who)
+            invalidated = self.approvals.invalidate_for_subject(CREDIT_NOTE_SUBJECT, credit_note_id, reason=f"credit note canceled: {why}", actor=who)
             self.audit.record(who, "bill.credit_note_cancelled", CREDIT_NOTE_SUBJECT, credit_note_id, {"bill_id": n["bill_id"], "reason": why, "approvals_invalidated": invalidated})
         return self.credit_note(credit_note_id)
 
@@ -1781,7 +1781,7 @@ class Bills:
         with self.db.transaction() as conn:
             req = self.correction(correction_id)
             if req["status"] != "pending":
-                raise BillError(f"correction request {correction_id} is {req['status']}; only a pending request is cancelled")
+                raise BillError(f"correction request {correction_id} is {req['status']}; only a pending request is canceled")
             conn.execute("UPDATE bill_corrections SET status='cancelled', resolved_by=?, resolved_at=?, resolution_note=? WHERE id=?",
                          (who, utcnow_iso(), why, correction_id))
             self.audit.record(who, "bill.correction_request_cancelled", "bill", req["bill_id"], {"request_id": correction_id, "reason": why})

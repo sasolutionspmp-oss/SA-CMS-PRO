@@ -2,7 +2,7 @@
 
 Everything here is SHADOW finance for the synthetic prototype: the statements,
 aging and WIP schedules are derived from Cipher's own journals and subledgers
-and are labelled "SHADOW - not authoritative".
+and are labeled "SHADOW - not authoritative".
 
 Period close
     ``checklist(period_id)`` gathers the conditions that must hold before a
@@ -1286,7 +1286,7 @@ class Plugin:
         with self.db.transaction():
             row = self._wip_row(wip_id)
             if row["status"] != "draft":
-                raise CloseError(f"WIP adjustment {wip_id} is {row['status']}; only a draft can be cancelled (posted adjustments are reversed)")
+                raise CloseError(f"WIP adjustment {wip_id} is {row['status']}; only a draft can be canceled (posted adjustments are reversed)")
             self._withdraw(row, "cancelled", actor=actor, reason=reason or "cancelled")
         return self.wip_adjustment(wip_id)
 
@@ -1695,7 +1695,7 @@ class Plugin:
         """Close runs (with their checklist and statements snapshots), the recorded reopen
         grants (who granted each reopen approval, under which role), every WIP adjustment
         with its inputs, contract value history and the WIP register reconciliation per
-        project, for an independent reviewer (JSON-serialisable; money as strings)."""
+        project, for an independent reviewer (JSON-serializable; money as strings)."""
         projects = {r["project_id"] for r in self.db.query("SELECT DISTINCT project_id FROM close_wip")}
         projects |= {r["project_id"] for r in self.db.query("SELECT DISTINCT project_id FROM close_contract_values")}
         projects |= {r["project_id"] for r in self.db.query(

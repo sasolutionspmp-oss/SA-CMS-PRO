@@ -1,8 +1,8 @@
 """Prime contracts, progress billing, sending, collections, prime retainage and the AR subledger.
 
-The fixture policy recognises revenue when the owner certifies progress and
+The fixture policy recognizes revenue when the owner certifies progress and
 bills it; the plan is explicit that billing is *not* universally the revenue
-trigger, so every statement produced here is labelled SHADOW.
+trigger, so every statement produced here is labeled SHADOW.
 
 Controls (plan sections 5, 6 and 10):
 
@@ -555,6 +555,7 @@ register_schema_version(CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_GUARDS_SCHEMA_STAT
 TERMS_MAX_DAYS = 365
 WRITE_OFF_MIN_DAYS_PAST_DUE = 90
 _ADJUSTMENT_TABLES = ("prime_bill_credit_memos", "receivable_write_offs", "deposit_applications")
+# Stored schema text: applied workspaces checksum it, so its spelling stays as first applied.
 _DRAFT_COLUMNS = """status TEXT NOT NULL CHECK (status IN ('draft','posted','cancelled')),
         created_at TEXT NOT NULL,
         created_by TEXT NOT NULL,
@@ -569,7 +570,7 @@ _DRAFT_COLUMNS = """status TEXT NOT NULL CHECK (status IN ('draft','posted','can
 
 
 def _valid_date(expr: str) -> str:
-    """SQL: ``expr`` is a calendar date written YYYY-MM-DD (SQLite normalises anything else)."""
+    """SQL: ``expr`` is a calendar date written YYYY-MM-DD (SQLite normalizes anything else)."""
     return f"({expr} IS NOT NULL AND date({expr}) IS {expr})"
 
 
@@ -642,7 +643,7 @@ def _draft_insert(table: str, label: str, extra: list[tuple[str, str]]) -> str:
 
 
 def _draft_guard(table: str, label: str, operation: str, fixed: tuple[str, ...], journal_ok: str, extra: list[tuple[str, str]]) -> str:
-    """BEFORE UPDATE trigger: a draft moves once, to cancelled (posting nothing) or to posted
+    """BEFORE UPDATE trigger: a draft moves once, to canceled (posting nothing) or to posted
     (under its consumed approval, with its own journal, within what is open)."""
     whens = "\n".join(f"                WHEN NEW.status = 'posted' AND ({cond})\n                THEN RAISE(ABORT, '{msg}')" for cond, msg in extra)
     return f"""CREATE TRIGGER {table}_guard BEFORE UPDATE ON {table}
@@ -1392,7 +1393,7 @@ class Receivables:
         most recently recorded).  A mandate whose evidence revision does not carry its
         evidence hash, or is not filed on a project of this customer (only possible for a
         row written outside record_mandate before the evidence guard existed), never
-        authorises a debit."""
+        authorizes a debit."""
         backed = _mandate_backed("m")
         if mandate_ref is not None:
             return self.db.one(
@@ -2299,10 +2300,10 @@ class Receivables:
             if row is None:
                 raise ReceivableError(f"unknown {what} {row_id}")
             if row["status"] != "draft":
-                raise ReceivableError(f"{what} {row_id} is {row['status']}; only a draft {what} can be cancelled")
+                raise ReceivableError(f"{what} {row_id} is {row['status']}; only a draft {what} can be canceled")
             conn.execute(f"UPDATE {table} SET status='cancelled', cancelled_at=?, cancelled_by=?, cancel_reason=? WHERE id=?", (utcnow_iso(), actor, why, row_id))
             self.audit.record(actor, f"{subject_type}.cancelled", subject_type, row_id, {"reason": why, "prime_bill_id": row["prime_bill_id"]})
-            Approvals(self.db, self.audit).invalidate_for_subject(subject_type, row_id, reason=f"{what} cancelled: {why}", actor=actor)
+            Approvals(self.db, self.audit).invalidate_for_subject(subject_type, row_id, reason=f"{what} canceled: {why}", actor=actor)
 
     # ---- credit memos (prime_bill.credit_memo) ---------------------------------------- #
 

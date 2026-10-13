@@ -82,7 +82,7 @@ class CriticalPathTests(Base):
         ])
         self.assertEqual(sch["resource_loading"][0]["demand_by_day"], [4, 4, 2])
         self.assertEqual(sch["resource_loading"][0]["peak_demand"], 4)
-        # serialise Y after X and the conflict disappears
+        # serialize Y after X and the conflict disappears
         self.s.add_dependency(x["id"], y["id"], "o")
         sch = self.s.compute(self.pid)
         self.assertEqual(sch["over_allocations"], [])
@@ -356,7 +356,7 @@ class BaselineTests(Base):
         self.assertEqual(len(self.s.baselines(self.pid)), 1)
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
-    def test_state_shape_and_serialisable(self):
+    def test_state_shape_and_serializable(self):
         empty = self.s.state(self.pid)
         self.assertEqual(set(empty), {"schedule", "baselines"})
         self.assertEqual(empty["schedule"]["duration_days"], 0)

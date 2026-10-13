@@ -23,7 +23,7 @@ open period that receives the reversal.  An approval can be requested only while
 the journal is unreversed and its latest request is pending; once either changes,
 executing an earlier approval invalidates it.  Journals whose source document is
 kept by a subledger that does not follow a bare ledger reversal (a bill stays
-payable, a payment stays settled, an asset stays capitalised) are refused: they
+payable, a payment stays settled, an asset stays capitalized) are refused: they
 are corrected through the owning module's own operation (``SUBLEDGER_OWNED_SOURCES``).
 A reversal journal is never itself reversed through ``journal.reverse``.
 """
@@ -37,6 +37,7 @@ from ..core.audit import Audit
 from ..core.db import Database
 from ..core.ids import hash_json, new_id, utcnow_iso
 from ..core.money import ZERO, fmt, money
+from ..core.words import us
 
 RULE_VERSION = "cipher-posting-rules/1"
 OP_REVERSE = "journal.reverse"
@@ -327,7 +328,7 @@ class Ledger:
         A journal is reversed at most once (also enforced by a unique index).  Any
         pending ``journal.reverse`` request for the journal is resolved in the same
         transaction: ``request_id`` (the governed path) becomes executed, any other
-        pending request is cancelled as superseded."""
+        pending request is canceled as superseded."""
         why = _text(reason, "a reversal reason")
         with self.db.transaction() as conn:
             original = self.journal(journal_id)
@@ -431,7 +432,7 @@ class Ledger:
         with self.db.transaction() as conn:
             req = self.reversal_request(request_id)
             if req["status"] != "pending":
-                raise LedgerError(f"reversal request {request_id} is {req['status']}; only a pending request can be cancelled")
+                raise LedgerError(f"reversal request {request_id} is {req['status']}; only a pending request can be canceled")
             conn.execute(
                 "UPDATE journal_reversal_requests SET status='cancelled', resolved_by=?, resolved_at=?, resolution_note=? WHERE id=?",
                 (who, utcnow_iso(), why, request_id),
@@ -458,7 +459,7 @@ class Ledger:
             )
         if request["status"] != "pending":
             raise ReversalNotAvailable(
-                f"the latest reversal request for journal {journal['id']} ({request['id']}) is {request['status']}; "
+                f"the latest reversal request for journal {journal['id']} ({request['id']}) is {us(request['status'])}; "
                 "prepare a new reversal request before requesting or executing a journal.reverse approval"
             )
         total_dr = money(sum((money(ln["debit"]) for ln in journal["lines"]), ZERO))
@@ -510,7 +511,7 @@ class Ledger:
             if request["journal_id"] != subject_id:
                 raise LedgerError(f"reversal request {request['id']} is for journal {request['journal_id']}, not {subject_id}")
             if request["status"] != "pending":
-                raise LedgerError(f"reversal request {request['id']} is {request['status']}; prepare a new reversal request and approval")
+                raise LedgerError(f"reversal request {request['id']} is {us(request['status'])}; prepare a new reversal request and approval")
             if reason != request["reason"]:
                 raise LedgerError(f"the approved reason no longer matches reversal request {request['id']}")
             original = self.journal(subject_id)

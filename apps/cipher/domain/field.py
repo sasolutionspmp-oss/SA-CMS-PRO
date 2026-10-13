@@ -28,7 +28,7 @@ feed the commercial core through its existing authority paths:
   ``field.decide_submittal`` operation makes it official.  approved and
   approved_as_noted approve the submittal; revise_resubmit requires a new
   revision; rejected is final (a new submittal is required).  A submittal
-  decision never posts a journal and never authorises scope or payment.
+  decision never posts a journal and never authorizes scope or payment.
 * **Hold point**: field work held on a submittal; released only once that
   submittal is approved, recording the approving revision.
 * **Punch list** ``PUNCH-001``... per project, against an executed commitment;
@@ -1363,7 +1363,7 @@ class Plugin:
             problems.append(f"{facts['open_punch_count']} open punch item(s)")
         if facts["pending_changes"]:
             problems.append(
-                f"{len(facts['pending_changes'])} pending change(s) totalling {facts['pending_change_exposure']} "
+                f"{len(facts['pending_changes'])} pending change(s) totaling {facts['pending_change_exposure']} "
                 "(execute or reject them first; the commitment must not grow after closeout)"
             )
         return problems
@@ -1713,7 +1713,7 @@ class Plugin:
         ]
 
     def audit_export(self) -> dict[str, Any]:
-        """Every field record, workspace-wide, for an independent reviewer (JSON-serialisable)."""
+        """Every field record, workspace-wide, for an independent reviewer (JSON-serializable)."""
         q = self.db.query
         rfis = q("SELECT * FROM field_rfis ORDER BY project_id, sequence")
         for r in rfis:

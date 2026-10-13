@@ -92,7 +92,7 @@ class GoldenFixtureTests(unittest.TestCase):
         self.assertEqual(self.r["ricky_abstain"]["decision"], "abstained")
         self.assertIn("superseded document", self.r["ricky_abstain"]["reason"])
         self.assertEqual(self.r["ricky_role"]["decision"], "abstained")
-        self.assertIn("not authorised", self.r["ricky_role"]["reason"])
+        self.assertIn("not authorized", self.r["ricky_role"]["reason"])
 
     def test_books_reconcile(self):
         self.assertTrue(self.r["trial_balance"]["balanced"])

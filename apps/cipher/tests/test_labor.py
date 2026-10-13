@@ -1098,7 +1098,7 @@ class LaborCloseAndStateTests(unittest.TestCase):
         full = s.c.project_state(s.project["id"])
         self.assertIn(PLUGIN_NAME, full)
         st = full[PLUGIN_NAME]
-        json.dumps(st)  # JSON-serialisable
+        json.dumps(st)  # JSON-serializable
         self.assertEqual(set(st), {"phases", "fee_total", "entries", "timesheets", "invoices", "utilization", "accrued_payroll", "receivables", "ledger"})
         self.assertEqual((st["receivables"]["subledger_total"], st["receivables"]["items"]), ("0.00", []))  # the invoice is still a draft
         self.assertEqual([p["code"] for p in st["phases"]], ["ADM", "DD"])

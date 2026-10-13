@@ -2,7 +2,7 @@
 
 Posting rules (fixture policy ``cipher-posting-rules/1``, synthetic prototype only):
 
-* ``asset.capitalise``           Dr 1500 Fixed assets / Cr 1000 Operating bank (synthetic purchase)
+* ``asset.capitalize``           Dr 1500 Fixed assets / Cr 1000 Operating bank (synthetic purchase)
 * ``asset.post_depreciation``    Dr 5200 Depreciation expense / Cr 1590 Accumulated depreciation
 * ``asset.reverse_depreciation`` the run's journal reversed through ``Ledger.reverse``
 * ``asset.dispose``              Dr 1590 accumulated to date, Dr 5200 remaining book value, Cr 1500 cost
@@ -21,7 +21,7 @@ yields a ``no_charge`` run with amount 0.00 that can never carry a journal
 per period id: several period rows may cover the same month (an adjustment
 period, a split month) and none of them may charge the month twice.  A
 duplicate is rejected unless the earlier run for that month was reversed (or
-cancelled), in which case the replacement links ``replaced_run_id``.  The
+canceled), in which case the replacement links ``replaced_run_id``.  The
 register can never exceed the depreciable base: a run's amount is clamped to
 what remains when it is scheduled and checked again when it is posted.
 Editing an asset bumps its version, which invalidates any open approval bound
@@ -288,7 +288,7 @@ class Plugin:
         """Edit a registered or active asset.  Bumps the version (invalidating open
         approvals bound to the old one) and cancels unposted runs, whose amounts
         derived from the old parameters.  Blocked while any run is posted; cost is
-        frozen once the asset is capitalised."""
+        frozen once the asset is capitalized."""
         unknown = sorted(set(fields) - set(EDITABLE_FIELDS))
         if unknown:
             raise AssetError(f"unknown asset field(s): {', '.join(unknown)}; editable: {', '.join(EDITABLE_FIELDS)}")
@@ -308,7 +308,7 @@ class Plugin:
             if not changed:
                 return a
             if "cost" in changed and a["status"] == "active":
-                raise AssetError("cost cannot change after capitalisation; dispose the asset and register the correct one")
+                raise AssetError("cost cannot change after capitalization; dispose the asset and register the correct one")
             if "description" in changed:
                 self._reject_duplicate_description(conn, a["project_id"], rec["description"], exclude_id=asset_id)
             version = a["version"] + 1
@@ -318,16 +318,16 @@ class Plugin:
                 "UPDATE asset_register SET description=?, cost=?, salvage_value=?, in_service_date=?, useful_life_months=?, method=?, version=?, content_hash=?, updated_at=? WHERE id=?",
                 (rec["description"], rec["cost"], rec["salvage_value"], rec["in_service_date"], rec["useful_life_months"], rec["method"], version, content_hash, now, asset_id),
             )
-            cancelled = []
+            canceled = []
             for r in a["runs"]:
                 if r["status"] in ("draft", "no_charge"):
                     conn.execute(
                         "UPDATE asset_depreciation_runs SET status='cancelled', cancelled_at=?, note=? WHERE id=?",
-                        (now, f"cancelled: asset changed to version {version}", r["id"]),
+                        (now, f"canceled: asset changed to version {version}", r["id"]),
                     )
                     self.audit.record(actor, "asset.run_cancelled", "asset_run", r["id"], {"asset_id": asset_id, "reason": "asset changed", "asset_version": version, "previous_status": r["status"]})
-                    cancelled.append(r["id"])
-            self.audit.record(actor, "asset.updated", "asset", asset_id, {"changes": changed, "version": version, "content_hash": content_hash, "cancelled_runs": cancelled})
+                    canceled.append(r["id"])
+            self.audit.record(actor, "asset.updated", "asset", asset_id, {"changes": changed, "version": version, "content_hash": content_hash, "cancelled_runs": canceled})
         return self.get_asset(asset_id)
 
     # ---- reading -------------------------------------------------------------- #
@@ -383,7 +383,7 @@ class Plugin:
         with self.db.transaction() as conn:
             a = self.get_asset(asset_id)
             if a["status"] != "active":
-                raise AssetError(f"asset {asset_id} is {a['status']}; depreciation applies to active (capitalised) assets only")
+                raise AssetError(f"asset {asset_id} is {a['status']}; depreciation applies to active (capitalized) assets only")
             period = self._require_open(period_id)
             start = _parse_date(period["start_date"], "period start date")
             end = _parse_date(period["end_date"], "period end date")
@@ -444,7 +444,7 @@ class Plugin:
         with self.db.transaction() as conn:
             run = self.get_run(run_id)
             if run["status"] not in ("draft", "no_charge"):
-                raise AssetError(f"only draft or no-charge runs can be cancelled; run {run_id} is {run['status']}")
+                raise AssetError(f"only draft or no-charge runs can be canceled; run {run_id} is {run['status']}")
             now = utcnow_iso()
             conn.execute("UPDATE asset_depreciation_runs SET status='cancelled', cancelled_at=?, note=? WHERE id=?", (now, f"cancelled: {reason}" if reason else "cancelled", run_id))
             self.audit.record(actor, "asset.run_cancelled", "asset_run", run_id, {"asset_id": run["asset_id"], "reason": reason, "previous_status": run["status"]})
@@ -505,7 +505,7 @@ class Plugin:
 
     def apply(self, operation: str, subject_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
         if operation == "asset.capitalise":
-            return self._capitalise(subject_id, approval_id=approval_id, actor=actor, period_id=period_id)
+            return self._capitalize(subject_id, approval_id=approval_id, actor=actor, period_id=period_id)
         if operation == "asset.post_depreciation":
             return self._post_depreciation(subject_id, approval_id=approval_id, actor=actor, period_id=period_id)
         if operation == "asset.reverse_depreciation":
@@ -514,16 +514,16 @@ class Plugin:
             return self._dispose(subject_id, approval_id=approval_id, actor=actor, period_id=period_id)
         raise AssetError(f"unknown asset operation {operation}")
 
-    def _capitalise(self, asset_id: str, *, approval_id: str, actor: str, period_id: str | None) -> dict[str, Any]:
+    def _capitalize(self, asset_id: str, *, approval_id: str, actor: str, period_id: str | None) -> dict[str, Any]:
         with self.db.transaction() as conn:
             a = self.get_asset(asset_id)
             if a["status"] != "registered":
-                raise AssetError(f"asset {asset_id} is {a['status']}; only a registered asset can be capitalised")
+                raise AssetError(f"asset {asset_id} is {a['status']}; only a registered asset can be capitalized")
             pid = self._resolve_period(period_id)
             self._require_open(pid)
             j = self.ledger.post(
                 period_id=pid,
-                description=f"Capitalise asset: {a['description']}",
+                description=f"Capitalize asset: {a['description']}",
                 lines=[
                     {"account": "1500", "debit": a["cost"], "project_id": a["project_id"], "memo": f"asset {asset_id}"},
                     {"account": "1000", "credit": a["cost"], "project_id": a["project_id"], "memo": f"synthetic purchase of asset {asset_id}"},
@@ -619,7 +619,7 @@ class Plugin:
                 lines.append({"account": "1590", "debit": accumulated, "project_id": a["project_id"], "memo": f"asset {asset_id} accumulated depreciation written off"})
             if book_value > 0:
                 lines.append({"account": "5200", "debit": book_value, "project_id": a["project_id"], "memo": f"asset {asset_id} remaining book value expensed"})
-            lines.append({"account": "1500", "credit": cost, "project_id": a["project_id"], "memo": f"asset {asset_id} cost derecognised"})
+            lines.append({"account": "1500", "credit": cost, "project_id": a["project_id"], "memo": f"asset {asset_id} cost derecognized"})
             j = self.ledger.post(
                 period_id=pid,
                 description=f"Dispose asset: {a['description']}",

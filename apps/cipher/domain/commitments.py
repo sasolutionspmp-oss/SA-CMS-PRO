@@ -9,7 +9,7 @@ before, and its material facts must still equal the manifest rebuilt from the
 current commitment / change (version, status, SOV, amounts, entity, currency,
 destination).  A direct call can therefore never execute what no human saw.
 
-A pending change only affects the forecast; the authorised commitment changes
+A pending change only affects the forecast; the authorized commitment changes
 only when the change itself is approved and executed, which bumps the
 commitment version and therefore invalidates any open bill approval.
 

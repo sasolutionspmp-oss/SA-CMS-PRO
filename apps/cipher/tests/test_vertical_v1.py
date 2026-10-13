@@ -40,7 +40,7 @@ each ``test_stepNN`` runs every earlier step it depends on exactly once, so a si
 step can be run on its own; a step whose prerequisite failed is skipped, not
 re-run.  ``VerticalV1VariantTests`` adds focused adversarial variants that the module
 suites do not already cover.  ``VerticalV1KnownDefectTests`` asserts the plan's
-behaviour where a module once fell short; the named defects fixed since are
+behavior where a module once fell short; the named defects fixed since are
 regression tests, and an open one is an expected failure that names it, so its fix
 shows up as an unexpected success.  The plan's full adversarial-variant list is in
 ``test_adversarial_variants.py``.
@@ -67,7 +67,7 @@ from apps.cipher.domain.labor import LaborError
 from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
 from apps.cipher.domain.payments import PaymentError, ReleaseQuarantined
 from apps.cipher.domain.receivables import ReceivableError
-from apps.cipher.service import Cipher, RoleNotAuthorised
+from apps.cipher.service import Cipher, RoleNotAuthorized
 
 D = Decimal
 STALE = (StaleApprovalError, ApprovalNotGranted)
@@ -333,7 +333,7 @@ class VerticalV1:
         tc.assertEqual((self.estimate["status"], self.estimate["stale"], self.estimate["approval_id"]), ("approved", False, ap["id"]))
         self.drawings.reference(self.dwr_a["id"], "estimate", est["id"], actor="estimator")
 
-        # the PM proposes the exact agreement; the authorised signer executes it
+        # the PM proposes the exact agreement; the authorized signer executes it
         cmt = c.commitments.create(
             project_id=self.pid, supplier_id=self.supplier["id"], title="V1 subcontract - cofferdam and pump station",
             sov_lines=[{"description": "Sheet pile cofferdam and dewatering", "amount": "60000", "cost_code": "XX 10 00"},
@@ -422,7 +422,7 @@ class VerticalV1:
         tc.assertEqual(([s["amount"] for s in cmt["sov"]], cmt["sov_total"], cmt["executed_amount"]), (["70000.00", "40000.00"], "110000.00", "110000.00"))
         tc.assertEqual(f.rfi(rfi["id"])["change"]["status"], "executed")
 
-        # an unexecuted alternative reaches only the separately labelled forecast
+        # an unexecuted alternative reaches only the separately labeled forecast
         self.alt = c.commitments.propose_change(self.cid, amount="12000", reason="Alternative: heavier PZ-35 sections (not executed)",
                                                 sov_line_id=self.line1, actor="pm")
         cmt = c.commitments.get(self.cid)
@@ -770,7 +770,7 @@ class VerticalV1:
         with tc.assertRaises(ReceivableError):
             c.receivables.prepare_deposit_application(dep["id"], prime["id"], "10000.01", "accountant")
         draft = c.receivables.prepare_deposit_application(dep["id"], prime["id"], "10000", "accountant")
-        with tc.assertRaises(RoleNotAuthorised):  # treasury moves money; it does not apply customer credits
+        with tc.assertRaises(RoleNotAuthorized):  # treasury moves money; it does not apply customer credits
             c.request_approval("receivable.apply_deposit", draft["id"], actor_role="treasury", requested_by="treasury")
         ap = c.request_approval("receivable.apply_deposit", draft["id"], actor_role="accountant", requested_by="accountant")
         tc.assertEqual(pick(ap["manifest"]["amounts"], ("amount", "deposit_amount", "deposit_unapplied", "open_receivable")),
@@ -1325,7 +1325,7 @@ class VerticalV1VariantTests(unittest.TestCase):
         self.assertEqual((note["status"], note["amount"], note["evidence_current"]), ("draft", "1500.00", True))
         with self.assertRaises(BillError):  # the same credit-note document backs one credit only
             c.bills.prepare_credit_note(bill["id"], "100.00", "the same back-charge again", ev["content_hash"], "accountant")
-        with self.assertRaises(RoleNotAuthorised):  # a PM certifies work; crediting a posted payable is the accountant's
+        with self.assertRaises(RoleNotAuthorized):  # a PM certifies work; crediting a posted payable is the accountant's
             c.request_approval("bill.credit_note", note["id"], actor_role="pm", requested_by="pm")
         ap = c.request_approval("bill.credit_note", note["id"], actor_role="accountant", requested_by="accountant")
         m = ap["manifest"]
@@ -1390,7 +1390,7 @@ def queued_payment_backup(tc):
 
 
 class VerticalV1KnownDefectTests(unittest.TestCase):
-    """Each test asserts the plan's behaviour where a module once fell short.  The tests
+    """Each test asserts the plan's behavior where a module once fell short.  The tests
     whose named defect is fixed are plain regression tests (the class keeps its name so
     test ids stay stable); a test marked ``expectedFailure`` names a defect still open, so
     its fix shows up as an unexpected success and the marker is then removed."""

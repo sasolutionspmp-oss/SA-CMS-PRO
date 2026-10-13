@@ -18,7 +18,7 @@ from apps.cipher.domain.estimates import (
     LIFECYCLE_SCHEMA_NAME, MEASURED_UNITS, NO_REPLACE_SCHEMA_NAME, STRUCTURE_SCHEMA_NAME, UNITS, EstimateError, EstimateStaleError,
     Estimates,
 )
-from apps.cipher.service import Cipher, RoleNotAuthorised
+from apps.cipher.service import Cipher, RoleNotAuthorized
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 BASIS = "synthetic drawing A rev 1 at 1:50, scale verified against the bar scale"
@@ -229,7 +229,7 @@ class BindingTests(Base):
         first = self.create(**self.BASE)
         with self.assertRaisesRegex(EstimateError, "duplicate"):
             self.create(**self.BASE)
-        with self.assertRaisesRegex(EstimateError, "duplicate"):  # whitespace-only differences normalise to the same content
+        with self.assertRaisesRegex(EstimateError, "duplicate"):  # whitespace-only differences normalize to the same content
             self.create(**{**self.BASE, "exclusions": ["  Rock   excavation "]})
         self.assertEqual(self.count(), 1)
         self.c.approve_and_execute("estimate.approve", first["id"], actor_role="estimator", actor="estimator")
@@ -448,10 +448,10 @@ class ApprovalControlTests(Base):
     def test_roles(self):
         est = self.create()
         for role in ("pm", "viewer", "treasury"):
-            with self.subTest(role=role), self.assertRaises(RoleNotAuthorised):
+            with self.subTest(role=role), self.assertRaises(RoleNotAuthorized):
                 self.request(est["id"], role=role)
         ap = self.request(est["id"])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             self.c.approve(ap["id"], approver="pm", approver_role="pm")
         self.c.approve(ap["id"], approver="estimator", approver_role="estimator")
         self.assertEqual(self.c.execute(ap["id"], actor="estimator").result["status"], "approved")

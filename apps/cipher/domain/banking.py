@@ -8,7 +8,7 @@ Every statement gets an immutable ``import_seq`` (its place in import order).
 
 Every line receives an immutable fingerprint::
 
-    sha256(account | date | amount | normalised reference | normalised description | occurrence)
+    sha256(account | date | amount | normalized reference | normalized description | occurrence)
 
 where *occurrence* is the line's index among identical lines in the same
 statement (so two genuine identical charges on one statement stay distinct).
@@ -105,7 +105,7 @@ from . import payments as _payments  # noqa: F401  (registers the payment lifecy
 SCHEMA_NAME = "banking"
 PLUGIN_NAME = "banking"
 POSTING_RULE = "cipher-posting-rules/1"
-FINGERPRINT_RULE = "account|date|amount|reference|description|occurrence (sha256, normalised lower-case, whitespace collapsed)"
+FINGERPRINT_RULE = "account|date|amount|reference|description|occurrence (sha256, normalized lower-case, whitespace collapsed)"
 
 STATEMENT_SUBJECT = "banking_statement"
 LINE_SUBJECT = "banking_line"
@@ -386,7 +386,7 @@ def _date(value, label: str) -> str:
 
 
 def _norm(text) -> str:
-    """Normalised form used in fingerprints and reference search."""
+    """Normalized form used in fingerprints and reference search."""
     return " ".join(str(text or "").split()).lower()
 
 
@@ -900,7 +900,7 @@ class Plugin:
                 "version": s["version"], "reconciled": rec["reconciled"], "difference": rec["difference"],
                 "unmatched_statement_lines": len(rec["unmatched_statement_lines"]), "in_transit_total": rec["in_transit_total"],
             })
-        # defence in depth: the evidence freeze keeps a locked statement reconciled
+        # defense in depth: the evidence freeze keeps a locked statement reconciled
         drifted = [s for s in summaries if s["status"] == "locked" and not s["reconciled"]]
         required = bool(stmts) or bool(active_accounts)
         reconciled = bool(stmts) and not unlocked and not missing and not drifted

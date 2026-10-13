@@ -33,7 +33,7 @@ class Fixture:
         params.update(over)
         return self.assets.register_asset(**params)
 
-    def capitalised(self, **over):
+    def capitalized(self, **over):
         a = self.register(**over)
         self.c.approve_and_execute("asset.capitalise", a["id"], period_id="P1")
         return self.assets.get_asset(a["id"])
@@ -136,13 +136,13 @@ class RegisterTests(unittest.TestCase):
         self.assertEqual(a["monthly_amount"], "100.00")
 
 
-class CapitalisationTests(unittest.TestCase):
+class CapitalizationTests(unittest.TestCase):
     def setUp(self):
         self.f = Fixture()
         self.c = self.f.c
         self.p = self.f.assets
 
-    def test_capitalise_posts_synthetic_purchase_and_activates(self):
+    def test_capitalize_posts_synthetic_purchase_and_activates(self):
         a = self.f.register()
         r = self.c.approve_and_execute("asset.capitalise", a["id"], period_id="P1")
         self.assertFalse(r.replayed)
@@ -161,12 +161,12 @@ class CapitalisationTests(unittest.TestCase):
         self.assertEqual(a["status"], "active")
         self.assertEqual(a["capitalisation_journal_id"], j["id"])
         self.assertEqual(a["version"], 1)
-        with self.assertRaises(AssetError):  # cannot capitalise twice
+        with self.assertRaises(AssetError):  # cannot capitalize twice
             self.c.approve_and_execute("asset.capitalise", a["id"], period_id="P1")
         self.assertEqual(self.c.ledger.balance("1500"), Decimal("12000.00"))
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
-    def test_capitalise_approval_goes_stale_when_asset_is_edited(self):
+    def test_capitalize_approval_goes_stale_when_asset_is_edited(self):
         a = self.f.register()
         ap = self.c.request_approval("asset.capitalise", a["id"])
         self.c.approve(ap["id"])
@@ -184,7 +184,7 @@ class CapitalisationTests(unittest.TestCase):
         r = self.c.approve_and_execute("asset.capitalise", a["id"], period_id="P1")
         self.assertEqual(r.result["status"], "active")
 
-    def test_capitalise_into_closed_period_is_rejected(self):
+    def test_capitalize_into_closed_period_is_rejected(self):
         a = self.f.register()
         self.c.close_period("P1")
         with self.assertRaises(PeriodNotOpen):
@@ -201,7 +201,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.f = Fixture()
         self.c = self.f.c
         self.p = self.f.assets
-        self.a = self.f.capitalised()
+        self.a = self.f.capitalized()
 
     def test_golden_schedule_no_charge_before_in_service_then_first_month(self):
         run0 = self.p.schedule_run(self.a["id"], "P0", "owner")
@@ -289,7 +289,7 @@ class DepreciationRunTests(unittest.TestCase):
             self.c.approve_and_execute("asset.reverse_depreciation", run0["id"], period_id="P0")
         self.assertEqual(self.c.ledger.journals(source_type="asset_run"), [])
 
-    def test_duplicate_runs_rejected_until_reversed_or_cancelled(self):
+    def test_duplicate_runs_rejected_until_reversed_or_canceled(self):
         run1 = self.p.schedule_run(self.a["id"], "P1", "owner")
         with self.assertRaises(AssetError):
             self.p.schedule_run(self.a["id"], "P1", "owner")
@@ -308,9 +308,9 @@ class DepreciationRunTests(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):  # a run cannot be moved to another month
             self.c.db.execute("UPDATE asset_depreciation_runs SET charge_month='2026-11' WHERE id=?", (run1["id"],))
         self.assertEqual(self.p.get_run(run1["id"])["charge_month"], "2026-10")
-        cancelled = self.p.cancel_run(run1["id"], "owner", reason="scheduled by mistake")
-        self.assertEqual(cancelled["status"], "cancelled")
-        with self.assertRaises(AssetError):  # cancelled runs are final
+        canceled = self.p.cancel_run(run1["id"], "owner", reason="scheduled by mistake")
+        self.assertEqual(canceled["status"], "cancelled")
+        with self.assertRaises(AssetError):  # canceled runs are final
             self.p.cancel_run(run1["id"], "owner")
         replacement = self.p.schedule_run(self.a["id"], "P1", "owner")
         self.assertEqual(replacement["replaced_run_id"], run1["id"])
@@ -320,7 +320,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
     def test_rounding_residual_lands_in_final_month_and_then_no_charge(self):
-        a = self.f.capitalised(description="Laser level", cost="1000", useful_life_months=3)
+        a = self.f.capitalized(description="Laser level", cost="1000", useful_life_months=3)
         self.c.open_period("P3", "December 2026", "2026-12-01", "2026-12-31")
         self.c.open_period("P4", "January 2027", "2027-01-01", "2027-01-31")
         amounts = []
@@ -347,7 +347,7 @@ class DepreciationRunTests(unittest.TestCase):
         self.assertTrue(self.c.ledger.trial_balance()["balanced"])
 
     def test_salvage_reduces_depreciable_base(self):
-        a = self.f.capitalised(description="Compactor", cost="10000", salvage_value="1000", useful_life_months=36, in_service_date="2026-10-15")
+        a = self.f.capitalized(description="Compactor", cost="10000", salvage_value="1000", useful_life_months=36, in_service_date="2026-10-15")
         self.assertEqual(a["depreciable_base"], "9000.00")
         self.assertEqual(a["monthly_amount"], "250.00")
         run = self.p.schedule_run(a["id"], "P1", "owner")  # mid-month in-service date still charges the full month
@@ -420,7 +420,7 @@ class OverDepreciationGuardTests(unittest.TestCase):
         self.f = Fixture()
         self.c = self.f.c
         self.p = self.f.assets
-        self.a = self.f.capitalised(description="Laser level", cost="1000", useful_life_months=3)
+        self.a = self.f.capitalized(description="Laser level", cost="1000", useful_life_months=3)
         self.c.open_period("P3", "December 2026", "2026-12-01", "2026-12-31")
         self.c.open_period("P4", "January 2027", "2027-01-01", "2027-01-31")
 
@@ -458,7 +458,7 @@ class OverDepreciationGuardTests(unittest.TestCase):
         self.assertEqual(self.c.ledger.balance("5200"), Decimal("1000.00"))
         st = self.p.state(self.f.project["id"])
         self.assertTrue(st["reconciled"])
-        # and the asset can still be derecognised with a balanced journal
+        # and the asset can still be derecognized with a balanced journal
         r = self.c.approve_and_execute("asset.dispose", self.a["id"], period_id="P4")
         j = self.c.ledger.journal(r.result["journal_id"])
         self.assertEqual([(l["account_code"], l["debit"], l["credit"]) for l in j["lines"]], [("1590", "1000.00", "0.00"), ("1500", "0.00", "1000.00")])
@@ -548,14 +548,14 @@ class UpdateTests(unittest.TestCase):
         self.p = self.f.assets
 
     def test_update_rules(self):
-        a = self.f.capitalised()
+        a = self.f.capitalized()
         run0 = self.p.schedule_run(a["id"], "P0", "owner")
         run1 = self.p.schedule_run(a["id"], "P1", "owner")
         with self.assertRaises(AssetError):
-            self.p.update_asset(a["id"], "owner", colour="orange")
+            self.p.update_asset(a["id"], "owner", color="orange")
         with self.assertRaises(AssetError):
             self.p.update_asset(a["id"], "owner")
-        with self.assertRaises(AssetError):  # cost is frozen once capitalised
+        with self.assertRaises(AssetError):  # cost is frozen once capitalized
             self.p.update_asset(a["id"], "owner", cost="13000")
         with self.assertRaises(AssetError):  # validation applies to edits too
             self.p.update_asset(a["id"], "owner", useful_life_months=0)
@@ -573,7 +573,7 @@ class UpdateTests(unittest.TestCase):
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
     def test_update_blocked_by_posted_depreciation_and_disposal(self):
-        a = self.f.capitalised()
+        a = self.f.capitalized()
         run1 = self.p.schedule_run(a["id"], "P1", "owner")
         self.c.approve_and_execute("asset.post_depreciation", run1["id"], period_id="P1")
         with self.assertRaises(AssetError):
@@ -602,7 +602,7 @@ class DisposalTests(unittest.TestCase):
         self.p = self.f.assets
 
     def test_dispose_after_one_run_expenses_book_value(self):
-        a = self.f.capitalised()
+        a = self.f.capitalized()
         run1 = self.p.schedule_run(a["id"], "P1", "owner")
         self.c.approve_and_execute("asset.post_depreciation", run1["id"], period_id="P1")
         ap = self.c.request_approval("asset.dispose", a["id"])
@@ -649,7 +649,7 @@ class DisposalTests(unittest.TestCase):
         registered = self.f.register(description="Unbought")
         with self.assertRaises(AssetError):
             self.c.approve_and_execute("asset.dispose", registered["id"], period_id="P1")
-        a = self.f.capitalised()
+        a = self.f.capitalized()
         draft = self.p.schedule_run(a["id"], "P1", "owner")
         with self.assertRaises(AssetError):
             self.c.approve_and_execute("asset.dispose", a["id"], period_id="P1")
@@ -675,11 +675,11 @@ class StateTests(unittest.TestCase):
             "assets": [], "totals": {"cost": "0.00", "accumulated_depreciation": "0.00", "net_book_value": "0.00", "registered": 0, "active": 0, "disposed": 0},
             "ledger": {"fixed_assets": "0.00", "accumulated_depreciation": "0.00"}, "reconciled": True, "posting_rule": "cipher-posting-rules/1",
         })
-        a = f.capitalised()
-        b = f.capitalised(description="Laser level", cost="1000", useful_life_months=3)
+        a = f.capitalized()
+        b = f.capitalized(description="Laser level", cost="1000", useful_life_months=3)
         pending = f.register(description="Pending purchase", cost="500", useful_life_months=5)
         other_project = c.create_project(name="Other", entity="E", budget="1")
-        f.capitalised(project_id=other_project["id"], description="Elsewhere", cost="700", useful_life_months=7)
+        f.capitalized(project_id=other_project["id"], description="Elsewhere", cost="700", useful_life_months=7)
         for asset in (a, b):
             run = p.schedule_run(asset["id"], "P1", "owner")
             c.approve_and_execute("asset.post_depreciation", run["id"], period_id="P1")

@@ -22,7 +22,7 @@ not match the certified bill, a payee bank change attempted by one person, a cus
 deposit applied beyond what it holds, and a write-off before 90 days past due.  They
 assert the same safe failure and routing as the plan's list.
 
-``AdversarialVariantDefectTests`` pins plan behaviour a module does not deliver
+``AdversarialVariantDefectTests`` pins plan behavior a module does not deliver
 yet.  Each is an expected failure naming the defect, so a fix shows up as an
 unexpected success.
 
@@ -59,7 +59,7 @@ from apps.cipher.domain.payments import (
 from apps.cipher.domain.receivables import ReceivableDuplicate, ReceivableError, ReceivableIneligible
 from apps.cipher.domain.rights import RightsError
 from apps.cipher.ricky_sdk import UNTRUSTED_NOTICE, ReceiptStoreUnavailable, RickySDK
-from apps.cipher.service import Cipher, RoleNotAuthorised
+from apps.cipher.service import Cipher, RoleNotAuthorized
 
 D = Decimal
 ENTITY = "S&A Solutions LLC (synthetic)"
@@ -155,7 +155,7 @@ class World:
         tc.assertTrue(clearing["reconciled"], clearing)
 
 
-class SerialisedProvider(SimulatedProvider):
+class SerializedProvider(SimulatedProvider):
     """The in-memory simulator answers one submission at a time, as a real provider's API
     would; Cipher's own concurrency controls are what the race tests exercise."""
 
@@ -326,16 +326,16 @@ class AdversarialVariantTests(unittest.TestCase):
         bill = w.posted_bill("20000")
         sdk = RickySDK(c)
         # a role without authority can neither request nor grant the release, and Ricky abstains for it
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("payment.release", bill["id"], actor_role="estimator", requested_by="estimator")
         ap = c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="accountant")
         for role in ("estimator", "viewer", "pm"):
-            with self.assertRaises(RoleNotAuthorised, msg=role):
+            with self.assertRaises(RoleNotAuthorized, msg=role):
                 c.approve(ap["id"], approver=f"{role}-user", approver_role=role)
         self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
         abstain = c.ricky.propose("payment.release", actor_role="estimator", context={"bill_id": bill["id"]})
         self.assertEqual(abstain["decision"], "abstained")
-        self.assertIn("not authorised", abstain["reason"])
+        self.assertIn("not authorized", abstain["reason"])
 
         later = utcnow() + _dt.timedelta(days=2)
         # pending past its expiry: it can no longer be granted, and the expiry is recorded
@@ -369,7 +369,7 @@ class AdversarialVariantTests(unittest.TestCase):
         """Variant: two concurrent releases -- real threads on two connections to one
         file-backed workspace: the same approval executed twice, two approvals for one
         bill executed at once, and two dispatchers racing for the outbox."""
-        provider = SerialisedProvider()
+        provider = SerializedProvider()
         w, _d = file_world(self, provider=provider)
         path = w.c.db.path
         second = Cipher(path, provider=provider)
@@ -513,7 +513,7 @@ class AdversarialVariantTests(unittest.TestCase):
         self.assertEqual(state["status"], "ok")
         self.assertNotIn(DEST, json.dumps(state["result"]))
         self.assertIn("[redacted …0001]", json.dumps(state["result"], ensure_ascii=False))
-        # restricted operations and unauthorised roles are refused whatever the text says
+        # restricted operations and unauthorized roles are refused whatever the text says
         for op in ("workspace.claim_write_authority", "party.update_destination"):
             r = sdk.invoke("request_approval", {"operation": op, "subject_id": w.pid}, actor="ricky-session", actor_role="owner")
             self.assertEqual(r["status"], "refused", op)
@@ -684,7 +684,7 @@ class AdversarialVariantTests(unittest.TestCase):
             c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_adv_0001",
                                             actor="treasury", mandate_ref="MANDATE-SIM-ADV-9999")
         c.receivables.revoke_mandate(w.customer["id"], "MANDATE-SIM-ADV-0001", actor="treasury", reason="customer withdrew the authorization")
-        with self.assertRaisesRegex(ReceivableError, "missing mandate"):  # a revoked mandate authorises nothing
+        with self.assertRaisesRegex(ReceivableError, "missing mandate"):  # a revoked mandate authorizes nothing
             c.receivables.record_collection(prime_bill_id=prime["id"], period_id="P1", amount="54000", fee="5", provider_ref="ach_sim_adv_0001", actor="treasury")
         self.assertEqual(c.ledger.trial_balance()["journal_count"], journals)
         self.assertEqual(c.receivables.ar_open_items(w.pid)["subledger_total"], "54000.00")
@@ -854,7 +854,7 @@ class AdversarialVariantTests(unittest.TestCase):
         self.assertTrue(any("payment.adopt_transfer" in h for h in held["held"]), held["held"])
         with self.assertRaises(ReleaseQuarantined):
             copy.dispatch_payments()
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             copy.request_approval("payment.adopt_transfer", "sim_000002", actor_role="treasury", requested_by="treasury")
         adopt = copy.approve_and_execute("payment.adopt_transfer", "sim_000002", actor_role="owner", actor="owner")
         self.assertEqual({k: adopt.result[k] for k in ("status", "provider_ref", "amount", "source_type", "source_id", "superseded")},
@@ -1060,13 +1060,13 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         # an independent verifier (the external accountant calling the number on file) records the evidence
         evidenced = p.record_verification_evidence(ch["id"], CALL_BACK, "ext-accountant", ev["content_hash"], "bank-admin")
         self.assertEqual((evidenced["status"], evidenced["verified_by"]), ("evidenced", "ext-accountant"))
-        with self.assertRaises(RoleNotAuthorised):  # treasury releases payments; it cannot also change where they go
+        with self.assertRaises(RoleNotAuthorized):  # treasury releases payments; it cannot also change where they go
             c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="treasury", requested_by="treasury")
         ap = c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="bank_admin", requested_by="bank-admin")
         self.assertEqual((ap["manifest"]["bindings"]["verified_by"], ap["manifest"]["bindings"]["requested_by"], ap["manifest"]["bindings"]["requested_actor"]),
                          ("ext-accountant", "treasury-clerk", "ap-clerk"))
         self.assertNotIn(new_dest, json.dumps(ap["manifest"]))  # fingerprints only
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.approve(ap["id"], approver="treasury", approver_role="treasury")
         c.approve(ap["id"], approver="owner", approver_role="owner")
         res = c.execute(ap["id"], actor="bank-admin")
@@ -1113,7 +1113,7 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         d2 = r.prepare_deposit_application(dep["id"], prime2["id"], "9000", "accountant")
         with self.assertRaises(ReceivableDuplicate):  # one open draft per deposit and bill
             r.prepare_deposit_application(dep["id"], prime1["id"], "100", "accountant")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("receivable.apply_deposit", d1["id"], actor_role="treasury", requested_by="treasury")
         aps = []
         for d in (d1, d2):
@@ -1185,11 +1185,11 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         wo = r.prepare_write_off(old["id"], "9000", "customer insolvent (synthetic)", "controller")
         self.assertEqual((wo["requested_on"], wo["due_date"], wo["days_past_due"], wo["status"]), (day(0), day(-90), 90, "draft"))
         for role in ("accountant", "treasury", "pm"):
-            with self.assertRaises(RoleNotAuthorised, msg=role):
+            with self.assertRaises(RoleNotAuthorized, msg=role):
                 c.request_approval("receivable.write_off", wo["id"], actor_role=role, requested_by=role)
         ap = c.request_approval("receivable.write_off", wo["id"], actor_role="controller", requested_by="controller")
         self.assertEqual((ap["manifest"]["bindings"]["days_past_due"], ap["manifest"]["bindings"]["minimum_days_past_due"]), (90, 90))
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.approve(ap["id"], approver="accountant", approver_role="accountant")
         c.approve(ap["id"], approver="controller", approver_role="controller")
         # a partial receipt arrives after the grant: the approval no longer fits the receivable and dies
@@ -1213,11 +1213,11 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
 
 
 # --------------------------------------------------------------------------- #
-# Plan behaviour a module does not deliver yet (expected failures)             #
+# Plan behavior a module does not deliver yet (expected failures)             #
 # --------------------------------------------------------------------------- #
 
 class AdversarialVariantDefectTests(unittest.TestCase):
-    """Each test asserts the plan's behaviour and is expected to fail until the named module is fixed."""
+    """Each test asserts the plan's behavior and is expected to fail until the named module is fixed."""
 
     def test_v04_an_approval_that_expired_at_execution_is_recorded_expired_and_leaves_the_brief(self):
         """Variant: expired approver.  An approval found expired at execution is recorded

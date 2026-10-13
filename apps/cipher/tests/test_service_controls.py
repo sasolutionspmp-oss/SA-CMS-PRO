@@ -3,7 +3,7 @@ import unittest
 
 from apps.cipher.core.approvals import build_manifest
 from apps.cipher.server import BackgroundServer
-from apps.cipher.service import Cipher, CipherError, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, CipherError, RoleNotAuthorized, run_golden_fixture
 
 
 def scenario():
@@ -19,11 +19,11 @@ def scenario():
 class RoleEnforcementTests(unittest.TestCase):
     def test_request_requires_the_executing_role_to_hold_authority(self):
         c, prj, sup, cmt = scenario()
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("commitment.execute", cmt["id"], actor_role="estimator")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("commitment.execute", cmt["id"], actor_role="viewer")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("commitment.execute", cmt["id"], actor_role="intern")
         ap = c.request_approval("commitment.execute", cmt["id"], actor_role="pm")
         self.assertEqual(ap["manifest"]["actor_role"], "pm")
@@ -31,7 +31,7 @@ class RoleEnforcementTests(unittest.TestCase):
     def test_approver_role_must_hold_authority(self):
         c, prj, sup, cmt = scenario()
         ap = c.request_approval("commitment.execute", cmt["id"], actor_role="pm")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.approve(ap["id"], approver="someone", approver_role="treasury")
         self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
         c.approve(ap["id"], approver="pm-user", approver_role="pm")

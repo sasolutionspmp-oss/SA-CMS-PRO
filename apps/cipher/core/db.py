@@ -50,7 +50,7 @@ _SQLITE_AUTH = 23
 _PLAIN_SELECT = re.compile(r"\s*select\b", re.IGNORECASE)  # cannot write, so it needs no authority refresh
 # Pragmas whose assignment would lift a control.  The authorizer refuses them unless the
 # Database itself issues the statement (query_only through the write-authority methods,
-# foreign_keys once at connect).  It sees the normalised pragma name for every statement
+# foreign_keys once at connect).  It sees the normalized pragma name for every statement
 # on every cursor, so no spelling of the statement gets past it.
 _GUARDED_PRAGMAS = {
     "query_only": "write authority",
@@ -946,7 +946,7 @@ class Database:
         read-only connection opens a deferred transaction so reads still work;
         its first write is refused by SQLite and raised as WriteAuthorityError.
         Authority is re-checked once the write lock is held, so a release committed
-        by another connection is honoured.  A commit that fails (for example a journal
+        by another connection is honored.  A commit that fails (for example a journal
         holding fewer lines than it declares) is rolled back, never left open."""
         with self._lock:
             outermost = self._depth == 0

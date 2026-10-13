@@ -17,7 +17,7 @@ from apps.cipher.domain.payments import (
     DESTINATION_SCHEMA_NAME, DESTINATION_VERIFICATION_SCHEMA_NAME, VERIFICATION_CHANNELS, VERIFY_DESTINATION_OPERATION, DestinationChangeError,
     DestinationChangeStale, PaymentError, destination_fingerprint,
 )
-from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 D = Decimal
 ENTITY = "S&A Solutions LLC (synthetic)"
@@ -505,11 +505,11 @@ class GovernedChangeTests(unittest.TestCase):
         w, c = self.w, self.c
         ch = w.evidenced_change(NEW)
         for role in ("treasury", "accountant", "controller", "pm", "reconciler", "viewer"):
-            with self.assertRaises(RoleNotAuthorised):
+            with self.assertRaises(RoleNotAuthorized):
                 c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role=role)
         ap = c.request_approval(VERIFY_DESTINATION_OPERATION, ch["id"], actor_role="bank_admin")
         for role in ("treasury", "accountant"):
-            with self.assertRaises(RoleNotAuthorised):
+            with self.assertRaises(RoleNotAuthorized):
                 c.approve(ap["id"], approver="someone", approver_role=role)
         c.approve(ap["id"], approver="bank-admin-2", approver_role="bank_admin")
         self.assertEqual(c.execute(ap["id"], actor="bank-admin").result["status"], "executed")

@@ -4,7 +4,7 @@ Status: synthetic-prototype evidence, 2026-10-12, scorecard version `cipher-core
 
 Plan reference: `CIPHER-PLAN-v1.0.md`, section 3 ("Accounting foundation decision") and section 13, decision 4 ("Choose the two serious accounting candidates and accept the hard gates/weighted scorecard"). The harness is `apps/cipher/tools/core_gates.py` and its tests are in `apps/cipher/tests/test_core_gates.py`.
 
-**Headline:** the native core **passes all 9 hard gates (127 of 127 hard checks)**, so it is scored. Its weighted total is **3.91 of 5 (78.23%)**. Only the control-fit input (4.89) is computed; the other four inputs are labelled ASSUMPTION. Three of five advisories are open:
+**Headline:** the native core **passes all 9 hard gates (127 of 127 hard checks)**, so it is scored. Its weighted total is **3.91 of 5 (78.23%)**. Only the control-fit input (4.89) is computed; the other four inputs are labeled ASSUMPTION. Three of five advisories are open:
 - the write-authority claim in the default configuration (G8);
 - a credited supplier bill cannot be released for its open payable (G9, new; the known payments defect);
 - the period-close checklist does not reconcile customer deposits 2400 (G9, new).
@@ -65,7 +65,7 @@ The native core passes every hard gate, so the plan's weights apply:
 | Accounting/control fit | 35 | **4.89** | 1.71 | **COMPUTED:** 129 of 132 executed checks passed: 127/127 hard and 2/5 advisory. Score = 5 x 129/132. |
 | AEC fit | 20 | 4 | 0.80 | **ASSUMPTION:** the schema models commitments, SOV lines, change orders, stored materials, retainage and prime billing. The rationale string still says labor, WIP/close and field are "being built"; those modules now exist, but the score is the owner's assumption and was not changed by this harness. |
 | Maintainability/upgrades | 20 | 3 | 0.60 | **ASSUMPTION:** standard library and SQLite only, with an append-only, checksummed schema catalog. One owner-maintainer carries the whole posting, close, reporting and recovery burden (plan section 3). |
-| Ownership/licensing | 15 | 4 | 0.60 | **ASSUMPTION:** owner-written code with no third-party runtime dependency or copyleft obligation. Held below 5 until repository ownership and licence are confirmed (plan section 2: the PRO root has no licence file). |
+| Ownership/licensing | 15 | 4 | 0.60 | **ASSUMPTION:** owner-written code with no third-party runtime dependency or copyleft obligation. Held below 5 until repository ownership and license are confirmed (plan section 2: the PRO root has no license file). |
 | Delivery cost | 10 | 2 | 0.20 | **ASSUMPTION:** plan section 12's native-ledger premium is 20-40 person-months ($400,000-$1.2 million) and 4-9 months. Not validated here. |
 | **Total** | 100 | | **3.91 / 5 (78.23%)** | |
 
@@ -79,7 +79,7 @@ The native core passes every hard gate, so the plan's weights apply:
 |---|---|---|---|
 | G5 | A bill already in flight cannot be released a second time under a new approval | pass | A second, independently approved release of the 9000.00 bill was refused (*"payment intent ... is still in progress"*). 1 intent on the bill; dispatch then added 1 provider transfer, the bill's first, legitimate release. |
 | G8 | A restored copy cannot gain write authority without an attestation it cannot mint, even in the default configuration | **open** | With no `CIPHER_OWNER_SECRET` configured, a claim presenting the fabricated credential `apr_gate_unrecorded_claim` was **accepted**. In that configuration the claim is self-attested: an approver name and a reason. |
-| G8 | A claim credential used on one restored copy cannot authorise a sibling copy of the same workspace | pass (was open in the 14:28Z revision of this document) | The code already used on the after-dispatch copy was **refused** on the older copy (`WriteAuthorityError`: *"... the code is bound to this workspace and its current authority epoch"*). `core/db.py` now also binds the code to a random challenge kept beside each physical copy (`claim_challenge`), so copies restored from the same backup get different codes. |
+| G8 | A claim credential used on one restored copy cannot authorize a sibling copy of the same workspace | pass (was open in the 14:28Z revision of this document) | The code already used on the after-dispatch copy was **refused** on the older copy (`WriteAuthorityError`: *"... the code is bound to this workspace and its current authority epoch"*). `core/db.py` now also binds the code to a random challenge kept beside each physical copy (`claim_challenge`), so copies restored from the same backup get different codes. |
 | G9 (new) | A credited supplier bill is released for exactly its open payable through `payment.release` | **open** | After the 1500.00 credit note, releasing the bill (amount due 18000.00, open payable 16500.00) was **refused** (`IntegrityError`: *"a payment release for a bill carrying a posted supplier credit note must be for exactly its open payable ..."*); 0 intents. `payments.manifest_for_bill` still binds the amount due, and the bills storage guard refuses it, so the supplier is never overpaid but the bill cannot be paid through the service. |
 | G9 (new) | The period-close checklist reconciles customer deposits (2400) | **open** | None of the 44 checks the close checklist runs for 2026-11 names customer deposits or account 2400. The deposit subledger reconciles (3000.00 = GL 2400) when asked, but a period can close while 2400 is unreconciled. `CoreReconciliationChecks` covers 2050, 1300, 1150 and 1200, and the close module computes AP and AR itself; nothing asks for 2400. |
 
@@ -132,7 +132,7 @@ Round three added supplier invoice intake and matching, supplier credit notes, p
   | The AP subledger ignores credit notes | `g9.credit_note_ap`, `g9.credit_note_bounded`, `g9.adjusted_totals` |
   | The deposit subledger ignores applications | `g9.deposit_application`, `g9.adjusted_totals` (the database still refuses the over-application, so `g9.deposit_application_bounded` passes) |
 
-- One control could not be re-opened by its Python check alone: with the evidence-currency check removed from `payments`, the `party.verify_destination` manifest still binds `evidence_is_current_revision`, so the stale approval is still invalidated and G6 still passes (`test_the_payee_approval_also_binds_evidence_currency_in_its_manifest`). That is defence in depth, not a gate weakness.
+- One control could not be re-opened by its Python check alone: with the evidence-currency check removed from `payments`, the `party.verify_destination` manifest still binds `evidence_is_current_revision`, so the stale approval is still invalidated and G6 still passes (`test_the_payee_approval_also_binds_evidence_currency_in_its_manifest`). That is defense in depth, not a gate weakness.
 - `RoundThreeCoreProbeTests` reproduces each new control on `Cipher` directly, with exact money strings, the trial balance, the audit chain and every subledger reconciled.
 
 ### 3.1 Previous revision (`cipher-core-gates/2` -> `/3`), kept for the record
@@ -172,7 +172,7 @@ Round three added supplier invoice intake and matching, supplier credit notes, p
 - **Payment of a credited bill.** It fails today (the open G9 advisory): `payments.manifest_for_bill` still binds the amount due, so a storage guard refuses the release until payments binds `Bills.open_payable`. The supplier is never overpaid, but the bill cannot be paid through the service.
 - **Who the two people are.** The two-person rule compares names. Cipher has no production identity, and a privileged session can still name an outside verifier who never verified anything. Production identity is a later plan gate.
 - **Close-time coverage of 2400** (the open G9 advisory).
-- **Statements and scope.** Financial statements, tax, multi-entity or multi-currency behaviour.
+- **Statements and scope.** Financial statements, tax, multi-entity or multi-currency behavior.
 - **Migration.** Real data, or parallel closes against the incumbent books (plan section 9).
 - **Production readiness.** Security, isolation, performance, backup operations, provider contracts, and concurrency across processes.
 - **Every plugin path respects locks.** Only asset, reimbursement and labor are driven in G4; the others rely on the period-open triggers and the journal seal, which G4 shows firing.
@@ -208,7 +208,7 @@ Each gap is still probed directly against the core (`test_each_former_gap_is_clo
 | Complete audit export | G7 | |
 | Restore safety | G8 | After- and before-dispatch backups, write authority on every path, the attested claim. One open advisory. |
 | Correct accounting semantics | G9 (control-balance agreement) | Now also after credit notes, credit memos, deposits and write-offs. Semantic and policy correctness is **not** executable here; it needs controller-approved policies and an independent oracle. |
-| Legally usable packaging | none | Manual licence review (section 7). |
+| Legally usable packaging | none | Manual license review (section 7). |
 | Approval binding (plan section 6, "Distinct authority states") | G6 (and G3's governed correction) | Now also supplier-invoice binding and the governed, two-person payee change. Treated as a hard gate because payment safety depends on it. |
 | "Reject permanent QBO dependence and pervasive core patches" | none | Architectural review items, not runtime checks. |
 
@@ -218,7 +218,7 @@ Each gap is still probed directly against the core (`test_each_former_gap_is_clo
 - A candidate that fails any hard gate is `disqualified` and not scored.
 - An unavailable candidate is `not_evaluated`.
 - Control fit is 5 x passed / executed, over the hard and advisory checks.
-- The other four criteria must be labelled `ASSUMPTION` with a rationale, or the harness raises. Non-finite or out-of-range scores are rejected.
+- The other four criteria must be labeled `ASSUMPTION` with a rationale, or the harness raises. Non-finite or out-of-range scores are rejected.
 
 ## 7. What an ERPNext evaluation needs
 
@@ -233,7 +233,7 @@ Each gap is still probed directly against the core (`test_each_former_gap_is_clo
 6. **Privileged-path tests.** The candidate must pass the same privileged-path and period-lock tests as G2-G4 and the raw self-verification of G6, including direct database writes, reposting and administrative paths.
 7. **Scoring.** Score only if every hard gate passes. Odoo Community stays the plan's comparator and would need its own adapter.
 
-Everything in this section about ERPNext's behaviour is **unverified** here. The only vendor facts used are the ones the plan already cites.
+Everything in this section about ERPNext's behavior is **unverified** here. The only vendor facts used are the ones the plan already cites.
 
 **Why ERPNext is still `not_evaluated`:** none of items 1-3 exists. No execution authorization or isolated host has been granted, no stack is provisioned, and no adapter is written. This machine also lacks the storage headroom for the stack (section 8).
 

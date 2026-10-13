@@ -25,7 +25,7 @@ from apps.cipher.domain.payments import (
     ProviderEventRejected, ReleaseQuarantined, SimulatedProvider, sign_event, verify_event,
 )
 from apps.cipher.domain.reimbursements import PLUGIN_NAME as REIMBURSEMENT
-from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 D = Decimal
 ENTITY = "S&A Solutions LLC (synthetic)"
@@ -173,13 +173,13 @@ class KillSwitchTests(unittest.TestCase):
         self.c.payments.engage_kill_switch("bank reported a compromised token", "owner")
         with self.assertRaises(PaymentError):
             self.c.request_approval("payment.resume_releases", "something-else", actor_role="treasury")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             self.c.request_approval("payment.resume_releases", "payments", actor_role="pm")
         ap = self.c.request_approval("payment.resume_releases", "payments", actor_role="treasury")
         m = ap["manifest"]
         self.assertEqual((m["operation"], m["subject"]), ("payment.resume_releases", {"type": "payment_controls", "id": "payments"}))
         self.assertEqual((m["bindings"]["controls_version"], m["bindings"]["reason"], m["bindings"]["kill_switch"]), (2, "bank reported a compromised token", True))
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             self.c.approve(ap["id"], approver="pm-user", approver_role="pm")
         self.c.approve(ap["id"], approver="treasury-user", approver_role="treasury")
         # a fresh emergency after the grant makes that approval stale
@@ -570,7 +570,7 @@ class RestoreDoublePaymentTests(unittest.TestCase):
         with self.assertRaises(ReleaseQuarantined):
             restored.execute(release["id"], actor="treasury")
         # adopting the live transfer is an owner decision bound to the transfer and the payee
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             restored.request_approval("payment.adopt_transfer", "sim_000001", actor_role="treasury")
         adopt = restored.request_approval("payment.adopt_transfer", "sim_000001", actor_role="owner")
         m = adopt["manifest"]

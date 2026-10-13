@@ -79,7 +79,7 @@ A candidate that passes every hard gate is scored with the plan's weights
 (accounting/control fit 35, AEC fit 20, maintainability/upgrades 20,
 ownership/licensing 15, delivery cost 10; each 0-5).  Control fit is computed
 from the executed checks; the other four come from the adapter and must be
-labelled ASSUMPTION with a rationale.  A candidate failing any hard gate is
+labeled ASSUMPTION with a rationale.  A candidate failing any hard gate is
 ``disqualified`` and is not scored; an unavailable candidate is
 ``not_evaluated``.
 
@@ -215,7 +215,7 @@ _UNRELATED_REASONS = (
 
 DOES_NOT_PROVE = [
     "accounting-policy correctness (revenue recognition, WIP, retainage classification, accruals): controller-approved policies do not exist yet",
-    "financial statements, tax, multi-entity or multi-currency behaviour",
+    "financial statements, tax, multi-entity or multi-currency behavior",
     "migration of real data or parallel closes against the incumbent books",
     "production readiness: security, isolation, performance, backup operations, provider contracts",
     "the payment kill switch and signed provider callbacks: no gate drives them (their module tests do)",
@@ -542,12 +542,12 @@ class LedgerAdapter:
     def claim_write_authority(self, credential: str) -> None:
         """Attempt the candidate's write-authority claim on this copy, in its governed
         configuration, presenting ``credential`` (a fabricated approval reference or claim
-        code, or a blank one) as the claim's only authorisation; every other part of the
+        code, or a blank one) as the claim's only authorization; every other part of the
         claim is well formed."""
         self._unsupported("claim_write_authority")
 
     def claim_write_authority_approved(self) -> dict[str, Any]:
-        """Claim write authority through the governed path with a genuine authorisation
+        """Claim write authority through the governed path with a genuine authorization
         (for the native core: an attested owner claim carrying a valid owner claim code).
         Returns ``{ref, credential}``: the stored claim record's reference and the
         credential that was presented."""
@@ -1322,8 +1322,8 @@ class NativeCipherAdapter(LedgerAdapter):
                                             "append-only, checksummed schema catalog; held at 3 because one owner-maintainer carries the whole "
                                             "posting, close, reporting and recovery burden (plan section 3, native disposition)."),
             "ownership_licensing": (4, "ASSUMPTION: owner-written code with no third-party runtime dependency or copyleft obligation; held "
-                                       "below 5 until repository ownership and licence are formally confirmed (plan section 2: the PRO root "
-                                       "has no licence file)."),
+                                       "below 5 until repository ownership and license are formally confirmed (plan section 2: the PRO root "
+                                       "has no license file)."),
             "delivery_cost": (2, "ASSUMPTION: plan section 12 budgets a native-ledger premium of 20-40 person-months ($400,000-$1.2 million) "
                                  "and 4-9 months versus a suitable reused core; not validated here."),
         }
@@ -1773,7 +1773,7 @@ def gate_g4(a: LedgerAdapter, r: _Recorder) -> None:
             f"control case: the governed reopen with recorded approval {ref} reopens G4-REOPEN and it accepts posting again; journals {before} -> {a.journal_count()}",
             key="g4.governed_reopen")
 
-    # A consumed reopen approval authorises one reopen of its own period: replaying it (ledger
+    # A consumed reopen approval authorizes one reopen of its own period: replaying it (ledger
     # path or raw UPDATE) on that period once it is closed again, or citing it for another
     # closed period, is refused.
     a.close_period("G4-REOPEN")
@@ -2143,7 +2143,7 @@ def gate_g7(a: LedgerAdapter, r: _Recorder) -> None:
             f"schema manifest: {len(applied)} catalog entries applied (database version {status['current_version']}), {len(status['pending'])} pending, all checksums match",
             key="g7.schema_status")
     size = len(json.dumps(export, default=str))
-    r.check(size > 0, f"export serialises to JSON ({size} bytes)", key="g7.serialises")
+    r.check(size > 0, f"export serializes to JSON ({size} bytes)", key="g7.serialises")
 
 
 # ---- G8 ---------------------------------------------------------------------- #
@@ -2278,12 +2278,12 @@ def gate_g8(a: LedgerAdapter, r: _Recorder) -> None:
         # reconcile external receipts before allowing any release.  Nothing may be resubmitted.
         old = a.open_restored(older)
         opened.append(old)
-        # Advisory: a credential issued for one restored copy should not also authorise a
+        # Advisory: a credential issued for one restored copy should not also authorize a
         # sibling copy of the same workspace (both copies still sit at the same authority epoch).
         s_out, s_why = _refused_by(old, (CONTROL_WRITE_AUTHORITY, CONTROL_APPROVAL_REFERENCE), old.claim_write_authority, claim["credential"])
         s_gained = old.authority_status()["effective_write_authority"]
         r.advise(s_out == "refused" and not s_gained,
-                 "a claim credential used on one restored copy cannot authorise a sibling copy of the same workspace",
+                 "a claim credential used on one restored copy cannot authorize a sibling copy of the same workspace",
                  f"the credential already used to claim the after-dispatch copy, presented on the older (before-dispatch) copy, {_verdict(s_out, s_why)}; "
                  f"effective write authority afterwards {s_gained}"
                  + (" - the credential is bound to the workspace and its authority epoch, which every copy taken before a claim shares, "
@@ -2296,7 +2296,7 @@ def gate_g8(a: LedgerAdapter, r: _Recorder) -> None:
         end = a.provider_counts()
         resubmitted = end["submissions"] - start["submissions"]
         dispatch_text = f"refused ({why})" if refused else f"sent {len(value or [])} payment(s)"
-        caveat = (" - a second transfer was avoided only because the simulator honours the idempotency key, which plan section 4 says the reviewed provider docs do not establish"
+        caveat = (" - a second transfer was avoided only because the simulator honors the idempotency key, which plan section 4 says the reviewed provider docs do not establish"
                   if resubmitted and end["transfers"] == start["transfers"] else "")
         old_intents = old.payment_intents()
         held = recovered.get("held") or []
@@ -2633,7 +2633,7 @@ def evaluate_candidate(adapter: LedgerAdapter, gate_ids: tuple[str, ...] | list[
     for criterion in ASSUMED_CRITERIA:
         value, rationale = assumed[criterion]
         if not isinstance(rationale, str) or not rationale.startswith("ASSUMPTION"):
-            raise CoreGateError(f"the {criterion} score of {adapter.candidate} must be labelled ASSUMPTION with a rationale")
+            raise CoreGateError(f"the {criterion} score of {adapter.candidate} must be labeled ASSUMPTION with a rationale")
         rows.append({"criterion": criterion, "label": CRITERIA_LABELS[criterion], "weight": WEIGHTS[criterion],
                      "score": _score(value, criterion), "basis": "ASSUMPTION", "rationale": rationale})
     weighted = sum((row["score"] * row["weight"] for row in rows), Decimal(0)) / Decimal(100)

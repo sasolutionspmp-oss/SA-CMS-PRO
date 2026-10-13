@@ -15,7 +15,7 @@ from apps.cipher.domain.close import (
     percent_complete,
 )
 from apps.cipher.domain.ledger import PeriodNotOpen
-from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthorised
+from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthorized
 
 D = Decimal
 
@@ -698,8 +698,8 @@ class WipTests(unittest.TestCase):
         self.assertEqual((again["period_id"], again["amount"]), ("P2", "7500.00"))
         ap = c.request_approval("close.post_wip_adjustment", again["id"])
         c.approve(ap["id"])
-        cancelled = cl.cancel_wip_adjustment(again["id"], actor="owner", reason="not needed")
-        self.assertEqual(cancelled["status"], "cancelled")
+        canceled = cl.cancel_wip_adjustment(again["id"], actor="owner", reason="not needed")
+        self.assertEqual(canceled["status"], "cancelled")
         self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
         with self.assertRaises(CloseError):
             cl.cancel_wip_adjustment(again["id"], actor="owner")
@@ -1269,7 +1269,7 @@ class GovernedReopenTests(unittest.TestCase):
 
         # a granted but not yet consumed reopen approval is not enough either
         ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
-        with self.assertRaises(RoleNotAuthorised):  # a project role cannot grant it
+        with self.assertRaises(RoleNotAuthorized):  # a project role cannot grant it
             c.approve(ap["id"], approver="pm-user", approver_role="pm")
         c.approve(ap["id"], approver="controller", approver_role="controller")
         with self.assertRaises(CloseError):
@@ -1339,7 +1339,7 @@ class ReopenAuthorityTests(unittest.TestCase):
         ap = c.request_approval("close.reopen_period", "P1", actor_role="controller", requested_by="controller")
         with self.assertRaises(ReopenAuthorityError):  # the core lets an accountant approve a reopen; this module does not
             c.approve(ap["id"], approver="accountant-amy", approver_role="accountant")
-        with self.assertRaises(RoleNotAuthorised):  # a project role has no reopen authority at all
+        with self.assertRaises(RoleNotAuthorized):  # a project role has no reopen authority at all
             c.approve(ap["id"], approver="pm-paul", approver_role="pm")
         self.assertEqual(c.approvals.get(ap["id"])["status"], "pending")
         self.assertIsNone(cl.reopen_grant(ap["id"]))

@@ -15,7 +15,7 @@ date defaults to the invoice date plus the supplier's payment terms (``set_terms
 30 days).  Lines (``description``, ``amount``, optional ``quantity`` x ``unit_price``, and
 one of ``sov_line_id`` / ``equipment_id``) must add up to the invoice amount exactly.
 
-Duplicates.  The same supplier and the same normalised invoice number (case, spaces and
+Duplicates.  The same supplier and the same normalized invoice number (case, spaces and
 punctuation ignored) is refused, whatever happened to the first invoice.  A near duplicate
 -- same supplier, same amount, invoice dates within 7 days, another number -- is accepted
 but flagged ``possible_duplicate``; it cannot be matched until ``clear_duplicate_flag``
@@ -161,7 +161,7 @@ SCHEMA_STATEMENTS = [
         CHECK ((service_period_start IS NULL) = (service_period_end IS NULL)),
         CHECK (service_period_start IS NULL OR service_period_start <= service_period_end)
     )""",
-    # the same supplier never has two invoices with one normalised number
+    # the same supplier never has two invoices with one normalized number
     "CREATE UNIQUE INDEX ap_invoices_supplier_number ON ap_invoices (supplier_id, number_key)",
     "CREATE UNIQUE INDEX ap_invoices_one_per_document ON ap_invoices (evidence_document_id) WHERE status != 'rejected'",
     "CREATE INDEX ap_invoices_by_project ON ap_invoices (project_id, created_at)",
@@ -323,7 +323,7 @@ class APIntakeError(RuntimeError):
 
 
 class DuplicateInvoiceError(APIntakeError):
-    """The supplier already has an invoice with this (normalised) number."""
+    """The supplier already has an invoice with this (normalized) number."""
 
 
 class InvoiceIneligible(APIntakeError, StaleApprovalError):
@@ -376,18 +376,18 @@ def _decimal(value: Any, label: str) -> Decimal:
 
 
 def _invoice_number(value: Any) -> tuple[str, str]:
-    """The invoice number as given (trimmed) and its normalised key.  Quotes, backslashes
+    """The invoice number as given (trimmed) and its normalized key.  Quotes, backslashes
     and control characters are refused: the number is copied into audited records."""
     number = _text(value, "invoice number", max_length=MAX_NUMBER_LENGTH)
     if any(ch in number for ch in '"\\') or any(ord(ch) < 32 for ch in number):
         raise APIntakeError(f"invoice number {number!r} may not contain quotes, backslashes or control characters")
-    key = normalise_invoice_number(number)
+    key = normalize_invoice_number(number)
     if not key:
         raise APIntakeError(f"invoice number {number!r} carries no letters or digits")
     return number, key
 
 
-def normalise_invoice_number(number: str) -> str:
+def normalize_invoice_number(number: str) -> str:
     """Case-, space- and punctuation-insensitive identity of an invoice number
     ("INV-0042", "inv 0042" and "Inv/0042" are the same number)."""
     folded = unicodedata.normalize("NFKC", number).casefold()
@@ -587,7 +587,7 @@ class Plugin:
                         project_id: str, commitment_id: str | None = None, due_date: str | None = None,
                         service_period_start: str | None = None, service_period_end: str | None = None, lines=()) -> dict[str, Any]:
         """Receive a supplier invoice (see the module docstring for the rules).  The same
-        supplier and normalised number is refused (``DuplicateInvoiceError``); a near
+        supplier and normalized number is refused (``DuplicateInvoiceError``); a near
         duplicate is accepted with ``possible_duplicate`` set."""
         who = _text(actor, "actor")
         number, key = _invoice_number(invoice_number)
@@ -1011,7 +1011,7 @@ class Plugin:
                 exc("amount_mismatch", f"invoice {fmt(amount)} against purchase order lines of {fmt(po_total)} for the equipment it bills (tolerance 0.00)")
             matched_amount = fmt(po_total) if lines else None
             if commitment is not None and commitment["status"] not in ("executed", "closed"):
-                exc("over_commitment", f"purchase order {commitment['id']} is {commitment['status']}; nothing is authorised until it is executed")
+                exc("over_commitment", f"purchase order {commitment['id']} is {commitment['status']}; nothing is authorized until it is executed")
             if commitment is not None:
                 candidates, _ = self._candidate_bills(inv, commitment["id"])
                 exact = sorted((b for b in candidates if money(b["amount_due"]) == amount),
@@ -1024,11 +1024,11 @@ class Plugin:
                                        f"invoice {fmt(amount)} no longer matches it, and it moves only once another invoice replaces it there")
         invoiced = ZERO
         if commitment is not None:
-            authorised = money(commitment["executed_amount"]) if commitment["status"] in ("executed", "closed") else ZERO
+            authorized = money(commitment["executed_amount"]) if commitment["status"] in ("executed", "closed") else ZERO
             invoiced = self._invoiced_to_date(commitment["id"], other_than=inv["id"])
-            if invoiced + amount > authorised and not (basis == BASIS_PURCHASE_ORDER and commitment["status"] not in ("executed", "closed")):
+            if invoiced + amount > authorized and not (basis == BASIS_PURCHASE_ORDER and commitment["status"] not in ("executed", "closed")):
                 exc("over_commitment", f"invoices matched on commitment {commitment['id']} ({fmt(invoiced)}) plus this one ({fmt(amount)}) "
-                                       f"exceed its executed amount {fmt(authorised)}")
+                                       f"exceed its executed amount {fmt(authorized)}")
         codes = sorted({d["code"] for d in details})
         return {
             "basis": basis,

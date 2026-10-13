@@ -15,7 +15,7 @@ from apps.cipher.domain.forecast import (
     _version_hash, normalize_cost_code, phase_code_from_memo,
 )
 from apps.cipher.domain.ledger import PeriodNotOpen
-from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 
@@ -601,7 +601,7 @@ class BudgetVersionTests(unittest.TestCase):
                 self.revise(lines, reason)
         with self.assertRaises(ForecastError):
             self.fc.manifest_for(OP_REVISE, "bdr_missing", actor_role="pm")
-        with self.assertRaises(KeyError):  # unchanged legacy behaviour of project()
+        with self.assertRaises(KeyError):  # unchanged legacy behavior of project()
             self.fc.project("prj_missing")
 
     def test_revision_through_approval(self):
@@ -620,7 +620,7 @@ class BudgetVersionTests(unittest.TestCase):
         self.assertEqual((b["current_version"], b["current_version_hash"], b["new_version"], b["new_lines_hash"], b["new_total"], b["reason"], b["project_id"]),
                          (1, v1["version_hash"], 2, rev["lines_hash"], "107000.00", "Scope transfer between cost codes", self.pid))
         self.assertEqual(b["new_lines"], rev["lines"])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             self.c.approve(ap["id"], approver="estimator", approver_role="estimator")
         self.c.approve(ap["id"], approver="controller", approver_role="controller")
         res = self.c.execute(ap["id"], actor="pm")
@@ -645,7 +645,7 @@ class BudgetVersionTests(unittest.TestCase):
         self.initial()
         rev = self.revise([{"cost_code": "XX 10 00", "amount": "70000"}])
         for role in ("accountant", "viewer", "estimator", "treasury", "unknown"):
-            with self.subTest(role=role), self.assertRaises(RoleNotAuthorised):
+            with self.subTest(role=role), self.assertRaises(RoleNotAuthorized):
                 self.c.request_approval(OP_REVISE, rev["id"], actor_role=role)
         self.assertEqual(self.c.ricky.propose(OP_REVISE, actor_role="estimator", context={"revision_id": rev["id"]})["decision"], "abstained")
         proposal = self.c.ricky.propose(OP_REVISE, actor_role="pm", context={"revision_id": rev["id"]})
@@ -678,7 +678,7 @@ class BudgetVersionTests(unittest.TestCase):
         self.assertEqual(self.fc.project(self.pid)["budget"], "110000.00")
         assert_books(self, self.c, self.pid)
 
-    def test_cancelled_draft_invalidates_its_approval(self):
+    def test_canceled_draft_invalidates_its_approval(self):
         self.initial()
         rev = self.revise([{"cost_code": "XX 10 00", "amount": "70000"}])
         ap = self.c.request_approval(OP_REVISE, rev["id"], actor_role="pm")

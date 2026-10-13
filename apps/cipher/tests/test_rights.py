@@ -163,7 +163,7 @@ class LicenseRegistryTests(RightsTestCase):
                          ("view", "rights_license_registrations")} <= objects)
         self.assertNotIn(("table", "rights_license_versions_hold"), objects)
 
-    def test_register_license_is_version_one_normalised_and_audited(self):
+    def test_register_license_is_version_one_normalized_and_audited(self):
         lic = self.s.license(SPEC, ["project_use", "ai_retrieval", " internal_reference "], processors=["local-model-host", LOCAL], purge=True)
         self.assertTrue(lic["id"].startswith("lic_"))
         self.assertEqual((lic["licensor"], lic["work"], lic["edition"], lic["holder"]), (SPEC["licensor"], SPEC["work"], SPEC["edition"], HOLDER))
@@ -1313,7 +1313,7 @@ class IntegrationTests(RightsTestCase):
         self.assertEqual(self.c.execute(fresh["id"]).result["status"], "closed")
         self.assertTrue(self.c.audit.verify_chain()["ok"])
 
-    def test_audit_export_is_json_serialisable_and_complete(self):
+    def test_audit_export_is_json_serializable_and_complete(self):
         lic = self.s.license(SPEC, ["ai_embedding"], expires_on=days(-2), purge=True)
         self.p.update_license(lic["id"], processors=[LOCAL, "local-model-host"], actor="owner")
         self.p.tag_document(self.doc, lic["id"], "owner")

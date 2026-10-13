@@ -96,7 +96,7 @@ class CipherError(RuntimeError):
     pass
 
 
-class RoleNotAuthorised(CipherError, PermissionError):
+class RoleNotAuthorized(CipherError, PermissionError):
     pass
 
 
@@ -166,7 +166,7 @@ class Cipher:
             try:
                 self.register_plugin(mod.PLUGIN_NAME, mod.Plugin(self))
             except Exception as exc:
-                log.warning("plugin %s failed to initialise: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
+                log.warning("plugin %s failed to initialize: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
         self.register_plugin("core_reconciliation", CoreReconciliationChecks(self))
         # Ricky's typed tool surface (registers itself as the "ricky_sdk" module)
         from .ricky_sdk import RickySDK
@@ -330,7 +330,7 @@ class Cipher:
         must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
         if not Ricky.can(actor_role, operation):
-            raise RoleNotAuthorised(f"role {actor_role!r} is not authorised for {operation}")
+            raise RoleNotAuthorized(f"role {actor_role!r} is not authorized for {operation}")
         for _name, governor in self._governors():
             check = getattr(governor, "check_request", None)
             if check is not None:
@@ -343,7 +343,7 @@ class Cipher:
         (plan v1.1), which is why releases also need the independent controls in payments."""
         ap = self.approvals.get(approval_id)
         if not Ricky.can(approver_role, ap["operation"]):
-            raise RoleNotAuthorised(f"role {approver_role!r} cannot approve {ap['operation']}")
+            raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
         for _name, governor in self._governors():
             check = getattr(governor, "check_grant", None)
             if check is not None:

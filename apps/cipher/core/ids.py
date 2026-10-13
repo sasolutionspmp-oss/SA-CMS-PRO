@@ -48,7 +48,7 @@ def _json_default(obj):
         return obj.hex()
     if isinstance(obj, set):
         return sorted(obj)
-    raise TypeError(f"not JSON serialisable: {type(obj).__name__}")
+    raise TypeError(f"not JSON serializable: {type(obj).__name__}")
 
 
 def canonical_json(obj) -> str:

@@ -22,7 +22,7 @@ from apps.cipher.domain.bills import (
 from apps.cipher.domain.commitments import COMMITMENTS_SCHEMA_NAME, CommitmentError
 from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
 from apps.cipher.domain.payments import PaymentError
-from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 # entries that build on bills_invoices_credits_corrections: a workspace older than it has none of them
@@ -1322,16 +1322,16 @@ class SupplierCreditNoteTests(unittest.TestCase):
         self.assertEqual(c.approvals.get(pay["id"])["status"], "invalidated")  # the payment approval was for 27,000
         with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
             c.execute(pay["id"], actor="treasury")
-        # a draft is cancelled once and its approval goes stale
+        # a draft is canceled once and its approval goes stale
         _, rev2 = credit_evidence(w, "CN-11")
         n2 = c.bills.prepare_credit_note(b["id"], "500.00", "rebate (synthetic)", rev2["content_hash"], "accountant")
         ap_n2 = granted(c, "bill.credit_note", n2["id"])
-        cancelled = c.bills.cancel_credit_note(n2["id"], "supplier withdrew the rebate", "accountant")
-        self.assertEqual((cancelled["status"], cancelled["cancelled_by"]), ("cancelled", "accountant"))
+        canceled = c.bills.cancel_credit_note(n2["id"], "supplier withdrew the rebate", "accountant")
+        self.assertEqual((canceled["status"], canceled["cancelled_by"]), ("cancelled", "accountant"))
         self.assertEqual(c.approvals.get(ap_n2["id"])["status"], "invalidated")
         with self.assertRaises(BillError):
             c.bills.cancel_credit_note(n2["id"], "again", "accountant")
-        # the cancelled document may back a new credit note
+        # the canceled document may back a new credit note
         n3 = c.bills.prepare_credit_note(b["id"], "400.00", "rebate reissued (synthetic)", rev2["content_hash"], "accountant")
         self.assertEqual(n3["status"], "draft")
         # a payment in flight stops a new credit; the payment is for the 25,000 still open, not the 27,000 due
@@ -1507,9 +1507,9 @@ class BillCorrectionTests(unittest.TestCase):
         self.assertEqual(c.ricky.propose("bill.correct", actor_role="estimator", context={"bill_id": b2["id"]})["decision"], "abstained")
         with self.assertRaises(BillError):  # one pending request per bill
             c.bills.prepare_correction(b2["id"], "again", "accountant")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.request_approval("bill.correct", b2["id"], actor_role="pm")
-        # a cancelled request makes its approval stale
+        # a canceled request makes its approval stale
         ap = granted(c, "bill.correct", b2["id"])
         c.bills.cancel_correction(req["id"], "measured again: the bill stands", "accountant")
         with self.assertRaises(StaleApprovalError):

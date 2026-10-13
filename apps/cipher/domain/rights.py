@@ -11,7 +11,7 @@ Model
 
 * A **license** is a registry entry identified by (licensor, work, edition,
   holder).  The identity is unique ignoring case (Unicode case folding with
-  NFKC normalisation and runs of whitespace treated as one space, checked by
+  NFKC normalization and runs of whitespace treated as one space, checked by
   this module; the database's own unique index and guards fold ASCII letters
   only, because SQLite's ``lower()`` does).  Identity never changes: a new
   edition or a different holder is a new license.  Its **terms** (permitted
@@ -528,7 +528,7 @@ _LICENSE_SELECT = """
 
 
 def _fold(text: str) -> str:
-    """Caseless form of a name: NFKC-normalised Unicode case folding."""
+    """Caseless form of a name: NFKC-normalized Unicode case folding."""
     return unicodedata.normalize("NFKC", unicodedata.normalize("NFKC", text).casefold())
 
 

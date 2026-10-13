@@ -29,7 +29,7 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
         "labor.approve_timesheet", "procurement.award", "field.respond_rfi", "field.decide_submittal", "field.accept_closeout",
         "field.distribute_rfi", "prime_bill.send", "budget.revise", "contract.approve_agreement",
     },
-    # plan section 10 step 1: a PM/legal reviewer approves the exact agreement; an authorised signer executes it
+    # plan section 10 step 1: a PM/legal reviewer approves the exact agreement; an authorized signer executes it
     "legal": {"contract.approve_agreement"},
     "signer": {"contract.sign"},
     "accountant": {
@@ -203,7 +203,7 @@ class Ricky:
         if allowed is None:
             raise _Abstain(f"unknown role {actor_role!r}; Ricky does not infer authority from the request")
         if "*" not in allowed and operation not in allowed:
-            raise _Abstain(f"role {actor_role!r} is not authorised for {operation}; route to a role that is")
+            raise _Abstain(f"role {actor_role!r} is not authorized for {operation}; route to a role that is")
 
     def _evaluate(self, workflow: str, actor_role: str, ctx: dict[str, Any]) -> tuple[dict[str, Any], str]:
         if workflow == "estimate.approve":

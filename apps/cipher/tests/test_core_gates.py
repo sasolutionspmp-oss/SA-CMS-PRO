@@ -181,7 +181,7 @@ class RestoreScenario:
     """A file-backed workspace with a sent prime bill (through the prime_bill.send
     approval, with the customer's ACH mandate on file) and a released supplier payment,
     copied before dispatch, dispatched, then copied several more times.  Used to probe
-    the core's restore behaviour directly (not through the gate adapter)."""
+    the core's restore behavior directly (not through the gate adapter)."""
 
     def __init__(self):
         self.dir = tempfile.mkdtemp(prefix="cipher-core-gates-gap-")
@@ -1061,7 +1061,7 @@ class NativeGateTests(unittest.TestCase):
         self.assertEqual(len(g8), 2, g8)
         default, sibling = g8
         self.assertIn("even in the default configuration", default["check"])
-        self.assertIn("cannot authorise a sibling copy", sibling["check"])
+        self.assertIn("cannot authorize a sibling copy", sibling["check"])
         for adv, probe in ((default, "default_config_claim"), (sibling, "sibling_claim")):
             with self.subTest(advisory=adv["check"]):
                 self.assertEqual(adv["status"], "open" if self.probes[probe] else "pass", adv["observed"])
@@ -1070,7 +1070,7 @@ class NativeGateTests(unittest.TestCase):
 
     def test_result_has_no_binary_floats(self):
         self.assertFalse([v for v in _walk(self.result) if isinstance(v, float)])
-        json.dumps(self.result)  # serialisable as is
+        json.dumps(self.result)  # serializable as is
 
 
 class ReintroducedGapTests(unittest.TestCase):
@@ -1107,7 +1107,7 @@ class RoundThreeReopenedTests(unittest.TestCase):
                 self.assertEqual(set(g["check_keys"]), EARLIER_KEYS[gate_id] | ROUND_THREE_KEYS[gate_id])  # nothing skipped
 
     def test_the_payee_approval_also_binds_evidence_currency_in_its_manifest(self):
-        """Defence in depth: without payments' own evidence check, the party.verify_destination
+        """Defense in depth: without payments' own evidence check, the party.verify_destination
         manifest still binds whether the evidence revision is current, so the stale approval is
         invalidated at execution and G6 keeps passing."""
         g = run_gate("G6", EvidenceBlindChangeCheck())
@@ -1167,7 +1167,7 @@ class RoundThreeReopenedTests(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 
 class RoundThreeCoreProbeTests(unittest.TestCase):
-    """The behaviour the new G6 and G9 checks report, reproduced on Cipher directly."""
+    """The behavior the new G6 and G9 checks report, reproduced on Cipher directly."""
 
     def test_a_reissued_supplier_invoice_invalidates_the_bill_approval_granted_before(self):
         w = ProbeWorld()
@@ -1436,8 +1436,8 @@ class ScorecardTests(unittest.TestCase):
             with self.subTest(value=bad), self.assertRaises(CoreGateError):
                 cg._score(bad, "aec_fit")
 
-    def test_assumed_scores_must_be_labelled(self):
-        class Unlabelled(NativeCipherAdapter):
+    def test_assumed_scores_must_be_labeled(self):
+        class Unlabeled(NativeCipherAdapter):
             def assumed_scores(self):
                 return {c: (3, "a guess") for c in ASSUMED_CRITERIA}
 
@@ -1446,7 +1446,7 @@ class ScorecardTests(unittest.TestCase):
 
         with mock.patch.dict(cg.GATES, {g: trivial for g in GATE_IDS}):
             with self.assertRaises(CoreGateError):
-                evaluate_candidate(Unlabelled())
+                evaluate_candidate(Unlabeled())
             scored = evaluate_candidate(NativeCipherAdapter())
         self.assertEqual(scored["status"], "scored")
         rows = {row["criterion"]: row for row in scored["scores"]}

@@ -25,7 +25,7 @@ Rules:
 
 * equipment tags are unique per project, case-insensitively (Unicode casefold;
   the ASCII ``lower()`` unique index is a backstop); an equipment item may sit
-  on only one non-cancelled requisition (``procurement_equipment.requisition_id``);
+  on only one non-canceled requisition (``procurement_equipment.requisition_id``);
 * one *live* quote per supplier per requisition (a withdrawn quote frees the
   supplier to quote again).  Quote amounts are positive whole cents (sub-cent,
   NaN/Infinity and floats are rejected, not rounded) and at least 0.01 per
@@ -57,7 +57,7 @@ Rules:
   site minus forecast delivery; ``late`` when float is negative.
 
 Database guards back the rules: requisition status only moves draft->awarded or
-draft->cancelled; quotes are frozen once their requisition leaves draft; an
+draft->canceled; quotes are frozen once their requisition leaves draft; an
 award row needs a consumed ``procurement.award`` approval for that requisition
 and an open period, and is immutable; receipts need an awarded requisition and
 are immutable; nothing here is ever deleted except un-actualised milestone plan
@@ -465,7 +465,7 @@ class Plugin:
 
     def create_requisition(self, project_id: str, title: str, equipment_ids: list[str], actor: str = "owner") -> dict[str, Any]:
         """Draft requisition (version 1) for equipment of one project.  Each item
-        may be on only one non-cancelled requisition."""
+        may be on only one non-canceled requisition."""
         title = _text(title, "requisition title")
         actor = _text(actor, "actor")
         if not isinstance(equipment_ids, (list, tuple)) or not equipment_ids:
@@ -505,14 +505,14 @@ class Plugin:
             req = self._requisition_row(requisition_id)
             self._require_draft(req)
             now = utcnow_iso()
-            version = self._bump(conn, "procurement_requisitions", req, status="cancelled", cancel_reason=reason, cancelled_at=now)
+            version = self._bump(conn, "procurement_requisitions", req, status="cancelled", cancel_reason=reason, cancelled_at=now)  # stored column names
             released = []
             for eid in self._equipment_ids(req):
                 eq = self._equipment_row(eid)
                 if eq["requisition_id"] == requisition_id:
                     self._bump(conn, "procurement_equipment", eq, requisition_id=None)
                     released.append(eid)
-            invalidated = self._invalidate_awards(requisition_id, reason=f"requisition cancelled: {reason}", actor=actor)
+            invalidated = self._invalidate_awards(requisition_id, reason=f"requisition canceled: {reason}", actor=actor)
             self.audit.record(actor, "procurement.requisition_cancelled", REQUISITION_SUBJECT, requisition_id, {
                 "reason": reason, "version": version, "equipment_released": released, "approvals_invalidated": invalidated,
             })

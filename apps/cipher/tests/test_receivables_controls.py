@@ -17,7 +17,7 @@ from apps.cipher.domain.receivables import (
     CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_NAME, ReceivableCutoffError, ReceivableError,
     ReceivableIneligible, ReceivableInputError, Receivables,
 )
-from apps.cipher.service import Cipher, RoleNotAuthorised, run_golden_fixture
+from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 RAW_TIME = "2026-10-20T00:00:00Z"
@@ -221,7 +221,7 @@ class PrimeBillApprovalTests(unittest.TestCase):
         self.assertEqual((bd["contract_version"], bd["contract_value"], bd["bill_contract_version"], bd["bill_hash"]), (1, "150000.00", 1, b["content_hash"]))
         self.assertIn("SHADOW", bd["recognition_policy"])
         self.assertEqual(preview_of(m), [("1100", "54000.00", "0.00"), ("1150", "6000.00", "0.00"), ("4000", "0.00", "60000.00")])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.approve(ap["id"], approver="pm", approver_role="pm")
         w.c.approve(ap["id"], approver="controller", approver_role="controller")
         res = w.c.execute(ap["id"], actor="accountant")
@@ -326,7 +326,7 @@ class SendingTests(unittest.TestCase):
         self.assertEqual(w.r.get(b["id"])["status"], "posted")
         self.assertEqual([e for e in w.c.audit.entries(entity_type="prime_bill", entity_id=b["id"]) if e["action"] == "prime_bill.sent"], [])
 
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.request_approval("prime_bill.send", b["id"], actor_role="estimator")
         ap = w.c.request_approval("prime_bill.send", b["id"], actor_role="pm", requested_by="pm")
         m = ap["manifest"]
@@ -338,7 +338,7 @@ class SendingTests(unittest.TestCase):
         # the invoice states the balance due and everything already taken off it
         self.assertEqual((bd["balance_due"], bd["received"], bd["credited_by_memo"], bd["written_off"], bd["deposits_applied"]),
                          ("54000.00", "0.00", "0.00", "0.00", "0.00"))
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.approve(ap["id"], approver="estimator", approver_role="estimator")
         w.c.approve(ap["id"], approver="owner")
         # the database refuses a raw send of this posted bill without its consumed send approval:
@@ -548,14 +548,14 @@ class MandateTests(unittest.TestCase):
             with self.assertRaisesRegex(sqlite3.DatabaseError, "content hash of its evidence revision", msg=mid):
                 w.c.db.execute(RAW_MANDATE, (mid, w.cust, f"RAW-{mid}", ev_hash, ev_rev, RAW_TIME))
         self.assertEqual(w.r.mandates(), [])
-        # positive control: a raw row backed by owned evidence is accepted and authorises ACH
+        # positive control: a raw row backed by owned evidence is accepted and authorizes ACH
         w.c.db.execute(RAW_MANDATE, ("mdt_raw_ok", w.cust, "RAW-OK", h, rev, RAW_TIME))
         self.assertEqual((w.r.active_mandate(w.cust)["id"], w.r.unbacked_mandates()), ("mdt_raw_ok", []))
         col = w.r.record_collection(prime_bill_id=b["id"], period_id="P1", amount="1000", provider_ref="ach_sim_rcv_raw_ok", actor="treasury", mandate_ref="raw-ok")
         self.assertEqual(col["mandate_id"], "mdt_raw_ok")
         w.assert_books(self)
 
-    def test_mandate_forged_before_the_evidence_guard_never_authorises_ach(self):
+    def test_mandate_forged_before_the_evidence_guard_never_authorizes_ach(self):
         """A workspace written before receivables_controls_guards may hold a mandate row
         written outside record_mandate with no owned evidence; after the upgrade it is
         reported and never used, in Python or by the database."""
@@ -656,7 +656,7 @@ class PrimeRetainageTests(unittest.TestCase):
         self.assertEqual({k: ret["items"][0][k] for k in ("retained", "released", "open", "through_sequence")},
                          {"retained": "10000.00", "released": "0.00", "open": "10000.00", "through_sequence": 2})
 
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.request_approval("prime_retainage.release", w.pid, actor_role="pm")
         ap = w.c.request_approval("prime_retainage.release", w.pid, actor_role="accountant", requested_by="accountant")
         m = ap["manifest"]
@@ -666,7 +666,7 @@ class PrimeRetainageTests(unittest.TestCase):
         self.assertEqual((bd["contract_version"], bd["contract_value"], bd["latest_prime_bill_sequence"], bd["certified_cumulative"], bd["released_to_date"], bd["customer_id"]),
                          (1, "100000.00", 2, "100000.00", "0.00", w.cust))
         self.assertEqual(preview_of(m), [("1100", "10000.00", "0.00"), ("1150", "0.00", "10000.00")])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.approve(ap["id"], approver="pm", approver_role="pm")
         w.c.approve(ap["id"], approver="controller", approver_role="controller")
         res = w.c.execute(ap["id"], actor="accountant", period_id="P2")

@@ -18,7 +18,7 @@ from apps.cipher.domain.receivables import (
     CONTROLS_GUARDS_SCHEMA_NAME, CONTROLS_SCHEMA_NAME, DATES_CREDITS_GUARDS_SCHEMA_NAME, DATES_CREDITS_SCHEMA_NAME, ReceivableCutoffError,
     ReceivableDuplicate, ReceivableError, ReceivableIneligible, ReceivableInputError,
 )
-from apps.cipher.service import Cipher, RoleNotAuthorised
+from apps.cipher.service import Cipher, RoleNotAuthorized
 import apps.cipher.ricky_sdk  # noqa: F401  (registers its schema entry before any test patches the catalog)
 
 ENTITY = "S&A Solutions LLC (synthetic)"
@@ -305,7 +305,7 @@ class CreditMemoTests(unittest.TestCase):
         h = w.evidence(b"synthetic concession letter: pay item 4 re-measured")
         memo = w.r.prepare_credit_memo(b["id"], "4000", "pay item 4 re-measured at a lower quantity", h, "accountant")
         self.assertEqual((memo["status"], memo["amount"], memo["bill_hash"], memo["evidence_hash"], memo["journal_id"]), ("draft", "4000.00", b["content_hash"], h, None))
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.request("prime_bill.credit_memo", memo["id"], "pm")
         ap = w.request("prime_bill.credit_memo", memo["id"], "accountant")
         m = ap["manifest"]
@@ -318,7 +318,7 @@ class CreditMemoTests(unittest.TestCase):
                          (b["id"], b["content_hash"], memo["reason"], h, b["due_date"], "P1"))
         self.assertIn("SHADOW", bd["recognition_policy"])
         self.assertEqual(preview_of(m), [("4000", "4000.00", "0.00"), ("1100", "0.00", "4000.00")])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.approve(ap["id"], approver="pm", approver_role="pm")
         w.grant(ap)
         res = w.c.execute(ap["id"], actor="accountant", period_id="P1")
@@ -395,14 +395,14 @@ class CreditMemoTests(unittest.TestCase):
         res = w.c.execute(ap2["id"], actor="accountant", period_id="P2")
         self.assertEqual((w.c.ledger.journal(res.result["journal_id"])["period_id"], res.result["open"]), ("P2", "52500.00"))
 
-        # cancelling a draft invalidates its approval; cancelled and posted memos never execute again
+        # canceling a draft invalidates its approval; canceled and posted memos never execute again
         m2 = w.r.prepare_credit_memo(**{**base, "amount": "200"})
         ap3 = w.request("prime_bill.credit_memo", m2["id"], "accountant")
         w.grant(ap3)
         with self.assertRaises(ReceivableInputError):
             w.r.cancel_credit_memo(m2["id"], "accountant", " ")
-        cancelled = w.r.cancel_credit_memo(m2["id"], "accountant", "issued in error")
-        self.assertEqual((cancelled["status"], cancelled["cancelled_by"], cancelled["cancel_reason"]), ("cancelled", "accountant", "issued in error"))
+        canceled = w.r.cancel_credit_memo(m2["id"], "accountant", "issued in error")
+        self.assertEqual((canceled["status"], canceled["cancelled_by"], canceled["cancel_reason"]), ("cancelled", "accountant", "issued in error"))
         self.assertEqual(w.c.approvals.get(ap3["id"])["status"], "invalidated")
         with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
             w.c.execute(ap3["id"], actor="accountant", period_id="P2")
@@ -517,7 +517,7 @@ class WriteOffTests(unittest.TestCase):
         with self.assertRaises(ReceivableDuplicate):
             w.r.prepare_write_off(**base)
         for role in ("accountant", "pm", "treasury"):  # a write-off is the controller's authority
-            with self.assertRaises(RoleNotAuthorised, msg=role):
+            with self.assertRaises(RoleNotAuthorized, msg=role):
                 w.request("receivable.write_off", wo["id"], role)
         ap = w.request("receivable.write_off", wo["id"], "controller")
         m = ap["manifest"]
@@ -528,7 +528,7 @@ class WriteOffTests(unittest.TestCase):
         self.assertGreaterEqual(bd["bill_posted_on"], w.day(0))  # the approver sees the bill reached the books today, dated 120 days ago
         self.assertIn("SHADOW", bd["policy"])
         self.assertEqual(preview_of(m), [("6100", "6000.00", "0.00"), ("1100", "0.00", "6000.00")])
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             w.c.approve(ap["id"], approver="accountant", approver_role="accountant")
         w.grant(ap, "controller")
         res = w.c.execute(ap["id"], actor="controller", period_id="P1")
@@ -635,7 +635,7 @@ class DepositTests(unittest.TestCase):
         app = w.r.prepare_deposit_application(dep["id"], b["id"], "15000", "accountant")
         self.assertEqual((app["status"], app["amount"], app["deposit_id"], app["prime_bill_id"]), ("draft", "15000.00", dep["id"], b["id"]))
         for role in ("pm", "treasury"):
-            with self.assertRaises(RoleNotAuthorised, msg=role):
+            with self.assertRaises(RoleNotAuthorized, msg=role):
                 w.request("receivable.apply_deposit", app["id"], role)
         ap = w.request("receivable.apply_deposit", app["id"], "accountant")
         m = ap["manifest"]

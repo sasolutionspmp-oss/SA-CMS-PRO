@@ -1,7 +1,7 @@
 """Test package setup: keep every temporary workspace under one disposable root.
 
 Tests create file-backed SQLite workspaces with ``tempfile.mkdtemp()`` to exercise
-restore and write-authority behaviour.  Pointing ``tempfile.tempdir`` at a
+restore and write-authority behavior.  Pointing ``tempfile.tempdir`` at a
 per-run root lets us remove them all: at exit (best effort, since Windows keeps
 open SQLite files locked) and, reliably, at the start of the next run, which
 deletes roots left behind by earlier runs.

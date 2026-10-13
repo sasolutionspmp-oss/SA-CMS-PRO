@@ -3,7 +3,7 @@
 Plan section 9: while the statutory books stay in the incumbent process, the
 first slice hands Cipher's figures over through an accountant-owned, reviewed
 export.  Each hand-off receipt is recorded and omissions are reconciled.
-Everything here is labelled "SHADOW - for the incumbent books; not
+Everything here is labeled "SHADOW - for the incumbent books; not
 authoritative"; a package is never an authoritative financial statement.
 
 Package (``prepare_handoff(period_id, actor)``)
@@ -46,7 +46,7 @@ Integrity (``verify``, close and acknowledgement)
     its content, and it has exactly one ``handoff.prepared`` audit entry recording
     this row (period, sequence, hash, journal count, totals, predecessor, label,
     preparer) that is intact in the hash-chained audit log (its own hashes and both
-    neighbouring links).  The provenance check is what covers the content the books
+    neighboring links).  The provenance check is what covers the content the books
     cannot re-derive later: AP / AR open items and subledger reconciliations are a
     snapshot as at preparation, so a raw row carrying invented subledgers fails
     because ``prepare_handoff`` never recorded it.  A package failing any of that
@@ -701,7 +701,7 @@ class Plugin:
 
     def _provenance(self, row: dict[str, Any]) -> list[str]:
         """The package row must have exactly one ``handoff.prepared`` audit entry that records it and
-        is intact in the hash-chained log (its own hashes and both neighbouring links)."""
+        is intact in the hash-chained log (its own hashes and both neighboring links)."""
         entries = self.db.query("SELECT * FROM audit_log WHERE action=? AND entity_type=? AND entity_id=? ORDER BY seq",
                                 (PREPARED_ACTION, SUBJECT_TYPE, row.get("id")))
         if not entries:
@@ -1172,8 +1172,8 @@ class Plugin:
             now = self._period_now(period_id)
             stated = {"journal_count": latest["journal_count"], "total_debit": latest["total_debit"], "total_credit": latest["total_credit"]}
             if now != stated:
-                problems.append(f"{head} states {stated['journal_count']} journal(s) totalling {stated['total_debit']} / {stated['total_credit']}, "
-                                f"but the period now has {now['journal_count']} totalling {now['total_debit']} / {now['total_credit']}; prepare a new hand-off")
+                problems.append(f"{head} states {stated['journal_count']} journal(s) totaling {stated['total_debit']} / {stated['total_credit']}, "
+                                f"but the period now has {now['journal_count']} totaling {now['total_debit']} / {now['total_credit']}; prepare a new hand-off")
         if problems:
             return [{"check": CHECK_NAME, "ok": False, "detail": "; ".join(problems)}]
         return [{"check": CHECK_NAME, "ok": True,

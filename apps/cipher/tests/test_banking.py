@@ -197,7 +197,7 @@ class StatementImportTests(unittest.TestCase):
             self.s.october("oct-2026")
         self.assertEqual(self.c.db.scalar("SELECT COUNT(*) FROM banking_statements"), 1)
 
-    def test_fingerprint_definition_and_normalisation(self):
+    def test_fingerprint_definition_and_normalization(self):
         st = self.s.october()
         line = st["lines"][0]
         raw = "1000|2026-10-20|-27000.00|sim_000001|ach debit synthetic subcontractor a|0"
@@ -882,7 +882,7 @@ class StatusAndStateTests(unittest.TestCase):
         with self.assertRaises(BankingError):
             b.reconciliation_status("NOPE")
 
-    def test_state_shape_is_json_serialisable(self):
+    def test_state_shape_is_json_serializable(self):
         s = Scenario()
         st = s.reconciled_october()
         state = s.b.state(s.project["id"])

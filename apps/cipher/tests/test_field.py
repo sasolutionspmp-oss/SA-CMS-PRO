@@ -13,7 +13,7 @@ from apps.cipher.domain.commitments import CommitmentError
 from apps.cipher.domain.field import CLOSEOUT_ITEMS, DISTRIBUTION_SCHEMA_NAME, PLUGIN_NAME, SCHEMA_NAME, FieldError
 from apps.cipher.domain.field import _recipients as field_recipients
 from apps.cipher.domain.ledger import PeriodNotOpen
-from apps.cipher.service import Cipher, CipherError, RoleNotAuthorised
+from apps.cipher.service import Cipher, CipherError, RoleNotAuthorized
 
 STALE = (StaleApprovalError, ApprovalNotGranted)
 
@@ -485,10 +485,10 @@ class RfiTests(unittest.TestCase):
         # roles: the pm and the owner hold the authority; a viewer or estimator does not
         self.f.set_distribution_list(r["id"], ["EOR"], "pm")
         for role in ("viewer", "estimator", "treasury"):
-            with self.subTest(role=role), self.assertRaises(RoleNotAuthorised):
+            with self.subTest(role=role), self.assertRaises(RoleNotAuthorized):
                 self.c.request_approval("field.distribute_rfi", r["id"], actor_role=role)
         ap3 = self.c.request_approval("field.distribute_rfi", r["id"], actor_role="pm")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             self.c.approve(ap3["id"], approver="someone", approver_role="estimator")
         self.c.approve(ap3["id"], approver="pm-user", approver_role="pm")
         dist = self.c.execute(ap3["id"], actor="pm").result
@@ -1054,7 +1054,7 @@ class FieldIntegrityTests(unittest.TestCase):
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
         self.assertEqual(self.c.commitments.get(cid)["status"], "executed")
 
-    def test_state_is_json_serialisable_and_audit_chain_holds(self):
+    def test_state_is_json_serializable_and_audit_chain_holds(self):
         cm = self.s.commitment()
         dwg, r1, r2 = self.s.drawing()
         rfi = self.s.rfi(drawing_revision_ids=[r1["id"]])

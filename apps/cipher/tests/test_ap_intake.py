@@ -12,7 +12,7 @@ from decimal import Decimal
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import sha256_hex, utcnow
 from apps.cipher.domain.ap_intake import (
-    EXCEPTION_CODES, PLUGIN_NAME, SCHEMA_NAME, APIntakeError, DuplicateInvoiceError, InvoiceIneligible, normalise_invoice_number,
+    EXCEPTION_CODES, PLUGIN_NAME, SCHEMA_NAME, APIntakeError, DuplicateInvoiceError, InvoiceIneligible, normalize_invoice_number,
 )
 from apps.cipher.domain.bills import BillError, BillIneligible
 from apps.cipher.service import Cipher
@@ -237,13 +237,13 @@ class IntakeTests(unittest.TestCase):
 # --------------------------------------------------------------------------- #
 
 class DuplicateTests(unittest.TestCase):
-    def test_same_supplier_and_normalised_number_is_refused(self):
+    def test_same_supplier_and_normalized_number_is_refused(self):
         w = World()
         first = w.receive("INV-0042", "1000.00")
         for variant in ("inv 0042", "Inv/0042", " INV.0042 ", "INV_0042"):
             with self.subTest(number=variant), self.assertRaises(DuplicateInvoiceError):
                 w.receive(variant, "1234.00", invoice_date="2026-08-01")
-        self.assertEqual(normalise_invoice_number("Inv/0042"), "inv0042")
+        self.assertEqual(normalize_invoice_number("Inv/0042"), "inv0042")
         # another supplier may use the same number
         other = w.receive("INV-0042", "1000.00", supplier_id=w.other_supplier["id"], commitment=False)
         self.assertFalse(other["possible_duplicate"])

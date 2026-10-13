@@ -34,7 +34,7 @@ from apps.cipher.core.audit import Audit
 from apps.cipher.core.db import SCHEMA_CATALOG, Database, WriteAuthorityError
 from apps.cipher.core.money import D, MoneyError, allocate, money, pct, rate, total
 from apps.cipher.domain.ledger import Ledger, LedgerError, PeriodNotOpen, ReversalNotAvailable, SubledgerOwnedJournal
-from apps.cipher.service import Cipher, RoleNotAuthorised
+from apps.cipher.service import Cipher, RoleNotAuthorized
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 JOURNAL_COLUMNS = "id, period_id, posted_at, description, source_type, source_id, source_version, rule_version, posted_by, line_count"
@@ -977,7 +977,7 @@ class GovernedReversalTests(unittest.TestCase):
         with self.assertRaisesRegex(LedgerError, "already has pending reversal request"):
             c.ledger.prepare_reversal(jid, "a second reason", "accountant")
         for role in ("pm", "viewer", "estimator", "treasury"):
-            with self.subTest(role=role), self.assertRaises(RoleNotAuthorised):
+            with self.subTest(role=role), self.assertRaises(RoleNotAuthorized):
                 c.request_approval("journal.reverse", jid, actor_role=role)
         ap = c.request_approval("journal.reverse", jid, actor_role="accountant", requested_by="accountant")
         m = ap["manifest"]
@@ -989,7 +989,7 @@ class GovernedReversalTests(unittest.TestCase):
         self.assertEqual(b["source"], {"type": "integrity_test", "id": "miscoded-cost", "version": "1"})
         self.assertEqual(b["reversal_request"]["id"], req["id"])
         self.assertEqual(len(b["lines_fingerprint"]), 64)
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             c.approve(ap["id"], approver="pm", approver_role="pm")
         with self.assertRaises(Exception):
             c.execute(ap["id"], actor="accountant", period_id="P3")  # not granted yet
@@ -1084,15 +1084,15 @@ class GovernedReversalTests(unittest.TestCase):
     def reverse_approvals(self):
         return [a for a in self.c.approvals.list() if a["operation"] == "journal.reverse"]
 
-    def test_no_approval_against_a_cancelled_request_or_a_reversed_journal(self):
+    def test_no_approval_against_a_canceled_request_or_a_reversed_journal(self):
         c, jid = self.c, self.j["id"]
         req = c.ledger.prepare_reversal(jid, "posted to the wrong cost account", "accountant")
         c.ledger.cancel_reversal_request(req["id"], actor="accountant", reason="recorded in error")
-        with self.assertRaisesRegex(ReversalNotAvailable, "is cancelled; prepare a new reversal request") as cm:
+        with self.assertRaisesRegex(ReversalNotAvailable, "is canceled; prepare a new reversal request") as cm:
             c.request_approval("journal.reverse", jid, actor_role="accountant", requested_by="accountant")
         self.assertIsInstance(cm.exception, LedgerError)
         self.assertEqual(self.reverse_approvals(), [])
-        # an approval granted while the request was pending goes stale (invalidated) once it is cancelled
+        # an approval granted while the request was pending goes stale (invalidated) once it is canceled
         ap = self.requested(jid)
         c.ledger.cancel_reversal_request(c.ledger.reversal_requests(jid)[-1]["id"], actor="accountant", reason="withdrawn")
         with self.assertRaises(StaleApprovalError):

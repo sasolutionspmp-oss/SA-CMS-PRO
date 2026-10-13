@@ -490,7 +490,7 @@ class DrawingRegisterTests(unittest.TestCase):
         with self.assertRaises(sqlite3.IntegrityError):
             db.execute("UPDATE drawing_revisions SET issued_period_id='P1' WHERE id=?", (r1["id"],))
         # issuing by hand: without an approval, with someone else's consumed approval, into a closed period
-        with self.assertRaises(sqlite3.IntegrityError):  # both the status machine and the authorisation guard reject this; their order is SQLite's
+        with self.assertRaises(sqlite3.IntegrityError):  # both the status machine and the authorization guard reject this; their order is SQLite's
             db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', issued_period_id='P1' WHERE id=?", (r2["id"],))
         with self.assertRaisesRegex(sqlite3.IntegrityError, "consumed drawing.issue approval for that revision"):
             db.execute("UPDATE drawing_revisions SET status='issued', issued_at='t', approval_id=?, issued_period_id='P1' WHERE id=?", (r1["approval_id"], r2["id"]))

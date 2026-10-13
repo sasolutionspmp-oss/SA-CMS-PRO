@@ -4,7 +4,7 @@ A command is identified by a *logical operation id* chosen by the caller
 (for example ``bill-approve:<bill id>:<version>``).  Replaying the same id with
 the same payload returns the stored result without re-executing anything.
 The same id with a different payload is a conflict and fails, which is the
-behaviour the plan requires for payment commands.
+behavior the plan requires for payment commands.
 """
 from __future__ import annotations
 

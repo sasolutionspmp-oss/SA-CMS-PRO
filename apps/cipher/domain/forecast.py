@@ -94,7 +94,7 @@ total (executed commitments not explained by SOV lines are an ``UNMAPPED`` resid
 Per-code figures add up to the project totals.
 
 Snapshots (``snapshot``) store every figure of ``project()`` with the hash of the inputs
-it was computed from; they are append-only, numbered per project, uniquely labelled
+it was computed from; they are append-only, numbered per project, uniquely labeled
 (case-insensitive) and never change.  ``variance_to_previous`` compares the latest two.
 """
 from __future__ import annotations
@@ -951,10 +951,10 @@ class Forecast:
         with self.db.transaction() as conn:
             rev = self.revision(revision_id)
             if rev["status"] != "pending":
-                raise ForecastError(f"budget revision {revision_id} is {rev['status']}; only a pending draft can be cancelled")
+                raise ForecastError(f"budget revision {revision_id} is {rev['status']}; only a pending draft can be canceled")
             conn.execute("UPDATE budget_revisions SET status='cancelled', resolved_by=?, resolved_at=?, resolution_note=? WHERE id=?",
                          (who, utcnow_iso(), why, revision_id))
-            invalidated = self.approvals.invalidate_for_subject(REVISION_SUBJECT, revision_id, reason=f"budget revision cancelled: {why}", actor=who)
+            invalidated = self.approvals.invalidate_for_subject(REVISION_SUBJECT, revision_id, reason=f"budget revision canceled: {why}", actor=who)
             self.audit.record(who, "budget.revision_cancelled", REVISION_SUBJECT, revision_id, {
                 "project_id": rev["project_id"], "reason": why, "approvals_invalidated": invalidated})
         return self.revision(revision_id)
@@ -1088,7 +1088,7 @@ class Forecast:
             self._project_row(project_id)
             dup = conn.execute("SELECT id, sequence FROM forecast_snapshots WHERE project_id=? AND label=? COLLATE NOCASE", (project_id, name)).fetchone()
             if dup is not None:
-                raise ForecastError(f"project {project_id} already has forecast snapshot {dup['sequence']} labelled {name!r}; labels are unique per project")
+                raise ForecastError(f"project {project_id} already has forecast snapshot {dup['sequence']} labeled {name!r}; labels are unique per project")
             figures = self.project(project_id)
             sequence = (conn.execute("SELECT COALESCE(MAX(sequence), 0) FROM forecast_snapshots WHERE project_id=?", (project_id,)).fetchone()[0]) + 1
             conn.execute(

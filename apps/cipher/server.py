@@ -24,6 +24,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlencode, urlparse
 
+from .core.words import us_text
 from .service import Cipher, run_golden_fixture
 
 CONSOLE_PATH = os.path.join(os.path.dirname(__file__), "console", "index.html")
@@ -367,7 +368,7 @@ class CipherHandler(BaseHTTPRequestHandler):
                 return self._json(HTTPStatus.OK, self.cipher.project_state(project_id))
             return self._json(HTTPStatus.NOT_FOUND, {"error": "not found"})
         except Exception as exc:  # pragma: no cover - defensive boundary
-            return self._json(HTTPStatus.BAD_REQUEST, {"error": str(exc), "type": type(exc).__name__})
+            return self._json(HTTPStatus.BAD_REQUEST, {"error": us_text(str(exc)), "type": type(exc).__name__})
 
     def do_POST(self):
         # Read the body before any response so a rejected request never leaves unread
@@ -410,7 +411,8 @@ class CipherHandler(BaseHTTPRequestHandler):
             result = action(body)
             return self._json(HTTPStatus.OK, {"ok": True, "result": result})
         except Exception as exc:
-            return self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": str(exc), "type": type(exc).__name__})
+            # people read this text; stored codes inside messages are shown in American spelling
+            return self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": us_text(str(exc)), "type": type(exc).__name__})
 
 
 class InsecureBindError(RuntimeError):

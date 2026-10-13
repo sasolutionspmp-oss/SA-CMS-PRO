@@ -239,7 +239,7 @@ class Plugin:
     def _require_label_free(self, drawing: dict[str, Any], label: str) -> None:
         live = self.db.one("SELECT id, status FROM drawing_revisions WHERE drawing_id=? AND label=? AND status != 'withdrawn'", (drawing["id"], label))
         if live is not None:
-            raise DrawingError(f"drawing {drawing['number']} already has a revision labelled {label!r} ({live['status']})")
+            raise DrawingError(f"drawing {drawing['number']} already has a revision labeled {label!r} ({live['status']})")
 
     def _bump(self, conn, drawing: dict[str, Any], **fields: Any) -> int:
         """Compare-and-set the register row to the next version (plus any

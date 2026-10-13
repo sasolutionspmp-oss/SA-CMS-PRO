@@ -209,8 +209,8 @@ class EquipmentAndRequisitionTests(unittest.TestCase):
         # an item may be on only one open requisition
         with self.assertRaises(ProcurementError):
             self.p.create_requisition(self.s.pid, "Pump again", [e1["id"]], actor="pm")
-        cancelled = self.p.cancel_requisition(req["id"], "re-scoped", actor="pm")
-        self.assertEqual(cancelled["status"], "cancelled")
+        canceled = self.p.cancel_requisition(req["id"], "re-scoped", actor="pm")
+        self.assertEqual(canceled["status"], "cancelled")
         self.assertIsNone(self.p.equipment(e1["id"])["requisition_id"])
         with self.assertRaises(ProcurementError):
             self.p.add_quote(req["id"], self.s.sup["A"], "1000.00", 4, FUTURE, True)
@@ -625,7 +625,7 @@ class StateTests(unittest.TestCase):
         e1, e2, req, qc, res = self.s.awarded()
         self.s.equipment("V-301", "2027-06-01", description="Butterfly valve", long_lead=False)
         st = self.p.state(self.s.pid)
-        json.dumps(st)  # JSON-serialisable
+        json.dumps(st)  # JSON-serializable
         self.assertEqual(set(st), {"equipment", "requisitions", "long_lead_report", "summary"})
         self.assertEqual(st["summary"], {
             "equipment": 3, "long_lead": 2, "late": 0, "requisitions": 1, "open_requisitions": 0,

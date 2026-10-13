@@ -20,7 +20,7 @@ from apps.cipher.domain.handoff import (
     PLUGIN_NAME, PREPARED_ACTION, SCHEMA_NAME, HandoffDuplicate, HandoffError, HandoffRefused, HandoffStale, _cell, _csv_files, label_line, read_csv,
     ref_key,
 )
-from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthorised
+from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthorized
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 CSV_HEAD = f"# {LABEL} | period P1 | {FORMAT}"
@@ -455,9 +455,9 @@ class AcknowledgementTests(unittest.TestCase):
 
         d = s.h.record_receipt_details(h["id"], "  RCPT-SYN-0001 ", "Synthetic Accountant A", "owner")
         self.assertEqual((d["version"], d["receipt_ref"], d["accountant"]), (1, "RCPT-SYN-0001", "Synthetic Accountant A"))
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             s.request(h["id"], role="pm")
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             s.request(h["id"], role="viewer")
 
         ap = s.request(h["id"])
@@ -471,7 +471,7 @@ class AcknowledgementTests(unittest.TestCase):
         self.assertEqual((b["period_status"], b["omission_count"], b["latest_handoff_for_period"], b["label"]), ("open", 0, h["id"], LABEL))
         self.assertEqual(b["period_now"], {"journal_count": 2, "total_debit": "11234.56", "total_credit": "11234.56"})
 
-        with self.assertRaises(RoleNotAuthorised):
+        with self.assertRaises(RoleNotAuthorized):
             s.c.approve(ap["id"], approver="pm-1", approver_role="pm")
         with self.assertRaises(ApprovalNotGranted):  # nothing executes before a human grants it
             s.c.execute(ap["id"], actor="accountant-1")
@@ -740,7 +740,7 @@ class OmissionAndCloseTests(unittest.TestCase):
         self.assertEqual(h2["package"]["csv"]["journals.csv"].count(r2["id"]), 2)  # reversed_by on both lines of j2
         s.assert_books_sound(self)
 
-    def test_close_check_behaviour(self):
+    def test_close_check_behavior(self):
         s = Scenario()
         self.assertEqual(s.h.close_checks("P1"), [{"check": CHECK_NAME, "ok": True,
                                                    "detail": "no shadow hand-off prepared for P1; the hand-off is optional in the prototype (informational)"}])

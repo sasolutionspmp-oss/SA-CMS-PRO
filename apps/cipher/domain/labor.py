@@ -83,7 +83,7 @@ Record lifecycles (SQLite triggers reject every other transition):
 Approvals bind the subject's version, a content hash recomputed from the CURRENT
 records, the exact amounts and allocation, the period and the counterparties, so
 a change after an approval was granted makes it stale instead of executing
-something the approver did not see.  Rejecting a timesheet, cancelling a payroll
+something the approver did not see.  Rejecting a timesheet, canceling a payroll
 draft or voiding an invoice also invalidates the open approvals on it.
 """
 from __future__ import annotations
@@ -1876,7 +1876,7 @@ class Plugin:
 
     def audit_export(self) -> dict[str, Any]:
         """Every labor record, workspace-wide, plus the module's reconciliations, for an
-        independent reviewer (JSON-serialisable; money as canonical strings)."""
+        independent reviewer (JSON-serializable; money as canonical strings)."""
         q = self.db.query
         timesheets = q("SELECT * FROM labor_timesheets ORDER BY submitted_at, id")
         for ts in timesheets:

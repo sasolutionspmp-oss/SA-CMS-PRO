@@ -253,7 +253,7 @@ class EstimateStaleError(EstimateError, StaleApprovalError):
 
 
 # --------------------------------------------------------------------------- #
-# Input normalisation                                                          #
+# Input normalization                                                          #
 # --------------------------------------------------------------------------- #
 
 def _visible(text: str) -> bool:
@@ -300,7 +300,7 @@ def _line_amount(quantity: Decimal, unit_price: Decimal) -> Decimal:
     return money(product)
 
 
-def normalise_unit(value: Any, *, line_no: int | None = None) -> str:
+def normalize_unit(value: Any, *, line_no: int | None = None) -> str:
     where = f"line {line_no}: " if line_no is not None else ""
     if value is None:
         return DEFAULT_UNIT
@@ -435,7 +435,7 @@ class Estimates:
         return [{"unit": u, "name": n, "measured": u in MEASURED_UNITS} for u, n in UNITS.items()]
 
     @staticmethod
-    def _normalise_lines(lines: Any) -> list[dict[str, Any]]:
+    def _normalize_lines(lines: Any) -> list[dict[str, Any]]:
         if not isinstance(lines, (list, tuple)) or not lines:
             raise EstimateError("an estimate needs at least one line")
         out = []
@@ -450,7 +450,7 @@ class Estimates:
                 raise EstimateError(f"line {idx}: description must be text, not {type(description).__name__}")
             if not _visible(description):
                 raise EstimateError(f"line {idx}: description is required")
-            unit = normalise_unit(raw.get("unit"), line_no=idx)
+            unit = normalize_unit(raw.get("unit"), line_no=idx)
             try:
                 qty = D(raw["quantity"])
                 price = D(raw["unit_price"])
@@ -500,7 +500,7 @@ class Estimates:
         measurement_basis: str | None = None,
         removed_exclusions: list[str] | tuple[str, ...] = (),
     ) -> dict[str, Any]:
-        norm = self._normalise_lines(lines)
+        norm = self._normalize_lines(lines)
         basis = _optional_text("measurement_basis", measurement_basis, empty_is_none=True)
         measured = [ln for ln in norm if ln["unit"] in MEASURED_UNITS]
         if measured and basis is None:
