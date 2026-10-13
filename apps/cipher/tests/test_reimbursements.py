@@ -863,6 +863,19 @@ class ReimbursementReceivableTests(unittest.TestCase):
         with self.assertRaises(ReimbursementError):
             self.r.record_billing_collection(b["id"], "45.00", period_id="P1", provider_ref="ach-sim-rb-0300", actor="treasury")
 
+    def test_a_reversed_billing_frees_its_amount_to_be_billed_again_once(self):
+        b = self.billed("45.00")
+        self.c.ledger.prepare_reversal(b["journal_id"], "billed under the wrong project phase; reissue (synthetic)", "accountant")
+        self.c.approve_and_execute("journal.reverse", b["journal_id"], actor="accountant", period_id="P1")
+        self.assertEqual(self.r.claim(b["claim_id"])["billed"], "0.00")
+        again = self.r.create_billing(b["claim_id"], "45.00", actor="pm")
+        self.c.approve_and_execute("reimbursement.bill", again["id"], period_id="P1")
+        self.assertEqual(self.r.claim(b["claim_id"])["billed"], "45.00")
+        self.assertReceivable("45.00")
+        self.assertEqual(self.c.ledger.balance("4000", project_id=self.pid), Decimal("45.00"))
+        with self.assertRaisesRegex(ReimbursementError, "exceeds the unbilled claim amount"):
+            self.r.create_billing(b["claim_id"], "0.01", actor="pm")  # billed again exactly once
+
 
 class ReimbursementPaymentControlTests(unittest.TestCase):
     """Reimbursement payments under the core payment controls: canceled intents, transfer

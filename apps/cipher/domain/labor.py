@@ -38,7 +38,9 @@ Payroll is cut off by period.  A settlement recorded in period P may pay only ti
 approved in P or earlier periods, and may not leave the employee's accrual
 overdrawn at the end of P or of any later period (payroll already recorded in a
 later period may have settled that time).  The 2200 reconciliation used by the
-close checklist is cut off at the period too.
+close checklist is cut off at the period too.  The 2200 subledger follows timesheet
+and payroll status, not their journals, so ``journal.reverse`` refuses timesheet and
+payroll journals (``ledger.SUBLEDGER_OWNED_SOURCES``).
 
 Accounts receivable: T&M invoices debit control account 1100 next to prime bills.
 ``ar_open_items(project_id)`` exposes the labor T&M subledger (billed less collected)
@@ -52,11 +54,16 @@ cumulatively through the period, which tells a reviewer which source is off.
 A billed invoice is corrected only by reversing its billing journal (the governed
 ``journal.reverse``): the reversal clears the whole receivable it posted, so the
 subledger and 1100 still agree, and no receipt can be recorded against the invoice
-afterwards.  A reversed collection journal no longer counts as collected.
+afterwards.  The reversal also frees the invoice's time (``Ledger.reversal_hooks``):
+its lines are released and its entries go back to approved, so the next invoice
+prepared for a period starting on or after the reversal's period bills that time
+again, once, even when it is dated in an earlier, closed period.  A reversed
+collection journal no longer counts as collected.
 ``record_collection`` refuses a receipt reference already used, ignoring case, in this
-module's collections or in any other 1100 receipt table (prime bill, prime retainage
-and reimbursement collections); the database backs only the labor table's own
-uniqueness (``labor_collections.provider_ref`` UNIQUE NOCASE).  The other direction
+module's collections or in any other customer receipt table (prime bill, prime
+retainage and reimbursement collections, and customer deposits on 2400); the
+database backs only the labor table's own uniqueness
+(``labor_collections.provider_ref`` UNIQUE NOCASE).  The other direction
 belongs to the other modules: ``Receivables.record_collection`` checks labor
 references, while the reimbursement module's collection checks only its own table at
 the time of writing, so a reimbursement receipt can still reuse a labor reference.
@@ -64,13 +71,15 @@ the time of writing, so a reimbursement receipt can still reuse a labor referenc
 Record lifecycles (SQLite triggers reject every other transition):
 
 * entry:      draft -> submitted -> approved -> billed;  submitted -> draft (timesheet rejected);
-              draft -> void (``delete_entry``; rows are never deleted)
+              draft -> void (``delete_entry``; rows are never deleted);  billed -> approved only once
+              no live invoice line holds the entry (its invoice's billing journal was reversed)
 * timesheet:  submitted -> approved | rejected;  rejected -> submitted (resubmission of the SAME
               timesheet as its next version).  At most one open (submitted or rejected) timesheet
               per employee per period.
 * payroll:    draft -> posted | canceled.  A reference is never reused, even after a cancel.
 * invoice:    draft -> billed | void.  An entry is reserved by at most one live invoice line
-              (partial UNIQUE index); voiding a draft invoice releases its lines.
+              (partial UNIQUE index); voiding a draft invoice releases its lines, and so does
+              reversing a billed invoice's billing journal (``labor_rebill_after_reversal``).
 * collection: immutable once recorded; only against a billed invoice of its project and customer
               (``labor_collections_billed_invoice_only``); and, from ``labor_collection_guards`` on,
               with exact two-place amount and fee, never in a period that starts before the
@@ -126,12 +135,12 @@ MAX_RATE = Decimal("1000000.00")            # per hour
 MAX_AMOUNT = Decimal("1000000000000.00")    # budgets, payroll runs, receipts
 MAX_BUDGET_HOURS = Decimal("10000000.00")
 
-# Receipt tables of the other receivables sources that credit control account 1100 (prime
-# bills, prime retainage invoices, reimbursement billings).  ``record_collection`` refuses a
-# reference already used in any of them or in labor_collections, ignoring case; a table that
-# does not exist (its module is not loaded) is skipped.  The reverse check is each other
-# module's own (see the module docstring).
-OTHER_RECEIPT_TABLES = ("collections", "prime_retainage_collections", "reimbursement_collections")
+# The other customer receipt tables: collections that credit control account 1100 (prime
+# bills, prime retainage invoices, reimbursement billings) and customer deposits on 2400.
+# ``record_collection`` refuses a reference already used in any of them or in
+# labor_collections, ignoring case; a table that does not exist (its module is not loaded)
+# is skipped.  The reverse check is each other module's own (see the module docstring).
+OTHER_RECEIPT_TABLES = ("collections", "prime_retainage_collections", "customer_deposits", "reimbursement_collections")
 
 LIVE_ENTRY_STATUSES = ("draft", "submitted", "approved", "billed")
 UTILIZATION_STATUSES = ("submitted", "approved", "billed")
@@ -451,10 +460,48 @@ COLLECTION_GUARDS_SCHEMA_STATEMENTS = [
         END""",
 ]
 
-# Registered here, in this order, so the guard entry always sits after the table it guards;
+# Re-billing after a correction, as its own catalog entry.  Reversing a billed invoice's
+# billing journal clears its receivable and revenue, so its time is billed again: its lines
+# may then be released (until now only a voided draft's could), and an entry may go from
+# billed back to approved once no live invoice line holds it.  Both triggers are replaced
+# under the same names; every other change stays refused.  Time on invoices reversed before
+# this entry is freed here, as ``_free_reversed_invoice_time`` frees it from now on.
+REBILL_SCHEMA_NAME = "labor_rebill_after_reversal"
+REBILL_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER labor_invoice_lines_release_only",
+    """CREATE TRIGGER labor_invoice_lines_release_only BEFORE UPDATE ON labor_invoice_lines
+        WHEN NEW.invoice_id IS NOT OLD.invoice_id OR NEW.entry_id IS NOT OLD.entry_id OR NEW.phase_id IS NOT OLD.phase_id
+          OR NEW.employee_id IS NOT OLD.employee_id OR NEW.work_date IS NOT OLD.work_date OR NEW.hours IS NOT OLD.hours
+          OR NEW.bill_rate IS NOT OLD.bill_rate OR NEW.amount IS NOT OLD.amount
+          OR OLD.released = 1 OR NEW.released != 1
+          OR NOT ((SELECT status FROM labor_invoices WHERE id = OLD.invoice_id) IS 'void'
+                  OR EXISTS (SELECT 1 FROM labor_invoices i JOIN journals r ON r.reversal_of = i.journal_id
+                             WHERE i.id = OLD.invoice_id AND i.status = 'billed'))
+        BEGIN SELECT RAISE(ABORT, 'labor invoice lines are immutable; a line is only released when its draft invoice is voided or its billing journal is reversed'); END""",
+    "DROP TRIGGER labor_entries_status_forward_only",
+    """CREATE TRIGGER labor_entries_status_forward_only BEFORE UPDATE OF status ON labor_entries
+        WHEN NEW.status != OLD.status AND NOT (
+            (OLD.status = 'draft' AND NEW.status IN ('submitted','void'))
+            OR (OLD.status = 'submitted' AND NEW.status IN ('draft','approved'))
+            OR (OLD.status = 'approved' AND NEW.status = 'billed')
+            OR (OLD.status = 'billed' AND NEW.status = 'approved'
+                AND NOT EXISTS (SELECT 1 FROM labor_invoice_lines l WHERE l.entry_id = OLD.id AND l.released = 0))
+        )
+        BEGIN SELECT RAISE(ABORT, 'illegal time entry status transition'); END""",
+    """UPDATE labor_invoice_lines SET released = 1
+        WHERE released = 0 AND invoice_id IN (SELECT i.id FROM labor_invoices i JOIN journals r ON r.reversal_of = i.journal_id WHERE i.status = 'billed')""",
+    """UPDATE labor_entries SET status = 'approved'
+        WHERE status = 'billed'
+          AND NOT EXISTS (SELECT 1 FROM labor_invoice_lines l WHERE l.entry_id = labor_entries.id AND l.released = 0)
+          AND EXISTS (SELECT 1 FROM labor_invoice_lines l JOIN labor_invoices i ON i.id = l.invoice_id JOIN journals r ON r.reversal_of = i.journal_id
+                      WHERE l.entry_id = labor_entries.id AND i.status = 'billed')""",
+]
+
+# Registered here, in this order, so each later entry always sits after the tables it changes;
 # the plugin loader's own registration of SCHEMA_NAME is then a no-op.
 register_schema_version(SCHEMA_NAME, SCHEMA_STATEMENTS)
 register_schema_version(COLLECTION_GUARDS_SCHEMA_NAME, COLLECTION_GUARDS_SCHEMA_STATEMENTS)
+register_schema_version(REBILL_SCHEMA_NAME, REBILL_SCHEMA_STATEMENTS)
 
 
 class LaborError(RuntimeError):
@@ -554,6 +601,12 @@ _ENTRY_SELECT = """SELECT e.*, p.code AS phase_code, p.billable AS phase_billabl
         (SELECT l.invoice_id FROM labor_invoice_lines l WHERE l.entry_id = e.id AND l.released = 0) AS invoice_id
     FROM labor_entries e JOIN labor_phases p ON p.id = e.phase_id"""
 
+# Start date of the latest period in which a reversal of a billed invoice's billing journal
+# freed entry ``e`` (NULL when no reversal ever freed it).
+_FREED_FROM = """(SELECT MAX(rp.start_date) FROM labor_invoice_lines x JOIN labor_invoices i ON i.id = x.invoice_id
+        JOIN journals r ON r.reversal_of = i.journal_id JOIN periods rp ON rp.id = r.period_id
+        WHERE x.entry_id = e.id AND x.released = 1 AND i.status = 'billed')"""
+
 
 # --------------------------------------------------------------------------- #
 # Plugin                                                                       #
@@ -566,6 +619,9 @@ class Plugin:
         self.audit = cipher.audit
         self.ledger = cipher.ledger
         self.approvals = cipher.approvals
+        reversal_hooks = getattr(self.ledger, "reversal_hooks", None)
+        if isinstance(reversal_hooks, dict):
+            reversal_hooks.setdefault(INVOICE_SUBJECT, self._free_reversed_invoice_time)
 
     # ---- master-data lookups --------------------------------------------- #
 
@@ -1247,16 +1303,19 @@ class Plugin:
         )
 
     def prepare_invoice(self, project_id: str, period_id: str, *, actor: str) -> dict[str, Any]:
-        """Draft a T&M invoice from approved, unbilled time on billable phases dated in the period."""
+        """Draft a T&M invoice from approved, unbilled time on billable phases dated in the period.
+        Time freed by the reversal of its invoice's billing journal is billed again from the
+        reversal's period on, whatever earlier period it is dated in, and never before it."""
         with self.db.transaction() as conn:
             project = self._project(project_id)
             self._customer(project["customer_id"], project_id)
             period = self._period(period_id, require_open=True, purpose="it can no longer be invoiced")
             candidates = self.db.query(
-                _ENTRY_SELECT + " WHERE e.project_id=? AND e.status='approved' AND p.billable=1 AND e.work_date BETWEEN ? AND ?"
+                _ENTRY_SELECT + " WHERE e.project_id=? AND e.status='approved' AND p.billable=1 AND e.work_date <= ?"
+                f" AND CASE WHEN {_FREED_FROM} IS NULL THEN e.work_date >= ? ELSE {_FREED_FROM} <= ? END"
                 " AND NOT EXISTS (SELECT 1 FROM labor_invoice_lines x WHERE x.entry_id = e.id AND x.released = 0)"
                 " ORDER BY e.work_date, e.id",
-                (project_id, period["start_date"], period["end_date"]),
+                (project_id, period["end_date"], period["start_date"], period["start_date"]),
             )
             billable = [e for e in candidates if money(e["bill_amount"]) > 0]
             if not billable:
@@ -1302,6 +1361,25 @@ class Plugin:
             invalidated = self.approvals.invalidate_for_subject(INVOICE_SUBJECT, invoice_id, reason=f"invoice voided: {_note(reason)}", actor=actor)
             self.audit.record(actor, "labor.invoice_voided", INVOICE_SUBJECT, invoice_id, {"reason": _note(reason), "entries_released": released, "approvals_invalidated": invalidated})
         return self.invoice(invoice_id)
+
+    def _free_reversed_invoice_time(self, journal: dict[str, Any], reversal: dict[str, Any], actor: str) -> None:
+        """``Ledger.reversal_hooks`` entry for T&M invoice journals, run inside the reversal.
+        Once a billed invoice's billing journal is reversed nothing stays billed on it, so its
+        lines are released and its entries go back to approved, to be invoiced again.  Any
+        other invoice-sourced journal (a reversal, a forged posting) changes nothing."""
+        inv = self.db.one("SELECT id FROM labor_invoices WHERE journal_id=? AND status='billed'", (journal["id"],))
+        if inv is None:
+            return
+        freed = [r["entry_id"] for r in self.db.query("SELECT entry_id FROM labor_invoice_lines WHERE invoice_id=? AND released=0 ORDER BY entry_id", (inv["id"],))]
+        if not freed:
+            return
+        now = utcnow_iso()
+        self.db.execute("UPDATE labor_invoice_lines SET released=1 WHERE invoice_id=? AND released=0", (inv["id"],))
+        for entry_id in freed:
+            self.db.execute("UPDATE labor_entries SET status='approved', updated_at=? WHERE id=? AND status='billed'", (now, entry_id))
+        self.audit.record(actor, "labor.invoice_time_released", INVOICE_SUBJECT, inv["id"], {
+            "journal_id": journal["id"], "reversal_journal_id": reversal["id"], "period_id": reversal["period_id"], "entries_released": freed,
+        })
 
     def _invoice_row(self, invoice_id: str) -> dict[str, Any]:
         row = self.db.one("SELECT * FROM labor_invoices WHERE id=?", (invoice_id,))

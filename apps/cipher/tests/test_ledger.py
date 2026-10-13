@@ -85,7 +85,8 @@ class LedgerTests(unittest.TestCase):
             self.ledger.prepare_reversal(j["id"], "again", "accountant")
 
     def test_governed_reversal_refuses_subledger_sources_and_reversals(self):
-        for source in ("bill", "retainage_release", "payment_intent", "provider_event", "asset_run", "wip_adjustment", "reimbursement_claim"):
+        for source in ("bill", "retainage_release", "payment_intent", "provider_event", "asset_run", "wip_adjustment", "reimbursement_claim",
+                       "labor_timesheet", "labor_payroll"):
             j = self.ledger.post(period_id="P1", description="subledger posting", lines=[{"account": "5000", "debit": "10"}, {"account": "2000", "credit": "10"}],
                                  source_type=source, source_id=f"{source}-1", source_version="1", posted_by="o")
             with self.subTest(source=source), self.assertRaisesRegex(SubledgerOwnedJournal, "correct it through the owning module"):
@@ -103,6 +104,29 @@ class LedgerTests(unittest.TestCase):
         self.ledger.reversal_owners.pop("bill")
         self.assertEqual(self.ledger.prepare_reversal(bill["id"], "late correction", "accountant")["status"], "pending")
         self.assertIn("bill", SUBLEDGER_OWNED_SOURCES)  # the module default is untouched
+        self.assertTrue(self.ledger.trial_balance()["balanced"])
+
+    def test_reversal_hook_updates_the_document_inside_the_reversal(self):
+        """A module registered in reversal_hooks for a source type updates its document in the
+        reversal's own transaction; a hook that refuses rolls the reversal back."""
+        seen = []
+
+        def hook(journal, reversal, actor):
+            if journal["source_id"] == "refuses":
+                raise LedgerError("the document refuses this reversal")
+            seen.append((journal["id"], reversal["reversal_of"], actor))
+
+        self.ledger.reversal_hooks["test"] = hook
+        j = self.post(amount="30.00")
+        r = self.ledger.reverse(j["id"], period_id="P1", posted_by="o", reason="wrong cost account")
+        self.assertEqual(seen, [(j["id"], j["id"], "o")])
+        self.assertEqual(r["reversal_of"], j["id"])
+        refused = self.ledger.post(period_id="P1", description="t", lines=[{"account": "5000", "debit": "5"}, {"account": "2000", "credit": "5"}],
+                                   source_type="test", source_id="refuses", source_version="1", posted_by="o")
+        with self.assertRaisesRegex(LedgerError, "refuses this reversal"):
+            self.ledger.reverse(refused["id"], period_id="P1", posted_by="o", reason="wrong cost account")
+        self.assertIsNone(self.ledger.journal(refused["id"])["reversed_by"])
+        self.assertEqual(self.ledger.balance("2000"), Decimal("5.00"))
         self.assertTrue(self.ledger.trial_balance()["balanced"])
 
     def test_period_lock_blocks_all_paths(self):

@@ -1,13 +1,16 @@
 """AEC practice management (labor): golden sequence and adversarial variants."""
 import json
+import os
+import shutil
 import sqlite3
+import tempfile
 import unittest
 from decimal import Decimal
 from unittest import mock
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
-from apps.cipher.domain.labor import COLLECTION_GUARDS_SCHEMA_NAME, PLUGIN_NAME, SCHEMA_NAME, LaborError
-from apps.cipher.domain.ledger import PeriodNotOpen
+from apps.cipher.domain.labor import COLLECTION_GUARDS_SCHEMA_NAME, PLUGIN_NAME, REBILL_SCHEMA_NAME, SCHEMA_NAME, LaborError
+from apps.cipher.domain.ledger import PeriodNotOpen, SubledgerOwnedJournal
 from apps.cipher.service import Cipher
 
 
@@ -15,8 +18,8 @@ class Scenario:
     """Fresh in-memory workspace: employee, customer, supplier, project with a billable
     (DD) and a non-billable (ADM) phase, open period P1 = October 2026."""
 
-    def __init__(self, *, with_customer: bool = True):
-        self.c = Cipher()
+    def __init__(self, *, with_customer: bool = True, path: str = ":memory:"):
+        self.c = Cipher(path)
         self.lab = self.c.plugin(PLUGIN_NAME)
         self.emp = self.c.add_party(kind="employee", name="Design Engineer", destination="ACH-EMP-1")
         self.customer = self.c.add_party(kind="customer", name="Synthetic Owner Agency")
@@ -698,6 +701,26 @@ class LaborPayrollTests(unittest.TestCase):
         self.assertEqual(self.s.bal("5300"), Decimal("840.00"))
         _assert_books_ok(self, c)
 
+    def test_journal_reverse_refuses_timesheet_and_payroll_journals(self):
+        """The 2200 subledger follows timesheet and payroll status, not their journals: a bare
+        reversal would leave 2200 unreconcilable for good and let payroll pay reversed cost."""
+        c, lab, emp = self.c, self.lab, self.emp
+        ts, _ = self.s.approved_timesheet()
+        pr = lab.record_payroll("P1", emp, "500.00", "PR-REV", actor="payroll")
+        c.approve_and_execute("labor.post_payroll", pr["id"], actor_role="treasury", period_id="P1")
+        for journal_id in (ts["journal_id"], lab.payroll(pr["id"])["journal_id"]):
+            with self.subTest(journal=c.ledger.journal(journal_id)["source_type"]):
+                with self.assertRaisesRegex(SubledgerOwnedJournal, "kept by the labor module"):
+                    c.ledger.prepare_reversal(journal_id, "charged to the wrong project (synthetic)", "accountant")
+                with self.assertRaises(SubledgerOwnedJournal):
+                    c.ledger.manifest_for("journal.reverse", journal_id, actor_role="accountant")
+        self.assertEqual(c.ledger.reversal_requests(), [])
+        rec = lab.accrued_payroll_reconciliation("P1")
+        self.assertEqual((rec["subledger_total"], rec["control_balance"], rec["reconciled"]), ("560.00", "560.00", True))
+        self.assertEqual(lab.payroll_available(emp, "P1"), Decimal("560.00"))
+        self.assertTrue(all(chk["ok"] for chk in lab.close_checks("P1") if "2200" in chk["check"]))
+        _assert_books_ok(self, c)
+
 
 class LaborInvoiceTests(unittest.TestCase):
     def test_entry_reserved_by_one_live_invoice(self):
@@ -893,6 +916,62 @@ class LaborInvoiceTests(unittest.TestCase):
         s.c.approve_and_execute("labor.bill", i2["id"], period_id="P2")
         self.assertEqual(s.bal("4100", period_id="P2"), Decimal("1040.00"))
         self.assertEqual(s.bal("4100", period_id="P1"), Decimal("0.00"))
+
+    def test_reversed_billing_frees_its_time_to_be_billed_again_once(self):
+        """The documented correction of a billed invoice (journal.reverse of its billing journal)
+        clears the receivable and frees the time, which is billed again exactly once, from the
+        reversal's period on, even when the work period has closed."""
+        s = Scenario()
+        c, lab = s.c, s.lab
+        c.open_period("P2", "P2", "2026-11-01", "2026-11-30")
+        _, (e1, e2, e3) = s.approved_timesheet()
+        inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        journal_id = lab.invoice(inv["id"])["journal_id"]
+        c.ledger.prepare_reversal(journal_id, "invoice sent to the wrong customer contact; reissue (synthetic)", "accountant")
+        c.approve_and_execute("journal.reverse", journal_id, actor="accountant", period_id="P2")
+
+        after = lab.invoice(inv["id"])
+        self.assertEqual((after["status"], after["billing_reversed"], after["open"]), ("billed", True, "0.00"))
+        self.assertTrue(all(ln["released"] for ln in after["lines"]))
+        self.assertEqual([(lab.entry(e["id"])["status"], lab.entry(e["id"])["invoice_id"]) for e in (e1, e2, e3)], [("approved", None)] * 3)
+        self.assertEqual((s.bal("1100"), s.bal("4100")), (Decimal("0.00"), Decimal("0.00")))
+        with self.assertRaisesRegex(LaborError, "nothing to bill"):
+            lab.prepare_invoice(s.project["id"], "P1", actor="pm")  # never billed back into a period before the reversal
+
+        c.close_period("P1")
+        again = lab.prepare_invoice(s.project["id"], "P2", actor="pm")
+        self.assertEqual((again["period_id"], again["total"], sorted(ln["entry_id"] for ln in again["lines"])),
+                         ("P2", "2000.00", sorted([e1["id"], e2["id"]])))
+        c.approve_and_execute("labor.bill", again["id"], period_id="P2")
+        self.assertEqual({lab.entry(e["id"])["status"] for e in (e1, e2)}, {"billed"})
+        self.assertEqual((s.bal("1100"), s.bal("4100"), s.bal("1100", party_id=s.customer["id"])), (Decimal("2000.00"), Decimal("2000.00"), Decimal("2000.00")))
+        with self.assertRaisesRegex(LaborError, "nothing to bill"):
+            lab.prepare_invoice(s.project["id"], "P2", actor="pm")  # billed again exactly once
+        tm = lab.tm_receivable_reconciliation("P2")
+        self.assertEqual((tm["subledger_total"], tm["labor_postings_1100"], tm["reconciled"]), ("2000.00", "2000.00", True))
+        self.assertTrue(c.receivables.ar_open_items()["reconciled"])
+        # the time on the live invoice stays reserved by it, even against raw SQL
+        for sql, params in (("UPDATE labor_invoice_lines SET released=1 WHERE invoice_id=?", (again["id"],)),
+                            ("UPDATE labor_entries SET status='approved' WHERE id=?", (e1["id"],))):
+            with self.assertRaises(sqlite3.DatabaseError, msg=sql):
+                c.db.execute(sql, params)
+        _assert_books_ok(self, c)
+
+    def test_collection_refuses_a_customer_deposit_reference(self):
+        """A receipt reference is unique across every receipt table, customer deposits included:
+        one wire is never booked once as a deposit and again as a T&M collection."""
+        s = Scenario()
+        c, lab = s.c, s.lab
+        s.approved_timesheet()
+        inv = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+        c.receivables.record_deposit(s.customer["id"], s.project["id"], "960.00", "WIRE-2026-0042", method="wire", actor="ar", period_id="P1")
+        with self.assertRaisesRegex(LaborError, "already recorded"):
+            lab.record_collection(inv["id"], "P1", "960.00", "wire-2026-0042", actor="ar")
+        self.assertEqual(lab.invoice(inv["id"])["collections"], [])
+        self.assertEqual(c.receivables.receipt_reference_conflicts(), [])
+        self.assertEqual((s.bal("1000"), s.bal("1100")), (Decimal("960.00"), Decimal("2000.00")))
 
 
 class LaborAnalyticsTests(unittest.TestCase):
@@ -1240,6 +1319,29 @@ class LaborIntegrityTests(unittest.TestCase):
         triggers = {r["name"]: r["tbl_name"] for r in c.db.query("SELECT name, tbl_name FROM sqlite_master WHERE type='trigger'")}
         self.assertEqual(triggers.get("labor_collections_within_the_invoice"), "labor_collections")
         self.assertEqual(triggers.get("labor_collections_billed_invoice_only"), "labor_collections")
+
+    def test_rebill_entry_frees_time_on_invoices_reversed_before_it(self):
+        from apps.cipher.core import db as core_db
+        d = tempfile.mkdtemp(prefix="cipher-labor-rebill-")
+        self.addCleanup(shutil.rmtree, d, True)
+        path = os.path.join(d, "older-release.sqlite")
+        legacy_catalog = [e for e in core_db.SCHEMA_CATALOG if e[1] != REBILL_SCHEMA_NAME]
+        with mock.patch.object(core_db, "SCHEMA_CATALOG", legacy_catalog):
+            s = Scenario(path=path)
+            s.c.ledger.reversal_hooks.pop("labor_invoice")  # an older release had no reversal hook either
+            _, (e1, e2, _) = s.approved_timesheet()
+            inv = s.lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+            s.c.approve_and_execute("labor.bill", inv["id"], period_id="P1")
+            s.c.ledger.reverse(s.lab.invoice(inv["id"])["journal_id"], period_id="P1", posted_by="controller", reason="billed in error")
+            self.assertEqual({s.lab.entry(e["id"])["status"] for e in (e1, e2)}, {"billed"})  # stranded
+            s.c.db.close()
+        reopened = Cipher(path)
+        self.addCleanup(reopened.db.close)
+        self.assertIn(REBILL_SCHEMA_NAME, [v["name"] for v in reopened.db.schema_status()["versions"] if v["applied"]])
+        lab = reopened.plugin(PLUGIN_NAME)
+        self.assertEqual([(lab.entry(e["id"])["status"], lab.entry(e["id"])["invoice_id"]) for e in (e1, e2)], [("approved", None)] * 2)
+        again = lab.prepare_invoice(s.project["id"], "P1", actor="pm")
+        self.assertEqual((again["total"], sorted(ln["entry_id"] for ln in again["lines"])), ("2000.00", sorted([e1["id"], e2["id"]])))
 
 
 if __name__ == "__main__":
