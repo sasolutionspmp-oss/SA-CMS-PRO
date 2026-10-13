@@ -2,7 +2,8 @@
 switch), recovery of queued intents from an older backup, cancellation, payee
 re-verification at dispatch, authenticated provider callbacks, missing-callback
 detection, provider MFA failure, provider clearing reconciliation, transfer terms
-bound by release approvals, forecast isolation and the golden numbers."""
+bound by release approvals, forecast isolation, the basis of a released-retainage
+payment, the period payment journals post in and the golden numbers."""
 import contextlib
 import datetime as _dt
 import io
@@ -67,6 +68,13 @@ class World:
     def release(self, bill_id):
         res = self.c.approve_and_execute("payment.release", bill_id, actor_role="treasury", actor="treasury")
         return self.c.payments.get(res.result["intent"])
+
+    def correct(self, bill_id):
+        """bill.correct: reverse a posted bill's journals (the reversal debits 2050 by the retainage it withheld)."""
+        self.c.bills.prepare_correction(bill_id, "certified the wrong quantity (synthetic)", "accountant")
+        ap = self.c.request_approval("bill.correct", bill_id, actor_role="accountant", requested_by="accountant")
+        self.c.approve(ap["id"], approver="controller", approver_role="controller")
+        return self.c.execute(ap["id"], actor="accountant", period_id="P1")
 
     def journals(self):
         return self.c.ledger.trial_balance()["journal_count"]
@@ -1611,7 +1619,133 @@ class ProviderReferenceTests(unittest.TestCase):
         self.assertEqual(c.payments.get(first["id"])["status"], "accepted")
 
 
+class RetainagePaymentBasisTests(unittest.TestCase):
+    """Payable retainage is what ``retainage.release`` journals moved to payables, less retainage
+    paid or in flight.  A bill correction's reversal also debits 2050, but it releases nothing: it
+    is never payable before closeout, and never on top of the real release."""
+
+    def corrected_and_rebilled(self, w):
+        bill = w.posted_bill("30000")  # 27,000 payable, 3,000 retained
+        w.correct(bill["id"])
+        replacement = w.posted_bill("30000")
+        w.release(replacement["id"])
+        self.assertEqual([r["status"] for r in w.c.dispatch_payments()], ["accepted"])
+
+    def test_a_corrected_bills_reversed_retainage_is_not_payable_before_closeout(self):
+        w = World()
+        w.correct(w.posted_bill("30000")["id"])
+        self.assertEqual((w.c.commitments.get(w.cmt["id"])["status"], w.c.bills.retainage_held(w.cmt["id"])), ("executed", D("0.00")))
+        with self.assertRaisesRegex(PaymentError, "no released retainage is payable"):
+            w.c.request_approval("payment.release_retainage", w.cmt["id"], actor_role="treasury")
+        self.assertEqual(w.c.payments.list(), [])
+
+    def test_after_a_correction_only_the_released_retainage_is_paid(self):
+        w = World()
+        self.corrected_and_rebilled(w)
+        w.c.commitments.close(w.cmt["id"], actor="pm")
+        w.c.approve_and_execute("retainage.release", w.cmt["id"], period_id="P1")
+        ap = w.c.request_approval("payment.release_retainage", w.cmt["id"], actor_role="treasury")
+        bound = ap["manifest"]["bindings"]
+        self.assertEqual((ap["manifest"]["amounts"], bound["released_retainage"], bound["retainage_paid_or_in_flight"]), ({"amount": "3000.00"}, "3000.00", "0.00"))
+        w.c.approve(ap["id"], approver="treasury")
+        w.c.execute(ap["id"], actor="treasury")
+        self.assertEqual([r["status"] for r in w.c.dispatch_payments()], ["accepted"])
+        self.assertEqual(sorted(i["amount"] for i in w.c.payments.list()), ["27000.00", "3000.00"])
+        self.assertEqual(w.c.ledger.balance("2000"), D("0.00"))
+        with self.assertRaisesRegex(PaymentError, "no released retainage is payable"):
+            w.c.request_approval("payment.release_retainage", w.cmt["id"], actor_role="treasury")
+        w.assert_books(self)
+
+    def test_a_restored_copy_adopts_a_retainage_transfer_only_against_retainage_it_released(self):
+        w, d = file_world(self)
+        self.corrected_and_rebilled(w)
+        backup = w.c.snapshot(os.path.join(d, "corrected-before-release.sqlite"))
+        w.c.commitments.close(w.cmt["id"], actor="pm")
+        w.c.approve_and_execute("retainage.release", w.cmt["id"], period_id="P1")
+        res = w.c.approve_and_execute("payment.release_retainage", w.cmt["id"], actor_role="treasury", actor="treasury")
+        self.assertEqual([r["status"] for r in w.c.dispatch_payments()], ["accepted"])
+        live = w.c.payments.get(res.result["intent"])
+        restored = restored_copy(self, w, backup)
+        claim_restored_copy(restored)
+        [t] = restored.complete_recovery(actor="reconciler")["unrecorded_transfers"]
+        self.assertFalse(t["adoptable"])
+        self.assertIn("only 0.00 of released retainage is payable", t["adoption_problem"])
+        # this copy never released the retainage: re-key the closeout and the release, then adopt
+        restored.commitments.close(w.cmt["id"], actor="pm")
+        restored.approve_and_execute("retainage.release", w.cmt["id"], period_id="P1")
+        adopted = restored.approve_and_execute("payment.adopt_transfer", live["provider_ref"], actor_role="owner").result
+        self.assertEqual((adopted["status"], adopted["amount"]), ("accepted", "3000.00"))
+        self.assertTrue(restored.complete_recovery(actor="reconciler")["quarantine_lifted"])
+        self.assertEqual(restored.ledger.balance("2000"), D("0.00"))
+        self.assertTrue(restored.bills.ap_open_items()["reconciled"])
+
+
+class PaymentPostingPeriodTests(unittest.TestCase):
+    """Acceptance and settlement post in the open period of the approved value date, and a return
+    in the open period of the day it is recorded, never in a later period opened ahead.  Once that
+    period is closed, they post in the next open period."""
+
+    def setUp(self):
+        first = utcnow().date().replace(day=1)
+        following = (first + _dt.timedelta(days=32)).replace(day=1)
+        after = (following + _dt.timedelta(days=32)).replace(day=1)
+        self.c = c = Cipher()
+        sup = c.add_party(kind="supplier", name="Synthetic Subcontractor P", destination=DEST)
+        c.verify_destination(sup["id"], destination=DEST, verified_by="owner")
+        customer = c.add_party(kind="customer", name="Synthetic Owner Agency")
+        project = c.create_project(name="Period project", entity=ENTITY, budget="115000", customer_id=customer["id"])
+        c.open_period("CUR", "This month", first.isoformat(), (following - _dt.timedelta(days=1)).isoformat())
+        c.open_period("NEXT", "Next month (opened ahead)", following.isoformat(), (after - _dt.timedelta(days=1)).isoformat())
+        cmt = c.commitments.create(project_id=project["id"], supplier_id=sup["id"], title="Sheet piling",
+                                   sov_lines=[{"description": "Sheet piling", "amount": "100000"}], retainage_rate="0", actor="pm")
+        c.approve_and_execute("commitment.execute", cmt["id"])
+        line = c.commitments.get(cmt["id"])["sov"][0]["id"]
+        bill = c.bills.certify(commitment_id=cmt["id"], period_id="CUR", installed=[{"sov_line_id": line, "cumulative_installed": "20000"}], actor="pm")
+        c.approve_and_execute("bill.approve", bill["id"], period_id="CUR")
+        res = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
+        self.op = c.payments.get(res.result["intent"])["logical_op_id"]
+
+    def posted_in(self):
+        """The period of each payment journal, by what it records."""
+        journals = self.c.ledger.journals(source_type="payment_intent") + self.c.ledger.journals(source_type="provider_event")
+        return {j["description"].split(" (")[0]: j["period_id"] for j in journals}
+
+    def assert_books(self):
+        self.assertTrue(self.c.ledger.trial_balance()["balanced"])
+        self.assertTrue(self.c.bills.ap_open_items()["reconciled"])
+        self.assertTrue(self.c.payments.clearing_items()["reconciled"])
+
+    def test_a_payment_made_today_posts_in_this_months_period_not_the_one_opened_ahead(self):
+        c = self.c
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        c.payments.ingest_event(c.provider.settle(self.op), actor="webhook")
+        self.assertEqual(self.posted_in(), {"Payment accepted by provider": "CUR", "Payment settled": "CUR"})
+        # this month's books show the payable paid and the cash gone; next month's carry nothing
+        self.assertEqual((c.ledger.balance("2000", period_id="CUR"), c.ledger.balance("1000", period_id="CUR")), (D("0.00"), D("-20000.00")))
+        self.assertEqual(c.ledger.account_activity("1000", period_id="NEXT"), {"debit": D("0.00"), "credit": D("0.00")})
+        c.payments.ingest_event(c.provider.return_payment(self.op), actor="webhook")
+        self.assertEqual(self.posted_in()["Payment returned"], "CUR")
+        self.assert_books()
+
+    def test_once_this_months_period_is_closed_the_payment_posts_in_the_next_open_period(self):
+        c = self.c
+        c.close_period("CUR")
+        self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
+        c.payments.ingest_event(c.provider.settle(self.op), actor="webhook")
+        c.payments.ingest_event(c.provider.return_payment(self.op), actor="webhook")
+        self.assertEqual(self.posted_in(), {"Payment accepted by provider": "NEXT", "Payment settled": "NEXT", "Payment returned": "NEXT"})
+        self.assert_books()
+
+
 class GoldenNumbersTests(unittest.TestCase):
+    def test_golden_fixture_pays_bill_1_in_the_period_of_its_value_date(self):
+        c = Cipher()
+        run_golden_fixture(c)
+        [intent] = c.payments.list()
+        expected = "2026-10" if intent["value_date"] <= "2026-10-31" else "2026-11"  # both are open when bill 1 is paid
+        journals = c.ledger.journals(source_type="payment_intent") + c.ledger.journals(source_type="provider_event")
+        self.assertEqual([j["period_id"] for j in journals], [expected, expected])
+
     def test_golden_fixture_numbers_are_unchanged(self):
         c = Cipher()
         r = run_golden_fixture(c)

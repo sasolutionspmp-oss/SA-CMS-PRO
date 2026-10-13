@@ -173,7 +173,15 @@ credits it (Dr payable / Cr 1200), settlement debits it back (Dr 1200 / Cr 1000)
 a return before settlement debits it back too (Dr 1200 / Cr payable).  Accepted but
 unsettled intents therefore appear as a *negative* control balance; the subledger
 is expressed in the same sign (minus the in-transit amount) so like is compared
-with like.
+with like.  Acceptance and settlement post in the open period containing the
+intent's approved value date, a return in the open period of the day it is
+recorded -- never in a later period opened ahead; when that period is closed or
+locked, they post in the earliest open period starting after it.
+
+A released-retainage payment (``payment.release_retainage``) pays what
+``retainage.release`` journals moved from 2050 to payables on the supplier's
+commitments on the project, less retainage payments queued, in flight or made; a
+bill correction's reversal also debits 2050 but releases nothing.
 
 Scope (catalog entry ``payments_scope``): every intent carries the project it
 pays for, the record it settles (``source_type``/``source_id``) and the payable
@@ -1076,16 +1084,28 @@ class Payments:
             (supplier_id, project_id),
         )
 
+    def _retainage_released(self, *, supplier_id: str, project_id: str) -> Decimal:
+        """Retainage released to payables on this supplier's commitments on this project: the
+        net 2050 debit on their ``retainage_release`` journals (a reversal nets out).  Other 2050
+        debits -- a bill correction's reversal of the retainage it withheld -- release nothing."""
+        rows = self.db.query(
+            """SELECT l.debit, l.credit FROM journal_lines l JOIN journals j ON j.id = l.journal_id JOIN commitments c ON c.id = j.source_id
+               WHERE j.source_type='retainage_release' AND l.account_code='2050' AND c.supplier_id=? AND c.project_id=?""",
+            (supplier_id, project_id),
+        )
+        return money(sum((money(r["debit"]) - money(r["credit"]) for r in rows), ZERO))
+
     def manifest_for_retainage(self, commitment_id: str, *, actor_role: str) -> dict[str, Any]:
         c = self.db.one("SELECT * FROM commitments WHERE id=?", (commitment_id,))
         if c is None:
             raise PaymentError(f"unknown commitment {commitment_id}")
         supplier = self.db.one("SELECT * FROM parties WHERE id=?", (c["supplier_id"],))
-        payable = self.ledger.account_activity("2050", party_id=c["supplier_id"], project_id=c["project_id"])["debit"]
+        released = self._retainage_released(supplier_id=c["supplier_id"], project_id=c["project_id"])
         paid = self._retainage_paid(supplier_id=c["supplier_id"], project_id=c["project_id"])
-        outstanding = money(payable - sum(money(p["amount"]) for p in paid))
+        committed = money(sum((money(p["amount"]) for p in paid), ZERO))
+        outstanding = money(released - committed)
         if outstanding <= 0:
-            raise PaymentError("no released retainage is payable")
+            raise PaymentError(f"no released retainage is payable (released {fmt(released)}, paid or in flight {fmt(committed)})")
         terms = self.payment_terms(outstanding, c["project_id"])
         return build_manifest(
             operation="payment.release",
@@ -1094,7 +1114,8 @@ class Payments:
             actor_role=actor_role,
             amounts={"amount": outstanding},
             bindings={
-                "kind": "retainage", "project_id": c["project_id"], "payable_account": DEFAULT_PAYABLE_ACCOUNT,
+                "kind": "retainage", "released_retainage": fmt(released), "retainage_paid_or_in_flight": fmt(committed),
+                "project_id": c["project_id"], "payable_account": DEFAULT_PAYABLE_ACCOUNT,
                 "destination_verified": bool(supplier["destination_verified"]), "funding_source": "operating-bank-simulated",
                 "fees": terms["fee"], "value_date": terms["value_date"],
             },
@@ -1587,6 +1608,27 @@ class Payments:
             self.audit.record(actor, f"payment.{status}", "payment_intent", intent_id, {"note": note, "provider_ref": provider_ref, **(extra or {})})
             return self._notify(intent_id, actor=actor)
 
+    def _posting_period(self, day: Any, what: str) -> dict[str, Any]:
+        """The open period a payment journal dated ``day`` (an ISO date; UTC today when missing
+        or malformed) posts in: the open period containing that day; else -- its period is closed
+        or locked, or no period covers it -- the earliest open period starting after it (a late
+        event books in the next open period); else, for a day past every period, the last period
+        while it is open.  Never a period opened ahead while the day's own period is open."""
+        try:
+            day = _dt.date.fromisoformat(day).isoformat()
+        except (TypeError, ValueError):
+            day = utcnow().date().isoformat()
+        periods = self.db.query("SELECT * FROM periods ORDER BY start_date, id")
+        for p in periods:
+            if p["status"] == "open" and p["start_date"] <= day <= p["end_date"]:
+                return p
+        for p in periods:
+            if p["status"] == "open" and p["start_date"] > day:
+                return p
+        if periods and periods[-1]["status"] == "open" and all(p["end_date"] < day for p in periods):
+            return periods[-1]
+        raise PaymentError(f"no open period to record the {what} dated {day}")
+
     def _accept(self, intent_id: str, *, provider_ref: str, actor: str) -> list[dict[str, str]]:
         """Record the provider's acceptance.  A provider reference already held by another
         intent is refused (``ProviderReferenceConflict``) before anything is posted: provider
@@ -1602,9 +1644,7 @@ class Payments:
                                                 f"{other['id']} already holds; nothing was posted")
             project_id = self._project_for(intent)
             payable = self._payable_for(intent)
-            period = self.db.one("SELECT id FROM periods WHERE status='open' ORDER BY start_date DESC LIMIT 1")
-            if period is None:
-                raise PaymentError("no open period to record the accepted payment")
+            period = self._posting_period(intent.get("value_date"), "accepted payment")
             j = self.ledger.post(
                 period_id=period["id"],
                 description=f"Payment accepted by provider ({provider_ref})",
@@ -1617,7 +1657,8 @@ class Payments:
             conn.execute("UPDATE payment_intents SET status='accepted', provider_ref=?, journal_id=?, note=? WHERE id=?", (provider_ref, j["id"], _label(intent["note"]), intent_id))
             if intent["bill_id"]:
                 conn.execute("UPDATE bills SET status='paid' WHERE id=? AND status='posted'", (intent["bill_id"],))
-            self.audit.record(actor, "payment.accepted", "payment_intent", intent_id, {"provider_ref": provider_ref, "journal_id": j["id"], "project_id": project_id, "payable_account": payable})
+            self.audit.record(actor, "payment.accepted", "payment_intent", intent_id, {"provider_ref": provider_ref, "journal_id": j["id"], "project_id": project_id,
+                                                                                       "payable_account": payable, "period_id": period["id"]})
             return self._notify(intent_id, actor=actor)
 
     # ---- reconciliation ------------------------------------------------------- #
@@ -1904,7 +1945,7 @@ class Payments:
         c = self.db.one("SELECT * FROM commitments WHERE id=?", (commitment_id,))
         if c is None:
             raise PaymentError(f"commitment {commitment_id} does not exist in this copy")
-        released = money(self.ledger.account_activity("2050", party_id=c["supplier_id"], project_id=c["project_id"])["debit"])
+        released = self._retainage_released(supplier_id=c["supplier_id"], project_id=c["project_id"])
         paid = self.db.query(
             """SELECT id, amount FROM payment_intents
                WHERE bill_id IS NULL AND party_id=? AND status IN ('queued','submitted','outcome_unknown','accepted','settled')
@@ -2664,9 +2705,9 @@ class Payments:
         """Apply an authenticated, consistent, not-yet-seen event; the caller holds the write lock."""
         if event["kind"] == PROCESSING_EVENT:
             return self._apply_processing(conn, event, intent, actor=actor)
-        period = self.db.one("SELECT id FROM periods WHERE status='open' ORDER BY start_date DESC LIMIT 1")
-        if period is None:
-            raise PaymentError("no open period")
+        # a settlement is dated by the approved value date the provider was given; a return by the day it is recorded
+        day = utcnow().date().isoformat() if event["kind"] == "returned" else intent.get("value_date")
+        period = self._posting_period(day, f"{event['kind']} payment")
         project_id = self._project_for(intent)
         payable = self._payable_for(intent)
         conn.execute("INSERT INTO provider_events (id, intent_id, kind, payload_json, received_at) VALUES (?,?,?,?,?)", (event["id"], intent["id"], event["kind"], canonical_json(event), utcnow_iso()))
@@ -2702,7 +2743,7 @@ class Payments:
             self.audit.record(actor, "provider_event.ignored", "payment_intent", intent["id"], {"event_id": event["id"], "kind": event["kind"], "intent_status": intent["status"]})
             return {"intent_id": intent["id"], "applied": False, "reason": f"{event['kind']} not applicable to {intent['status']}"}
         self.audit.record(actor, f"provider_event.{event['kind']}", "payment_intent", intent["id"], {
-            "event_id": event["id"], "project_id": project_id, "payable_account": payable, "source": event.get("source", "provider"),
+            "event_id": event["id"], "project_id": project_id, "payable_account": payable, "source": event.get("source", "provider"), "period_id": period["id"],
         })
         failures = self._notify(intent["id"], actor=actor)
         out = {"intent_id": intent["id"], "applied": True}
