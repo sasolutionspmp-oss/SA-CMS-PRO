@@ -625,12 +625,88 @@ class CosignatureTests(unittest.TestCase):
         with self.assertRaises(IndependenceRequired):  # external in the registry, but the policy names its parties
             w.pp.cosign(ap["id"], "audit-firm", "audit-firm")
         w = World()
+        b = w.bill(60000)
+        enforce_identity(w)  # registers ext-accountant as an external person
         w.adopt(high="10000.00", cosign="50000.00", first=False, parties=())
-        w.c.register_plugin("people", PeopleStub(persons, externals={"audit-firm"}))
-        ap = w.request(w.bill(60000)["id"])
-        sig = w.pp.cosign(ap["id"], "audit-firm", "audit-firm")  # an external person in the registry
-        self.assertEqual(sig["cosigner"], "audit-firm")
+        ap = w.request(b["id"])
+        sig = w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")  # an external person in the registry
+        self.assertEqual(sig["cosigner"], "ext-accountant")
         w.c.approve(ap["id"], approver="owner")
+        w.step_up()
+        self.assertEqual(w.c.execute(ap["id"], actor="treasury").result["amount"], "60000.00")
+
+    def test_while_the_policy_names_no_party_an_external_registered_after_it_is_not_one(self):
+        """With no party named, the enforcing registry's external persons stand in -- but only
+        those registered before the policy was adopted.  Otherwise the owner registers a second
+        login as external alone (no approval) and it co-signs, and the owner could also name that
+        login as the "first" party with nobody co-signing."""
+        w = World()
+        b, b2 = w.bill(60000), w.bill(60000)
+        people = enforce_identity(w)
+        w.adopt(high="10000.00", cosign="50000.00", first=False, parties=())
+        people.register_person("owner-alt", "The owner's second login", actor="owner", external=True)
+        self.assertTrue(people.is_external("owner-alt"))
+        self.assertEqual((w.pp.is_independent("owner-alt"), w.pp.is_independent("ext-accountant")), (False, True))
+        ap = w.granted(b["id"])
+        with self.assertRaises(IndependenceRequired):
+            w.pp.cosign(ap["id"], "owner-alt", "owner-alt")
+        d = w.pp.draft_policy(high_risk_amount="900000", cosign_amount="900000", step_up_max_age_seconds=3600, new_destination_cooling_days=0,
+                              first_payment_to_destination_is_high_risk=False, independent_parties=[], reason="loosen", actor="owner")
+        upd = w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.assertEqual(upd["manifest"]["bindings"]["cosigners_allowed"], ["ext-accountant"])
+        w.c.approve(upd["id"])
+        with self.assertRaises(IndependenceRequired):
+            w.pp.cosign(upd["id"], "owner-alt", "owner-alt")
+        with self.assertRaises(CosignatureRequired):
+            w.c.execute(upd["id"])
+        w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")  # the registry's outside party still co-signs
+        w.step_up()
+        self.assertEqual(w.c.execute(ap["id"], actor="treasury").result["amount"], "60000.00")
+        # adopting another version that names nobody (it only tightens: no co-signature) does not let it in
+        w.adopt(high="9000.00", cosign="50000.00", first=False, parties=())
+        self.assertEqual((w.pp.policy()["version"], w.pp.is_independent("owner-alt")), (2, False))
+        ap2 = w.granted(b2["id"])
+        with self.assertRaises(IndependenceRequired):
+            w.pp.cosign(ap2["id"], "owner-alt", "owner-alt")
+        # naming a party other than the registry's outside parties adds one: a weakening
+        d = w.pp.draft_policy(high_risk_amount="9000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
+                              first_payment_to_destination_is_high_risk=False, independent_parties=["owner-alt"], reason="name a party", actor="owner")
+        upd = w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.assertEqual((upd["manifest"]["bindings"]["weakens"], upd["manifest"]["bindings"]["cosigners_allowed"]),
+                         (["independent_party_added:owner-alt"], ["ext-accountant"]))
+        w.c.approve(upd["id"])
+        with self.assertRaises(CosignatureRequired):
+            w.c.execute(upd["id"])
+        self.assertEqual(w.pp.policy()["version"], 2)
+        # naming the registry's outside party pins it: not a weakening
+        d = w.pp.draft_policy(high_risk_amount="9000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
+                              first_payment_to_destination_is_high_risk=False, independent_parties=["ext-accountant"], reason="name it", actor="owner")
+        self.assertEqual(w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")["manifest"]["bindings"]["weakens"], [])
+        # deactivating the outside party (no approval) leaves nobody to co-sign; it does not free
+        # the owner to name a "first" party alone (as with a named party that is deactivated)
+        people.deactivate_person("ext-accountant", reason="engagement ended", actor="owner")
+        self.assertFalse(w.pp.is_independent("ext-accountant"))
+        d = w.pp.draft_policy(high_risk_amount="9000", cosign_amount="50000", step_up_max_age_seconds=300, new_destination_cooling_days=10,
+                              first_payment_to_destination_is_high_risk=False, independent_parties=["owner-alt"], reason="name a party", actor="owner")
+        upd = w.c.request_approval(OP_UPDATE, d["id"], actor_role="owner")
+        self.assertEqual((upd["manifest"]["bindings"]["weakens"], upd["manifest"]["bindings"]["cosigners_allowed"]),
+                         (["independent_party_added:owner-alt"], ["ext-accountant"]))
+        w.c.approve(upd["id"])
+        with self.assertRaises(CosignatureRequired):
+            w.c.execute(upd["id"])
+        self.assertEqual(w.pp.policy()["terms"]["independent_parties"], [])
+
+    def test_while_the_policy_names_no_party_and_the_registry_supplies_none_a_co_signed_release_is_refused_at_request(self):
+        w = World()
+        b = w.bill(60000)
+        people = enforce_identity(w, persons=STAFF[:2])  # no external person yet
+        w.adopt(high="10000.00", cosign="50000.00", first=False, parties=())
+        people.register_person("ext-accountant", "Synthetic ext-accountant", actor="owner", external=True)
+        with self.assertRaises(CosignatureRequired):
+            w.request(b["id"])
+        w.adopt(high="10000.00", cosign="50000.00", first=False, parties=("ext-accountant",))  # naming the first party sets the control up
+        ap = w.granted(b["id"])
+        w.pp.cosign(ap["id"], "ext-accountant", "ext-accountant")
         w.step_up()
         self.assertEqual(w.c.execute(ap["id"], actor="treasury").result["amount"], "60000.00")
 

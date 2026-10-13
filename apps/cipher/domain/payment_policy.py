@@ -43,9 +43,11 @@ Policy versions (``payment_policy.update``)
 * ``independent_parties`` -- logins of the outside parties for the solo-owner control (the
   external accountant).  A policy that names parties names all of them: a login the owner
   registers as external in the people plugin does not become one (adding a party is a governed,
-  co-signed update).  Only while the policy names none does ``people.is_external(login)`` of an
-  enforcing people plugin qualify a login.  With an enforcing people plugin an inactive login or
-  a service identity never qualifies.
+  co-signed update).  Only while the policy names none does an enforcing people plugin's active
+  external person qualify, and only one whose registration the audit log recorded before the
+  adoption that began the run of versions naming nobody: registering an external needs no
+  approval, so a login the owner registers afterwards never stands in.  With an enforcing people
+  plugin an inactive login or a service identity never qualifies.
 
 The approval-bound operation ``payment_policy.update`` (subject: the draft; owner authority
 only -- no other role holds it in ``ROLE_AUTHORITY``) binds the draft hash, the version it was
@@ -57,7 +59,8 @@ under, so it would go stale at execution anyway) and every other open update app
 
 A draft that *weakens* the current policy -- raises a threshold, lengthens the step-up age,
 shortens the cooling-off, turns off the first-payment or co-sign-everything rule, adds an
-independent party when the policy already names one, or removes the last one named -- needs a
+independent party when the policy already names one (or, while it names none, one that is not
+among the people registry's outside parties standing in), or removes the last one named -- needs a
 co-signature (``cosign``) by an independent party of the *current* policy, distinct from the
 requester, the approver and the executing login.  Without that an owner could lower the bar
 alone and then release alone (or drop the outside party and name their own second login as the
@@ -171,6 +174,7 @@ ADOPTED_ACTION = "payment_policy.version_adopted"
 COSIGNED_ACTION = "payment_policy.cosigned"
 CLEARED_ACTION = "payment_policy.release_cleared"
 STEP_UP_ACTION = "payment_policy.step_up_recorded"
+PERSON_REGISTERED_ACTION = "people.person_registered"  # the people plugin's audit entry for a registered identity
 # Phishing-resistant or possession factors only: SMS and e-mail codes are not step-up here.
 STEP_UP_METHODS = ("webauthn", "security_key", "totp", "push_approval")
 MAX_STEP_UP_AGE_SECONDS = 3600
@@ -674,8 +678,9 @@ class Plugin:
         """Whether ``login`` is an independent party under ``policy`` (default: the current one).
         A policy that names independent parties names all of them: only those logins count, so a
         co-signer is added only by a governed update (a weakening once one is named).  A policy
-        that names none falls back to an enforcing people plugin's external persons.  With an
-        enforcing people plugin an inactive login or a service identity never qualifies."""
+        that names none falls back to an enforcing people plugin's external persons registered
+        before it (``_registry_parties``).  With an enforcing people plugin an inactive login or a
+        service identity never qualifies."""
         policy = policy if policy is not None else self._policy()
         if policy is None:
             return False
@@ -688,9 +693,36 @@ class Plugin:
         if named:
             return _norm(login) in named
         try:
-            return people.is_external(login) is True
+            return _norm(login) in self._registry_parties(policy) and people.is_external(login) is True
         except Exception:
             return False
+
+    def _registry_parties(self, policy: dict[str, Any]) -> list[str]:
+        """The outside parties that stand in while ``policy`` names none and a people plugin
+        enforces: the external persons whose registration the audit log recorded before the
+        adoption that began the run of versions naming nobody (``is_independent`` also needs one
+        active, as it does a named party).  Registering or deactivating an identity needs no
+        approval, so a login registered later (the owner's second login) never stands in, adopting
+        another version that names nobody (no co-signature needed) does not move that point, and
+        deactivating one does not free the owner to name a "first" party alone.  Empty when the
+        policy names parties or no people plugin enforces."""
+        if self._people() is None or policy["terms"]["independent_parties"]:
+            return []
+        start = policy["version"]
+        for version in reversed([v for v in self.versions() if v["version"] < policy["version"]]):
+            if version["terms"]["independent_parties"]:
+                break
+            start = version["version"]
+        adoptions = self._adoption_entries()
+        if len(adoptions) < start:
+            return []
+        out = set()
+        for row in self.db.query("SELECT payload_json FROM audit_log WHERE action=? AND entity_type='people_person' AND seq<? ORDER BY seq",
+                                 (PERSON_REGISTERED_ACTION, adoptions[start - 1]["seq"])):
+            payload = loads(row["payload_json"]) or {}
+            if payload.get("kind") == "person" and payload.get("external") == 1 and isinstance(payload.get("login"), str):
+                out.add(_norm(payload["login"]))
+        return sorted(out)
 
     # ---- policy record ------------------------------------------------------------------ #
 
@@ -836,6 +868,14 @@ class Plugin:
                              f"version {base}; draft again against the current version")
         terms = loads(row["terms_json"])
         weak = weakenings(current["terms"] if current else None, terms)
+        parties = current["terms"]["independent_parties"] if current else []
+        if current and not parties:
+            # the registry's outside parties stand in for named ones, so naming anyone else adds a
+            # party: the owner could otherwise name their own second login as the "first" one alone
+            parties = self._registry_parties(current)
+            added = sorted(p for p in terms["independent_parties"] if _norm(p) not in parties)
+            if parties and added:
+                weak.append("independent_party_added:" + ",".join(added))
         return build_manifest(
             operation=OP_UPDATE,
             subject_type=DRAFT_SUBJECT,
@@ -845,7 +885,7 @@ class Plugin:
                 "draft_id": row["id"], "draft_hash": row["content_hash"], "base_version": base,
                 "base_hash": current["hash"] if current else GENESIS_HASH, "terms": terms, "reason": row["reason"],
                 "drafted_by": row["drafted_by"], "weakens": weak, "cosign_required": bool(weak),
-                "cosigners_allowed": current["terms"]["independent_parties"] if (current and weak) else [],
+                "cosigners_allowed": parties if (current and weak) else [],
             },
         )
 
@@ -906,7 +946,7 @@ class Plugin:
         ap = self.approvals.get(approval_id)
         sig = self.db.one("SELECT * FROM payment_policy_cosignatures WHERE approval_id=?", (approval_id,))
         if current is None or sig is None:
-            allowed = ", ".join(current["terms"]["independent_parties"]) if current else "none"
+            allowed = ", ".join((ap["manifest"].get("bindings") or {}).get("cosigners_allowed") or []) or "none"
             raise CosignatureRequired(f"this update weakens payment policy version {current['version'] if current else 0} "
                                       f"({', '.join((ap['manifest'].get('bindings') or {}).get('weakens') or [])}); it needs a co-signature by an "
                                       f"independent party of the current policy ({allowed}) before it is executed")
@@ -996,14 +1036,14 @@ class Plugin:
 
     def check_request(self, operation: str, manifest: dict[str, Any], *, actor_role: str, requested_by: str) -> None:
         """Refuse a release that needs a co-signature nobody could give (no independent party
-        named and no enforcing people registry to name external ones)."""
+        named, and no external person an enforcing people registry recorded before the policy)."""
         if operation not in GOVERNED_OPERATIONS:
             return
         facts = self._facts(manifest)
         if not facts or not facts.get("cosign_required"):
             return
         policy = self._policy()
-        if policy is not None and not policy["terms"]["independent_parties"] and self._people() is None:
+        if policy is not None and not policy["terms"]["independent_parties"] and not self._registry_parties(policy):
             raise CosignatureRequired(f"this release needs an independent co-signature ({', '.join(facts['cosign_reasons'])}), but payment policy "
                                       f"version {policy['version']} names no independent party; adopt a policy that names the outside party first")
 
