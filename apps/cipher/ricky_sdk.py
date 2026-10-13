@@ -1388,7 +1388,9 @@ _SECRET_KEYS = frozenset({"webhook_secret", "secret", "instance_token", "claim_c
 # destination (manifest and material hashes), a payment intent hashes it into its
 # payload, and the party audit trail records its digest.  Every other input to
 # them is visible to the caller, so the raw hash of a low-entropy account number
-# would confirm a guess of the masked digits.
+# would confirm a guess of the masked digits.  Any other ``*_hash`` key naming a
+# destination (a destination change binds ``old_destination_hash`` and
+# ``new_destination_hash``) counts too.
 DESTINATION_DERIVED_KEYS = frozenset({"manifest_hash", "material_hash", "payload_hash", "destination_hash"})
 REDACTED = "[redacted]"
 FINGERPRINT_PREFIX = "fp:"
@@ -1403,11 +1405,13 @@ def _mask(text: str) -> str:
 def redact(value: Any, *, fingerprint: Callable[[str], str] | None = None) -> Any:
     """Mask payee destinations, drop secret-like fields and replace every hash that
     may cover a destination, recursively.  A hash counts as destination-derived
-    when its key is in DESTINATION_DERIVED_KEYS, or when it is a ``*_hash`` field
-    of an object that holds a destination anywhere beneath it (a safety net for
-    records this module does not know).  Such a hash becomes ``fingerprint(hash)``
-    (a keyed digest: equal hashes give equal fingerprints, but a guess cannot be
-    tested without the key), or "[redacted]" when no fingerprint is given."""
+    when its key is in DESTINATION_DERIVED_KEYS, when it is a ``*_hash`` field
+    whose name mentions a destination (``new_destination_hash``), or when it is a
+    ``*_hash`` field of an object that holds a destination anywhere beneath it (a
+    safety net for records this module does not know).  Such a hash becomes
+    ``fingerprint(hash)`` (a keyed digest: equal hashes give equal fingerprints,
+    but a guess cannot be tested without the key), or "[redacted]" when no
+    fingerprint is given."""
     return _redact(value, fingerprint)[0]
 
 
@@ -1427,7 +1431,7 @@ def _redact(value: Any, fingerprint: Callable[[str], str] | None) -> tuple[Any, 
                 holds = holds or child_holds
         for key, item in list(out.items()):
             if (isinstance(key, str) and isinstance(item, str) and item != REDACTED and not item.startswith(FINGERPRINT_PREFIX)
-                    and (key in DESTINATION_DERIVED_KEYS or (holds and key.endswith("_hash")))):
+                    and (key in DESTINATION_DERIVED_KEYS or (key.endswith("_hash") and (holds or "destination" in key)))):
                 out[key] = fingerprint(item) if fingerprint is not None else REDACTED
         return out, holds
     if isinstance(value, (list, tuple)):
@@ -1834,7 +1838,8 @@ class RickySDK:
         """While the people module's identity policy enforces, the role a caller names is
         believed only when the registry says so: the actor must be an active registered
         identity that holds ``actor_role`` (by grant, or by an active delegation) -- on the
-        tool's project when the call names one (directly or through the record it acts on),
+        tool's project when the call names one (directly or through the record it acts on;
+        a preview's context names one only when all its records sit on that project),
         else at entity scope.  This applies to every tool, reads included, and runs before any
         idempotency replay; while any record that confers authority fails verification every
         call is refused, exactly as the governor checks are.  Returns the resolved identity
@@ -1919,6 +1924,8 @@ class RickySDK:
         ("invoice_id", "SELECT project_id FROM ap_invoices WHERE id=?"),
         ("document_id", "SELECT project_id FROM documents WHERE id=?"),
         ("agreement_id", "SELECT project_id FROM contract_agreements WHERE id=?"),
+        ("estimate_id", "SELECT project_id FROM estimates WHERE id=?"),
+        ("change_id", "SELECT c.project_id FROM changes ch JOIN commitments c ON c.id = ch.commitment_id WHERE ch.id=?"),
     )
 
     def _identity_project(self, spec: ToolSpec, args: dict[str, Any]) -> str | None:
@@ -1947,10 +1954,17 @@ class RickySDK:
         elif spec.name in ("request_approval", "preview_release"):  # the project the manifest will bind (a read; the tool rebuilds it)
             manifest = self.c._manifest(args["operation"], args["subject_id"], "owner")
         elif spec.name == "preview":
+            # Ricky evaluates one record of the context, which one depending on the workflow, so
+            # the call is on a project only when every record named resolves to that one project
             context = args.get("context") or {}
-            key = next((k for k in ("commitment_id", "bill_id", "prime_bill_id") if k in context), None)
-            return self._find_project(spec, {key: context[key]}) if key else None
-        bindings = (manifest or {}).get("bindings") if isinstance(manifest, dict) else None
+            projects = {self._bound_project(self.c._manifest(args["workflow"], value, "owner")) if key == "subject_id"
+                        else self._find_project(spec, {key: value}) for key, value in context.items()}
+            return projects.pop() if len(projects) == 1 else None
+        return self._bound_project(manifest)
+
+    @staticmethod
+    def _bound_project(manifest: Any) -> str | None:
+        bindings = manifest.get("bindings") if isinstance(manifest, dict) else None
         project_id = bindings.get("project_id") if isinstance(bindings, dict) else None
         return project_id if isinstance(project_id, str) else None
 
@@ -2202,9 +2216,13 @@ class RickySDK:
         ``incremental`` (used by close checks, which every brief runs) starts from
         the head the last verification reached, provided the schema cookie has not
         moved since and the append-only triggers on receipts and the audit log all
-        exist: while they do, no verified receipt or audit entry can have changed
-        (dropping a trigger moves the cookie), so only newer rows are checked.
-        Otherwise, and by default, the whole chain is re-derived."""
+        exist, so only newer rows are checked.  Dropping a trigger to rewrite a
+        verified row moves the cookie, which forces the whole chain; a writer who
+        also sets the cookie back (``PRAGMA schema_version``) is forging integrity
+        metadata, like one who recomputes the unkeyed hashes, and that rewrite is
+        found only when the whole chain is next re-derived (or, once the hashes are
+        recomputed too, not at all).  Otherwise, and by default, the whole chain is
+        re-derived."""
         db = self.c.db
         cookie = db.scalar("PRAGMA schema_version")
         anchor = self._anchor if incremental else None

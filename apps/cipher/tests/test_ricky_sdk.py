@@ -1648,6 +1648,26 @@ class RedactionTests(unittest.TestCase):
                     w.c.db.execute(sql, ("0" * 64,))
         self.assertEqual(RickySDK(w.c, register=False)._fingerprint(stored["manifest_hash"]), res["manifest_hash"])
 
+    def test_a_destination_changes_old_and_new_hashes_are_keyed_fingerprints(self):
+        w = world()
+        p = w.c.payments
+        change = p.request_destination_change(w.supplier["id"], "ACH-SIM-7002", "ap-clerk", "supplier letter announcing a new bank account", "ap-clerk")
+        p.record_verification_evidence(change["id"], "call-back to number on file", "ext-accountant", evidence(w, "destination_verification"), "bank-admin")
+        ap = w.c.request_approval("party.verify_destination", change["id"], actor_role="bank_admin", requested_by="bank-admin")
+        raw = {"old": sha256_hex("ACH-SIM-7001"), "new": sha256_hex("ACH-SIM-7002")}
+        self.assertEqual((ap["manifest"]["bindings"]["old_destination_hash"], ap["manifest"]["bindings"]["new_destination_hash"]),
+                         (raw["old"], raw["new"]))
+        state = call(w, "read_project_state", {"project_id": w.project["id"], "keys": ["approvals"]}, role="viewer")
+        preview = call(w, "preview", {"workflow": "party.verify_destination", "context": {"subject_id": change["id"]}}, role="bank_admin")
+        row = next(a for a in state["result"]["state"]["approvals"] if a["id"] == ap["id"])
+        for name, out, manifest in (("state", state, row["manifest"]), ("preview", preview, preview["result"]["manifest"])):
+            with self.subTest(output=name):
+                for side in ("old", "new"):
+                    self.assertTrue(manifest["bindings"][f"{side}_destination_hash"].startswith(FINGERPRINT_PREFIX))
+                    self.assertNotIn(raw[side], canonical_json(out))
+        self.assertNotIn(raw["new"], canonical_json(w.sdk.receipts()))
+        self.assertEqual(redact({"previous_destination_hash": "f" * 64})["previous_destination_hash"], "[redacted]")
+
     def test_redact_rules(self):
         record = {"id": "x", "destination": "ACH-SIM-12345678", "manifest_hash": "a" * 64, "content_hash": "b" * 64,
                   "nested": {"party": {"destination": "ACH-SIM-87654321"}, "sov_hash": "c" * 64},
@@ -3381,6 +3401,58 @@ class SDKIdentityTests(Round3Case):
         self.assertRefused(call(w, "record_insurance_certificate", certificate_args(w), role="pm", actor="pm-lee"),
                            "does not hold role 'pm' at entity scope")  # certificates are supplier-wide: entity scope
         self.assertEqual(count(w.c, "contract_certificates"), 0)
+
+    def other_project(self, w, pm="pm-bo"):
+        """Project B, with ``pm`` holding pm there only."""
+        prj = w.c.create_project(name="Synthetic project B", entity="S&A Solutions LLC (synthetic)", budget="90000", customer_id=w.customer["id"])
+        w.c.plugin("people").register_person(pm, "Synthetic PM of project B", actor="owner-1")
+        w.c.plugin("people").add_membership(pm, prj["id"], actor="owner-1")
+        grant_role(w, pm, "pm", project_id=prj["id"])
+        return prj
+
+    def test_a_project_scoped_pm_requests_and_executes_its_own_projects_baseline(self):
+        w, fx, p = self.identity_world()
+        self.other_project(w)
+        w.c.plugin("schedule").add_activity(w.project["id"], "Mobilize", 5, "owner-1")
+        args = {"operation": "schedule.baseline", "subject_id": w.project["id"]}
+        self.assertRefused(call(w, "request_approval", args, role="pm", actor="pm-bo"), "does not hold role 'pm'")
+        req = call(w, "request_approval", args, role="pm", actor="pm-lee")
+        self.assertOk(req)
+        self.assertEqual((req["identity"]["scope"], req["identity"]["project_id"]), ("project", w.project["id"]))
+        w.c.approve(req["result"]["approval_id"], approver="owner-1", approver_role="owner")
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": req["result"]["approval_id"]}, role="pm", actor="pm-bo"),
+                           "does not hold role 'pm'")
+        done = self.assertOk(call(w, "execute_approved_action", {"approval_id": req["result"]["approval_id"]}, role="pm", actor="pm-lee"))
+        self.assertEqual(done["command_result"]["project_id"], w.project["id"])
+        self.assertEqual(len(w.c.plugin("schedule").baselines(w.project["id"])), 1)
+
+    def test_a_preview_is_scoped_to_the_record_ricky_evaluates(self):
+        w, fx, p = self.identity_world()
+        prj_b = self.other_project(w)
+        cmt_b = w.c.commitments.create(project_id=prj_b["id"], supplier_id=w.supplier["id"], title="Project B subcontract", sov_lines=[
+            {"description": "Placeholder work item", "cost_code": "XX 90 00", "amount": "7000"}], retainage_rate="0.10", actor="owner-1")
+        w.c.approve_and_execute("commitment.execute", cmt_b["id"], actor="owner-1")
+        bill_b = w.c.bills.certify(commitment_id=cmt_b["id"], period_id="2026-10", installed=[
+            {"sov_line_id": w.c.commitments.get(cmt_b["id"])["sov"][0]["id"], "cumulative_installed": "3000"}], actor="owner-1")
+        before = count(w.c, "ricky_proposals")
+        # a record of the caller's own project beside another project's record decides nothing
+        for context in ({"bill_id": bill_b["id"]}, {"commitment_id": w.commitment["id"], "bill_id": bill_b["id"]},
+                        {"bill_id": bill_b["id"], "commitment_id": w.commitment["id"]}):
+            with self.subTest(context=context):
+                self.assertRefused(call(w, "preview", {"workflow": "bill.approve", "context": context}, role="pm", actor="pm-lee"),
+                                   "does not hold role 'pm'", "nothing ran")
+        self.assertEqual(count(w.c, "ricky_proposals"), before)
+        # the caller's own records, whichever key names them
+        change = w.c.commitments.propose_change(w.commitment["id"], amount="250", reason="Synthetic scope addition", actor="owner-1")
+        bill_a = w.c.bills.certify(commitment_id=w.commitment["id"], period_id="2026-10", installed=[
+            {"sov_line_id": w.line1, "cumulative_installed": "1000"}], actor="owner-1")
+        for workflow, context in (("change.execute", {"change_id": change["id"]}), ("bill.approve", {"bill_id": bill_a["id"]}),
+                                  ("commitment.execute", {"commitment_id": w.commitment["id"]})):
+            with self.subTest(workflow=workflow):
+                r = call(w, "preview", {"workflow": workflow, "context": context}, role="pm", actor="pm-lee")
+                self.assertOk(r)
+                self.assertEqual((r["identity"]["scope"], r["identity"]["project_id"]), ("project", w.project["id"]))
+        self.assertEqual(count(w.c, "ricky_proposals"), before + 3)
 
     def test_without_an_enforcing_policy_receipts_carry_no_identity_and_nothing_else_changes(self):
         w = world()

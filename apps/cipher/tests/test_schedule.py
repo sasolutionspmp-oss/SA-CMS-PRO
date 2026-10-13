@@ -5,6 +5,7 @@ import unittest
 
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.ledger import PeriodNotOpen
+from apps.cipher.domain.people import IdentityRefused
 from apps.cipher.domain.schedule import ScheduleError
 from apps.cipher.service import Cipher
 
@@ -355,6 +356,34 @@ class BaselineTests(Base):
             self.s.apply("schedule.baseline", self.pid, approval_id="apr_none", manifest=fresh, actor="o", period_id="P1")
         self.assertEqual(len(self.s.baselines(self.pid)), 1)
         self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_a_project_scoped_pm_baselines_its_own_project_only(self):
+        """The manifest binds the project, so under an enforcing identity policy the people
+        governor checks a PM's authority on that project, not at entity scope."""
+        self.golden()
+        other = self.c.create_project(name="Q", entity="E", budget="100000", customer_id=self.customer["id"])
+        people = self.c.plugin("people")
+        people.bootstrap_owner("owner", "Synthetic owner")
+        for login, project_id in (("pm.lee", self.pid), ("pm.sue", self.pid), ("pm.bo", other["id"])):
+            people.register_person(login, "Synthetic PM", actor="owner")
+            people.add_membership(login, project_id, actor="owner")
+            req = people.request_grant(login, "pm", reason="PM on one project", actor="owner", project_id=project_id)
+            self.c.approve_and_execute("people.grant_role", req["id"], actor="owner")
+        people.register_person("clerk", "Synthetic clerk", actor="owner")
+        draft = people.prepare_policy(enforce=True, segregate=True, reason="enforce", actor="owner")
+        ap = self.c.request_approval("people.set_policy", draft["id"], actor_role="owner", requested_by="owner")
+        self.c.approve(ap["id"], approver="owner", approver_role="owner")
+        self.c.execute(ap["id"], actor="owner")
+        self.assertTrue(people.enforcing())
+        ap = self.c.request_approval("schedule.baseline", self.pid, actor_role="pm", requested_by="clerk")
+        self.assertEqual(ap["manifest"]["bindings"]["project_id"], self.pid)
+        with self.assertRaises(IdentityRefused):  # another project's PM
+            self.c.approve(ap["id"], approver="pm.bo", approver_role="pm")
+        self.c.approve(ap["id"], approver="pm.sue", approver_role="pm")
+        with self.assertRaises(IdentityRefused):
+            self.c.execute(ap["id"], actor="pm.bo")
+        bl = self.c.execute(ap["id"], actor="pm.lee").result
+        self.assertEqual((bl["project_id"], bl["sequence"], bl["created_by"]), (self.pid, 1, "pm.lee"))
 
     def test_state_shape_and_serializable(self):
         empty = self.s.state(self.pid)

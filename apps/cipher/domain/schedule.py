@@ -24,7 +24,9 @@ The only approval-bound operation is ``schedule.baseline``: it freezes the
 computed schedule into an immutable ``schedule_baselines`` row.  The manifest
 binds a content hash of every activity, dependency and resource plus the
 computed duration, so any edit between approval and execution makes the
-approval stale.  No money moves in this module, so no journals are posted;
+approval stale.  It also binds ``project_id``, so authority to request, approve
+and execute a baseline is checked on that project (a role held on the project
+only is enough).  No money moves in this module, so no journals are posted;
 a baseline is still recorded against an open accounting period.
 """
 from __future__ import annotations
@@ -514,6 +516,7 @@ class Plugin:
             actor_role=actor_role,
             amounts={},
             bindings={
+                "project_id": subject_id,
                 "content_hash": schedule["content_hash"],
                 "duration_days": schedule["duration_days"],
                 "activity_count": schedule["activity_count"],
