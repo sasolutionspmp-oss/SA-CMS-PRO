@@ -5,7 +5,14 @@ Posting rules (fixture policy ``cipher-posting-rules/1``, synthetic prototype on
 * ``asset.capitalize``           Dr 1500 Fixed assets / Cr 1000 Operating bank (synthetic purchase)
 * ``asset.post_depreciation``    Dr 5200 Depreciation expense / Cr 1590 Accumulated depreciation
 * ``asset.reverse_depreciation`` the run's journal reversed through ``Ledger.reverse``
+                                 (default: into the run's period)
 * ``asset.dispose``              Dr 1590 accumulated to date, Dr 5200 remaining book value, Cr 1500 cost
+                                 (default: into the latest open period)
+
+A reversal or disposal is never dated in a period starting before the journals it
+reverses or settles (the rule ``journal.reverse`` applies): a reversal not before its
+run's journal, a disposal not before the asset's capitalization journal or any of its
+depreciation journals and their reversals.  The manifests bind that rule (``target_rule``).
 
 Schedule: straight-line monthly charge = (cost - salvage) / useful_life_months
 quantised to cents; the FINAL month absorbs the rounding residual so the schedule
@@ -243,6 +250,33 @@ class Plugin:
     def _resolve_period(self, period_id: str | None) -> str:
         return period_id or self.c.current_period()["id"]
 
+    def _latest_journal_period(self, journal_ids) -> dict[str, Any] | None:
+        """The latest-starting period holding any of ``journal_ids`` (with the journal), or None."""
+        ids = [j for j in journal_ids if j]
+        if not ids:
+            return None
+        return self.db.one(
+            f"""SELECT p.id, p.start_date, j.id AS journal_id FROM journals j JOIN periods p ON p.id = j.period_id
+                WHERE j.id IN ({','.join('?' * len(ids))}) ORDER BY p.start_date DESC, p.id DESC LIMIT 1""",
+            tuple(ids),
+        )
+
+    @staticmethod
+    def _asset_journals(a: dict[str, Any]) -> list[str]:
+        """Every journal on the asset: its capitalization and each run's journal and reversal."""
+        return [a["capitalisation_journal_id"], *(r["journal_id"] for r in a["runs"]), *(r["reversal_journal_id"] for r in a["runs"])]
+
+    def _require_not_before(self, target_id: str, journal_ids, what: str) -> None:
+        """The ledger's rule for reversals (``journal.reverse``): ``what`` cannot be dated in a
+        period starting before the period of any journal it reverses or settles."""
+        source = self._latest_journal_period(journal_ids)
+        target = self._period(target_id)
+        if source is not None and target["start_date"] < source["start_date"]:
+            raise AssetError(
+                f"{what} cannot be dated before journal {source['journal_id']}: period {target_id} starts {target['start_date']}, "
+                f"the journal is in {source['id']} starting {source['start_date']}; use an open period starting on or after {source['start_date']}"
+            )
+
     # ---- register ------------------------------------------------------------ #
 
     def register_asset(
@@ -466,7 +500,8 @@ class Plugin:
             return build_manifest(
                 operation=operation, subject_type="asset", subject_id=subject_id, actor_role=actor_role,
                 amounts={"cost": a["cost"], "accumulated_depreciation": a["accumulated_depreciation"], "net_book_value": a["net_book_value"]},
-                bindings={**self._asset_bindings(a), "posted_runs": len(posted), "runs_hash": hash_json(posted), "open_runs": sum(1 for r in a["runs"] if r["status"] == "draft")},
+                bindings={**self._asset_bindings(a), "posted_runs": len(posted), "runs_hash": hash_json(posted), "open_runs": sum(1 for r in a["runs"] if r["status"] == "draft"),
+                          "target_rule": self._target_rule(self._asset_journals(a), "the latest open period")},
             )
         if operation in ("asset.post_depreciation", "asset.reverse_depreciation"):
             run = self.get_run(subject_id)
@@ -484,12 +519,19 @@ class Plugin:
                 "debit_account": "5200",
                 "credit_account": "1590",
             }
+            if operation == "asset.reverse_depreciation":
+                bindings["target_rule"] = self._target_rule([run["journal_id"]], f"the run's period {run['period_id']}")
             return build_manifest(
                 operation=operation, subject_type="asset_run", subject_id=subject_id, actor_role=actor_role,
                 amounts={"amount": run["amount"]},
                 bindings=bindings,
             )
         raise AssetError(f"unknown asset operation {operation}")
+
+    def _target_rule(self, journal_ids, default: str) -> str:
+        source = self._latest_journal_period(journal_ids)
+        earliest = f" starting on or after {source['start_date']}" if source else ""
+        return f"execute with period_id of an open period{earliest} (default: {default})"
 
     @staticmethod
     def _asset_bindings(a: dict[str, Any]) -> dict[str, Any]:
@@ -591,6 +633,7 @@ class Plugin:
                 raise AssetError(f"asset {a['id']} is disposed; its depreciation was settled by the disposal journal and cannot be reversed")
             pid = period_id or run["period_id"]
             self._require_open(pid)
+            self._require_not_before(pid, [run["journal_id"]], f"the reversal of depreciation run {run_id}")
             j = self.ledger.reverse(run["journal_id"], period_id=pid, posted_by=actor, reason=f"depreciation run {run_id} reversed", approval_id=approval_id)
             conn.execute(
                 "UPDATE asset_depreciation_runs SET status='reversed', reversal_journal_id=?, reversal_approval_id=?, reversed_at=? WHERE id=?",
@@ -609,6 +652,7 @@ class Plugin:
                 raise AssetError(f"cancel the outstanding draft depreciation run(s) before disposal: {', '.join(drafts)}")
             pid = self._resolve_period(period_id)
             self._require_open(pid)
+            self._require_not_before(pid, self._asset_journals(a), f"the disposal of asset {asset_id}")
             cost = money(a["cost"])
             accumulated = money(a["accumulated_depreciation"])
             if accumulated > cost:

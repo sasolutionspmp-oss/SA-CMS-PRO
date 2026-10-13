@@ -21,9 +21,11 @@ Posting rules (fixture policy ``cipher-posting-rules/1``):
                              a provider return    Dr 1000 (or 1200 before settlement) / Cr 2100, reinstating the payable
 * ``reimbursement.bill``     Dr 1100 accounts receivable (party = project customer) / Cr 4000 contract revenue
 * billing collection        Dr 1000 operating bank (net of fee) / Dr 6000 fee / Cr 1100 (``record_billing_collection``:
-                             a bank fact like a prime-bill collection, so it needs no approval; one per provider reference)
+                             a bank fact like a prime-bill collection, so it needs no approval; one per provider reference;
+                             never in a period starting before the billing journal's)
 * ``reimbursement.void``     reversal of the approval journal (Dr 2100 / Cr 5100); only while nothing
-                             has been paid, is in flight or has been billed on the claim
+                             has been paid, is in flight or has been billed on the claim, and never in a
+                             period starting before the approval journal's (the manifest binds that rule)
 
 Accounts receivable from billings (``ar_open_items``): each posted billing is open for its
 billed amount less the collections recorded against it whose journal still stands; a reversal
@@ -910,7 +912,8 @@ class Plugin:
         """Record the customer's payment of a posted billing: Dr 1000 (net of the fee) /
         Dr 6000 fee / Cr 1100.  Partial collections are allowed; collecting more than
         is open, collecting a reversed billing, reusing a provider reference or posting
-        into a period that is not open are refused."""
+        into a period that is not open, or that starts before the billing's period, are
+        refused."""
         amt = _positive_amount(amount, "collection amount")
         try:
             f = money(fee)
@@ -930,7 +933,14 @@ class Plugin:
                 raise ReimbursementError(f"billing {billing_id} was reversed; nothing is receivable on it")
             if amt > bal["open"]:
                 raise ReimbursementError(f"collection {fmt(amt)} exceeds the open receivable {fmt(bal['open'])} on billing {billing_id}")
-            self.ledger.require_open(period_id)
+            target = self.ledger.require_open(period_id)
+            source = self.ledger.period(b["period_id"])
+            if target["start_date"] < source["start_date"]:
+                raise ReimbursementError(
+                    f"a collection cannot be dated before the billing it settles: period {period_id} starts {target['start_date']}, "
+                    f"billing journal {b['journal_id']} is in {source['id']} starting {source['start_date']}; "
+                    f"use an open period starting on or after {source['start_date']}"
+                )
             row = self._claim_row(b["claim_id"])
             collection_id = new_id("rcol")
             scope = {"project_id": row["project_id"], "party_id": b["customer_id"]}
@@ -1135,9 +1145,14 @@ class Plugin:
         if not row["journal_id"]:
             raise ReimbursementError(f"claim {row['id']} has no approval journal to reverse")
 
+    def _void_source_period(self, row: dict[str, Any]) -> dict[str, Any]:
+        """The period of the approval journal a void reverses; the void is never dated before it."""
+        return self.ledger.period(self.ledger.journal(row["journal_id"])["period_id"])
+
     def _void_manifest(self, claim_id: str, *, actor_role: str) -> dict[str, Any]:
         row = self._claim_row(claim_id)
         self._check_voidable(row)
+        source = self._void_source_period(row)
         return build_manifest(
             operation=OP_VOID,
             subject_type=CLAIM_SUBJECT,
@@ -1159,6 +1174,7 @@ class Plugin:
                 "employee_id": row["employee_id"],
                 "receipt_hash": row["receipt_hash"],
                 "posting_rule": POSTING_RULE,
+                "target_rule": f"execute with period_id of an open period starting on or after {source['start_date']} (default: the latest open period)",
             },
         )
 
@@ -1284,7 +1300,14 @@ class Plugin:
         with self.db.transaction() as conn:
             row = self._claim_row(claim_id)
             self._check_voidable(row)
-            self.ledger.require_open(period_id)
+            target = self.ledger.require_open(period_id)
+            source = self._void_source_period(row)
+            if target["start_date"] < source["start_date"]:
+                raise ReimbursementError(
+                    f"a void cannot be dated before the approval it reverses: period {period_id} starts {target['start_date']}, "
+                    f"approval journal {row['journal_id']} is in {source['id']} starting {source['start_date']}; "
+                    f"use an open period starting on or after {source['start_date']}"
+                )
             canceled_payments = []
             for p in self.db.query("SELECT * FROM reimbursement_payments WHERE claim_id=? AND status='draft' ORDER BY created_at, id", (claim_id,)):
                 self._cancel_draft_payment(p, actor=actor, reason=f"claim {claim_id} voided")
