@@ -27,9 +27,11 @@ In priority order. "Done when" is the acceptance test to write first.
 
 ### 1. Pre-pilot blockers from the spec (section 11.2)
 
-The spec lists 15 backend fixes; the first four block any use by real people. Status as checked against the code on 2026-10-13:
+The spec lists 15 backend fixes; the first four block any use by real people. The spec was written on 2026-10-12, before round 4 was committed and reviewed, and these items were not re-checked against the code at handoff.
 
-_Status check against the current code in progress; until it lands, treat all 15 items in spec section 11.2 as open._
+Treat all 15 as open, and confirm each against the code before starting. One is known to be partly done: item 11. The `people`, `payment_policy` and `contracts` modules are now committed, but `service.py` still skips a module that fails to import with only a warning. Make the loader fail loudly.
+
+Items 1 and 2 (separate approving from posting; take execution away from Ricky's served tools) are engine changes that can start now. Items 3 and 4 (retire the old action API; derive identity from Microsoft 365 sign-in) go with decisions 13 and 10.
 
 ### 2. Known gaps from review
 
