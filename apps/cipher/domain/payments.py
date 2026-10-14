@@ -146,6 +146,10 @@ Execution controls (catalog entry ``payments_controls``):
   The provider receives the approved value date and currency (both also in the
   payload hash) and a reference naming this workspace, the intent and the record
   it pays, which is what recovery uses to attribute transfers it never recorded;
+* the contract governor rechecks insurance and bond coverage in that claim
+  transaction. Missing, lapsed or invalid coverage holds the intent as ``queued``
+  and the outbox as ``pending`` without a provider attempt. Current audited
+  evidence permits a later dispatch while the approved transfer terms remain valid;
 * provider callbacks are authenticated: every event the simulator emits carries an
   HMAC-SHA256 ``signature`` over the canonical JSON of the event without that field,
   keyed with the provider's per-instance ``webhook_secret``.  ``ingest_event``
@@ -214,11 +218,11 @@ import secrets
 import weakref
 from typing import Any, Callable, NoReturn
 
-from ..core.approvals import Approvals, StaleApprovalError, build_manifest
+from ..core.approvals import Approvals, StaleApprovalError, build_manifest, material_hash
 from ..core.audit import Audit
 from ..core.commands import Commands
 from ..core.db import Database, register_schema_version
-from ..core.ids import canonical_json, hash_json, new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
 from ..core.money import ZERO, MoneyError, fmt, money, total
 from .ledger import Ledger
 
@@ -844,6 +848,7 @@ class Payments:
         self._webhook_secret: str | None = None
         self._listeners: dict[str, list[Callable[..., None]]] = {}
         self._adopters: dict[str, dict[str, Any]] = {}
+        self._dispatch_checks: dict[str, Callable[..., str | None]] = {}
         self._savepoint_seq = 0
         # used to invalidate open approvals that name a payee's destination when it changes
         self._approvals = Approvals(db, audit)
@@ -1460,6 +1465,80 @@ class Payments:
 
     # ---- dispatch -------------------------------------------------------------- #
 
+    def register_dispatch_check(self, name: str, check: Callable[..., str | None]) -> None:
+        """Register a governor's final check before claiming a queued payment.
+
+        ``check(intent, actor=...)`` runs under the claim transaction's write lock.
+        A reason or a failed check holds the intent and its pending outbox row for
+        a later attempt; neither claims nor submits the payment.
+        """
+        self._dispatch_checks[name] = check
+
+    def _dispatch_problem(self, intent: dict[str, Any], *, actor: str) -> str | None:
+        try:
+            problem = self._dispatch_binding_problem(intent)
+        except Exception as exc:
+            return f"the payment's audited release could not be verified: {type(exc).__name__}: {exc}"
+        if problem is not None:
+            return problem
+        for name, check in self._dispatch_checks.items():
+            try:
+                problem = check(intent, actor=actor)
+            except Exception as exc:  # a broken governor must never permit a submission
+                return f"dispatch check {name} could not verify the payment: {type(exc).__name__}: {exc}"
+            if problem is not None:
+                return problem
+        return None
+
+    def _dispatch_binding_problem(self, intent: dict[str, Any]) -> str | None:
+        """Verify immutable queue and approval evidence before choosing governors.
+
+        Stored intent source fields and approval hashes alone are mutable under
+        raw SQL. Their original audited bindings and the chain must agree too.
+        Older queue entries are checked for the fields they recorded.
+        """
+        if not self.audit.verify_chain()["ok"]:
+            return "the payment's audited release cannot be trusted because the audit chain is broken"
+        queued = self.db.one("""SELECT payload_json FROM audit_log WHERE action='payment.queued' AND entity_type='payment_intent'
+                                AND entity_id=? ORDER BY seq LIMIT 1""", (intent["id"],))
+        if queued is None:
+            return "the payment's audited queue record is missing; restore its records before dispatch"
+        bound = loads(queued["payload_json"])
+        fields = ("amount", "fee", "value_date", "party_id", "approval_id", "outbox_id", "project_id", "source_type", "source_id", "payable_account")
+        if any(intent.get(key) != bound[key] for key in fields if key in bound):
+            return "the payment differs from its audited queue record; restore its records before dispatch"
+        if bound.get("source_type") == "bill" and intent.get("bill_id") != bound.get("source_id"):
+            return "the payment's bill differs from its audited queue record; restore its records before dispatch"
+        approval = self._approvals.get(intent["approval_id"])
+        manifest = approval["manifest"]
+        mh, material = hash_json(manifest), material_hash(manifest)
+        subject = manifest.get("subject") or {}
+        if (approval["status"] != "consumed" or approval["manifest_hash"] != mh or approval["material_hash"] != material
+                or approval["operation"] != manifest.get("operation") or approval["subject_type"] != subject.get("type")
+                or approval["subject_id"] != subject.get("id")):
+            return "the payment's release approval does not match its audited manifest; restore its records before dispatch"
+        audited = {r["action"]: loads(r["payload_json"]) for r in self.db.query(
+            """SELECT action, payload_json FROM audit_log WHERE entity_type='approval' AND entity_id=?
+                 AND action IN ('approval.requested','approval.granted','approval.consumed') ORDER BY seq""", (approval["id"],))}
+        requested = audited.get("approval.requested") or {}
+        if (requested.get("manifest_hash") != mh or requested.get("operation") != approval["operation"]
+                or requested.get("subject") != subject or any(
+                    (audited.get(action) or {}).get("material_hash") != material
+                    or (audited.get(action) or {}).get("operation") != approval["operation"]
+                    for action in ("approval.granted", "approval.consumed"))):
+            return "the payment's release approval does not match its audited authorization; restore its records before dispatch"
+        return None
+
+    def _hold_queued(self, intent: dict[str, Any], outbox_id: str, *, reason: str, actor: str) -> None:
+        """Keep a coverage hold retryable without consuming a provider attempt."""
+        label = _label(intent["note"])
+        note = f"held before dispatch: {reason}"
+        self.db.execute("UPDATE payment_intents SET note=? WHERE id=? AND status='queued'",
+                        (f"{label}{_REASON_SEP}{note}" if label else note, intent["id"]))
+        self.db.execute("UPDATE outbox SET last_error=? WHERE id=? AND status='pending'", (reason, outbox_id))
+        self.audit.record(actor, "payment.dispatch_held", "payment_intent", intent["id"],
+                          {"reason": reason, "outbox_id": outbox_id, "approval_id": intent["approval_id"]})
+
     def _payee_problem(self, intent: dict[str, Any]) -> str | None:
         party = self.db.one("SELECT destination, destination_version, destination_verified FROM parties WHERE id=?", (intent["party_id"],))
         if party is None:
@@ -1544,11 +1623,12 @@ class Payments:
             # Claim the row first so a second worker can never dispatch the same intent.  Everything
             # the submission depends on -- the release controls, the intent's status, the payee's
             # destination and destination version, the provider's fee, the approved value date and
-            # the project's entity and currency -- is re-read under the
+            # the project's entity and currency, and required insurance/bond coverage -- is re-read under the
             # write lock in the claiming transaction, so a kill switch engaged or a destination
             # re-verified mid-run (another thread on the shared connection) cannot slip between the
             # check and the claim: the intent goes to exactly the destination that was verified.
             problem: str | None = None
+            held: str | None = None
             failures: list[dict[str, str]] | None = None
             with self.db.transaction() as conn:
                 block = self._release_block()
@@ -1563,13 +1643,21 @@ class Payments:
                 if problem is not None:
                     failures = self._fail_queued(intent["id"], ob["id"], reason=problem, actor=actor)
                 else:
-                    claimed = conn.execute("UPDATE payment_intents SET status='submitted', submitted_at=? WHERE id=? AND status='queued'", (utcnow_iso(), intent["id"])).rowcount
-                    if not claimed:
-                        continue
-                    self.commands.mark_dispatched(ob["id"])
+                    held = self._dispatch_problem(intent, actor=actor)
+                    if held is not None:
+                        self._hold_queued(intent, ob["id"], reason=held, actor=actor)
+                    else:
+                        claimed = conn.execute("UPDATE payment_intents SET status='submitted', submitted_at=? WHERE id=? AND status='queued'", (utcnow_iso(), intent["id"])).rowcount
+                        if not claimed:
+                            continue
+                        self.commands.mark_dispatched(ob["id"])
+                        conn.execute("UPDATE outbox SET last_error=NULL WHERE id=?", (ob["id"],))
             if problem is not None:
                 if failures is not None:
                     results.append(self._result(intent["id"], "failed", failures, reason=problem))
+                continue
+            if held is not None:
+                results.append({"intent_id": intent["id"], "status": "queued", "held": True, "reason": held})
                 continue
             try:
                 resp = self._submit(provider, intent)

@@ -16,7 +16,10 @@ ENV PYTHONPATH=/workspace \
     PYTHONUNBUFFERED=1 \
     CIPHER_DB=/workspace/data/cipher.sqlite \
     CIPHER_PORT=8765
-RUN python -m apps.cipher test \
+# COPY preserves restrictive modes from private checkouts. The server user
+# needs to read application files and traverse their directories.
+RUN chmod -R a+rX /workspace/apps \
+ && python -m apps.cipher test \
  && useradd --system --uid 10001 --home-dir /workspace --shell /usr/sbin/nologin cipher \
  && mkdir -p /workspace/data \
  && chown -R cipher:cipher /workspace/data

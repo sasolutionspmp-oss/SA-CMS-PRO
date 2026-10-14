@@ -97,6 +97,9 @@ flows and workspaces behave exactly as before.
   ``contract_coverage_checks`` inside the execution transaction (rolled back with it).  A
   retainage payment pays retainage released on any of the supplier's commitments on the
   project, so it must satisfy the requirements of all of them (the highest minimum per kind).
+  ``check_dispatch`` rechecks current audited coverage before the outbox claims the
+  payment and audits the certificates used. A hold keeps the same intent retryable
+  after valid replacement evidence is recorded, subject to its approved transfer terms.
 
 Certificates.  ``record_certificate(party_id, kind, carrier, policy_number, limit,
 effective_date, expiry_date, evidence_hash, actor)`` records a supplier's insurance policy or
@@ -581,6 +584,7 @@ class Plugin:
         self.approvals = cipher.approvals
         # injectable clock: certificate validity, signing dates and expiry warnings use its date
         self.now = utcnow
+        cipher.payments.register_dispatch_check(PLUGIN_NAME, self.check_dispatch)
 
     # ---- clock and identity ------------------------------------------------------------------ #
 
@@ -1147,7 +1151,10 @@ class Plugin:
     def _certificate_state(self, cert: dict[str, Any], day: _dt.date | None = None) -> dict[str, Any]:
         day = day or self._today()
         cur = self._current_revision(cert["document_id"])
-        intact = _hash_of(cert, _CERTIFICATE_KEYS) == cert["content_hash"]
+        intact = (_hash_of(cert, _CERTIFICATE_KEYS) == cert["content_hash"] and self.db.one(
+            """SELECT 1 AS x FROM audit_log WHERE action='contract.certificate_recorded' AND entity_type=? AND entity_id=?
+                 AND json_extract(payload_json, '$.content_hash')=? LIMIT 1""",
+            (CERTIFICATE_SUBJECT, cert["id"], cert["content_hash"])) is not None)
         stale = cur is None or cur["id"] != cert["revision_id"]
         effective, expiry = _dt.date.fromisoformat(cert["effective_date"]), _dt.date.fromisoformat(cert["expiry_date"])
         # an audited withdrawal stands even if the record was rewritten to read "recorded"
@@ -1239,7 +1246,7 @@ class Plugin:
             return f"certificate {cert['id']} expired on {cert['expiry_date']}"
         return None
 
-    def _cover(self, facts: dict[str, Any], day: _dt.date) -> list[dict[str, Any]]:
+    def _cover(self, facts: dict[str, Any], day: _dt.date, *, dispatch: bool = False) -> list[dict[str, Any]]:
         """For each bound requirement, the bound certificate in force on ``day`` (the one
         expiring last); raises ``CoverageError`` naming every requirement left uncovered."""
         chosen, missing = [], []
@@ -1259,9 +1266,51 @@ class Plugin:
                 chosen.append({"kind": req["kind"], "min_limit": req["min_limit"], "certificate_id": best["id"], "certificate_hash": best["content_hash"],
                                "limit": best["limit_amount"], "effective_date": best["effective_date"], "expiry_date": best["expiry_date"]})
         if missing:
+            remedy = ("record a current certificate with record_certificate, then retry dispatch" if dispatch else
+                      "record a current certificate with record_certificate, then request a fresh approval")
             raise CoverageError(f"required insurance or bond coverage of supplier {facts.get('supplier_id')} is not in force on {day.isoformat()}: "
-                                + " | ".join(missing) + " (record a current certificate with record_certificate, then request a fresh approval)")
+                                + " | ".join(missing) + f" ({remedy})")
         return chosen
+
+    def check_dispatch(self, intent: dict[str, Any], *, actor: str) -> str | None:
+        """Recheck current coverage for an already approved queued payment.
+
+        Renewals may replace the release's certificates. The obligation, payee and
+        transfer terms remain approved; their requirements still rest on audited
+        records. This check runs inside the payment's claim transaction.
+        """
+        approval = self._approval(intent["approval_id"])
+        if intent.get("source_type") == "bill" or intent.get("bill_id"):
+            operation, subject_id = "payment.release", intent.get("bill_id") or intent.get("source_id")
+        elif intent.get("source_type") == "retainage_release":
+            operation, subject_id = "payment.release_retainage", intent["source_id"]
+        elif approval is not None and approval["operation"] in ("payment.release", "payment.release_retainage"):
+            operation, subject_id = approval["operation"], approval["subject_id"]
+        else:
+            return None
+        if approval is None or approval["operation"] != operation or approval["subject_id"] != subject_id:
+            return "the payment's release approval does not match its source; restore its records before dispatch"
+        scope = self._coverage_scope(operation, subject_id)
+        bound = (approval["manifest"].get("governance") or {}).get(PLUGIN_NAME) or {}
+        # Keep the original commitments in scope even if source records were altered.
+        scope = sorted(set(scope) | {r["commitment_id"] for r in bound.get("requirement_sets") or []})
+        if not scope:
+            return "the payment's commitment scope is missing; restore its records before dispatch"
+        try:
+            if any(self._commitment(cid)["supplier_id"] != intent["party_id"] for cid in scope):
+                return "the payment's commitment supplier changed after release; restore its records before dispatch"
+            facts = self._coverage_facts(scope)
+            if facts is None:
+                return None
+            day = self._today()
+            chosen = self._cover(facts, day, dispatch=True)
+        except ContractError as exc:
+            return str(exc)
+        self.audit.record(actor, "contract.dispatch_coverage_verified", "payment_intent", intent["id"], {
+            "approval_id": approval["id"], "checked_on": day.isoformat(),
+            "requirement_sets": facts["requirement_sets"], "coverage": chosen,
+        })
+        return None
 
     def coverage(self, commitment_id: str, on: str | None = None) -> list[dict[str, Any]]:
         """Per requirement of the commitment: whether coverage is in force on ``on`` (default

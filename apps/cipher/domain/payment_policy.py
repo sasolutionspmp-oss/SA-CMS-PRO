@@ -1057,7 +1057,6 @@ class Plugin:
             return
         policy = self._policy()
         if policy is None or policy["version"] != facts.get("policy_version") or policy["hash"] != facts.get("policy_hash"):
-            self.approvals.invalidate(approval["id"], reason="the payment release policy changed after the request", actor=approver)
             raise StaleApprovalError(f"approval {approval['id']} was classified under payment policy version {facts.get('policy_version')}; "
                                      "request a fresh approval")
         if facts.get("classification") != "high_risk":

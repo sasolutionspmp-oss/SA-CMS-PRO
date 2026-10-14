@@ -203,6 +203,54 @@ class DepreciationRunTests(unittest.TestCase):
         self.p = self.f.assets
         self.a = self.f.capitalized()
 
+    def test_charge_cannot_be_scheduled_before_capitalization(self):
+        a = self.f.capitalized(description="Late capitalization", in_service_date="2026-09-01")
+        with self.assertRaisesRegex(AssetError, "cannot be dated before"):
+            self.p.schedule_run(a["id"], "P0", "owner")
+        self.assertEqual(self.p.runs(a["id"]), [])
+        self.assertEqual(self.c.ledger.journals(period_id="P0"), [])
+
+        run = self.p.schedule_run(a["id"], "P1", "owner")
+        ap = self.c.request_approval("asset.post_depreciation", run["id"])
+        self.assertIn("starting on or after 2026-10-01", ap["manifest"]["bindings"]["target_rule"])
+        self.c.approve(ap["id"])
+        self.assertEqual(self.c.execute(ap["id"]).result["period_id"], "P1")
+        later = self.p.schedule_run(a["id"], "P2", "owner")
+        self.assertEqual(self.c.approve_and_execute("asset.post_depreciation", later["id"]).result["period_id"], "P2")
+        self.assertEqual(accumulated(self.c), Decimal("2000.00"))
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_charge_uses_period_start_for_same_month_capitalization(self):
+        self.c.open_period("P1late", "October second half", "2026-10-15", "2026-10-31")
+        a = self.f.register(description="Second-half purchase", in_service_date="2026-10-01")
+        self.c.approve_and_execute("asset.capitalise", a["id"], period_id="P1late")
+        with self.assertRaisesRegex(AssetError, "cannot be dated before"):
+            self.p.schedule_run(a["id"], "P1", "owner")
+        self.assertEqual(self.p.runs(a["id"]), [])
+        run = self.p.schedule_run(a["id"], "P1late", "owner")
+        self.assertEqual(self.c.approve_and_execute("asset.post_depreciation", run["id"]).result["period_id"], "P1late")
+        self.assertEqual(accumulated(self.c), Decimal("1000.00"))
+
+    def test_legacy_charge_cannot_post_before_capitalization(self):
+        a = self.f.capitalized(description="Legacy draft", in_service_date="2026-09-01")
+        # An older workspace may already contain a draft scheduled before capitalization.
+        self.c.db.execute(
+            """INSERT INTO asset_depreciation_runs
+               (id, asset_id, period_id, charge_month, sequence, amount, asset_version, status, content_hash, created_at)
+               VALUES (?,?,?,'2026-09',1,'1000.00',1,'draft','legacy','2026-10-01T00:00:00+00:00')""",
+            ("dep_legacy", a["id"], "P0"),
+        )
+        ap = self.c.request_approval("asset.post_depreciation", "dep_legacy")
+        self.c.approve(ap["id"])
+        with self.assertRaisesRegex(AssetError, "cannot be dated before"):
+            self.c.execute(ap["id"])
+        self.assertEqual(self.p.get_run("dep_legacy")["status"], "draft")
+        self.assertIsNone(self.p.get_run("dep_legacy")["journal_id"])
+        self.assertEqual(self.c.approvals.get(ap["id"])["status"], "granted")
+        self.assertEqual(self.c.ledger.journals(period_id="P0"), [])
+        self.assertEqual(accumulated(self.c), Decimal("0.00"))
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
     def test_golden_schedule_no_charge_before_in_service_then_first_month(self):
         run0 = self.p.schedule_run(self.a["id"], "P0", "owner")
         self.assertEqual(run0["status"], "no_charge")

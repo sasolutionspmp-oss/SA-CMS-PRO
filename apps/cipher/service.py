@@ -12,7 +12,6 @@ the same shape:
 from __future__ import annotations
 
 import importlib
-import logging
 import os
 import tempfile
 from typing import Any
@@ -20,10 +19,8 @@ from typing import Any
 from .core.approvals import ApprovalExpired, Approvals, StaleApprovalError
 from .core.db import register_schema_version
 
-log = logging.getLogger("cipher")
-
-# v2 modules.  Each module is optional (missing or broken modules are skipped
-# with a warning) and must expose:
+# Configured v2 modules are required: a missing or broken module aborts startup.
+# Each module must expose:
 #   SCHEMA_NAME: str, SCHEMA_STATEMENTS: list[str]   -> registered as the next schema version, in this order
 #   PLUGIN_NAME: str                                   -> the operation prefix it owns, e.g. "asset" for "asset.*"
 #   class Plugin: __init__(self, cipher); manifest_for(operation, subject_id, *, actor_role) -> manifest;
@@ -52,31 +49,57 @@ PLUGIN_MODULES = [
 _LOADED_PLUGIN_MODULES: list[Any] = []
 
 
+class PluginLoadError(RuntimeError):
+    """A configured module could not supply its schema or controls."""
+
+
 def _load_plugin_modules() -> list[Any]:
+    global _LOADED_PLUGIN_MODULES
     if _LOADED_PLUGIN_MODULES:
         return _LOADED_PLUGIN_MODULES
+    loaded: list[Any] = []
+    plugin_names = {"core_reconciliation", "ricky_sdk"}
     for name in PLUGIN_MODULES:
         try:
             mod = importlib.import_module(name)
-        except ModuleNotFoundError as exc:
-            if exc.name == name:
-                continue
-            log.warning("plugin %s failed to import: %s", name, exc)
-            continue
-        except Exception as exc:  # a broken sibling module must not take the core down
-            log.warning("plugin %s failed to import: %s", name, exc)
-            continue
-        try:
-            register_schema_version(mod.SCHEMA_NAME, list(mod.SCHEMA_STATEMENTS))
         except Exception as exc:
-            log.warning("plugin %s schema rejected: %s", name, exc)
-            continue
-        _LOADED_PLUGIN_MODULES.append(mod)
+            raise PluginLoadError(f"configured plugin {name} failed to import: {exc}") from exc
+        try:
+            schema_name = mod.SCHEMA_NAME
+            statements = mod.SCHEMA_STATEMENTS
+            if not isinstance(schema_name, str) or not schema_name.strip():
+                raise ValueError("SCHEMA_NAME must be a nonempty string")
+            if not isinstance(statements, list) or any(not isinstance(s, str) or not s.strip() for s in statements):
+                raise ValueError("SCHEMA_STATEMENTS must be a list of nonempty strings")
+        except Exception as exc:
+            raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
+        try:
+            plugin_name = mod.PLUGIN_NAME
+            if not isinstance(plugin_name, str) or not plugin_name.isascii() or not plugin_name.isidentifier():
+                raise ValueError("PLUGIN_NAME must be an ASCII identifier used as an operation prefix")
+            if plugin_name in plugin_names:
+                raise ValueError(f"PLUGIN_NAME {plugin_name!r} is already registered or reserved")
+            if not isinstance(mod.Plugin, type):
+                raise TypeError("Plugin must be a class")
+            for method in ("manifest_for", "apply", "state"):
+                if not callable(getattr(mod.Plugin, method, None)):
+                    raise TypeError(f"Plugin must expose callable {method}")
+        except Exception as exc:
+            raise PluginLoadError(f"configured plugin {name} initialization contract rejected: {exc}") from exc
+        try:
+            register_schema_version(schema_name, list(statements))
+        except Exception as exc:
+            raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
+        plugin_names.add(plugin_name)
+        loaded.append(mod)
+    # Publish only a complete set.  Earlier schema registrations remain idempotent
+    # on retry, including entries a module registers itself during import.
+    _LOADED_PLUGIN_MODULES = loaded
     return _LOADED_PLUGIN_MODULES
 
 
 _load_plugin_modules()
-from .core.audit import Audit
+from .core.audit import Audit, register_audit_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database
 from .core.ids import new_id, sha256_hex, utcnow_iso
@@ -90,6 +113,10 @@ from .domain.ledger import Ledger
 from .domain.payments import Payments, SimulatedProvider
 from .domain.receivables import Receivables
 from .domain.ricky import Ricky
+from .ricky_sdk import RickySDK
+
+# Append only after every historical domain and SDK schema has registered.
+register_audit_schema()
 
 
 class CipherError(RuntimeError):
@@ -141,6 +168,7 @@ OPERATIONS = {
 
 class Cipher:
     def __init__(self, path: str = ":memory:", *, provider: SimulatedProvider | None = None):
+        plugin_modules = _load_plugin_modules()
         self.db = Database(path)
         self.audit = Audit(self.db)
         self.approvals = Approvals(self.db, self.audit)
@@ -162,14 +190,24 @@ class Cipher:
         # a bill payment releases the open payable (after credit notes and earlier payments)
         self.payments.open_payable_for_bill = self.bills.open_payable
         self._plugins: dict[str, Any] = {}
-        for mod in _load_plugin_modules():
-            try:
-                self.register_plugin(mod.PLUGIN_NAME, mod.Plugin(self))
-            except Exception as exc:
-                log.warning("plugin %s failed to initialize: %s", getattr(mod, "PLUGIN_NAME", mod), exc)
+        try:
+            with self.db.transaction():
+                for mod in plugin_modules:
+                    try:
+                        plugin = mod.Plugin(self)
+                        for method in ("manifest_for", "apply", "state"):
+                            if not callable(getattr(plugin, method, None)):
+                                raise TypeError(f"Plugin must expose callable {method}")
+                        self.register_plugin(mod.PLUGIN_NAME, plugin)
+                    except Exception as exc:
+                        name = getattr(mod, "__name__", repr(mod))
+                        raise PluginLoadError(f"configured plugin {name} failed to initialize: {exc}") from exc
+        except Exception:
+            self._plugins.clear()
+            self.db.close()
+            raise
         self.register_plugin("core_reconciliation", CoreReconciliationChecks(self))
         # Ricky's typed tool surface (registers itself as the "ricky_sdk" module)
-        from .ricky_sdk import RickySDK
         self.sdk = RickySDK(self)
         # Plugins that post to accounts receivable (1100) expose ar_open_items(project_id)
         # so the AR subledger covers every source, not only prime bills.
@@ -277,6 +315,12 @@ class Cipher:
             the same facts.
         ``check_request(operation, manifest, *, actor_role, requested_by) -> None``
         ``check_grant(approval, *, approver, approver_role) -> None``
+            read-only preflight checks; refuse by raising.  Grant checks run before any
+            grant effects.  At an actual grant attempt, ``StaleApprovalError`` durably
+            invalidates the pending approval after the grant transaction rolls back.
+        ``on_grant(approval, *, approver, approver_role) -> None``
+            record grant effects after all grant checks pass and the approval is granted,
+            inside the same transaction.  A refusal rolls back the grant and every effect.
         ``check_execute(approval, manifest, *, actor) -> None``
             refuse by raising.  ``check_execute`` runs inside the execution transaction,
             before the approval is consumed: a refusal leaves the approval granted unless it
@@ -341,14 +385,46 @@ class Cipher:
         """Grant an approval.  The approver's role must hold the operation's authority.
         A sole owner holds every role; two owner logins are not two-person separation
         (plan v1.1), which is why releases also need the independent controls in payments."""
-        ap = self.approvals.get(approval_id)
-        if not Ricky.can(approver_role, ap["operation"]):
-            raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
-        for _name, governor in self._governors():
-            check = getattr(governor, "check_grant", None)
-            if check is not None:
-                check(ap, approver=approver, approver_role=approver_role)
-        return self.approvals.grant(approval_id, approver=approver)
+        try:
+            with self.db.transaction() as conn:
+                # A caught refusal must also undo grant effects when our transaction
+                # joins a caller's outer transaction.  The identifier is generated here.
+                savepoint = new_id("grant")
+                conn.execute(f"SAVEPOINT {savepoint}")
+                try:
+                    ap = self.approvals.get(approval_id)
+                    if not Ricky.can(approver_role, ap["operation"]):
+                        raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
+                    governors = self._governors()
+                    for _name, governor in governors:
+                        check = getattr(governor, "check_grant", None)
+                        if check is not None:
+                            check(ap, approver=approver, approver_role=approver_role)
+                    granted = self.approvals.grant(approval_id, approver=approver)
+                    for _name, governor in governors:
+                        hook = getattr(governor, "on_grant", None)
+                        if hook is not None:
+                            hook(granted, approver=approver, approver_role=approver_role)
+                except BaseException:
+                    if conn.in_transaction:
+                        conn.execute(f"ROLLBACK TO {savepoint}")
+                    raise
+                finally:
+                    if conn.in_transaction:
+                        conn.execute(f"RELEASE {savepoint}")
+                return granted
+        except StaleApprovalError as exc:
+            # Grant checks and effects rolled back; preserve a stale attempt durably.
+            with self.db.transaction():
+                if self.approvals.get(approval_id)["status"] == "pending":
+                    self.approvals.invalidate(approval_id, reason=str(exc), actor=approver)
+            raise
+        except ApprovalExpired:
+            # Approvals.grant's expiry write joined the transaction that rolled back.
+            with self.db.transaction():
+                if self.approvals.get(approval_id)["status"] == "pending":
+                    self.approvals.mark_expired(approval_id, actor=approver)
+            raise
 
     def reject(self, approval_id: str, *, approver: str = "owner", reason: str = "") -> dict[str, Any]:
         return self.approvals.reject(approval_id, approver=approver, reason=reason)

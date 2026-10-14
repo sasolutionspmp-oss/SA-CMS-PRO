@@ -26,11 +26,15 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 from .core.words import us_text
 from .service import Cipher, run_golden_fixture
+from .ricky_sdk import RickySDK
+from .ricky_served import ServedRicky, ServedRickyRefused
 
 CONSOLE_PATH = os.path.join(os.path.dirname(__file__), "console", "index.html")
 
 
 def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
+    served_ricky = ServedRicky(c.sdk)
+
     def p(d, *keys):
         missing = [k for k in keys if k not in d]
         if missing:
@@ -104,8 +108,8 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "snapshot": lambda d: {"path": _snapshot(c, d.get("name", ""))},
         "claim_challenge": lambda d: _claim_challenge(c),
         "claim_authority": lambda d: c.claim_write_authority(approval_ref=d.get("approval_ref"), actor=d.get("actor", "owner"), reason=d.get("reason"), claim_code=d.get("claim_code")),
-        "ricky_tools": lambda d: c.sdk.catalog(),
-        "ricky_tool": lambda d: c.sdk.invoke(d["tool"], d.get("args", {}), actor=d.get("actor", "owner"), actor_role=d.get("actor_role", "owner"), idempotency_key=d.get("idempotency_key")),
+        "ricky_tools": lambda d: served_ricky.catalog(),
+        "ricky_tool": lambda d: served_ricky.invoke(d["tool"], d.get("args", {}), actor=d.get("actor", "owner"), actor_role=d.get("actor_role", "owner"), idempotency_key=d.get("idempotency_key")),
         "complete_recovery": lambda d: c.complete_recovery(actor=d.get("actor", "owner")),
         "selftest_report": lambda d: _store_selftest(c, d),
         "module_call": lambda d: _module_call(c, d),
@@ -113,6 +117,8 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
 
 
 def _module_methods(plugin: Any) -> list[str]:
+    if isinstance(plugin, RickySDK):
+        return []  # the synthetic SDK is available only through the served adapter
     reserved = {"manifest_for", "apply", "state"}
     return sorted(
         name for name in dir(plugin)
@@ -125,6 +131,8 @@ def _module_call(c: Cipher, d: dict[str, Any]) -> Any:
     {"plugin": "asset", "method": "register_asset", "kwargs": {...}}.
     Approval-bound operations are not reachable here; they go through request_approval/execute."""
     plugin = c._plugins.get(d.get("plugin", ""))
+    if d.get("plugin") == "ricky_sdk" or isinstance(plugin, RickySDK):
+        raise ServedRickyRefused("Ricky's synthetic SDK cannot be called through module_call. Use Ricky's served read and draft tools.")
     if plugin is None:
         raise ValueError(f"unknown module {d.get('plugin')!r}; available: {', '.join(sorted(c._plugins))}")
     method = d.get("method", "")
@@ -410,6 +418,8 @@ class CipherHandler(BaseHTTPRequestHandler):
                 raise ValueError("body must be a JSON object")
             result = action(body)
             return self._json(HTTPStatus.OK, {"ok": True, "result": result})
+        except ServedRickyRefused as exc:
+            return self._json(HTTPStatus.FORBIDDEN, {"ok": False, "error": str(exc), "type": type(exc).__name__, "code": exc.code})
         except Exception as exc:
             # people read this text; stored codes inside messages are shown in American spelling
             return self._json(HTTPStatus.BAD_REQUEST, {"ok": False, "error": us_text(str(exc)), "type": type(exc).__name__})

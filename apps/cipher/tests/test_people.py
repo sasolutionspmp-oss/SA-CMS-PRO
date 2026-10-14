@@ -1137,14 +1137,14 @@ class SoloOwnerTests(unittest.TestCase):
                 intact = w.check("people identity records intact")
                 self.assertFalse(intact["ok"])
                 self.assertIn(ap["id"], intact["detail"])
-        # a self-approval whose approval expired before it was granted is recorded but never granted
+        # Expiry before grant records no self-approval or review obligation.
         w = self.solo()
         c, p = w.c, w.p
         ap = c.request_approval("commitment.execute", w.commitment(), actor_role="owner", requested_by="travis")
         c.db.execute("UPDATE approvals SET expires_at='2000-01-01T00:00:00Z' WHERE id=?", (ap["id"],))
         with self.assertRaises(ApprovalExpired):
             c.approve(ap["id"], approver="travis")
-        self.assertIsNotNone(c.db.one("SELECT id FROM people_self_approvals WHERE approval_id=?", (ap["id"],)))
+        self.assertIsNone(c.db.one("SELECT id FROM people_self_approvals WHERE approval_id=?", (ap["id"],)))
         self.assertEqual(p.integrity_problems(), [])
 
 

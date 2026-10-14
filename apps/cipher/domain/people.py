@@ -84,9 +84,11 @@ existing flows and workspaces behave exactly as before.  While the current polic
   worker, Ricky -- never approve) holding ``approver_role`` directly or by an active delegation
   in the manifest's scope (``bindings['project_id']`` when there is one); when the policy
   segregates the approver must differ from the requester.  In solo-owner mode (policy rule
-  ``solo_owner_self_approval``) an active owner may approve their own request; each such
-  self-approval is recorded and fails the close check until an outside party (an active
-  external person other than the approver) reviews it.
+  ``solo_owner_self_approval``) an active owner may approve their own request.  This check
+  only reads; the service invalidates a stale approval on an actual grant attempt.
+* ``on_grant``: records each successful solo-owner self-approval in the grant transaction.
+  It fails the close check until an outside party (an active external person other than
+  the approver) reviews it.
 * ``check_execute``: the executing identity must be active and hold ``manifest['actor_role']``
   in scope; an approval whose approver has since been deactivated or lost every role
   authorized for the operation is invalidated (``StaleApprovalError``).
@@ -1088,8 +1090,8 @@ class Plugin:
                        for x in recorded.get(("people.self_approval_recorded", s["id"]), [])):
                 out.append(f"the self-approval of approval {s['approval_id']} reads as {s['operation']} by {s['login']} under identity policy "
                            f"version {s['policy_version']}, which the audit log does not record")
-            # a record outlives a grant refused after it (the approval expiring first): the approver
-            # must be its login only once the audit log records the login granting it
+            # Older workspaces may contain a record from a preflight whose grant later failed.
+            # The approver must match once the audit log records the login granting it.
             if not (s["approval_operation"] == s["operation"] and _norm(s["requested_by"]) == s["login"]
                     and (_norm(s["approver"]) == s["login"] or s["login"] not in granted.get(s["approval_id"], ()))):
                 out.append(f"the self-approval of approval {s['approval_id']} names {s['login']}, but the approval reads as requested by "
@@ -1716,6 +1718,7 @@ class Plugin:
             raise IdentityRefused(f"identity enforcement is on: {requested_by!r} is not an active registered identity, so it cannot request {operation}")
 
     def check_grant(self, approval: dict[str, Any], *, approver: str, approver_role: str) -> None:
+        """Read-only identity and authority preflight against the stored approval."""
         # decide on the stored approval, never on the caller's copy of it
         approval = self.approvals.get(approval["id"])
         if approval["status"] != "pending":
@@ -1732,7 +1735,6 @@ class Plugin:
         bound = (manifest.get("governance") or {}).get(PLUGIN_NAME)
         current = self._binding()
         if bound != current:
-            self.approvals.invalidate(approval["id"], reason="the identity policy changed after the approval was requested", actor=str(approver))
             raise StaleApprovalError(f"approval {approval['id']} was requested under another identity policy; request it again")
         if not self.enforcing():
             return
@@ -1750,7 +1752,21 @@ class Plugin:
             if not (policy["solo_owner_self_approval"] and self._holds_by_grant(person, OWNER_ROLE, None)):
                 raise IdentityRefused(f"segregation: {person['login']} requested {operation} and cannot also approve it"
                                       + ("" if not policy["solo_owner_self_approval"] else "; only an owner may self-approve in solo-owner mode"))
-            self._record_self_approval(approval, person, approver_role, policy)
+
+    def on_grant(self, approval: dict[str, Any], *, approver: str, approver_role: str) -> None:
+        """Record a solo-owner self-approval with its successful service grant."""
+        if not self.db.in_transaction:
+            raise PeopleError("self-approval effects run only inside the grant transaction")
+        approval = self.approvals.get(approval["id"])
+        who = _norm(approver)
+        if approval["status"] != "granted" or _norm(approval["approver"]) != who:
+            raise IdentityRefused("self-approval effects require a successful grant by the named approver")
+        policy = self._policy()[0]
+        if not (policy and policy["enforce"] and policy["segregate"] and policy["solo_owner_self_approval"]
+                and who == _norm(approval["requested_by"])):
+            return
+        person = self._person_row(who)
+        self._record_self_approval(approval, person, approver_role, policy)
 
     def check_execute(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
         approval = self.approvals.get(approval["id"])

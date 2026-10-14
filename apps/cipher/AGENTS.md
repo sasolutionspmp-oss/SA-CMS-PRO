@@ -7,7 +7,7 @@ Read `HANDOFF.md` first for where the project stands and what to do next. These 
 From the repository root, Python 3.12 or later, no installs:
 
 ```bash
-python -m apps.cipher test                       # full suite, about 6 to 7 minutes, 1260 tests
+python -m apps.cipher test                       # full suite, 1320 tests
 python -m unittest apps.cipher.tests.test_people # one module's tests while you work
 python -m apps.cipher demo                       # golden fixture; numbers listed in README.md
 python -m apps.cipher.tools.core_gates           # 9 hard gates, 127 checks

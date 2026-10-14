@@ -12,5 +12,5 @@ Cipher imports nothing from the rest of the repository, and nothing else imports
 ## Repository-wide notes
 
 - **Committed `node_modules`.** About 64,000 files under `apps/web/node_modules` are committed, so a full checkout is about 1.4 GB. For Cipher-only work in a tight container, use a sparse checkout: `git sparse-checkout set --cone apps/cipher`. Never create one full worktree per parallel agent: that filled a 7 GB disk during round 4.
-- **Branches.** `main` carries both projects. Cipher work happened on `cipher/synthetic-prototype` (merged through PR #27). Older `codex/*` branches belong to SA-CMS Pro.
+- **Branches.** Cipher work is on `cipher/synthetic-prototype` in PR #27, which was still open when Codex resumed on 2026-10-14. Older `codex/*` branches belong to SA-CMS Pro.
 - **Spelling.** Write American English and US formats in code, comments, docs and messages.

@@ -9,10 +9,11 @@ Posting rules (fixture policy ``cipher-posting-rules/1``, synthetic prototype on
 * ``asset.dispose``              Dr 1590 accumulated to date, Dr 5200 remaining book value, Cr 1500 cost
                                  (default: into the latest open period)
 
-A reversal or disposal is never dated in a period starting before the journals it
-reverses or settles (the rule ``journal.reverse`` applies): a reversal not before its
-run's journal, a disposal not before the asset's capitalization journal or any of its
-depreciation journals and their reversals.  The manifests bind that rule (``target_rule``).
+A depreciation charge, reversal or disposal is never dated in a period starting
+before the journals it depends on (the rule ``journal.reverse`` applies): a charge
+not before capitalization, a reversal not before its run's journal, a disposal not
+before the asset's capitalization journal or any of its depreciation journals and
+their reversals.  The manifests bind that rule (``target_rule``).
 
 Schedule: straight-line monthly charge = (cost - salvage) / useful_life_months
 quantised to cents; the FINAL month absorbs the rounding residual so the schedule
@@ -268,7 +269,7 @@ class Plugin:
 
     def _require_not_before(self, target_id: str, journal_ids, what: str) -> None:
         """The ledger's rule for reversals (``journal.reverse``): ``what`` cannot be dated in a
-        period starting before the period of any journal it reverses or settles."""
+        period starting before the period of any journal it depends on."""
         source = self._latest_journal_period(journal_ids)
         target = self._period(target_id)
         if source is not None and target["start_date"] < source["start_date"]:
@@ -413,7 +414,8 @@ class Plugin:
         """Create the run for ``period_id``: a draft carrying its calendar month's charge,
         or a ``no_charge`` run (amount 0.00, never journaled) when the month precedes the
         in-service month, the asset is already fully depreciated, or the schedule has
-        ended.  The charge never exceeds what remains of the depreciable base."""
+        ended.  The charge never exceeds what remains of the depreciable base and
+        cannot be dated before the capitalization journal's period."""
         with self.db.transaction() as conn:
             a = self.get_asset(asset_id)
             if a["status"] != "active":
@@ -459,6 +461,7 @@ class Plugin:
                     status, note = "no_charge", "nothing to depreciate this month"
                 else:
                     status = "draft"
+                    self._require_not_before(period_id, [a["capitalisation_journal_id"]], f"the depreciation of asset {asset_id}")
             content = {
                 "asset_id": asset_id, "asset_version": a["version"], "period_id": period_id, "charge_month": charge_month,
                 "sequence": sequence, "amount": fmt(amount), "replaced_run_id": replaced_run_id,
@@ -521,6 +524,8 @@ class Plugin:
             }
             if operation == "asset.reverse_depreciation":
                 bindings["target_rule"] = self._target_rule([run["journal_id"]], f"the run's period {run['period_id']}")
+            else:
+                bindings["target_rule"] = self._target_rule([a["capitalisation_journal_id"]], f"the run's period {run['period_id']}")
             return build_manifest(
                 operation=operation, subject_type="asset_run", subject_id=subject_id, actor_role=actor_role,
                 amounts={"amount": run["amount"]},
@@ -595,6 +600,7 @@ class Plugin:
             if period_id and period_id != run["period_id"]:
                 raise AssetError(f"run {run_id} belongs to period {run['period_id']}, not {period_id}")
             self._require_open(run["period_id"])
+            self._require_not_before(run["period_id"], [a["capitalisation_journal_id"]], f"the depreciation of asset {a['id']}")
             amount = money(run["amount"])
             if amount <= 0:
                 raise AssetError(f"run {run_id} has no positive amount to post")

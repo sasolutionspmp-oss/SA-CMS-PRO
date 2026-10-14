@@ -2,6 +2,8 @@
 
 Cipher is S&A Solutions' owned AEC/EPC project-controls and accounting system, operated through explicit human approvals. Ricky is its role-aware assistant. Ricky previews and proposes, and through its SDK it can execute an approval only after a human has granted it; it can never grant one. This directory is the bounded **synthetic** build from the Cipher planning package (v1.0 plus the v1.1 solo-first correction): one owner, one USD entity, synthetic data, shadow finance and a simulated payment rail.
 
+The HTTP Ricky surface exposes only reviewed read and draft tools. Approval requests, execution and payment reconciliation are human actions on that surface. The standalone SDK retains its execution tools for synthetic automation and acceptance tests.
+
 Nothing here touches production systems, real payment rails or live records. Standard library only; no package installation.
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
@@ -79,9 +81,10 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 - commands are idempotent by logical operation id; a conflicting payload fails;
 - posted journals cannot be edited, extended, deleted or moved by any SQL path; corrections append reversals; locked periods never change; a period reopens only with a consumed, single-use reopen approval;
 - subledgers reconcile to control accounts: AP, AR (all sources), retainage payable and receivable, stored materials, provider clearing, employee payable, accrued payroll, bank;
-- a payment leaves only through a committed outbox row with Cipher's idempotency key, after the payee is re-verified; a timeout is *outcome unknown* until reconciliation; callbacks must be signed; duplicates are ignored; one provider reference never pairs with two payments; a kill switch stops releases immediately and resuming needs an approval;
+- a payment leaves only through a committed outbox row with Cipher's idempotency key, after the payee is re-verified and current audited insurance and bond coverage is checked; invalid coverage holds the same queued intent for retry without a provider attempt; a timeout is *outcome unknown* until reconciliation; callbacks must be signed; duplicates are ignored; one provider reference never pairs with two payments; a kill switch stops releases immediately and resuming needs an approval;
 - a payee destination changes only through a request, independent evidence recorded by someone other than the requester, and a `party.verify_destination` approval;
 - once configured, the governor modules hold approvals other modules own: the people registry checks every approver and executor, the payment policy holds high-risk releases for an independent releaser, step-up, co-signature and cooling-off, and contracts hold commitment execution for a signed agreement and bills and releases for certificates in force;
+- configured modules must load successfully; startup fails on an import, schema or initialization failure. Grant preflight checks are read-only; the grant and its self-approval record commit together, including when a caller already has a transaction open;
 - a restored copy is read-only at the SQLite level until the owner claims it; claims bind to that copy's challenge when `CIPHER_OWNER_SECRET` is set (otherwise they are attestation only and Ricky flags it); releases stay quarantined until recovery reconciliation resolves every in-flight and queued payment;
 - the HTTP boundary requires JSON with a same-origin Origin (no CSRF), rejects foreign Host headers in loopback mode (no DNS rebinding), and needs a token for any non-loopback bind; the console escapes every server value before rendering it; period close and commitment close go through their checklists.
 
@@ -108,6 +111,7 @@ apps/cipher/
                  modules: assets, schedule, drawings, reimbursements, banking, labor, procurement, field, close, handoff, rights, ap_intake
                  governors: people, payment_policy, contracts
   ricky_sdk.py   typed tool catalog for Ricky
+  ricky_served.py read and draft adapter for HTTP; standalone SDK remains a synthetic harness
   service.py     Cipher façade: request → approve → execute; core and module routing; golden fixture
   server.py      stdlib HTTP API and console host
   console/       owner console with a browser self-test

@@ -3,10 +3,27 @@ from __future__ import annotations
 
 from typing import Any
 
-from .db import Database
+from .db import Database, register_schema_version
 from .ids import canonical_json, sha256_hex, utcnow_iso
 
 GENESIS = "0" * 64
+
+INDEX_SCHEMA_NAME = "audit_log_lookup_indexes"
+INDEX_SCHEMA_STATEMENTS = [
+    "CREATE INDEX IF NOT EXISTS audit_log_entity_seq ON audit_log(entity_type, entity_id, seq)",
+    "CREATE INDEX IF NOT EXISTS audit_log_action_seq ON audit_log(action, seq)",
+]
+
+
+def register_audit_schema() -> int:
+    """Append lookup indexes after the service loads all historical schema entries.
+
+    Audit is imported by the governors before their schema registration, so
+    registering at import time would shift existing catalog positions. The
+    entity index serves scoped audit reads and governor evidence lookups; the
+    action index serves policy history and integrity checks in sequence order.
+    """
+    return register_schema_version(INDEX_SCHEMA_NAME, INDEX_SCHEMA_STATEMENTS)
 
 
 class Audit:
