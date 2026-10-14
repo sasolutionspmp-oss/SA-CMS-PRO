@@ -13,8 +13,8 @@ export function StatusChip({ status }: { status: string }) {
   const Icon = tone === 'positive' ? CheckmarkCircleRegular : tone === 'warning' || tone === 'negative' ? WarningRegular : ClockRegular;
   return <span className={`cipher-status cipher-status-${tone}`}><Icon aria-hidden="true" />{statusText(status)}</span>;
 }
-export function PageHeader({ title, subtitle, helpKind = 'record', children }: {
-  title: string; subtitle?: string; helpKind?: keyof typeof help; children?: ReactNode;
+export function PageHeader({ title, subtitle, helpKind = 'record', helpContent, children }: {
+  title: string; subtitle?: string; helpKind?: keyof typeof help; helpContent?: ReactNode; children?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const restoreTarget = useRestoreFocusTarget();
@@ -25,7 +25,7 @@ export function PageHeader({ title, subtitle, helpKind = 'record', children }: {
     </header>
     <OverlayDrawer {...restoreSource} open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="medium">
       <DrawerHeader><DrawerHeaderTitle action={<Button appearance="subtle" aria-label="Close help" icon={<DismissRegular />} onClick={() => setOpen(false)} />}>About this page</DrawerHeaderTitle></DrawerHeader>
-      <DrawerBody><p>{help[helpKind]}</p><h2>Practice workspace</h2><p>Read views let you explore the work without changing a record. Use the navigation to return to projects or review requests.</p><AppLink href="/projects">Open practice projects</AppLink></DrawerBody>
+      <DrawerBody>{helpContent ?? <><p>{help[helpKind]}</p><h2>Practice workspace</h2><p>Read views let you explore the work without changing a record. Use the navigation to return to projects or review requests.</p><AppLink href="/projects">Open practice projects</AppLink></>}</DrawerBody>
     </OverlayDrawer>
   </>;
 }

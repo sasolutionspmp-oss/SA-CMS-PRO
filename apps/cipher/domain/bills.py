@@ -1399,13 +1399,29 @@ class Bills:
                 or new_flow and (manifest.get("bindings") or {}).get("approval_flow") != BILL_APPROVAL_FLOW
                 or not new_flow and (manifest.get("bindings") or {}).get("approval_flow") is not None):
             raise BillError("bill requires a fresh, intact separate-posting business authorization")
-        history = {r["action"]: {**loads(r["payload_json"]), "actor": r["actor"]} for r in self.db.query(
-            "SELECT action,actor,payload_json FROM audit_log WHERE entity_type='approval' AND entity_id=? ORDER BY seq", (approval_id,))}
+        events = self.db.query("SELECT action,actor,payload_json FROM audit_log WHERE entity_type='approval' AND entity_id=? ORDER BY seq", (approval_id,))
+        lifecycle = {"approval.requested": "pending", "approval.granted": "granted", "approval.consumed": "consumed",
+                     "approval.expired": "expired", "approval.invalidated": "invalidated"}
+        transitions = {None: {"pending"}, "pending": {"granted", "expired", "invalidated"},
+                       "granted": {"consumed", "expired", "invalidated"}, "consumed": set(),
+                       "expired": {"invalidated"}, "invalidated": {"invalidated"}}
+        recorded_status = None
+        for event in events:
+            if event["action"] not in lifecycle:
+                continue
+            next_status = lifecycle[event["action"]]
+            if next_status not in transitions[recorded_status]:
+                raise BillError("bill authorization has an unsupported audited lifecycle transition")
+            recorded_status = next_status
+        if recorded_status != status:
+            raise BillError("bill authorization lifecycle differs from its latest audited decision")
+        history = {r["action"]: {**loads(r["payload_json"]), "actor": r["actor"]} for r in events}
         requested, granted = history.get("approval.requested") or {}, history.get("approval.granted") or {}
         if (requested.get("manifest_hash") != ap["manifest_hash"] or requested.get("operation") != ap["operation"]
                 or requested.get("subject") != manifest["subject"] or requested.get("actor") != ap["requested_by"]
-                or granted.get("material_hash") != ap["material_hash"]
-                or granted.get("operation") != ap["operation"] or granted.get("actor") != ap["approver"]):
+                or status != "pending" and (granted.get("material_hash") != ap["material_hash"]
+                or granted.get("operation") != ap["operation"] or granted.get("actor") != ap["approver"])
+                or status == "pending" and bool(granted)):
             raise BillError("bill business authorization does not match its audited request and grant")
         if status == "consumed":
             consumed = history.get("approval.consumed") or {}
@@ -1415,6 +1431,15 @@ class Bills:
         elif status in ("invalidated", "expired") and f"approval.{status}" not in history:
             raise BillError("bill authorization lifecycle does not match its audited history")
         return ap
+
+    def business_grant_preflight(self, bill_id: str, *, approval_id: str) -> dict[str, Any]:
+        """Verify pending business facts without granting or writing lifecycle state."""
+        b = self.get(bill_id)
+        if b["status"] not in ("draft", "approved"):
+            raise BillError("only an unposted bill receives business approval")
+        ap = self._audited_authorization(approval_id, bill_id, status="pending")
+        manifest = self._current_business_manifest(bill_id, ap)
+        return {"bill": b, "approval": ap, "manifest": manifest}
 
     def _current_business_manifest(self, bill_id: str, ap: dict[str, Any]) -> dict[str, Any]:
         builder = self.business_manifest_builder
@@ -1487,50 +1512,60 @@ class Bills:
             conn.execute("UPDATE bills SET status='approved',business_approval_id=?,approval_record_id=? WHERE id=?", (approval_id, record["id"], bill_id))
         return self.get(bill_id)
 
+    def posting_preflight(self, bill_id: str, *, approval_id: str, actor: str, period_id: str | None = None,
+                          reason: str = "", actor_role: str = "accountant") -> dict[str, Any]:
+        """The exact read-only source, period and journal checks used by posting."""
+        b = self.get(bill_id)
+        if b["status"] != "approved":
+            raise BillError(f"bill {bill_id} is {b['status']}")
+        record = self._business_record(b)
+        if approval_id != record["approval_id"]:
+            raise BillError("post using this bill's actual recorded business approval")
+        ap = self._audited_authorization(approval_id, bill_id)
+        current = self._current_business_manifest(bill_id, ap)
+        if not isinstance(actor, str) or not actor.strip():
+            raise BillError("posting requires a named human actor")
+        if actor.strip().casefold() == ap["approver"].strip().casefold():
+            raise BillError("the business approver cannot post their own bill")
+        if not callable(self.posting_authorizer):
+            raise BillError("posting requires an authoritative posting-duty check")
+        if actor_role not in ("accountant", "controller"):
+            raise BillError("only an actual accountant or controller posting duty may post")
+        if b["stale"]:
+            raise BillError(f"the commitment changed after this bill was certified ({', '.join(b['stale_reasons'])}); re-certify it")
+        target = self.ledger.require_open(period_id or b["period_id"])
+        if target["start_date"] < self.ledger.period(b["period_id"])["start_date"]:
+            raise BillError("posting cannot precede the certification period")
+        if not isinstance(reason, str) or len(reason) > MAX_TEXT_LENGTH:
+            raise BillError("the posting reason must be text of at most 500 characters")
+        reason = reason.strip()
+        if target["id"] != b["period_id"] and not reason:
+            raise BillError("posting in another period requires a reason")
+        prior = self.db.one("SELECT id,status FROM bills WHERE commitment_id=? AND sequence<? AND status NOT IN ('void','corrected') ORDER BY sequence DESC LIMIT 1",
+                            (b["commitment_id"], b["sequence"]))
+        if prior and prior["status"] not in ("posted", "paid"):
+            raise BillError("post the cumulative predecessor before this successor")
+        if prior:
+            prior_period = self.ledger.period(self._actual_posting_period(self.get(prior["id"])))
+            if target["start_date"] < prior_period["start_date"]:
+                raise BillError("a cumulative successor cannot be dated before its predecessor's actual posting")
+        frozen = [lot["id"] for lot in self._bill_lots(b) if lot["evidence_status"] != "current"]
+        if frozen:
+            raise BillError(f"stored material lot(s) {', '.join(frozen)} have revised evidence; confirm_lot_evidence and approve again")
+        plan = self._journal_plan(b, period_id=target["id"])
+        if not plan:
+            raise BillError(f"bill {bill_id} has nothing to post")
+        self._supplier_invoice_binding(b)
+        self._refuse_spent_approval(approval_id)
+        return {"bill": b, "record": record, "approval": ap, "manifest": current, "period": target, "reason": reason, "plan": plan}
+
     def post(self, bill_id: str, *, approval_id: str, actor: str, period_id: str | None = None, reason: str = "", actor_role: str = "accountant") -> dict[str, Any]:
         """Consume one recorded business grant in a separate, authorized posting act."""
         with self._lifecycle_transaction() as conn:
-            b = self.get(bill_id)
-            if b["status"] != "approved":
-                raise BillError(f"bill {bill_id} is {b['status']}")
-            record = self._business_record(b)
-            if approval_id != record["approval_id"]:
-                raise BillError("post using this bill's actual recorded business approval")
-            ap = self._audited_authorization(approval_id, bill_id)
-            current = self._current_business_manifest(bill_id, ap)
-            if actor.strip().casefold() == ap["approver"].strip().casefold():
-                raise BillError("the business approver cannot post their own bill")
-            if not callable(self.posting_authorizer):
-                raise BillError("posting requires an authoritative posting-duty check")
-            if actor_role not in ("accountant", "controller"):
-                raise BillError("only an actual accountant or controller posting duty may post")
-            if b["stale"]:
-                raise BillError(f"the commitment changed after this bill was certified ({', '.join(b['stale_reasons'])}); re-certify it")
-            target = self.ledger.require_open(period_id or b["period_id"])
-            if target["start_date"] < self.ledger.period(b["period_id"])["start_date"]:
-                raise BillError("posting cannot precede the certification period")
-            if not isinstance(reason, str) or len(reason) > MAX_TEXT_LENGTH:
-                raise BillError("the posting reason must be text of at most 500 characters")
-            reason = reason.strip()
-            if target["id"] != b["period_id"] and not reason:
-                raise BillError("posting in another period requires a reason")
-            prior = self.db.one("SELECT id,status FROM bills WHERE commitment_id=? AND sequence<? AND status NOT IN ('void','corrected') ORDER BY sequence DESC LIMIT 1",
-                                (b["commitment_id"], b["sequence"]))
-            if prior and prior["status"] not in ("posted", "paid"):
-                raise BillError("post the cumulative predecessor before this successor")
-            if prior:
-                prior_period = self.ledger.period(self._actual_posting_period(self.get(prior["id"])))
-                if target["start_date"] < prior_period["start_date"]:
-                    raise BillError("a cumulative successor cannot be dated before its predecessor's actual posting")
-            # every lot this bill bills for the first time or transfers from must still rest on current evidence
-            frozen = [l["id"] for l in self._bill_lots(b) if l["evidence_status"] != "current"]
-            if frozen:
-                raise BillError(f"stored material lot(s) {', '.join(frozen)} have revised evidence; confirm_lot_evidence and approve again")
-            plan = self._journal_plan(b, period_id=target["id"])
-            if not plan:
-                raise BillError(f"bill {bill_id} has nothing to post")
-            self._supplier_invoice_binding(b)
-            self._refuse_spent_approval(approval_id)
+            checked = self.posting_preflight(bill_id, approval_id=approval_id, actor=actor, period_id=period_id,
+                                             reason=reason, actor_role=actor_role)
+            b, record, ap, current = checked["bill"], checked["record"], checked["approval"], checked["manifest"]
+            target, reason, plan = checked["period"], checked["reason"], checked["plan"]
             self.posting_authorizer(ap, current, actor, target["id"], actor_role=actor_role)
             self.approvals.consume(approval_id, current_manifest=current, consumer=actor)
             journal_ids = []

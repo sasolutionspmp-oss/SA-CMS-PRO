@@ -1215,7 +1215,7 @@ class CoreSubledgerCheckTests(unittest.TestCase):
         bill = s.supplier_bill(cmt, "20000")  # 2,000 retainage payable
         s.prime_bill("30000")  # 3,000 retainage receivable
         s.owner_contribution("1000")
-        expected = [f"bill {bill['id']} lifecycle intact"] + [
+        expected = [f"bill {bill['id']} lifecycle intact", "AP action receipts intact"] + [
             label for label, domain, method in CoreReconciliationChecks.CHECKS if hasattr(getattr(c, domain), method)]
         report = cl.checklist_report("P1")
         core_checks = [ch["check"] for ch in report["checks"] if ch["source"] == CORE_SOURCE]

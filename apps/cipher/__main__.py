@@ -2,6 +2,7 @@
 
   serve   [--db PATH] [--port N] [--demo]   run the owner console
   practice-web [--port N]                   run the read-only Fluent practice app
+  ap-practice-web [--port N]                run the disposable Fluent AP workflow
   demo    [--db PATH]                        run the golden fixture and print the summary
   test                                       run the test suite
   export  [--db PATH] [--out FILE]           write the audit export
@@ -35,6 +36,9 @@ def main(argv: list[str] | None = None) -> int:
     pw = sub.add_parser("practice-web", help="run the Fluent app against a fresh read-only synthetic workspace")
     pw.add_argument("--port", type=int, default=8766)
 
+    apw = sub.add_parser("ap-practice-web", help="run the Fluent AP workflow in a fresh synthetic workspace")
+    apw.add_argument("--port", type=int, default=8767)
+
     e = sub.add_parser("export", help="write the audit export")
     e.add_argument("--db", default=os.environ.get("CIPHER_DB", "data/cipher.sqlite"))
     e.add_argument("--out", default="-")
@@ -60,6 +64,15 @@ def main(argv: list[str] | None = None) -> int:
         from .practice_server import serve_practice
         try:
             serve_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "ap-practice-web":
+        from .ap_practice_server import serve_ap_practice
+        try:
+            serve_ap_practice(port=args.port)
         except (OSError, ValueError) as exc:
             print(f"cipher: {exc}", file=sys.stderr)
             return 2

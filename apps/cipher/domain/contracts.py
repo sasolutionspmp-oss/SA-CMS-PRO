@@ -1440,7 +1440,8 @@ class Plugin:
         elif operation == OP_REQUIRE and approver_role != "owner":
             raise ContractError(f"{OP_REQUIRE} is granted by the owner only, not by role {approver_role!r}")
 
-    def check_execute(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
+    def check_execute_preflight(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> dict[str, Any] | None:
+        """Check current execution facts without recording coverage verification."""
         operation = approval["operation"]
         stored = self._approval(approval.get("id"))
         if stored is not None and (stored["status"] != "granted" or parse_iso(stored["expires_at"]) <= utcnow()):
@@ -1453,12 +1454,18 @@ class Plugin:
         elif operation in COVERAGE_OPERATIONS and facts:
             day = self._today()
             chosen = self._cover(facts, day)
-            self._record_coverage(approval, chosen, day, actor)
+            return {"day": day, "chosen": chosen}
         elif operation == OP_SIGN:
             bound = (approval.get("manifest") or {}).get("bindings") or {}
             why = self._signer_problem(bound.get("signer"), bound.get("project_id"))
             if why:
                 raise ContractError(why)
+        return None
+
+    def check_execute(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
+        coverage = self.check_execute_preflight(approval, manifest, actor=actor)
+        if coverage is not None:
+            self._record_coverage(approval, coverage["chosen"], coverage["day"], actor)
 
     # ---- manifests --------------------------------------------------------------------------- #
 

@@ -1120,6 +1120,15 @@ class Plugin:
                 raise IndependenceRequired(f"the co-signer {sig['cosigner']!r} is also the {role} of this release")
         return sig
 
+    def check_execute_preflight(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
+        """Declare nongoverned operations safe for a read-only preview.
+
+        Release clearance consumes step-up assertions and records financial controls;
+        an AP bill review must never invoke that effectful execution hook.
+        """
+        if approval.get("operation") in GOVERNED_OPERATIONS:
+            raise PolicyRefused("Payment release clearance does not support this read-only bill review.")
+
     def check_execute(self, approval: dict[str, Any], manifest: dict[str, Any], *, actor: str) -> None:
         """Enforce the release rules inside the execution transaction (see the module docstring).
         Writes (the step-up's use and the clearance) commit only with the release itself."""

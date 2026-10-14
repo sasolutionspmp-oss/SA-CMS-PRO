@@ -8,7 +8,7 @@ Nothing here touches production systems, real payment rails or live records. Sta
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
 
-The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) now works in the synthetic engine; immutable practice mode is implemented. Typed action contracts, presenters and practice sessions come next. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
+The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) works in the synthetic engine; immutable practice mode is implemented. The separate [AP practice workflow](docs/AP_PRACTICE.md) adds scoped synthetic sessions, typed reviews and repeatable bill request/approval/posting actions. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
 
 ## Start
 
@@ -21,12 +21,15 @@ python -m apps.cipher serve --db data/cipher.sqlite         # persistent workspa
 python -m apps.cipher export --db data/cipher.sqlite --out audit-export.json
 python -m apps.cipher schema --db data/cipher.sqlite
 python -m apps.cipher practice-web --port 8766              # read-only Fluent practice backend, fresh in-memory fixture
+python -m apps.cipher ap-practice-web --port 8767           # Fluent AP workflow, fresh synthetic people and records
 python -m apps.cipher.tools.core_gates                      # accounting-core decision gates (scorecard JSON)
 python -m apps.cipher.tools.corpus                          # 20-bill corpus: approval-time metrics (report JSON)
 python -m apps.cipher.tools.browser_check                   # headless Chrome/Edge drives the console journey
 ```
 
 The separate [Fluent practice app](web/README.md) reads versioned project, commitment, bill and approval presenters from `/api/practice/v1`. Build it with `npm ci` and `npm run build` in `apps/cipher/web`, then run `practice-web` and open `http://127.0.0.1:8766`. This local server always owns a fresh in-memory fixture, freezes it read-only, and has no file-workspace, action, identity or provider option. It mounts none of the old console routes. It is a design/development harness; the live backend-for-frontend remains open.
+
+Build the separate AP entry with `npm run build:ap`, then start `ap-practice-web` and open `http://127.0.0.1:8767`. It uses `/api/ap-practice/v1` and its own disposable workspace. Select the synthetic accountant to request business approval, the separate PM to grant it without a journal, and the accountant to review and post the actual entry. Current audited project duties govern each request; no body can supply an actor or role. Exact authorized retries replay an immutable action receipt. These practice selectors do not authenticate staff, and this server has no external accounting or payment routes.
 
 New workspaces receive an immutable audited practice declaration. Known historical Cipher files adopt practice while preserving original history; unrelated, empty, missing-identity or invalid-schema files are refused before initialization. This release refuses live files and unqualified payment providers. No flag or route promotes practice to live.
 

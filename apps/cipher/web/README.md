@@ -39,6 +39,31 @@ CIPHER_WEB_BASE_URL=http://127.0.0.1:8766 npm run smoke --prefix apps/cipher/web
 
 Smoke checks use installed `/usr/bin/chromium` by default (`CIPHER_CHROME` can select another installed Chromium). They exercise six read pages at 1440, 1024, and 390 pixels, search, keyboard dismissal/focus return, mobile navigation, scoped scrolling, no write requests, and axe WCAG checks. API-mode checks also verify Fluent style nonces and browser CSP errors. Reports and screenshots go to `/tmp/cipher-web-review` unless `CIPHER_WEB_ARTIFACTS` selects an artifact directory. Hidden Tabster focus-sentinel nodes are narrowly excluded from axe after keyboard traversal confirmed focus skips them; no accessibility rule is disabled globally. Automated checks do not replace manual screen reader testing or owner review.
 
+## AP practice actions
+
+The separate AP entry adds a complete synthetic bill workflow while the original read application and its GET-only checks keep their existing behavior:
+
+```bash
+npm run build:ap --prefix apps/cipher/web
+python -m apps.cipher ap-practice-web --port 8767
+```
+
+Open `http://127.0.0.1:8767`. Start as the listed accountant to review a certified draft bill and request business approval. Change practice person to the listed project manager, open Business reviews, read the decision packet and grant approval. Approval creates no journal or payable. Change back to the accountant and open Post approved bills; select an open posting period, supply a reason for a different period, review the exact entry, and explicitly post to the practice working ledger.
+
+This entry uses the existing Fluent 2 theme, frame and record templates, with its own `ap-practice.html`, `src/ap-main.tsx`, `src/ap/` and ignored `dist-ap/`. The fixed same-origin `/api/ap-practice/v1` API derives current project scope and duties from a registered synthetic person. Persona selection is a transparent practice tool; it does not establish real human identity or Microsoft authentication. The opaque HttpOnly, SameSite=Strict cookie is for this loopback HTTP application. Sessions expire after 30 minutes idle or 8 hours total, and every unsafe request includes the current CSRF token. Restarting the server discards its sessions and in-memory records.
+
+Each action requires a read-only preflight and current record version. Changing the posting period or reason clears the review. The client retains the exact action body and repeatability UUID in memory for an explicit **Retry same action**, including navigation within the current person’s scope. A retry retrieves the original recorded outcome; a fresh read shows current state. Starting a new review, changing person/scope, losing the session, or reloading the browser discards that client memory. No cookies or CSRF tokens are persisted by the action cache. Safe changed/expired/blocked responses require refreshed facts and a new review; the client never resubmits automatically or substitutes fixture data.
+
+Certification lines show actual installed work and period totals. There are no claimed-versus-reviewed editing fields, invoice upload, payment, provider acknowledgement, production identity or live-workspace controls in this entry. It displays grounded names and **Bill {sequence}**; it does not invent business record numbers. QuickBooks and Odoo handoffs remain later work.
+
+```bash
+npm run typecheck --prefix apps/cipher/web
+npm run build:ap --prefix apps/cipher/web
+npm run smoke:ap --prefix apps/cipher/web
+```
+
+The AP smoke test launches a fresh isolated backend for each of 1440, 1024 and 390 pixels, exercises the same-accountant request/post with a different project manager, verifies journal-free approval and an actual later-period post, and retries each action using the same body/UUID/receipt, including a retry after navigation. It checks a genuine competing-post refusal, a backend rejection of changed review inputs, session loss, eight malformed-contract/precision cases, keyboard focus, the posting dialog’s safe initial focus, scoped reads, style nonces, CSP/application errors and axe WCAG findings. Expected HTTP refusals are bound to the tested request’s method, path and status when it begins; their actual response evidence is retained for matching browser network messages. Every unexpected HTTP response and application/CSP error fails the check. Its screenshots and report go to `/tmp/cipher-completion/ap-browser`; `CIPHER_AP_ARTIFACTS` may choose a different artifact directory and `CIPHER_AP_PORT` an unused local test port. The accessibility run uses reduced motion so transient color animations have settled. Automated checks still leave manual screen reader and owner design review open.
+
 ## Exact direct dependencies
 
 Publication dates were verified against the npm registry on Oct 14, 2026. Each selected release was published more than two weeks earlier. `package-lock.json` pins the complete resolved dependency graph.
@@ -58,4 +83,4 @@ Publication dates were verified against the npm registry on Oct 14, 2026. Each s
 
 Fluent, Griffel, React, TypeScript, and Vite use MIT licenses; Playwright uses Apache-2.0 and axe-core uses MPL-2.0. Their package license files remain available in the development install.
 
-The bounded read contract does not yet include schedule-of-values grids, documents, governed approval packets, forecasts, history seals, person-specific home queues, saved views, or server-side exports. Those features are omitted. No mock checks, approval thresholds, numbering, or business facts are invented for API records. The explicit sample fixture supplies synthetic examples solely for layout review. `node_modules/`, `dist/`, local environment overrides, and test reports are ignored and must not be committed.
+The original bounded read contract does not include schedule-of-values grids, documents, governed approval packets, forecasts, history seals, person-specific home queues, saved views, or server-side exports. The separate AP entry adds certified bill lines, business packets and person-scoped workflow queues as described above. No mock checks, approval thresholds, numbering, or business facts are invented for API records. The explicit read-app sample fixture supplies synthetic examples solely for layout review. `node_modules/`, `dist/`, `dist-ap/`, local environment overrides, and test reports are ignored and must not be committed.

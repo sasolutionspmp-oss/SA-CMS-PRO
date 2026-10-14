@@ -100,6 +100,7 @@ def _load_plugin_modules() -> list[Any]:
 
 _load_plugin_modules()
 from .core.audit import Audit, register_audit_schema
+from .core.api_receipts import APIActionReceipts, register_api_receipts_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database, register_workspace_mode_schema
 from .core.ids import new_id, sha256_hex, utcnow_iso
@@ -119,6 +120,7 @@ from .ricky_sdk import RickySDK
 register_audit_schema()
 register_bill_posting_schema()
 register_workspace_mode_schema()
+register_api_receipts_schema()
 
 
 class CipherError(RuntimeError):
@@ -148,6 +150,8 @@ class CoreReconciliationChecks:
     def close_checks(self, period_id: str) -> list[dict[str, Any]]:
         out = []
         out.extend(self.c.bills.lifecycle_integrity_checks())
+        for check in APIActionReceipts(self.c.db, self.c.audit).integrity_checks():
+            out.append({"check": "AP action receipts intact", "ok": check["ok"], "detail": check["message"]})
         for label, domain_name, method in self.CHECKS:
             fn = getattr(getattr(self.c, domain_name), method, None)
             if fn is None:
@@ -383,9 +387,8 @@ class Cipher:
             return plugin.manifest_for(operation, subject_id, actor_role=actor_role)
         raise CipherError(f"unknown operation {operation}")
 
-    def request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
-        """The manifest's actor_role is the role that will execute the operation; it
-        must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
+    def check_request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
+        """Build and check the request without creating an approval or audit entry."""
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
         if operation == "bill.approve":
             people = self._plugins.get("people")
@@ -400,7 +403,28 @@ class Cipher:
             check = getattr(governor, "check_request", None)
             if check is not None:
                 check(operation, manifest, actor_role=actor_role, requested_by=requested_by)
+        return manifest
+
+    def request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
+        """The manifest's actor_role is the role that will execute the operation; it
+        must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
+        manifest = self.check_request_approval(operation, subject_id, actor_role=actor_role, requested_by=requested_by)
         return self.approvals.request(manifest, requested_by=requested_by)
+
+    def check_approval_grant(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
+        """Check human decision authority and bill facts without granting anything."""
+        self.db.require_practice_mode()
+        ap = self.approvals.get(approval_id)
+        if not Ricky.can(approver_role, ap["operation"]):
+            raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
+        governors = self._governors()
+        for name, governor in governors:
+            check = getattr(governor, "check_bill_grant" if ap["operation"] == "bill.approve" and name == "people" else "check_grant", None)
+            if check is not None:
+                check(ap, approver=approver, approver_role=approver_role)
+        if ap["operation"] == "bill.approve" and ap["status"] == "pending":
+            self.bills.business_grant_preflight(ap["subject_id"], approval_id=approval_id)
+        return {"approval": ap, "governors": governors}
 
     def approve(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
         """Grant an approval.  The approver's role must hold the operation's authority.
@@ -414,14 +438,8 @@ class Cipher:
                 savepoint = new_id("grant")
                 conn.execute(f"SAVEPOINT {savepoint}")
                 try:
-                    ap = self.approvals.get(approval_id)
-                    if not Ricky.can(approver_role, ap["operation"]):
-                        raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
-                    governors = self._governors()
-                    for _name, governor in governors:
-                        check = getattr(governor, "check_bill_grant" if ap["operation"] == "bill.approve" and _name == "people" else "check_grant", None)
-                        if check is not None:
-                            check(ap, approver=approver, approver_role=approver_role)
+                    checked = self.check_approval_grant(approval_id, approver=approver, approver_role=approver_role)
+                    ap, governors = checked["approval"], checked["governors"]
                     granted = self.approvals.grant(approval_id, approver=approver)
                     for _name, governor in governors:
                         hook = getattr(governor, "on_grant", None)
@@ -554,6 +572,32 @@ class Cipher:
         if people is None or not callable(getattr(people, "check_bill_cancellation", None)):
             raise RoleNotAuthorized("Withdrawing an approved bill requires its human business approver.")
         people.check_bill_cancellation(approval, actor=actor)
+
+    def check_bill_posting(self, bill_id: str, *, actor: str, actor_role: str = "accountant", period_id: str | None = None,
+                           reason: str = "") -> dict[str, Any]:
+        """Read-only eligibility and exact posting plan for a human's review."""
+        self.db.require_practice_mode()
+        bill = self.bills.get(bill_id)
+        approval_id = bill.get("business_approval_id")
+        if not approval_id:
+            raise CipherError("This bill has no recorded business approval for independent posting.")
+        checked = self.bills.posting_preflight(bill_id, approval_id=approval_id, actor=actor, actor_role=actor_role,
+                                               period_id=period_id, reason=reason)
+        ap, manifest = checked["approval"], checked["manifest"]
+        people = self._plugins.get("people")
+        if people is None or not callable(getattr(people, "check_bill_post", None)):
+            raise RoleNotAuthorized("Bill posting requires the configured identity governor.")
+        people.check_bill_post(ap, manifest, actor=actor, actor_role=actor_role)
+        for name, governor in self._governors():
+            if name == "people":
+                continue
+            check = getattr(governor, "check_execute_preflight", None)
+            if check is not None:
+                check(ap, manifest, actor=actor)
+            elif callable(getattr(governor, "check_execute", None)):
+                # Effectful execution hooks are not safe preview hooks.
+                raise CipherError("A configured bill governor does not support read-only review.")
+        return checked
 
     def post_bill(self, bill_id: str, *, actor: str, actor_role: str = "accountant", period_id: str | None = None,
                   reason: str = "", op_id: str | None = None) -> CommandResult:
@@ -742,6 +786,10 @@ class Cipher:
             "journals": self.ledger.journals(),
             "approvals": self.approvals.list(),
             "ap_reconciliation": reconciliations["ap"],
+            "ap_action_receipts": {
+                "records": q("SELECT * FROM ap_action_receipts ORDER BY created_at, id"),
+                "integrity": APIActionReceipts(self.db, self.audit).integrity_checks(),
+            },
             "ar_reconciliation": reconciliations["ar"],
             "source_records": {
                 "parties": q("SELECT id, kind, name, destination_version, destination_verified, created_at FROM parties ORDER BY created_at"),
