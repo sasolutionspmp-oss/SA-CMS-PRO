@@ -4,6 +4,8 @@ Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read 
 
 For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. The next coding milestone is B01–B02, specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md). Its design is complete; the lifecycle and authority changes are not implemented yet.
 
+The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. The recovered architecture makes Odoo the planned operational source for customers, opportunities, projects and procurement; Cipher supplies construction/engineering extensions, commercial controls and the interface. QuickBooks stays the accounting authority until a separately agreed cutover. Preserve the established BILL route while its handoff is mapped and tested. Recover the latest Odoo setup/reconciliation checkpoint before duplicating overlapping modules; this checkout's synthetic tests do not verify its live state. Recovering that checkpoint can proceed alongside the Cipher control and UI work.
+
 ## Where it stands
 
 - **Code:** `apps/cipher` on `cipher/synthetic-prototype`, in open PR #27. The original handoff incorrectly said it had merged; GitHub still showed it open when Codex resumed on 2026-10-14. Python standard library only.
@@ -50,7 +52,7 @@ From `BUILD_STATUS.md`, "Not verified / remaining gaps":
 7. **Redaction by structure.** SDK destination redaction matches key names, with a fallback for hashes next to a destination value. Mark destination-derived fields where they are built instead.
 8. **Acceptance coverage.** Neither acceptance walk exercises labor, field, drawings, schedule or reimbursements under an enforcing identity policy. Extend `tests/test_vertical_extended.py`.
 9. **Container image — addressed.** Rebuilt on 2026-10-14 with 1320 tests passing. Restrictive checkout permissions are normalized so the non-root server can read its application files. A volume seeded by the prior PR head upgrades to schema 64 and passes token sign-in 16 of 16 before and after restart, with a healthy server running as UID 10001.
-10. **Core decision.** ERPNext was never run against `tools/core_gates.py`; the gates have an adapter slot for it. Needs a machine with tens of gigabytes free.
+10. **Historical core comparison.** ERPNext was never run against `tools/core_gates.py`; the gates have an adapter slot for it. That is a prototype evidence limit, not a prerequisite for continuing the established Odoo/QuickBooks architecture. Reopen a finance-core comparison only if a replacement is selected later.
 
 ### 3. After the owner's decisions
 

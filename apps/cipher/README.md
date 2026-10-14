@@ -1,6 +1,6 @@
 # Cipher — synthetic prototype
 
-Cipher is S&A Solutions' owned AEC/EPC project-controls and accounting system, operated through explicit human approvals. Ricky is its role-aware assistant. Ricky previews and proposes, and through its SDK it can execute an approval only after a human has granted it; it can never grant one. This directory is the bounded **synthetic** build from the Cipher planning package (v1.0 plus the v1.1 solo-first correction): one owner, one USD entity, synthetic data, shadow finance and a simulated payment rail.
+Cipher is a prototype for S&A Solutions' AEC/EPC extensions, commercial controls and planned working interface alongside Odoo and QuickBooks, operated through explicit human approvals. Odoo is the planned operational source for customers, opportunities, projects and procurement; QuickBooks is the current accounting authority. Prior Odoo catch-up work is owner-confirmed; its latest checkpoint and the live integrations are not verified by this prototype. Ricky is the role-aware assistant. Ricky previews and proposes, and through its SDK it can execute an approval only after a human has granted it; it can never grant one. This directory is the bounded **synthetic** build from the Cipher planning package (v1.0 plus the v1.1 solo-first correction): one owner, one USD entity, synthetic data, shadow finance and a simulated payment rail.
 
 The HTTP Ricky surface exposes only reviewed read and draft tools. Approval requests, execution and payment reconciliation are human actions on that surface. The standalone SDK retains its execution tools for synthetic automation and acceptance tests.
 
@@ -8,7 +8,7 @@ Nothing here touches production systems, real payment rails or live records. Sta
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
 
-The path to a usable ERP is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with milestone acceptance gates and the next work items. The next implementation is the [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md). Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
+The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. Recover and reuse the Odoo checkpoint while continuing the [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md). Preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
 
 ## Start
 
@@ -125,4 +125,4 @@ apps/cipher/
 
 ## Gates that remain closed
 
-Authoritative accounting (the native-vs-ERPNext comparison, controller-approved policies, migration, parallel closes), production identity and authentication, real payment providers and bank connectivity, licensed-content ingestion, multi-entity and CAD automation are later gates in the plan. The fixture's posting rules (certified progress billed = earned, stored-material and disposal treatment) are labeled SHADOW assumptions awaiting controller approval.
+Live Odoo and QuickBooks/BILL integration, production identity and authentication, real payment providers and bank connectivity, licensed-content ingestion, multi-entity and CAD automation require their own acceptance gates. QuickBooks remains authoritative; a finance cutover and any reopened core comparison require a separate decision, controller-approved policies, reconciled migration and parallel closes. The fixture's posting rules (certified progress billed = earned, stored-material and disposal treatment) are labeled SHADOW assumptions awaiting controller approval.

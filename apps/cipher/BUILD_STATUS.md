@@ -6,6 +6,7 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 | Date | Check | Result |
 |---|---|---|
+| 2026-10-14 | Odoo/Cipher/QuickBooks delivery-boundary correction (documentation only) | local links and 15 unique build IDs checked; independent documentation review; unchanged engine suite: 1320 tests, OK, 243.012 seconds; live Odoo checkpoint and integrations not verified |
 | 2026-10-14 | Delivery backlog and bill approval/posting design (documentation only) | local links and 15 unique build IDs checked; unchanged engine suite: 1320 tests, OK, 234.047 seconds; split implementation remains open |
 | 2026-10-14 | `python -m apps.cipher test` after the Codex continuation and review fixes (Linux, Python 3.12) | 1320 unique tests, OK, no expected failures; 243.776 seconds |
 | 2026-10-14 | Rebuilt container image, including the full suite | 1320 tests, OK; 282.092 seconds; application files readable after a restrictive checkout; server UID 10001, healthy |
@@ -41,6 +42,10 @@ Continued from the exact PR #27 head, `4bbe9842`, after reproducing the handoff'
 - **Container packaging:** the non-root startup check reproduced unreadable application files copied from a private checkout. The Dockerfile now normalizes source read/traverse permissions before its tests; the rebuilt image and an independent runtime check both pass upgrade, token sign-in, health and restart checks.
 
 The pre-pilot approval/posting split, authenticated session identity and replacement of the old action API remain open. This continuation does not open the production gates or settle the owner's UI decisions.
+
+### Architecture context correction (2026-10-14)
+
+The owner confirmed that QuickBooks is in use and that prior work has brought Odoo toward being fully caught up. The recovered September architecture assigns customers, opportunities, projects and procurement to Odoo; Cipher supplies construction/engineering extensions, commercial controls and the working interface. QuickBooks remains accounting authority until a separately agreed cutover; preserve the established BILL route while its handoff is mapped and tested. The delivery backlog and handoff now carry that boundary and require recovering/reusing the Odoo checkpoint before building overlapping modules. This is a documentation correction, not an Odoo completion, reconciliation or integration test result. No live tenant or financial records were accessed or changed.
 
 ## Round 4 (governor modules)
 
@@ -108,6 +113,6 @@ Every finding below was reproduced before it was fixed, and each fix has a regre
 - **Ricky SDK coverage:** every approval-bound operation is reachable through the SDK or excluded by name with a reason. Restricted for every role, even after a person grants them: role grants, revocations and delegations, identity and payment policies, the workspace contract switch, the payment kill switch and payee destination changes, and every `people.*` and `payment_policy.*` operation. Not offered as tools (a person's decision): recording a customer deposit, setting payment terms, clearing a duplicate flag, rejecting or revising an invoice, canceling a draft, setting insurance requirements, withdrawing a certificate, co-signing a release and recording a step-up. Destination redaction is by key name, with a fallback for hashes next to a destination value.
 - **V1 coverage:** the section-10 acceptance test does not walk procurement, hand-off, rights, assets or the SDK; `tests/test_vertical_extended.py` does, and the 20-bill corpus reports approval-time metrics. Neither exercises labor, field, drawings, schedule or reimbursements under the identity policy.
 - **Accounting policy:** posting rules for revenue recognition, stored materials and disposals are SHADOW assumptions awaiting controller approval.
-- **Core decision:** ERPNext has not been run against the same gates; this machine had about 4 GB free on 2026-10-12 against the owner's 250 GB free-space target, so a multi-GB ERP stack should not be pulled here.
+- **Historical core comparison:** ERPNext has not been run against the same gates; this machine had about 4 GB free on 2026-10-12 against the owner's 250 GB free-space target, so a multi-GB ERP stack should not be pulled here. That evidence limit is not a prerequisite for the established Odoo/QuickBooks workflow. The current prototype also does not verify Odoo's live setup, prior catch-up checkpoint or QuickBooks/BILL integration.
 - **UI:** `docs/UI_OVERHAUL_SPEC.md` waits on the owner's decisions (Part A6) and mockup sign-off; no screen is built from it yet, and the current console is for synthetic data only.
-- **Later plan gates:** authoritative accounting, production identity, real payment providers, bank connectivity, licensed-content ingestion, multi-entity and CAD automation.
+- **Later plan gates:** live Odoo and QuickBooks/BILL integration, production identity, real payment providers, bank connectivity, licensed-content ingestion, multi-entity and CAD automation. Replacing QuickBooks as the accounting authority is optional and separately gated.
