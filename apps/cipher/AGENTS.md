@@ -7,7 +7,7 @@ Read `HANDOFF.md` first for where the project stands and what to do next. These 
 From the repository root, Python 3.12 or later, no installs:
 
 ```bash
-python -m apps.cipher test                       # full suite, 1867 tests
+python -m apps.cipher test                       # full suite, 2017 tests
 python -m unittest apps.cipher.tests.test_people # one module's tests while you work
 python -m apps.cipher demo                       # golden fixture; numbers listed in README.md
 python -m apps.cipher.tools.core_gates           # 9 hard gates, 127 checks
@@ -17,7 +17,7 @@ python -m apps.cipher practice-web --port 8766   # isolated read-only backend pl
 python -m apps.cipher ap-practice-web --port 8767 # isolated synthetic AP request/approve/post workflow
 ```
 
-Read `docs/PRODUCT_GOAL.md` for the owner's full scope and internal/enterprise quality gates. `web/` is the pinned Fluent 2 practice client; Node is a build tool, and web dependencies never become engine dependencies. Its `README.md` lists typecheck/build/browser commands. The read practice server owns a fresh in-memory fixture and no action or file-workspace routes. The separate AP practice server admits 17 fixed scoped installed-work commands: the original nine preparation/intake/match/bill commands and eight invoice exception, cancellation and correction commands. It uses seeded owned evidence and the same registered synthetic people; neither server selects a file workspace or mounts live records. See `docs/AP_EXCEPTIONS.md` for revision, final rejection, documented duplicate review, original-approver withdrawal and independently approved unpaid-bill correction followed by separate replacement. Existing UI templates and initial guidelines apply to later commercial, estimating, CMS and engineering/library screens.
+Read `docs/PRODUCT_GOAL.md` for the owner's full scope and internal/enterprise quality gates. `web/` is the pinned Fluent 2 practice client; Node is a build tool, and web dependencies never become engine dependencies. Its `README.md` lists typecheck/build/browser commands. The read practice server owns a fresh in-memory fixture and no action or file-workspace routes. The separate AP practice server admits 24 fixed scoped commands: nine preparation/intake/match/bill commands, eight invoice exception/cancellation/correction commands, and seven practice accounting preparation/authorization/worker commands. It uses seeded owned evidence and the same registered synthetic people; neither server selects a file workspace or mounts live records. See `docs/AP_EXCEPTIONS.md` for governed correction/separate replacement, `docs/ACCOUNTING_PRACTICE.md` for the original obligation and memory-only simulated worker/recovery boundary, and `docs/COMMERCIAL_DELIVERY_PLAN.md` for the next estimate-to-subcontract checkpoint. Existing UI templates and initial guidelines apply across commercial, estimating, CMS and engineering/library screens.
 
 The full suite must pass before every commit. For a bug, first write a test that fails on the current code, then fix it.
 

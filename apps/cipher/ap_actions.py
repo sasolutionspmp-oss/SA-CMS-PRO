@@ -11,7 +11,7 @@ from typing import Any
 from uuid import UUID
 
 from .ap_contract import APRefusal
-from .core.api_receipts import APIActionReceipts, APIReceiptIntegrityError
+from .core.api_receipts import APIActionReceipts, APIReceiptIntegrityError, APIRepeatabilityConflict
 from .core.approvals import ApprovalError, ApprovalExpired, StaleApprovalError, material_hash
 from .core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow
 from .core.money import money
@@ -81,6 +81,7 @@ class APActionRunner:
                 self.cipher.db.require_practice_mode()
                 context = self.preflight.authorize(person_id, action, resource_id)
                 canonical_person = context["personId"]
+                self.receipts.require_repeatability_namespace(canonical_person, key, action, binding)
                 receipt = self.receipts.find(canonical_person, key)
                 if receipt is not None:
                     if receipt["binding_json"] != canonical_json(binding):
@@ -120,6 +121,8 @@ class APActionRunner:
                         response = self._response(receipt, replayed=False)
         except APRefusal:
             raise
+        except APIRepeatabilityConflict:
+            raise APRefusal(409, "repeatability_conflict", "This key belongs to a different original reviewed request.") from None
         except PermissionError:
             raise _refusal(403, "action_not_authorized", "Your current project duties do not permit this action.") from None
         except (ApprovalError, CipherError, BillError):

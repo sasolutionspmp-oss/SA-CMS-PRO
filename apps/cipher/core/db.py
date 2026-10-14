@@ -1009,9 +1009,6 @@ class Database:
         with self._internal() as conn:
             conn.execute("PRAGMA foreign_keys = ON")
         try:
-            if not self.in_memory:
-                self.conn.execute("PRAGMA journal_mode = WAL")
-                self.conn.execute("PRAGMA synchronous = NORMAL")
             if migrate:
                 self.migrate()
         except BaseException:
@@ -1031,6 +1028,19 @@ class Database:
         # migrate=False is a diagnostic choice, not a waiver of copied-file
         # authority or undeclared-mode controls.
         self._apply_authority_mode()
+        # Changing journal mode writes the file header. Determine authority first:
+        # a current diagnostic copy must retain its original bytes, including a
+        # DELETE-mode backup of an owned in-memory workspace. Existing WAL files
+        # already retain that mode during migration without assigning the pragma.
+        if not self.in_memory and not self._read_only:
+            try:
+                with self._internal() as conn:
+                    conn.execute("PRAGMA journal_mode = WAL")
+                    conn.execute("PRAGMA synchronous = NORMAL")
+                    self._data_version = self._read_data_version()
+            except BaseException:
+                self.conn.close()
+                raise
 
     def _preflight_existing_file(self) -> None:
         """Read and classify before WAL, migrations or authority sidecar writes."""

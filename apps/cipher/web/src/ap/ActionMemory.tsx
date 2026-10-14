@@ -1,11 +1,12 @@
 import { createContext, useContext, useRef, type ReactNode } from 'react';
-import type { ActionOutcome, APAction } from './types';
+import type { ActionOutcome, APAction, WorkerPendingOutcome } from './types';
 
 export interface PreparedAction {
   action: APAction; id: string; version: string; repeatabilityId: string; body: Record<string, unknown>;
 }
 export interface RememberedAction {
   inputKey: string; prepared: PreparedAction | null; outcome: ActionOutcome | null;
+  unfinished?: WorkerPendingOutcome | null;
 }
 const Context = createContext<Map<string, RememberedAction> | null>(null);
 export const memoryKey = (action: APAction, id: string) => `${action}:${id}`;

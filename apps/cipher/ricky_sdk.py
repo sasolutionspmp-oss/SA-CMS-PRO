@@ -607,6 +607,7 @@ GOVERNED_ROUTABLE_OPERATIONS = frozenset({"contract.approve_agreement", "contrac
 # Operations the SDK never requests or executes, whatever a role holds (the owner's '*'
 # included) and even after a person granted them, with the reason given in the refusal.
 RESTRICTED_OPERATIONS: MappingProxyType = MappingProxyType({
+    "accounting.queue": "is a human accounting handoff requiring actual accountant duties and independent review; Ricky never queues or delivers accounting entries",
     "bill.post": "is a human accounting posting command requiring a distinct authorized poster; Ricky never posts a supplier bill",
     "people.grant_role": "grants a role",
     "people.revoke_role": "revokes a role",

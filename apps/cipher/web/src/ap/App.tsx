@@ -10,6 +10,7 @@ import { APHeader } from './presentation';
 import { APApproval, APBill, APCommitment, APHome, APList, APMissing, APPostingQueue, APProject } from './pages';
 import { APIntakeList, APInvoice, APMatchReview, APPreparation } from './intake-pages';
 import { APBillExceptions, APCorrectionList, APCorrectionReview, APInvoiceExceptions } from './exception-pages';
+import { APAccountingIntent, APAccountingList, APAccountingPlan, APAccountingPreparation, APAccountingReview } from './accounting-pages';
 import type { Persona, Session, Workspace } from './types';
 import { ActionMemory } from './ActionMemory';
 import '../theme/global.css';
@@ -102,6 +103,7 @@ export function APApp() {
     { href: '/invoices', name: 'Invoices', Icon: BookRegular, current: parts[0] === 'invoices' },
     { href: '/match-approvals', name: 'Match reviews', Icon: TaskListSquareLtrRegular, current: parts[0] === 'match-approvals' },
     { href: '/correction-approvals', name: 'Correction reviews', Icon: TaskListSquareLtrRegular, current: parts[0] === 'correction-approvals' },
+    { href: '/accounting', name: 'Accounting handoffs', Icon: BookRegular, current: ['accounting', 'accounting-plans', 'accounting-approvals', 'accounting-intents'].includes(parts[0]) },
     { href: '/projects', name: 'Projects', Icon: BuildingMultipleRegular, current: ['projects', 'commitments', 'bills'].includes(parts[0]) },
     ...(session?.duties.includes('accountant') ? [{ href: '/posting-queue', name: 'Post approved bills', Icon: BookRegular, current: parts[0] === 'posting-queue' }] : []),
   ].map(({ href, name, Icon, current }) => <a key={href} href={href} className="cipher-nav-item" aria-current={current ? 'page' : undefined} title={name} onClick={event => { if (!event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); navigate(href); } }}><Icon aria-hidden="true" /><span className="cipher-nav-label">{name}</span></a>)}</nav>;
@@ -115,6 +117,10 @@ export function APApp() {
     else if (parts[0] === 'match-approvals' && parts.length === 2 && workspace.matchApprovals.some(row => row.id === parts[1])) content = <APMatchReview key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     else if (parts[0] === 'correction-approvals' && parts.length === 1) content = <APCorrectionList revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     else if (parts[0] === 'correction-approvals' && parts.length === 2) content = <APCorrectionReview key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'accounting' && parts.length === 1) content = <APAccountingList revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'accounting-plans' && parts.length === 2) content = <APAccountingPlan key={parts[1]} planId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'accounting-approvals' && parts.length === 2) content = <APAccountingReview key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'accounting-intents' && parts.length === 2) content = <APAccountingIntent key={parts[1]} intentId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     else if (parts[0] === 'posting-queue' && session.duties.includes('accountant')) content = <APPostingQueue workspace={workspace} />;
     else if (parts[0] === 'projects') {
       const project = workspace.projects.find(row => row.id === parts[1]); const tab = parts[2] ?? 'overview';
@@ -126,6 +132,7 @@ export function APApp() {
     } else if (parts[0] === 'bills') {
       const record = workspace.bills.find(row => row.id === parts[1]);
       if (record && parts[2] === 'exceptions' && parts.length === 3) content = <APBillExceptions key={record.id} billId={record.id} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+      else if (record && parts[2] === 'accounting-preparation' && parts.length === 3) content = <APAccountingPreparation key={record.id} billId={record.id} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
       else if (record && parts.length === 2) content = <APBill key={record.id} bill={record} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     } else if (parts[0] === 'approvals') {
       if (workspace.approvals.some(row => row.id === parts[1])) content = <APApproval key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;

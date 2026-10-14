@@ -16,7 +16,7 @@ import os
 import tempfile
 from typing import Any
 
-from .core.approvals import ApprovalExpired, Approvals, StaleApprovalError
+from .core.approvals import ApprovalError, ApprovalExpired, Approvals, StaleApprovalError, material_hash
 from .core.db import register_schema_version
 
 # Configured v2 modules are required: a missing or broken module aborts startup.
@@ -43,10 +43,13 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.people",
     "apps.cipher.domain.payment_policy",
     "apps.cipher.domain.contracts",
+    "apps.cipher.domain.accounting",  # required; schema registers after every historical entry
 ]
 # Optional plugin hook used by the close module's checklist:
 #   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
 _LOADED_PLUGIN_MODULES: list[Any] = []
+_LATE_ACCOUNTING_MODULE = "apps.cipher.domain.accounting"
+_LATE_ACCOUNTING_SCHEMA = "accounting_practice_delivery"
 
 
 class PluginLoadError(RuntimeError):
@@ -60,8 +63,13 @@ def _load_plugin_modules() -> list[Any]:
     loaded: list[Any] = []
     plugin_names = {"core_reconciliation", "ricky_sdk"}
     for name in PLUGIN_MODULES:
+        from .core import db as schema_registry
+        late_accounting = name == _LATE_ACCOUNTING_MODULE
+        catalog_before = tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) if late_accounting else None
         try:
             mod = importlib.import_module(name)
+            if late_accounting and tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) != catalog_before:
+                raise ValueError("accounting import must not register or change schema entries")
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} failed to import: {exc}") from exc
         try:
@@ -71,6 +79,15 @@ def _load_plugin_modules() -> list[Any]:
                 raise ValueError("SCHEMA_NAME must be a nonempty string")
             if not isinstance(statements, list) or any(not isinstance(s, str) or not s.strip() for s in statements):
                 raise ValueError("SCHEMA_STATEMENTS must be a list of nonempty strings")
+            if late_accounting:
+                if schema_name != _LATE_ACCOUNTING_SCHEMA or not statements:
+                    raise ValueError("accounting must supply its full named schema")
+                if getattr(mod, "DEFER_SCHEMA_REGISTRATION", None) is not True:
+                    raise ValueError("accounting must declare its explicit late registration")
+                if not callable(getattr(mod, "register_accounting_schema", None)):
+                    raise ValueError("accounting must supply its named late registrar")
+            elif getattr(mod, "DEFER_SCHEMA_REGISTRATION", False):
+                raise ValueError("only the configured accounting schema may defer registration")
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
         try:
@@ -79,6 +96,8 @@ def _load_plugin_modules() -> list[Any]:
                 raise ValueError("PLUGIN_NAME must be an ASCII identifier used as an operation prefix")
             if plugin_name in plugin_names:
                 raise ValueError(f"PLUGIN_NAME {plugin_name!r} is already registered or reserved")
+            if late_accounting and (plugin_name != "accounting" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
+                raise ValueError("accounting must own its fixed prefix and approval governor")
             if not isinstance(mod.Plugin, type):
                 raise TypeError("Plugin must be a class")
             for method in ("manifest_for", "apply", "state"):
@@ -87,7 +106,8 @@ def _load_plugin_modules() -> list[Any]:
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} initialization contract rejected: {exc}") from exc
         try:
-            register_schema_version(schema_name, list(statements))
+            if not late_accounting:
+                register_schema_version(schema_name, list(statements))
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
         plugin_names.add(plugin_name)
@@ -100,10 +120,10 @@ def _load_plugin_modules() -> list[Any]:
 
 _load_plugin_modules()
 from .core.audit import Audit, register_audit_schema
-from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema, register_api_exception_receipts_schema
+from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema, register_api_exception_receipts_schema, register_api_accounting_receipts_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database, register_workspace_mode_schema
-from .core.ids import new_id, sha256_hex, utcnow_iso
+from .core.ids import new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
 from .core.money import fmt, money
 from .domain.bills import Bills, register_bill_posting_schema
 from .domain.commitments import Commitments
@@ -123,6 +143,29 @@ register_workspace_mode_schema()
 register_api_receipts_schema()
 register_api_preparation_receipts_schema()
 register_api_exception_receipts_schema()
+
+# Only this already validated configured module is deferred. The module has no
+# import registration, and the complete existing catalog remains in its order.
+_accounting_module = next((mod for mod in _LOADED_PLUGIN_MODULES
+                           if mod.__name__ == _LATE_ACCOUNTING_MODULE), None)
+if _accounting_module is None:
+    raise PluginLoadError("configured accounting module is missing at late registration")
+try:
+    from .core import db as _accounting_schema_registry
+    _accounting_history_before = tuple((version, schema, tuple(sql)) for version, schema, sql in _accounting_schema_registry.SCHEMA_CATALOG if schema != _LATE_ACCOUNTING_SCHEMA)
+    _accounting_module.register_accounting_schema()
+    _accounting_history_after = tuple((version, schema, tuple(sql)) for version, schema, sql in _accounting_schema_registry.SCHEMA_CATALOG if schema != _LATE_ACCOUNTING_SCHEMA)
+    if _accounting_history_after != _accounting_history_before:
+        raise ValueError("accounting registrar changed historical schema entries")
+    _accounting_entries = [entry for entry in _accounting_schema_registry.SCHEMA_CATALOG
+                           if entry[1] == _LATE_ACCOUNTING_SCHEMA]
+    if (len(_accounting_entries) != 1 or _accounting_entries[0][0] != 70
+            or _accounting_entries[0][2] != _accounting_module.SCHEMA_STATEMENTS):
+        raise ValueError("accounting late schema does not follow the preserved catalog")
+except Exception as exc:
+    raise PluginLoadError("configured accounting late schema rejected") from exc
+
+register_api_accounting_receipts_schema()
 
 
 class CipherError(RuntimeError):
@@ -389,8 +432,104 @@ class Cipher:
             return plugin.manifest_for(operation, subject_id, actor_role=actor_role)
         raise CipherError(f"unknown operation {operation}")
 
+    def _accounting_person(self, actor, project_id):
+        """An actual human's own current accountant grant and membership.
+
+        accounting.require_accountant must verify audited people state. Owner
+        wildcard, controller-only grants, delegations, service identities and
+        caller-supplied role text do not supply this operation's actual duty.
+        A person who is also an owner may act with their genuine accountant grant.
+        """
+        from .domain.accounting import AccountingError
+        from .domain.people import IdentityRefused
+        try:
+            return self.plugin("accounting").require_accountant(actor, project_id)
+        except AccountingError as exc:
+            raise IdentityRefused("Accounting handoff requires the person's own current project accountant duty") from exc
+
+    def check_accounting_queue_request(self, plan_id, *, requested_by, actor_role="accountant"):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            self.db.require_practice_mode()
+            if actor_role != "accountant":
+                raise IdentityRefused("Accounting handoff requests require the actual accountant duty")
+            module = self.plugin("accounting")
+            scope = module.plan_scope(plan_id)  # minimal project reference; no payload disclosed
+            person = self._accounting_person(requested_by, scope["projectId"])
+            checked = module.queue_preflight(plan_id)
+            manifest = self._manifest("accounting.queue", plan_id, "accountant")
+            for _name, governor in self._governors():
+                check = getattr(governor, "check_request", None)
+                if check is not None:
+                    check("accounting.queue", manifest, actor_role="accountant", requested_by=requested_by)
+            return {"person": person, "project_id": scope["projectId"], "manifest": manifest, "plan": checked}
+
+    def _accounting_queue_current(self, approval_id, *, status, actor):
+        """Resolve current actor scope before material source or provider facts."""
+        from .domain.accounting import AccountingError
+        self.db.require_practice_mode()
+        approval = self.approvals.get(approval_id)
+        if approval["operation"] != "accounting.queue" or approval["subject_type"] != "accounting_plan":
+            raise ApprovalError("This operation requires its own accounting handoff approval")
+        module = self.plugin("accounting")
+        scope = module.plan_scope(approval["subject_id"])
+        person = self._accounting_person(actor, scope["projectId"])
+        module.approval_proof(approval_id)
+        if approval["status"] == "expired":
+            raise ApprovalExpired("The accounting handoff approval expired")
+        if approval["status"] != status:
+            raise ApprovalError("The accounting handoff approval is no longer available")
+        if parse_iso(approval["expires_at"]) <= utcnow():
+            raise ApprovalExpired("The accounting handoff approval expired")
+        try:
+            checked = module.queue_preflight(approval["subject_id"])
+            current = self._manifest("accounting.queue", approval["subject_id"], "accountant")
+        except AccountingError as exc:
+            raise StaleApprovalError("The accounting source or mapping no longer permits this handoff") from exc
+        if (material_hash(current) != approval["material_hash"]
+                or current.get("governance") != approval["manifest"].get("governance")):
+            raise StaleApprovalError("The accounting source, mapping or governed policy changed")
+        return {"approval": approval, "person": person, "project_id": scope["projectId"],
+                "manifest": current, "plan": checked, "governors": self._governors()}
+
+    def check_accounting_queue_grant(self, approval_id, *, approver, approver_role="accountant"):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            if approver_role != "accountant":
+                raise IdentityRefused("Accounting handoff review requires the actual accountant duty")
+            checked = self._accounting_queue_current(approval_id, status="pending", actor=approver)
+            people = self.plugin("people")
+            if people.same_person(approver, checked["approval"]["requested_by"]):
+                raise IdentityRefused("A different accountant must review this accounting handoff")
+            for _name, governor in checked["governors"]:
+                check = getattr(governor, "check_grant", None)
+                if check is not None:
+                    check(checked["approval"], approver=approver, approver_role="accountant")
+            return checked
+
+    def check_accounting_queue_execution(self, approval_id, *, actor):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            checked = self._accounting_queue_current(approval_id, status="granted", actor=actor)
+            original_approver = checked["approval"]["approver"]
+            try:
+                self._accounting_person(original_approver, checked["project_id"])
+            except IdentityRefused as exc:
+                raise StaleApprovalError("The original accounting reviewer no longer holds the required duty") from exc
+            for name, governor in checked["governors"]:
+                effect_check = getattr(governor, "check_execute", None)
+                if effect_check is None:
+                    continue
+                check = effect_check if name == "people" else getattr(governor, "check_execute_preflight", None)
+                if check is None:
+                    raise ApprovalError("A configured governor cannot provide a pure accounting handoff review")
+                check(checked["approval"], checked["manifest"], actor=actor)
+            return checked
+
     def check_request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
         """Build and check the request without creating an approval or audit entry."""
+        if operation == "accounting.queue":
+            return self.check_accounting_queue_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
         if operation == "bill.approve":
             people = self._plugins.get("people")
@@ -410,6 +549,20 @@ class Cipher:
     def request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
         """The manifest's actor_role is the role that will execute the operation; it
         must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
+        if operation == "accounting.queue":
+            with self.db.transaction() as conn:
+                savepoint = new_id("accounting_request")
+                conn.execute(f"SAVEPOINT {savepoint}")
+                try:
+                    manifest = self.check_request_approval(operation, subject_id, actor_role=actor_role, requested_by=requested_by)
+                    return self.approvals.request(manifest, requested_by=requested_by)
+                except BaseException:
+                    if conn.in_transaction:
+                        conn.execute(f"ROLLBACK TO {savepoint}")
+                    raise
+                finally:
+                    if conn.in_transaction:
+                        conn.execute(f"RELEASE {savepoint}")
         manifest = self.check_request_approval(operation, subject_id, actor_role=actor_role, requested_by=requested_by)
         return self.approvals.request(manifest, requested_by=requested_by)
 
@@ -421,6 +574,8 @@ class Cipher:
             return self.check_invoice_match_grant(approval_id, approver=approver, approver_role=approver_role)
         if ap["operation"] == "bill.correct":
             return self.check_bill_correction_grant(approval_id, approver=approver, approver_role=approver_role)
+        if ap["operation"] == "accounting.queue":
+            return self.check_accounting_queue_grant(approval_id, approver=approver, approver_role=approver_role)
         if not Ricky.can(approver_role, ap["operation"]):
             raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
         governors = self._governors()
@@ -585,12 +740,22 @@ class Cipher:
             raise CipherError("Bill business approval does not post. An independent accounting person must use post_bill.")
         op_id = op_id or f"exec:{approval_id}"
         payload = {"approval_id": approval_id, "operation": operation, "subject_id": subject_id}
+        if operation == "accounting.queue":
+            if period_id is not None:
+                raise ApprovalError("Accounting handoff uses only its original bound posting period")
+            module = self.plugin("accounting")
+            scope = module.plan_scope(subject_id)
+            person = self._accounting_person(actor, scope["projectId"])
+            module.approval_proof(approval_id)
+            payload["person_id"] = person["personId"]
 
         def apply_handler():
             current = (self.check_invoice_match_execution(approval_id, actor=actor)["manifest"]
                        if operation == "ap_intake.match_invoice" else
                        self.check_bill_correction_execution(approval_id, actor=actor, period_id=period_id)["manifest"]
-                       if operation == "bill.correct" else self._manifest(operation, subject_id, ap["actor_role"]))
+                       if operation == "bill.correct" else
+                       self.check_accounting_queue_execution(approval_id, actor=actor)["manifest"]
+                       if operation == "accounting.queue" else self._manifest(operation, subject_id, ap["actor_role"]))
             fresh = self.approvals.get(approval_id)
             approved_policy, current_policy = fresh["manifest"].get("governance"), current.get("governance")
             if fresh["status"] == "granted" and approved_policy != current_policy:
@@ -604,15 +769,26 @@ class Cipher:
             self.approvals.consume(approval_id, current_manifest=current, consumer=actor)
             return self._apply(operation, subject_id, approval_id, current, actor, period_id)
 
-        def correction_command():
+        def governed_command():
             # Commands joins an outer transaction. Include its bookkeeping in
             # this boundary so a caught late failure cannot leave consumption,
             # reversals, correction state or an incomplete command behind.
             with self.db.transaction() as conn:
-                savepoint = new_id("bill_correction_act")
+                savepoint = new_id("accounting_queue_act" if operation == "accounting.queue" else "bill_correction_act")
                 conn.execute(f"SAVEPOINT {savepoint}")
                 try:
-                    return self.commands.run(op_id, payload, apply_handler, actor=actor)
+                    result = self.commands.run(op_id, payload, apply_handler, actor=actor)
+                    if operation == "accounting.queue":
+                        intents = [row for row in module.intent_inventory(project_ids=(scope["projectId"],))
+                                   if row["approval_id"] == approval_id]
+                        if len(intents) != 1:
+                            raise ApprovalError("Accounting command lost its original queued intent")
+                        original = intents[0]
+                        expected = {"intent_id": original["id"], "logical_operation_id": original["logical_operation_id"],
+                                    "status": "queued", "mode": "practice", "synthetic": True}
+                        if result.result != expected:
+                            raise ApprovalError("Accounting command result differs from its original queued effect")
+                    return result
                 except BaseException:
                     if conn.in_transaction:
                         conn.execute(f"ROLLBACK TO {savepoint}")
@@ -622,7 +798,7 @@ class Cipher:
                         conn.execute(f"RELEASE {savepoint}")
 
         try:
-            return (correction_command() if operation == "bill.correct" else
+            return (governed_command() if operation in ("bill.correct", "accounting.queue") else
                     self.commands.run(op_id, payload, apply_handler, actor=actor))
         except StaleApprovalError as exc:
             # the command transaction rolled back; make the invalidation durable

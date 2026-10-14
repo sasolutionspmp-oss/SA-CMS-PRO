@@ -8,7 +8,7 @@ import { Changes, Checks, EntryPreview, IntakeFindings } from './presentation';
 import { money } from '../copy/format';
 import { AppLink } from '../app/navigation';
 import { TechnicalDetails } from '../ui/shared';
-import type { ActionOutcome, APAction, Preflight } from './types';
+import type { ActionOutcome, APAction, Preflight, WorkerPendingOutcome } from './types';
 
 interface Props {
   action: APAction; id: string; version: string; csrf: string; amountCents: number;
@@ -34,6 +34,13 @@ const labels: Record<APAction, { review: string; apply: string; done: string; co
   'bill.requestCorrection': { review: 'Review correction request', apply: 'Request correction approval', done: 'Bill correction approval requested.', consequence: 'A different authorized accountant reviews the correction. Requesting approval does not reverse the bill or create a journal.' },
   'bill.approveCorrection': { review: 'Review correction approval', apply: 'Approve bill correction', done: 'Bill correction approved.', consequence: 'This records approval of the reviewed correction. An authorized accountant separately selects an open period and executes its reversal.' },
   'bill.executeCorrection': { review: 'Review correction reversal', apply: 'Execute approved correction', done: 'Approved bill correction executed.', consequence: 'This reverses the reviewed bill journals in the selected practice period, marks the original bill corrected and makes its work available for replacement certification.' },
+  'accounting.prepare': { review: 'Review handoff preparation', apply: 'Prepare practice handoff', done: 'Practice accounting handoff prepared.', consequence: 'This records the original posting and fixed synthetic mapping in an immutable practice plan. No new working journal, simulator call or payment is created.' },
+  'accounting.request': { review: 'Review handoff request', apply: 'Request handoff approval', done: 'Practice handoff approval requested.', consequence: 'A different authorized accountant reviews this exact source, mapping and synthetic date. No working journal, simulator call or payment is created.' },
+  'accounting.approve': { review: 'Review handoff approval', apply: 'Approve practice handoff', done: 'Practice accounting handoff approved.', consequence: 'This records the independent accountant decision. Queueing and simulation remain separate actions.' },
+  'accounting.queue': { review: 'Review approved handoff', apply: 'Queue approved practice handoff', done: 'Approved practice handoff queued.', consequence: 'This records one authorized handoff for separate delivery. It creates no working journal, AP balance change, simulator call or payment. Delivery is an explicit later step.' },
+  'accounting.deliver': { review: 'Review practice delivery', apply: 'Run practice delivery', done: 'Practice delivery step recorded.', consequence: 'This performs the reviewed delivery step against the fixed practice simulator. The original outcome is recorded separately. QuickBooks official books and payments are untouched.' },
+  'accounting.lookup': { review: 'Review original outcome lookup', apply: 'Look up original outcome', done: 'Original simulation outcome checked.', consequence: 'This looks up the original logical operation in the fixed simulator. It cannot submit a replacement or use a new logical operation.' },
+  'accounting.reconcile': { review: 'Review simulation readback', apply: 'Reconcile simulation', done: 'Original simulator record checked.', consequence: 'This separately reads back the originally acknowledged simulator record and compares it with the approved practice plan. Official accounting reconciliation remains unavailable.' },
 };
 export function ActionPanel({ action, id, version, csrf, amountCents, body = {}, permitted, periodName, withdrawal = false, onChanged, onSessionLost }: Props) {
   const memory = useActionMemory();
@@ -43,6 +50,7 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
   const [review, setReview] = useState<Preflight | null>(null);
   const [prepared, setPrepared] = useState<PreparedAction | null>(sameInput ? remembered?.prepared ?? null : null);
   const [outcome, setOutcome] = useState<ActionOutcome | null>(sameInput ? remembered?.outcome ?? null : null);
+  const [unfinished, setUnfinished] = useState<WorkerPendingOutcome | null>(sameInput ? remembered?.unfinished ?? null : null);
   const [busy, setBusy] = useState<'review' | 'action' | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [problem, setProblem] = useState<APError | Error | null>(null);
@@ -66,11 +74,11 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     if (key === previousInput.current) return;
     previousInput.current = key;
     memory.delete(memoryKey(action, id));
-    setReview(null); setPrepared(null); setOutcome(null); setProblem(null); setMessage(null); setConfirmOpen(false);
+    setReview(null); setPrepared(null); setOutcome(null); setUnfinished(null); setProblem(null); setMessage(null); setConfirmOpen(false);
   }, [action, id, bodyKey, memory]);
   useEffect(() => {
-    memory.set(memoryKey(action, id), { inputKey: bodyKey, prepared, outcome });
-  }, [action, id, bodyKey, prepared, outcome, memory]);
+    memory.set(memoryKey(action, id), { inputKey: bodyKey, prepared, outcome, unfinished });
+  }, [action, id, bodyKey, prepared, outcome, unfinished, memory]);
   useEffect(() => {
     if (review && review.resourceVersion !== version && !prepared) {
       setReview(null); setMessage('The record changed. Refresh the facts and review this step again.');
@@ -83,7 +91,7 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
   }
   async function reviewAction() {
     memory.delete(memoryKey(action, id));
-    setBusy('review'); setProblem(null); setMessage(null); setOutcome(null); setPrepared(null); setReview(null);
+    setBusy('review'); setProblem(null); setMessage(null); setOutcome(null); setUnfinished(null); setPrepared(null); setReview(null);
     try {
       const current = await preflight(action, id, JSON.parse(bodyKey), csrf);
       if (!alive.current) return;
@@ -106,15 +114,27 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     try {
       const result = await applyAction(request.action, request.id, request.body, csrf, request.version, request.repeatabilityId);
       if (!alive.current) return;
-      setOutcome(result); setReview(null);
-      setMessage(result.replayed ? `Original outcome retrieved. ${copy.done} No additional effect was applied.` : copy.done);
+      setReview(null);
+      if (!('result' in result)) {
+        setUnfinished(result); setOutcome(null);
+        setMessage('This original practice step is unfinished. Refresh its current record or retry the same request; a new delivery is not started by an exact retry.');
+      } else {
+        setOutcome(result); setUnfinished(null);
+        const words = action.startsWith('accounting.') ? accountingOutcome(result, copy.done) : copy.done;
+        setMessage(result.replayed ? `Original outcome retrieved. ${words} No additional effect was applied.` : words);
+      }
       onChanged();
     } catch (error) { if (alive.current) { failed(error); onChanged(); } }
     finally { if (alive.current) setBusy(null); }
   }
   const changedOrExpired = problem instanceof APError && [409, 412, 423].includes(problem.status);
+  const uncertain = unfinished !== null || action.startsWith('accounting.') && !!outcome && ['outcome_unknown', 'refused', 'reconciliation_unavailable', 'reconciliation_conflict'].includes(outcome.result.status as string);
+  const restored = action.startsWith('accounting.') ? unfinished
+    ? 'This original practice step is unfinished. Refresh its current record or retry the same request.'
+    : outcome ? `Original recorded outcome. ${accountingOutcome(outcome, copy.done)}` : null : null;
+  const feedback = message ?? restored;
   return <div className="cipher-ap-action" data-action={action} data-resource-version={version} aria-busy={busy !== null}>
-    {message && <p role="status" aria-live="polite" className={`cipher-ap-feedback ${outcome ? 'cipher-ap-feedback-positive' : review?.allowed === false ? 'cipher-ap-feedback-warning' : ''}`}>{message}</p>}
+    {feedback && <p role="status" aria-live="polite" className={`cipher-ap-feedback ${uncertain ? 'cipher-ap-feedback-warning' : outcome ? 'cipher-ap-feedback-positive' : review?.allowed === false ? 'cipher-ap-feedback-warning' : ''}`}>{feedback}</p>}
     {problem && <div role="alert" className="cipher-message cipher-message-negative"><div>
       <p>{problem.message}</p>{problem instanceof APError && problem.problem.fix && <p>{problem.problem.fix}</p>}
       {changedOrExpired && <p>Refresh the record, then run a new review. The original request stays available for an exact retry.</p>}
@@ -122,6 +142,7 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     </div></div>}
     {review && <div className="cipher-ap-review"><h3>Current checks</h3><Checks checks={review.checks} />
       {review.changes.length > 0 && <><h3>What changed</h3><Changes changes={review.changes} /></>}
+      {action.startsWith('accounting.') && <p>{review.safeEffects.startsSeparateWorkerInvocation === true ? `The reviewed practice step is ${review.safeEffects.intendedWorkerPhase === 'submit' ? 'original entry delivery' : review.safeEffects.intendedWorkerPhase === 'lookup' ? 'original outcome lookup' : 'original simulator record readback'}. Its outcome is observed separately.` : 'This human handoff step creates no simulator call or additional working journal.'}</p>}
       {action !== 'bill.post' && <div className="cipher-ap-effect-facts">
         {typeof review.safeEffects.amountDueCents === 'number' && <p>Reviewed bill amount due: <strong>{money(review.safeEffects.amountDueCents)}</strong></p>}
         {typeof review.safeEffects.amountCents === 'number' && <p>Reviewed invoice amount: <strong>{money(review.safeEffects.amountCents)}</strong></p>}
@@ -133,19 +154,24 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     </div>}
     <p className="cipher-ap-consequence">{copy.consequence}</p>
     <div className="cipher-ap-action-footer">
-      {permitted && !outcome && <Button ref={reviewButton} appearance={review?.allowed ? 'secondary' : 'primary'} disabled={busy !== null} onClick={reviewAction}>{busy === 'review' ? 'Reviewing current facts…' : copy.review}</Button>}
+      {permitted && !outcome && !unfinished && <Button ref={reviewButton} appearance={review?.allowed ? 'secondary' : 'primary'} disabled={busy !== null} onClick={reviewAction}>{busy === 'review' ? 'Reviewing current facts…' : copy.review}</Button>}
+      {action.startsWith('accounting.') && permitted && outcome && !unfinished && <Button ref={reviewButton} appearance="secondary" disabled={busy !== null} onClick={reviewAction}>Review next practice step</Button>}
       {review?.allowed && !outcome && <Button appearance="primary" disabled={busy !== null || !!prepared} onClick={() => confirmation ? setConfirmOpen(true) : submit()}>{busy === 'action' ? 'Applying practice action…' : copy.apply}</Button>}
       {prepared && <Button appearance="secondary" disabled={busy !== null} onClick={() => submit(true)}>{busy === 'action' ? 'Retrieving outcome…' : 'Retry same action'}</Button>}
-      {(outcome || changedOrExpired) && <Button appearance="subtle" disabled={busy !== null} onClick={onChanged}>Refresh record</Button>}
+      {(outcome || unfinished || changedOrExpired) && <Button appearance="subtle" disabled={busy !== null} onClick={onChanged}>Refresh record</Button>}
     </div>
     {!permitted && !prepared && <p className="cipher-caption">This step is unavailable for the current person or record. Refresh the record to read its current state.</p>}
-    {outcome && <TechnicalDetails entries={[{ label: 'Action receipt', value: outcome.receiptId }, { label: 'Outcome', value: outcome.replayed ? 'Original result replayed' : 'Effect applied once' }]} />}
+    {outcome && <TechnicalDetails entries={[{ label: 'Action receipt', value: outcome.receiptId }, { label: 'Outcome', value: outcome.replayed ? 'Original result replayed' : action.startsWith('accounting.') ? 'Original practice outcome recorded' : 'Effect applied once' }]} />}
+    {unfinished && <TechnicalDetails entries={[{ label: 'Original invocation', value: unfinished.invocationId }, { label: 'Outcome', value: 'Unfinished; refresh current state' }]} />}
     {outcome && <div className="cipher-link-row cipher-ap-outcome-links">
       {action === 'bill.prepare' && typeof outcome.result.billId === 'string' && <AppLink href={`/bills/${encodeURIComponent(outcome.result.billId)}`}>Open prepared bill</AppLink>}
       {action === 'invoice.receive' && typeof outcome.result.invoiceId === 'string' && <AppLink href={`/invoices/${encodeURIComponent(outcome.result.invoiceId)}`}>Open received invoice</AppLink>}
       {action === 'invoice.requestMatchApproval' && typeof outcome.result.approvalId === 'string' && <AppLink href={`/match-approvals/${encodeURIComponent(outcome.result.approvalId)}`}>Open match review</AppLink>}
       {action === 'invoice.executeMatch' && typeof outcome.result.billId === 'string' && <AppLink href={`/bills/${encodeURIComponent(outcome.result.billId)}`}>Open linked bill</AppLink>}
       {action === 'bill.requestCorrection' && typeof outcome.result.approvalId === 'string' && <AppLink href={`/correction-approvals/${encodeURIComponent(outcome.result.approvalId)}`}>Open correction review</AppLink>}
+      {action === 'accounting.prepare' && typeof outcome.result.planId === 'string' && <AppLink href={`/accounting-plans/${encodeURIComponent(outcome.result.planId)}`}>Open practice handoff plan</AppLink>}
+      {action === 'accounting.request' && typeof outcome.result.approvalId === 'string' && <AppLink href={`/accounting-approvals/${encodeURIComponent(outcome.result.approvalId)}`}>Open handoff review</AppLink>}
+      {action === 'accounting.queue' && typeof outcome.result.intentId === 'string' && <AppLink href={`/accounting-intents/${encodeURIComponent(outcome.result.intentId)}`}>Open practice delivery record</AppLink>}
     </div>}
     <Dialog open={confirmOpen} onOpenChange={(_, data) => { setConfirmOpen(data.open); if (!data.open) requestAnimationFrame(() => reviewButton.current?.focus()); }}>
       <DialogSurface><DialogBody><DialogTitle>{confirmationTitle}</DialogTitle>
@@ -154,4 +180,15 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
       </DialogBody></DialogSurface>
     </Dialog>
   </div>;
+}
+function accountingOutcome(outcome: ActionOutcome, fallback: string) {
+  return ({
+    outcome_unknown: 'The original simulation outcome is unknown. Look up the original outcome before another delivery step.',
+    simulated_accepted: 'The practice simulator acknowledged the original handoff. A separate readback check is still required.',
+    confirmed_missing: 'The original lookup found no simulator record. A separately reviewed step may use the same logical operation.',
+    refused: 'The practice step was refused. Read its current record and restrictions.',
+    reconciled: 'The original simulator record matches the approved practice plan. QuickBooks delivery remains unavailable.',
+    reconciliation_unavailable: 'The original simulator readback was unavailable. The recorded acknowledgment is retained; simulation reconciliation is still incomplete.',
+    reconciliation_conflict: 'The original simulator readback conflicts with the approved practice plan. The recorded acknowledgment is retained; simulation reconciliation is still incomplete.',
+  } as Record<string, string>)[outcome.result.status as string] ?? fallback;
 }

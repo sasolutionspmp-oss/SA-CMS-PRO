@@ -53,7 +53,11 @@ AP_EXCEPTION_ACTIONS = (
     "invoice.revise", "invoice.reject", "invoice.reviewDuplicate", "bill.cancel",
     "bill.prepareCorrection", "bill.requestCorrection", "bill.approveCorrection", "bill.executeCorrection",
 )
-AP_KNOWN_ACTIONS = frozenset(("bill.requestApproval", "bill.approve", "bill.post", *AP_PREPARATION_ACTIONS, *AP_EXCEPTION_ACTIONS))
+AP_ACCOUNTING_ACTIONS = (
+    "accounting.prepare", "accounting.request", "accounting.approve", "accounting.queue",
+    "accounting.deliver", "accounting.lookup", "accounting.reconcile",
+)
+AP_KNOWN_ACTIONS = frozenset(("bill.requestApproval", "bill.approve", "bill.post", *AP_PREPARATION_ACTIONS, *AP_EXCEPTION_ACTIONS, *AP_ACCOUNTING_ACTIONS))
 AP_PREPARATION_RECEIPTS_SCHEMA_NAME = "ap_practice_preparation_action_receipts"
 AP_PREPARATION_RECEIPTS_SCHEMA_STATEMENTS = [
     "DROP TRIGGER ap_action_receipts_insert",
@@ -118,8 +122,95 @@ def register_api_exception_receipts_schema() -> int:
     return register_schema_version(AP_EXCEPTION_RECEIPTS_SCHEMA_NAME, AP_EXCEPTION_RECEIPTS_SCHEMA_STATEMENTS)
 
 
+
+AP_ACCOUNTING_RECEIPTS_SCHEMA_NAME = "ap_practice_accounting_action_receipts"
+AP_ACCOUNTING_INVOCATION_SCHEMA_STATEMENTS = [
+    """CREATE TABLE ap_accounting_invocations (
+        id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL,
+        canonical_person_id TEXT NOT NULL REFERENCES people_persons(id), actor_login TEXT NOT NULL,
+        repeatability_uuid TEXT NOT NULL, contract_version TEXT NOT NULL,
+        fixed_action TEXT NOT NULL CHECK(fixed_action IN ('accounting.deliver','accounting.lookup','accounting.reconcile')),
+        resource_id TEXT NOT NULL REFERENCES accounting_intents(id), binding_json TEXT NOT NULL CHECK(json_valid(binding_json)),
+        binding_hash TEXT NOT NULL, state TEXT NOT NULL CHECK(state IN ('reserved','claimed','awaiting_observation','observed','completed')),
+        revision INTEGER NOT NULL CHECK(revision>=0), body_json TEXT NOT NULL CHECK(json_valid(body_json)),
+        row_hash TEXT NOT NULL, audit_seq INTEGER NOT NULL UNIQUE REFERENCES audit_log(seq),
+        CHECK(json_extract(body_json,'$.id') IS id), CHECK(json_extract(body_json,'$.workspace_id') IS workspace_id),
+        CHECK(json_extract(body_json,'$.canonical_person_id') IS canonical_person_id),
+        CHECK(json_extract(body_json,'$.actor_login') IS actor_login), CHECK(json_extract(body_json,'$.repeatability_uuid') IS repeatability_uuid),
+        CHECK(json_extract(body_json,'$.contract_version') IS contract_version), CHECK(json_extract(body_json,'$.fixed_action') IS fixed_action),
+        CHECK(json_extract(body_json,'$.resource_id') IS resource_id), CHECK(json_extract(body_json,'$.binding_hash') IS binding_hash),
+        CHECK(json_extract(body_json,'$.state') IS state), CHECK(json_extract(body_json,'$.revision') IS revision),
+        UNIQUE(canonical_person_id,repeatability_uuid)
+    )""",
+    """CREATE TRIGGER ap_accounting_invocations_no_delete BEFORE DELETE ON ap_accounting_invocations
+        BEGIN SELECT RAISE(ABORT,'accounting API invocations are append-only'); END""",
+    """CREATE TRIGGER ap_accounting_invocations_birth BEFORE INSERT ON ap_accounting_invocations BEGIN
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM ap_accounting_invocations WHERE id=NEW.id
+            OR (canonical_person_id=NEW.canonical_person_id AND repeatability_uuid=NEW.repeatability_uuid))
+            THEN RAISE(ABORT,'accounting API invocations cannot be replaced') END;
+        SELECT CASE WHEN NEW.revision<>0 OR NEW.state<>'reserved' OR NOT EXISTS(
+            SELECT 1 FROM audit_log WHERE seq=NEW.audit_seq AND action='ap.accounting_invocation_reserved'
+              AND entity_type='ap_accounting_invocation' AND entity_id=NEW.id AND actor=NEW.actor_login
+              AND json_extract(payload_json,'$.rowHash')=NEW.row_hash)
+            THEN RAISE(ABORT,'accounting API reservation requires its original audited binding') END;
+    END""",
+    """CREATE TRIGGER ap_accounting_invocations_change BEFORE UPDATE ON ap_accounting_invocations BEGIN
+        SELECT CASE WHEN NEW.id IS NOT OLD.id OR NEW.workspace_id IS NOT OLD.workspace_id
+            OR NEW.canonical_person_id IS NOT OLD.canonical_person_id OR NEW.actor_login IS NOT OLD.actor_login
+            OR NEW.repeatability_uuid IS NOT OLD.repeatability_uuid OR NEW.contract_version IS NOT OLD.contract_version
+            OR NEW.fixed_action IS NOT OLD.fixed_action OR NEW.resource_id IS NOT OLD.resource_id
+            OR NEW.binding_json IS NOT OLD.binding_json OR NEW.binding_hash IS NOT OLD.binding_hash
+            OR NEW.revision<>OLD.revision+1 OR OLD.state='completed'
+            THEN RAISE(ABORT,'accounting API original binding and completed result are immutable') END;
+        SELECT CASE WHEN NOT EXISTS(SELECT 1 FROM audit_log WHERE seq=NEW.audit_seq
+            AND action='ap.accounting_invocation_changed' AND entity_type='ap_accounting_invocation'
+            AND entity_id=NEW.id AND actor=NEW.actor_login AND json_extract(payload_json,'$.rowHash')=NEW.row_hash)
+            THEN RAISE(ABORT,'accounting API invocation change requires its exact audit revision') END;
+    END""",
+]
+AP_ACCOUNTING_RECEIPTS_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER ap_action_receipts_insert",
+    "DROP TRIGGER ap_action_receipts_no_update",
+    "DROP TRIGGER ap_action_receipts_no_delete",
+    """CREATE TABLE ap_action_receipts_accounting_expanded (
+        id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL,
+        canonical_person_id TEXT NOT NULL REFERENCES people_persons(id), actor_login TEXT NOT NULL,
+        repeatability_uuid TEXT NOT NULL, contract_version TEXT NOT NULL,
+        fixed_action TEXT NOT NULL CHECK(fixed_action IN (
+            'bill.requestApproval','bill.approve','bill.post','bill.prepare','invoice.receive',
+            'invoice.computeMatch','invoice.requestMatchApproval','invoice.approveMatch','invoice.executeMatch',
+            'invoice.revise','invoice.reject','invoice.reviewDuplicate','bill.cancel',
+            'bill.prepareCorrection','bill.requestCorrection','bill.approveCorrection','bill.executeCorrection',
+            'accounting.prepare','accounting.request','accounting.approve','accounting.queue',
+            'accounting.deliver','accounting.lookup','accounting.reconcile')),
+        resource_id TEXT NOT NULL, binding_json TEXT NOT NULL, outcome TEXT NOT NULL CHECK(outcome IN ('success','refused')),
+        http_status INTEGER NOT NULL, result_json TEXT NOT NULL, source_json TEXT NOT NULL,
+        created_at TEXT NOT NULL, receipt_hash TEXT NOT NULL,
+        UNIQUE(canonical_person_id,repeatability_uuid)
+    )""",
+    "INSERT INTO ap_action_receipts_accounting_expanded SELECT * FROM ap_action_receipts",
+    "DROP TABLE ap_action_receipts",
+    "ALTER TABLE ap_action_receipts_accounting_expanded RENAME TO ap_action_receipts",
+    *AP_RECEIPTS_SCHEMA_STATEMENTS[1:],
+    *AP_ACCOUNTING_INVOCATION_SCHEMA_STATEMENTS,
+]
+
+
+def register_api_accounting_receipts_schema() -> int:
+    """Append fixed handoff receipts and audited worker reservations after 70.
+
+    Original receipt rows and named schema entries retain their exact text and
+    hashes. Reservations precede external observation and never imply delivery.
+    """
+    return register_schema_version(AP_ACCOUNTING_RECEIPTS_SCHEMA_NAME, AP_ACCOUNTING_RECEIPTS_SCHEMA_STATEMENTS)
+
+
 class APIReceiptIntegrityError(RuntimeError):
     """Receipt metadata is missing, counterfeit, or inconsistent with its audit."""
+
+
+class APIRepeatabilityConflict(APIReceiptIntegrityError):
+    """The reviewed key belongs to a different immutable worker invocation."""
 
 
 class APIActionReceipts:
@@ -179,6 +270,37 @@ class APIActionReceipts:
         return self.db.one("SELECT * FROM ap_action_receipts WHERE canonical_person_id=? AND repeatability_uuid=?",
                            (person_id, repeatability_uuid))
 
+    def require_repeatability_namespace(self, person_id: str, repeatability_uuid: str,
+                                        action: str, binding: dict[str, Any]) -> dict[str, Any] | None:
+        """Keep all fixed actions in the same person/key namespace.
+
+        Current caller scope is established by the action runner before this
+        pure check. Old workspaces without worker admission retain their original
+        behavior; an installed or audited reservation store must verify fully.
+        """
+        self.verify_integrity()
+        installed = self.db.one("SELECT version FROM schema_version WHERE name=?", (AP_ACCOUNTING_RECEIPTS_SCHEMA_NAME,))
+        table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='ap_accounting_invocations'")
+        births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='ap.accounting_invocation_reserved'")
+        if installed is None:
+            if table is not None or births:
+                raise APIReceiptIntegrityError("Accounting reservation history lost its registered admission schema")
+            return None
+        # This proof reads storage/audit metadata only. It initializes no worker
+        # and neither retrieves nor invokes a simulator or domain adapter.
+        from ..ap_accounting_actions import invocation_inventory_proof
+        reservations = invocation_inventory_proof(self.db, self.audit)
+        matches = [body for body in reservations if body["canonical_person_id"] == person_id
+                   and body["repeatability_uuid"] == repeatability_uuid]
+        if len(matches) > 1:
+            raise APIReceiptIntegrityError("A reviewed key has multiple accounting reservations")
+        if not matches:
+            return None
+        body = matches[0]
+        if body["fixed_action"] != action or canonical_json(body["binding"]) != canonical_json(binding):
+            raise APIRepeatabilityConflict("This repeatability key belongs to its original reviewed worker invocation")
+        return body
+
     def record(self, *, person_id: str, actor_login: str, repeatability_uuid: str, contract_version: str,
                action: str, resource_id: str, binding: dict[str, Any], outcome: str, http_status: int,
                result: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
@@ -188,6 +310,11 @@ class APIActionReceipts:
             raise APIReceiptIntegrityError("This AP action has no fixed receipt contract")
         self.db.require_practice_mode()
         self.verify_integrity()
+        reservation = self.require_repeatability_namespace(person_id, repeatability_uuid, action, binding)
+        if reservation is not None and (reservation["state"] != "observed"
+                or reservation["resource_id"] != resource_id or reservation["actor_login"] != actor_login
+                or reservation["contract_version"] != contract_version):
+            raise APIReceiptIntegrityError("A worker receipt requires its original observed invocation")
         row = {"id": new_id("api"), "workspace_id": self.db.mode_status()["workspace_id"],
                "canonical_person_id": person_id, "actor_login": actor_login, "repeatability_uuid": repeatability_uuid,
                "contract_version": contract_version, "fixed_action": action, "resource_id": resource_id,

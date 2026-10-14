@@ -44,3 +44,9 @@ Shared pure checks calculate eligibility and effects without SQL writes. Domain 
 Appended schema 69 expands the receipt action allowlist while preserving schemas 1–68. Genuine original nine-action schema-68 receipts retain their bytes, hashes, bindings and sources after upgrade; failed later migration rolls back the expansion. Copied workspaces remain physically read-only.
 
 Document upload, PO/stored-material exceptions, supplier credit screens, payment delivery, real staff identity and qualified accounting integration remain later work in [DELIVERY_BACKLOG.md](DELIVERY_BACKLOG.md). The full ERP and enterprise acceptance gates remain open.
+
+The subsequent [practice accounting handoff](ACCOUNTING_PRACTICE.md) preserves the
+original posting obligation after legitimate correction. It can look up or read
+back a prior simulated delivery without submitting it again. The first route has
+no inverse or credit delivery; close checks keep those adjustments unresolved in
+their actual reversal/credit periods even when the original was reconciled.

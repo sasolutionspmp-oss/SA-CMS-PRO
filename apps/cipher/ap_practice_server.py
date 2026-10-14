@@ -65,6 +65,17 @@ _EXCEPTION_BODY_FIELDS = {
     "bill.approveCorrection": frozenset(),
     "bill.executeCorrection": frozenset(("periodId",)),
 }
+_ACCOUNTING_ACTION_ROUTES = (
+    (re.compile(r"^bills/" + _RESOURCE + r"/prepare-accounting(:preflight)?$"), "accounting.prepare"),
+    (re.compile(r"^accounting-plans/" + _RESOURCE + r"/request-approval(:preflight)?$"), "accounting.request"),
+    (re.compile(r"^accounting-approvals/" + _RESOURCE + r"/approve(:preflight)?$"), "accounting.approve"),
+    (re.compile(r"^accounting-approvals/" + _RESOURCE + r"/queue(:preflight)?$"), "accounting.queue"),
+    (re.compile(r"^accounting-intents/" + _RESOURCE + r"/deliver(:preflight)?$"), "accounting.deliver"),
+    (re.compile(r"^accounting-intents/" + _RESOURCE + r"/lookup(:preflight)?$"), "accounting.lookup"),
+    (re.compile(r"^accounting-intents/" + _RESOURCE + r"/reconcile(:preflight)?$"), "accounting.reconcile"),
+)
+_ACCOUNTING_ACTIONS = frozenset(action for _, action in _ACCOUNTING_ACTION_ROUTES)
+_ACCOUNTING_WORKER_ACTIONS = frozenset(("accounting.deliver", "accounting.lookup", "accounting.reconcile"))
 _MAX_CENTS = 9_007_199_254_740_991
 _READ_PARAMETERS = {
     "projects": frozenset(("top", "cursor", "search")),
@@ -80,6 +91,10 @@ _INTAKE_READ_PARAMETERS = {
 }
 _EXCEPTION_READ_PARAMETERS = {
     "correction-approvals": frozenset(("projectId", "status", "search", "top", "cursor")),
+}
+_ACCOUNTING_READ_PARAMETERS = {
+    collection: frozenset(("projectId", "status", "search", "top", "cursor"))
+    for collection in ("accounting-plans", "accounting-approvals", "accounting-intents")
 }
 
 
@@ -98,6 +113,12 @@ class APPracticeHTTPServer(ThreadingHTTPServer):
         from .ap_exception_contract import APExceptionContract
         from .ap_exception_preflight import APExceptionPreflight
         from .ap_exception_actions import APExceptionActionRunner
+        from .ap_accounting_contract import APAccountingContract
+        from .ap_accounting_preflight import APAccountingPreflight
+        from .ap_accounting_actions import APAccountingActionRunner
+        from .accounting_simulator import SimulatedAccountingAdapter, SimulatedAccountingRecordStore
+        from .accounting_worker import SimulatedAccountingWorker
+        from .ap_practice_fixture import ACCOUNTANT_LOGIN
 
         self.webroot = webroot.resolve()
         self.cipher = make_ap_practice_fixture()
@@ -117,6 +138,26 @@ class APPracticeHTTPServer(ThreadingHTTPServer):
             self.exception_preflight = APExceptionPreflight(self.cipher, self.exception_contract, secret=secret)
             self.exception_actions = APExceptionActionRunner(self.cipher, self.exception_contract, self.exception_preflight)
             self.cipher.register_plugin("ap_exception_sources", self.exception_actions)
+            accounting = self.cipher.plugin("accounting")
+            # Fixed synthetic configuration is declared once per entity before
+            # any plan is prepared. Two jobs in one entity share that version.
+            declared_entities = set()
+            for project_id in self.cipher.ap_practice_records["visible_project_ids"]:
+                entity = self.cipher.project(project_id)["entity"]
+                if entity not in declared_entities:
+                    accounting.prepare_synthetic_mapping(project_id, actor=ACCOUNTANT_LOGIN,
+                                                         reason="Synthetic practice accounting declaration")
+                    declared_entities.add(entity)
+            self.accounting_store = SimulatedAccountingRecordStore()
+            self.accounting_adapter = SimulatedAccountingAdapter(self.accounting_store)
+            self.accounting_worker = SimulatedAccountingWorker(accounting, self.accounting_adapter)
+            self.accounting_contract = APAccountingContract(self.cipher, self.contract, self.intake_contract,
+                                                           self.exception_contract, secret=secret, worker=self.accounting_worker)
+            self.accounting_preflight = APAccountingPreflight(self.cipher, self.accounting_contract,
+                                                             secret=secret, worker=self.accounting_worker)
+            self.accounting_actions = APAccountingActionRunner(self.cipher, self.accounting_contract,
+                                                              self.accounting_preflight, worker=self.accounting_worker)
+            self.cipher.register_plugin("ap_accounting_sources", self.accounting_actions)
             self.sessions = APPracticeSessions(self.cipher)
             super().__init__(("127.0.0.1", port), APPracticeHandler)
         except BaseException:
@@ -442,6 +483,12 @@ class APPracticeHandler(BaseHTTPRequestHandler):
             result = self.server.exception_contract.read(authority.person_id, route, **params)
             self._json(200, result)
             return
+        if route in _ACCOUNTING_READ_PARAMETERS:
+            params = self._query(query, _ACCOUNTING_READ_PARAMETERS[route])
+            authority = self._authenticated(self._session())
+            result = self.server.accounting_contract.read(authority.person_id, route, **params)
+            self._json(200, result)
+            return
         bill = re.fullmatch(r"bills/" + _RESOURCE, route)
         packet = re.fullmatch(r"approvals/" + _RESOURCE + r"/packet", route)
         preparation = re.fullmatch(r"commitments/" + _RESOURCE + r"/preparation", route)
@@ -450,7 +497,13 @@ class APPracticeHandler(BaseHTTPRequestHandler):
         invoice_review = re.fullmatch(r"invoices/" + _RESOURCE + r"/exception-review", route)
         bill_review = re.fullmatch(r"bills/" + _RESOURCE + r"/exception-review", route)
         correction_packet = re.fullmatch(r"correction-approvals/" + _RESOURCE + r"/packet", route)
-        if bill or packet or preparation or invoice or match_packet or invoice_review or bill_review or correction_packet:
+        accounting_preparation = re.fullmatch(r"bills/" + _RESOURCE + r"/accounting-preparation", route)
+        accounting_plan = re.fullmatch(r"accounting-plans/" + _RESOURCE + r"/review", route)
+        accounting_packet = re.fullmatch(r"accounting-approvals/" + _RESOURCE + r"/packet", route)
+        accounting_intent = re.fullmatch(r"accounting-intents/" + _RESOURCE + r"/review", route)
+        accounting_invocation = re.fullmatch(r"accounting-invocations/" + _RESOURCE, route)
+        if (bill or packet or preparation or invoice or match_packet or invoice_review or bill_review or correction_packet
+                or accounting_preparation or accounting_plan or accounting_packet or accounting_intent or accounting_invocation):
             self._query(query, frozenset())
             authority = self._authenticated(self._session())
             if bill:
@@ -467,22 +520,35 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                 result = self.server.exception_contract.invoice_review(authority.person_id, invoice_review[1])
             elif bill_review:
                 result = self.server.exception_contract.bill_review(authority.person_id, bill_review[1])
-            else:
+            elif correction_packet:
                 result = self.server.exception_contract.packet(authority.person_id, correction_packet[1])
-            self._json(200, result, etag=result.get("version"))
+            elif accounting_preparation:
+                result = self.server.accounting_contract.preparation(authority.person_id, accounting_preparation[1])
+            elif accounting_plan:
+                result = self.server.accounting_contract.plan_review(authority.person_id, accounting_plan[1])
+            elif accounting_packet:
+                result = self.server.accounting_contract.packet(authority.person_id, accounting_packet[1])
+            elif accounting_intent:
+                result = self.server.accounting_contract.intent_review(authority.person_id, accounting_intent[1])
+            else:
+                result = self.server.accounting_actions.status(authority.person_id, accounting_invocation[1])
+            status = 202 if accounting_invocation and "receiptId" not in result else 200
+            self._json(status, result, etag=result.get("version"))
             return
         raise APRefusal(404, "route_not_found", "This practice route is not available.")
 
     def do_POST(self):
         from .ap_contract import APRefusal
         try:
+            worker_request = None
             with self.server.cipher_lock:
                 path, query = self._boundary(unsafe=True)
                 self._query(query, frozenset())
                 if not path.startswith(API_PREFIX):
                     raise APRefusal(404, "route_not_found", "This practice route is not available.")
                 route = path.removeprefix(API_PREFIX)
-                match = next(((pattern.fullmatch(route), action) for pattern, action in (*_ACTION_ROUTES, *_INTAKE_ACTION_ROUTES, *_EXCEPTION_ACTION_ROUTES)
+                match = next(((pattern.fullmatch(route), action) for pattern, action in
+                              (*_ACTION_ROUTES, *_INTAKE_ACTION_ROUTES, *_EXCEPTION_ACTION_ROUTES, *_ACCOUNTING_ACTION_ROUTES)
                               if pattern.fullmatch(route)), None)
                 if route not in ("session", "session/logout") and match is None:
                     raise APRefusal(404, "route_not_found", "This practice route is not available.")
@@ -507,6 +573,7 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                 resource_id, is_preflight = route_match[1], route_match[2] is not None
                 is_intake = action in _INTAKE_BODY_FIELDS
                 is_exception = action in _EXCEPTION_BODY_FIELDS
+                is_accounting = action in _ACCOUNTING_ACTIONS
                 fields = (set(_EXCEPTION_BODY_FIELDS[action]) if is_exception else set(_INTAKE_BODY_FIELDS[action]) if is_intake
                           else {"periodId", "reason"} if action == "bill.post" else set())
                 required = fields.copy()
@@ -517,7 +584,8 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                                   exception_action=action if is_exception else None)
                 if is_preflight:
                     authority = self._authenticated(session)
-                    preflight = self.server.exception_preflight if is_exception else self.server.intake_preflight if is_intake else self.server.preflight
+                    preflight = (self.server.accounting_preflight if is_accounting else self.server.exception_preflight if is_exception
+                                 else self.server.intake_preflight if is_intake else self.server.preflight)
                     result = preflight.review(authority.person_id, action, resource_id, body)
                 else:
                     repeatability_key = self._one_header("Repeatability-Request-ID", required=True)
@@ -530,13 +598,37 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                     if not re.fullmatch(r'"[A-Za-z0-9_.:-]{1,256}"', if_match):
                         raise APRefusal(422, "invalid_record_version", "Use the quoted record version from the current review.", "If-Match")
                     authority = self._authenticated(session)
-                    runner = self.server.exception_actions if is_exception else self.server.intake_actions if is_intake else self.server.actions
-                    result = runner.run(authority.person_id, action, resource_id, body,
-                                        repeatability_key=repeatability_key, if_match=if_match[1:-1])
-                self._json(200, {"contractVersion": "cipher.ap-practice.v1", "mode": "practice",
-                                 "synthetic": True, "currency": "USD", **result})
+                    runner = (self.server.accounting_actions if is_accounting else self.server.exception_actions if is_exception
+                              else self.server.intake_actions if is_intake else self.server.actions)
+                    if action in _ACCOUNTING_WORKER_ACTIONS:
+                        worker_request = (runner, action, resource_id, body, repeatability_key, if_match[1:-1])
+                    else:
+                        result = runner.run(authority.person_id, action, resource_id, body,
+                                            repeatability_key=repeatability_key, if_match=if_match[1:-1])
+                if worker_request is None:
+                    self._action_response(result)
+            if worker_request is not None:
+                # Worker claims/outcomes own separate committed transactions.
+                # Release the HTTP lock before the bounded simulator call.
+                # The runner owns its reservation/outcome transactions and
+                # repeats scoped authority and source checks at reservation
+                # and provider boundaries.
+                with self.server.cipher_lock:
+                    self.server.require_practice()
+                    if not self.server.sessions.validate_csrf(session, csrf):
+                        raise APRefusal(403, "csrf_refused", "Refresh the practice session before continuing.", "session")
+                    authority = self._authenticated(session)
+                runner, action, resource_id, body, repeatability_key, if_match = worker_request
+                result = runner.run(authority.person_id, action, resource_id, body,
+                                    repeatability_key=repeatability_key, if_match=if_match)
+                self._action_response(result, worker=True)
         except Exception as exc:
             self._handle_error(exc)
+
+    def _action_response(self, result, *, worker=False):
+        status = 202 if worker and "receiptId" not in result else 200
+        self._json(status, {"contractVersion": "cipher.ap-practice.v1", "mode": "practice",
+                            "synthetic": True, "currency": "USD", **result})
 
     def _static(self, path):
         root = self.server.webroot

@@ -10,7 +10,7 @@ from uuid import UUID
 from .ap_actions import APActionRunner, CONTRACT_VERSION
 from .ap_contract import APRefusal
 from .ap_intake_actions import APIntakeActionRunner, INVOICE_CONTENT_FIELDS, _cents
-from .core.api_receipts import APIReceiptIntegrityError
+from .core.api_receipts import APIReceiptIntegrityError, APIRepeatabilityConflict
 from .core.approvals import ApprovalError, ApprovalExpired, StaleApprovalError, material_hash
 from .core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow
 from .domain.ap_intake import APIntakeError
@@ -58,6 +58,7 @@ class APExceptionActionRunner(APIntakeActionRunner):
                 self.cipher.db.require_practice_mode()
                 context = self.preflight.authorize(person_id, action, resource_id)
                 person = context["personId"]
+                self.receipts.require_repeatability_namespace(person, key, action, binding)
                 receipt = self.receipts.find(person, key)
                 if receipt is not None:
                     if receipt["binding_json"] != canonical_json(binding):
@@ -98,6 +99,8 @@ class APExceptionActionRunner(APIntakeActionRunner):
                     self._verify_effect_boundary(action, resource_id, before, receipt, source)
         except APRefusal:
             raise
+        except APIRepeatabilityConflict:
+            raise APRefusal(409, "repeatability_conflict", "This key belongs to a different original reviewed request.") from None
         except PermissionError:
             raise APRefusal(403, "action_not_authorized", "Your current project duties do not permit this exception action.") from None
         except (ApprovalError, CipherError, BillError, APIntakeError):

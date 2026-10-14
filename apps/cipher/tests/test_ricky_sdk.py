@@ -2361,7 +2361,7 @@ EXPECTED_ROUTABLE = {
 }
 EXPECTED_RESTRICTED = {
     "people.grant_role", "people.revoke_role", "people.delegate", "people.set_policy", "payment_policy.update",
-    "contract.require_agreements", "payment.resume_releases", "party.verify_destination", "bill.post",
+    "contract.require_agreements", "payment.resume_releases", "party.verify_destination", "bill.post", "accounting.queue",
 }
 _OPERATION_NAME = re.compile(r"[a-z_]+\.[a-z_]+")
 _OPERATION_CONSTANT = re.compile(r"OP_[A-Z_]+|[A-Z_]*OPERATIONS?")

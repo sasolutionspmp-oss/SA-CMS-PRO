@@ -36,6 +36,8 @@ Read-only connected company metadata now confirms QuickBooks Online Advanced. Us
 
 Preserve existing audit history, schema checksums, stored codes, approval manifests, restored-copy quarantine and governor behavior. Approval, posting, contract signature, external sending and payment release remain separate named acts. Ricky remains read/draft-only in the served application; approved external specialist jobs do not grant it accounting authority.
 
+The connected [practice accounting handoff](ACCOUNTING_PRACTICE.md) implements the first normalized installed-work obligation through fixed simulated delivery and separate readback. It preserves original cost, AP and retainage, binds a versioned synthetic period-end date rule, and requires independent accountant authorization. Its disposable in-memory worker refuses file workspaces and preserves unknown-outcome recovery within the original process. It supplies local control evidence; production transport, persisted provider history, official posting policies and broader AP/AR/credit routes still need qualification.
+
 ## Fluent 2 design contract
 
 Use the researched UI specification's React/TypeScript/Vite and Fluent UI React v9 direction. Follow its shell, company/job hierarchy, role home pages, T1–T10 page templates, record/lifecycle patterns, grid behavior, status vocabulary and responsive layouts. Extend those patterns to proposals, estimating/takeoffs, engineering and library screens rather than introducing a second visual system. Pin actual published package versions and retain the lockfile; verify compatibility and licensing instead of assuming the spec's version examples are available.

@@ -17,7 +17,8 @@
     "build:ap": "npm run typecheck && vite build --config vite.ap.config.ts",
     "smoke:ap": "node tests/ap-smoke.mjs",
     "smoke:ap-intake": "node tests/ap-intake-smoke.mjs",
-    "smoke:ap-exception": "node tests/ap-exception-smoke.mjs"
+    "smoke:ap-exception": "node tests/ap-exception-smoke.mjs",
+    "smoke:ap-accounting": "node tests/ap-accounting-smoke.mjs"
   },
   "dependencies": {
     "@fluentui/react-components": "9.74.3",

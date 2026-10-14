@@ -14,7 +14,7 @@ from uuid import UUID
 
 from .ap_actions import APActionRunner, CONTRACT_VERSION
 from .ap_contract import APRefusal
-from .core.api_receipts import APIReceiptIntegrityError
+from .core.api_receipts import APIReceiptIntegrityError, APIRepeatabilityConflict
 from .core.approvals import ApprovalError, ApprovalExpired, StaleApprovalError, material_hash
 from .core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow
 from .core.money import money
@@ -77,6 +77,7 @@ class APIntakeActionRunner(APActionRunner):
                 self.cipher.db.require_practice_mode()
                 context = self.preflight.authorize(person_id, action, resource_id)
                 canonical_person = context["personId"]
+                self.receipts.require_repeatability_namespace(canonical_person, key, action, binding)
                 receipt = self.receipts.find(canonical_person, key)
                 if receipt is not None:
                     if receipt["binding_json"] != canonical_json(binding):
@@ -119,6 +120,8 @@ class APIntakeActionRunner(APActionRunner):
                     self._verify_effect_boundary(action, resource_id, before, receipt, source)
         except APRefusal:
             raise
+        except APIRepeatabilityConflict:
+            raise APRefusal(409, "repeatability_conflict", "This key belongs to a different original reviewed request.") from None
         except PermissionError:
             raise APRefusal(403, "action_not_authorized", "Your current project duties do not permit this intake action.") from None
         except (ApprovalError, CipherError, BillError, APIntakeError):

@@ -25,10 +25,12 @@ class AuditIndexTests(unittest.TestCase):
         history = sorted([[name, catalog_checksum(statements)]
                           for _, name, statements in core_db.SCHEMA_CATALOG[:HISTORICAL_ENTRY_COUNT]])
         self.assertEqual(sha256_hex(canonical_json(history)), HISTORICAL_CATALOG_HASH)
-        self.assertEqual(PLUGIN_MODULES, [f"apps.cipher.domain.{name}" for name in (
+        historical_modules = [f"apps.cipher.domain.{name}" for name in (
             "assets", "schedule", "drawings", "reimbursements", "banking", "labor", "procurement", "field",
             "close", "handoff", "rights", "ap_intake", "people", "payment_policy", "contracts",
-        )])
+        )]
+        self.assertEqual(PLUGIN_MODULES[:len(historical_modules)], historical_modules)
+        self.assertEqual(PLUGIN_MODULES[len(historical_modules):], ["apps.cipher.domain.accounting"])
 
     def test_governor_lookup_plans_use_indexes_in_sequence_order(self):
         c = Cipher()

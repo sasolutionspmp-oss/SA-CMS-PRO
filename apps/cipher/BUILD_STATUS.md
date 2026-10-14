@@ -6,6 +6,11 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 | Date | Check | Result |
 |---|---|---|
+| 2026-10-14 | Full suite after normalized practice accounting, API recovery and source/copy review | 2017 unique tests, OK; 928.845 seconds; 150 new accounting domain/simulator/service/contract/action/HTTP/review/upgrade cases; zero failures/errors. All Python source remained unchanged throughout final discovery |
+| 2026-10-14 | Fluent original-obligation accounting handoff and Unknown recovery | 58 views at 1440/1024/390, three fresh actual-backend journeys, 61 exact retries, 24 contract checks and six recovery cases; zero unexpected HTTP/application/CSP or axe findings. Each width preserves its two original source journals, produces one simulator effect per obligation, and makes zero native payment submissions/transfers. Original cost/AP/retainage and Oct 31/Nov 30 dates remain exact in America/New_York. Pending responses, malformed refreshes, confirmed-missing recovery with an explicit later delivery review, later readback reviews and original Unknown replay after reconciliation/navigation are covered |
+| 2026-10-14 | Existing Fluent AP/intake/exception interfaces after accounting integration | original AP 54 views/3 journeys/12 retries/8 checks; intake 46 views/3 journeys/21 retries/10 holds/5 checks; exceptions 30 views/3 journeys/27 retries/2 checks; zero unexpected HTTP/application/CSP or axe findings. Final accounting-only client hardening leaves their source branches and action labels unchanged |
+| 2026-10-14 | Accounting migration, file-copy review and focused source controls | schemas 1–69 exact; four genuine 69/70 upgrade and rollback cases preserve old receipt bytes/hashes, audited history, journals and accepted/readback records. Current copied-file review preserves bytes and initializes no worker; copy/core 57 tests pass. Accounting domain/simulator/service/startup/actions/HTTP 132 tests pass; separate independent result/provenance regressions and current-duty/contract/preflight checks pass. A historical exact plugin-list assertion was reproduced and updated to require the unchanged original prefix plus accounting at the tail; its four tests pass |
+| 2026-10-14 | Final Fluent AP typecheck/build with accounting screens | both pass with unchanged exact dependency pins/lockfile; AP JavaScript chunk 671.28 kB minified, 179.51 kB gzip. Vite's existing size advisory remains; production load/performance and manual screen-reader/owner acceptance are not established by the browser checks |
 | 2026-10-14 | Full suite after invoice exceptions, governed corrections and source/compatibility review | 1867 unique tests, OK; 697.938 seconds; 100 new exception/correction/source/migration cases; zero failures/errors |
 | 2026-10-14 | Fluent exception/correction and existing interfaces against frozen backend | exceptions 30 views/3 journeys/27 exact retries/2 contract checks; intake 46 views/3 journeys/21 retries/10 holds/5 checks; original AP 54 views/3 journeys/12 retries/8 checks; read app 18 views/7 checks; zero unexpected HTTP/application/CSP or axe findings |
 | 2026-10-14 | Exception receipt upgrades and financial/source preservation | schemas 1–68 exact; genuine schema-67/schema-68 receipts, hashes, audit prefixes and journals preserved under schema 69; five migration/copy tests; console 20/20; gates 9/9, checks 127/127; complete corpus and golden business results unchanged |
@@ -49,7 +54,7 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 The older container rows predate round 4. The 2026-10-14 rebuild and restart checks above supersede them.
 
-Tests per module: adversarial_variants 22, ap_action_review 1, ap_actions 38, ap_boundary_review 4, ap_contract 27, ap_contract_review 3, ap_exception_actions 30, ap_exception_bills 19, ap_exception_contract 6, ap_exception_domain 19, ap_exception_http 9, ap_exception_preflight 11, ap_exception_review 2, ap_exception_source_review 2, ap_intake 25, ap_intake_actions 50, ap_intake_actions_review 3, ap_intake_contract 27, ap_intake_http 13, ap_intake_preflight 23, ap_intake_review 5, ap_practice_fixture 7, ap_practice_server 23, ap_preflight 19, ap_preparation_domain 29, ap_sessions 17, api_contract 14, api_receipt_upgrade 5, assets 35, audit_index 4, banking 43, bill_authorization_history 4, bill_posting_authority 25, bill_posting_review 8, bill_posting_split 23, bill_service_split 9, bills_controls 42, close 42, contracts 49, core 31, core_gates 53, corpus 9, dispatch_coverage 15, drawings 25, estimates_controls 49, field 36, forecast_v2 32, grant_preflight 14, handoff 27, http 25, integrity 41, labor 41, ledger 17, payee_changes 20, payment_policy 47, payment_workspace_mode 20, payments_controls 70, payments_scope 27, people 60, plugin_loading 13, practice_server 13, procurement 29, receivables_controls 36, receivables_v3 23, reimbursements 41, ricky_brief 6, ricky_sdk 117, ricky_served 12, ricky_served_handlers 1, rights 46, schedule 25, service_controls 18, vertical_extended 12, vertical_v1 23, words 2, workflow 29, workspace_mode 15, workspace_runtime 10.
+Tests per module: accounting_domain 32, accounting_service 12, accounting_simulator 53, accounting_startup 8, adversarial_variants 22, ap_accounting_actions 18, ap_accounting_contract 3, ap_accounting_http 9, ap_accounting_preflight 6, ap_accounting_review 5, ap_action_review 1, ap_actions 38, ap_boundary_review 4, ap_contract 27, ap_contract_review 3, ap_exception_actions 30, ap_exception_bills 19, ap_exception_contract 6, ap_exception_domain 19, ap_exception_http 9, ap_exception_preflight 11, ap_exception_review 2, ap_exception_source_review 2, ap_intake 25, ap_intake_actions 50, ap_intake_actions_review 3, ap_intake_contract 27, ap_intake_http 13, ap_intake_preflight 23, ap_intake_review 5, ap_practice_fixture 7, ap_practice_server 23, ap_preflight 19, ap_preparation_domain 29, ap_sessions 17, api_accounting_upgrade 4, api_contract 14, api_receipt_upgrade 5, assets 35, audit_index 4, banking 43, bill_authorization_history 4, bill_posting_authority 25, bill_posting_review 8, bill_posting_split 23, bill_service_split 9, bills_controls 42, close 42, contracts 49, core 31, core_gates 53, corpus 9, dispatch_coverage 15, drawings 25, estimates_controls 49, field 36, forecast_v2 32, grant_preflight 14, handoff 27, http 25, integrity 41, labor 41, ledger 17, payee_changes 20, payment_policy 47, payment_workspace_mode 20, payments_controls 70, payments_scope 27, people 60, plugin_loading 13, practice_server 13, procurement 29, receivables_controls 36, receivables_v3 23, reimbursements 41, ricky_brief 6, ricky_sdk 117, ricky_served 12, ricky_served_handlers 1, rights 46, schedule 25, service_controls 18, vertical_extended 12, vertical_v1 23, words 2, workflow 29, workspace_mode 15, workspace_runtime 10.
 
 ## Codex continuation (2026-10-14)
 
@@ -147,6 +152,57 @@ The final Fluent exception check covers 30 views, three journeys, 27 exact retri
 
 Console 20/20, core gates 9/9 and hard checks 127/127 pass. The complete corpus report and golden business results remain unchanged. The next slice is a normalized, separately governed accounting handoff with a fixed practice simulator, durable outcomes and reconciliation; none of this milestone posts to QuickBooks or changes the established BILL route. Real document storage, PO/stored-material screens, supplier credit/payment screens, authenticated staff identity and live integrations remain open. The older 1320-test Docker image has not been rebuilt for this milestone; internal completion and enterprise qualification remain open.
 
+### Original-obligation practice accounting handoff (2026-10-14)
+
+The final backend suite passes 2017 distinct cases in 928.845 seconds, including
+150 new accounting domain, simulator, service, contract, action, HTTP, review and
+upgrade cases. Python source remained unchanged throughout discovery. The first
+run caught an outdated exact plugin-list expectation; its historical prefix and
+schema checksums passed. The corrected test pins that same original prefix and
+requires accounting only at the tail; the complete rerun passes.
+
+[ACCOUNTING_PRACTICE.md](docs/ACCOUNTING_PRACTICE.md) records the fixed aggregate
+JournalEntry route. It preserves original installed cost, net AP and retainage
+from a modern posting receipt, original journal/business grant and matched invoice
+binding or explicit null. The date rule uses the audited actual posting period's
+end, explicitly labeled synthetic. It does not invent an invoice, cost type, tax
+mapping or official QuickBooks transaction.
+
+Seven fixed actions prepare, request, independently grant and queue the handoff,
+then explicitly deliver, look up or read back its simulator record. Current actual
+project accountant duty and membership govern every step and replay. Queueing
+creates no journal/provider call. A private factory-owned worker claims before
+crossing the simulator boundary outside SQL transactions. Unknown and unfinished
+outcomes recover by the original UUID; confirmed missing permits a later separately
+reviewed delivery, and readback remains distinct from acceptance. The independent
+simulator store retains an acceptance across local observation/receipt failures.
+It is memory-only practice; process restart and file-workspace delivery are not
+qualified. The served Ricky cannot request or execute this handoff.
+
+Schema 70 appends audited mappings/plans/intents/leases/attempts/acceptances/readback;
+schema 71 adds audited API invocation recovery and expands receipts to 24 actions.
+All 24 share the per-person repeatability namespace, including pending invocations.
+Genuine schema-69 receipts and schema-70 accepted/readback history survive upgrade
+unchanged. A current copied-file review preserves its bytes and initializes no
+worker; WAL setup now waits until writable authority is established. Historical
+schemas 1–69 remain exact.
+
+Regression-first review fixed false QuickBooks/journal result claims, altered
+original command payloads, bool/int/float aliases in original result and audit-reference proofs, cross-action pending-key reuse, payment/credit source
+admission and cross-period close omissions. Genuine canceled/failed/returned
+histories remain eligible where unpaid. Original October reconciliation cannot
+hide a November correction or credit: unsupported inverses/credits remain flagged
+in their actual journal period. Historical lookup/readback preserves the original
+obligation without authorizing another submission or netting a correction.
+
+The verification table records actual Fluent journeys and their limits. Console
+20/20, native gates 9/9 and hard checks 127/127 pass; the complete corpus report and
+golden business figures remain unchanged. The prior 1320-test container image has
+not been rebuilt. Real identity, persisted provider recovery, official posting
+policies and live integration remain open. Continue with
+[connected estimating and subcontract handoff](docs/COMMERCIAL_DELIVERY_PLAN.md),
+while the full ERP and enterprise acceptance gates remain open.
+
 ## Round 4 (governor modules)
 
 Three modules govern approvals that other modules own. Each does nothing until it is configured.
@@ -202,6 +258,11 @@ Every finding below was reproduced before it was fixed, and each fix has a regre
 
 ## Not verified / remaining gaps
 
+- **Accounting transport:** the normalized original-obligation route and owned
+  memory-only simulator worker are practice evidence. File-workspace delivery,
+  process-restart provider recovery, approved inverse/credit/AR routes, complete
+  cost-code/type/tax mappings and controller-approved live date/posting policies
+  remain open. Simulated acceptance/readback supplies no QuickBooks delivery.
 - **Claim attestation (G8 advisory):** without `CIPHER_OWNER_SECRET`, claiming a restored copy is attestation only (recorded and flagged by Ricky's brief). The container run above sets the secret; every deployment that opens restored copies must too.
 - **Identity:** the people registry checks roles once its policy enforces, and the Ricky SDK answers to it, but nothing authenticates the caller yet. The HTTP `ricky_tool` action and the console take the actor login from the request, so who is calling is asserted, not proven (part of the production-identity gate).
 - **Approval expiry during a hold:** approvals, payment value dates and the procurement and intake "today" checks keep the wall clock. A 24-hour approval expires while a high-risk release waits out a co-signature or the five-day cooling-off window, so the release then needs a fresh approval, co-signature and step-up; the corpus's simulated days never expire one, so it understates those re-approvals.

@@ -2,13 +2,16 @@ import { sumCents } from '../copy/format';
 import type {
   ActionOutcome, APAction, Bill, Collection, Envelope, Packet, Persona, Preflight, Problem,
   BillException, CorrectionApproval, CorrectionPacket, Invoice, InvoiceException, MatchPacket, Preparation, Records, Session, Workspace,
+  AccountingIntentReview, AccountingPacket, AccountingPlanReview, AccountingPreparation,
+  WorkerPendingOutcome,
 } from './types';
 
 const prefix = '/api/ap-practice/v1';
 const supportedActions: APAction[] = ['bill.requestApproval', 'bill.approve', 'bill.post', 'bill.prepare',
   'invoice.receive', 'invoice.computeMatch', 'invoice.requestMatchApproval', 'invoice.approveMatch', 'invoice.executeMatch',
   'invoice.revise', 'invoice.reject', 'invoice.reviewDuplicate', 'bill.cancel', 'bill.prepareCorrection',
-  'bill.requestCorrection', 'bill.approveCorrection', 'bill.executeCorrection'];
+  'bill.requestCorrection', 'bill.approveCorrection', 'bill.executeCorrection', 'accounting.prepare', 'accounting.request',
+  'accounting.approve', 'accounting.queue', 'accounting.deliver', 'accounting.lookup', 'accounting.reconcile'];
 const pendingReads = new Set<AbortController>();
 export function abortScopedReads() {
   for (const controller of pendingReads) controller.abort();
@@ -79,6 +82,19 @@ function effects(raw: unknown, allowed: boolean, action: APAction) {
     if (allowed) integers(value, action === 'bill.prepare' ? ['amountDueCents', 'retainageCents', 'thisPeriodCents'] : ['amountCents']);
     if (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || array(value, 'journalPreview').length !== 0) throw unreadable();
     if (array(value, 'matchExceptionCodes').some(code => typeof code !== 'string') || typeof value.possibleDuplicate !== 'boolean' || typeof value.billLinked !== 'boolean') throw unreadable();
+  } else if (action.startsWith('accounting.')) {
+    integers(value, ['nativePaymentProviderCalls', 'preflightAccountingSimulatorCalls', 'accountingSimulatorCallBound']);
+    if (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || value.nativePaymentProviderCalls !== 0 || value.preflightAccountingSimulatorCalls !== 0 || value.quickBooksAccepted !== false || array(value, 'journalPreview').length) throw unreadable();
+    for (const field of ['createsPlan', 'createsApproval', 'grantsApproval', 'createsIntent', 'startsSeparateWorkerInvocation']) if (typeof value[field] !== 'boolean') throw unreadable();
+    nullableStrings(value, ['approvalStatus', 'intentStatus', 'intendedWorkerPhase']);
+    const worker = ['accounting.deliver', 'accounting.lookup', 'accounting.reconcile'].includes(action);
+    if (![0, 1, 3].includes(value.accountingSimulatorCallBound as number) || !worker && (value.accountingSimulatorCallBound !== 0 || value.intendedWorkerPhase !== null)) throw unreadable();
+    if (worker && allowed) {
+      const phases = action === 'accounting.reconcile' ? ['read_record'] : action === 'accounting.lookup' ? ['lookup'] : ['submit', 'lookup'];
+      if (!phases.includes(value.intendedWorkerPhase as string) || value.startsSeparateWorkerInvocation !== true || value.accountingSimulatorCallBound !== (value.intendedWorkerPhase === 'lookup' ? 3 : 1)) throw unreadable();
+    }
+    if (!allowed && (value.intendedWorkerPhase !== null || value.accountingSimulatorCallBound !== 0 || value.startsSeparateWorkerInvocation !== false)) throw unreadable();
+    accountingPrivacy(value);
   } else {
     if (action !== 'bill.executeCorrection' && (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || array(value, 'journalPreview').length !== 0)) throw unreadable();
     for (const field of ['billStatus', 'invoiceStatus', 'approvalStatus']) if (value[field] !== undefined && value[field] !== null && typeof value[field] !== 'string') throw unreadable();
@@ -161,6 +177,68 @@ function correctionApproval(raw: unknown) {
   integers(value, ['sequence', 'amountDueCents']); nullableStrings(value, ['approvedAt']); person(value.requestedBy);
   if (value.approvedBy !== null) person(value.approvedBy);
 }
+function accountingPrivacy(raw: unknown, depth = 0) {
+  if (depth > 20) throw unreadable();
+  if (Array.isArray(raw)) { for (const value of raw) accountingPrivacy(value, depth + 1); return; }
+  if (raw && typeof raw === 'object') for (const [key, value] of Object.entries(raw)) {
+    if (/^(?:lease.*|token|secret|credentials|accessToken|refreshToken|csrfToken|.*Secret|providerUrl|realmId)$/i.test(key)) throw new Error('The accounting practice response contains an unsupported private field.');
+    accountingPrivacy(value, depth + 1);
+  }
+}
+function calendarDate(raw: unknown) {
+  if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw)) throw unreadable();
+  const date = new Date(raw + 'T00:00:00Z');
+  if (Number.isNaN(date.valueOf()) || date.toISOString().slice(0, 10) !== raw) throw unreadable();
+}
+function timestamp(raw: unknown) {
+  if (typeof raw !== 'string' || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(raw) || Number.isNaN(new Date(raw).valueOf())) throw unreadable();
+  calendarDate(raw.slice(0, 10));
+}
+function accountingApproval(raw: unknown) {
+  const value = object(raw); strings(value, ['id', 'planId', 'status', 'effectiveStatus', 'requestedAt', 'expiresAt']);
+  if (!['pending', 'granted', 'consumed', 'expired', 'invalidated'].includes(value.status as string) || !['pending', 'granted', 'consumed', 'expired', 'invalidated', 'stale'].includes(value.effectiveStatus as string)) throw unreadable();
+  person(value.requestedBy); nullableStrings(value, ['approvedAt']); if (value.approvedBy !== null) person(value.approvedBy);
+  timestamp(value.requestedAt); timestamp(value.expiresAt); if (value.approvedAt !== null) timestamp(value.approvedAt);
+}
+function accountingIntent(raw: unknown) {
+  const value = object(raw); strings(value, ['id', 'planId', 'approvalId', 'status', 'logicalOperationId', 'payloadHash', 'queuedAt', 'updatedAt']);
+  integers(value, ['revision']); person(value.queuedBy); person(value.updatedBy);
+  timestamp(value.queuedAt); timestamp(value.updatedAt);
+  if (!['queued', 'submitting', 'outcome_unknown', 'simulated_accepted', 'reconciled', 'refused'].includes(value.status as string) || typeof value.lookupRequired !== 'boolean' || typeof value.hasAcceptance !== 'boolean' || value.simulation !== true || value.externalAccounting !== 'unavailable' || value.liveAccounting !== 'unavailable') throw unreadable();
+  if (['simulated_accepted', 'reconciled'].includes(value.status as string) && value.hasAcceptance !== true || value.status === 'outcome_unknown' && (value.lookupRequired !== true || value.hasAcceptance !== false)) throw unreadable();
+  accountingPrivacy(value);
+}
+function accountingPlan(raw: unknown) {
+  const value = object(raw); accountingPrivacy(value);
+  strings(value, ['id', 'projectId', 'billId', 'logicalOperationId', 'payloadHash', 'route', 'datePolicy', 'transactionDate', 'currency', 'preparedAt']);
+  integers(value, ['grossCostCents', 'netApCents', 'retainageCents']); person(value.preparedBy);
+  timestamp(value.preparedAt);
+  if (value.status !== 'prepared' || value.currency !== 'USD' || value.route !== 'practice.simulated-journal-entry.v1' || value.datePolicy !== 'synthetic.period-end.v1') throw unreadable();
+  const source = object(value.source); strings(source, ['billId', 'projectId', 'projectName', 'supplierId', 'supplierName', 'commitmentId', 'commitmentTitle', 'currentBillStatus', 'postingReceiptId', 'originalJournalId']); integers(source, ['sequence']);
+  if (source.billId !== value.billId || source.projectId !== value.projectId) throw unreadable();
+  const original = object(value.original); integers(original, ['originalCostCents', 'originalApCents', 'originalRetainageCents']); period(original.sourcePeriod); person(original.sourcePostedBy); strings(original, ['sourcePostedAt']);
+  timestamp(original.sourcePostedAt);
+  if (original.originalCostCents !== value.grossCostCents || original.originalApCents !== value.netApCents || original.originalRetainageCents !== value.retainageCents || (original.originalCostCents as number) <= 0 || (original.originalApCents as number) < 0 || (original.originalRetainageCents as number) < 0 || BigInt(original.originalCostCents as number) !== BigInt(original.originalApCents as number) + BigInt(original.originalRetainageCents as number)) throw unreadable();
+  const date = object(value.date); strings(date, ['transactionDate', 'sourcePeriodId', 'sourcePeriodEndDate']); calendarDate(date.transactionDate); calendarDate(date.sourcePeriodEndDate);
+  if (date.policy !== 'synthetic.period-end.v1' || date.qualification !== 'synthetic_only' || date.transactionDate !== value.transactionDate || date.transactionDate !== date.sourcePeriodEndDate || date.sourcePeriodId !== object(original.sourcePeriod).id || date.sourcePeriodEndDate !== object(original.sourcePeriod).endDate) throw unreadable();
+  const capability = object(value.capability);
+  if (capability.source !== 'original_installed_work_posting_receipt' || capability.route !== value.route || capability.simulation !== true || capability.externalAccounting !== 'unavailable' || capability.quickBooksAccepted !== false || capability.datePolicy !== date.policy || capability.liveDatePolicy !== 'unqualified' || capability.transactionKind !== 'aggregate_practice_journal' || JSON.stringify(capability.dimensions) !== '["project","supplier"]' || capability.costTypeQualification !== 'unavailable' || capability.taxQualification !== 'unavailable' || capability.payment !== 'not_started') throw unreadable();
+  const mapping = object(value.mapping); strings(mapping, ['id', 'hash']); integers(mapping, ['version']);
+  const postingPeriod = object(value.period); strings(postingPeriod, ['id', 'startDate', 'endDate']);
+  if (postingPeriod.id !== date.sourcePeriodId || postingPeriod.startDate !== object(original.sourcePeriod).startDate || postingPeriod.endDate !== date.sourcePeriodEndDate) throw unreadable();
+  const preview = object(value.preview); integers(preview, ['debitTotalCents', 'creditTotalCents']);
+  const rows = array(preview, 'lines'); const codes = new Set<string>();
+  for (const item of rows) {
+    const line = object(item); strings(line, ['id', 'sourceAccountCode', 'sourceAccountName', 'practiceAccountName', 'projectName', 'supplierName', 'memo']); integers(line, ['debitCents', 'creditCents']);
+    if (!['5000', '2000', '2050'].includes(line.sourceAccountCode as string) || codes.has(line.sourceAccountCode as string) || (line.debitCents as number) < 0 || (line.creditCents as number) < 0) throw unreadable();
+    codes.add(line.sourceAccountCode as string);
+    if (line.projectName !== source.projectName || line.supplierName !== source.supplierName) throw unreadable();
+    const expectedDebit = line.sourceAccountCode === '5000' ? original.originalCostCents : 0;
+    const expectedCredit = line.sourceAccountCode === '2000' ? original.originalApCents : line.sourceAccountCode === '2050' ? original.originalRetainageCents : 0;
+    if (line.debitCents !== expectedDebit || line.creditCents !== expectedCredit) throw unreadable();
+  }
+  if (!codes.has('5000') || (original.originalApCents as number) > 0 && !codes.has('2000') || (original.originalRetainageCents as number) > 0 && !codes.has('2050') || sumCents(rows.map(row => object(row).debitCents as number)) !== preview.debitTotalCents || sumCents(rows.map(row => object(row).creditCents as number)) !== preview.creditTotalCents || preview.debitTotalCents !== original.originalCostCents || preview.creditTotalCents !== original.originalCostCents) throw unreadable();
+}
 function record(raw: unknown, collection: Collection) {
   const value = object(raw);
   if (collection === 'projects') {
@@ -183,6 +261,9 @@ function record(raw: unknown, collection: Collection) {
   } else if (collection === 'invoices') invoice(value);
   else if (collection === 'match-approvals') matchApproval(value);
   else if (collection === 'correction-approvals') correctionApproval(value);
+  else if (collection === 'accounting-plans') accountingPlan(value);
+  else if (collection === 'accounting-approvals') accountingApproval(value);
+  else if (collection === 'accounting-intents') accountingIntent(value);
   else {
     strings(value, ['id', 'projectId', 'status']); evidence(value);
     if (typeof value.available !== 'boolean') throw unreadable();
@@ -261,6 +342,7 @@ export async function readCollection<K extends Collection>(collection: K, signal
   do {
     const query = new URLSearchParams({ top: '50' }); if (cursor) query.set('cursor', cursor);
     const value = provenance(await request(`/${collection}?${query}`, { signal }));
+    if (collection.startsWith('accounting-')) accountingPrivacy(value);
     if (value.collection !== collection || !Number.isSafeInteger(value.count) || (value.count as number) < 0) throw unreadable();
     nullableStrings(value, ['nextCursor', 'projectId']); object(value.facets);
     const totals = object(value.totals); if (Object.values(totals).some(amount => !Number.isSafeInteger(amount))) throw unreadable();
@@ -330,6 +412,38 @@ export async function readCorrectionPacket(id: string, signal?: AbortSignal): Pr
 export function readCorrectionApprovals(_id: string, signal?: AbortSignal): Promise<CorrectionApproval[]> {
   return readCollection('correction-approvals', signal);
 }
+export async function readAccountingPreparation(id: string, signal?: AbortSignal): Promise<AccountingPreparation> {
+  const value = provenance(await request(`/bills/${encodeURIComponent(id)}/accounting-preparation`, { signal })); accountingPrivacy(value);
+  strings(value, ['version']); bill(value.bill); actions(value);
+  if (object(value.bill).id !== id) throw unreadable();
+  if (value.simulation !== true || value.externalAccounting !== 'unavailable' || value.liveAccounting !== 'unavailable') throw unreadable();
+  if (value.mapping !== null) {
+    const mapping = object(value.mapping); strings(mapping, ['id', 'hash']); integers(mapping, ['version']);
+    if (mapping.route !== 'practice.simulated-journal-entry.v1' || mapping.datePolicy !== 'synthetic.period-end.v1') throw unreadable();
+  }
+  return value as unknown as AccountingPreparation;
+}
+export async function readAccountingPlan(id: string, signal?: AbortSignal): Promise<AccountingPlanReview> {
+  const value = provenance(await request(`/accounting-plans/${encodeURIComponent(id)}/review`, { signal })); accountingPrivacy(value);
+  strings(value, ['version']); accountingPlan(value.plan); actions(value);
+  if (object(value.plan).id !== id) throw unreadable();
+  return value as unknown as AccountingPlanReview;
+}
+export async function readAccountingPacket(id: string, signal?: AbortSignal): Promise<AccountingPacket> {
+  const value = provenance(await request(`/accounting-approvals/${encodeURIComponent(id)}/packet`, { signal })); accountingPrivacy(value);
+  strings(value, ['version']); accountingPlan(value.plan); accountingApproval(value.approval); actions(value);
+  if (object(value.approval).id !== id || object(value.approval).planId !== object(value.plan).id) throw unreadable();
+  return value as unknown as AccountingPacket;
+}
+export async function readAccountingIntent(id: string, signal?: AbortSignal): Promise<AccountingIntentReview> {
+  const value = provenance(await request(`/accounting-intents/${encodeURIComponent(id)}/review`, { signal })); accountingPrivacy(value);
+  strings(value, ['version']); accountingPlan(value.plan); accountingIntent(value.intent); actions(value);
+  if (value.deliveryAdmission !== 'disposable-memory-practice-only' || object(value.intent).id !== id || object(value.intent).planId !== object(value.plan).id || object(value.intent).logicalOperationId !== object(value.plan).logicalOperationId || object(value.intent).payloadHash !== object(value.plan).payloadHash) throw unreadable();
+  return value as unknown as AccountingIntentReview;
+}
+export function readAccountingPlans(_id: string, signal?: AbortSignal) { return readCollection('accounting-plans', signal); }
+export function readAccountingApprovals(_id: string, signal?: AbortSignal) { return readCollection('accounting-approvals', signal); }
+export function readAccountingIntents(_id: string, signal?: AbortSignal) { return readCollection('accounting-intents', signal); }
 export async function readBill(id: string, signal?: AbortSignal): Promise<Bill> {
   const value = provenance(await request(`/bills/${encodeURIComponent(id)}`, { signal })); bill(value);
   return value as unknown as Bill;
@@ -355,6 +469,9 @@ export function actionPath(action: APAction, id: string) {
     'invoice.reviewDuplicate': `/invoices/${encoded}/review-duplicate`, 'bill.cancel': `/bills/${encoded}/cancel`,
     'bill.prepareCorrection': `/bills/${encoded}/prepare-correction`, 'bill.requestCorrection': `/bills/${encoded}/request-correction`,
     'bill.approveCorrection': `/correction-approvals/${encoded}/approve`, 'bill.executeCorrection': `/correction-approvals/${encoded}/execute`,
+    'accounting.prepare': `/bills/${encoded}/prepare-accounting`, 'accounting.request': `/accounting-plans/${encoded}/request-approval`,
+    'accounting.approve': `/accounting-approvals/${encoded}/approve`, 'accounting.queue': `/accounting-approvals/${encoded}/queue`,
+    'accounting.deliver': `/accounting-intents/${encoded}/deliver`, 'accounting.lookup': `/accounting-intents/${encoded}/lookup`, 'accounting.reconcile': `/accounting-intents/${encoded}/reconcile`,
   };
   return routes[action];
 }
@@ -366,8 +483,28 @@ export async function preflight(action: APAction, id: string, body: ObjectValue,
   effects(value.safeEffects, value.allowed, action);
   return value as unknown as Preflight;
 }
-export async function applyAction(action: APAction, id: string, body: ObjectValue, csrf: string, version: string, repeatabilityId: string): Promise<ActionOutcome> {
+export async function applyAction(action: APAction, id: string, body: ObjectValue, csrf: string, version: string, repeatabilityId: string): Promise<ActionOutcome | WorkerPendingOutcome> {
   const value = provenance(await request(actionPath(action, id), { method: 'POST', csrf, body, version, repeatabilityId }));
+  if (action.startsWith('accounting.')) {
+    accountingPrivacy(value);
+    if (value.retrySameRequest === true) {
+      if (!['accounting.deliver', 'accounting.lookup', 'accounting.reconcile'].includes(action) || value.effectApplied !== false || value.replayed !== false || value.receiptId !== undefined || value.result !== undefined || !['reserved', 'claimed', 'awaiting_observation', 'observed'].includes(value.state as string)) throw unreadable();
+      strings(value, ['invocationId', 'state']); return value as unknown as WorkerPendingOutcome;
+    }
+    const result = object(value.result);
+    if (result.simulation !== true || result.quickBooksAccepted !== false || result.journalCountDelta !== 0 || result.apBalanceDeltaCents !== 0) throw unreadable();
+    const humanStatus = { 'accounting.prepare': 'prepared', 'accounting.request': 'pending', 'accounting.approve': 'granted', 'accounting.queue': 'queued' } as Record<string, string>;
+    if (action in humanStatus) {
+      if (result.status !== humanStatus[action]) throw unreadable();
+      strings(result, action === 'accounting.prepare' ? ['planId', 'billId'] : action === 'accounting.queue' ? ['intentId', 'approvalId', 'planId'] : ['approvalId', 'planId']);
+      const resource = action === 'accounting.prepare' ? result.billId : action === 'accounting.request' ? result.planId : result.approvalId;
+      if (resource !== id) throw unreadable();
+    } else {
+      strings(result, ['invocationId', 'intentId', 'logicalOperationId', 'status']);
+      const allowed = action === 'accounting.reconcile' ? ['reconciled', 'reconciliation_unavailable', 'reconciliation_conflict', 'refused'] : ['simulated_accepted', 'outcome_unknown', 'confirmed_missing', 'refused'];
+      if (result.intentId !== id || !allowed.includes(result.status as string)) throw unreadable();
+    }
+  }
   strings(value, ['receiptId']); object(value.result);
   if (typeof value.replayed !== 'boolean' || typeof value.effectApplied !== 'boolean') throw unreadable();
   return value as unknown as ActionOutcome;

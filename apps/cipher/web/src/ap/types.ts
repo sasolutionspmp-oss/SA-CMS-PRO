@@ -5,7 +5,9 @@ export type APAction = 'bill.requestApproval' | 'bill.approve' | 'bill.post' | '
   | 'invoice.receive' | 'invoice.computeMatch' | 'invoice.requestMatchApproval'
   | 'invoice.approveMatch' | 'invoice.executeMatch' | 'invoice.revise' | 'invoice.reject'
   | 'invoice.reviewDuplicate' | 'bill.cancel' | 'bill.prepareCorrection' | 'bill.requestCorrection'
-  | 'bill.approveCorrection' | 'bill.executeCorrection';
+  | 'bill.approveCorrection' | 'bill.executeCorrection' | AccountingAction;
+export type AccountingAction = 'accounting.prepare' | 'accounting.request' | 'accounting.approve' | 'accounting.queue'
+  | 'accounting.deliver' | 'accounting.lookup' | 'accounting.reconcile';
 export type Duty = 'pm' | 'accountant';
 export interface Person { id: string; displayName: string }
 export interface Capabilities {
@@ -71,6 +73,9 @@ export interface Preflight extends Provenance {
 export interface ActionOutcome extends Provenance {
   receiptId: string; replayed: boolean; effectApplied: boolean; result: Record<string, SafeValue>;
 }
+export interface WorkerPendingOutcome extends Provenance {
+  invocationId: string; state: string; retrySameRequest: true; replayed: boolean; effectApplied: false;
+}
 export interface Preparation extends Provenance {
   id: string; version: string; projectId: string; projectName: string; commitmentTitle: string;
   supplierId: string; supplierName: string; status: string; retainageRateMicros: number;
@@ -119,9 +124,57 @@ export interface CorrectionPacket extends Provenance, CorrectionApproval {
   bill: Bill; boundFacts: Record<string, SafeValue>; currentFacts: Record<string, SafeValue>; changes: Change[];
   effect: Record<string, SafeValue>; availableActions: APAction[]; blockedReasons: Problem[]; correctionPeriods: Period[];
 }
+export interface AccountingSource {
+  billId: string; sequence: number; projectId: string; projectName: string; supplierId: string;
+  supplierName: string; commitmentId: string; commitmentTitle: string; currentBillStatus: string;
+  postingReceiptId: string; originalJournalId: string;
+}
+export interface AccountingCapability {
+  source: 'original_installed_work_posting_receipt'; route: 'practice.simulated-journal-entry.v1';
+  simulation: true; externalAccounting: 'unavailable'; quickBooksAccepted: false;
+  datePolicy: 'synthetic.period-end.v1'; liveDatePolicy: 'unqualified'; transactionKind: 'aggregate_practice_journal';
+  dimensions: ['project', 'supplier']; costTypeQualification: 'unavailable'; taxQualification: 'unavailable'; payment: 'not_started';
+}
+export interface AccountingPlan {
+  id: string; status: 'prepared'; version?: string; projectId: string; billId: string; source: AccountingSource;
+  original: { originalCostCents: number; originalApCents: number; originalRetainageCents: number;
+    sourcePeriod: Period; sourcePostedBy: Person; sourcePostedAt: string };
+  date: { policy: 'synthetic.period-end.v1'; transactionDate: string; sourcePeriodId: string;
+    sourcePeriodEndDate: string; qualification: 'synthetic_only' };
+  preview: { lines: { id: string; sourceAccountCode: '5000' | '2000' | '2050'; sourceAccountName: string;
+    practiceAccountName: string; debitCents: number; creditCents: number; projectName: string; supplierName: string; memo: string }[];
+    debitTotalCents: number; creditTotalCents: number };
+  capability: AccountingCapability; mapping: { id: string; version: number; hash: string };
+  logicalOperationId: string; payloadHash: string; route: 'practice.simulated-journal-entry.v1';
+  datePolicy: 'synthetic.period-end.v1'; transactionDate: string; currency: 'USD';
+  grossCostCents: number; netApCents: number; retainageCents: number; preparedBy: Person; preparedAt: string;
+}
+export interface AccountingApproval {
+  id: string; planId: string; version?: string; status: string; effectiveStatus: string;
+  requestedBy: Person; requestedAt: string; approvedBy: Person | null; approvedAt: string | null; expiresAt: string;
+}
+export interface AccountingIntent {
+  id: string; planId: string; approvalId: string; version?: string;
+  status: 'queued' | 'submitting' | 'outcome_unknown' | 'simulated_accepted' | 'reconciled' | 'refused';
+  revision: number; logicalOperationId: string; payloadHash: string; queuedBy: Person; queuedAt: string;
+  updatedBy: Person; updatedAt: string; lookupRequired: boolean; hasAcceptance: boolean;
+  simulation: true; externalAccounting: 'unavailable'; liveAccounting: 'unavailable';
+}
+export interface AccountingPreparation extends Provenance {
+  version: string; bill: Bill; mapping: { id: string; version: number; hash: string; route: string; datePolicy: string } | null;
+  availableActions: APAction[]; blockedReasons: Problem[]; simulation: true; externalAccounting: 'unavailable'; liveAccounting: 'unavailable';
+}
+export interface AccountingPlanReview extends Provenance {
+  version: string; plan: AccountingPlan; availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface AccountingPacket extends AccountingPlanReview { approval: AccountingApproval }
+export interface AccountingIntentReview extends AccountingPlanReview {
+  intent: AccountingIntent; deliveryAdmission: 'disposable-memory-practice-only';
+}
 export interface Records {
   projects: Project; commitments: Commitment; bills: Bill; approvals: Approval; 'posting-queue': PostingQueueRow;
   invoices: Invoice; 'invoice-evidence': InvoiceEvidence; 'match-approvals': MatchApproval; 'correction-approvals': CorrectionApproval;
+  'accounting-plans': AccountingPlan; 'accounting-approvals': AccountingApproval; 'accounting-intents': AccountingIntent;
 }
 export type Collection = keyof Records;
 export interface Envelope<T> extends Provenance {

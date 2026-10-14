@@ -41,7 +41,7 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
         "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",
         "close.close_period", "close.reopen_period", "close.lock_period", "close.post_wip_adjustment", "close.reverse_wip_adjustment",
         "labor.post_payroll", "labor.bill", "prime_bill.send", "prime_retainage.release", "journal.reverse", "handoff.acknowledge",
-        "retainage.release", "ap_intake.match_invoice", "bill.credit_note", "bill.correct", "prime_bill.credit_memo",
+        "retainage.release", "ap_intake.match_invoice", "bill.credit_note", "bill.correct", "accounting.queue", "prime_bill.credit_memo",
         "receivable.apply_deposit",
     },
     "controller": {
