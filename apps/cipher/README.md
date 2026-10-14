@@ -1,6 +1,6 @@
 # Cipher — synthetic prototype
 
-Cipher is a prototype for S&A Solutions' AEC/EPC extensions, commercial controls and planned working interface alongside Odoo and QuickBooks, operated through explicit human approvals. Odoo is the planned operational source for customers, opportunities, projects and procurement; QuickBooks is the current accounting authority. Prior Odoo catch-up work is owner-confirmed; its latest checkpoint and the live integrations are not verified by this prototype. Ricky is the role-aware assistant. Ricky previews and proposes, and through its SDK it can execute an approval only after a human has granted it; it can never grant one. This directory is the bounded **synthetic** build from the Cipher planning package (v1.0 plus the v1.1 solo-first correction): one owner, one USD entity, synthetic data, shadow finance and a simulated payment rail.
+Cipher is the prototype for S&A Solutions' full commercial, estimating/takeoff, AP/AR, project/CMS and engineering/library working system, operated through explicit human approvals. [The product goal](docs/PRODUCT_GOAL.md) defines its Fluent 2 interface, accounting adapter and internal/enterprise acceptance gates. QuickBooks is the current accounting authority; prior Odoo work is reused through explicit mappings. Its latest checkpoint and the live integrations are not verified by this prototype. Ricky is the role-aware assistant. Ricky previews and proposes, and through its SDK it can execute an approval only after a human has granted it; it can never grant one. This directory is the bounded **synthetic** build from the Cipher planning package (v1.0 plus the v1.1 solo-first correction): one owner, one USD entity, synthetic data, shadow finance and a simulated payment rail.
 
 The HTTP Ricky surface exposes only reviewed read and draft tools. Approval requests, execution and payment reconciliation are human actions on that surface. The standalone SDK retains its execution tools for synthetic automation and acceptance tests.
 
@@ -20,10 +20,13 @@ python -m apps.cipher serve --demo                          # console on http://
 python -m apps.cipher serve --db data/cipher.sqlite         # persistent workspace
 python -m apps.cipher export --db data/cipher.sqlite --out audit-export.json
 python -m apps.cipher schema --db data/cipher.sqlite
+python -m apps.cipher practice-web --port 8766              # read-only Fluent practice backend, fresh in-memory fixture
 python -m apps.cipher.tools.core_gates                      # accounting-core decision gates (scorecard JSON)
 python -m apps.cipher.tools.corpus                          # 20-bill corpus: approval-time metrics (report JSON)
 python -m apps.cipher.tools.browser_check                   # headless Chrome/Edge drives the console journey
 ```
+
+The separate [Fluent practice app](web/README.md) reads versioned project, commitment, bill and approval presenters from `/api/practice/v1`. Build it with `npm ci` and `npm run build` in `apps/cipher/web`, then run `practice-web` and open `http://127.0.0.1:8766`. This local server always owns a fresh in-memory fixture, freezes it read-only, and has no file-workspace, action, identity or provider option. It mounts none of the old console routes. It is a design/development harness; the live backend-for-frontend remains open.
 
 Restored or copied workspaces open read-only until the owner claims them:
 

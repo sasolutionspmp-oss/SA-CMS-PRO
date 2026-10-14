@@ -4,12 +4,14 @@ Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read 
 
 For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. The next coding milestone is B01–B02, specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md). Its design is complete; the lifecycle and authority changes are not implemented yet.
 
-The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. The recovered architecture makes Odoo the planned operational source for customers, opportunities, projects and procurement; Cipher supplies construction/engineering extensions, commercial controls and the interface. QuickBooks stays the accounting authority until a separately agreed cutover. Preserve the established BILL route while its handoff is mapped and tested. Recover the latest Odoo setup/reconciliation checkpoint before duplicating overlapping modules; this checkout's synthetic tests do not verify its live state. Recovering that checkpoint can proceed alongside the Cipher control and UI work.
+The current [product goal](docs/PRODUCT_GOAL.md) records the owner's full scope: Cipher owns proposals, estimating/takeoffs, all AP/AR business work, projects/CMS, engineering and specification/contract libraries, with a Fluent 2 interface and an accounting adapter. Internal completion and enterprise qualification are separate evidence gates. Follow the existing UI templates across those workflows; enterprise quality is an architectural direction, not a readiness claim.
+
+The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. The recovered September architecture assigned operations to Odoo; the latest instruction expands Cipher's business workflow ownership. Recover and reuse accepted Odoo data/configuration through explicit adopt/import/adapter mappings and stable source IDs. QuickBooks stays accounting authority until a separately agreed cutover; preserve the established BILL route while its handoff is mapped and tested. This checkout's synthetic tests do not verify the latest Odoo reconciliation checkpoint. Recovery of that evidence can proceed alongside Cipher control and UI work.
 
 ## Where it stands
 
 - **Code:** `apps/cipher` on `cipher/synthetic-prototype`, in open PR #27. The original handoff incorrectly said it had merged; GitHub still showed it open when Codex resumed on 2026-10-14. Python standard library only.
-- **Tests:** `python -m apps.cipher test` runs 1320 unique tests, all passing (Linux, Python 3.12, 2026-10-14). The console self-test passes 16 of 16, the core gates pass 9 of 9 with 127 of 127 checks, and the golden fixture and 20-bill corpus match their recorded numbers.
+- **Tests:** `python -m apps.cipher test` runs 1347 unique tests, all passing (Linux, Python 3.12, 2026-10-14). The previous continuation's console self-test passed 16 of 16, core gates passed 9 of 9 with 127 of 127 checks, and golden fixture/corpus matched their recorded numbers. The practice read contract/server add 27 tests; `BUILD_STATUS.md` records the separate Fluent checks.
 - **Built:** a synthetic, single-owner, single-entity engine:
   - ledger, approvals, the hash-chained audit log and restore safety;
   - AP and AR, payments through an outbox and simulator, banking, labor, procurement, field, close, assets, the accountant hand-off, content rights, supplier invoice intake;
@@ -17,11 +19,11 @@ The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. T
   - Ricky's SDK;
   - a test-bench HTTP console.
 - **Reviewed:** four build rounds, each with adversarial review and fixes, then a cross-module critic (26 confirmed findings, all fixed but one declined) and a Codex review on the PR. `BUILD_STATUS.md` lists what each found.
-- **Not built:** any real user interface. `docs/UI_OVERHAUL_SPEC.md` is the researched plan for one, and it waits on the owner.
+- **Practice interface:** the new Fluent 2 read slice under `web/` connects to a separate in-memory practice backend. It does not yet implement approval/posting/payment actions, authenticated identity or live integrations. `docs/UI_OVERHAUL_SPEC.md` supplies its templates; final acceptance remains open.
 
 ## Waiting on the owner
 
-The owner has not answered the 18 decisions in `docs/UI_OVERHAUL_SPEC.md`, Part A, section A6, or signed off the mockups (decision 12). Each decision there carries the team's recommendation. Several are facts to supply rather than choices: the Microsoft 365 license tier (10), the exact lime color and logo files (12), and the pilot job (15).
+The owner has directed use of Fluent/Fluent 2 and the initial design guidelines, including a functional backend linked to the interface. That supplies the direction for A6 decisions 1–2 and practice implementation. Other financial policies, hosting facts and final mockup acceptance remain open; recommendations in the original 18-decision table are not adopted automatically. Several inputs are facts to recover or supply: the Microsoft 365 license tier (10), final lime/logo assets (12), and pilot job (15). Independent work proceeds while those are pending.
 
 UI phase 1a (spec section 12.1) starts with mockups, which are themselves the sign-off for decision 1 (the direction). Drafts for review can use the spec's placeholder colors and a temporary wordmark; final branding and mockup acceptance remain decision 12. Decisions 3 to 7 set the approval limits, expiry and holds, so get them before finalizing those policies. Engine work, API contracts and draft mockups can proceed in parallel while these answers are pending.
 

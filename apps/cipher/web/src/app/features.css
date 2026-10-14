@@ -1,0 +1,67 @@
+.cipher-mark { color: var(--cipher-accent); font-size: 14px; margin-right: 8px; }
+.cipher-project-picker { display: flex; min-width: 0; max-width: 360px; }
+.cipher-project-picker > div { min-width: 0; width: 100%; }
+.cipher-project-picker select { color: var(--cipher-surface); background: var(--cipher-brand); border-color: var(--cipher-rail-text); max-width: 100%; }
+.cipher-project-picker select option { color: var(--cipher-text); background: var(--cipher-surface); }
+.cipher-read-only { color: var(--cipher-rail-text); font-size: 12px; white-space: nowrap; }
+.cipher-nav-count { margin-left: auto; }
+.cipher-source-label { margin-left: auto; font-weight: 600; }
+.cipher-subtitle { color: var(--cipher-text-secondary); margin-top: 4px; max-width: 720px; }
+.cipher-page-header > div:first-child { min-width: 0; }
+.cipher-page-header h1 { overflow-wrap: anywhere; }
+.cipher-main > .cipher-section, .cipher-main > .cipher-content-grid, .cipher-main > .cipher-details { margin-bottom: 24px; }
+.cipher-main > .cipher-section + .cipher-section { margin-top: 24px; }
+.cipher-cell-secondary { display: block; color: var(--cipher-text-secondary); font-weight: 400; margin-top: 3px; }
+.cipher-table td:first-child { min-width: 220px; max-width: 300px; white-space: normal; }
+.cipher-table th.cipher-money, .cipher-table td.cipher-money { text-align: right; }
+.cipher-side-stack .cipher-metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); border: 0; gap: 24px; }
+.cipher-metric { text-decoration: none; color: var(--cipher-text); }
+.cipher-metric strong { font-size: 24px; line-height: 32px; font-variant-numeric: tabular-nums; color: var(--cipher-brand); }
+.cipher-metric span { color: var(--cipher-link); text-decoration: underline; }
+.cipher-metric small { color: var(--cipher-text-secondary); }
+.cipher-facts dd { font-size: 20px; line-height: 28px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cipher-facts p { margin-top: 4px; }
+.cipher-link-row { display: flex; gap: 12px 24px; flex-wrap: wrap; }
+.cipher-breadcrumb { display: flex; gap: 12px; flex-wrap: wrap; color: var(--cipher-text-secondary); margin-bottom: 12px; font-size: 12px; }
+.cipher-compact-facts > div { display: flex; justify-content: space-between; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--cipher-divider); }
+.cipher-filter-bar { display: flex; align-items: end; flex-wrap: wrap; gap: 16px; margin-bottom: 12px; }
+.cipher-filter-field { display: flex; flex-direction: column; gap: 4px; min-width: 180px; max-width: 320px; flex: 1; }
+.cipher-filter-field > span { font-size: 12px; font-weight: 600; }
+.cipher-notice { display: flex; gap: 8px; align-items: start; padding: 12px 16px; background: var(--cipher-neutral-tint); color: var(--cipher-neutral); margin-bottom: 24px; }
+.cipher-notice svg { flex-shrink: 0; width: 20px; height: 20px; }
+.cipher-lifecycle { align-items: stretch; gap: 16px; }
+.cipher-lifecycle li { flex: 1; min-width: 150px; align-items: start; flex-direction: column; padding: 12px 0; border-top: 2px solid var(--cipher-divider); gap: 4px; }
+.cipher-lifecycle strong { color: var(--cipher-text); }
+.cipher-details dl { display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; }
+.cipher-details dt { color: var(--cipher-text-secondary); font-size: 12px; }
+.cipher-details dd { overflow-wrap: anywhere; }
+.cipher-details code { font-size: 12px; }
+.cipher-empty { padding: 16px 0; color: var(--cipher-text-secondary); }
+.cipher-workspace-footer { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px var(--cipher-gutter); border-top: 1px solid var(--cipher-divider); color: var(--cipher-text-secondary); font-size: 12px; }
+.cipher-loading { padding: 80px 16px; }
+.cipher-loading-help { margin: 12px 0 16px; }
+.cipher-mobile-navigation .cipher-nav-label { display: block; }
+.cipher-mobile-navigation .cipher-nav-item { color: var(--cipher-text); min-height: 44px; }
+.cipher-mobile-navigation .cipher-nav-item:hover { color: var(--cipher-brand); background: var(--cipher-brand-tint); }
+.cipher-mobile-navigation .cipher-nav-item[aria-current="page"] { color: var(--cipher-brand); background: var(--cipher-brand-tint); }
+.cipher-mobile-navigation .cipher-nav-count { color: var(--cipher-surface); background: var(--cipher-brand); }
+@media (min-width: 1024px) and (max-width: 1439px) { .cipher-rail .cipher-nav-count { display: none; } }
+@media (max-width: 599px) {
+  .cipher-topbar { padding-inline: 8px; gap: 8px; }
+  .cipher-wordmark { font-size: 16px; }
+  .cipher-mark { display: none; }
+  .cipher-project-picker { max-width: 150px; }
+  .cipher-project-picker select { min-width: 0; width: 100%; text-overflow: ellipsis; }
+  .cipher-topbar-spacer { display: none; }
+  .cipher-topbar-button { min-width: 44px; }
+  .cipher-page-header { flex-wrap: wrap; gap: 8px; }
+  .cipher-page-actions { width: 100%; }
+  .cipher-filter-field { min-width: 0; max-width: none; width: 100%; flex-basis: 100%; }
+  .cipher-table td:first-child { min-width: 180px; max-width: 200px; }
+  .cipher-source-label { display: none; }
+  .cipher-facts { grid-template-columns: minmax(0, 1fr); }
+  .cipher-nav-count { margin-left: auto; }
+}
+
+.cipher-mobile-only.cipher-mobile-only { display: none; }
+@media (max-width: 1023px) { .cipher-mobile-only.cipher-mobile-only { display: inline-flex; } }

@@ -1,6 +1,7 @@
 """Command line: ``python -m apps.cipher <command>``.
 
   serve   [--db PATH] [--port N] [--demo]   run the owner console
+  practice-web [--port N]                   run the read-only Fluent practice app
   demo    [--db PATH]                        run the golden fixture and print the summary
   test                                       run the test suite
   export  [--db PATH] [--out FILE]           write the audit export
@@ -31,6 +32,9 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("test", help="run the test suite")
 
+    pw = sub.add_parser("practice-web", help="run the Fluent app against a fresh read-only synthetic workspace")
+    pw.add_argument("--port", type=int, default=8766)
+
     e = sub.add_parser("export", help="write the audit export")
     e.add_argument("--db", default=os.environ.get("CIPHER_DB", "data/cipher.sqlite"))
     e.add_argument("--out", default="-")
@@ -51,6 +55,15 @@ def main(argv: list[str] | None = None) -> int:
     cl.add_argument("--code", default=None, help="owner claim code (required when CIPHER_OWNER_SECRET is set)")
 
     args = parser.parse_args(argv)
+
+    if args.command == "practice-web":
+        from .practice_server import serve_practice
+        try:
+            serve_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
 
     if args.command == "serve":
         from .server import InsecureBindError, serve

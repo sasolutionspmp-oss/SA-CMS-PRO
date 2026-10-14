@@ -6,6 +6,12 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 | Date | Check | Result |
 |---|---|---|
+| 2026-10-14 | Fluent 2 practice client typecheck and static release build | both pass; exact direct pins and lockfile; authored CSS and nonce-backed Griffel; development dependencies excluded from the engine image context |
+| 2026-10-14 | Chromium Fluent checks against fixture and actual practice API | each covers 6 views at 1440, 1024 and 390 px (36 page/viewport cases total); no browser/CSP errors or application axe findings; narrowly excluded hidden Tabster library sentinels after keyboard verification; manual screen-reader acceptance remains open |
+| 2026-10-14 | Fluent malformed-data, money, filtering and focus regressions | 7 API contract/precision checks pass, including missing/object/null fields, a live envelope, exact maximum cents, intermediate sum precision and controlled final-total overflow; URL filters, Help/Ctrl+K focus and mobile navigation pass; independent review clear |
+| 2026-10-14 | Full Cipher suite after the product goal and practice read backend | 1347 unique tests, OK; 249.003 seconds; no existing schema/domain/governor changes |
+| 2026-10-14 | Practice read contract and isolated HTTP/static surface | 27 tests, OK; domain totals and approval amounts match; reads preserve complete state; file-backed sources, write routes, forged queries/origins and escaping/cyclic static paths refused; independent review clear |
+| 2026-10-14 | Golden fixture, core gates and 20-bill corpus after the practice foundation | fixture/corpus financial results unchanged; 9 of 9 hard gates, 127 of 127 checks; 19 released for 405,700.00, 1 blocked and 61 approvals |
 | 2026-10-14 | Odoo/Cipher/QuickBooks delivery-boundary correction (documentation only) | local links and 15 unique build IDs checked; independent documentation review; unchanged engine suite: 1320 tests, OK, 243.012 seconds; live Odoo checkpoint and integrations not verified |
 | 2026-10-14 | Delivery backlog and bill approval/posting design (documentation only) | local links and 15 unique build IDs checked; unchanged engine suite: 1320 tests, OK, 234.047 seconds; split implementation remains open |
 | 2026-10-14 | `python -m apps.cipher test` after the Codex continuation and review fixes (Linux, Python 3.12) | 1320 unique tests, OK, no expected failures; 243.776 seconds |
@@ -27,7 +33,7 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 The older container rows predate round 4. The 2026-10-14 rebuild and restart checks above supersede them.
 
-Tests per module: adversarial_variants 22, ap_intake 25, assets 35, audit_index 4, banking 43, bills_controls 42, close 42, contracts 49, core 31, core_gates 52, corpus 8, dispatch_coverage 15, drawings 25, estimates_controls 49, field 36, forecast_v2 32, grant_preflight 14, handoff 27, http 18, integrity 41, labor 41, ledger 17, payee_changes 20, payment_policy 47, payments_controls 70, payments_scope 27, people 60, plugin_loading 13, procurement 29, receivables_controls 36, receivables_v3 23, reimbursements 41, ricky_brief 6, ricky_sdk 114, ricky_served 10, ricky_served_handlers 1, rights 46, schedule 25, service_controls 18, vertical_extended 12, vertical_v1 23, words 2, workflow 29.
+Tests per module: adversarial_variants 22, ap_intake 25, api_contract 14, assets 35, audit_index 4, banking 43, bills_controls 42, close 42, contracts 49, core 31, core_gates 52, corpus 8, dispatch_coverage 15, drawings 25, estimates_controls 49, field 36, forecast_v2 32, grant_preflight 14, handoff 27, http 18, integrity 41, labor 41, ledger 17, payee_changes 20, payment_policy 47, payments_controls 70, payments_scope 27, people 60, plugin_loading 13, practice_server 13, procurement 29, receivables_controls 36, receivables_v3 23, reimbursements 41, ricky_brief 6, ricky_sdk 114, ricky_served 10, ricky_served_handlers 1, rights 46, schedule 25, service_controls 18, vertical_extended 12, vertical_v1 23, words 2, workflow 29.
 
 ## Codex continuation (2026-10-14)
 
@@ -46,6 +52,14 @@ The pre-pilot approval/posting split, authenticated session identity and replace
 ### Architecture context correction (2026-10-14)
 
 The owner confirmed that QuickBooks is in use and that prior work has brought Odoo toward being fully caught up. The recovered September architecture assigns customers, opportunities, projects and procurement to Odoo; Cipher supplies construction/engineering extensions, commercial controls and the working interface. QuickBooks remains accounting authority until a separately agreed cutover; preserve the established BILL route while its handoff is mapped and tested. The delivery backlog and handoff now carry that boundary and require recovering/reusing the Odoo checkpoint before building overlapping modules. This is a documentation correction, not an Odoo completion, reconciliation or integration test result. No live tenant or financial records were accessed or changed.
+
+### Expanded product goal and connected practice foundation (2026-10-14)
+
+The owner's subsequent direction expands Cipher to proposals, estimating/takeoffs, all AP/AR business workflows, full project/CMS work, engineering delivery and specification/contract libraries, linked to Fluent 2. QuickBooks may supply accounting through an API; a qualified native ledger remains an option. [PRODUCT_GOAL.md](docs/PRODUCT_GOAL.md) records internal completion gates and the separate enterprise quality path. Prior Odoo work remains reusable data/configuration/integration evidence, not a limit on Cipher's workflow ownership. The latest scope supersedes the narrower interpretation above without asserting new live integration readiness.
+
+The first B04/B08 read subset is implemented: typed, allowlisted project/commitment/bill/approval presenters with exact cents, filtered totals and bounded query-bound paging; a separate loopback-only server owns a fresh golden in-memory fixture, freezes it through the Database's managed read-only guard, and serves the built Fluent client. It has no file database, actor, credentials, provider, action API or old-console option. Static files use explicit MIME types, confined paths and per-response Fluent style nonces. Frontend dependencies are pinned and locked; the existing engine Docker context excludes the new web development tree.
+
+This is a connected local read prototype, not the authenticated operational backend. Production OpenAPI, scoped identity, action contracts, external IDs and accounting/provider routes remain open. The bill approval/posting split is still unimplemented. The new design and practice interface do not close full internal workflow or enterprise gates.
 
 ## Round 4 (governor modules)
 
@@ -114,5 +128,5 @@ Every finding below was reproduced before it was fixed, and each fix has a regre
 - **V1 coverage:** the section-10 acceptance test does not walk procurement, hand-off, rights, assets or the SDK; `tests/test_vertical_extended.py` does, and the 20-bill corpus reports approval-time metrics. Neither exercises labor, field, drawings, schedule or reimbursements under the identity policy.
 - **Accounting policy:** posting rules for revenue recognition, stored materials and disposals are SHADOW assumptions awaiting controller approval.
 - **Historical core comparison:** ERPNext has not been run against the same gates; this machine had about 4 GB free on 2026-10-12 against the owner's 250 GB free-space target, so a multi-GB ERP stack should not be pulled here. That evidence limit is not a prerequisite for the established Odoo/QuickBooks workflow. The current prototype also does not verify Odoo's live setup, prior catch-up checkpoint or QuickBooks/BILL integration.
-- **UI:** `docs/UI_OVERHAUL_SPEC.md` waits on the owner's decisions (Part A6) and mockup sign-off; no screen is built from it yet, and the current console is for synthetic data only.
+- **UI:** the Fluent 2 practice read slice follows the existing templates and is built against the separate synthetic backend. Consequential workflows, live identity/read permissions, full grid/decision states, final mockup acceptance and manual screen-reader review remain open. Other A6 financial policies/facts are not automatically adopted by the owner's framework/design direction.
 - **Later plan gates:** live Odoo and QuickBooks/BILL integration, production identity, real payment providers, bank connectivity, licensed-content ingestion, multi-entity and CAD automation. Replacing QuickBooks as the accounting authority is optional and separately gated.

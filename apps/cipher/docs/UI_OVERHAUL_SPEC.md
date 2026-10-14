@@ -2,6 +2,10 @@
 
 Draft 2, Oct 12, 2026.
 
+**Owner direction update, October 14:** [PRODUCT_GOAL.md](PRODUCT_GOAL.md) defines the full Cipher scope: proposals, estimating/takeoffs, all AP/AR business work, projects/CMS, engineering and specification/contract libraries. Use this specification's Fluent 2/React v9 direction, page templates and initial design guidelines across that scope. QuickBooks may supply accounting through an API; moving official books into Cipher is optional and separately qualified. Preserve prior Odoo work through explicit mappings. The owner's instruction authorizes the design direction and its web packages; it does not adopt the proposed financial thresholds, exceptions, hosting choices or final mockups. The original phase estimates and native-cutover assumptions below are historical proposals; use the delivery backlog and product goal for current scope and acceptance.
+
+The first connected Fluent build is an isolated, read-only practice slice under `apps/cipher/web`, colocated with this prototype rather than the proposed `apps/cipher-web` path. It uses the versioned `/api/practice/v1` read contract and a fresh in-memory backend. This gives a runnable design for review; consequential screens still require the bill split, authenticated action API, real read permissions and mockup acceptance before operational use. It does not implement the production architecture in section 11.6.
+
 Part A is the owner's brief: about four pages on what people will see, what arrives when, and the decisions we need. Part B is the build specification. It holds the detail the team needs, and nobody else has to read it.
 
 ---

@@ -7,13 +7,16 @@ Read `HANDOFF.md` first for where the project stands and what to do next. These 
 From the repository root, Python 3.12 or later, no installs:
 
 ```bash
-python -m apps.cipher test                       # full suite, 1320 tests
+python -m apps.cipher test                       # full suite, 1347 tests
 python -m unittest apps.cipher.tests.test_people # one module's tests while you work
 python -m apps.cipher demo                       # golden fixture; numbers listed in README.md
 python -m apps.cipher.tools.core_gates           # 9 hard gates, 127 checks
 python -m apps.cipher.tools.corpus               # 20-bill corpus; tests/test_corpus.py pins its exact report
 CIPHER_CHROME=/path/to/chrome python -m apps.cipher.tools.browser_check   # console self-test, 16 steps
+python -m apps.cipher practice-web --port 8766   # isolated read-only backend plus built Fluent app
 ```
+
+Read `docs/PRODUCT_GOAL.md` for the owner's full scope and internal/enterprise quality gates. `web/` is the pinned Fluent 2 practice client; Node is a build tool, and web dependencies never become engine dependencies. Its `README.md` lists typecheck/build/browser commands. The practice server owns a fresh in-memory fixture and no action or file-workspace routes; do not mount it on live records. Existing UI templates and initial guidelines apply to later commercial, estimating, CMS and engineering/library screens.
 
 The full suite must pass before every commit. For a bug, first write a test that fails on the current code, then fix it.
 
