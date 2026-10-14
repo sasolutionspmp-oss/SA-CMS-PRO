@@ -603,6 +603,10 @@ class PaymentError(RuntimeError):
     pass
 
 
+class ProviderNotSupported(PaymentError, PermissionError):
+    """This practice runtime accepts only initialized synthetic simulators."""
+
+
 class ReleaseQuarantined(PaymentError):
     """Release is blocked: no write authority on this copy, or the restore quarantine is active."""
 
@@ -844,7 +848,7 @@ class Payments:
         self.audit = audit
         self.commands = commands
         self.ledger = ledger
-        self.provider: Any = None
+        self._provider: SimulatedProvider | None = None
         self._webhook_secret: str | None = None
         self._listeners: dict[str, list[Callable[..., None]]] = {}
         self._adopters: dict[str, dict[str, Any]] = {}
@@ -855,6 +859,36 @@ class Payments:
 
     # ---- provider binding -------------------------------------------------------- #
 
+    @staticmethod
+    def require_simulated_provider(provider: Any) -> None:
+        """Validate a rail without reading arbitrary duck-provider properties.
+
+        Simulator subclasses used by concurrency probes are supported when they
+        initialized the real simulator and remain registered under its secret.
+        A provider's own synthetic or liveness flags confer no authority.
+        """
+        if not issubclass(type(provider), SimulatedProvider):
+            raise ProviderNotSupported("only an initialized SimulatedProvider is supported in a practice workspace")
+        state = object.__getattribute__(provider, "__dict__")
+        secret = state.get("webhook_secret")
+        if (not isinstance(secret, str) or _PROVIDERS.get(secret) is not provider
+                or not isinstance(state.get("transfers"), dict) or not isinstance(state.get("submissions"), list)):
+            raise ProviderNotSupported("the simulator is not initialized under its registered synthetic secret")
+
+    def _require_practice_provider(self, provider: Any) -> None:
+        self.db.require_practice_mode()
+        self.require_simulated_provider(provider)
+
+    @property
+    def provider(self) -> SimulatedProvider | None:
+        return self._provider
+
+    @provider.setter
+    def provider(self, value: Any) -> None:
+        if value is not None:
+            self._require_practice_provider(value)
+        self._provider = value
+
     @property
     def webhook_secret(self) -> str | None:
         """The secret provider callbacks must be signed with.  Without one every
@@ -864,27 +898,32 @@ class Payments:
     @webhook_secret.setter
     def webhook_secret(self, value: str | None) -> None:
         """Setting the secret also re-binds the provider whose fees manifests quote: the
-        provider registered under that secret, so a replaced provider never leaves fee
-        quotes on its predecessor.  A secret no registered provider holds unbinds a
-        provider whose own secret differs (fees then quote 0.00 and dispatch, which asks
-        the dispatching provider, fails any intent whose approved fee is wrong).  Clearing
-        the secret (``None``) keeps the binding; callbacks are then refused (fail closed)."""
-        self._webhook_secret = value
+        initialized simulator registered under that secret. Unknown secrets are refused
+        before the existing binding changes. Clearing the secret (``None``) keeps the
+        binding; callbacks are then refused (fail closed)."""
         if not value:
+            self._webhook_secret = value
             return
+        self.db.require_practice_mode()
+        if not isinstance(value, str):
+            raise ProviderNotSupported("a callback secret must belong to an initialized synthetic simulator")
         registered = _PROVIDERS.get(value)
-        if registered is not None:
-            self.provider = registered
-        elif self.provider is not None and getattr(self.provider, "webhook_secret", None) != value:
-            self.provider = None
+        self._require_practice_provider(registered)
+        self._provider = registered
+        self._webhook_secret = value
 
-    def attach_provider(self, provider: Any) -> None:
-        """Bind the provider whose fees manifests quote and whose secret signs callbacks."""
-        self.provider = provider
-        self._webhook_secret = getattr(provider, "webhook_secret", None)
+    def attach_provider(self, provider: Any, *, allow_legacy: bool = False) -> None:
+        """Bind a simulator; pending legacy diagnostics permit no rail operations."""
+        self.require_simulated_provider(provider)
+        self.db.require_practice_mode(allow_pending=allow_legacy)
+        self._provider = provider
+        self._webhook_secret = object.__getattribute__(provider, "__dict__")["webhook_secret"]
 
     def fee_for(self, amount: Any, provider: Any = None) -> str:
+        self.db.require_practice_mode()
         provider = provider if provider is not None else self.provider
+        if provider is not None:
+            self.require_simulated_provider(provider)
         quote = getattr(provider, "fee_for", None)
         if quote is None:
             return "0.00"
@@ -1145,6 +1184,7 @@ class Payments:
         return rows
 
     def _release_block(self) -> tuple[type[PaymentError], str] | None:
+        self.db.require_practice_mode()
         status = self.db.authority_status()
         if not status["effective_write_authority"]:
             return ReleaseQuarantined, ("this workspace copy holds no write authority; payment release is blocked until write authority "
@@ -1382,6 +1422,7 @@ class Payments:
         active a queued intent may already have been paid from the live workspace (the
         backup predates its dispatch), so only recovery reconciliation -- which looks
         every queued intent up at the provider -- may decide its fate."""
+        self.db.require_practice_mode()
         status = self.db.authority_status()
         if not status["effective_write_authority"]:
             return "this workspace copy holds no write authority; its queued payment intents cannot be changed here"
@@ -1393,6 +1434,9 @@ class Payments:
     def _provider_has_no_transfer(self, intent: dict[str, Any]) -> str:
         """Ask the bound provider whether it already holds a transfer for ``intent``.
         Refuses when it does or when it cannot be asked; returns what was checked."""
+        self.db.require_practice_mode()
+        if self.provider is not None:
+            self.require_simulated_provider(self.provider)
         lookup = getattr(self.provider, "lookup", None)
         if lookup is None:
             return "no provider bound; the local queue is authoritative on this copy"
@@ -1550,6 +1594,7 @@ class Payments:
         return None
 
     def _fee_problem(self, intent: dict[str, Any], provider: Any) -> str | None:
+        self._require_practice_provider(provider)
         if getattr(provider, "fee_for", None) is None:
             return None
         quoted = self.fee_for(intent["amount"], provider)
@@ -1595,6 +1640,7 @@ class Payments:
         return {p.name for p in params}
 
     def _submit(self, provider: Any, intent: dict[str, Any]) -> dict[str, Any]:
+        self._require_practice_provider(provider)
         kwargs: dict[str, Any] = {"logical_op_id": intent["logical_op_id"], "amount": intent["amount"], "destination": intent["destination"], "payload_hash": intent["payload_hash"]}
         accepted = self._accepted_keywords(provider.submit)
         for key, value in (("value_date", intent.get("value_date")), ("currency", intent.get("currency")), ("reference", self._reference(intent))):
@@ -1612,6 +1658,7 @@ class Payments:
             return self._set_status(intent_id, "failed", actor=actor, note=f"{reason}; not submitted", resolved=True, extra={"outbox_id": outbox_id})
 
     def dispatch_pending(self, provider: SimulatedProvider, *, actor: str) -> list[dict[str, Any]]:
+        self._require_practice_provider(provider)
         self._require_release_allowed()
         results = []
         for ob in self.commands.pending("payment"):
@@ -1757,6 +1804,7 @@ class Payments:
         results = []
         for row in self.db.query("SELECT id FROM payment_intents WHERE status IN ('submitted','outcome_unknown') ORDER BY created_at"):
             intent = self.get(row["id"])
+            self._require_practice_provider(provider)
             try:
                 found = provider.lookup(intent["logical_op_id"])
             except ConnectionError as exc:
@@ -1823,6 +1871,7 @@ class Payments:
         blocked: list[dict[str, Any]] = []
         for row in self.db.query("SELECT id FROM payment_intents WHERE status IN ('accepted','settled') AND provider_ref IS NOT NULL ORDER BY created_at"):
             intent = self.db.one("SELECT * FROM payment_intents WHERE id=?", (row["id"],))
+            self._require_practice_provider(provider)
             try:
                 found = provider.lookup(intent["logical_op_id"])
             except ConnectionError as exc:
@@ -1845,6 +1894,7 @@ class Payments:
         """Resolve submitted/outcome-unknown intents by durable identifier, then catch
         up callbacks the provider sent but Cipher never received.  Nothing is ever
         resubmitted from here."""
+        self._require_practice_provider(provider)
         results = self._resolve_in_doubt(provider, actor=actor)
         caught, _blocked = self._catch_up_callbacks(provider, actor=actor)
         results.extend(caught)
@@ -1860,6 +1910,7 @@ class Payments:
         unresolved: list[str] = []
         for row in self.db.query("SELECT id FROM payment_intents WHERE status='queued' ORDER BY created_at"):
             intent = self.get(row["id"])
+            self._require_practice_provider(provider)
             try:
                 found = provider.lookup(intent["logical_op_id"])
             except ConnectionError as exc:
@@ -1886,6 +1937,7 @@ class Payments:
         return results, unresolved
 
     def _provider_transfers(self, provider: Any) -> list[dict[str, Any]]:
+        self._require_practice_provider(provider)
         lister = getattr(provider, "list_transfers", None)
         if lister is None:
             raise PaymentError("the provider cannot list its transfers, so transfers this copy never recorded cannot be ruled out")
@@ -1900,6 +1952,8 @@ class Payments:
         ``(transfers, problem)``; ``problem`` says why the provider could not be asked."""
         try:
             transfers = self._provider_transfers(provider)
+        except ProviderNotSupported:
+            raise
         except PaymentError as exc:
             return [], str(exc)
         workspace_id = self.db.workspace()["workspace_id"]
@@ -1936,6 +1990,7 @@ class Payments:
         intent records (``unrecorded_transfers``; record each with the approval
         ``payment.adopt_transfer`` and run recovery again).  Lifting with any of these
         open could pay an obligation the live workspace already paid."""
+        self._require_practice_provider(provider)
         self.db.require_write_authority()
         results, unresolved_queued = self._resolve_queued_after_restore(provider, actor=actor)
         results.extend(self._resolve_in_doubt(provider, actor=actor))
@@ -2006,6 +2061,7 @@ class Payments:
         for i in rows:
             if i["status"] != "queued":
                 raise PaymentError(f"payment intent {i['id']} for {source_type} {source_id} is {i['status']}; reconcile it before adopting another transfer for that record")
+            self._require_practice_provider(provider)
             try:
                 found = provider.lookup(i["logical_op_id"])
             except ConnectionError as exc:
@@ -2107,6 +2163,7 @@ class Payments:
                 "party": party, "entity": project["entity"], "currency": currency}
 
     def _adoption_manifest(self, subject_id: str, *, actor_role: str) -> dict[str, Any]:
+        self.db.require_practice_mode()
         provider_ref, override = self._parse_adoption_subject(subject_id)
         if self.provider is None:
             raise PaymentError("no provider is bound; a transfer can only be adopted from the provider that holds it")
@@ -2142,6 +2199,7 @@ class Payments:
         bound = manifest.get("bindings") or {}
         provider_ref = bound["provider_ref"]
         provider = self.provider
+        self._require_practice_provider(provider)
         with self.db.transaction() as conn:
             self.db.require_write_authority()
             if conn.execute("SELECT id FROM payment_intents WHERE logical_op_id=? OR provider_ref=?", (bound["logical_op_id"], provider_ref)).fetchone():
@@ -2188,6 +2246,7 @@ class Payments:
             callbacks: list[dict[str, Any]] = []
             if self.webhook_secret and provider is not None:
                 intent = self.db.one("SELECT * FROM payment_intents WHERE id=?", (intent_id,))
+                self._require_practice_provider(provider)
                 try:
                     found = provider.lookup(bound["logical_op_id"])
                 except ConnectionError:
@@ -2715,6 +2774,13 @@ class Payments:
 
         A ``processing`` event marks an accepted intent as processing (no journal, no period
         needed); a repeated or reordered one is stored and ignored."""
+        self.db.require_practice_mode()
+        if self.provider is not None:
+            self.require_simulated_provider(self.provider)
+        if self.webhook_secret:
+            self.require_simulated_provider(self.provider)
+            if self.webhook_secret != object.__getattribute__(self.provider, "__dict__")["webhook_secret"]:
+                raise ProviderNotSupported("the callback secret does not belong to the bound synthetic simulator")
         self._authenticate_event(event, actor=actor)
         with self.db.transaction() as conn:
             holders = self.db.query("SELECT * FROM payment_intents WHERE provider_ref=? ORDER BY created_at, id", (event["provider_ref"],))

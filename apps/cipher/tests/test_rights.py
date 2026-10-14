@@ -1426,6 +1426,19 @@ class IntegrationTests(RightsTestCase):
         workdir = tempfile.mkdtemp(prefix="cipher-rights-upgrade-")
         self.addCleanup(shutil.rmtree, workdir, True)
         path = os.path.join(workdir, "earlier.sqlite")
+        catalog_patch = mock.patch.object(db_module, "SCHEMA_CATALOG", list(db_module.SCHEMA_CATALOG))
+        catalog_patch.start()
+        self.addCleanup(catalog_patch.stop)
+        probe_schema_name = "rights_upgrade_forward_trigger_probe"
+        probe_statements = [
+            "CREATE TABLE zz_probe_forward (x)",
+            "CREATE TRIGGER zz_probe_forward_ref BEFORE INSERT ON zz_probe_forward BEGIN SELECT * FROM zz_table_created_later; END",
+        ]
+        # A registered extension can legitimately name a table a later entry
+        # will create: SQLite resolves trigger bodies when they run. Keep the
+        # same probe entry in both catalogs, so the rights upgrade must avoid
+        # re-parsing this unrelated forward reference as ALTER TABLE RENAME would.
+        db_module.register_schema_version(probe_schema_name, probe_statements)
         earlier = [entry for entry in db_module.SCHEMA_CATALOG if entry[1] != HARDENING_SCHEMA_NAME]
         stamp = now_iso()
         with mock.patch.object(db_module, "SCHEMA_CATALOG", earlier):
@@ -1434,6 +1447,10 @@ class IntegrationTests(RightsTestCase):
                 applied = {r["name"] for r in old.c.db.query("SELECT name FROM schema_version")}
                 self.assertTrue({SCHEMA_NAME, GUARDS_SCHEMA_NAME} <= applied)
                 self.assertNotIn(HARDENING_SCHEMA_NAME, applied)
+                self.assertIn(probe_schema_name, applied)
+                probe_before = old.c.db.query("SELECT type,name,sql FROM sqlite_master WHERE name IN ('zz_probe_forward','zz_probe_forward_ref') ORDER BY name")
+                self.assertEqual(len(probe_before), 2)
+                self.assertIsNone(old.c.db.scalar("SELECT name FROM sqlite_master WHERE name='zz_table_created_later'"))
                 self.assertIn("DEFERRABLE", old.c.db.scalar("SELECT sql FROM sqlite_master WHERE name='rights_license_versions'"))
                 cols = rights_module._VERSION_COLUMNS
                 with old.c.db.transaction() as conn:  # the earlier registration order: terms first, the deferred key checked at COMMIT
@@ -1450,10 +1467,6 @@ class IntegrationTests(RightsTestCase):
                     conn.execute("INSERT INTO rights_document_tags (id, document_id, license_id, license_version, status, tagged_by, tagged_at) VALUES ('rtag_gone', ?, 'lic_legacy', 2, 'active', 'owner', ?)",
                                  (old.memo["id"], stamp))
                     conn.execute("UPDATE rights_document_tags SET status='removed', removed_by='owner', removed_at=?, removal_reason='memo rewritten' WHERE id='rtag_gone'", (stamp,))
-                    # a trigger elsewhere that names a table no entry has created yet (SQLite resolves trigger bodies when they run):
-                    # the upgrade must not depend on re-parsing unrelated triggers, as ALTER TABLE ... RENAME would
-                    conn.execute("CREATE TABLE zz_probe_forward (x)")
-                    conn.execute("CREATE TRIGGER zz_probe_forward_ref BEFORE INSERT ON zz_probe_forward BEGIN SELECT * FROM zz_table_created_later; END")
             finally:
                 old.c.db.close()
 
@@ -1462,6 +1475,8 @@ class IntegrationTests(RightsTestCase):
             status = new.db.schema_status()
             self.assertEqual(status["pending"], [])
             self.assertTrue(all(v["checksum_matches"] for v in status["versions"] if v["applied"]))
+            self.assertEqual(new.db.query("SELECT type,name,sql FROM sqlite_master WHERE name IN ('zz_probe_forward','zz_probe_forward_ref') ORDER BY name"), probe_before)
+            self.assertIsNone(new.db.scalar("SELECT name FROM sqlite_master WHERE name='zz_table_created_later'"))
             self.assertNotIn("DEFERRABLE", new.db.scalar("SELECT sql FROM sqlite_master WHERE name='rights_license_versions'").upper())
             rp = new.plugin(PLUGIN_NAME)
             history = rp.license_history("lic_legacy")

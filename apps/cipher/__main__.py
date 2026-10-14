@@ -108,8 +108,20 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.command == "schema":
-        from .core.db import Database
-        print(json.dumps(Database(args.db).schema_status(), indent=2))
+        # The service registers the complete catalog before existing-file checks.
+        from .service import Database
+        from .core.db import SchemaError
+        db = None
+        try:
+            db = Database(args.db)
+            db.require_practice_mode(allow_pending=True)
+            print(json.dumps(db.schema_status(), indent=2))
+        except SchemaError as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        finally:
+            if db is not None:
+                db.close()
         return 0
 
     if args.command in ("claim-challenge", "claim-code", "claim"):

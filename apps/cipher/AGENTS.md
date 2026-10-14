@@ -7,7 +7,7 @@ Read `HANDOFF.md` first for where the project stands and what to do next. These 
 From the repository root, Python 3.12 or later, no installs:
 
 ```bash
-python -m apps.cipher test                       # full suite, 1426 tests
+python -m apps.cipher test                       # full suite, 1471 tests
 python -m unittest apps.cipher.tests.test_people # one module's tests while you work
 python -m apps.cipher demo                       # golden fixture; numbers listed in README.md
 python -m apps.cipher.tools.core_gates           # 9 hard gates, 127 checks
@@ -31,6 +31,7 @@ The full suite must pass before every commit. For a bug, first write a test that
 7. **The audit log wins.** Governor modules (`people`, `payment_policy`, `contracts`) check their rows against the hash-chained audit log, and a mismatch fails closed. New governor state needs the same treatment: record an audit entry, and verify the row against it in the module's integrity and `close_checks`.
 8. **Ricky never decides.** Ricky (`domain/ricky.py`, `ricky_sdk.py`) previews, drafts and executes only approvals a person already granted. It never grants, rejects, changes policy, roles, delegations or payee destinations, or posts without an approval. The routing completeness test fails unless every approval-bound operation is either reachable through the SDK or listed in `RESTRICTED_OPERATIONS` with a reason.
 9. **No real money and no real data.** One owner, one USD entity, synthetic data, a simulated payment rail and shadow finance. Never wire a real provider, bank or production identity without the owner's decision.
+   Workspace mode is immutable and checked against its original audit declaration. This release admits only practice; live files are refused before initialization. Never promote practice, accept a caller's liveness flag or bind an unqualified provider. Known legacy copies remain undeclared/read-only until an attested owner claim. Claims require a standalone transaction because the authority sidecar cannot follow an outer SQLite rollback.
 10. **Escape everything in the console.** `console/index.html` escapes server data once on arrival (`escDeep`) and encodes handler arguments with `js()`. `ConsoleEscapingTests` in `tests/test_http.py` guards the pattern. Keep it when editing the console.
 
 ## Threat model the tests use

@@ -9,8 +9,8 @@ from unittest import mock
 from apps.cipher.core.approvals import (ApprovalConsumed, ApprovalExpired, ApprovalNotGranted, Approvals, StaleApprovalError, build_manifest, material_hash)
 from apps.cipher.core.audit import Audit
 from apps.cipher.core.commands import Commands, IdempotencyConflict
-from apps.cipher.core.db import SCHEMA_CATALOG, Database, SchemaError, WriteAuthorityError, catalog_checksum
-from apps.cipher.core.ids import canonical_json, hash_json, parse_iso, utcnow
+from apps.cipher.core.db import MODE_ACTION, MODE_SCHEMA_NAME, SCHEMA_CATALOG, Database, SchemaError, WriteAuthorityError, catalog_checksum
+from apps.cipher.core.ids import canonical_json, hash_json, parse_iso, sha256_hex, utcnow
 from apps.cipher.core.money import MoneyError, allocate, money, pct, rate, total
 import datetime as dt
 
@@ -101,17 +101,55 @@ class SchemaTests(unittest.TestCase):
         d = tempfile.mkdtemp()
         path = os.path.join(d, "old.sqlite")
         saved = list(SCHEMA_CATALOG)
+        stamp = "2026-10-14T00:00:00Z"
+        conn = sqlite3.connect(path)
+        conn.row_factory = sqlite3.Row
         try:
-            del SCHEMA_CATALOG[1:]  # simulate a release that only had the foundation
-            old = Database(path)
-            Audit(old).record("owner", "seed", "t", "1", {"v": 1})
-            old.close()
+            # Build the original release directly. Today's constructor must not
+            # declare a new mode while seeding a historical workspace.
+            conn.execute("CREATE TABLE schema_version (version INTEGER PRIMARY KEY, name TEXT NOT NULL, statement_count INTEGER NOT NULL, checksum TEXT NOT NULL, applied_at TEXT NOT NULL)")
+            conn.execute("CREATE UNIQUE INDEX schema_version_name ON schema_version(name)")
+            version, name, statements = saved[0]
+            for statement in statements:
+                conn.execute(statement)
+            conn.execute("INSERT INTO schema_version VALUES (?,?,?,?,?)",
+                         (version, name, len(statements), catalog_checksum(statements), stamp))
+            conn.execute("INSERT INTO workspace VALUES (1,'ws_core_legacy','inst_core_legacy',1,1,0,0,?,?)", (stamp, stamp))
+            payload = canonical_json({"v": 1})
+            payload_hash = sha256_hex(payload)
+            previous = "0" * 64
+            entry_hash = sha256_hex("|".join([previous, stamp, "owner", "seed", "t", "1", payload_hash]))
+            conn.execute("INSERT INTO audit_log (ts,actor,action,entity_type,entity_id,payload_json,payload_hash,prev_hash,entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+                         (stamp, "owner", "seed", "t", "1", payload, payload_hash, previous, entry_hash))
+            conn.commit()
+            history = [dict(row) for row in conn.execute("SELECT * FROM schema_version ORDER BY version")]
+            entries = [dict(row) for row in conn.execute("SELECT * FROM audit_log ORDER BY seq")]
         finally:
-            SCHEMA_CATALOG[:] = saved
+            conn.close()
+        with open(path + ".authority", "w", encoding="utf-8") as sidecar:
+            sidecar.write("inst_core_legacy")
         upgraded = Database(path)
+        self.addCleanup(upgraded.close)
         status = upgraded.schema_status()
         self.assertEqual(status["pending"], [])
         self.assertEqual(status["orphaned"], [])
+        self.assertEqual(upgraded.query("SELECT * FROM schema_version WHERE version=1"), history)
+        self.assertEqual(upgraded.workspace()["workspace_id"], "ws_core_legacy")
+        self.assertEqual(upgraded.workspace()["created_at"], stamp)
+        upgraded_entries = Audit(upgraded).entries()
+        self.assertEqual(upgraded_entries[:len(entries)], entries)
+        if any(name == MODE_SCHEMA_NAME for _, name, _ in saved):
+            self.assertEqual(len(upgraded_entries), len(entries) + 1)
+            declaration = upgraded_entries[-1]
+            self.assertEqual(declaration["action"], MODE_ACTION)
+            self.assertEqual(declaration["payload_json"], canonical_json({
+                "workspace_id": "ws_core_legacy", "mode": "practice", "created_at": stamp, "origin": "legacy_adopted",
+            }))
+            self.assertEqual(declaration["prev_hash"], entries[-1]["entry_hash"])
+            self.assertTrue(upgraded.mode_status()["verified"])
+        else:
+            self.assertEqual(upgraded_entries, entries)
+        self.assertTrue(Audit(upgraded).verify_chain()["ok"])
         self.assertEqual(len(Audit(upgraded).entries(entity_type="t")), 1)
         # reordering the catalog (a different module load order) must not break an existing database
         upgraded.close()
@@ -121,6 +159,7 @@ class SchemaTests(unittest.TestCase):
                 SCHEMA_CATALOG[:] = reordered
                 again = Database(path)
                 self.assertEqual(again.schema_status()["pending"], [])
+                self.assertEqual(Audit(again).entries(), upgraded_entries)
                 again.close()
             finally:
                 SCHEMA_CATALOG[:] = saved
@@ -189,7 +228,13 @@ class WriteAuthorityTests(unittest.TestCase):
 
     def test_restored_copy_is_quarantined_until_claimed(self):
         db = self.open("a.sqlite")
+        declarations = db.query("SELECT * FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,))
         restored = self.open(db.snapshot(os.path.join(self.dir, "restore.sqlite")))
+        self.assertEqual(restored.query("SELECT * FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,)), declarations)
+        if declarations:
+            self.assertEqual(restored.workspace()["mode"], "practice")
+            self.assertTrue(restored.mode_status()["verified"])
+            self.assertFalse(restored.mode_status()["runtime_authorized"])
         self.assertFalse(restored.has_write_authority())
         self.assertTrue(restored.authority_status()["read_only"])
         cmds = Commands(restored, Audit(restored))
@@ -206,6 +251,7 @@ class WriteAuthorityTests(unittest.TestCase):
         self.assertFalse(status["read_only"])
         self.assertEqual(status["recovery_epoch"], 1)
         self.assertTrue(status["release_quarantined"])
+        self.assertEqual(restored.query("SELECT * FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,)), declarations)
         self.assertEqual(cmds.run("op", {}, lambda: 1, actor="owner").result, 1)
         claim = Audit(restored).entries(entity_type="workspace")[-1]
         self.assertEqual(claim["actor"], "owner")
@@ -228,15 +274,26 @@ class AuditTests(unittest.TestCase):
     def test_chain_verifies_and_is_append_only(self):
         db = Database()
         a = Audit(db)
+        original = a.entries()
+        if any(name == MODE_SCHEMA_NAME for _, name, _ in SCHEMA_CATALOG):
+            self.assertEqual([entry["action"] for entry in original], [MODE_ACTION])
+            self.assertEqual(original[0]["entity_id"], db.workspace()["workspace_id"])
+            self.assertTrue(db.mode_status()["verified"])
+        else:
+            self.assertEqual(original, [])  # core-only schema diagnostics
         a.record("owner", "x", "t", "1", {"v": 1})
         a.record("owner", "y", "t", "2", {"v": 2})
         self.assertTrue(a.verify_chain()["ok"])
-        with self.assertRaises(sqlite3.IntegrityError):
-            db.execute("UPDATE audit_log SET actor='mallory' WHERE seq=1")
-        with self.assertRaises(sqlite3.IntegrityError):
-            db.execute("DELETE FROM audit_log WHERE seq=1")
+        for entry in a.entries():
+            with self.subTest(action=entry["action"]):
+                with self.assertRaises(sqlite3.IntegrityError):
+                    db.execute("UPDATE audit_log SET actor='mallory' WHERE seq=?", (entry["seq"],))
+                with self.assertRaises(sqlite3.IntegrityError):
+                    db.execute("DELETE FROM audit_log WHERE seq=?", (entry["seq"],))
         self.assertEqual(len(a.entries(entity_type="t")), 2)
-        self.assertEqual(len(a.export()["entries"]), 2)
+        exported = a.export()["entries"]
+        self.assertEqual(exported[:len(original)], original)
+        self.assertEqual(len(exported), len(original) + 2)
 
 
 class ApprovalTests(unittest.TestCase):

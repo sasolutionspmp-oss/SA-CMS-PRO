@@ -16,6 +16,7 @@ import binascii
 import json
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
+from .core.db import WorkspaceModeError
 from .core.ids import canonical_json, hash_json, loads
 from .core.money import MoneyError, money, rate
 
@@ -222,6 +223,10 @@ def _refuse(code: str, target: str, message: str) -> None:
 
 
 def _require_practice(cipher: Cipher) -> None:
+    try:
+        cipher.db.require_practice_mode()
+    except WorkspaceModeError:
+        _refuse("unsupported_workspace", "workspace", "Practice reads require a verified practice workspace.")
     # Inspect the actual connections, rather than relabeling a supplied file path.
     databases = cipher.db.query("PRAGMA database_list")
     if not databases or any(database["file"] for database in databases):

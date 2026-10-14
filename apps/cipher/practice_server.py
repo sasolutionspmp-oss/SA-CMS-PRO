@@ -14,6 +14,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlsplit
 
 from .service import Cipher, run_golden_fixture
+from .core.db import WorkspaceModeError
 
 
 API_PREFIX = "/api/practice/v1/"
@@ -114,6 +115,11 @@ class PracticeHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if not self._same_origin():
+            return
+        try:
+            self.server.cipher.db.require_practice_mode()
+        except WorkspaceModeError:
+            self._error(503, "workspace_mode_unavailable", "A verified practice workspace is required.")
             return
         if len(self.path) > 4096 or re.search(r"%(?![0-9A-Fa-f]{2})", self.path):
             self._error(400, "invalid_url", "Use a valid practice URL.")

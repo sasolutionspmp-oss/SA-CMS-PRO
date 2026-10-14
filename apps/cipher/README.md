@@ -8,7 +8,7 @@ Nothing here touches production systems, real payment rails or live records. Sta
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
 
-The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) now works in the synthetic engine; immutable workspace modes and authenticated action contracts come next. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
+The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) now works in the synthetic engine; immutable practice mode is implemented. Typed action contracts, presenters and practice sessions come next. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
 
 ## Start
 
@@ -28,7 +28,9 @@ python -m apps.cipher.tools.browser_check                   # headless Chrome/Ed
 
 The separate [Fluent practice app](web/README.md) reads versioned project, commitment, bill and approval presenters from `/api/practice/v1`. Build it with `npm ci` and `npm run build` in `apps/cipher/web`, then run `practice-web` and open `http://127.0.0.1:8766`. This local server always owns a fresh in-memory fixture, freezes it read-only, and has no file-workspace, action, identity or provider option. It mounts none of the old console routes. It is a design/development harness; the live backend-for-frontend remains open.
 
-Restored or copied workspaces open read-only until the owner claims them:
+New workspaces receive an immutable audited practice declaration. Known historical Cipher files adopt practice while preserving original history; unrelated, empty, missing-identity or invalid-schema files are refused before initialization. This release refuses live files and unqualified payment providers. No flag or route promotes practice to live.
+
+Restored or copied workspaces open read-only until the owner claims them. A known pre-mode copy defers declaration until that claim; diagnostics report its pending state. Claims must run outside any enclosing transaction. Payment recovery quarantine remains until reconciliation:
 
 ```bash
 python -m apps.cipher claim-challenge --db restored.sqlite

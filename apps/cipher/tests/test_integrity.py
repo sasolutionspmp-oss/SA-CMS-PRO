@@ -32,7 +32,8 @@ from unittest import mock
 from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import Approvals, StaleApprovalError, build_manifest
 from apps.cipher.core.audit import Audit
-from apps.cipher.core.db import SCHEMA_CATALOG, Database, WriteAuthorityError
+from apps.cipher.core.db import MODE_ACTION, SCHEMA_CATALOG, Database, WriteAuthorityError, catalog_checksum
+from apps.cipher.core.ids import canonical_json, sha256_hex
 from apps.cipher.core.money import D, MoneyError, allocate, money, pct, rate, total
 from apps.cipher.domain.ledger import Ledger, LedgerError, PeriodNotOpen, ReversalNotAvailable, SubledgerOwnedJournal
 from apps.cipher.service import Cipher, RoleNotAuthorized
@@ -241,7 +242,13 @@ class RestoredCopyTests(unittest.TestCase):
         self.assertTrue(c.db.authority_status()["read_only"])
 
     def test_restored_copy_opens_read_only_and_refuses_every_write(self):
+        original_declarations = self.live.db.query("SELECT * FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,))
+        self.assertEqual(len(original_declarations), 1)
         r = self.restored()
+        self.assertEqual(r.db.query("SELECT * FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,)), original_declarations)
+        self.assertEqual(r.db.workspace()["mode"], "practice")
+        self.assertTrue(r.db.mode_status()["verified"])
+        self.assertFalse(r.db.mode_status()["runtime_authorized"])
         status = r.db.authority_status()
         self.assertFalse(status["effective_write_authority"])
         self.assertTrue(status["read_only"])
@@ -329,6 +336,9 @@ class RestoredCopyTests(unittest.TestCase):
     def test_in_memory_workspaces_hold_authority(self):
         c = Cipher()
         self.addCleanup(c.db.close)
+        original_workspace_audit = c.audit.entries(entity_type="workspace")
+        self.assertEqual([e["action"] for e in original_workspace_audit], [MODE_ACTION])
+        self.assertTrue(c.db.mode_status()["verified"])
         status = c.db.authority_status()
         self.assertTrue(status["effective_write_authority"])
         self.assertFalse(status["read_only"])
@@ -337,7 +347,8 @@ class RestoredCopyTests(unittest.TestCase):
         self.assertTrue(c.db.has_write_authority())
         self.assertFalse(c.db.read_only)
         c.add_party(kind="supplier", name="Synthetic Sheet Piling Supplier")
-        self.assertEqual([e["action"] for e in c.audit.entries(entity_type="workspace")], [])  # the refused release wrote nothing
+        # Creation declares the mode; the refused release adds no audit entry.
+        self.assertEqual(c.audit.entries(entity_type="workspace"), original_workspace_audit)
 
     QUERY_ONLY_SPELLINGS = (
         "PRAGMA query_only = OFF", "PRAGMA query_only=0", "PRAGMA QUERY_ONLY = false", "PRAGMA query_only(0)", "PRAGMA main.query_only=0",
@@ -606,21 +617,58 @@ class SealedJournalTests(unittest.TestCase):
     def test_older_workspace_is_backfilled_and_sealed_on_upgrade(self):
         d = tempfile.mkdtemp(prefix="cipher-integrity-upgrade-")
         path = os.path.join(d, "old.sqlite")
-        saved = list(SCHEMA_CATALOG)
+        stamp = "2026-10-14T00:00:00Z"
+        conn = sqlite3.connect(path)
+        conn.row_factory = sqlite3.Row
         try:
-            del SCHEMA_CATALOG[1:]  # a release that only had the foundation
-            old = Database(path)
-            old.execute("INSERT INTO periods (id, name, start_date, end_date, status) VALUES ('P1','P1','2026-10-01','2026-10-31','open')")
-            old.execute("INSERT INTO accounts (code, name, type) VALUES ('5000','Cost','expense'), ('2000','AP','liability')")
-            old.execute("INSERT INTO journals (id, period_id, posted_at, description, source_type, source_id, source_version, rule_version, posted_by) "
-                        "VALUES ('jrn_old','P1','t','old','old','old','1','r','old')")
-            old.execute("INSERT INTO journal_lines (id, journal_id, line_no, account_code, debit, credit) VALUES ('l1','jrn_old',1,'5000','42.00','0.00'), ('l2','jrn_old',2,'2000','0.00','42.00')")
-            old.close()
+            # Use actual foundation SQL and its original identity/audit, without
+            # invoking today's mode-aware constructor to create the old file.
+            conn.execute("CREATE TABLE schema_version (version INTEGER PRIMARY KEY, name TEXT NOT NULL, statement_count INTEGER NOT NULL, checksum TEXT NOT NULL, applied_at TEXT NOT NULL)")
+            conn.execute("CREATE UNIQUE INDEX schema_version_name ON schema_version(name)")
+            version, name, statements = SCHEMA_CATALOG[0]
+            for statement in statements:
+                conn.execute(statement)
+            conn.execute("INSERT INTO schema_version VALUES (?,?,?,?,?)",
+                         (version, name, len(statements), catalog_checksum(statements), stamp))
+            conn.execute("INSERT INTO workspace VALUES (1,'ws_integrity_legacy','inst_integrity_legacy',1,1,0,0,?,?)", (stamp, stamp))
+            conn.execute("INSERT INTO periods (id, name, start_date, end_date, status) VALUES ('P1','P1','2026-10-01','2026-10-31','open')")
+            conn.execute("INSERT INTO accounts (code, name, type) VALUES ('5000','Cost','expense'), ('2000','AP','liability')")
+            conn.execute("INSERT INTO journals (id, period_id, posted_at, description, source_type, source_id, source_version, rule_version, posted_by) "
+                         "VALUES ('jrn_old','P1','t','old','old','old','1','r','old')")
+            conn.execute("INSERT INTO journal_lines (id, journal_id, line_no, account_code, debit, credit) VALUES ('l1','jrn_old',1,'5000','42.00','0.00'), ('l2','jrn_old',2,'2000','0.00','42.00')")
+            payload = canonical_json({"journal_id": "jrn_old", "amount": "42.00"})
+            payload_hash = sha256_hex(payload)
+            previous = "0" * 64
+            entry_hash = sha256_hex("|".join([previous, stamp, "old", "journal.posted", "journal", "jrn_old", payload_hash]))
+            conn.execute("INSERT INTO audit_log (ts,actor,action,entity_type,entity_id,payload_json,payload_hash,prev_hash,entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+                         (stamp, "old", "journal.posted", "journal", "jrn_old", payload, payload_hash, previous, entry_hash))
+            conn.commit()
+            history = [dict(row) for row in conn.execute("SELECT * FROM schema_version ORDER BY version")]
+            entries = [dict(row) for row in conn.execute("SELECT * FROM audit_log ORDER BY seq")]
+            old_header = dict(conn.execute("SELECT * FROM journals WHERE id='jrn_old'").fetchone())
+            old_lines = [dict(row) for row in conn.execute("SELECT * FROM journal_lines WHERE journal_id='jrn_old' ORDER BY line_no")]
         finally:
-            SCHEMA_CATALOG[:] = saved
+            conn.close()
+        with open(path + ".authority", "w", encoding="utf-8") as sidecar:
+            sidecar.write("inst_integrity_legacy")
         upgraded = Database(path)
         self.addCleanup(upgraded.close)
         self.assertEqual(upgraded.schema_status()["pending"], [])
+        self.assertEqual(upgraded.query("SELECT * FROM schema_version WHERE version=1"), history)
+        self.assertEqual(upgraded.workspace()["workspace_id"], "ws_integrity_legacy")
+        self.assertEqual(upgraded.workspace()["created_at"], stamp)
+        actual_entries = Audit(upgraded).entries()
+        self.assertEqual(actual_entries[:-1], entries)
+        self.assertEqual(actual_entries[-1]["action"], MODE_ACTION)
+        self.assertEqual(actual_entries[-1]["payload_json"], canonical_json({
+            "workspace_id": "ws_integrity_legacy", "mode": "practice", "created_at": stamp, "origin": "legacy_adopted",
+        }))
+        self.assertEqual(actual_entries[-1]["prev_hash"], entries[-1]["entry_hash"])
+        self.assertTrue(Audit(upgraded).verify_chain()["ok"])
+        self.assertTrue(upgraded.mode_status()["verified"])
+        actual_header = upgraded.one("SELECT * FROM journals WHERE id='jrn_old'")
+        self.assertEqual({key: actual_header[key] for key in old_header}, old_header)
+        self.assertEqual(upgraded.query("SELECT * FROM journal_lines WHERE journal_id='jrn_old' ORDER BY line_no"), old_lines)
         self.assertEqual(upgraded.scalar("SELECT line_count FROM journals WHERE id='jrn_old'"), 2)
         with self.assertRaisesRegex(sqlite3.IntegrityError, "posted journals are immutable"):
             upgraded.execute("INSERT INTO journal_lines (id, journal_id, line_no, account_code, debit, credit) VALUES ('l3','jrn_old',3,'5000','1.00','0.00')")

@@ -101,7 +101,7 @@ def _load_plugin_modules() -> list[Any]:
 _load_plugin_modules()
 from .core.audit import Audit, register_audit_schema
 from .core.commands import CommandResult, Commands
-from .core.db import Database
+from .core.db import Database, register_workspace_mode_schema
 from .core.ids import new_id, sha256_hex, utcnow_iso
 from .core.money import fmt, money
 from .domain.bills import Bills, register_bill_posting_schema
@@ -118,6 +118,7 @@ from .ricky_sdk import RickySDK
 # Append only after every historical domain and SDK schema has registered.
 register_audit_schema()
 register_bill_posting_schema()
+register_workspace_mode_schema()
 
 
 class CipherError(RuntimeError):
@@ -170,8 +171,15 @@ OPERATIONS = {
 
 class Cipher:
     def __init__(self, path: str = ":memory:", *, provider: SimulatedProvider | None = None):
+        if provider is not None:
+            Payments.require_simulated_provider(provider)
         plugin_modules = _load_plugin_modules()
         self.db = Database(path)
+        try:
+            workspace_mode = self.db.require_practice_mode(allow_pending=True)
+        except BaseException:
+            self.db.close()
+            raise
         self.audit = Audit(self.db)
         self.approvals = Approvals(self.db, self.audit)
         self.commands = Commands(self.db, self.audit)
@@ -188,7 +196,7 @@ class Cipher:
         # a fresh simulator on an existing workspace continues after the references it holds
         self.provider = provider or SimulatedProvider(ref_floor=self._simulated_ref_floor())
         # provider callbacks are verified against the provider's webhook secret when it has one
-        self.payments.webhook_secret = getattr(self.provider, "webhook_secret", None)
+        self.payments.attach_provider(self.provider, allow_legacy=not workspace_mode["runtime_authorized"])
         # a bill payment releases the open payable (after credit notes and earlier payments)
         self.payments.open_payable_for_bill = self.bills.open_payable
         self._plugins: dict[str, Any] = {}
@@ -335,6 +343,7 @@ class Cipher:
         return [(n, p) for n, p in sorted(self._plugins.items()) if getattr(p, "GOVERNOR", False) is True]
 
     def _manifest(self, operation: str, subject_id: str, actor_role: str) -> dict[str, Any]:
+        self.db.require_practice_mode()
         manifest = self._base_manifest(operation, subject_id, actor_role)
         bound: dict[str, Any] = {}
         for name, governor in self._governors():
@@ -397,6 +406,7 @@ class Cipher:
         """Grant an approval.  The approver's role must hold the operation's authority.
         A sole owner holds every role; two owner logins are not two-person separation
         (plan v1.1), which is why releases also need the independent controls in payments."""
+        self.db.require_practice_mode()
         try:
             with self.db.transaction() as conn:
                 # A caught refusal must also undo grant effects when our transaction
@@ -444,6 +454,7 @@ class Cipher:
         return self.approvals.reject(approval_id, approver=approver, reason=reason)
 
     def execute(self, approval_id: str, *, actor: str = "owner", op_id: str | None = None, period_id: str | None = None) -> CommandResult:
+        self.db.require_practice_mode()
         ap = self.approvals.get(approval_id)
         operation, subject_id = ap["operation"], ap["subject_id"]
         if operation == "bill.approve":
@@ -552,6 +563,7 @@ class Cipher:
         This synthetic facade receives a declared duty; the live API must derive
         identity/duties from its authenticated session, never request-body claims.
         """
+        self.db.require_practice_mode()
         if not isinstance(actor, str) or not actor.strip():
             raise RoleNotAuthorized("Name the independent accounting person posting this bill.")
         bill = self.bills.get(bill_id)
@@ -647,6 +659,7 @@ class Cipher:
     # ---- reading ------------------------------------------------------------------------------ #
 
     def project_state(self, project_id: str) -> dict[str, Any]:
+        workspace_mode = self.db.require_practice_mode(allow_pending=True)
         project = self.project(project_id)
         commitments = self.commitments.list(project_id)
         for c in commitments:
@@ -655,6 +668,7 @@ class Cipher:
         state = {
             "project": project,
             "authority": self.db.authority_status(),
+            "workspace_mode": workspace_mode,
             "periods": self.ledger.periods(),
             "parties": self.parties(),
             "documents": self.evidence.documents(project_id),
@@ -684,6 +698,7 @@ class Cipher:
         payment execution history, subledger reconciliations, every module's own
         records (via its optional audit_export() hook), the schema manifest and the
         hash-chained audit log."""
+        workspace_mode = self.db.require_practice_mode(allow_pending=True)
         q = self.db.query
         modules: dict[str, Any] = {}
         for name, plugin in sorted(self._plugins.items()):
@@ -719,6 +734,7 @@ class Cipher:
         return {
             "exported_at": utcnow_iso(),
             "workspace": self.db.authority_status(),
+            "workspace_mode": workspace_mode,
             "schema": self.db.schema_manifest(),
             "chart_of_accounts": self.ledger.accounts(),
             "periods": self.ledger.periods(),

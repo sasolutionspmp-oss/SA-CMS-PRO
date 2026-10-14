@@ -2,7 +2,7 @@
 
 Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read this first, then `AGENTS.md` (the rules), `BUILD_STATUS.md` (what was verified and the known gaps) and `README.md` (commands, modules and controls).
 
-For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. B01's separate bill approval/posting engine is implemented as specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md), including bill-specific duties from B02. Next are B03's immutable practice/live boundary and the authenticated API/action foundation; B02's other operation duties remain open.
+For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. B01's separate bill approval/posting engine is implemented as specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md), including bill-specific duties from B02. B03 adds immutable audited practice mode, provider guards and safe historical opening/claims. Next are B04/B05's typed actions/presenters and B09's practice session/API slice; other operation duties and real identity remain open.
 
 The current [product goal](docs/PRODUCT_GOAL.md) records the owner's full scope: Cipher owns proposals, estimating/takeoffs, all AP/AR business work, projects/CMS, engineering and specification/contract libraries, with a Fluent 2 interface and an accounting adapter. Internal completion and enterprise qualification are separate evidence gates. Follow the existing UI templates across those workflows; enterprise quality is an architectural direction, not a readiness claim.
 
@@ -11,12 +11,13 @@ The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. T
 ## Where it stands
 
 - **Code:** `apps/cipher` on `cipher/synthetic-prototype`, in open PR #27. The original handoff incorrectly said it had merged; GitHub still showed it open when Codex resumed on 2026-10-14. Python standard library only.
-- **Tests:** `python -m apps.cipher test` runs 1426 unique tests, all passing (Linux, Python 3.12, 2026-10-14; 338.180 seconds). Console self-test: 20 of 20. Core gates: 9 of 9 with 127 of 127 checks. Golden fixture/corpus retain their financial results. The separate Fluent actual-API run passes 18 views and 7 contract/precision checks; `BUILD_STATUS.md` records coverage and limits.
+- **Tests:** `python -m apps.cipher test` runs 1471 unique tests, all passing (Linux, Python 3.12, 2026-10-14; 393.561 seconds). Console self-test: 20 of 20. Core gates: 9 of 9 with 127 of 127 checks. Golden fixture business results and the complete corpus report are unchanged. The separate Fluent actual-API run passes 18 views and 7 contract/precision checks; `BUILD_STATUS.md` records coverage and limits.
 - **Built:** a synthetic, single-owner, single-entity engine:
   - ledger, approvals, the hash-chained audit log and restore safety;
   - AP and AR, payments through an outbox and simulator, banking, labor, procurement, field, close, assets, the accountant hand-off, content rights, supplier invoice intake;
   - three governor modules (`people`, `payment_policy`, `contracts`);
   - journal-free bill business grants, independent explicit posting and audit-backed immutable posting receipts;
+  - immutable audited workspace mode, foreign/live startup refusal and initialized simulator-only payment boundaries;
   - Ricky's SDK;
   - a test-bench HTTP console.
 - **Reviewed:** four build rounds, each with adversarial review and fixes, then a cross-module critic (26 confirmed findings, all fixed but one declined) and a Codex review on the PR. `BUILD_STATUS.md` lists what each found.

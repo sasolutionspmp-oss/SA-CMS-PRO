@@ -80,6 +80,6 @@ The acceptance suite must also cover concurrent posting and a caught refusal ins
 
 `test_bill_posting_split` and `test_bill_posting_review` pass 31 focused tests, including immutable source proof, the original expiry bound and a schema-64 upgrade that preserves historical schema rows, journals and audit entries. The authority and service modules add 34 cases; all 65 are included in the passing 1426-test full suite. Core gates pass 9/9 and 127/127 checks; the corpus retains its exact financial/timing report. Chromium passes the 20-step console journey and 18 Fluent actual-API views plus 7 contract/precision checks.
 
-B02 is complete only for bill duties. Global duties, authenticated identity, owner policy choices and Entra account binding remain open. B03's immutable workspace mode and the production API/action contracts remain next dependencies; the Fluent practice read harness does not close them.
+B02 is complete only for bill duties. Global duties, authenticated identity, owner policy choices and Entra account binding remain open. B03 now supplies immutable audited practice mode and refuses live admission. Typed action contracts, presenters and practice sessions are next; the Fluent read harness does not close consequential screen or operational gates.
 
 Microsoft tenant setup and Fluent UI styling are not prerequisites for this engine work. The authenticated API and accepted screens are separate dependencies before operational use by staff.

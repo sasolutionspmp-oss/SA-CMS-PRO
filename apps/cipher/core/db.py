@@ -33,6 +33,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import os
 import re
 import secrets
@@ -41,6 +42,7 @@ import threading
 import weakref
 from contextlib import contextmanager
 from typing import Any, Iterator
+from urllib.parse import quote
 
 from .ids import new_id, sha256_hex, utcnow_iso, canonical_json
 
@@ -68,6 +70,10 @@ _LOCKED_DBCONFIG = (
 
 class SchemaError(RuntimeError):
     """The on-disk schema and the catalog disagree."""
+
+
+class WorkspaceModeError(SchemaError):
+    """The workspace has no verified, supported runtime mode."""
 
 
 class WriteAuthorityError(PermissionError):
@@ -181,7 +187,7 @@ class AuthorityConnection(sqlite3.Connection):
         """Before a top-level statement that may write (anything but a plain SELECT),
         let the Database follow a release or claim committed by another connection."""
         hook = self._authority_hook
-        if hook is None or self.in_transaction or self._is_internal():
+        if hook is None or self._is_internal():
             return
         if isinstance(sql, str) and _PLAIN_SELECT.match(sql):
             return
@@ -893,6 +899,88 @@ def catalog_checksum(statements: list[str]) -> str:
     return sha256_hex("\n--\n".join(s.strip() for s in statements))
 
 
+# Registered explicitly by the service after every historical entry. Do not move
+# this registration to module import: historical catalog positions are fixed.
+MODE_SCHEMA_NAME = "workspace_mode"
+MODE_ACTION = "workspace.mode_declared"
+MODE_SCHEMA_STATEMENTS = [
+    "ALTER TABLE workspace ADD COLUMN mode TEXT CHECK (mode IN ('practice','live'))",
+    "ALTER TABLE workspace ADD COLUMN mode_declaration_seq INTEGER REFERENCES audit_log(seq)",
+    "CREATE UNIQUE INDEX workspace_mode_declaration_once ON audit_log(entity_id) WHERE entity_type='workspace' AND action='workspace.mode_declared'",
+    """CREATE TRIGGER workspace_identity_immutable BEFORE UPDATE ON workspace
+        WHEN NEW.workspace_id IS NOT OLD.workspace_id OR NEW.created_at IS NOT OLD.created_at
+        BEGIN SELECT RAISE(ABORT, 'the original workspace identity is immutable'); END""",
+    """CREATE TRIGGER workspace_mode_immutable BEFORE UPDATE ON workspace
+        WHEN (OLD.mode IS NOT NULL OR OLD.mode_declaration_seq IS NOT NULL)
+          AND (NEW.mode IS NOT OLD.mode OR NEW.mode_declaration_seq IS NOT OLD.mode_declaration_seq)
+        BEGIN SELECT RAISE(ABORT, 'workspace mode is immutable'); END""",
+    """CREATE TRIGGER workspace_mode_declaration_required BEFORE UPDATE ON workspace
+        WHEN (NEW.mode IS NULL) IS NOT (NEW.mode_declaration_seq IS NULL)
+          OR (NEW.mode IS NOT NULL AND NOT EXISTS (
+            SELECT 1 FROM audit_log a WHERE a.seq=NEW.mode_declaration_seq
+              AND a.action='workspace.mode_declared' AND a.entity_type='workspace'
+              AND a.entity_id=NEW.workspace_id
+              AND json_extract(a.payload_json, '$.workspace_id') IS NEW.workspace_id
+              AND json_extract(a.payload_json, '$.mode') IS NEW.mode
+              AND json_extract(a.payload_json, '$.created_at') IS NEW.created_at))
+        BEGIN SELECT RAISE(ABORT, 'workspace mode requires its original audited declaration'); END""",
+    "CREATE TRIGGER workspace_no_delete BEFORE DELETE ON workspace BEGIN SELECT RAISE(ABORT, 'the original workspace cannot be deleted'); END",
+    "CREATE TRIGGER workspace_no_replace BEFORE INSERT ON workspace WHEN EXISTS (SELECT 1 FROM workspace) BEGIN SELECT RAISE(ABORT, 'the original workspace cannot be replaced'); END",
+]
+
+
+def register_workspace_mode_schema() -> int:
+    return register_schema_version(MODE_SCHEMA_NAME, MODE_SCHEMA_STATEMENTS)
+
+
+_KNOWN_SCHEMA_INVENTORIES: dict[tuple, dict] = {}
+
+
+def _inventory(conn: sqlite3.Connection) -> dict:
+    # schema_version is managed by the migration engine, not a catalog entry;
+    # its columns are checked separately, without relying on formatting of DDL.
+    return {(r[0], r[1]): re.sub(r"\s+", " ", r[2].strip()) for r in conn.execute(
+        "SELECT type,name,sql FROM sqlite_master WHERE sql IS NOT NULL AND name NOT LIKE 'sqlite_%' "
+        "AND name NOT IN ('schema_version','schema_version_name')")}
+
+
+def _verify_known_schema(conn: sqlite3.Connection) -> None:
+    """A planted catalog checksum does not prove that its schema was installed."""
+    catalog = {name: statements for _, name, statements in SCHEMA_CATALOG}
+    rows = list(conn.execute("SELECT version,name,statement_count,checksum FROM schema_version ORDER BY version"))
+    if not rows or rows[0][1] != "foundation" or len({r[1] for r in rows}) != len(rows):
+        raise SchemaError("the existing file has no recognized Cipher schema history")
+    basis = []
+    for row in rows:
+        statements = catalog.get(row[1])
+        if statements is None or row[2] != len(statements) or row[3] != catalog_checksum(statements):
+            raise SchemaError("the existing file has an unknown or modified Cipher schema history")
+        basis.append((row[1], row[3]))
+    key = tuple(basis)
+    expected = _KNOWN_SCHEMA_INVENTORIES.get(key)
+    if expected is None:
+        replay = sqlite3.connect(":memory:")
+        try:
+            for name, _ in basis:
+                for statement in catalog[name]:
+                    replay.execute(statement)
+            expected = _inventory(replay)
+        finally:
+            replay.close()
+        _KNOWN_SCHEMA_INVENTORIES[key] = expected
+    if _inventory(conn) != expected:
+        raise SchemaError("the existing file's installed schema differs from its recognized Cipher catalog")
+
+
+def _verify_audit_rows(conn: sqlite3.Connection) -> None:
+    prev = "0" * 64
+    for row in conn.execute("SELECT ts,actor,action,entity_type,entity_id,payload_json,payload_hash,prev_hash,entry_hash FROM audit_log ORDER BY seq"):
+        expected = sha256_hex("|".join([prev, *row[:5], row[6]]))
+        if row[7] != prev or row[8] != expected or sha256_hex(row[5]) != row[6]:
+            raise WorkspaceModeError("the workspace audit history is not intact")
+        prev = row[8]
+
+
 # --------------------------------------------------------------------------- #
 # Database                                                                     #
 # --------------------------------------------------------------------------- #
@@ -901,29 +989,81 @@ class Database:
     """A single SQLite connection with explicit transactions and a schema lifecycle."""
 
     def __init__(self, path: str = ":memory:", *, migrate: bool = True):
-        self.path = path
-        self.in_memory = path == ":memory:"
+        self.path = os.fspath(path)
+        self.in_memory = self.path == ":memory:"
         self._lock = threading.RLock()
         self._depth = 0
         self._read_only = False
         self._refresh_suspended = 0
         self._data_version: int | None = None
-        self.conn = sqlite3.connect(path, isolation_level=None, check_same_thread=False, factory=AuthorityConnection)
+        self._original_workspace_id: str | None = None
+        self._original_created_at: str | None = None
+        self._legacy_recognized = False
+        self._mode_origin = "created"
+        self._mode_anchor: tuple | None = None
+        if not self.in_memory and os.path.lexists(self.path):
+            self._preflight_existing_file()
+        self.conn = sqlite3.connect(self.path, isolation_level=None, check_same_thread=False, factory=AuthorityConnection)
         self.conn.set_authorizer(_authorizer_for(self.conn))
         self.conn.row_factory = sqlite3.Row
         with self._internal() as conn:
             conn.execute("PRAGMA foreign_keys = ON")
-        if not self.in_memory:
-            self.conn.execute("PRAGMA journal_mode = WAL")
-            self.conn.execute("PRAGMA synchronous = NORMAL")
-        if migrate:
-            self.migrate()
+        try:
+            if not self.in_memory:
+                self.conn.execute("PRAGMA journal_mode = WAL")
+                self.conn.execute("PRAGMA synchronous = NORMAL")
+            if migrate:
+                self.migrate()
+        except BaseException:
+            self.conn.close()
+            raise
         if not self.in_memory:
             if self._data_version is None:
                 self._data_version = self._read_data_version()
             # from here on, a commit by any other connection to this file makes this one
             # re-evaluate its write authority before its next top-level statement
             self.conn._authority_hook = _hook_for(self)
+        # In-memory workspaces need the same mutation/proof checks; data_version
+        # alone cannot observe tampering through this connection.
+        self.conn._authority_hook = _hook_for(self)
+        self._mode_write_stamp: tuple | None = None
+        self._mode_guard_schema_version: int | None = None
+        # migrate=False is a diagnostic choice, not a waiver of copied-file
+        # authority or undeclared-mode controls.
+        self._apply_authority_mode()
+
+    def _preflight_existing_file(self) -> None:
+        """Read and classify before WAL, migrations or authority sidecar writes."""
+        inspect = None
+        try:
+            if not os.path.isfile(self.path) or os.path.getsize(self.path) == 0:
+                raise SchemaError("an existing empty or unknown file is not a new Cipher workspace")
+            uri = "file:" + quote(os.path.abspath(self.path), safe="/") + "?mode=ro"
+            inspect = sqlite3.connect(uri, uri=True)
+            _verify_known_schema(inspect)
+            rows = list(inspect.execute("SELECT * FROM workspace"))
+            columns = [r[1] for r in inspect.execute("PRAGMA table_info(workspace)")]
+            if len(rows) != 1:
+                raise SchemaError("the existing Cipher file must contain its original workspace row")
+            workspace = dict(zip(columns, rows[0]))
+            if workspace.get("id") != 1 or any(not isinstance(workspace.get(k), str) or not workspace[k].strip()
+                                                for k in ("workspace_id", "instance_token", "created_at")):
+                raise SchemaError("the existing file has no valid original Cipher workspace identity")
+            _verify_audit_rows(inspect)
+            self._original_workspace_id = workspace["workspace_id"]
+            self._original_created_at = workspace["created_at"]
+            self._legacy_recognized = MODE_SCHEMA_NAME not in {r[0] for r in inspect.execute("SELECT name FROM schema_version")}
+            if self._legacy_recognized:
+                self._mode_origin = "legacy_adopted"
+            if not self._legacy_recognized:
+                mode = self._mode_proof(inspect, workspace)
+                if mode["mode"] == "live":
+                    raise WorkspaceModeError("Live workspace runtime and integrations are unavailable in this release")
+        except (sqlite3.Error, OSError, ValueError, TypeError) as exc:
+            raise SchemaError("the existing file is not a recognized, intact Cipher workspace") from exc
+        finally:
+            if inspect is not None:
+                inspect.close()
 
     @contextmanager
     def _internal(self) -> Iterator[sqlite3.Connection]:
@@ -1061,7 +1201,7 @@ class Database:
         except (SchemaError, sqlite3.Error):
             return False
 
-    def _migrate(self, *, unclaimed_copy: bool = False) -> list[dict[str, Any]]:
+    def _migrate(self, *, unclaimed_copy: bool = False, mode_claim: bool = False) -> list[dict[str, Any]]:
         applied_now: list[dict[str, Any]] = []
         with self.transaction() as conn:
             conn.execute(
@@ -1077,6 +1217,10 @@ class Database:
             applied = {r["name"]: dict(r) for r in conn.execute("SELECT * FROM schema_version")}
             next_seq = (max((r["version"] for r in applied.values()), default=0)) + 1
             for _, name, statements in SCHEMA_CATALOG:
+                # Structural upgrades retain their existing copied-workspace audit.
+                # A mode declaration is an authority act, deferred until the claim.
+                if name == MODE_SCHEMA_NAME and unclaimed_copy and not mode_claim:
+                    continue
                 checksum = catalog_checksum(statements)
                 if name in applied:
                     if applied[name]["checksum"] != checksum:
@@ -1094,6 +1238,8 @@ class Database:
                 applied_now.append({"version": next_seq, "name": name, "statement_count": len(statements), "checksum": checksum})
                 next_seq += 1
             self._ensure_workspace(conn)
+            if MODE_SCHEMA_NAME in {r[0] for r in conn.execute("SELECT name FROM schema_version")}:
+                self._declare_practice_mode(conn, origin=self._mode_origin)
             if unclaimed_copy and applied_now:
                 ws = conn.execute("SELECT workspace_id FROM workspace WHERE id = 1").fetchone()
                 conn.execute(
@@ -1157,6 +1303,117 @@ class Database:
                 (new_id("ws"), token, now, now),
             )
             self._write_sidecar(token)
+            row = conn.execute("SELECT * FROM workspace WHERE id=1").fetchone()
+            self._legacy_recognized = True
+        if self._original_workspace_id is None:
+            self._original_workspace_id = row["workspace_id"]
+            self._original_created_at = row["created_at"]
+
+    def _declare_practice_mode(self, conn: sqlite3.Connection, *, origin: str) -> None:
+        ws = dict(conn.execute("SELECT * FROM workspace WHERE id=1").fetchone())
+        if ws.get("mode") is not None or ws.get("mode_declaration_seq") is not None:
+            self._mode_proof(conn, ws)
+            return
+        if conn.execute("SELECT 1 FROM audit_log WHERE action=?", (MODE_ACTION,)).fetchone() is not None:
+            raise WorkspaceModeError("a workspace with an existing mode declaration cannot be reclassified")
+        payload = {"workspace_id": ws["workspace_id"], "mode": "practice", "created_at": ws["created_at"], "origin": origin}
+        cursor = conn.execute(
+            "INSERT INTO audit_log (ts,actor,action,entity_type,entity_id,payload_json,payload_hash,prev_hash,entry_hash) VALUES (?,?,?,?,?,?,?,?,?)",
+            self._audit_tuple("system", MODE_ACTION, "workspace", ws["workspace_id"], payload))
+        conn.execute("UPDATE workspace SET mode='practice', mode_declaration_seq=? WHERE id=1", (cursor.lastrowid,))
+        self._mode_proof(conn, dict(conn.execute("SELECT * FROM workspace WHERE id=1").fetchone()))
+
+    def _mode_proof(self, conn: sqlite3.Connection, ws: dict) -> dict[str, Any]:
+        if (ws.get("workspace_id") != self._original_workspace_id
+                or ws.get("created_at") != self._original_created_at):
+            raise WorkspaceModeError("the workspace mode no longer belongs to its original workspace identity")
+        rows = list(conn.execute("SELECT seq,ts,actor,action,entity_type,entity_id,payload_json,payload_hash,prev_hash,entry_hash "
+                                 "FROM audit_log WHERE action=? ORDER BY seq", (MODE_ACTION,)))
+        mode, seq = ws.get("mode"), ws.get("mode_declaration_seq")
+        if mode is None and seq is None:
+            if rows or self._mode_anchor is not None or not self._legacy_recognized:
+                raise WorkspaceModeError("the original workspace mode declaration is missing")
+            return {"mode": None, "state": "pending_practice_declaration", "verified": False,
+                    "workspace_id": ws["workspace_id"], "runtime_authorized": False}
+        if mode not in ("practice", "live") or not isinstance(seq, int) or len(rows) != 1:
+            raise WorkspaceModeError("the workspace mode has no unique original audit declaration")
+        row = tuple(rows[0])
+        try:
+            payload = json.loads(row[6])
+        except (TypeError, ValueError) as exc:
+            raise WorkspaceModeError("the original workspace mode declaration is invalid") from exc
+        expected_payload = {"workspace_id": self._original_workspace_id, "mode": mode,
+                            "created_at": self._original_created_at, "origin": payload.get("origin") if isinstance(payload, dict) else None}
+        expected_hash = sha256_hex("|".join([row[8], *row[1:6], row[7]]))
+        if (row[0] != seq or row[2:6] != ("system", MODE_ACTION, "workspace", self._original_workspace_id)
+                or payload != expected_payload or payload["origin"] not in ("created", "legacy_adopted")
+                or row[6] != canonical_json(payload) or row[7] != sha256_hex(row[6]) or row[9] != expected_hash):
+            raise WorkspaceModeError("the workspace mode differs from its canonical original audit declaration")
+        anchor = (self._original_workspace_id, self._original_created_at, mode, row)
+        if self._mode_anchor is not None and anchor != self._mode_anchor:
+            raise WorkspaceModeError("the original workspace mode proof changed on this connection")
+        self._mode_anchor = anchor
+        return {"mode": mode, "state": "declared", "verified": True, "workspace_id": ws["workspace_id"],
+                "runtime_authorized": False, "origin": payload["origin"]}
+
+    def mode_status(self) -> dict[str, Any]:
+        """Sanitized mode fact; physical authority remains a separate control."""
+        with self._lock:
+            try:
+                status = self._mode_proof(self.conn, self.workspace())
+                if status["verified"]:
+                    self._check_mode_guards()
+            except WorkspaceModeError:
+                raise
+            except (SchemaError, sqlite3.Error) as exc:
+                raise WorkspaceModeError("the original workspace identity or mode proof is missing") from exc
+            status["runtime_authorized"] = (status["verified"] and status["mode"] == "practice"
+                                             and self.has_write_authority() and not self.read_only)
+            return status
+
+    def _check_mode_guards(self) -> None:
+        with self._internal() as conn:
+            version = conn.execute("PRAGMA schema_version").fetchone()[0]
+            if version == getattr(self, "_mode_guard_schema_version", None):
+                return
+            for statement in MODE_SCHEMA_STATEMENTS[2:]:
+                match = re.match(r"CREATE (?:UNIQUE )?(?:INDEX|TRIGGER) (\w+)", statement)
+                name = match[1]
+                row = conn.execute("SELECT sql FROM sqlite_master WHERE name=?", (name,)).fetchone()
+                if row is None or re.sub(r"\s+", " ", row[0].strip()) != re.sub(r"\s+", " ", statement.strip()):
+                    raise WorkspaceModeError("the original workspace mode storage guards are missing or changed")
+            self._mode_guard_schema_version = version
+
+    def _check_mode_before_write(self) -> None:
+        if self._original_workspace_id is None:
+            return  # controlled initialization has not created the row yet
+        with self._internal() as conn:
+            stamp = (conn.total_changes, conn.execute("PRAGMA data_version").fetchone()[0],
+                     conn.execute("PRAGMA schema_version").fetchone()[0])
+            if not self.in_memory:
+                # The authority sidecar can disappear without changing SQLite's
+                # counters. Only mode-proof verification may use this cache.
+                self._apply_authority_mode()
+            if stamp == getattr(self, "_mode_write_stamp", None):
+                return
+            status = self.mode_status()
+            if status["verified"] and status["mode"] != "practice":
+                raise WorkspaceModeError("Live workspace writes and integrations are unavailable in this release")
+            # Pending copies stay SQLite read-only. Historical core-only fixture
+            # catalogs have no runtime admission and cannot authorize a provider.
+            self._mode_write_stamp = stamp
+
+    def require_practice_mode(self, *, allow_pending: bool = False) -> dict[str, Any]:
+        """Read-only admission; accepting a declared copied mode does not authorize writes."""
+        status = self.mode_status()
+        if status["verified"] and status["mode"] == "practice":
+            return status
+        if (allow_pending and status["state"] == "pending_practice_declaration"
+                and self._legacy_recognized and not self.has_write_authority()):
+            return status
+        if status["mode"] == "live":
+            raise WorkspaceModeError("Live workspace runtime and integrations are unavailable in this release")
+        raise WorkspaceModeError("this known legacy copy needs an owner claim before its practice mode is declared")
 
     def _write_sidecar(self, token: str) -> None:
         p = self._authority_path()
@@ -1221,17 +1478,16 @@ class Database:
         """Follow a release or claim committed by another connection to this file:
         when ``PRAGMA data_version`` moved, re-evaluate authority and set ``query_only``
         to match.  Cheap when nothing changed (one pragma read)."""
-        if self.in_memory:
-            return
         with self._lock:
             if self._refresh_suspended:
                 return
-            with self._internal() as conn:
-                version = conn.execute("PRAGMA data_version").fetchone()[0]
-                if version == self._data_version:
-                    return
-                self._data_version = version
-                self._apply_authority_mode()
+            if not self.in_memory:
+                with self._internal() as conn:
+                    version = conn.execute("PRAGMA data_version").fetchone()[0]
+                    if version != self._data_version:
+                        self._data_version = version
+                        self._apply_authority_mode()
+            self._check_mode_before_write()
 
     def _apply_authority_mode(self) -> bool:
         """Make the connection read-only exactly when this copy lacks effective write
@@ -1242,6 +1498,13 @@ class Database:
                 writable = self.has_write_authority()
             except (SchemaError, sqlite3.Error):
                 return False
+            if self._original_workspace_id is not None and any(name == MODE_SCHEMA_NAME for _, name, _ in SCHEMA_CATALOG):
+                try:
+                    mode = self._mode_proof(self.conn, self.workspace())
+                except WorkspaceModeError:
+                    self._set_query_only(True)
+                    raise
+                writable = writable and mode["verified"] and mode["mode"] == "practice"
             if self._read_only != (not writable):
                 self._set_query_only(not writable)
             return True
@@ -1340,7 +1603,13 @@ class Database:
             raise WriteAuthorityError("note must be a string")
         secret = os.environ.get(OWNER_SECRET_ENV) or None
         with self._lock:
+            # A sidecar is physical state outside SQLite's rollback. Neither a
+            # caught nested refusal nor an outer rollback may publish a partial
+            # ownership claim; this operation must own its transaction.
+            if self.in_transaction or self.conn.in_transaction:
+                raise WriteAuthorityError("claim write authority requires a standalone transaction")
             self._refresh_authority()
+            self.require_practice_mode(allow_pending=True)
             if secret is not None:
                 expected = self.expected_claim_code(secret)
                 supplied = "" if claim_code is None else str(claim_code).strip()
@@ -1350,6 +1619,7 @@ class Database:
                         "the code is bound to this workspace and its current authority epoch"
                     )
             self._refresh_suspended += 1  # the claim itself decides the mode until it is done
+            original_anchor = self._mode_anchor
             try:
                 if self._read_only:
                     self._set_query_only(False)
@@ -1371,10 +1641,17 @@ class Database:
                             "owner_claim_code": "verified" if secret is not None else "not_configured",
                         }),
                     )
+                    # Mode adoption joins the successful old authority claim. A
+                    # failed claim never leaves a declaration behind on the copy.
+                    if self.mode_status()["state"] == "pending_practice_declaration":
+                        self._migrate(mode_claim=True)
                     # the sidecar is written last: if the transaction then fails, the token
                     # mismatch leaves this copy without authority rather than with it
                     self._write_sidecar(token)
                 self._retire_challenge()
+            except BaseException:
+                self._mode_anchor = original_anchor
+                raise
             finally:
                 self._refresh_suspended -= 1
                 self._sync_data_version()

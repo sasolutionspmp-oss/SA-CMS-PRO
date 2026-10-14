@@ -26,6 +26,7 @@ from typing import Any, Callable
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from .core.words import us_text
+from .core.db import WorkspaceModeError
 from .service import Cipher, run_golden_fixture
 from .ricky_sdk import RickySDK
 from .ricky_served import ServedRicky, ServedRickyRefused
@@ -55,7 +56,7 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         actor = p(d, "actor")[0] if c.bills.get(bill_id)["status"] == "approved" else d.get("actor", "owner")
         return c.bills.void(bill_id, actor=actor, reason=d.get("reason", ""))
 
-    return {
+    actions = {
         "add_party": lambda d: c.add_party(kind=d["kind"], name=d["name"], destination=d.get("destination")),
         # A payee destination change is never one call on this surface: request it, record the
         # independent verification (a different person, a stored evidence revision), then open
@@ -132,6 +133,12 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "selftest_report": lambda d: _store_selftest(c, d),
         "module_call": lambda d: _module_call(c, d),
     }
+    def guarded(name, action):
+        def invoke(data):
+            c.db.require_practice_mode(allow_pending=name in ("claim_challenge", "claim_authority"))
+            return action(data)
+        return invoke
+    return {name: guarded(name, action) for name, action in actions.items()}
 
 
 def _module_methods(plugin: Any) -> list[str]:
@@ -341,6 +348,11 @@ class CipherHandler(BaseHTTPRequestHandler):
         if not self._host_allowed():
             self._json(HTTPStatus.FORBIDDEN, {"error": "host not allowed"})
             return True
+        try:
+            self.cipher.db.require_practice_mode(allow_pending=True)
+        except WorkspaceModeError:
+            self._json(HTTPStatus.SERVICE_UNAVAILABLE, {"error": "A verified practice workspace is required.", "code": "workspace_mode_unavailable"})
+            return True
         return False
 
     def do_GET(self):
@@ -448,6 +460,7 @@ class InsecureBindError(RuntimeError):
 
 
 def make_server(cipher: Cipher, host: str = "127.0.0.1", port: int = 8765, *, token: str | None = None) -> ThreadingHTTPServer:
+    cipher.db.require_practice_mode(allow_pending=True)
     if token is not None and len(token) < 16:
         raise InsecureBindError("CIPHER_TOKEN must be at least 16 characters")
     if not _is_loopback(host) and not token:
