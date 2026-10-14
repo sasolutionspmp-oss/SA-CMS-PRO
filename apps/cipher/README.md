@@ -8,6 +8,8 @@ Nothing here touches production systems, real payment rails or live records. Sta
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
 
+The path to a usable ERP is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with milestone acceptance gates and the next work items. The next implementation is the [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md). Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
+
 ## Start
 
 ```bash

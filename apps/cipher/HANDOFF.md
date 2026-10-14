@@ -2,6 +2,8 @@
 
 Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read this first, then `AGENTS.md` (the rules), `BUILD_STATUS.md` (what was verified and the known gaps) and `README.md` (commands, modules and controls).
 
+For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. The next coding milestone is B01–B02, specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md). Its design is complete; the lifecycle and authority changes are not implemented yet.
+
 ## Where it stands
 
 - **Code:** `apps/cipher` on `cipher/synthetic-prototype`, in open PR #27. The original handoff incorrectly said it had merged; GitHub still showed it open when Codex resumed on 2026-10-14. Python standard library only.
@@ -19,7 +21,9 @@ Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read 
 
 The owner has not answered the 18 decisions in `docs/UI_OVERHAUL_SPEC.md`, Part A, section A6, or signed off the mockups (decision 12). Each decision there carries the team's recommendation. Several are facts to supply rather than choices: the Microsoft 365 license tier (10), the exact lime color and logo files (12), and the pilot job (15).
 
-UI phase 1a (spec section 12.1) starts with mockups, which need decision 12 (colors and logo) and are themselves the sign-off for decision 1 (the direction). Decisions 3 to 7 set the approval limits, expiry and holds the screens enforce, so get them before building approval screens. Engine work in the next section does not wait on any of this, except where a row says so.
+UI phase 1a (spec section 12.1) starts with mockups, which are themselves the sign-off for decision 1 (the direction). Drafts for review can use the spec's placeholder colors and a temporary wordmark; final branding and mockup acceptance remain decision 12. Decisions 3 to 7 set the approval limits, expiry and holds, so get them before finalizing those policies. Engine work, API contracts and draft mockups can proceed in parallel while these answers are pending.
+
+Fluent UI requires no Microsoft sign-in. Microsoft Entra ID is the application's identity provider: it must prove which person performs consequential actions before operational use by staff. Tenant/app setup does not block engine work or synthetic UI design. The Microsoft 365 license fact determines available tenant controls, including stronger step-up options, rather than permission to use Fluent components.
 
 ## Work queue
 
@@ -31,7 +35,7 @@ The spec lists 15 backend fixes; the first four block any use by real people. Th
 
 Confirm each item against the code before starting. Codex's first continuation addressed item 11 (configured module failures now stop startup) and item 13 (grant preflight checks are read-only, with self-approval records committed atomically with successful grants). Item 2 is partly addressed: the HTTP Ricky catalog and invocation route allow only explicit read and draft tools, reject execution, approval requests and payment reconciliation with a typed 403, and block the generic SDK module-call bypass. The standalone SDK keeps its synthetic execution tools; the new API and authenticated session identity are still pending. The remaining items stay open.
 
-Item 1 (separate approving from posting) is the next engine blocker. Finish item 2 when the new API supplies authenticated session identity. Items 3 and 4 (retire the old action API; derive identity from Microsoft 365 sign-in) go with decisions 13 and 10.
+Item 1 (separate approving from posting) is the next engine blocker. Its implementation and migration acceptance criteria are in `docs/BILL_POSTING_SPLIT_PLAN.md`; B01–B02 are designed and remain open. Finish item 2 when the new API supplies authenticated session identity. Items 3 and 4 (retire the old action API; derive identity from Microsoft 365 sign-in) go with decisions 13 and 10.
 
 ### 2. Known gaps from review
 

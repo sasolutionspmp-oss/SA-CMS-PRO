@@ -6,6 +6,7 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 | Date | Check | Result |
 |---|---|---|
+| 2026-10-14 | Delivery backlog and bill approval/posting design (documentation only) | local links and 15 unique build IDs checked; unchanged engine suite: 1320 tests, OK, 234.047 seconds; split implementation remains open |
 | 2026-10-14 | `python -m apps.cipher test` after the Codex continuation and review fixes (Linux, Python 3.12) | 1320 unique tests, OK, no expected failures; 243.776 seconds |
 | 2026-10-14 | Rebuilt container image, including the full suite | 1320 tests, OK; 282.092 seconds; application files readable after a restrictive checkout; server UID 10001, healthy |
 | 2026-10-14 | Token sign-in on an existing volume seeded by prior head `4bbe9842`, then container restart | schema 63 upgraded to 64; Chromium self-test 16 of 16 both before and after restart; audit chain and trial balance valid |
