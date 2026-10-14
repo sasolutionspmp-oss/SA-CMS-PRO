@@ -78,12 +78,13 @@ from __future__ import annotations
 
 import datetime as _dt
 import unicodedata
+from contextlib import contextmanager
 from decimal import Decimal
 from typing import Any
 
-from ..core.approvals import StaleApprovalError, build_manifest
+from ..core.approvals import StaleApprovalError, build_manifest, material_hash
 from ..core.db import register_schema_version
-from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow, utcnow_iso
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, total
 # Imported for its schema entries: the bills columns this module's integrity entry guards
 # (supplier_invoice_*) must exist, and the bills table must be in its final (rebuilt) form,
@@ -408,6 +409,23 @@ class Plugin:
         self.db = cipher.db
         self.audit = cipher.audit
         self.approvals = cipher.approvals
+        self._preparation_savepoint = 0
+
+    @contextmanager
+    def _preparation_transaction(self):
+        """Keep one preparation atomic when a caller catches it in an outer act."""
+        with self.db.transaction() as conn:
+            self._preparation_savepoint += 1
+            savepoint = f"ap_preparation_{self._preparation_savepoint}"
+            conn.execute(f"SAVEPOINT {savepoint}")
+            try:
+                yield conn
+            except BaseException:
+                conn.execute(f"ROLLBACK TO {savepoint}")
+                conn.execute(f"RELEASE {savepoint}")
+                raise
+            else:
+                conn.execute(f"RELEASE {savepoint}")
 
     # ---- lookups ----------------------------------------------------------------- #
 
@@ -578,10 +596,98 @@ class Plugin:
         return {"supplier_id": supplier_id, "days": days, "version": version}
 
     def terms(self, supplier_id: str) -> int:
-        row = self.db.one("SELECT days FROM ap_supplier_terms WHERE supplier_id=?", (supplier_id,))
-        return row["days"] if row else DEFAULT_TERMS_DAYS
+        return self.audited_terms(supplier_id)["days"]
+
+    def audited_terms(self, supplier_id: str) -> dict[str, Any]:
+        """Read configured terms only when their row agrees with the original audit.
+
+        An absent row means the default only when no terms were ever recorded. The
+        audit entry historically binds days, version, predecessor days and actor;
+        the row's timestamp is diagnostic and is not claimed as an audited value.
+        """
+        with self.db._lock:
+            self._supplier(supplier_id)
+            if not self.audit.verify_chain()["ok"]:
+                raise APIntakeError("supplier payment terms cannot be trusted while the audit chain is broken")
+            row = self.db.one("SELECT * FROM ap_supplier_terms WHERE supplier_id=?", (supplier_id,))
+            entries = [entry for entry in self.audit.entries(entity_type="party", entity_id=supplier_id)
+                       if entry["action"] == "ap_intake.terms_set"]
+            if row is None and not entries:
+                return {"days": DEFAULT_TERMS_DAYS, "version": 0, "configured": False,
+                        "row": None, "audit_seq": None, "audit_entry_hash": None}
+            previous_days = None
+            valid = row is not None and bool(entries)
+            for version, entry in enumerate(entries, start=1):
+                payload = loads(entry["payload_json"])
+                days = payload.get("days") if isinstance(payload, dict) else None
+                valid = valid and isinstance(days, int) and not isinstance(days, bool) and 0 <= days <= MAX_TERMS_DAYS
+                valid = valid and payload == {"days": days, "version": version, "previous_days": previous_days}
+                valid = valid and (previous_days is None or previous_days != days)
+                previous_days = days
+            if valid:
+                latest = entries[-1]
+                valid = (row["version"] == len(entries) and row["days"] == previous_days
+                         and row["set_by"] == latest["actor"])
+            if not valid:
+                raise APIntakeError(f"supplier {supplier_id} payment terms disagree with their audited history")
+            return {"days": row["days"], "version": row["version"], "configured": True,
+                    "row": row, "audit_seq": latest["seq"], "audit_entry_hash": latest["entry_hash"]}
 
     # ---- intake --------------------------------------------------------------------------- #
+
+    def receive_preflight(self, supplier_id: str, invoice_number: str, invoice_date: str, amount: Any, evidence_hash: str, *,
+                          project_id: str, commitment_id: str | None = None, due_date: str | None = None,
+                          service_period_start: str | None = None, service_period_end: str | None = None, lines=()) -> dict[str, Any]:
+        """Validate invoice intake without recording or reserving anything.
+
+        Content excludes the later invoice ID, timestamp and ID-bound hash. The exact
+        canonical fields, default terms, duplicate flags and evidence are recalculated
+        by ``receive_invoice`` inside its write transaction.
+        """
+        number, key = _invoice_number(invoice_number)
+        inv_date = _date(invoice_date, "invoice_date")
+        amt = _amount(amount, "invoice amount")
+        sp_start, sp_end = self._service_period(service_period_start, service_period_end)
+        with self.db._lock:
+            project = self._project(project_id)
+            supplier = self._supplier(supplier_id)
+            commitment = self._commitment(commitment_id, project_id=project_id, supplier_id=supplier_id) if commitment_id is not None else None
+            clean = self._lines(lines, amount=amt, project_id=project_id, commitment=commitment)
+            dup = self.db.conn.execute("SELECT id, invoice_number, status FROM ap_invoices WHERE supplier_id=? AND number_key=?", (supplier_id, key)).fetchone()
+            if dup is not None:
+                raise DuplicateInvoiceError(
+                    f"duplicate supplier invoice: {number!r} is the same number as invoice {dup['invoice_number']!r} ({dup['id']}, {dup['status']}) "
+                    "from this supplier; revise that invoice instead of receiving it again"
+                )
+            rev = self._resolve_evidence(self.db.conn, project_id, evidence_hash)
+            self.require_invoice_source_integrity(supplier_id=supplier_id, evidence_document_id=rev["document_id"])
+            terms = self.audited_terms(supplier_id)
+            if due_date is not None:
+                due, terms_days = _date(due_date, "due_date"), None
+            else:
+                terms_days = terms["days"]
+                due = inv_date + _dt.timedelta(days=terms_days)
+            if due < inv_date:
+                raise APIntakeError(f"due date {due.isoformat()} is before the invoice date {inv_date.isoformat()}")
+            near = self._near_duplicates(self.db.conn, supplier_id=supplier_id, amount=amt, invoice_date=inv_date, number_key=key, other_than=None)
+            return {
+                "content": {
+                    "version": 1, "project_id": project_id, "supplier_id": supplier_id, "commitment_id": commitment_id,
+                    "invoice_number": number, "number_key": key, "invoice_date": inv_date.isoformat(),
+                    "due_date": due.isoformat(), "terms_days": terms_days, "amount": fmt(amt),
+                    "service_period_start": sp_start, "service_period_end": sp_end, "evidence_hash": rev["content_hash"],
+                    "evidence_document_id": rev["document_id"], "evidence_revision_id": rev["id"], "lines": clean,
+                },
+                "possible_duplicate": bool(near), "possible_duplicate_of": near,
+                "source_facts": {
+                    "project": project, "supplier": supplier, "commitment": commitment,
+                    "evidence": rev, "current_revision": self._current_revision(rev["document_id"]),
+                    "terms": terms,
+                    "supplier_invoices": self.db.query(
+                        "SELECT id, project_id, number_key, invoice_date, amount, status, evidence_document_id, version, content_hash "
+                        "FROM ap_invoices WHERE supplier_id=? ORDER BY id", (supplier_id,)),
+                },
+            }
 
     def receive_invoice(self, supplier_id: str, invoice_number: str, invoice_date: str, amount: Any, evidence_hash: str, actor: str, *,
                         project_id: str, commitment_id: str | None = None, due_date: str | None = None,
@@ -590,38 +696,21 @@ class Plugin:
         supplier and normalized number is refused (``DuplicateInvoiceError``); a near
         duplicate is accepted with ``possible_duplicate`` set."""
         who = _text(actor, "actor")
-        number, key = _invoice_number(invoice_number)
-        inv_date = _date(invoice_date, "invoice_date")
-        amt = _amount(amount, "invoice amount")
-        sp_start, sp_end = self._service_period(service_period_start, service_period_end)
         invoice_id = new_id("apinv")
-        with self.db.transaction() as conn:
-            self._project(project_id)
-            self._supplier(supplier_id)
-            commitment = self._commitment(commitment_id, project_id=project_id, supplier_id=supplier_id) if commitment_id is not None else None
-            clean = self._lines(lines, amount=amt, project_id=project_id, commitment=commitment)
-            dup = conn.execute("SELECT id, invoice_number, status FROM ap_invoices WHERE supplier_id=? AND number_key=?", (supplier_id, key)).fetchone()
-            if dup is not None:
-                raise DuplicateInvoiceError(
-                    f"duplicate supplier invoice: {number!r} is the same number as invoice {dup['invoice_number']!r} ({dup['id']}, {dup['status']}) "
-                    "from this supplier; revise that invoice instead of receiving it again"
-                )
-            rev = self._resolve_evidence(conn, project_id, evidence_hash)
-            if due_date is not None:
-                due, terms_days = _date(due_date, "due_date"), None
-            else:
-                terms_days = self.terms(supplier_id)
-                due = inv_date + _dt.timedelta(days=terms_days)
-            if due < inv_date:
-                raise APIntakeError(f"due date {due.isoformat()} is before the invoice date {inv_date.isoformat()}")
-            near = self._near_duplicates(conn, supplier_id=supplier_id, amount=amt, invoice_date=inv_date, number_key=key, other_than=None)
+        with self._preparation_transaction() as conn:
+            plan = self.receive_preflight(supplier_id, invoice_number, invoice_date, amount, evidence_hash,
+                                          project_id=project_id, commitment_id=commitment_id, due_date=due_date,
+                                          service_period_start=service_period_start, service_period_end=service_period_end, lines=lines)
+            content = plan["content"]
+            clean = content["lines"]
+            number, key = content["invoice_number"], content["number_key"]
+            terms_days = content["terms_days"]
+            sp_start, sp_end = content["service_period_start"], content["service_period_end"]
+            rev = plan["source_facts"]["evidence"]
+            near = plan["possible_duplicate_of"]
             now = utcnow_iso()
-            row = {
-                "id": invoice_id, "version": 1, "project_id": project_id, "supplier_id": supplier_id, "commitment_id": commitment_id,
-                "invoice_number": number, "number_key": key, "invoice_date": inv_date.isoformat(), "due_date": due.isoformat(), "terms_days": terms_days,
-                "amount": fmt(amt), "service_period_start": sp_start, "service_period_end": sp_end, "evidence_hash": rev["content_hash"],
-                "evidence_document_id": rev["document_id"], "evidence_revision_id": rev["id"], "lines_json": canonical_json(clean),
-            }
+            row = {**{key: value for key, value in content.items() if key != "lines"},
+                   "id": invoice_id, "lines_json": canonical_json(clean)}
             row["content_hash"] = self._content_hash(row)
             # audited first: the storage guard admits an invoice only with its audit entry
             self.audit.record(who, "ap_intake.invoice_received", INVOICE_SUBJECT, invoice_id, {
@@ -804,7 +893,7 @@ class Plugin:
         """Received, or matched to a bill that was voided or corrected since."""
         return inv["status"] == "received" or self._orphaned(inv)
 
-    def _integrity_problem(self, inv: dict[str, Any]) -> str | None:
+    def _content_integrity_problem(self, inv: dict[str, Any]) -> str | None:
         """Why the stored invoice is not the record the intake wrote (None when it is): its
         facts no longer hash to its content hash, or its duplicate flag disagrees with the
         invoices it was found to resemble."""
@@ -815,6 +904,236 @@ class Plugin:
             return (f"supplier invoice {inv['invoice_number']} ({inv['id']}) carries a possible-duplicate flag that disagrees with the invoices "
                     "it was found to resemble: its duplicate review was changed outside the intake")
         return None
+
+    def _integrity_problem(self, inv: dict[str, Any]) -> str | None:
+        """Expose full source failures to reads, close and export diagnostics."""
+        problem = self._content_integrity_problem(inv)
+        if problem:
+            return problem
+        try:
+            self.invoice_proof(inv["id"])
+        except RuntimeError:
+            return f"supplier invoice {inv['invoice_number']} ({inv['id']}) has content or lifecycle that differs from its audited source"
+        return None
+
+    def invoice_proof(self, invoice_id: str) -> dict[str, Any]:
+        """Verify a current invoice against its audited content and lifecycle.
+
+        This source check does not re-evaluate completed matching against today's
+        bill status. Legitimate later posting, revisions, reopening and corrections
+        retain their original receipts while current aggregate controls stay exact.
+        """
+        inv = self._row(invoice_id)
+        try:
+            if not self.audit.verify_chain()["ok"]:
+                raise ValueError("broken source audit")
+            if self._content_integrity_problem(inv):
+                raise ValueError("altered content")
+            events = self.db.query("SELECT * FROM audit_log WHERE entity_type='ap_invoice' AND entity_id=? ORDER BY seq", (invoice_id,))
+            born = [event for event in events if event["action"] == "ap_intake.invoice_received"]
+            if len(born) != 1:
+                raise ValueError("missing original receipt")
+            origin = loads(born[0]["payload_json"])
+            if (born[0]["actor"] != inv["created_by"] or any(origin.get(key) != inv[key] for key in
+                    ("project_id", "supplier_id", "commitment_id"))):
+                raise ValueError("altered source ownership")
+            versions = [event for event in events if event["action"] in ("ap_intake.invoice_revised", "ap_intake.match_reopened")]
+            if inv["version"] != len(versions) + 1 or any(loads(event["payload_json"]).get("version") != number
+                                                        for number, event in enumerate(versions, 2)):
+                raise ValueError("altered content version")
+            source = loads(versions[-1]["payload_json"]) if versions else origin
+            if (source.get("content_hash") != inv["content_hash"] or source.get("amount") != inv["amount"]
+                    or source.get("possible_duplicate") != inv["possible_duplicate"]):
+                raise ValueError("altered current source")
+            duplicate_source = next((loads(event["payload_json"]) for event in reversed([*born, *versions])
+                                     if "possible_duplicate_of" in loads(event["payload_json"])), origin)
+            if canonical_json(duplicate_source.get("possible_duplicate_of", [])) != inv["duplicate_of_json"]:
+                raise ValueError("altered duplicate source")
+            lifecycle = {"ap_intake.invoice_received": "received", "ap_intake.invoice_revised": "received",
+                         "ap_intake.match_reopened": "received", "ap_intake.invoice_matched": "matched",
+                         "ap_intake.invoice_rejected": "rejected"}
+            transitions = {None: {"received"}, "received": {"received", "matched", "rejected"},
+                           "matched": {"received"}, "rejected": set()}
+            status, source_version, source_hash, source_amount, latest_attempt = None, 0, None, None, None
+            duplicate_review, number_key = None, origin.get("number_key")
+            for event in events:
+                payload = loads(event["payload_json"])
+                if event["action"] == "ap_intake.match_computed":
+                    if payload.get("invoice_version") != source_version:
+                        raise ValueError("computation is not on its audited source version")
+                    latest_attempt = payload.get("attempt_id")
+                if event["action"] == "ap_intake.duplicate_flag_cleared":
+                    if payload.get("version") != source_version or payload.get("cleared_by") != event["actor"]:
+                        raise ValueError("duplicate review differs from its current source")
+                    duplicate_review = payload
+                if event["action"] in lifecycle:
+                    next_status = lifecycle[event["action"]]
+                    if next_status not in transitions[status]:
+                        raise ValueError("unsupported lifecycle")
+                    if event["action"] == "ap_intake.invoice_received":
+                        source_version = 1
+                        source_hash, source_amount = payload.get("content_hash"), payload.get("amount")
+                    elif event["action"] in ("ap_intake.invoice_revised", "ap_intake.match_reopened"):
+                        source_version += 1
+                        if payload.get("version") != source_version:
+                            raise ValueError("lifecycle version is not sequential")
+                        if event["action"] == "ap_intake.invoice_revised" and payload.get("previous_status") != status:
+                            raise ValueError("revision differs from its prior audited state")
+                        if event["action"] == "ap_intake.invoice_revised":
+                            changes = payload.get("changes") or {}
+                            revised_key = normalize_invoice_number(changes["invoice_number"]) if "invoice_number" in changes else number_key
+                            if "amount" in changes or "invoice_date" in changes or revised_key != number_key:
+                                duplicate_review = None
+                            number_key = revised_key
+                        source_hash, source_amount = payload.get("content_hash"), payload.get("amount")
+                        latest_attempt = None
+                    elif event["action"] == "ap_intake.invoice_matched":
+                        self.approval_proof(payload.get("approval_id"))
+                        historical = self.approvals.get(payload["approval_id"])
+                        bound = historical["manifest"]["bindings"]
+                        if (payload.get("invoice_version") != source_version or payload.get("attempt_id") != latest_attempt
+                                or historical["status"] != "consumed" or historical["subject_id"] != invoice_id
+                                or historical["consumed_by"] != event["actor"]
+                                or bound.get("invoice_version") != source_version or bound.get("invoice_hash") != source_hash
+                                or historical["manifest"]["amounts"].get("invoice_amount") != source_amount
+                                or payload.get("amount") != source_amount
+                                or payload.get("bill_id") != (bound.get("bill") or {}).get("id")
+                                or payload.get("commitment_id") != (bound.get("commitment") or {}).get("id")):
+                            raise ValueError("historical match differs from its consumed source")
+                    elif event["action"] == "ap_intake.invoice_rejected" and payload.get("version") != source_version:
+                        raise ValueError("rejection differs from its audited source version")
+                    status = next_status
+            if status != inv["status"]:
+                raise ValueError("altered current lifecycle")
+            expected_review = ((duplicate_review["cleared_by"], duplicate_review["cleared_at"], duplicate_review["reason"])
+                               if duplicate_review else (None, None, None))
+            if (inv["duplicate_cleared_by"], inv["duplicate_cleared_at"], inv["duplicate_clear_reason"]) != expected_review:
+                raise ValueError("duplicate review differs from its latest material revision")
+            if duplicate_review and canonical_json(duplicate_review.get("possible_duplicate_of")) != inv["duplicate_of_json"]:
+                raise ValueError("altered duplicate review pool")
+            historical_matches = [event for event in events if event["action"] == "ap_intake.invoice_matched"]
+            if historical_matches:
+                latest_match = historical_matches[-1]
+                matched = loads(latest_match["payload_json"])
+                if (inv["matched_by"] != latest_match["actor"] or inv["matched_bill_id"] != matched.get("bill_id")
+                        or inv["matched_commitment_id"] != matched.get("commitment_id")
+                        or inv["match_approval_id"] != matched.get("approval_id") or not inv["matched_at"]):
+                    raise ValueError("altered historical match attribution")
+                if "matched_at" in matched:
+                    if matched["matched_at"] != inv["matched_at"]:
+                        raise ValueError("altered matched timestamp")
+                else:
+                    matched_time = parse_iso(inv["matched_at"])
+                    if (matched_time.utcoffset() is None or matched_time > parse_iso(latest_match["ts"])
+                            or parse_iso(latest_match["ts"]) - matched_time > _dt.timedelta(seconds=1)):
+                        raise ValueError("invalid historical match timestamp")
+            elif any(inv[key] is not None for key in ("matched_by", "matched_at", "matched_bill_id", "matched_commitment_id", "match_approval_id")):
+                raise ValueError("unrecorded historical match attribution")
+            if status != "rejected" and any(inv[key] is not None for key in ("rejected_by", "rejected_at", "reject_reason")):
+                raise ValueError("unrecorded rejection attribution")
+            current_computations = [event for event in events if event["action"] == "ap_intake.match_computed"
+                                    and loads(event["payload_json"]).get("invoice_version") == inv["version"]]
+            if current_computations:
+                if loads(current_computations[-1]["payload_json"]).get("attempt_id") != inv["match_attempt_id"]:
+                    raise ValueError("current computation differs from latest audit")
+            elif inv["match_attempt_id"] is not None:
+                raise ValueError("unrecorded current computation")
+            if inv["match_attempt_id"] is not None:
+                attempt = self.db.one("SELECT * FROM ap_invoice_matches WHERE id=? AND invoice_id=?", (inv["match_attempt_id"], invoice_id))
+                computed = [event for event in events if event["action"] == "ap_intake.match_computed"
+                            and loads(event["payload_json"]).get("attempt_id") == inv["match_attempt_id"]]
+                if attempt is None or len(computed) != 1:
+                    raise ValueError("unrecorded match computation")
+                facts, payload = loads(attempt["result_json"]), loads(computed[0]["payload_json"])
+                if (attempt["invoice_version"] != inv["version"] or facts["invoice"] != {
+                        "id": inv["id"], "version": inv["version"], "content_hash": inv["content_hash"], "amount": inv["amount"]}
+                        or hash_json(facts) != attempt["result_hash"] or canonical_json(facts) != attempt["result_json"]
+                        or computed[0]["actor"] != attempt["computed_by"]
+                        or payload.get("result_hash") != attempt["result_hash"]
+                        or payload.get("invoice_version") != inv["version"]
+                        or payload.get("basis") != attempt["basis"] or facts["basis"] != attempt["basis"]
+                        or payload.get("status") != attempt["status"] or facts["status"] != attempt["status"]
+                        or payload.get("exceptions") != facts["exceptions"] or canonical_json(facts["exceptions"]) != attempt["exceptions_json"]
+                        or inv["match_status"] != attempt["status"] or inv["match_basis"] != attempt["basis"]
+                        or inv["match_exceptions_json"] != attempt["exceptions_json"]):
+                    raise ValueError("altered match computation")
+            elif inv["match_status"] is not None or inv["match_basis"] is not None or inv["match_exceptions_json"] != "[]":
+                raise ValueError("unrecorded current computation")
+            if status == "matched":
+                self.approval_proof(inv["match_approval_id"])
+                approval = self.approvals.get(inv["match_approval_id"])
+                bound = approval["manifest"]["bindings"]
+                matched = [event for event in events if event["action"] == "ap_intake.invoice_matched"
+                           and loads(event["payload_json"]).get("approval_id") == inv["match_approval_id"]]
+                if len(matched) != 1 or approval["status"] != "consumed" or approval["subject_id"] != invoice_id:
+                    raise ValueError("unrecorded current match")
+                payload = loads(matched[0]["payload_json"])
+                if (matched[0]["actor"] != inv["matched_by"] or approval["consumed_by"] != inv["matched_by"]
+                        or payload.get("invoice_version") != inv["version"] or payload.get("attempt_id") != inv["match_attempt_id"]
+                        or payload.get("bill_id") != inv["matched_bill_id"]
+                        or payload.get("commitment_id") != inv["matched_commitment_id"]
+                        or (bound.get("commitment") or {}).get("id") != inv["matched_commitment_id"]
+                        or (bound.get("bill") or {}).get("id") != inv["matched_bill_id"]
+                        or payload.get("basis") != inv["match_basis"] or payload.get("amount") != inv["amount"]
+                        or payload.get("due_date") != inv["due_date"] or bound.get("invoice_version") != inv["version"]
+                        or bound.get("invoice_hash") != inv["content_hash"] or bound.get("result_hash") != attempt["result_hash"]):
+                    raise ValueError("altered matched attribution")
+            elif status == "rejected":
+                rejected = [event for event in events if event["action"] == "ap_intake.invoice_rejected"]
+                if len(rejected) != 1:
+                    raise ValueError("unrecorded rejection")
+                payload = loads(rejected[0]["payload_json"])
+                if (rejected[0]["actor"] != inv["rejected_by"] or payload.get("reason") != inv["reject_reason"]
+                        or payload.get("rejected_at") != inv["rejected_at"] or payload.get("version") != inv["version"]):
+                    raise ValueError("altered rejection")
+            return inv
+        except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+            raise APIntakeError("A supplier invoice control source differs from its audited history") from exc
+
+    def require_invoice_source_integrity(self, *, supplier_id=None, commitment_id=None, evidence_document_id=None, all_matched=False) -> None:
+        """Validate contributors from audited inventory, including omitted rows.
+
+        Querying only currently matched/nonrejected rows would let tampering remove
+        an obligation or free evidence. Audit-backed inventory supplies the rows
+        that must still be present and honestly classified. Nothing is displayed.
+        """
+        with self.db._lock:
+            if not self.audit.verify_chain()["ok"]:
+                raise APIntakeError("The invoice control audit chain cannot be verified")
+            ids = set()
+            for inv in self.db.query("SELECT id,supplier_id,commitment_id,matched_commitment_id,evidence_document_id,status FROM ap_invoices"):
+                if ((supplier_id is not None and inv["supplier_id"] == supplier_id)
+                        or (commitment_id is not None and commitment_id in (inv["commitment_id"], inv["matched_commitment_id"]))
+                        or (evidence_document_id is not None and inv["evidence_document_id"] == evidence_document_id)
+                        or (all_matched and inv["status"] == "matched")):
+                    ids.add(inv["id"])
+            for event in self.db.query("SELECT entity_id,action,payload_json FROM audit_log WHERE entity_type='ap_invoice' AND action IN ('ap_intake.invoice_received','ap_intake.invoice_matched','ap_intake.invoice_revised') ORDER BY seq"):
+                payload = loads(event["payload_json"])
+                revision_id = payload.get("evidence_revision_id") or (payload.get("changes") or {}).get("evidence_revision_id")
+                evidence_revision = self.db.one("SELECT document_id FROM document_revisions WHERE id=?", (revision_id,))
+                if ((supplier_id is not None and payload.get("supplier_id") == supplier_id)
+                        or (commitment_id is not None and payload.get("commitment_id") == commitment_id)
+                        or (evidence_document_id is not None and evidence_revision is not None
+                            and evidence_revision["document_id"] == evidence_document_id)
+                        or (all_matched and event["action"] == "ap_intake.invoice_matched")):
+                    ids.add(event["entity_id"])
+            for invoice_id in sorted(ids):
+                self.invoice_proof(invoice_id)
+
+    def _source_integrity_checks(self, *, project_id: str | None = None) -> list[dict[str, Any]]:
+        """Keep deleted, unreceipted invoice sources visible to diagnostics."""
+        rows = {row["id"]: row for row in self.db.query("SELECT * FROM ap_invoices")}
+        ids = {invoice_id for invoice_id, row in rows.items() if project_id is None or row["project_id"] == project_id}
+        for event in self.db.query("SELECT entity_id,payload_json FROM audit_log WHERE action='ap_intake.invoice_received' AND entity_type='ap_invoice' ORDER BY seq"):
+            if project_id is None or loads(event["payload_json"]).get("project_id") == project_id:
+                ids.add(event["entity_id"])
+        result = []
+        for invoice_id in sorted(ids):
+            problem = (self._integrity_problem(rows[invoice_id]) if invoice_id in rows else
+                       "A supplier invoice recorded by the audit is missing from the working records")
+            result.append({"invoice_id": invoice_id, "ok": problem is None,
+                           "detail": problem or "Current invoice source agrees with its audited lifecycle"})
+        return result
 
     def _attached_bill(self, inv: dict[str, Any]) -> dict[str, Any] | None:
         """The live (draft, approved, posted or paid) bill that carries this invoice, if any.
@@ -891,6 +1210,7 @@ class Plugin:
         return {"id": c["id"], "version": c["version"], "status": c["status"], "executed_amount": c["executed_amount"]}
 
     def _invoiced_to_date(self, commitment_id: str, *, other_than: str) -> Decimal:
+        self.require_invoice_source_integrity(commitment_id=commitment_id)
         rows = self.db.query(
             """SELECT i.amount FROM ap_invoices i LEFT JOIN bills b ON b.id = i.matched_bill_id
                WHERE i.status = 'matched' AND i.matched_commitment_id = ? AND i.id != ? AND COALESCE(b.status, '') NOT IN ('void','corrected')""",
@@ -899,6 +1219,7 @@ class Plugin:
         return total(r["amount"] for r in rows) if rows else ZERO
 
     def _equipment_invoiced(self, *, other_than: str) -> dict[str, str]:
+        self.require_invoice_source_integrity(all_matched=True)
         out: dict[str, str] = {}
         for r in self.db.query("SELECT id, invoice_number, lines_json FROM ap_invoices WHERE status='matched' AND match_basis=? AND id != ?",
                                (BASIS_PURCHASE_ORDER, other_than)):
@@ -1082,6 +1403,38 @@ class Plugin:
             raise APIntakeError(f"supplier invoice {inv['id']} changed concurrently; retry")
         return self._row(inv["id"])
 
+    def match_preflight(self, invoice_id: str) -> dict[str, Any]:
+        """Compute the next recorded match, including any reopen, without writes.
+
+        A reopen is represented as a proposed next invoice version only. The real
+        ``match`` recalculates under its write transaction and records the unchanged
+        audited reopen/computation sequence.
+        """
+        with self.db._lock:
+            stored = self._row(invoice_id)
+            self.invoice_proof(invoice_id)
+            tampered = self._integrity_problem(stored)
+            if tampered:
+                raise APIntakeError(f"{tampered}; it cannot be matched")
+            reason = self._reopen_reason(stored)
+            inv = dict(stored)
+            if reason:
+                inv["version"] += 1
+                inv["content_hash"] = self._content_hash(inv)
+                inv["status"] = "received"
+                inv["match_status"] = inv["match_basis"] = inv["match_attempt_id"] = None
+                inv["match_exceptions_json"] = "[]"
+            if inv["status"] == "matched":
+                if inv["match_basis"] == BASIS_PURCHASE_ORDER and not inv["matched_bill_id"]:
+                    raise APIntakeError(f"supplier invoice {inv['invoice_number']} is matched to its purchase-order receipts; it is linked to a bill once a "
+                                        "certified bill of the purchase order is due exactly its amount (run match again then)")
+                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is already matched to bill {inv['matched_bill_id']}; revise it if the supplier replaced it")
+            if inv["status"] == "rejected":
+                raise APIntakeError(f"supplier invoice {inv['invoice_number']} was rejected")
+            facts = self._facts(inv)
+            return {"invoice_id": invoice_id, "facts": facts, "result_hash": hash_json(facts),
+                    "reopen_reason": reason, "source_facts": {"invoice": stored, "match": facts}}
+
     def match(self, invoice_id: str, actor: str) -> dict[str, Any]:
         """Compute the 3-way match against current state and record it (``ap_invoice_matches``).
         Returns the computation: ``status`` matched | exception, ``exceptions`` codes with
@@ -1091,21 +1444,12 @@ class Plugin:
         once that bill is certified, is reopened first (see ``_reopen_reason``).  An invoice
         whose stored facts no longer hash to its content hash is refused."""
         who = _text(actor, "actor")
-        with self.db.transaction() as conn:
-            inv = self._row(invoice_id)
-            tampered = self._integrity_problem(inv)
-            if tampered:
-                raise APIntakeError(f"{tampered}; it cannot be matched")
-            reason = self._reopen_reason(inv)
+        with self._preparation_transaction() as conn:
+            plan = self.match_preflight(invoice_id)
+            inv = plan["source_facts"]["invoice"]
+            reason = plan["reopen_reason"]
             if reason:
                 inv = self._reopen(conn, inv, who, reason)
-            if inv["status"] == "matched":
-                if inv["match_basis"] == BASIS_PURCHASE_ORDER and not inv["matched_bill_id"]:
-                    raise APIntakeError(f"supplier invoice {inv['invoice_number']} is matched to its purchase-order receipts; it is linked to a bill once a "
-                                        "certified bill of the purchase order is due exactly its amount (run match again then)")
-                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is already matched to bill {inv['matched_bill_id']}; revise it if the supplier replaced it")
-            if inv["status"] == "rejected":
-                raise APIntakeError(f"supplier invoice {inv['invoice_number']} was rejected")
             facts = self._facts(inv)
             attempt_id = new_id("apm")
             result_hash = hash_json(facts)
@@ -1128,7 +1472,92 @@ class Plugin:
 
     # ---- approval-bound operation: ap_intake.match_invoice ---------------------------------------- #
 
+    def approval_proof(self, approval_id: str) -> dict[str, Any]:
+        """Verify the fixed match authorization against its original audit history.
+
+        The returned request proof stays stable after a legitimate decision or
+        consumption. Current lifecycle is still checked on every read, including
+        receipt replay, so dropping SQLite triggers cannot resurrect authority.
+        Historical owner/controller requests retain their original acting role.
+        """
+        with self.db._lock:
+            if not self.audit.verify_chain()["ok"]:
+                raise APIntakeError("The match authorization audit chain cannot be verified")
+            ap = self.approvals.get(approval_id)
+            manifest = ap["manifest"]
+            try:
+                expiry, original = parse_iso(ap["expires_at"]), parse_iso(manifest["expires_at"])
+                if expiry.utcoffset() is None or original.utcoffset() is None or expiry > original:
+                    raise ValueError("invalid deadline")
+                if (ap["operation"] != OP_MATCH or ap["subject_type"] != INVOICE_SUBJECT
+                        or manifest.get("operation") != OP_MATCH
+                        or manifest.get("subject") != {"type": INVOICE_SUBJECT, "id": ap["subject_id"]}
+                        or hash_json(manifest) != ap["manifest_hash"] or material_hash(manifest) != ap["material_hash"]
+                        or manifest.get("actor_role") != ap["actor_role"] or manifest.get("nonce") != ap["nonce"]
+                        or manifest.get("policy_version") != ap["policy_version"]):
+                    raise ValueError("altered immutable request")
+                history = self.db.query("SELECT * FROM audit_log WHERE entity_type='approval' AND entity_id=? ORDER BY seq", (approval_id,))
+                lifecycle = {"approval.requested": "pending", "approval.granted": "granted", "approval.consumed": "consumed",
+                             "approval.expired": "expired", "approval.invalidated": "invalidated"}
+                transitions = {None: {"pending"}, "pending": {"granted", "expired", "invalidated"},
+                               "granted": {"consumed", "expired", "invalidated"}, "consumed": set(),
+                               "expired": {"invalidated"}, "invalidated": {"invalidated"}}
+                events = [event for event in history if event["action"] in lifecycle]
+                status, request, grants, consumed = None, None, [], []
+                for event in events:
+                    next_status = lifecycle[event["action"]]
+                    if next_status not in transitions[status]:
+                        raise ValueError("unsupported lifecycle")
+                    status = next_status
+                    payload = loads(event["payload_json"])
+                    if event["action"] == "approval.requested":
+                        request = event
+                        if (event["actor"] != ap["requested_by"] or payload != {
+                                "operation": OP_MATCH, "subject": manifest["subject"], "manifest_hash": ap["manifest_hash"]}):
+                            raise ValueError("altered original request")
+                    elif event["action"] in ("approval.granted", "approval.consumed"):
+                        actor = ap["approver"] if event["action"] == "approval.granted" else ap["consumed_by"]
+                        if event["actor"] != actor or payload != {"operation": OP_MATCH, "material_hash": ap["material_hash"]}:
+                            raise ValueError("altered decision")
+                        (grants if event["action"] == "approval.granted" else consumed).append(event)
+                if request is None or status != ap["status"]:
+                    raise ValueError("altered current lifecycle")
+                if bool(grants) != bool(ap["approver"] and ap["granted_at"]):
+                    raise ValueError("altered grant attribution")
+                if bool(consumed) != bool(ap["consumed_by"] and ap["consumed_at"]):
+                    raise ValueError("altered consumption attribution")
+                if not grants and (ap["approver"] is not None or ap["granted_at"] is not None):
+                    raise ValueError("unrecorded grant attribution")
+                if not consumed and (ap["consumed_by"] is not None or ap["consumed_at"] is not None):
+                    raise ValueError("unrecorded consumption attribution")
+                if status == "invalidated":
+                    terminal = events[-1]
+                    payload = loads(terminal["payload_json"])
+                    if "reason" not in payload or ap["invalidated_reason"] is None:
+                        raise ValueError("missing invalidation reason")
+                    # consume's historical material-change audit uses a general
+                    # reason plus a diff; ordinary invalidation records it exactly.
+                    if "diff" in payload:
+                        if (payload["reason"] != "material change" or type(payload["diff"]) is not str
+                                or ap["invalidated_reason"] != f"subject changed after approval: {payload['diff']}"):
+                            raise ValueError("altered material-change invalidation")
+                    elif payload["reason"] != ap["invalidated_reason"]:
+                        raise ValueError("altered invalidation reason")
+                elif ap["invalidated_reason"] is not None:
+                    raise ValueError("unrecorded invalidation reason")
+                for field in ("requested_at", "granted_at", "consumed_at"):
+                    if ap.get(field) is not None and parse_iso(ap[field]).utcoffset() is None:
+                        raise ValueError("invalid lifecycle timestamp")
+            except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+                raise APIntakeError("The match authorization differs from its audited source") from exc
+            return {"auditSeq": request["seq"], "auditHash": request["entry_hash"], "manifestHash": ap["manifest_hash"],
+                    "materialHash": ap["material_hash"], "requestedBy": ap["requested_by"], "requestedAt": ap["requested_at"]}
+
     def _eligibility(self, inv: dict[str, Any]) -> tuple[dict[str, Any], dict[str, Any] | None, list[str]]:
+        try:
+            self.invoice_proof(inv["id"])
+        except APIntakeError as exc:
+            raise InvoiceIneligible("The supplier invoice's audited source cannot be verified") from exc
         problems: list[str] = []
         tampered = self._integrity_problem(inv)
         if tampered:
@@ -1208,7 +1637,7 @@ class Plugin:
             self.audit.record(actor, "ap_intake.invoice_matched", INVOICE_SUBJECT, subject_id, {
                 "approval_id": approval_id, "attempt_id": attempt["id"], "invoice_version": inv["version"], "basis": facts["basis"], "bill_id": bill_id,
                 "receipts": [r["receipt_id"] for r in facts["receipts"]], "commitment_id": (facts["commitment"] or {}).get("id"),
-                "amount": inv["amount"], "due_date": inv["due_date"], "approvals_invalidated": invalidated,
+                "amount": inv["amount"], "due_date": inv["due_date"], "approvals_invalidated": invalidated, "matched_at": now,
             })
             # the invoice record is matched to the bill first: the bill copies its link from this record
             cur = conn.execute(
@@ -1243,7 +1672,7 @@ class Plugin:
                 "exceptions": sum(1 for i in invoices if i["status"] == "received" and i["match_status"] == "exception"),
                 "possible_duplicates": sum(1 for i in invoices if i["status"] == "received" and i["duplicate_blocking"]),
                 "overdue_unmatched": sum(1 for i in invoices if i["overdue"]),
-                "integrity_failures": sum(1 for i in invoices if i["integrity_problem"]),
+                "integrity_failures": sum(1 for check in self._source_integrity_checks(project_id=project_id) if not check["ok"]),
                 "open_amount": fmt(total(i["amount"] for i in unmatched)) if unmatched else "0.00",
             },
         }
@@ -1275,7 +1704,7 @@ class Plugin:
         detail = (f"{len(late)} unmatched supplier invoice(s) past due by {end}: "
                   + ", ".join(f"{r['invoice_number']} ({r['id']}, due {r['due_date']}, {why(r)})" for r in late)
                   if late else f"no unmatched supplier invoice is past due by {end}")
-        tampered = [p for p in (self._integrity_problem(r) for r in self.db.query("SELECT * FROM ap_invoices ORDER BY created_at, id")) if p]
+        tampered = [check["detail"] for check in self._source_integrity_checks() if not check["ok"]]
         exceptions = self.db.scalar("SELECT COUNT(*) FROM ap_invoices WHERE status='received' AND match_status='exception'") or 0
         duplicates = self.db.scalar("SELECT COUNT(*) FROM ap_invoices WHERE status='received' AND possible_duplicate=1 AND duplicate_cleared_at IS NULL") or 0
         return [
@@ -1288,8 +1717,10 @@ class Plugin:
         ]
 
     def audit_export(self) -> dict[str, Any]:
+        invoices = self.db.query("SELECT * FROM ap_invoices ORDER BY created_at, id")
         return {
-            "invoices": self.db.query("SELECT * FROM ap_invoices ORDER BY created_at, id"),
+            "invoices": invoices,
             "match_computations": self.db.query("SELECT * FROM ap_invoice_matches ORDER BY computed_at, id"),
             "supplier_terms": self.db.query("SELECT * FROM ap_supplier_terms ORDER BY supplier_id"),
+            "source_integrity": self._source_integrity_checks(),
         }

@@ -1,11 +1,12 @@
 import { sumCents } from '../copy/format';
 import type {
   ActionOutcome, APAction, Bill, Collection, Envelope, Packet, Persona, Preflight, Problem,
-  Records, Session, Workspace,
+  Invoice, MatchPacket, Preparation, Records, Session, Workspace,
 } from './types';
 
 const prefix = '/api/ap-practice/v1';
-const supportedActions: APAction[] = ['bill.requestApproval', 'bill.approve', 'bill.post'];
+const supportedActions: APAction[] = ['bill.requestApproval', 'bill.approve', 'bill.post', 'bill.prepare',
+  'invoice.receive', 'invoice.computeMatch', 'invoice.requestMatchApproval', 'invoice.approveMatch', 'invoice.executeMatch'];
 const pendingReads = new Set<AbortController>();
 export function abortScopedReads() {
   for (const controller of pendingReads) controller.abort();
@@ -53,20 +54,31 @@ function person(raw: unknown) { strings(object(raw), ['id', 'displayName']); }
 function period(raw: unknown) { strings(object(raw), ['id', 'name', 'startDate', 'endDate', 'status']); }
 function problems(raw: unknown) {
   if (!Array.isArray(raw)) throw unreadable();
-  for (const item of raw) { const value = object(item); strings(value, ['code', 'message']); nullableStrings(value, ['target', 'fix']); }
+  for (const item of raw) {
+    const value = object(item); strings(value, ['code', 'message']); nullableStrings(value, ['target']);
+    if (value.fix !== undefined && value.fix !== null && typeof value.fix !== 'string') throw unreadable();
+  }
 }
 function checks(raw: unknown) {
   problems(raw);
   for (const item of raw as unknown[]) {
     const check = object(item);
-    if (check.status !== 'passed' && check.status !== 'blocked') throw unreadable();
+    if (check.status !== 'passed' && check.status !== 'blocked' && check.status !== 'warning') throw unreadable();
   }
 }
-function effects(raw: unknown, allowed: boolean) {
+function effects(raw: unknown, allowed: boolean, action: APAction) {
   const value = object(raw);
-  strings(value, ['billStatus']); integers(value, ['workingLedgerJournalDelta', 'apPayableDeltaCents']);
-  if (allowed) integers(value, ['amountDueCents', 'retainageCents']);
-  else for (const field of ['amountDueCents', 'retainageCents']) if (value[field] !== undefined && !Number.isSafeInteger(value[field])) throw unreadable();
+  integers(value, ['workingLedgerJournalDelta', 'apPayableDeltaCents']);
+  if (['bill.requestApproval', 'bill.approve', 'bill.post'].includes(action)) {
+    strings(value, ['billStatus']);
+    if (allowed) integers(value, ['amountDueCents', 'retainageCents']);
+  } else {
+    nullableStrings(value, ['billStatus', 'invoiceStatus', 'approvalStatus', 'matchStatus']);
+    if (allowed) integers(value, action === 'bill.prepare' ? ['amountDueCents', 'retainageCents', 'thisPeriodCents'] : ['amountCents']);
+    if (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || array(value, 'journalPreview').length !== 0) throw unreadable();
+    if (array(value, 'matchExceptionCodes').some(code => typeof code !== 'string') || typeof value.possibleDuplicate !== 'boolean' || typeof value.billLinked !== 'boolean') throw unreadable();
+  }
+  for (const field of ['amountDueCents', 'retainageCents', 'amountCents', 'thisPeriodCents']) if (value[field] !== undefined && !Number.isSafeInteger(value[field])) throw unreadable();
   if (value.externalAccounting !== 'unavailable' || value.payment !== 'not_started') throw unreadable();
   for (const item of array(value, 'journalPreview')) {
     const journal = object(item); strings(journal, ['periodId', 'description']);
@@ -108,6 +120,31 @@ function bill(raw: unknown) {
   if (array(value, 'availableActions').some(action => !supportedActions.includes(action as APAction))) throw unreadable();
   problems(value.blockedReasons);
 }
+function actions(value: ObjectValue) {
+  if (array(value, 'availableActions').some(action => !supportedActions.includes(action as APAction))) throw unreadable();
+  problems(value.blockedReasons);
+}
+function evidence(raw: unknown) {
+  const value = object(raw); strings(value, ['documentId', 'revisionId', 'title']); integers(value, ['revision']);
+  if (typeof value.isCurrent !== 'boolean') throw unreadable();
+}
+function invoice(raw: unknown) {
+  const value = object(raw);
+  strings(value, ['id', 'version', 'projectId', 'projectName', 'supplierId', 'supplierName', 'invoiceNumber', 'invoiceDate', 'dueDate', 'status']);
+  nullableStrings(value, ['commitmentId', 'commitmentTitle', 'matchApprovalId']); integers(value, ['amountCents', 'invoiceVersion']); evidence(value.evidence);
+  if (typeof value.possibleDuplicate !== 'boolean' || typeof value.duplicateBlocking !== 'boolean') throw unreadable();
+  if (value.match !== null) {
+    const match = object(value.match); strings(match, ['status', 'basis', 'attemptId']); nullableStrings(match, ['billId']);
+    for (const item of array(match, 'exceptions')) strings(object(item), ['code', 'message']);
+  }
+  actions(value);
+}
+function matchApproval(raw: unknown) {
+  const value = object(raw);
+  strings(value, ['id', 'approvalId', 'version', 'projectId', 'projectName', 'invoiceId', 'invoiceNumber', 'supplierName', 'status', 'effectiveStatus', 'requestedAt', 'expiresAt']);
+  nullableStrings(value, ['approvedAt']); integers(value, ['amountCents']); person(value.requestedBy);
+  if (value.approvedBy !== null) person(value.approvedBy);
+}
 function record(raw: unknown, collection: Collection) {
   const value = object(raw);
   if (collection === 'projects') {
@@ -123,10 +160,15 @@ function record(raw: unknown, collection: Collection) {
     strings(value, ['id', 'version', 'billId', 'projectId', 'projectName', 'subjectLabel', 'status', 'effectiveStatus', 'requestedAt', 'expiresAt']);
     integers(value, ['amountDueCents']); nullableStrings(value, ['approvedAt']); person(value.requestedBy);
     if (value.approvedBy !== null) person(value.approvedBy);
-  } else {
+  } else if (collection === 'posting-queue') {
     strings(value, ['billId', 'version', 'projectId', 'supplierName', 'commitmentTitle', 'businessApprovalId', 'approvedAt', 'expiresAt']);
     integers(value, ['sequence', 'amountDueCents']); period(value.certificationPeriod); person(value.approvedBy);
     if (typeof value.ready !== 'boolean') throw unreadable(); problems(value.blockedReasons);
+  } else if (collection === 'invoices') invoice(value);
+  else if (collection === 'match-approvals') matchApproval(value);
+  else {
+    strings(value, ['id', 'projectId', 'status']); evidence(value);
+    if (typeof value.available !== 'boolean') throw unreadable();
   }
 }
 export class APError extends Error {
@@ -214,15 +256,38 @@ export async function readCollection<K extends Collection>(collection: K, signal
   return rows;
 }
 export async function loadWorkspace(signal?: AbortSignal): Promise<Workspace> {
-  const [projects, commitments, bills, approvals, postingQueue] = await Promise.all([
+  const [projects, commitments, bills, approvals, postingQueue, invoices, invoiceEvidence, matchApprovals] = await Promise.all([
     readCollection('projects', signal), readCollection('commitments', signal), readCollection('bills', signal),
     readCollection('approvals', signal), readCollection('posting-queue', signal),
+    readCollection('invoices', signal), readCollection('invoice-evidence', signal), readCollection('match-approvals', signal),
   ]);
   for (const project of projects) {
     sumCents(commitments.filter(row => row.projectId === project.id).map(row => row.executedAmountCents));
     sumCents(bills.filter(row => row.projectId === project.id).map(row => row.currentDueCents));
+    sumCents(invoices.filter(row => row.projectId === project.id && row.status !== 'rejected').map(row => row.amountCents));
   }
-  return { projects, commitments, bills, approvals, postingQueue, loadedAt: new Date() };
+  return { projects, commitments, bills, approvals, postingQueue, invoices, invoiceEvidence, matchApprovals, loadedAt: new Date() };
+}
+export async function readPreparation(id: string, signal?: AbortSignal): Promise<Preparation> {
+  const value = provenance(await request(`/commitments/${encodeURIComponent(id)}/preparation`, { signal }));
+  strings(value, ['id', 'version', 'projectId', 'projectName', 'commitmentTitle', 'supplierId', 'supplierName', 'status']); integers(value, ['retainageRateMicros']);
+  for (const item of array(value, 'lines')) {
+    const line = object(item); strings(line, ['sovLineId', 'description', 'costCode']); integers(line, ['lineNo', 'scheduledCents', 'priorInstalledCents']);
+  }
+  for (const item of array(value, 'periods')) period(item);
+  if (value.priorBill !== null) { const prior = object(value.priorBill); strings(prior, ['id', 'status']); integers(prior, ['sequence']); }
+  actions(value); return value as unknown as Preparation;
+}
+export async function readInvoice(id: string, signal?: AbortSignal): Promise<Invoice> {
+  const value = provenance(await request(`/invoices/${encodeURIComponent(id)}`, { signal })); invoice(value);
+  return value as unknown as Invoice;
+}
+export async function readMatchPacket(id: string, signal?: AbortSignal): Promise<MatchPacket> {
+  const value = provenance(await request(`/match-approvals/${encodeURIComponent(id)}/packet`, { signal }));
+  matchApproval(value); invoice(value.invoice); object(value.boundFacts); object(value.currentFacts); changes(value.changes); actions(value);
+  const effect = object(value.effect);
+  if (effect.invoiceStatus !== 'matched' || typeof effect.billLinked !== 'boolean' || effect.workingLedgerJournalDelta !== 0 || effect.apPayableDeltaCents !== 0) throw unreadable();
+  return value as unknown as MatchPacket;
 }
 export async function readBill(id: string, signal?: AbortSignal): Promise<Bill> {
   const value = provenance(await request(`/bills/${encodeURIComponent(id)}`, { signal })); bill(value);
@@ -239,15 +304,21 @@ export async function readPacket(id: string, signal?: AbortSignal): Promise<Pack
 }
 export function actionPath(action: APAction, id: string) {
   const encoded = encodeURIComponent(id);
-  return action === 'bill.requestApproval' ? `/bills/${encoded}/request-approval`
-    : action === 'bill.approve' ? `/approvals/${encoded}/approve` : `/bills/${encoded}/post`;
+  const routes: Record<APAction, string> = {
+    'bill.requestApproval': `/bills/${encoded}/request-approval`, 'bill.approve': `/approvals/${encoded}/approve`,
+    'bill.post': `/bills/${encoded}/post`, 'bill.prepare': `/commitments/${encoded}/prepare-bill`,
+    'invoice.receive': `/commitments/${encoded}/receive-invoice`, 'invoice.computeMatch': `/invoices/${encoded}/compute-match`,
+    'invoice.requestMatchApproval': `/invoices/${encoded}/request-match-approval`,
+    'invoice.approveMatch': `/match-approvals/${encoded}/approve`, 'invoice.executeMatch': `/match-approvals/${encoded}/execute`,
+  };
+  return routes[action];
 }
 export async function preflight(action: APAction, id: string, body: ObjectValue, csrf: string): Promise<Preflight> {
   const value = provenance(await request(actionPath(action, id) + ':preflight', { method: 'POST', csrf, body }));
   strings(value, ['action', 'resourceId', 'resourceVersion']); checks(value.checks); changes(value.changes);
   if (value.action !== action || value.resourceId !== id || typeof value.allowed !== 'boolean' ||
       (value.allowed ? typeof value.fingerprint !== 'string' || !value.fingerprint : value.fingerprint !== null)) throw unreadable();
-  effects(value.safeEffects, value.allowed);
+  effects(value.safeEffects, value.allowed, action);
   return value as unknown as Preflight;
 }
 export async function applyAction(action: APAction, id: string, body: ObjectValue, csrf: string, version: string, repeatabilityId: string): Promise<ActionOutcome> {

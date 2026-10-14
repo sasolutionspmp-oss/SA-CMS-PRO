@@ -313,7 +313,7 @@ try {
       await page.getByRole('dialog').getByRole('link', { name: 'Home', exact: true }).click();
       await page.getByRole('heading', { name: 'Books', level: 1, exact: true }).waitFor();
     }
-    for (const collection of ['projects', 'commitments', 'bills', 'approvals', 'posting-queue']) expectHTTP('GET', prefix + '/' + collection, 401);
+    for (const collection of ['projects', 'commitments', 'bills', 'approvals', 'posting-queue', 'invoices', 'invoice-evidence', 'match-approvals']) expectHTTP('GET', prefix + '/' + collection, 401);
     await context.clearCookies();
     await page.getByRole('button', { name: 'Refresh scoped records', exact: true }).click();
     await page.getByRole('heading', { name: 'Start a practice session', level: 1, exact: true }).waitFor();

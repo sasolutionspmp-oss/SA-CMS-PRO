@@ -60,7 +60,7 @@ class APPracticeSessionTests(unittest.TestCase):
 
     def test_only_fixed_personas_can_be_selected_and_safe_options_do_not_mutate_repository(self):
         options = self.sessions.personas()
-        self.assertEqual({option["personaId"] for option in options}, {"accountant", "pm"})
+        self.assertEqual({option["personaId"] for option in options}, {"accountant", "pm", "reviewer"})
         self.assertTrue(all(set(option) == {"personaId", "displayName", "synthetic"} for option in options))
         options[0]["personaId"] = "owner"
         self.assertNotIn("owner", {option["personaId"] for option in self.sessions.personas()})

@@ -45,6 +45,44 @@ def register_api_receipts_schema() -> int:
     return register_schema_version(AP_RECEIPTS_SCHEMA_NAME, AP_RECEIPTS_SCHEMA_STATEMENTS)
 
 
+AP_PREPARATION_ACTIONS = (
+    "bill.prepare", "invoice.receive", "invoice.computeMatch",
+    "invoice.requestMatchApproval", "invoice.approveMatch", "invoice.executeMatch",
+)
+AP_KNOWN_ACTIONS = frozenset(("bill.requestApproval", "bill.approve", "bill.post", *AP_PREPARATION_ACTIONS))
+AP_PREPARATION_RECEIPTS_SCHEMA_NAME = "ap_practice_preparation_action_receipts"
+AP_PREPARATION_RECEIPTS_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER ap_action_receipts_insert",
+    "DROP TRIGGER ap_action_receipts_no_update",
+    "DROP TRIGGER ap_action_receipts_no_delete",
+    """CREATE TABLE ap_action_receipts_expanded (
+        id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL,
+        canonical_person_id TEXT NOT NULL REFERENCES people_persons(id), actor_login TEXT NOT NULL,
+        repeatability_uuid TEXT NOT NULL, contract_version TEXT NOT NULL,
+        fixed_action TEXT NOT NULL CHECK(fixed_action IN (
+            'bill.requestApproval','bill.approve','bill.post','bill.prepare','invoice.receive',
+            'invoice.computeMatch','invoice.requestMatchApproval','invoice.approveMatch','invoice.executeMatch')),
+        resource_id TEXT NOT NULL, binding_json TEXT NOT NULL, outcome TEXT NOT NULL CHECK(outcome IN ('success','refused')),
+        http_status INTEGER NOT NULL, result_json TEXT NOT NULL, source_json TEXT NOT NULL,
+        created_at TEXT NOT NULL, receipt_hash TEXT NOT NULL,
+        UNIQUE(canonical_person_id,repeatability_uuid)
+    )""",
+    "INSERT INTO ap_action_receipts_expanded SELECT * FROM ap_action_receipts",
+    "DROP TABLE ap_action_receipts",
+    "ALTER TABLE ap_action_receipts_expanded RENAME TO ap_action_receipts",
+    *AP_RECEIPTS_SCHEMA_STATEMENTS[1:],
+]
+
+
+def register_api_preparation_receipts_schema() -> int:
+    """Expand only the fixed action set; preserve every existing receipt byte.
+
+    The original named schema and guard text remain unchanged. No columns are
+    added to old rows, because doing so would change their original row hashes.
+    """
+    return register_schema_version(AP_PREPARATION_RECEIPTS_SCHEMA_NAME, AP_PREPARATION_RECEIPTS_SCHEMA_STATEMENTS)
+
+
 class APIReceiptIntegrityError(RuntimeError):
     """Receipt metadata is missing, counterfeit, or inconsistent with its audit."""
 
@@ -87,7 +125,8 @@ class APIActionReceipts:
                              and row["source_json"] == canonical_json(loads(row["source_json"])))
             except (TypeError, ValueError, KeyError):
                 raise APIReceiptIntegrityError("AP action receipt contains malformed facts") from None
-            if (not canonical or row["workspace_id"] != workspace_id or row["receipt_hash"] != expected
+            if (not canonical or row["fixed_action"] not in AP_KNOWN_ACTIONS
+                    or row["workspace_id"] != workspace_id or row["receipt_hash"] != expected
                     or payload != {"receipt_hash": expected, "canonical_person_id": row["canonical_person_id"],
                                    "fixed_action": row["fixed_action"], "resource_id": row["resource_id"], "outcome": row["outcome"]}
                     or event["actor"] != row["actor_login"]):
@@ -110,6 +149,8 @@ class APIActionReceipts:
                result: dict[str, Any], source: dict[str, Any]) -> dict[str, Any]:
         if not self.db.in_transaction:
             raise RuntimeError("AP action receipts must join the transaction committing their action")
+        if action not in AP_KNOWN_ACTIONS:
+            raise APIReceiptIntegrityError("This AP action has no fixed receipt contract")
         self.db.require_practice_mode()
         self.verify_integrity()
         row = {"id": new_id("api"), "workspace_id": self.db.mode_status()["workspace_id"],

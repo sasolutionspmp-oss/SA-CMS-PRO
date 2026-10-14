@@ -335,7 +335,7 @@ class APActionRunner:
         if not checks[0]["ok"]:
             return checks
         try:
-            for row in self.cipher.db.query("SELECT * FROM ap_action_receipts ORDER BY id"):
+            for row in self.cipher.db.query("SELECT * FROM ap_action_receipts WHERE fixed_action IN (?,?,?) ORDER BY id", tuple(sorted(ACTIONS))):
                 self._verify_source(row)
         except Exception:
             return [{"ok": False, "code": "ap_action_sources_integrity", "message": "AP action receipts have inconsistent domain source proof"}]
@@ -349,4 +349,4 @@ class APActionRunner:
         # Local audit export is an owner diagnostic.  HTTP presenters never
         # expose these review bindings or private domain source identifiers.
         return {"integrity": self.integrity_checks(),
-                "records": self.cipher.db.query("SELECT * FROM ap_action_receipts ORDER BY created_at,id")}
+                "records": self.cipher.db.query("SELECT * FROM ap_action_receipts WHERE fixed_action IN (?,?,?) ORDER BY created_at,id", tuple(sorted(ACTIONS)))}

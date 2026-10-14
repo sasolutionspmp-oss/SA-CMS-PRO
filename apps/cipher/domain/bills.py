@@ -999,34 +999,27 @@ class Bills:
         row = self.db.one("SELECT * FROM bills WHERE commitment_id=? AND status NOT IN ('void','corrected') ORDER BY sequence DESC LIMIT 1", (commitment_id,))
         return self.get(row["id"]) if row else None
 
-    def certify(
-        self,
-        *,
-        commitment_id: str,
-        period_id: str,
-        installed: list[dict[str, Any]],
+    def certification_preflight(
+        self, *, commitment_id: str, period_id: str, installed: list[dict[str, Any]],
         transfers: list[dict[str, Any]] | None = None,
-        actor: str,
     ) -> dict[str, Any]:
-        """Create a draft bill.
+        """Calculate a draft certification without IDs, time, transactions or writes.
 
-        ``installed``: ``[{"sov_line_id", "cumulative_installed"}]`` cumulative value installed per line,
-        including any stored material transferred to installed this period.
-        ``transfers``: ``[{"lot_id", "amount"}]`` stored-material value moved to installed this period.
-        Lots recorded since the previous bill are billed as stored material automatically,
-        except lots whose evidence must be re-confirmed (they wait for the next bill).
+        The resulting content is the existing bill hash input. Source facts also bind
+        the standing predecessor, current period, SOV and every lot's evidence state.
+        ``certify`` recalculates this plan under its write transaction; a caller's
+        earlier plan never authorizes or supplies stored effects.
         """
         transfers = list(transfers or [])
         if not isinstance(installed, list) or not all(isinstance(i, dict) for i in installed):
             raise BillError("installed must be a list of {sov_line_id, cumulative_installed}")
         if not all(isinstance(t, dict) for t in transfers):
             raise BillError("transfers must be a list of {lot_id, amount}")
-        c = self.commitments.get(commitment_id)
-        if c["status"] != "executed":
-            raise BillError("bills apply to executed commitments only")
-        self.ledger.require_open(period_id)
-        with self.db.transaction() as conn:
+        with self.db._lock:
             c = self.commitments.get(commitment_id)
+            if c["status"] != "executed":
+                raise BillError("bills apply to executed commitments only")
+            self.ledger.require_open(period_id)
             prior = self.latest(commitment_id)
             if prior and prior["status"] == "draft":
                 raise BillError("the previous bill is still a draft; approve, post or void it first")
@@ -1150,7 +1143,7 @@ class Bills:
                 raise BillError(f"cumulative gross {fmt(cumulative_gross)} exceeds executed commitment {c['executed_amount']}")
 
             # certification numbers are never reused, not even a voided draft's
-            sequence = (conn.execute("SELECT COALESCE(MAX(sequence), 0) FROM bills WHERE commitment_id=?", (commitment_id,)).fetchone()[0]) + 1
+            sequence = self.db.scalar("SELECT COALESCE(MAX(sequence), 0) FROM bills WHERE commitment_id=?", (commitment_id,)) + 1
             newly_billed = sorted(i for i, l in included.items() if not l["billed"])
             content = {
                 "commitment_id": commitment_id, "commitment_version": c["version"], "period_id": period_id, "sequence": sequence,
@@ -1164,6 +1157,69 @@ class Bills:
                 "cumulative_net": fmt(cumulative_net), "prior_net": fmt(prior_net), "amount_due": fmt(amount_due),
             }
             content_hash = hash_json(content)
+            return {
+                "content": content, "content_hash": content_hash,
+                "retainage_this_period": fmt(retainage_this_period),
+                "installed_this_period": fmt(installed_this_period),
+                "stored_added_this_period": fmt(stored_added),
+                "stored_transferred_this_period": fmt(transfer_total),
+                "stored_added_by_line": {sid: fmt(value) for sid, value in added_by_line.items()},
+                "stored_transferred_by_line": {sid: fmt(value) for sid, value in transferred_by_line.items()},
+                "lot_updates": [{"lot_id": lid, "remaining_amount": fmt(value)} for lid, value in lot_updates],
+                "newly_billed_lots": newly_billed,
+                "excluded_lots": [{"lot_id": lot["id"], "reason": f"evidence {lot['evidence_status']}; confirm_lot_evidence before billing"}
+                                  for lot in excluded],
+                "source_facts": {
+                    "commitment": c,
+                    "period": self.db.one("SELECT * FROM periods WHERE id=?", (period_id,)),
+                    "project": self.db.one("SELECT id, entity, currency FROM projects WHERE id=?", (c["project_id"],)),
+                    "standing_predecessor": prior,
+                    "next_sequence": sequence,
+                    "lots": [all_lots[lid] for lid in sorted(all_lots)],
+                },
+            }
+
+    def certify(
+        self,
+        *,
+        commitment_id: str,
+        period_id: str,
+        installed: list[dict[str, Any]],
+        transfers: list[dict[str, Any]] | None = None,
+        actor: str,
+    ) -> dict[str, Any]:
+        """Create a draft bill.
+
+        ``installed``: ``[{"sov_line_id", "cumulative_installed"}]`` cumulative value installed per line,
+        including any stored material transferred to installed this period.
+        ``transfers``: ``[{"lot_id", "amount"}]`` stored-material value moved to installed this period.
+        Lots recorded since the previous bill are billed as stored material automatically,
+        except lots whose evidence must be re-confirmed (they wait for the next bill).
+        """
+        with self._lifecycle_transaction() as conn:
+            plan = self.certification_preflight(commitment_id=commitment_id, period_id=period_id,
+                                                 installed=installed, transfers=transfers)
+            content = plan["content"]
+            content_hash = plan["content_hash"]
+            c = plan["source_facts"]["commitment"]
+            sequence = content["sequence"]
+            ordered = content["lines"]
+            newly_billed = plan["newly_billed_lots"]
+            cumulative_installed = content["cumulative_installed"]
+            cumulative_stored = content["cumulative_stored"]
+            cumulative_gross = content["cumulative_gross"]
+            cumulative_retainage = content["cumulative_retainage"]
+            cumulative_net = content["cumulative_net"]
+            prior_net = content["prior_net"]
+            amount_due = content["amount_due"]
+            retainage_this_period = plan["retainage_this_period"]
+            installed_this_period = plan["installed_this_period"]
+            stored_added = plan["stored_added_this_period"]
+            transfer_total = plan["stored_transferred_this_period"]
+            sov_hash = content["sov_hash"]
+            added_by_line = plan["stored_added_by_line"]
+            transferred_by_line = plan["stored_transferred_by_line"]
+            transfers = content["transfers"]
             bill_id = new_id("bill")
             conn.execute(
                 """INSERT INTO bills (id, commitment_id, period_id, sequence, status, cumulative_installed, cumulative_stored, cumulative_gross,
@@ -1184,8 +1240,8 @@ class Bills:
                     (new_id("bln"), bill_id, sid, fmt(ln["cumulative_installed"]), fmt(ln["prior_installed"]), fmt(ln["installed_this_period"]),
                      fmt(added_by_line.get(sid, ZERO)), fmt(transferred_by_line.get(sid, ZERO))),
                 )
-            for lid, remaining in lot_updates:
-                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (fmt(remaining), lid))
+            for update in plan["lot_updates"]:
+                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (update["remaining_amount"], update["lot_id"]))
             for lid in newly_billed:
                 conn.execute("UPDATE stored_material_lots SET billed_bill_id=? WHERE id=? AND billed_bill_id IS NULL", (bill_id, lid))
             for t in transfers:
@@ -1195,7 +1251,7 @@ class Bills:
                 "content_hash": content_hash, "newly_billed_lots": newly_billed, "excluded_lots": content["excluded_lots"],
             })
         out = self.get(bill_id)
-        out["excluded_lots"] = [{"lot_id": l["id"], "reason": f"evidence {l['evidence_status']}; confirm_lot_evidence before billing"} for l in excluded]
+        out["excluded_lots"] = plan["excluded_lots"]
         return out
 
     def get(self, bill_id: str) -> dict[str, Any]:

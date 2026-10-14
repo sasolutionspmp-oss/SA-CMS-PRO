@@ -19,7 +19,7 @@ export function Problems({ reasons }: { reasons: Problem[] }) {
 export function Checks({ checks }: { checks: Check[] }) {
   return <ul className="cipher-ap-checks">{checks.map((check, index) => <li key={`${check.code}-${index}`}>
     {check.status === 'passed' ? <CheckmarkCircleRegular aria-hidden="true" /> : <WarningRegular aria-hidden="true" />}
-    <div><span className="cipher-visually-hidden">{check.status === 'passed' ? 'Passed: ' : 'Blocked: '}</span>{check.message}{check.fix && <p className="cipher-caption">{check.fix}</p>}</div>
+    <div><span className="cipher-visually-hidden">{check.status === 'passed' ? 'Passed: ' : check.status === 'warning' ? 'Warning: ' : 'Blocked: '}</span>{check.message}{check.fix && <p className="cipher-caption">{check.fix}</p>}</div>
   </li>)}</ul>;
 }
 const labels: Record<string, string> = {
@@ -29,6 +29,8 @@ const labels: Record<string, string> = {
   certificationPeriodId: 'Certification period', sequence: 'Bill sequence', supplierInvoiceAttached: 'Supplier invoice attached',
   storedEvidenceCount: 'Stored-material evidence records', available: 'Current source facts available',
   supplier: 'Supplier', supplierName: 'Supplier', project: 'Project', projectName: 'Project', commitment: 'Subcontract',
+  invoiceNumber: 'Supplier invoice number', invoiceDate: 'Invoice date', dueDate: 'Invoice due date',
+  amountCents: 'Invoice amount', evidenceRevisionId: 'Source evidence revision', billId: 'Certified bill',
 };
 export function factLabel(key: string) { return labels[key] ?? 'Reviewed fact'; }
 export function factValue(value: SafeValue | undefined, field = ''): ReactNode {
@@ -44,6 +46,21 @@ export function Changes({ changes }: { changes: Change[] }) {
     { key: 'before', label: 'At request', render: row => factValue(row.before, row.field) },
     { key: 'after', label: 'Now', render: row => factValue(row.after, row.field) },
   ]} /> : <p>No changed facts are reported in this review.</p>;
+}
+export function IntakeFindings({ effects }: { effects: Record<string, SafeValue> }) {
+  const messages: Record<string, string> = {
+    amount_mismatch: 'The invoice amount does not equal the eligible certified bill.',
+    no_certified_bill: 'Prepare an eligible bill for this subcontract before requesting a match approval.',
+    possible_duplicate: 'A possible duplicate requires a separate documented review.',
+    evidence_stale: 'The invoice source has a newer revision that requires review.',
+    over_commitment: 'The invoice exceeds the authorized subcontract or previously matched amount.',
+    not_received: 'Required purchased items have not been received.', damaged_receipt: 'A required receipt reports damaged goods.',
+  };
+  const codes = effects.matchExceptionCodes;
+  return <>{effects.matchStatus === 'matched' && <p>The proposed invoice match passes its current source checks.</p>}
+    {effects.matchStatus === 'exception' && <p>The computed match will require attention before approval.</p>}
+    {Array.isArray(codes) && codes.length > 0 && <ul className="cipher-ap-problems">{codes.map((code, index) => <li key={index}>{typeof code === 'string' ? messages[code] ?? 'A matching check requires review.' : 'A matching check requires review.'}</li>)}</ul>}
+  </>;
 }
 export function EntryPreview({ effects }: { effects: Record<string, SafeValue> }) {
   const previews = effects.journalPreview;

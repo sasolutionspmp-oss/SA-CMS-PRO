@@ -3,7 +3,7 @@ import inspect
 import unittest
 from unittest.mock import patch
 
-from apps.cipher.ap_practice_fixture import ACCOUNTANT_LOGIN, BOOTSTRAP_LOGIN, PM_LOGIN, make_ap_practice_fixture
+from apps.cipher.ap_practice_fixture import ACCOUNTANT_LOGIN, BOOTSTRAP_LOGIN, PM_LOGIN, REVIEWER_LOGIN, make_ap_practice_fixture
 from apps.cipher.service import Cipher
 
 
@@ -58,10 +58,11 @@ class APPracticeFixtureTests(unittest.TestCase):
         self.assertEqual(self.c.ledger.trial_balance()["journal_count"], 0)
 
     def test_each_selectable_person_has_only_real_project_grants_and_active_memberships(self):
-        self.assertEqual({option["personaId"] for option in self.c.ap_practice_personas}, {"accountant", "pm"})
+        self.assertEqual({option["personaId"] for option in self.c.ap_practice_personas}, {"accountant", "pm", "reviewer"})
         self.assertNotIn(BOOTSTRAP_LOGIN, {person["login"] for person in self.c.ap_practice_persona_people.values()})
         self.assertNotEqual(self.people.person_for(ACCOUNTANT_LOGIN)["id"], self.people.person_for(PM_LOGIN)["id"])
-        for login, role in ((ACCOUNTANT_LOGIN, "accountant"), (PM_LOGIN, "pm")):
+        self.assertNotEqual(self.people.person_for(ACCOUNTANT_LOGIN)["id"], self.people.person_for(REVIEWER_LOGIN)["id"])
+        for login, role in ((ACCOUNTANT_LOGIN, "accountant"), (PM_LOGIN, "pm"), (REVIEWER_LOGIN, "accountant")):
             grants = self.people.grants(login)
             self.assertEqual({grant["role"] for grant in grants}, {role})
             self.assertEqual({grant["scope"] for grant in grants}, {"project"})

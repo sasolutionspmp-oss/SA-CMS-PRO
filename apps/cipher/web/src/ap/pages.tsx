@@ -73,6 +73,11 @@ export function APHome({ workspace: w, session }: { workspace: Workspace; sessio
         <AppLink key={metric.label} href={metric.href} className="cipher-metric"><strong>{metric.value}</strong><span>{metric.label}</span><small>{metric.source}</small></AppLink>)}
     </div></aside></div>
     <Section title="My projects" extra={<AppLink href="/projects">View all projects</AppLink>}><ProjectTable rows={w.projects} /></Section>
+    <Section title="Invoice matches waiting for review" extra={<AppLink href="/match-approvals">View match reviews</AppLink>}><RecordTable label="Pending invoice match reviews" rows={w.matchApprovals.filter(row => row.effectiveStatus === 'pending').slice(0, 5)} columns={[
+      { key: 'invoice', label: 'Supplier invoice', render: row => <AppLink href={`/match-approvals/${encodeURIComponent(row.id)}`}>{row.invoiceNumber}<span className="cipher-cell-secondary">{row.supplierName}</span></AppLink> },
+      { key: 'requester', label: 'Requested by', render: row => row.requestedBy.displayName },
+      { key: 'amount', label: 'Invoice amount', money: true, render: row => money(row.amountCents) },
+    ]} empty="No supplier invoice matches are waiting for review in your project scope." /></Section>
     <Section title="Recent bills"><BillTable rows={w.bills.slice(0, 5)} /></Section>
   </>;
 }
@@ -124,7 +129,9 @@ export function APCommitment({ commitment: c, workspace: w }: { commitment: Comm
     <APHeader title={c.title} subtitle={c.supplierName}><StatusChip status={c.status} /></APHeader>
     <Section title="Subcontract amounts"><KeyFacts facts={[
       { label: 'Original amount', value: money(c.originalAmountCents) }, { label: 'Executed amount', value: money(c.executedAmountCents) }, { label: 'Retainage rate', value: rate(c.retainageRateMicros) },
-    ]} /></Section><Section title="Certified bills"><BillTable rows={w.bills.filter(row => row.commitmentId === c.id)} /></Section>
+    ]} /></Section>
+    <Section title="Prepare and receive"><div className="cipher-link-row"><AppLink href={`/commitments/${encodeURIComponent(c.id)}/prepare-bill`}>Prepare a bill</AppLink><AppLink href={`/commitments/${encodeURIComponent(c.id)}/receive-invoice`}>Receive a supplier invoice</AppLink><AppLink href="/invoices">Open invoices</AppLink></div><p className="cipher-caption">An authorized accountant prepares certified installed work and receives the supplier’s invoice using existing source evidence.</p></Section>
+    <Section title="Certified bills"><BillTable rows={w.bills.filter(row => row.commitmentId === c.id)} /></Section>
     <TechnicalDetails entries={[{ label: 'Subcontract ID', value: c.id }]} />
   </>;
 }

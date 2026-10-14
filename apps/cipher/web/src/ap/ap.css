@@ -22,6 +22,12 @@
 .cipher-ap-history p { color: var(--cipher-text-secondary); }
 .cipher-ap-action .cipher-message { margin-bottom: 16px; }
 .cipher-ap-page-link { display: block; margin-top: 8px; }
+.cipher-ap-period-field { max-width: 420px; margin-bottom: 20px; }
+.cipher-ap-money-input { min-width: 170px; max-width: 240px; }
+.cipher-ap-intake-form { max-width: 720px; }
+.cipher-ap-outcome-links { margin-top: 16px; }
+.cipher-ap-effect-facts { margin: 16px 0; }
+.cipher-ap-effect-facts p + p { margin-top: 8px; }
 @media (max-width: 599px) {
   .cipher-ap-persona { min-width: 0; flex-basis: 100%; }
   .cipher-ap-action-footer { justify-content: stretch; }

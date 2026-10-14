@@ -15,7 +15,8 @@
     "preview": "vite preview --host 127.0.0.1",
     "smoke": "node tests/smoke.mjs",
     "build:ap": "npm run typecheck && vite build --config vite.ap.config.ts",
-    "smoke:ap": "node tests/ap-smoke.mjs"
+    "smoke:ap": "node tests/ap-smoke.mjs",
+    "smoke:ap-intake": "node tests/ap-intake-smoke.mjs"
   },
   "dependencies": {
     "@fluentui/react-components": "9.74.3",

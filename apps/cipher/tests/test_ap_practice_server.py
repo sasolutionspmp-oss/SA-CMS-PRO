@@ -98,7 +98,7 @@ class APPracticeServerTests(unittest.TestCase):
         self.assertNotIn("Secure", headers["Set-Cookie"])
         status, _, personas = self.json_request("personas")
         self.assertEqual(status, 200, personas)
-        self.assertEqual({p["personaId"] for p in personas["value"]}, {"accountant", "pm"})
+        self.assertEqual({p["personaId"] for p in personas["value"]}, {"accountant", "pm", "reviewer"})
         self.assertNotIn("owner", json.dumps(personas))
 
     def test_select_and_logout_rotate_cookie_and_csrf_and_invalidate_previous_cookie(self):

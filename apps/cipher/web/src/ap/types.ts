@@ -1,7 +1,9 @@
 export interface Provenance {
   contractVersion: 'cipher.ap-practice.v1'; mode: 'practice'; synthetic: true; currency: 'USD';
 }
-export type APAction = 'bill.requestApproval' | 'bill.approve' | 'bill.post';
+export type APAction = 'bill.requestApproval' | 'bill.approve' | 'bill.post' | 'bill.prepare'
+  | 'invoice.receive' | 'invoice.computeMatch' | 'invoice.requestMatchApproval'
+  | 'invoice.approveMatch' | 'invoice.executeMatch';
 export type Duty = 'pm' | 'accountant';
 export interface Person { id: string; displayName: string }
 export interface Capabilities {
@@ -13,7 +15,7 @@ export interface Session extends Provenance {
   person: (Person & { personaId: string }) | null; duties: Duty[]; projectIds: string[]; capabilities: Capabilities;
 }
 export interface Persona { personaId: string; displayName: string; synthetic: true }
-export interface Problem { code: string; target: string | null; message: string; fix: string | null }
+export interface Problem { code: string; target: string | null; message: string; fix?: string | null }
 export interface Check extends Problem { status: string }
 export interface Period { id: string; name: string; startDate: string; endDate: string; status: string }
 export interface Project { id: string; name: string; entity: string; currency: 'USD'; budgetCents: number; customerName?: string | null }
@@ -67,7 +69,41 @@ export interface Preflight extends Provenance {
 export interface ActionOutcome extends Provenance {
   receiptId: string; replayed: boolean; effectApplied: boolean; result: Record<string, SafeValue>;
 }
-export interface Records { projects: Project; commitments: Commitment; bills: Bill; approvals: Approval; 'posting-queue': PostingQueueRow }
+export interface Preparation extends Provenance {
+  id: string; version: string; projectId: string; projectName: string; commitmentTitle: string;
+  supplierId: string; supplierName: string; status: string; retainageRateMicros: number;
+  lines: { sovLineId: string; lineNo: number; description: string; costCode: string; scheduledCents: number; priorInstalledCents: number }[];
+  periods: Period[]; priorBill: { id: string; sequence: number; status: string } | null;
+  availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface InvoiceEvidence {
+  id: string; documentId: string; revisionId: string; projectId: string; title: string;
+  revision: number; isCurrent: boolean; available: boolean; status: string;
+}
+export interface Invoice extends Provenance {
+  id: string; version: string; projectId: string; projectName: string; commitmentId: string | null;
+  commitmentTitle: string | null; supplierId: string; supplierName: string; invoiceNumber: string;
+  invoiceDate: string; dueDate: string; amountCents: number; status: string; invoiceVersion: number;
+  evidence: { documentId: string; revisionId: string; title: string; revision: number; isCurrent: boolean };
+  possibleDuplicate: boolean; duplicateBlocking: boolean;
+  match: { status: string; basis: string; exceptions: { code: string; message: string }[]; billId: string | null; attemptId: string } | null;
+  matchApprovalId: string | null; availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface MatchApproval {
+  id: string; approvalId: string; version: string; projectId: string; projectName: string;
+  invoiceId: string; invoiceNumber: string; supplierName: string; status: string; effectiveStatus: string;
+  requestedBy: Person; approvedBy: Person | null; requestedAt: string; approvedAt: string | null;
+  expiresAt: string; amountCents: number;
+}
+export interface MatchPacket extends Provenance, MatchApproval {
+  invoice: Invoice; boundFacts: Record<string, SafeValue>; currentFacts: Record<string, SafeValue>;
+  changes: Change[]; effect: { invoiceStatus: 'matched'; billLinked: boolean; workingLedgerJournalDelta: 0; apPayableDeltaCents: 0 };
+  availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface Records {
+  projects: Project; commitments: Commitment; bills: Bill; approvals: Approval; 'posting-queue': PostingQueueRow;
+  invoices: Invoice; 'invoice-evidence': InvoiceEvidence; 'match-approvals': MatchApproval;
+}
 export type Collection = keyof Records;
 export interface Envelope<T> extends Provenance {
   collection: Collection; projectId: string | null; value: T[]; count: number; nextCursor: string | null;
@@ -75,5 +111,5 @@ export interface Envelope<T> extends Provenance {
 }
 export interface Workspace {
   projects: Project[]; commitments: Commitment[]; bills: Bill[]; approvals: Approval[];
-  postingQueue: PostingQueueRow[]; loadedAt: Date;
+  postingQueue: PostingQueueRow[]; invoices: Invoice[]; invoiceEvidence: InvoiceEvidence[]; matchApprovals: MatchApproval[]; loadedAt: Date;
 }

@@ -100,7 +100,7 @@ def _load_plugin_modules() -> list[Any]:
 
 _load_plugin_modules()
 from .core.audit import Audit, register_audit_schema
-from .core.api_receipts import APIActionReceipts, register_api_receipts_schema
+from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database, register_workspace_mode_schema
 from .core.ids import new_id, sha256_hex, utcnow_iso
@@ -121,6 +121,7 @@ register_audit_schema()
 register_bill_posting_schema()
 register_workspace_mode_schema()
 register_api_receipts_schema()
+register_api_preparation_receipts_schema()
 
 
 class CipherError(RuntimeError):
@@ -415,6 +416,8 @@ class Cipher:
         """Check human decision authority and bill facts without granting anything."""
         self.db.require_practice_mode()
         ap = self.approvals.get(approval_id)
+        if ap["operation"] == "ap_intake.match_invoice":
+            return self.check_invoice_match_grant(approval_id, approver=approver, approver_role=approver_role)
         if not Ricky.can(approver_role, ap["operation"]):
             raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
         governors = self._governors()
@@ -425,6 +428,56 @@ class Cipher:
         if ap["operation"] == "bill.approve" and ap["status"] == "pending":
             self.bills.business_grant_preflight(ap["subject_id"], approval_id=approval_id)
         return {"approval": ap, "governors": governors}
+
+    def _invoice_match_current(self, approval_id: str, *, status: str) -> dict[str, Any]:
+        """Check one fixed match operation, with no lifecycle writes or effects."""
+        from .core.approvals import ApprovalConsumed, ApprovalError, ApprovalNotGranted, material_hash
+        from .core.ids import parse_iso, utcnow
+        self.db.require_practice_mode()
+        self.plugin("ap_intake").approval_proof(approval_id)
+        approval = self.approvals.get(approval_id)
+        if approval["status"] == "expired":
+            raise ApprovalExpired("The match authorization expired")
+        if approval["status"] != status:
+            if status == "granted":
+                if approval["status"] == "consumed":
+                    raise ApprovalConsumed("The match authorization was already consumed")
+                raise ApprovalNotGranted("The match authorization is no longer granted")
+            raise ApprovalError("The match authorization is no longer available")
+        if parse_iso(approval["expires_at"]) <= utcnow():
+            raise ApprovalExpired("The match authorization expired")
+        manifest = self._manifest("ap_intake.match_invoice", approval["subject_id"], approval["actor_role"])
+        if (material_hash(manifest) != approval["material_hash"]
+                or manifest.get("governance") != approval["manifest"].get("governance")):
+            raise StaleApprovalError("The match authorization no longer matches its governed source facts")
+        return {"approval": approval, "manifest": manifest, "governors": self._governors()}
+
+    def check_invoice_match_grant(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
+        """Verify current match facts and independent grant authority without writing."""
+        checked = self._invoice_match_current(approval_id, status="pending")
+        approval = checked["approval"]
+        if not Ricky.can(approver_role, "ap_intake.match_invoice"):
+            raise RoleNotAuthorized("This role cannot approve a supplier invoice match")
+        for _name, governor in checked["governors"]:
+            check = getattr(governor, "check_grant", None)
+            if check is not None:
+                check(approval, approver=approver, approver_role=approver_role)
+        return checked
+
+    def check_invoice_match_execution(self, approval_id: str, *, actor: str = "owner") -> dict[str, Any]:
+        """Verify the granted match with explicitly pure governor counterparts."""
+        checked = self._invoice_match_current(approval_id, status="granted")
+        for name, governor in checked["governors"]:
+            effect_check = getattr(governor, "check_execute", None)
+            if effect_check is None:
+                continue
+            # The registry's execute check is read-only. Other governors must
+            # declare a pure counterpart, never run an effect and roll it back.
+            check = effect_check if name == "people" else getattr(governor, "check_execute_preflight", None)
+            if check is None:
+                raise CipherError("A configured governor does not support a pure invoice match check")
+            check(checked["approval"], checked["manifest"], actor=actor)
+        return checked
 
     def approve(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
         """Grant an approval.  The approver's role must hold the operation's authority.
@@ -481,7 +534,8 @@ class Cipher:
         payload = {"approval_id": approval_id, "operation": operation, "subject_id": subject_id}
 
         def handler():
-            current = self._manifest(operation, subject_id, ap["actor_role"])
+            current = (self.check_invoice_match_execution(approval_id, actor=actor)["manifest"]
+                       if operation == "ap_intake.match_invoice" else self._manifest(operation, subject_id, ap["actor_role"]))
             fresh = self.approvals.get(approval_id)
             approved_policy, current_policy = fresh["manifest"].get("governance"), current.get("governance")
             if fresh["status"] == "granted" and approved_policy != current_policy:
