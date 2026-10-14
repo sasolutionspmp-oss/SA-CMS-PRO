@@ -1,12 +1,14 @@
 import { sumCents } from '../copy/format';
 import type {
   ActionOutcome, APAction, Bill, Collection, Envelope, Packet, Persona, Preflight, Problem,
-  Invoice, MatchPacket, Preparation, Records, Session, Workspace,
+  BillException, CorrectionApproval, CorrectionPacket, Invoice, InvoiceException, MatchPacket, Preparation, Records, Session, Workspace,
 } from './types';
 
 const prefix = '/api/ap-practice/v1';
 const supportedActions: APAction[] = ['bill.requestApproval', 'bill.approve', 'bill.post', 'bill.prepare',
-  'invoice.receive', 'invoice.computeMatch', 'invoice.requestMatchApproval', 'invoice.approveMatch', 'invoice.executeMatch'];
+  'invoice.receive', 'invoice.computeMatch', 'invoice.requestMatchApproval', 'invoice.approveMatch', 'invoice.executeMatch',
+  'invoice.revise', 'invoice.reject', 'invoice.reviewDuplicate', 'bill.cancel', 'bill.prepareCorrection',
+  'bill.requestCorrection', 'bill.approveCorrection', 'bill.executeCorrection'];
 const pendingReads = new Set<AbortController>();
 export function abortScopedReads() {
   for (const controller of pendingReads) controller.abort();
@@ -72,11 +74,19 @@ function effects(raw: unknown, allowed: boolean, action: APAction) {
   if (['bill.requestApproval', 'bill.approve', 'bill.post'].includes(action)) {
     strings(value, ['billStatus']);
     if (allowed) integers(value, ['amountDueCents', 'retainageCents']);
-  } else {
+  } else if (['bill.prepare', 'invoice.receive', 'invoice.computeMatch', 'invoice.requestMatchApproval', 'invoice.approveMatch', 'invoice.executeMatch'].includes(action)) {
     nullableStrings(value, ['billStatus', 'invoiceStatus', 'approvalStatus', 'matchStatus']);
     if (allowed) integers(value, action === 'bill.prepare' ? ['amountDueCents', 'retainageCents', 'thisPeriodCents'] : ['amountCents']);
     if (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || array(value, 'journalPreview').length !== 0) throw unreadable();
     if (array(value, 'matchExceptionCodes').some(code => typeof code !== 'string') || typeof value.possibleDuplicate !== 'boolean' || typeof value.billLinked !== 'boolean') throw unreadable();
+  } else {
+    if (action !== 'bill.executeCorrection' && (value.workingLedgerJournalDelta !== 0 || value.apPayableDeltaCents !== 0 || array(value, 'journalPreview').length !== 0)) throw unreadable();
+    for (const field of ['billStatus', 'invoiceStatus', 'approvalStatus']) if (value[field] !== undefined && value[field] !== null && typeof value[field] !== 'string') throw unreadable();
+    if (typeof value.duplicateReviewed !== 'boolean' || typeof value.requiresNewMatch !== 'boolean' || !Number.isSafeInteger(value.invalidatedApprovalCount) || (value.invalidatedApprovalCount as number) < 0) throw unreadable();
+    if (allowed) {
+      strings(value, action.startsWith('invoice.') ? ['invoiceStatus'] : ['billStatus']);
+      integers(value, action.startsWith('invoice.') ? ['amountCents'] : ['amountDueCents']);
+    }
   }
   for (const field of ['amountDueCents', 'retainageCents', 'amountCents', 'thisPeriodCents']) if (value[field] !== undefined && !Number.isSafeInteger(value[field])) throw unreadable();
   if (value.externalAccounting !== 'unavailable' || value.payment !== 'not_started') throw unreadable();
@@ -145,6 +155,12 @@ function matchApproval(raw: unknown) {
   nullableStrings(value, ['approvedAt']); integers(value, ['amountCents']); person(value.requestedBy);
   if (value.approvedBy !== null) person(value.approvedBy);
 }
+function correctionApproval(raw: unknown) {
+  const value = object(raw);
+  strings(value, ['id', 'approvalId', 'version', 'projectId', 'projectName', 'billId', 'supplierName', 'status', 'effectiveStatus', 'requestedAt', 'expiresAt', 'correctionId', 'reason']);
+  integers(value, ['sequence', 'amountDueCents']); nullableStrings(value, ['approvedAt']); person(value.requestedBy);
+  if (value.approvedBy !== null) person(value.approvedBy);
+}
 function record(raw: unknown, collection: Collection) {
   const value = object(raw);
   if (collection === 'projects') {
@@ -166,6 +182,7 @@ function record(raw: unknown, collection: Collection) {
     if (typeof value.ready !== 'boolean') throw unreadable(); problems(value.blockedReasons);
   } else if (collection === 'invoices') invoice(value);
   else if (collection === 'match-approvals') matchApproval(value);
+  else if (collection === 'correction-approvals') correctionApproval(value);
   else {
     strings(value, ['id', 'projectId', 'status']); evidence(value);
     if (typeof value.available !== 'boolean') throw unreadable();
@@ -289,6 +306,30 @@ export async function readMatchPacket(id: string, signal?: AbortSignal): Promise
   if (effect.invoiceStatus !== 'matched' || typeof effect.billLinked !== 'boolean' || effect.workingLedgerJournalDelta !== 0 || effect.apPayableDeltaCents !== 0) throw unreadable();
   return value as unknown as MatchPacket;
 }
+export async function readInvoiceException(id: string, signal?: AbortSignal): Promise<InvoiceException> {
+  const value = provenance(await request(`/invoices/${encodeURIComponent(id)}/exception-review`, { signal }));
+  strings(value, ['version']); invoice(value.invoice); actions(value); return value as unknown as InvoiceException;
+}
+export async function readBillException(id: string, signal?: AbortSignal): Promise<BillException> {
+  const value = provenance(await request(`/bills/${encodeURIComponent(id)}/exception-review`, { signal }));
+  strings(value, ['version']); bill(value.bill); actions(value);
+  for (const item of array(value, 'correctionPeriods')) period(item);
+  if (value.correction !== null) {
+    const correction = object(value.correction); strings(correction, ['id', 'status', 'reason', 'requestedAt']); person(correction.requestedBy);
+  }
+  return value as unknown as BillException;
+}
+export async function readCorrectionPacket(id: string, signal?: AbortSignal): Promise<CorrectionPacket> {
+  const value = provenance(await request(`/correction-approvals/${encodeURIComponent(id)}/packet`, { signal }));
+  correctionApproval(value); bill(value.bill); actions(value); changes(value.changes); object(value.boundFacts); object(value.currentFacts);
+  const effect = object(value.effect);
+  if (effect.billStatus !== 'corrected' || effect.externalAccounting !== 'unavailable' || effect.payment !== 'not_started') throw unreadable();
+  for (const item of array(value, 'correctionPeriods')) period(item);
+  return value as unknown as CorrectionPacket;
+}
+export function readCorrectionApprovals(_id: string, signal?: AbortSignal): Promise<CorrectionApproval[]> {
+  return readCollection('correction-approvals', signal);
+}
 export async function readBill(id: string, signal?: AbortSignal): Promise<Bill> {
   const value = provenance(await request(`/bills/${encodeURIComponent(id)}`, { signal })); bill(value);
   return value as unknown as Bill;
@@ -310,6 +351,10 @@ export function actionPath(action: APAction, id: string) {
     'invoice.receive': `/commitments/${encoded}/receive-invoice`, 'invoice.computeMatch': `/invoices/${encoded}/compute-match`,
     'invoice.requestMatchApproval': `/invoices/${encoded}/request-match-approval`,
     'invoice.approveMatch': `/match-approvals/${encoded}/approve`, 'invoice.executeMatch': `/match-approvals/${encoded}/execute`,
+    'invoice.revise': `/invoices/${encoded}/revise`, 'invoice.reject': `/invoices/${encoded}/reject`,
+    'invoice.reviewDuplicate': `/invoices/${encoded}/review-duplicate`, 'bill.cancel': `/bills/${encoded}/cancel`,
+    'bill.prepareCorrection': `/bills/${encoded}/prepare-correction`, 'bill.requestCorrection': `/bills/${encoded}/request-correction`,
+    'bill.approveCorrection': `/correction-approvals/${encoded}/approve`, 'bill.executeCorrection': `/correction-approvals/${encoded}/execute`,
   };
   return routes[action];
 }

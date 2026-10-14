@@ -797,7 +797,10 @@ class OneInvoiceOneBillTests(unittest.TestCase):
         bill1 = w.certify({1: "30000"})  # 27,000 due
         sp100 = w.receive("SP-100", "27000.00", invoice_date="2026-09-01")
         w.match_and_execute(sp100["id"])
-        w.post(bill1["id"])
+        # Resolve a reissued invoice before either obligation is posted. A
+        # posted obligation requires its governed correction path instead.
+        business = c.request_approval("bill.approve", bill1["id"], actor_role="accountant")
+        c.approve(business["id"], approver="controller", approver_role="controller")
         bill2 = w.certify({1: "40000"})
         self.assertEqual(bill2["amount_due"], "9000.00")
         w.ap.revise_invoice(sp100["id"], "ap clerk", reason="supplier reissued SP-100 for the later work", amount="9000.00")
@@ -809,7 +812,7 @@ class OneInvoiceOneBillTests(unittest.TestCase):
             c.request_approval("ap_intake.match_invoice", sp100["id"], actor_role="accountant")
         self.assertEqual(w.ap.invoice(sp100["id"])["attached_bill_id"], bill1["id"])
         # bill 1's link no longer holds (its invoice was revised), so bill 1 takes its own invoice
-        self.assertFalse(item_for(c, w.pid, bill1["id"])["supplier_invoice_current"])
+        self.assertFalse(c.bills.supplier_invoice_link_holds(c.bills.get(bill1["id"])))
         sp101 = w.receive("SP-101", "27000.00", invoice_date="2026-09-20")
         res = w.ap.match(sp101["id"], "ap clerk")
         self.assertEqual((res["status"], res["bill"]["id"]), ("matched", bill1["id"]))
@@ -819,6 +822,7 @@ class OneInvoiceOneBillTests(unittest.TestCase):
         res = w.ap.match(sp100["id"], "ap clerk")
         self.assertEqual((res["status"], res["bill"]["id"]), ("matched", bill2["id"]))
         w.execute(w.request_match(sp100["id"])["id"])
+        w.post(bill1["id"])
         w.post(bill2["id"])
         items = {i["bill_id"]: i for i in c.bills.ap_open_items(w.pid)["items"]}
         self.assertEqual({b: (i["supplier_invoice_number"], i["open"], i["supplier_invoice_current"]) for b, i in items.items()},

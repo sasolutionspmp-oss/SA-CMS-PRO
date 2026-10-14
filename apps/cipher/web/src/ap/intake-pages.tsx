@@ -10,7 +10,7 @@ import { billName, BillTable } from './pages';
 import { APHeader, Changes, Problems } from './presentation';
 import type { Invoice, MatchApproval, MatchPacket, Preparation, Session, Workspace } from './types';
 
-interface Controls { session: Session; onChanged: () => void; onSessionLost: () => void }
+export interface Controls { session: Session; onChanged: () => void; onSessionLost: () => void }
 const stamp = (value: string) => {
   const parsed = new Date(value);
   return Number.isNaN(parsed.valueOf()) ? 'Time unavailable' : new Intl.DateTimeFormat('en-US', {
@@ -24,12 +24,12 @@ export function inputCents(value: string): number | null {
   const cents = BigInt(whole) * 100n + BigInt(fraction.padEnd(2, '0'));
   return cents <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(cents) : null;
 }
-const decimal = (cents: number) => `${BigInt(cents) / 100n}.${(BigInt(cents) % 100n).toString().padStart(2, '0')}`;
+export const decimal = (cents: number) => `${BigInt(cents) / 100n}.${(BigInt(cents) % 100n).toString().padStart(2, '0')}`;
 export function IntakeStatus({ status }: { status: string }) {
-  const label: Record<string, string> = { received: 'Received', matched: 'Matched', exception: 'Match needs attention', stale: 'Facts changed', available: 'Available', in_use: 'In use' };
-  return label[status] ? <span className={`cipher-status cipher-status-${status === 'matched' ? 'positive' : ['exception', 'stale'].includes(status) ? 'warning' : 'neutral'}`}>{label[status]}</span> : <StatusChip status={status} />;
+  const label: Record<string, string> = { received: 'Received', matched: 'Matched', rejected: 'Rejected', exception: 'Match needs attention', stale: 'Facts changed', available: 'Available', in_use: 'In use' };
+  return label[status] ? <span className={`cipher-status cipher-status-${status === 'matched' ? 'positive' : status === 'rejected' ? 'negative' : ['exception', 'stale'].includes(status) ? 'warning' : 'neutral'}`}>{label[status]}</span> : <StatusChip status={status} />;
 }
-function useRecord<T>(id: string, revision: number, read: (id: string, signal?: AbortSignal) => Promise<T>, controls: Controls) {
+export function useRecord<T>(id: string, revision: number, read: (id: string, signal?: AbortSignal) => Promise<T>, controls: Controls) {
   const [record, setRecord] = useState<T | null>(null);
   const [problem, setProblem] = useState<Error | null>(null);
   useEffect(() => {
@@ -38,13 +38,13 @@ function useRecord<T>(id: string, revision: number, read: (id: string, signal?: 
       if (controller.signal.aborted || error instanceof Error && error.name === 'AbortError') return;
       setProblem(error instanceof Error ? error : new Error('The current practice record could not be loaded.'));
       if (error instanceof APError && error.status === 401) controls.onSessionLost();
-      else if (error instanceof APError && [403, 404].includes(error.status)) { setRecord(null); controls.onChanged(); }
+      else if (error instanceof APError && [403, 404].includes(error.status)) setRecord(null);
     });
     return () => controller.abort();
   }, [id, revision, read]);
   return { record, problem };
 }
-function LoadingRecord({ title, problem, onChanged }: { title: string; problem: Error | null; onChanged: () => void }) {
+export function LoadingRecord({ title, problem, onChanged }: { title: string; problem: Error | null; onChanged: () => void }) {
   return <><APHeader title={title} />{problem ? <><p role="alert">{problem.message}</p><Button onClick={onChanged}>Refresh record</Button></> : <Spinner label={`Reading ${title.toLocaleLowerCase()}`} />}</>;
 }
 export function InvoiceTable({ rows }: { rows: Invoice[] }) {
@@ -84,7 +84,7 @@ export function APIntakeList({ workspace, collection, search, status }: {
   }
   return <><APHeader title={title} subtitle={isInvoices ? 'Supplier invoice details, source evidence and current matching results in your project scope.' : 'Independent accountant decisions on current supplier invoice matches.'} />
     <div className="cipher-list-toolbar"><Input aria-label={`Search ${title.toLocaleLowerCase()}`} placeholder="Search invoice, supplier or project" value={search} onChange={(_, data) => filters(data.value, status)} />
-      <Select aria-label={`Filter ${title.toLocaleLowerCase()} by status`} value={status} onChange={(_, data) => filters(search, data.value)}><option value="all">All statuses</option>{statuses.map(value => <option key={value} value={value}>{({ received: 'Received', matched: 'Matched', stale: 'Facts changed', pending: 'Waiting for review', granted: 'Approved', consumed: 'Completed', expired: 'Expired', invalidated: 'Needs approval again' } as Record<string, string>)[value] ?? value}</option>)}</Select>
+      <Select aria-label={`Filter ${title.toLocaleLowerCase()} by status`} value={status} onChange={(_, data) => filters(search, data.value)}><option value="all">All statuses</option>{statuses.map(value => <option key={value} value={value}>{({ received: 'Received', matched: 'Matched', rejected: 'Rejected', stale: 'Facts changed', pending: 'Waiting for review', granted: 'Approved', consumed: 'Completed', expired: 'Expired', invalidated: 'Needs approval again' } as Record<string, string>)[value] ?? value}</option>)}</Select>
       {(search || status !== 'all') && <Button appearance="subtle" onClick={() => filters('', 'all')}>Clear filters</Button>}
     </div>
     <Section title={isInvoices ? 'Supplier invoices' : 'Invoice match reviews'}>{isInvoices ? <InvoiceTable rows={workspace.invoices.filter(matching)} /> : <MatchTable rows={workspace.matchApprovals.filter(matching)} />}</Section>
@@ -175,13 +175,14 @@ export function APInvoice({ invoiceId, revision, ...controls }: Controls & { inv
     <Section title="Received invoice"><KeyFacts facts={[{ label: 'Invoice amount', value: money(invoice.amountCents) }, { label: 'Invoice date', value: date(invoice.invoiceDate) }, { label: 'Due date', value: date(invoice.dueDate), note: 'Derived from audited supplier terms' }, { label: 'Supplier', value: invoice.supplierName }]} /></Section>
     <Section title="Source evidence"><KeyFacts facts={[{ label: 'Document', value: invoice.evidence.title }, { label: 'Source revision', value: String(invoice.evidence.revision) }, { label: 'Current source', value: invoice.evidence.isCurrent ? 'Current revision' : 'A newer source revision exists' }, { label: 'Duplicate review', value: invoice.duplicateBlocking ? 'Required before match approval' : invoice.possibleDuplicate ? 'Recorded review' : 'No duplicate flag' }]} /></Section>
     {invoice.blockedReasons.length > 0 && <Section title="Current restrictions"><Problems reasons={invoice.blockedReasons} /></Section>}
-    <Section title="Current invoice match">{invoice.match ? <><KeyFacts facts={[{ label: 'Match status', value: <IntakeStatus status={invoice.match.status} /> }, { label: 'Match basis', value: invoice.match.basis === 'installed_work' ? 'Certified installed work' : invoice.match.basis.replaceAll('_', ' ') }]} />
+    <Section title="Current invoice match">{invoice.match ? <><KeyFacts facts={[{ label: 'Match status', value: <IntakeStatus status={invoice.match.status} /> }, { label: 'Match basis', value: ['progress', 'installed_work'].includes(invoice.match.basis) ? 'Certified installed work' : invoice.match.basis.replaceAll('_', ' ') }]} />
       {invoice.match.exceptions.length > 0 && <ul className="cipher-ap-problems">{invoice.match.exceptions.map(reason => <li key={reason.code}>{reason.message}</li>)}</ul>}
       {invoice.match.billId && <AppLink href={`/bills/${encodeURIComponent(invoice.match.billId)}`}>Open matched bill</AppLink>}
     </> : <p>No match has been computed for this invoice.</p>}</Section>
     {isAccountant && invoice.status === 'received' && <><Section title="Compute invoice match"><ActionPanel action="invoice.computeMatch" id={invoice.id} version={invoice.version} csrf={controls.session.csrfToken} amountCents={invoice.amountCents} permitted={invoice.availableActions.includes('invoice.computeMatch')} onChanged={controls.onChanged} onSessionLost={controls.onSessionLost} /></Section>
       <Section title="Request independent match review"><ActionPanel action="invoice.requestMatchApproval" id={invoice.id} version={invoice.version} csrf={controls.session.csrfToken} amountCents={invoice.amountCents} permitted={invoice.availableActions.includes('invoice.requestMatchApproval')} onChanged={controls.onChanged} onSessionLost={controls.onSessionLost} /></Section></>}
     <Section title="Related records"><div className="cipher-link-row">{invoice.commitmentId && <AppLink href={`/commitments/${encodeURIComponent(invoice.commitmentId)}`}>Open subcontract</AppLink>}{invoice.matchApprovalId && <AppLink href={`/match-approvals/${encodeURIComponent(invoice.matchApprovalId)}`}>Open match review</AppLink>}<AppLink href="/match-approvals">Match reviews</AppLink></div></Section>
+    <Section title="Resolve invoice exceptions"><AppLink href={`/invoices/${encodeURIComponent(invoice.id)}/exceptions`}>Review invoice revision, duplicate or rejection</AppLink></Section>
     <TechnicalDetails entries={[{ label: 'Invoice ID', value: invoice.id }, { label: 'Source document', value: invoice.evidence.documentId }, { label: 'Source revision', value: invoice.evidence.revisionId }]} />
   </>;
 }

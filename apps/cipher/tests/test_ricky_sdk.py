@@ -2685,9 +2685,18 @@ class PersonDecisionTests(Round3Case):
         # an approval that still holds keeps blocking a duplicate
         self.assertRefused(call(w, "request_approval", {"operation": "bill.correct", "subject_id": bill["id"]}, role="accountant"),
                            f"approval {new['approval_id']}", "already pending")
-        # the stale one could never have executed; the new one does
-        w.c.approve(old["approval_id"], approver="controller", approver_role="controller")
-        self.assertRefused(call(w, "execute_approved_action", {"approval_id": old["approval_id"]}, role="accountant"), "StaleApprovalError")
+        # A person's attempt now detects the canceled source before granting.
+        # The original posting and the replacement request remain untouched.
+        original_posting = w.c.bills.posting_receipt(bill["id"])
+        journals_before = count(w.c, "journals")
+        with self.assertRaises(StaleApprovalError):
+            w.c.approve(old["approval_id"], approver="controller", approver_role="controller")
+        self.assertEqual(w.c.approvals.get(old["approval_id"])["status"], "invalidated")
+        self.assertEqual(w.c.bills.correction(first["correction_id"])["status"], "cancelled")
+        self.assertEqual(w.c.bills.correction(second["correction_id"])["status"], "pending")
+        self.assertEqual(w.c.bills.posting_receipt(bill["id"]), original_posting)
+        self.assertEqual(count(w.c, "journals"), journals_before)
+        self.assertRefused(call(w, "execute_approved_action", {"approval_id": old["approval_id"]}, role="accountant"), "it was invalidated")
         w.c.approve(new["approval_id"], approver="controller", approver_role="controller")
         done = self.assertOk(call(w, "execute_approved_action", {"approval_id": new["approval_id"]}, role="accountant"))
         self.assertEqual((done["command_result"]["status"], done["command_result"]["reason"]), ("corrected", "Synthetic wrong pay item, restated"))

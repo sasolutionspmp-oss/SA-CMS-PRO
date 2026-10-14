@@ -9,6 +9,7 @@ import { APError, abortScopedReads, bindSession, endSession, loadWorkspace, read
 import { APHeader } from './presentation';
 import { APApproval, APBill, APCommitment, APHome, APList, APMissing, APPostingQueue, APProject } from './pages';
 import { APIntakeList, APInvoice, APMatchReview, APPreparation } from './intake-pages';
+import { APBillExceptions, APCorrectionList, APCorrectionReview, APInvoiceExceptions } from './exception-pages';
 import type { Persona, Session, Workspace } from './types';
 import { ActionMemory } from './ActionMemory';
 import '../theme/global.css';
@@ -100,6 +101,7 @@ export function APApp() {
     { href: '/approvals', name: 'Business reviews', Icon: TaskListSquareLtrRegular, current: parts[0] === 'approvals' },
     { href: '/invoices', name: 'Invoices', Icon: BookRegular, current: parts[0] === 'invoices' },
     { href: '/match-approvals', name: 'Match reviews', Icon: TaskListSquareLtrRegular, current: parts[0] === 'match-approvals' },
+    { href: '/correction-approvals', name: 'Correction reviews', Icon: TaskListSquareLtrRegular, current: parts[0] === 'correction-approvals' },
     { href: '/projects', name: 'Projects', Icon: BuildingMultipleRegular, current: ['projects', 'commitments', 'bills'].includes(parts[0]) },
     ...(session?.duties.includes('accountant') ? [{ href: '/posting-queue', name: 'Post approved bills', Icon: BookRegular, current: parts[0] === 'posting-queue' }] : []),
   ].map(({ href, name, Icon, current }) => <a key={href} href={href} className="cipher-nav-item" aria-current={current ? 'page' : undefined} title={name} onClick={event => { if (!event.ctrlKey && !event.metaKey && !event.shiftKey) { event.preventDefault(); navigate(href); } }}><Icon aria-hidden="true" /><span className="cipher-nav-label">{name}</span></a>)}</nav>;
@@ -109,7 +111,10 @@ export function APApp() {
     else if (['projects', 'commitments', 'bills', 'approvals'].includes(parts[0]) && parts.length === 1) content = <APList workspace={workspace} collection={parts[0] as 'projects' | 'commitments' | 'bills' | 'approvals'} search={query.get('search') ?? ''} status={query.get('status') ?? 'all'} />;
     else if (['invoices', 'match-approvals'].includes(parts[0]) && parts.length === 1) content = <APIntakeList workspace={workspace} collection={parts[0] as 'invoices' | 'match-approvals'} search={query.get('search') ?? ''} status={query.get('status') ?? 'all'} />;
     else if (parts[0] === 'invoices' && parts.length === 2 && workspace.invoices.some(row => row.id === parts[1])) content = <APInvoice key={parts[1]} invoiceId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'invoices' && parts[2] === 'exceptions' && parts.length === 3 && workspace.invoices.some(row => row.id === parts[1])) content = <APInvoiceExceptions key={parts[1]} invoiceId={parts[1]} revision={revision} workspace={workspace} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     else if (parts[0] === 'match-approvals' && parts.length === 2 && workspace.matchApprovals.some(row => row.id === parts[1])) content = <APMatchReview key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'correction-approvals' && parts.length === 1) content = <APCorrectionList revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+    else if (parts[0] === 'correction-approvals' && parts.length === 2) content = <APCorrectionReview key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     else if (parts[0] === 'posting-queue' && session.duties.includes('accountant')) content = <APPostingQueue workspace={workspace} />;
     else if (parts[0] === 'projects') {
       const project = workspace.projects.find(row => row.id === parts[1]); const tab = parts[2] ?? 'overview';
@@ -119,7 +124,9 @@ export function APApp() {
       if (record && ['prepare-bill', 'receive-invoice'].includes(parts[2])) content = <APPreparation key={`${record.id}:${parts[2]}`} commitmentId={record.id} revision={revision} workspace={workspace} receive={parts[2] === 'receive-invoice'} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
       else if (record && parts.length === 2) content = <APCommitment commitment={record} workspace={workspace} />;
     } else if (parts[0] === 'bills') {
-      const record = workspace.bills.find(row => row.id === parts[1]); if (record) content = <APBill key={record.id} bill={record} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+      const record = workspace.bills.find(row => row.id === parts[1]);
+      if (record && parts[2] === 'exceptions' && parts.length === 3) content = <APBillExceptions key={record.id} billId={record.id} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
+      else if (record && parts.length === 2) content = <APBill key={record.id} bill={record} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     } else if (parts[0] === 'approvals') {
       if (workspace.approvals.some(row => row.id === parts[1])) content = <APApproval key={parts[1]} approvalId={parts[1]} revision={revision} session={session} onChanged={refresh} onSessionLost={sessionLost} />;
     }

@@ -7,6 +7,7 @@ the original audit and immutable records before it returns the original result.
 from __future__ import annotations
 
 from collections import Counter
+import datetime as dt
 from decimal import Decimal
 from typing import Any
 from uuid import UUID
@@ -92,6 +93,7 @@ class APIntakeActionRunner(APActionRunner):
                     if action == "invoice.requestMatchApproval":
                         self._refuse_duplicate_request(resource_id, checked)
                     before = self._control_snapshot()
+                    reviewed_plan = loads(canonical_json(checked.get("plan")))
                     try:
                         result, source = self._service_act(action, resource_id, body, checked)
                     except (StaleApprovalError, ApprovalExpired) as exc:
@@ -107,6 +109,7 @@ class APIntakeActionRunner(APActionRunner):
                         self._verify_source(receipt)
                         deferred = self._stored_refusal(receipt, replayed=False)
                     else:
+                        self._verify_reviewed_plan(action, resource_id, reviewed_plan, checked, source)
                         receipt = self.receipts.record(person_id=canonical_person, actor_login=context["login"],
                                                        repeatability_uuid=key, contract_version=CONTRACT_VERSION, action=action,
                                                        resource_id=resource_id, binding=binding, outcome="success", http_status=200,
@@ -157,6 +160,35 @@ class APIntakeActionRunner(APActionRunner):
         else:
             conn.execute(f"RELEASE {savepoint}")
             return result
+
+    def _verify_reviewed_plan(self, action, resource_id, plan, context, source):
+        """Compare the committed proposal with the complete locked pure review."""
+        if action == "invoice.receive":
+            actual = self.cipher.plugin("ap_intake")._row(source["invoiceId"])
+            expected = dict(plan["content"])
+            expected["lines_json"] = canonical_json(expected.pop("lines"))
+            expected["id"] = source["invoiceId"]
+            expected["content_hash"] = self.cipher.plugin("ap_intake")._content_hash(expected)
+            expected.update(status="received", created_by=context["login"], possible_duplicate=int(plan["possible_duplicate"]),
+                            duplicate_of_json=canonical_json(plan["possible_duplicate_of"]))
+            for key in ("duplicate_cleared_by", "duplicate_cleared_at", "duplicate_clear_reason", "match_status", "match_basis",
+                        "match_attempt_id", "matched_bill_id", "matched_commitment_id", "match_approval_id", "matched_at", "matched_by",
+                        "rejected_at", "rejected_by", "reject_reason"):
+                expected[key] = None
+            expected["match_exceptions_json"] = "[]"
+            if any(actual.get(key) != value for key, value in expected.items()):
+                raise APIReceiptIntegrityError("The received invoice differs from its complete reviewed source and control plan")
+        elif action == "bill.prepare":
+            if source["content"] != plan["content"] or source["header"]["content_hash"] != plan["content_hash"]:
+                raise APIReceiptIntegrityError("The prepared certification differs from its complete reviewed quantity plan")
+        elif action == "invoice.computeMatch":
+            if source["attempt"]["row"]["result_hash"] != plan["result_hash"] or loads(source["attempt"]["row"]["result_json"]) != plan["facts"]:
+                raise APIReceiptIntegrityError("The recorded computation differs from its complete reviewed match plan")
+        elif action == "invoice.requestMatchApproval":
+            approval = self.cipher.approvals.get(source["approvalId"])
+            if (material_hash(context["manifest"]) != approval["material_hash"]
+                    or context["manifest"].get("governance") != approval["manifest"].get("governance")):
+                raise APIReceiptIntegrityError("The requested match authorization differs from its complete reviewed manifest")
 
     def _control_snapshot(self):
         snapshot = super()._control_snapshot()
@@ -466,6 +498,12 @@ class APIntakeActionRunner(APActionRunner):
             if (typed["invoiceNumber"] != original["invoice_number"] or typed["invoiceDate"] != original["invoice_date"]
                     or typed["amountCents"] != _cents(original["amount"]) or typed["evidenceRevisionId"] != original["evidence_revision_id"]):
                 raise APIReceiptIntegrityError("The received invoice differs from the original typed review")
+            terms = original["terms_days"]
+            if (type(terms) is not int or not 0 <= terms <= 365
+                    or original["due_date"] != (dt.date.fromisoformat(original["invoice_date"]) + dt.timedelta(days=terms)).isoformat()
+                    or original["service_period_start"] is not None or original["service_period_end"] is not None
+                    or loads(original["lines_json"]) != []):
+                raise APIReceiptIntegrityError("The fixed receipt source differs from its original server-derived terms")
             expected = {"invoiceId": original["id"], "commitmentId": resource, "status": "received", "invoiceNumber": original["invoice_number"],
                         "amountCents": _cents(original["amount"]), "dueDate": original["due_date"],
                         "possibleDuplicate": bool(payload["possible_duplicate"]), "journalDelta": 0, "apDeltaCents": 0}

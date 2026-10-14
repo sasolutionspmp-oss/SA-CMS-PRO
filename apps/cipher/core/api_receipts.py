@@ -49,7 +49,11 @@ AP_PREPARATION_ACTIONS = (
     "bill.prepare", "invoice.receive", "invoice.computeMatch",
     "invoice.requestMatchApproval", "invoice.approveMatch", "invoice.executeMatch",
 )
-AP_KNOWN_ACTIONS = frozenset(("bill.requestApproval", "bill.approve", "bill.post", *AP_PREPARATION_ACTIONS))
+AP_EXCEPTION_ACTIONS = (
+    "invoice.revise", "invoice.reject", "invoice.reviewDuplicate", "bill.cancel",
+    "bill.prepareCorrection", "bill.requestCorrection", "bill.approveCorrection", "bill.executeCorrection",
+)
+AP_KNOWN_ACTIONS = frozenset(("bill.requestApproval", "bill.approve", "bill.post", *AP_PREPARATION_ACTIONS, *AP_EXCEPTION_ACTIONS))
 AP_PREPARATION_RECEIPTS_SCHEMA_NAME = "ap_practice_preparation_action_receipts"
 AP_PREPARATION_RECEIPTS_SCHEMA_STATEMENTS = [
     "DROP TRIGGER ap_action_receipts_insert",
@@ -81,6 +85,37 @@ def register_api_preparation_receipts_schema() -> int:
     added to old rows, because doing so would change their original row hashes.
     """
     return register_schema_version(AP_PREPARATION_RECEIPTS_SCHEMA_NAME, AP_PREPARATION_RECEIPTS_SCHEMA_STATEMENTS)
+
+
+AP_EXCEPTION_RECEIPTS_SCHEMA_NAME = "ap_practice_exception_action_receipts"
+AP_EXCEPTION_RECEIPTS_SCHEMA_STATEMENTS = [
+    "DROP TRIGGER ap_action_receipts_insert",
+    "DROP TRIGGER ap_action_receipts_no_update",
+    "DROP TRIGGER ap_action_receipts_no_delete",
+    """CREATE TABLE ap_action_receipts_exceptions_expanded (
+        id TEXT PRIMARY KEY, workspace_id TEXT NOT NULL,
+        canonical_person_id TEXT NOT NULL REFERENCES people_persons(id), actor_login TEXT NOT NULL,
+        repeatability_uuid TEXT NOT NULL, contract_version TEXT NOT NULL,
+        fixed_action TEXT NOT NULL CHECK(fixed_action IN (
+            'bill.requestApproval','bill.approve','bill.post','bill.prepare','invoice.receive',
+            'invoice.computeMatch','invoice.requestMatchApproval','invoice.approveMatch','invoice.executeMatch',
+            'invoice.revise','invoice.reject','invoice.reviewDuplicate','bill.cancel',
+            'bill.prepareCorrection','bill.requestCorrection','bill.approveCorrection','bill.executeCorrection')),
+        resource_id TEXT NOT NULL, binding_json TEXT NOT NULL, outcome TEXT NOT NULL CHECK(outcome IN ('success','refused')),
+        http_status INTEGER NOT NULL, result_json TEXT NOT NULL, source_json TEXT NOT NULL,
+        created_at TEXT NOT NULL, receipt_hash TEXT NOT NULL,
+        UNIQUE(canonical_person_id,repeatability_uuid)
+    )""",
+    "INSERT INTO ap_action_receipts_exceptions_expanded SELECT * FROM ap_action_receipts",
+    "DROP TABLE ap_action_receipts",
+    "ALTER TABLE ap_action_receipts_exceptions_expanded RENAME TO ap_action_receipts",
+    *AP_RECEIPTS_SCHEMA_STATEMENTS[1:],
+]
+
+
+def register_api_exception_receipts_schema() -> int:
+    """Append exception receipts without altering any original receipt facts."""
+    return register_schema_version(AP_EXCEPTION_RECEIPTS_SCHEMA_NAME, AP_EXCEPTION_RECEIPTS_SCHEMA_STATEMENTS)
 
 
 class APIReceiptIntegrityError(RuntimeError):

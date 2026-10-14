@@ -45,6 +45,26 @@ _INTAKE_BODY_FIELDS = {
     "invoice.approveMatch": frozenset(),
     "invoice.executeMatch": frozenset(),
 }
+_EXCEPTION_ACTION_ROUTES = (
+    (re.compile(r"^invoices/" + _RESOURCE + r"/revise(:preflight)?$"), "invoice.revise"),
+    (re.compile(r"^invoices/" + _RESOURCE + r"/reject(:preflight)?$"), "invoice.reject"),
+    (re.compile(r"^invoices/" + _RESOURCE + r"/review-duplicate(:preflight)?$"), "invoice.reviewDuplicate"),
+    (re.compile(r"^bills/" + _RESOURCE + r"/cancel(:preflight)?$"), "bill.cancel"),
+    (re.compile(r"^bills/" + _RESOURCE + r"/prepare-correction(:preflight)?$"), "bill.prepareCorrection"),
+    (re.compile(r"^bills/" + _RESOURCE + r"/request-correction(:preflight)?$"), "bill.requestCorrection"),
+    (re.compile(r"^correction-approvals/" + _RESOURCE + r"/approve(:preflight)?$"), "bill.approveCorrection"),
+    (re.compile(r"^correction-approvals/" + _RESOURCE + r"/execute(:preflight)?$"), "bill.executeCorrection"),
+)
+_EXCEPTION_BODY_FIELDS = {
+    "invoice.revise": frozenset(("reason", "invoiceNumber", "invoiceDate", "amountCents", "evidenceRevisionId")),
+    "invoice.reject": frozenset(("reason",)),
+    "invoice.reviewDuplicate": frozenset(("reason",)),
+    "bill.cancel": frozenset(("reason",)),
+    "bill.prepareCorrection": frozenset(("reason",)),
+    "bill.requestCorrection": frozenset(),
+    "bill.approveCorrection": frozenset(),
+    "bill.executeCorrection": frozenset(("periodId",)),
+}
 _MAX_CENTS = 9_007_199_254_740_991
 _READ_PARAMETERS = {
     "projects": frozenset(("top", "cursor", "search")),
@@ -57,6 +77,9 @@ _INTAKE_READ_PARAMETERS = {
     "invoices": frozenset(("projectId", "status", "search", "top", "cursor")),
     "invoice-evidence": frozenset(("projectId", "status", "search", "top", "cursor")),
     "match-approvals": frozenset(("projectId", "status", "search", "top", "cursor")),
+}
+_EXCEPTION_READ_PARAMETERS = {
+    "correction-approvals": frozenset(("projectId", "status", "search", "top", "cursor")),
 }
 
 
@@ -72,6 +95,9 @@ class APPracticeHTTPServer(ThreadingHTTPServer):
         from .ap_intake_contract import APIntakeContract
         from .ap_intake_preflight import APIntakePreflight
         from .ap_intake_actions import APIntakeActionRunner
+        from .ap_exception_contract import APExceptionContract
+        from .ap_exception_preflight import APExceptionPreflight
+        from .ap_exception_actions import APExceptionActionRunner
 
         self.webroot = webroot.resolve()
         self.cipher = make_ap_practice_fixture()
@@ -87,6 +113,10 @@ class APPracticeHTTPServer(ThreadingHTTPServer):
             self.intake_preflight = APIntakePreflight(self.cipher, self.intake_contract, secret=secret)
             self.intake_actions = APIntakeActionRunner(self.cipher, self.intake_contract, self.intake_preflight)
             self.cipher.register_plugin("ap_intake_sources", self.intake_actions)
+            self.exception_contract = APExceptionContract(self.cipher, self.contract, self.intake_contract, secret=secret)
+            self.exception_preflight = APExceptionPreflight(self.cipher, self.exception_contract, secret=secret)
+            self.exception_actions = APExceptionActionRunner(self.cipher, self.exception_contract, self.exception_preflight)
+            self.cipher.register_plugin("ap_exception_sources", self.exception_actions)
             self.sessions = APPracticeSessions(self.cipher)
             super().__init__(("127.0.0.1", port), APPracticeHandler)
         except BaseException:
@@ -241,7 +271,7 @@ class APPracticeHandler(BaseHTTPRequestHandler):
     def _authenticated(self, session):
         return self.server.sessions.require(session)
 
-    def _body(self, *, allowed, required=(), intake_action=None):
+    def _body(self, *, allowed, required=(), intake_action=None, exception_action=None):
         from .ap_contract import APRefusal
         if self._one_header("Transfer-Encoding") is not None:
             raise APRefusal(400, "invalid_body", "Send one bounded JSON request body.", "body")
@@ -273,7 +303,9 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                                parse_constant=lambda _: (_ for _ in ()).throw(ValueError()))
             if type(value) is not dict or value.keys() - allowed or set(required) - value.keys():
                 raise ValueError
-            if intake_action is None:
+            if exception_action is not None:
+                self._exception_body(value, exception_action)
+            elif intake_action is None:
                 # Preserve the original API's string-only body contract. New
                 # integer/array fields are accepted only on fixed intake routes.
                 if any(type(item) is not str or (not item and key != "reason") or len(item) > 2048
@@ -317,6 +349,26 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                     or not reference(body["evidenceRevisionId"])):
                 raise ValueError
         elif action not in _INTAKE_BODY_FIELDS:
+            raise ValueError
+
+    @staticmethod
+    def _exception_body(body, action):
+        """Keep the exception wire contract fixed and separate from old actions."""
+        fingerprint = body.get("fingerprint")
+        if "fingerprint" in body and (type(fingerprint) is not str or not fingerprint or len(fingerprint) > 256):
+            raise ValueError
+        if "reason" in _EXCEPTION_BODY_FIELDS[action]:
+            reason = body["reason"]
+            if (type(reason) is not str or not reason.strip() or len(reason) > 500
+                    or any(ord(char) < 32 for char in reason)):
+                raise ValueError
+        if action == "invoice.revise":
+            APPracticeHandler._intake_body(body, "invoice.receive")
+        elif action == "bill.executeCorrection":
+            period = body["periodId"]
+            if type(period) is not str or re.fullmatch(_RESOURCE, period) is None:
+                raise ValueError
+        elif action not in _EXCEPTION_BODY_FIELDS:
             raise ValueError
 
     def _boundary(self, *, unsafe=False):
@@ -384,12 +436,21 @@ class APPracticeHandler(BaseHTTPRequestHandler):
             result = self.server.intake_contract.read(authority.person_id, route, **params)
             self._json(200, result)
             return
+        if route in _EXCEPTION_READ_PARAMETERS:
+            params = self._query(query, _EXCEPTION_READ_PARAMETERS[route])
+            authority = self._authenticated(self._session())
+            result = self.server.exception_contract.read(authority.person_id, route, **params)
+            self._json(200, result)
+            return
         bill = re.fullmatch(r"bills/" + _RESOURCE, route)
         packet = re.fullmatch(r"approvals/" + _RESOURCE + r"/packet", route)
         preparation = re.fullmatch(r"commitments/" + _RESOURCE + r"/preparation", route)
         invoice = re.fullmatch(r"invoices/" + _RESOURCE, route)
         match_packet = re.fullmatch(r"match-approvals/" + _RESOURCE + r"/packet", route)
-        if bill or packet or preparation or invoice or match_packet:
+        invoice_review = re.fullmatch(r"invoices/" + _RESOURCE + r"/exception-review", route)
+        bill_review = re.fullmatch(r"bills/" + _RESOURCE + r"/exception-review", route)
+        correction_packet = re.fullmatch(r"correction-approvals/" + _RESOURCE + r"/packet", route)
+        if bill or packet or preparation or invoice or match_packet or invoice_review or bill_review or correction_packet:
             self._query(query, frozenset())
             authority = self._authenticated(self._session())
             if bill:
@@ -400,8 +461,14 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                 result = self.server.intake_contract.preparation(authority.person_id, preparation[1])
             elif invoice:
                 result = self.server.intake_contract.invoice(authority.person_id, invoice[1])
-            else:
+            elif match_packet:
                 result = self.server.intake_contract.packet(authority.person_id, match_packet[1])
+            elif invoice_review:
+                result = self.server.exception_contract.invoice_review(authority.person_id, invoice_review[1])
+            elif bill_review:
+                result = self.server.exception_contract.bill_review(authority.person_id, bill_review[1])
+            else:
+                result = self.server.exception_contract.packet(authority.person_id, correction_packet[1])
             self._json(200, result, etag=result.get("version"))
             return
         raise APRefusal(404, "route_not_found", "This practice route is not available.")
@@ -415,7 +482,7 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                 if not path.startswith(API_PREFIX):
                     raise APRefusal(404, "route_not_found", "This practice route is not available.")
                 route = path.removeprefix(API_PREFIX)
-                match = next(((pattern.fullmatch(route), action) for pattern, action in (*_ACTION_ROUTES, *_INTAKE_ACTION_ROUTES)
+                match = next(((pattern.fullmatch(route), action) for pattern, action in (*_ACTION_ROUTES, *_INTAKE_ACTION_ROUTES, *_EXCEPTION_ACTION_ROUTES)
                               if pattern.fullmatch(route)), None)
                 if route not in ("session", "session/logout") and match is None:
                     raise APRefusal(404, "route_not_found", "This practice route is not available.")
@@ -439,16 +506,18 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                 route_match, action = match
                 resource_id, is_preflight = route_match[1], route_match[2] is not None
                 is_intake = action in _INTAKE_BODY_FIELDS
-                fields = set(_INTAKE_BODY_FIELDS[action]) if is_intake else {"periodId", "reason"} if action == "bill.post" else set()
+                is_exception = action in _EXCEPTION_BODY_FIELDS
+                fields = (set(_EXCEPTION_BODY_FIELDS[action]) if is_exception else set(_INTAKE_BODY_FIELDS[action]) if is_intake
+                          else {"periodId", "reason"} if action == "bill.post" else set())
+                required = fields.copy()
                 if not is_preflight:
                     fields.add("fingerprint")
-                required = set(_INTAKE_BODY_FIELDS[action]) if is_intake else {"periodId", "reason"} if action == "bill.post" else set()
-                if not is_preflight:
                     required.add("fingerprint")
-                body = self._body(allowed=fields, required=required, intake_action=action if is_intake else None)
+                body = self._body(allowed=fields, required=required, intake_action=action if is_intake else None,
+                                  exception_action=action if is_exception else None)
                 if is_preflight:
                     authority = self._authenticated(session)
-                    preflight = self.server.intake_preflight if is_intake else self.server.preflight
+                    preflight = self.server.exception_preflight if is_exception else self.server.intake_preflight if is_intake else self.server.preflight
                     result = preflight.review(authority.person_id, action, resource_id, body)
                 else:
                     repeatability_key = self._one_header("Repeatability-Request-ID", required=True)
@@ -461,7 +530,7 @@ class APPracticeHandler(BaseHTTPRequestHandler):
                     if not re.fullmatch(r'"[A-Za-z0-9_.:-]{1,256}"', if_match):
                         raise APRefusal(422, "invalid_record_version", "Use the quoted record version from the current review.", "If-Match")
                     authority = self._authenticated(session)
-                    runner = self.server.intake_actions if is_intake else self.server.actions
+                    runner = self.server.exception_actions if is_exception else self.server.intake_actions if is_intake else self.server.actions
                     result = runner.run(authority.person_id, action, resource_id, body,
                                         repeatability_key=repeatability_key, if_match=if_match[1:-1])
                 self._json(200, {"contractVersion": "cipher.ap-practice.v1", "mode": "practice",

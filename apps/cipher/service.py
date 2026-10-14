@@ -100,7 +100,7 @@ def _load_plugin_modules() -> list[Any]:
 
 _load_plugin_modules()
 from .core.audit import Audit, register_audit_schema
-from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema
+from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema, register_api_exception_receipts_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database, register_workspace_mode_schema
 from .core.ids import new_id, sha256_hex, utcnow_iso
@@ -122,6 +122,7 @@ register_bill_posting_schema()
 register_workspace_mode_schema()
 register_api_receipts_schema()
 register_api_preparation_receipts_schema()
+register_api_exception_receipts_schema()
 
 
 class CipherError(RuntimeError):
@@ -418,6 +419,8 @@ class Cipher:
         ap = self.approvals.get(approval_id)
         if ap["operation"] == "ap_intake.match_invoice":
             return self.check_invoice_match_grant(approval_id, approver=approver, approver_role=approver_role)
+        if ap["operation"] == "bill.correct":
+            return self.check_bill_correction_grant(approval_id, approver=approver, approver_role=approver_role)
         if not Ricky.can(approver_role, ap["operation"]):
             raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
         governors = self._governors()
@@ -479,6 +482,56 @@ class Cipher:
             check(checked["approval"], checked["manifest"], actor=actor)
         return checked
 
+    def _bill_correction_current(self, approval_id: str, *, status: str) -> dict[str, Any]:
+        from .core.approvals import ApprovalConsumed, ApprovalError, ApprovalNotGranted, material_hash
+        from .core.ids import parse_iso, utcnow
+        self.db.require_practice_mode()
+        self.bills.correction_approval_proof(approval_id)
+        approval = self.approvals.get(approval_id)
+        if approval["status"] == "expired":
+            raise ApprovalExpired("The correction authorization expired")
+        if approval["status"] != status:
+            if status == "granted":
+                if approval["status"] == "consumed":
+                    raise ApprovalConsumed("The correction authorization was already consumed")
+                raise ApprovalNotGranted("The correction authorization is no longer granted")
+            raise ApprovalError("The correction authorization is no longer available")
+        if parse_iso(approval["expires_at"]) <= utcnow():
+            raise ApprovalExpired("The correction authorization expired")
+        manifest = self._manifest("bill.correct", approval["subject_id"], approval["actor_role"])
+        if (material_hash(manifest) != approval["material_hash"]
+                or manifest.get("governance") != approval["manifest"].get("governance")):
+            raise StaleApprovalError("The correction authorization no longer matches its governed source facts")
+        return {"approval": approval, "manifest": manifest, "governors": self._governors()}
+
+    def check_bill_correction_grant(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
+        """Verify the fixed bill correction and independent grant duty without effects."""
+        checked = self._bill_correction_current(approval_id, status="pending")
+        if not Ricky.can(approver_role, "bill.correct"):
+            raise RoleNotAuthorized("This role cannot approve a bill correction")
+        for _name, governor in checked["governors"]:
+            check = getattr(governor, "check_grant", None)
+            if check is not None:
+                check(checked["approval"], approver=approver, approver_role=approver_role)
+        return checked
+
+    def check_bill_correction_execution(self, approval_id: str, *, actor: str = "owner", period_id: str | None = None) -> dict[str, Any]:
+        """Calculate the exact reversal plan through declared pure governor checks."""
+        checked = self._bill_correction_current(approval_id, status="granted")
+        for name, governor in checked["governors"]:
+            effect_check = getattr(governor, "check_execute", None)
+            if effect_check is None:
+                continue
+            check = effect_check if name == "people" else getattr(governor, "check_execute_preflight", None)
+            if check is None:
+                raise CipherError("A configured governor does not support a pure bill correction check")
+            check(checked["approval"], checked["manifest"], actor=actor)
+        plan = self.bills.correction_execution_preflight(checked["approval"]["subject_id"], period_id=period_id,
+                                                        approval_id=approval_id, manifest=checked["manifest"])
+        checked.update(plan)
+        checked["plan"] = plan
+        return checked
+
     def approve(self, approval_id: str, *, approver: str = "owner", approver_role: str = "owner") -> dict[str, Any]:
         """Grant an approval.  The approver's role must hold the operation's authority.
         A sole owner holds every role; two owner logins are not two-person separation
@@ -533,9 +586,11 @@ class Cipher:
         op_id = op_id or f"exec:{approval_id}"
         payload = {"approval_id": approval_id, "operation": operation, "subject_id": subject_id}
 
-        def handler():
+        def apply_handler():
             current = (self.check_invoice_match_execution(approval_id, actor=actor)["manifest"]
-                       if operation == "ap_intake.match_invoice" else self._manifest(operation, subject_id, ap["actor_role"]))
+                       if operation == "ap_intake.match_invoice" else
+                       self.check_bill_correction_execution(approval_id, actor=actor, period_id=period_id)["manifest"]
+                       if operation == "bill.correct" else self._manifest(operation, subject_id, ap["actor_role"]))
             fresh = self.approvals.get(approval_id)
             approved_policy, current_policy = fresh["manifest"].get("governance"), current.get("governance")
             if fresh["status"] == "granted" and approved_policy != current_policy:
@@ -549,8 +604,26 @@ class Cipher:
             self.approvals.consume(approval_id, current_manifest=current, consumer=actor)
             return self._apply(operation, subject_id, approval_id, current, actor, period_id)
 
+        def correction_command():
+            # Commands joins an outer transaction. Include its bookkeeping in
+            # this boundary so a caught late failure cannot leave consumption,
+            # reversals, correction state or an incomplete command behind.
+            with self.db.transaction() as conn:
+                savepoint = new_id("bill_correction_act")
+                conn.execute(f"SAVEPOINT {savepoint}")
+                try:
+                    return self.commands.run(op_id, payload, apply_handler, actor=actor)
+                except BaseException:
+                    if conn.in_transaction:
+                        conn.execute(f"ROLLBACK TO {savepoint}")
+                    raise
+                finally:
+                    if conn.in_transaction:
+                        conn.execute(f"RELEASE {savepoint}")
+
         try:
-            return self.commands.run(op_id, payload, handler, actor=actor)
+            return (correction_command() if operation == "bill.correct" else
+                    self.commands.run(op_id, payload, apply_handler, actor=actor))
         except StaleApprovalError as exc:
             # the command transaction rolled back; make the invalidation durable
             if self.approvals.get(approval_id)["status"] == "granted":

@@ -730,18 +730,82 @@ class Plugin:
             )
         return self.invoice(invoice_id)
 
-    def revise_invoice(self, invoice_id: str, actor: str, *, reason: str, invoice_number: str | None = None, invoice_date: str | None = None,
-                       amount: Any = None, evidence_hash: str | None = None, due_date: str | None = None, lines=None,
-                       service_period_start: str | None = None, service_period_end: str | None = None) -> dict[str, Any]:
-        """Replace the facts of a received or matched invoice (the supplier reissued it).
-        The invoice moves to its next version and back to ``received``: its match must be
-        computed and approved again, open approvals on it are invalidated, and a bill it
-        was attached to can no longer be approved or posted until the revised invoice is
-        matched again.  Duplicate checks run again on the revised facts."""
-        who = _text(actor, "actor")
+    def _exception_evidence(self, revision_id: str, project_id: str) -> dict[str, Any]:
+        """Verify original document metadata and every immutable revision receipt."""
+        row = self.db.one("SELECT r.*,d.project_id,d.kind,d.title FROM document_revisions r JOIN documents d ON d.id=r.document_id WHERE r.id=?", (revision_id,))
+        if row is None or row["project_id"] != project_id or row["kind"] != SUPPLIER_INVOICE_KIND:
+            raise APIntakeError("The invoice evidence is not a supplier invoice source on its project")
+        registrations = self.db.query("SELECT payload_json FROM audit_log WHERE action='document.registered' AND entity_type='document' AND entity_id=?", (row["document_id"],))
+        if len(registrations) != 1 or loads(registrations[0]["payload_json"]) != {
+                "project_id": project_id, "kind": row["kind"], "title": row["title"]}:
+            raise APIntakeError("The invoice document metadata differs from its audited source")
+        revisions = self.db.query("SELECT * FROM document_revisions WHERE document_id=? ORDER BY revision", (row["document_id"],))
+        events = self.db.query("SELECT payload_json FROM audit_log WHERE action='document.revised' AND entity_type='document' AND entity_id=? ORDER BY seq", (row["document_id"],))
+        if len(revisions) != len(events) or not revisions:
+            raise APIntakeError("The invoice evidence revision inventory differs from its audited source")
+        for number, (revision, event) in enumerate(zip(revisions, events), 1):
+            if revision["revision"] != number or loads(event["payload_json"]) != {
+                    "revision_id": revision["id"], "revision": number, "content_hash": revision["content_hash"], "note": revision["note"]}:
+                raise APIntakeError("The invoice evidence revision differs from its audited source")
+        return {**row, "current_revision": revisions[-1], "is_current": row["id"] == revisions[-1]["id"]}
+
+    def _exception_source(self, invoice_id: str) -> dict[str, Any]:
+        """Read current exception controls; private cross-project facts never become DTOs."""
+        inv = self.invoice_proof(invoice_id)
+        self.require_invoice_source_integrity(supplier_id=inv["supplier_id"], evidence_document_id=inv["evidence_document_id"])
+        evidence = self._exception_evidence(inv["evidence_revision_id"], inv["project_id"])
+        terms = self.audited_terms(inv["supplier_id"])
+        approvals = self.db.query("SELECT id FROM approvals WHERE subject_type=? AND subject_id=?", (INVOICE_SUBJECT, invoice_id))
+        approval_ids = {row["id"] for row in approvals}
+        for event in self.db.query("SELECT entity_id,payload_json FROM audit_log WHERE action='approval.requested' AND entity_type='approval'"):
+            payload = loads(event["payload_json"])
+            if payload.get("subject") == {"type": INVOICE_SUBJECT, "id": invoice_id}:
+                approval_ids.add(event["entity_id"])
+        approvals = []
+        for approval_id in sorted(approval_ids):
+            self.approval_proof(approval_id)
+            approvals.append(self.approvals.get(approval_id))
+        linked_ids = {row["id"] for row in self.db.query("SELECT id FROM bills WHERE supplier_invoice_id=?", (invoice_id,))}
+        if inv["matched_bill_id"]:
+            linked_ids.add(inv["matched_bill_id"])
+        for event in self.db.query("SELECT entity_id,payload_json FROM audit_log WHERE action='bill.supplier_invoice_attached' AND entity_type='bill'"):
+            if loads(event["payload_json"]).get("supplier_invoice_id") == invoice_id:
+                linked_ids.add(event["entity_id"])
+        linked = []
+        for bill_id in sorted(linked_ids):
+            try:
+                bill = self.c.bills.get(bill_id)
+                if bill["project_id"] != inv["project_id"] or bill["supplier_id"] != inv["supplier_id"]:
+                    raise APIntakeError("The invoice's historical bill identity differs from its source")
+                if not all(check["ok"] for check in self.c.bills.lifecycle_integrity_checks(bill_id)):
+                    raise APIntakeError("The invoice's bill lifecycle cannot be verified")
+                if bill["status"] == "corrected":
+                    prove = getattr(self.c.bills, "corrected_bill_proof", None)
+                    if not callable(prove):
+                        raise APIntakeError("The invoice's governed bill correction cannot be verified")
+                    prove(bill_id)
+                if bill["status"] == "void" and len(self.db.query("SELECT seq FROM audit_log WHERE action='bill.voided' AND entity_type='bill' AND entity_id=?", (bill_id,))) != 1:
+                    raise APIntakeError("The invoice's canceled bill lacks its original cancellation source")
+                linked.append(bill)
+            except RuntimeError as exc:
+                raise APIntakeError("The invoice's bill financial source cannot be verified") from exc
+        return {"invoice": inv, "evidence": evidence, "terms": terms, "approvals": approvals, "linked_bills": linked,
+                "supplier_invoices": self.db.query("SELECT * FROM ap_invoices WHERE supplier_id=? ORDER BY id", (inv["supplier_id"],))}
+
+    @staticmethod
+    def _require_unposted_exception(source: dict[str, Any]) -> None:
+        if any(bill["status"] in ("posted", "paid") for bill in source["linked_bills"]):
+            raise APIntakeError("An invoice linked to a posted or paid bill requires a governed bill correction before revision or rejection")
+
+    def revision_preflight(self, invoice_id: str, *, reason: str, invoice_number: str | None = None, invoice_date: str | None = None,
+                           amount: Any = None, evidence_hash: str | None = None, due_date: str | None = None, lines=None,
+                           service_period_start: str | None = None, service_period_end: str | None = None) -> dict[str, Any]:
+        """Calculate the exact next invoice version and control changes without writes."""
         why = _text(reason, "a revision reason")
-        with self.db.transaction() as conn:
-            inv = self._row(invoice_id)
+        with self.db._lock:
+            source = self._exception_source(invoice_id)
+            inv = source["invoice"]
+            self._require_unposted_exception(source)
             if inv["status"] == "rejected":
                 raise APIntakeError(f"supplier invoice {inv['invoice_number']} was rejected; a rejected invoice is final")
             tampered = self._integrity_problem(inv)
@@ -779,7 +843,9 @@ class Plugin:
                     new["service_period_start"], new["service_period_end"] = sp
                     changes["service_period"] = list(sp)
             if evidence_hash is not None:
-                rev = self._resolve_evidence(conn, inv["project_id"], evidence_hash, other_than=invoice_id)
+                rev = self._resolve_evidence(self.db.conn, inv["project_id"], evidence_hash, other_than=invoice_id)
+                self.require_invoice_source_integrity(evidence_document_id=rev["document_id"])
+                self._exception_evidence(rev["id"], inv["project_id"])
                 if rev["id"] != inv["evidence_revision_id"]:
                     new["evidence_hash"], new["evidence_document_id"], new["evidence_revision_id"] = rev["content_hash"], rev["document_id"], rev["id"]
                     changes["evidence_revision_id"] = rev["id"]
@@ -795,7 +861,7 @@ class Plugin:
             if not changes:
                 raise APIntakeError(f"revision of supplier invoice {inv['invoice_number']} changes nothing")
             if new["number_key"] != inv["number_key"]:
-                dup = conn.execute("SELECT id, invoice_number FROM ap_invoices WHERE supplier_id=? AND number_key=? AND id != ?",
+                dup = self.db.conn.execute("SELECT id, invoice_number FROM ap_invoices WHERE supplier_id=? AND number_key=? AND id != ?",
                                    (inv["supplier_id"], new["number_key"], invoice_id)).fetchone()
                 if dup is not None:
                     raise DuplicateInvoiceError(f"duplicate supplier invoice: {new['invoice_number']!r} is the same number as {dup['invoice_number']!r} ({dup['id']})")
@@ -803,13 +869,69 @@ class Plugin:
             new["content_hash"] = self._content_hash(new)
             dup_facts_changed = (new["number_key"], new["amount"], new["invoice_date"]) != (inv["number_key"], inv["amount"], inv["invoice_date"])
             if dup_facts_changed:
-                near = self._near_duplicates(conn, supplier_id=inv["supplier_id"], amount=money(new["amount"]), invoice_date=inv_date,
+                near = self._near_duplicates(self.db.conn, supplier_id=inv["supplier_id"], amount=money(new["amount"]), invoice_date=inv_date,
                                              number_key=new["number_key"], other_than=invoice_id)
                 flag, near_json, cleared = (1 if near else 0), canonical_json(near), (None, None, None)
             else:
                 near = loads(inv["duplicate_of_json"])
                 flag, near_json = inv["possible_duplicate"], inv["duplicate_of_json"]
                 cleared = (inv["duplicate_cleared_by"], inv["duplicate_cleared_at"], inv["duplicate_clear_reason"])
+            content_fields = ("id", "version", "project_id", "supplier_id", "commitment_id", "invoice_number", "number_key",
+                              "invoice_date", "due_date", "terms_days", "amount", "service_period_start", "service_period_end",
+                              "evidence_hash", "evidence_document_id", "evidence_revision_id", "lines_json", "content_hash")
+            content = {field: new[field] for field in content_fields}
+            return {"invoice_id": invoice_id, "reason": why, "source_facts": source, "content": content, "changes": changes,
+                    "invoice_status": "received",
+                    "possible_duplicate": bool(flag), "possible_duplicate_of": near,
+                    "duplicate_review": {"cleared_by": cleared[0], "cleared_at": cleared[1], "reason": cleared[2]},
+                    "invalidated_approval_ids": [approval["id"] for approval in source["approvals"] if approval["status"] in ("pending", "granted")]}
+
+    def rejection_preflight(self, invoice_id: str, *, reason: str) -> dict[str, Any]:
+        """Check a final, journal-free rejection without changing invoice or approvals."""
+        why = _text(reason, "a rejection reason")
+        with self.db._lock:
+            source = self._exception_source(invoice_id)
+            inv = source["invoice"]
+            self._require_unposted_exception(source)
+            if inv["status"] != "received":
+                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is {inv['status']}; only a received (unmatched) invoice is rejected")
+            return {"invoice_id": invoice_id, "reason": why, "source_facts": source, "content": inv, "invoice_status": "rejected",
+                    "invalidated_approval_ids": [approval["id"] for approval in source["approvals"] if approval["status"] in ("pending", "granted")]}
+
+    def duplicate_review_preflight(self, invoice_id: str, *, reason: str) -> dict[str, Any]:
+        """Check a documented duplicate review without inventing its person or time."""
+        why = _text(reason, "a review reason")
+        with self.db._lock:
+            source = self._exception_source(invoice_id)
+            inv = source["invoice"]
+            if inv["status"] != "received":
+                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is {inv['status']}")
+            if not inv["possible_duplicate"]:
+                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is not flagged as a possible duplicate")
+            if inv["duplicate_cleared_at"]:
+                raise APIntakeError(f"the possible-duplicate flag on {inv['invoice_number']} was already cleared by {inv['duplicate_cleared_by']}")
+            return {"invoice_id": invoice_id, "reason": why, "source_facts": source, "content": inv,
+                    "possible_duplicate_of": loads(inv["duplicate_of_json"]), "invalidated_approval_ids": []}
+
+    def revise_invoice(self, invoice_id: str, actor: str, *, reason: str, invoice_number: str | None = None, invoice_date: str | None = None,
+                       amount: Any = None, evidence_hash: str | None = None, due_date: str | None = None, lines=None,
+                       service_period_start: str | None = None, service_period_end: str | None = None) -> dict[str, Any]:
+        """Replace the facts of a received or matched invoice (the supplier reissued it).
+        The invoice moves to its next version and back to ``received``: its match must be
+        computed and approved again, open approvals on it are invalidated, and a bill it
+        was attached to can no longer be approved or posted until the revised invoice is
+        matched again.  Duplicate checks run again on the revised facts."""
+        who = _text(actor, "actor")
+        with self._preparation_transaction() as conn:
+            plan = self.revision_preflight(invoice_id, reason=reason, invoice_number=invoice_number, invoice_date=invoice_date,
+                                           amount=amount, evidence_hash=evidence_hash, due_date=due_date, lines=lines,
+                                           service_period_start=service_period_start, service_period_end=service_period_end)
+            inv, new = plan["source_facts"]["invoice"], plan["content"]
+            why, changes = plan["reason"], plan["changes"]
+            near = plan["possible_duplicate_of"]
+            flag, near_json = int(plan["possible_duplicate"]), canonical_json(near)
+            review = plan["duplicate_review"]
+            cleared = (review["cleared_by"], review["cleared_at"], review["reason"])
             now = utcnow_iso()
             invalidated = self.approvals.invalidate_for_subject(INVOICE_SUBJECT, invoice_id, reason=f"invoice revised to version {new['version']}: {why}", actor=who)
             # audited first: the storage guard admits a new version only with its audit entry
@@ -835,15 +957,9 @@ class Plugin:
     def clear_duplicate_flag(self, invoice_id: str, reason: str, actor: str) -> dict[str, Any]:
         """Record the review of a possible duplicate: the invoice is genuine and may be matched."""
         who = _text(actor, "actor")
-        why = _text(reason, "a review reason")
-        with self.db.transaction() as conn:
-            inv = self._row(invoice_id)
-            if inv["status"] != "received":
-                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is {inv['status']}")
-            if not inv["possible_duplicate"]:
-                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is not flagged as a possible duplicate")
-            if inv["duplicate_cleared_at"]:
-                raise APIntakeError(f"the possible-duplicate flag on {inv['invoice_number']} was already cleared by {inv['duplicate_cleared_by']}")
+        with self._preparation_transaction() as conn:
+            plan = self.duplicate_review_preflight(invoice_id, reason=reason)
+            inv, why = plan["content"], plan["reason"]
             now = utcnow_iso()
             # audited first: the storage guard admits a review only with its audit entry
             self.audit.record(who, "ap_intake.duplicate_flag_cleared", INVOICE_SUBJECT, invoice_id, {
@@ -857,11 +973,9 @@ class Plugin:
         """Reject a received invoice (a confirmed duplicate, or not owed).  Final; its number
         stays taken, and open approvals on it are invalidated."""
         who = _text(actor, "actor")
-        why = _text(reason, "a rejection reason")
-        with self.db.transaction() as conn:
-            inv = self._row(invoice_id)
-            if inv["status"] != "received":
-                raise APIntakeError(f"supplier invoice {inv['invoice_number']} is {inv['status']}; only a received (unmatched) invoice is rejected")
+        with self._preparation_transaction() as conn:
+            plan = self.rejection_preflight(invoice_id, reason=reason)
+            inv, why = plan["content"], plan["reason"]
             now = utcnow_iso()
             invalidated = self.approvals.invalidate_for_subject(INVOICE_SUBJECT, invoice_id, reason=f"invoice rejected: {why}", actor=who)
             # audited first: the storage guard admits a rejection only with its audit entry

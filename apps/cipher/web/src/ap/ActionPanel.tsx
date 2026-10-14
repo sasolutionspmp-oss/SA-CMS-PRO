@@ -13,6 +13,7 @@ import type { ActionOutcome, APAction, Preflight } from './types';
 interface Props {
   action: APAction; id: string; version: string; csrf: string; amountCents: number;
   body?: Record<string, unknown>; permitted: boolean; periodName?: string;
+  withdrawal?: boolean;
   onChanged: () => void; onSessionLost: () => void;
 }
 const labels: Record<APAction, { review: string; apply: string; done: string; consequence: string }> = {
@@ -25,8 +26,16 @@ const labels: Record<APAction, { review: string; apply: string; done: string; co
   'invoice.requestMatchApproval': { review: 'Review match request', apply: 'Request match approval', done: 'Invoice match approval requested.', consequence: 'A different authorized accountant reviews the proposed invoice match. Requesting approval creates no journal or payable.' },
   'invoice.approveMatch': { review: 'Review match approval', apply: 'Approve invoice match', done: 'Invoice match approved.', consequence: 'This records approval of the reviewed source match. An authorized accountant separately applies the approved match to the bill.' },
   'invoice.executeMatch': { review: 'Review approved match', apply: 'Apply approved match', done: 'Approved invoice match applied to the bill.', consequence: 'This links the approved invoice to the certified bill. Business approval and independent posting remain separate steps.' },
+  'invoice.revise': { review: 'Review invoice revision', apply: 'Revise supplier invoice', done: 'Supplier invoice revised.', consequence: 'This records the reviewed replacement source facts and reason. The invoice returns to received, and its match requires fresh review and approval.' },
+  'invoice.reject': { review: 'Review invoice rejection', apply: 'Reject supplier invoice', done: 'Supplier invoice rejected.', consequence: 'Rejection is final for this invoice. Its number stays reserved, its open approvals are invalidated, and its source evidence becomes available for another receipt.' },
+  'invoice.reviewDuplicate': { review: 'Review duplicate decision', apply: 'Record duplicate review', done: 'Duplicate review recorded.', consequence: 'This records why the flagged invoice is a distinct obligation. Changed duplicate facts require review again before matching.' },
+  'bill.cancel': { review: 'Review bill cancellation', apply: 'Cancel unposted bill', done: 'Unposted bill canceled.', consequence: 'This cancels an unposted bill and invalidates its open approval. Approved bills can be withdrawn only by their original business approver with current authority.' },
+  'bill.prepareCorrection': { review: 'Review correction preparation', apply: 'Prepare correction request', done: 'Bill correction reason recorded.', consequence: 'This records the reason to correct a posted, unpaid bill. Correction approval and explicit reversal follow separately.' },
+  'bill.requestCorrection': { review: 'Review correction request', apply: 'Request correction approval', done: 'Bill correction approval requested.', consequence: 'A different authorized accountant reviews the correction. Requesting approval does not reverse the bill or create a journal.' },
+  'bill.approveCorrection': { review: 'Review correction approval', apply: 'Approve bill correction', done: 'Bill correction approved.', consequence: 'This records approval of the reviewed correction. An authorized accountant separately selects an open period and executes its reversal.' },
+  'bill.executeCorrection': { review: 'Review correction reversal', apply: 'Execute approved correction', done: 'Approved bill correction executed.', consequence: 'This reverses the reviewed bill journals in the selected practice period, marks the original bill corrected and makes its work available for replacement certification.' },
 };
-export function ActionPanel({ action, id, version, csrf, amountCents, body = {}, permitted, periodName, onChanged, onSessionLost }: Props) {
+export function ActionPanel({ action, id, version, csrf, amountCents, body = {}, permitted, periodName, withdrawal = false, onChanged, onSessionLost }: Props) {
   const memory = useActionMemory();
   const bodyKey = JSON.stringify(body);
   const remembered = memory.get(memoryKey(action, id));
@@ -41,7 +50,16 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
   const reviewButton = useRef<HTMLButtonElement>(null);
   const alive = useRef(true);
   const previousInput = useRef(`${action}:${id}:${bodyKey}`);
-  const copy = labels[action];
+  const copy = withdrawal && action === 'bill.cancel' ? {
+    review: 'Review approved withdrawal', apply: 'Withdraw approved bill', done: 'Approved bill withdrawn.',
+    consequence: 'This records the original business approver’s withdrawal of the unposted bill and invalidates its authorization. No journal or payable is created.',
+  } : labels[action];
+  const confirmation = ['bill.post', 'invoice.reject', 'bill.cancel', 'bill.executeCorrection'].includes(action);
+  const confirmationTitle = action === 'bill.post' ? `Post ${money(amountCents)} to ${periodName ?? 'the selected practice period'}?`
+    : action === 'invoice.reject' ? 'Reject this supplier invoice?'
+      : action === 'bill.cancel' ? withdrawal ? 'Withdraw this approved bill?' : 'Cancel this unposted bill?'
+        : `Reverse the approved bill in ${periodName ?? 'the selected practice period'}?`;
+  const safeOption = action === 'bill.post' ? 'Don’t post' : action === 'invoice.reject' ? 'Keep invoice' : action === 'bill.cancel' ? 'Keep bill' : 'Don’t reverse';
   useEffect(() => { alive.current = true; return () => { alive.current = false; }; }, []);
   useEffect(() => {
     const key = `${action}:${id}:${bodyKey}`;
@@ -95,7 +113,7 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     finally { if (alive.current) setBusy(null); }
   }
   const changedOrExpired = problem instanceof APError && [409, 412, 423].includes(problem.status);
-  return <div className="cipher-ap-action" data-action={action} aria-busy={busy !== null}>
+  return <div className="cipher-ap-action" data-action={action} data-resource-version={version} aria-busy={busy !== null}>
     {message && <p role="status" aria-live="polite" className={`cipher-ap-feedback ${outcome ? 'cipher-ap-feedback-positive' : review?.allowed === false ? 'cipher-ap-feedback-warning' : ''}`}>{message}</p>}
     {problem && <div role="alert" className="cipher-message cipher-message-negative"><div>
       <p>{problem.message}</p>{problem instanceof APError && problem.problem.fix && <p>{problem.problem.fix}</p>}
@@ -116,7 +134,7 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
     <p className="cipher-ap-consequence">{copy.consequence}</p>
     <div className="cipher-ap-action-footer">
       {permitted && !outcome && <Button ref={reviewButton} appearance={review?.allowed ? 'secondary' : 'primary'} disabled={busy !== null} onClick={reviewAction}>{busy === 'review' ? 'Reviewing current facts…' : copy.review}</Button>}
-      {review?.allowed && !outcome && <Button appearance="primary" disabled={busy !== null || !!prepared} onClick={() => action === 'bill.post' ? setConfirmOpen(true) : submit()}>{busy === 'action' ? 'Applying practice action…' : copy.apply}</Button>}
+      {review?.allowed && !outcome && <Button appearance="primary" disabled={busy !== null || !!prepared} onClick={() => confirmation ? setConfirmOpen(true) : submit()}>{busy === 'action' ? 'Applying practice action…' : copy.apply}</Button>}
       {prepared && <Button appearance="secondary" disabled={busy !== null} onClick={() => submit(true)}>{busy === 'action' ? 'Retrieving outcome…' : 'Retry same action'}</Button>}
       {(outcome || changedOrExpired) && <Button appearance="subtle" disabled={busy !== null} onClick={onChanged}>Refresh record</Button>}
     </div>
@@ -127,11 +145,12 @@ export function ActionPanel({ action, id, version, csrf, amountCents, body = {},
       {action === 'invoice.receive' && typeof outcome.result.invoiceId === 'string' && <AppLink href={`/invoices/${encodeURIComponent(outcome.result.invoiceId)}`}>Open received invoice</AppLink>}
       {action === 'invoice.requestMatchApproval' && typeof outcome.result.approvalId === 'string' && <AppLink href={`/match-approvals/${encodeURIComponent(outcome.result.approvalId)}`}>Open match review</AppLink>}
       {action === 'invoice.executeMatch' && typeof outcome.result.billId === 'string' && <AppLink href={`/bills/${encodeURIComponent(outcome.result.billId)}`}>Open linked bill</AppLink>}
+      {action === 'bill.requestCorrection' && typeof outcome.result.approvalId === 'string' && <AppLink href={`/correction-approvals/${encodeURIComponent(outcome.result.approvalId)}`}>Open correction review</AppLink>}
     </div>}
     <Dialog open={confirmOpen} onOpenChange={(_, data) => { setConfirmOpen(data.open); if (!data.open) requestAnimationFrame(() => reviewButton.current?.focus()); }}>
-      <DialogSurface><DialogBody><DialogTitle>Post {money(amountCents)} to {periodName ?? 'the selected practice period'}?</DialogTitle>
-        <DialogContent><p>The reviewed bill creates a practice working ledger entry in {periodName ?? 'the selected period'}.</p><p className="cipher-ap-consequence">{copy.consequence}</p></DialogContent>
-        <DialogActions><Button appearance="secondary" onClick={() => setConfirmOpen(false)}>Don’t post</Button><Button appearance="primary" disabled={busy !== null} onClick={() => submit()}>Post to {periodName ?? 'selected period'}</Button></DialogActions>
+      <DialogSurface><DialogBody><DialogTitle>{confirmationTitle}</DialogTitle>
+        <DialogContent>{action === 'bill.post' && <p>The reviewed bill creates a practice working ledger entry in {periodName ?? 'the selected period'}.</p>}<p className="cipher-ap-consequence">{copy.consequence}</p></DialogContent>
+        <DialogActions><Button appearance="secondary" onClick={() => setConfirmOpen(false)}>{safeOption}</Button><Button appearance="primary" disabled={busy !== null} onClick={() => submit()}>{action === 'bill.post' ? `Post to ${periodName ?? 'selected period'}` : copy.apply}</Button></DialogActions>
       </DialogBody></DialogSurface>
     </Dialog>
   </div>;

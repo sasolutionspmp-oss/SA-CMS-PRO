@@ -1284,31 +1284,81 @@ class Bills:
             rows = self.db.query("SELECT id FROM bills ORDER BY created_at")
         return [self.get(r["id"]) for r in rows]
 
-    def void(self, bill_id: str, *, actor: str, reason: str) -> dict[str, Any]:
-        with self._lifecycle_transaction() as conn:
+    def void_preflight(self, bill_id: str, *, actor: str, reason: str) -> dict[str, Any]:
+        """Check cancellation and exact reservation restoration without writing.
+
+        Draft duty is supplied by the authenticated caller's project scope.
+        An approved withdrawal additionally requires its original business
+        approver's current authority through the existing pure callback.
+        """
+        who = self._text(actor, "actor")
+        why = self._text(reason, "a cancellation reason")
+        with self.db._lock:
             b = self.get(bill_id)
             if b["status"] not in ("draft", "approved"):
                 raise BillError("only unposted bills can be voided; posted bills are corrected by reversal")
-            self._text(reason, "a cancellation reason")
+            if not self.audit.verify_chain()["ok"]:
+                raise BillError("bill cancellation requires an intact audit chain")
+            certified = self.db.query("SELECT payload_json FROM audit_log WHERE action='bill.certified' AND entity_type='bill' AND entity_id=?", (bill_id,))
+            if len(certified) != 1 or any(loads(certified[0]["payload_json"]).get(key) != b[key] for key in
+                                         ("commitment_id", "sequence", "amount_due", "retainage_this_period", "content_hash")):
+                raise BillError("bill cancellation source differs from its audited certification")
+            if b["status"] == "draft" and b.get("sov_hash") is not None and b.get("retainage_rate") is not None:
+                origin = loads(certified[0]["payload_json"])
+                sov_order = {line["id"]: line["line_no"] for line in self.commitments.get(b["commitment_id"])["sov"]}
+                if any(line["sov_line_id"] not in sov_order for line in b["lines"]):
+                    raise BillError("bill cancellation lines no longer belong to their certified SOV")
+                content = {key: b[key] for key in ("commitment_id", "commitment_version", "period_id", "sequence", "retainage_rate", "sov_hash",
+                                                  "cumulative_installed", "cumulative_stored", "cumulative_gross", "cumulative_retainage",
+                                                  "cumulative_net", "prior_net", "amount_due")}
+                content["lines"] = [{key: line[key] for key in ("sov_line_id", "cumulative_installed", "prior_installed", "installed_this_period")}
+                                    for line in sorted(b["lines"], key=lambda line: sov_order[line["sov_line_id"]])]
+                content["transfers"] = b["transfers"]
+                lots = self.db.query("SELECT l.id,l.remaining_amount,l.billed_bill_id FROM stored_material_lots l JOIN bills original ON original.id=l.billed_bill_id WHERE l.commitment_id=? AND original.sequence<=? ORDER BY l.id", (b["commitment_id"], b["sequence"]))
+                content["stored_lots"] = [{"lot_id": lot["id"], "remaining": lot["remaining_amount"], "newly_billed": lot["billed_bill_id"] == bill_id} for lot in lots]
+                content["excluded_lots"] = origin.get("excluded_lots") or []
+                if (hash_json(content) != b["content_hash"]
+                        or sorted(origin.get("newly_billed_lots") or []) != sorted(lot["id"] for lot in lots if lot["billed_bill_id"] == bill_id)):
+                    raise BillError("bill cancellation quantities and reservations differ from their certified source")
+            if any(not check["ok"] for check in self.lifecycle_integrity_checks(bill_id)):
+                raise BillError("bill cancellation source has inconsistent lifecycle proof")
             if self.db.one("SELECT id FROM bills WHERE commitment_id=? AND sequence>? AND status NOT IN ('void','corrected') LIMIT 1",
                            (b["commitment_id"], b["sequence"])):
                 raise BillError("void the cumulative successor before canceling this bill")
             if b.get("approval_record_id"):
-                self._business_record(b)
+                record = self._business_record(b)
+                bound = loads(record["snapshot_json"])["bindings"]
+                if (bound.get("bill_immutable") != self._immutable_bill_facts(b)
+                        or bound.get("bill_lines_hash") != hash_json(b["lines"])
+                        or bound.get("bill_transfers_hash") != hash_json(b["transfers"])):
+                    raise BillError("the approved withdrawal differs from its original business decision")
             if b["status"] == "approved":
                 if not callable(self.cancellation_authorizer):
                     raise BillError("approved bill cancellation requires the original approver's current authority")
                 ap = self.approvals.get(b["business_approval_id"])
-                self.cancellation_authorizer(ap, ap["manifest"], actor)
-            # restore lot balances consumed by this draft's transfers
-            for t in conn.execute("SELECT lot_id, amount FROM bill_transfers WHERE bill_id=?", (bill_id,)).fetchall():
+                self.cancellation_authorizer(ap, ap["manifest"], who)
+            restored = []
+            for t in b["transfers"]:
                 lot = self.lot(t["lot_id"])
-                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (fmt(money(lot["remaining_amount"]) + money(t["amount"])), t["lot_id"]))
-            # lots first billed by this draft are unbilled again
+                remaining = money(money(lot["remaining_amount"]) + money(t["amount"]))
+                if (lot["commitment_id"] != b["commitment_id"] or money(t["amount"]) <= ZERO
+                        or remaining > money(lot["eligible_amount"])):
+                    raise BillError("bill cancellation cannot restore an inconsistent stored-material transfer")
+                restored.append({"lot_id": t["lot_id"], "amount": t["amount"], "remaining": fmt(remaining)})
+            lots = self.db.query("SELECT id FROM stored_material_lots WHERE billed_bill_id=? ORDER BY created_at,id", (bill_id,))
+            return {"bill": b, "actor": who, "reason": why, "restore_transfers": restored, "unbill_lots": [lot["id"] for lot in lots],
+                    "open_approval_ids": [row["id"] for row in self.db.query("SELECT id FROM approvals WHERE subject_type='bill' AND subject_id=? AND status IN ('pending','granted') ORDER BY id", (bill_id,))],
+                    "source_facts": {"certification": loads(certified[0]["payload_json"]), "lots": self._bill_lots(b), "commitment": self.commitments.get(b["commitment_id"])}}
+
+    def void(self, bill_id: str, *, actor: str, reason: str) -> dict[str, Any]:
+        with self._lifecycle_transaction() as conn:
+            plan = self.void_preflight(bill_id, actor=actor, reason=reason)
+            for transfer in plan["restore_transfers"]:
+                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (transfer["remaining"], transfer["lot_id"]))
             conn.execute("UPDATE stored_material_lots SET billed_bill_id=NULL WHERE billed_bill_id=?", (bill_id,))
             conn.execute("UPDATE bills SET status='void' WHERE id=?", (bill_id,))
-            self.approvals.invalidate_for_subject("bill", bill_id, reason=reason, actor=actor)
-            self.audit.record(actor, "bill.voided", "bill", bill_id, {"reason": reason})
+            self.approvals.invalidate_for_subject("bill", bill_id, reason=plan["reason"], actor=plan["actor"])
+            self.audit.record(plan["actor"], "bill.voided", "bill", bill_id, {"reason": plan["reason"]})
         return self.get(bill_id)
 
     # ---- approval and posting ---------------------------------------------- #
@@ -1731,6 +1781,10 @@ class Bills:
                         "SELECT 1 AS x FROM audit_log WHERE action='bill.business_approved' AND entity_type='bill' AND entity_id=? LIMIT 1", (b["id"],)):
                     raise BillError("approved bill lacks an audited business grant")
                 self.posting_receipt(b["id"])
+                if self._table_exists("bill_corrections"):
+                    self.correction_inventory(b["id"])
+                if b["status"] == "corrected":
+                    self.corrected_bill_proof(b["id"])
                 out.append({"check": f"bill {b['id']} lifecycle intact", "ok": True, "detail": "recorded business approval and posting history agree"})
             except (BillError, ValueError, TypeError) as exc:
                 out.append({"check": f"bill {b['id']} lifecycle intact", "ok": False, "detail": str(exc)})
@@ -2177,12 +2231,276 @@ class Bills:
             rows = self.db.query("SELECT id FROM bill_corrections ORDER BY rowid")
         return [self.correction(r["id"]) for r in rows]
 
+    def correction_approval_proof(self, approval_id: str) -> dict[str, Any]:
+        """Verify a fixed correction authorization without current duty or effects.
+
+        Original owner/controller/accountant manifests keep their historical
+        acting role. The practice API separately admits its accountant duty.
+        """
+        with self.db._lock:
+            if not self.audit.verify_chain()["ok"]:
+                raise BillError("the correction authorization requires an intact audit chain")
+            approval = self.approvals.get(approval_id)
+            manifest = approval["manifest"]
+            try:
+                deadline, original = parse_iso(approval["expires_at"]), parse_iso(manifest["expires_at"])
+                if (deadline.utcoffset() is None or original.utcoffset() is None or deadline > original
+                        or approval["operation"] != OP_CORRECT or approval["subject_type"] != "bill"
+                        or manifest.get("operation") != OP_CORRECT
+                        or manifest.get("subject") != {"type": "bill", "id": approval["subject_id"]}
+                        or manifest.get("actor_role") != approval["actor_role"]
+                        or manifest.get("nonce") != approval["nonce"] or manifest.get("policy_version") != approval["policy_version"]
+                        or hash_json(manifest) != approval["manifest_hash"] or material_hash(manifest) != approval["material_hash"]):
+                    raise ValueError("altered immutable authorization")
+                lifecycle = {"approval.requested": "pending", "approval.granted": "granted", "approval.consumed": "consumed",
+                             "approval.expired": "expired", "approval.invalidated": "invalidated"}
+                allowed = {None: {"pending"}, "pending": {"granted", "expired", "invalidated"},
+                           "granted": {"consumed", "expired", "invalidated"}, "consumed": set(),
+                           "expired": {"invalidated"}, "invalidated": {"invalidated"}}
+                history = self.db.query("SELECT * FROM audit_log WHERE entity_type='approval' AND entity_id=? ORDER BY seq", (approval_id,))
+                state, request, grant, consumed, terminal = None, None, None, None, None
+                for event in history:
+                    if event["action"] not in lifecycle:
+                        continue
+                    next_state = lifecycle[event["action"]]
+                    if next_state not in allowed[state]:
+                        raise ValueError("unaudited lifecycle")
+                    state, terminal = next_state, event
+                    payload = loads(event["payload_json"])
+                    if event["action"] == "approval.requested":
+                        request = event
+                        if event["actor"] != approval["requested_by"] or payload != {
+                                "operation": OP_CORRECT, "subject": manifest["subject"], "manifest_hash": approval["manifest_hash"]}:
+                            raise ValueError("altered original request")
+                    elif event["action"] in ("approval.granted", "approval.consumed"):
+                        actor = approval["approver"] if event["action"] == "approval.granted" else approval["consumed_by"]
+                        if event["actor"] != actor or payload != {"operation": OP_CORRECT, "material_hash": approval["material_hash"]}:
+                            raise ValueError("altered decision attribution")
+                        if event["action"] == "approval.granted":
+                            grant = event
+                        else:
+                            consumed = event
+                if request is None or state != approval["status"]:
+                    raise ValueError("altered current lifecycle")
+                for event, actor_field, time_field in ((grant, "approver", "granted_at"), (consumed, "consumed_by", "consumed_at")):
+                    if event is None and (approval[actor_field] is not None or approval[time_field] is not None):
+                        raise ValueError("unrecorded decision")
+                    if event is not None and (not approval[actor_field] or not approval[time_field]):
+                        raise ValueError("missing decision attribution")
+                if state == "invalidated":
+                    payload = loads(terminal["payload_json"])
+                    reason = payload.get("reason")
+                    expected = f"subject changed after approval: {payload['diff']}" if "diff" in payload else reason
+                    if (reason is None or approval["invalidated_reason"] != expected
+                            or "diff" in payload and (reason != "material change" or not isinstance(payload["diff"], str))):
+                        raise ValueError("altered invalidation reason")
+                elif approval["invalidated_reason"] is not None:
+                    raise ValueError("unrecorded invalidation reason")
+                for field in ("requested_at", "granted_at", "consumed_at"):
+                    if approval[field] is not None and parse_iso(approval[field]).utcoffset() is None:
+                        raise ValueError("invalid decision timestamp")
+            except (ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+                raise BillError("the correction authorization differs from its audited source") from exc
+            return {"auditSeq": request["seq"], "auditHash": request["entry_hash"], "manifestHash": approval["manifest_hash"],
+                    "materialHash": approval["material_hash"], "requestedBy": approval["requested_by"], "requestedAt": approval["requested_at"]}
+
+    @staticmethod
+    def _correction_reversal_plan(journal, target, request):
+        reason = f"bill.correct {request['id']}: {request['reason']}"
+        return {"period_id": target["id"], "description": f"Reversal of {journal['id']}: {reason}",
+                "source_type": journal["source_type"], "source_id": journal["source_id"], "source_version": journal["source_version"],
+                "rule_version": journal["rule_version"], "reversal_of": journal["id"],
+                "lines": [{"account": line["account_code"], "debit": line["credit"], "credit": line["debit"],
+                           "project_id": line["project_id"], "party_id": line["party_id"], "memo": f"reversal: {line['memo']}"}
+                          for line in journal["lines"]]}
+
+    def correction_proof(self, correction_id: str) -> dict[str, Any]:
+        """Return a source-verified record or a typed domain refusal."""
+        with self.db._lock:
+            try:
+                return self._correction_proof(correction_id)
+            except BillError:
+                raise
+            except (RuntimeError, ValueError, TypeError, KeyError, AttributeError, OverflowError) as exc:
+                raise BillError("the correction record has malformed or missing source proof") from exc
+
+    def _correction_proof(self, correction_id: str) -> dict[str, Any]:
+        """Verify preparation, cancellation or executed correction history."""
+        with self.db._lock:
+            if not self.audit.verify_chain()["ok"]:
+                raise BillError("bill correction records require an intact audit chain")
+            request = self.correction(correction_id)
+            history = self.db.query("SELECT * FROM audit_log WHERE entity_type='bill' AND entity_id=? AND action IN ('bill.correction_requested','bill.correction_request_cancelled','bill.corrected') ORDER BY seq", (request["bill_id"],))
+            events = [event for event in history if loads(event["payload_json"]).get("request_id") == correction_id]
+            births = [event for event in events if event["action"] == "bill.correction_requested"]
+            resolutions = [event for event in events if event["action"] != "bill.correction_requested"]
+            if (len(births) != 1 or births[0]["actor"] != request["requested_by"]
+                    or loads(births[0]["payload_json"]) != {"request_id": correction_id, "reason": request["reason"]}
+                    or len(resolutions) > 1 or any(event["seq"] < births[0]["seq"] for event in resolutions)):
+                raise BillError("the correction request differs from its original preparation")
+            if request["status"] == "pending":
+                if resolutions or any(request[field] is not None for field in ("approval_id", "period_id", "reversal_journals_json", "resolved_by", "resolved_at")) or request["resolution_note"]:
+                    raise BillError("the pending correction request has unrecorded resolution facts")
+            elif request["status"] == "cancelled":
+                if len(resolutions) != 1 or resolutions[0]["action"] != "bill.correction_request_cancelled":
+                    raise BillError("the correction cancellation has no original source")
+                payload = loads(resolutions[0]["payload_json"])
+                if (resolutions[0]["actor"] != request["resolved_by"] or payload.get("reason") != request["resolution_note"]
+                        or not request["resolved_at"] or any(request[field] is not None for field in ("approval_id", "period_id", "reversal_journals_json"))):
+                    raise BillError("the correction cancellation differs from its original source")
+            elif request["status"] == "executed":
+                if len(resolutions) != 1 or resolutions[0]["action"] != "bill.corrected":
+                    raise BillError("the correction execution has no original source")
+                self.correction_approval_proof(request["approval_id"])
+                approval = self.approvals.get(request["approval_id"])
+                bill = self.get(request["bill_id"])
+                self.posting_receipt(bill["id"])
+                payload, bound = loads(resolutions[0]["payload_json"]), approval["manifest"]["bindings"]
+                if (approval["status"] != "consumed" or approval["subject_id"] != bill["id"]
+                        or (bound.get("request") or {}).get("id") != request["id"] or bound.get("reason") != request["reason"]
+                        or bound.get("bill_hash") != bill["content_hash"] or approval["consumed_by"] != request["resolved_by"]
+                        or bill["status"] != "corrected" or bill.get("correction_id") != request["id"] or bill.get("corrected_at") != request["resolved_at"]
+                        or resolutions[0]["actor"] != request["resolved_by"] or payload.get("approval_id") != request["approval_id"]
+                        or payload.get("reason") != request["reason"] or payload.get("period_id") != request["period_id"]
+                        or payload.get("reversal_journals") != request["reversal_journals"]
+                        or payload.get("amount_due") != bill["amount_due"] or payload.get("retainage_this_period") != bill["retainage_this_period"]
+                        or payload.get("unbilled_lots") != bound.get("unbill_lots")
+                        or [{"lot_id": lot["lot_id"], "amount": lot["amount"]} for lot in payload.get("restored_lots", [])] != bound.get("restore_transfers")):
+                    raise BillError("the executed correction differs from its approved source")
+                originals = self._bill_journals(bill["id"])
+                if ([journal["id"] for journal in originals] != [journal["id"] for journal in bound.get("journals", [])]
+                        or len(originals) != len(request["reversal_journals"]) or not originals):
+                    raise BillError("the correction must reverse every original posting journal")
+                target = self.ledger.period(request["period_id"])
+                posting_period = self.ledger.period(self._actual_posting_period(bill))
+                if target["start_date"] < posting_period["start_date"]:
+                    raise BillError("the correction reversal precedes the original posting")
+                for original, journal_id in zip(originals, request["reversal_journals"]):
+                    reversal = self.ledger.journal(journal_id)
+                    plan = self._correction_reversal_plan(original, target, request)
+                    expected = [{"line_no": number, "account_code": line["account"], **{key: line[key] for key in ("debit", "credit", "project_id", "party_id", "memo")}}
+                                for number, line in enumerate(plan["lines"], 1)]
+                    if (original["reversed_by"] != journal_id or reversal["approval_id"] != request["approval_id"]
+                            or reversal["posted_by"] != request["resolved_by"]
+                            or any(reversal[key] != plan[key] for key in ("period_id", "description", "source_type", "source_id", "source_version", "rule_version", "reversal_of"))
+                            or lines_fingerprint(reversal["lines"]) != lines_fingerprint(expected)):
+                        raise BillError("the correction reversal differs from its approved journal plan")
+                    reverse_events = self.db.query("SELECT actor,payload_json FROM audit_log WHERE action='journal.reversed' AND entity_type='journal' AND entity_id=?", (original["id"],))
+                    if (len(reverse_events) != 1 or reverse_events[0]["actor"] != request["resolved_by"]
+                            or any(loads(reverse_events[0]["payload_json"]).get(key) != value for key, value in {
+                                "reversal_journal_id": journal_id, "period_id": target["id"], "approval_id": request["approval_id"],
+                                "reason": f"bill.correct {request['id']}: {request['reason']}"}.items())):
+                        raise BillError("the correction reversal lacks its original audited act")
+                if request["resolution_note"] != f"reversed by {', '.join(request['reversal_journals'])} in period {request['period_id']}":
+                    raise BillError("the correction resolution record differs from its original journals")
+            else:
+                raise BillError("the correction request has an unsupported lifecycle")
+            if (parse_iso(request["requested_at"]).utcoffset() is None
+                    or request["resolved_at"] is not None and parse_iso(request["resolved_at"]).utcoffset() is None):
+                raise BillError("the correction request has an invalid timestamp")
+            return {**request, "auditSeq": births[0]["seq"], "auditHash": births[0]["entry_hash"]}
+
+    def corrected_bill_proof(self, bill_id: str) -> dict[str, Any]:
+        """An edited status cannot release a posted invoice without its reversal."""
+        with self.db._lock:
+            bill = self.get(bill_id)
+            if bill["status"] != "corrected" or not bill.get("correction_id"):
+                raise BillError("a corrected bill requires its recorded governed correction")
+            proof = self.correction_proof(bill["correction_id"])
+            if proof["status"] != "executed" or proof["bill_id"] != bill_id:
+                raise BillError("a corrected bill requires its own executed reversal source")
+            return proof
+
+    def correction_inventory(self, bill_id: str) -> list[dict[str, Any]]:
+        """Read every correction request in its original audited preparation order.
+
+        Absence in the current table cannot conceal an earlier request from a
+        read, close check or new preparation. This does not require eligibility
+        for another correction, so completed history remains readable.
+        """
+        with self.db._lock:
+            if not self.audit.verify_chain()["ok"]:
+                raise BillError("bill correction inventory requires an intact audit chain")
+            rows = self.db.query("SELECT id FROM bill_corrections WHERE bill_id=?", (bill_id,)) if self._table_exists("bill_corrections") else []
+            births = self.db.query("SELECT payload_json FROM audit_log WHERE action='bill.correction_requested' AND entity_type='bill' AND entity_id=? ORDER BY seq", (bill_id,))
+            try:
+                audited_ids = [loads(event["payload_json"])["request_id"] for event in births]
+                if len(set(audited_ids)) != len(audited_ids) or set(audited_ids) != {row["id"] for row in rows}:
+                    raise BillError("bill correction request inventory differs from its audited preparation history")
+            except (ValueError, TypeError, KeyError) as exc:
+                raise BillError("bill correction inventory has malformed audited preparation") from exc
+            return [self.correction_proof(request_id) for request_id in audited_ids]
+
     def _bill_journals(self, bill_id: str) -> list[dict[str, Any]]:
         rows = self.db.query("SELECT id FROM journals WHERE source_type='bill' AND source_id=? AND reversal_of IS NULL ORDER BY posted_at, id", (bill_id,))
         return [self.ledger.journal(r["id"]) for r in rows]
 
+    def _correction_obligation_sources(self, bill_id: str) -> None:
+        """An edited/deleted hold or credit cannot qualify a financial reversal.
+
+        Only audited local state is read here. This does not dispatch, query a
+        provider or classify a timeout as a failed payment. Genuine canceled,
+        failed and returned histories remain available under existing policy.
+        """
+        if not self.audit.verify_chain()["ok"]:
+            raise BillError("correction obligations require an intact audit chain")
+        payments = {row["id"]: row for row in self.db.query("SELECT * FROM payment_intents WHERE bill_id=? OR (source_type='bill' AND source_id=?)", (bill_id, bill_id))}
+        births = self.db.query("SELECT * FROM audit_log WHERE entity_type='payment_intent' AND action IN ('payment.queued','payment.adopted') ORDER BY seq")
+        original = {}
+        for event in births:
+            payload = loads(event["payload_json"])
+            if payload.get("source_type") == "bill" and payload.get("source_id") == bill_id or payload.get("bill_id") == bill_id:
+                if event["entity_id"] in original:
+                    raise BillError("a payment obligation has multiple original creation acts")
+                original[event["entity_id"]] = event
+        if payments.keys() != original.keys():
+            raise BillError("bill payment obligation inventory differs from its audited history")
+        states = {"payment.queued": "queued", "payment.adopted": "submitted", "payment.submitted": "submitted",
+                  "payment.outcome_unknown": "outcome_unknown", "payment.accepted": "accepted", "payment.failed": "failed",
+                  "payment.canceled": "canceled", "provider_event.settled": "settled", "provider_event.returned": "returned"}
+        for intent_id, intent in payments.items():
+            origin = loads(original[intent_id]["payload_json"])
+            if (intent["bill_id"] != bill_id or origin.get("amount") != intent["amount"]
+                    or origin.get("approval_id") != intent["approval_id"]
+                    or intent.get("source_type") != "bill" or intent.get("source_id") != bill_id):
+                raise BillError("a bill payment obligation differs from its original source")
+            history = self.db.query("SELECT action FROM audit_log WHERE entity_type='payment_intent' AND entity_id=? ORDER BY seq", (intent_id,))
+            changes = [event for event in history if event["action"] in states]
+            if not changes or states[changes[-1]["action"]] != intent["status"]:
+                raise BillError("a bill payment state differs from its original recorded outcome")
+        if not self._table_exists("bill_credit_notes"):
+            return
+        notes = {row["id"]: row for row in self.db.query("SELECT * FROM bill_credit_notes WHERE bill_id=?", (bill_id,))}
+        prepared = {}
+        for event in self.db.query("SELECT * FROM audit_log WHERE action='bill.credit_note_prepared' AND entity_type=? ORDER BY seq", (CREDIT_NOTE_SUBJECT,)):
+            payload = loads(event["payload_json"])
+            if payload.get("bill_id") == bill_id:
+                if event["entity_id"] in prepared:
+                    raise BillError("a supplier credit has multiple original preparation acts")
+                prepared[event["entity_id"]] = event
+        if notes.keys() != prepared.keys():
+            raise BillError("supplier credit inventory differs from its audited preparation history")
+        credit_states = {"bill.credit_note_prepared": "draft", "bill.credit_note_cancelled": "cancelled", "bill.credit_note_posted": "posted"}
+        for note_id, note in notes.items():
+            event = prepared[note_id]
+            origin = loads(event["payload_json"])
+            if (event["actor"] != note["created_by"] or any(origin.get(key) != note[key] for key in
+                    ("bill_id", "amount", "reason", "evidence_hash", "evidence_document_id", "evidence_revision_id"))):
+                raise BillError("the supplier credit differs from its original preparation")
+            history = self.db.query("SELECT * FROM audit_log WHERE entity_type=? AND entity_id=? ORDER BY seq", (CREDIT_NOTE_SUBJECT, note_id))
+            changes = [entry for entry in history if entry["action"] in credit_states]
+            if not changes or credit_states[changes[-1]["action"]] != note["status"]:
+                raise BillError("the supplier credit state differs from its original recorded outcome")
+            if note["status"] == "cancelled":
+                payload = loads(changes[-1]["payload_json"])
+                if changes[-1]["actor"] != note["cancelled_by"] or payload.get("reason") != note["cancel_reason"]:
+                    raise BillError("the supplier credit cancellation differs from its recorded decision")
+
     def _correction_facts(self, bill_id: str) -> dict[str, Any]:
         b = self.get(bill_id)
+        self._correction_obligation_sources(bill_id)
+        if b["status"] in ("posted", "paid", "corrected"):
+            self.posting_receipt(bill_id)
         problems: list[str] = []
         if b["status"] != "posted":
             problems.append(f"bill {b['sequence']} ({bill_id}) is {b['status']}; only a posted, unpaid bill is corrected")
@@ -2207,7 +2525,8 @@ class Bills:
         reversed_already = [j["id"] for j in journals if j["reversed_by"]]
         if reversed_already:
             problems.append(f"journal(s) {', '.join(reversed_already)} of the bill were already reversed")
-        request = self.db.one("SELECT * FROM bill_corrections WHERE bill_id=? ORDER BY rowid DESC LIMIT 1", (bill_id,)) if self._table_exists("bill_corrections") else None
+        inventory = self.correction_inventory(bill_id)
+        request = inventory[-1] if inventory else None
         request_problem = None
         if request is None:
             request_problem = f"bill {b['sequence']} has no correction request; call prepare_correction(bill_id, reason, actor) first so the reason is bound into the approval"
@@ -2218,20 +2537,26 @@ class Bills:
                 "request": request, "transfers": b["transfers"], "first_billed": first_billed,
                 "bill_problems": problems, "problems": problems + ([request_problem] if request_problem else [])}
 
+    def correction_prepare_preflight(self, bill_id: str, reason: str) -> dict[str, Any]:
+        """Validate a correction preparation without allocating an ID or writing."""
+        why = self._text(reason, "a correction reason")
+        with self.db._lock:
+            facts = self._correction_facts(bill_id)
+            if facts["request"] is not None and facts["request"]["status"] == "pending":
+                raise BillError(f"bill {bill_id} already has pending correction request")
+            if facts["bill_problems"]:
+                raise BillError(f"bill {bill_id} cannot be corrected: " + "; ".join(facts["bill_problems"]))
+            return {"facts": facts, "reason": why}
+
     def prepare_correction(self, bill_id: str, reason: str, actor: str) -> dict[str, Any]:
         """Record why a posted bill should be corrected; the pending request is what a
         ``bill.correct`` approval binds.  One pending request per bill, and only for a bill
         that can be corrected now (posted, unpaid, uncredited, the commitment's latest)."""
         who = self._text(actor, "actor")
-        why = self._text(reason, "a correction reason")
         request_id = new_id("bcr")
-        with self.db.transaction() as conn:
-            f = self._correction_facts(bill_id)
-            pending = f["request"] is not None and f["request"]["status"] == "pending"
-            if pending:
-                raise BillError(f"bill {bill_id} already has pending correction request {f['request']['id']}; cancel it before preparing another")
-            if f["bill_problems"]:
-                raise BillError(f"bill {bill_id} cannot be corrected: " + "; ".join(f["bill_problems"]))
+        with self._lifecycle_transaction() as conn:
+            plan = self.correction_prepare_preflight(bill_id, reason)
+            why = plan["reason"]
             conn.execute("INSERT INTO bill_corrections (id, bill_id, reason, status, requested_by, requested_at) VALUES (?,?,?,'pending',?,?)",
                          (request_id, bill_id, why, who, utcnow_iso()))
             self.audit.record(who, "bill.correction_requested", "bill", bill_id, {"request_id": request_id, "reason": why})
@@ -2241,8 +2566,8 @@ class Bills:
         """Withdraw a pending correction request; an approval that bound it goes stale."""
         who = self._text(actor, "actor")
         why = self._text(reason, "a cancellation reason")
-        with self.db.transaction() as conn:
-            req = self.correction(correction_id)
+        with self._lifecycle_transaction() as conn:
+            req = self.correction_proof(correction_id)
             if req["status"] != "pending":
                 raise BillError(f"correction request {correction_id} is {req['status']}; only a pending request is canceled")
             conn.execute("UPDATE bill_corrections SET status='cancelled', resolved_by=?, resolved_at=?, resolution_note=? WHERE id=?",
@@ -2281,19 +2606,51 @@ class Bills:
             **self._scope(b["project_id"]),
         )
 
+    def correction_execution_preflight(self, bill_id: str, *, period_id: str | None = None,
+                                       approval_id: str | None = None, manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+        """Build the exact working-ledger reversal and reservation plan without writes.
+
+        A shared service check supplies current person/duties and approval clocks.
+        This pure plan accepts intact granted or just-consumed authorization so
+        the real apply path can reuse it inside its savepoint.
+        """
+        with self.db._lock:
+            facts = self._correction_facts(bill_id)
+            if facts["problems"]:
+                raise BillIneligible(f"bill {bill_id} cannot be corrected: " + "; ".join(facts["problems"]))
+            bill, request = facts["bill"], facts["request"]
+            if approval_id is not None:
+                self.correction_approval_proof(approval_id)
+                approval = self.approvals.get(approval_id)
+                if approval["subject_id"] != bill_id or approval["status"] not in ("granted", "consumed"):
+                    raise BillIneligible("the correction requires its intact granted authorization")
+                current = self._correction_manifest(bill_id, actor_role=approval["actor_role"])
+                if (material_hash(current) != approval["material_hash"]
+                        or manifest is not None and material_hash(manifest) != approval["material_hash"]):
+                    raise BillIneligible("the correction no longer matches its approved source facts")
+            elif manifest is not None:
+                raise BillError("a reviewed correction manifest requires its original authorization")
+            target = self._target_period(period_id, not_before=self._actual_posting_period(bill), what="correction")
+            restored = []
+            for transfer in facts["transfers"]:
+                lot = self.lot(transfer["lot_id"])
+                remaining = money(money(lot["remaining_amount"]) + money(transfer["amount"]))
+                if (lot["commitment_id"] != bill["commitment_id"] or money(transfer["amount"]) <= ZERO
+                        or remaining > money(lot["eligible_amount"])):
+                    raise BillError("the correction cannot restore an inconsistent stored-material transfer")
+                restored.append({"lot_id": transfer["lot_id"], "amount": fmt(money(transfer["amount"])), "remaining": fmt(remaining)})
+            return {"facts": facts, "target": target,
+                    "journal_preview": [self._correction_reversal_plan(journal, target, request) for journal in facts["journals"]],
+                    "restore_transfers": restored, "unbill_lots": [lot["id"] for lot in facts["first_billed"]]}
+
     def _apply_correction(self, bill_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str, period_id: str | None) -> dict[str, Any]:
-        bound = manifest.get("bindings") or {}
-        with self.db.transaction() as conn:
-            f = self._correction_facts(bill_id)
-            if f["problems"]:
-                raise BillIneligible(f"bill {bill_id} can no longer be corrected: " + "; ".join(f["problems"]))
+        with self._lifecycle_transaction() as conn:
+            plan = self.correction_execution_preflight(bill_id, period_id=period_id, approval_id=approval_id, manifest=manifest)
+            f = plan["facts"]
             b, req = f["bill"], f["request"]
-            if ((bound.get("request") or {}).get("id") != req["id"] or bound.get("reason") != req["reason"] or bound.get("bill_hash") != b["content_hash"]
-                    or [j.get("id") for j in bound.get("journals") or []] != [j["id"] for j in f["journals"]]):
-                raise BillIneligible(f"bill {bill_id} no longer matches the approved correction; nothing was reversed")
             self._approved_manifest(approval_id, OP_CORRECT, bill_id)
             self._refuse_spent_approval(approval_id)
-            target = self._target_period(period_id, not_before=self._actual_posting_period(b), what="correction")
+            target = plan["target"]
             reason = req["reason"]
             reversals = []
             for j in f["journals"]:
@@ -2306,13 +2663,10 @@ class Bills:
                 (approval_id, target["id"], canonical_json(reversals), actor, now, f"reversed by {', '.join(reversals)} in period {target['id']}", req["id"]),
             )
             conn.execute("UPDATE bills SET status='corrected', correction_id=?, corrected_at=? WHERE id=?", (req["id"], now, bill_id))
-            restored = []
-            for t in f["transfers"]:
-                lot = self.lot(t["lot_id"])
-                remaining = money(money(lot["remaining_amount"]) + money(t["amount"]))
-                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (fmt(remaining), t["lot_id"]))
-                restored.append({"lot_id": t["lot_id"], "amount": fmt(money(t["amount"])), "remaining": fmt(remaining)})
-            unbilled = [l["id"] for l in f["first_billed"]]
+            restored = plan["restore_transfers"]
+            for transfer in restored:
+                conn.execute("UPDATE stored_material_lots SET remaining_amount=? WHERE id=?", (transfer["remaining"], transfer["lot_id"]))
+            unbilled = plan["unbill_lots"]
             conn.execute("UPDATE stored_material_lots SET billed_bill_id=NULL WHERE billed_bill_id=?", (bill_id,))
             invalidated = self.approvals.invalidate_for_subject("bill", bill_id, reason=f"bill corrected under {approval_id}", actor=actor)
             self.audit.record(actor, "bill.corrected", "bill", bill_id, {

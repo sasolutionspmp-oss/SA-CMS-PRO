@@ -3,7 +3,9 @@ export interface Provenance {
 }
 export type APAction = 'bill.requestApproval' | 'bill.approve' | 'bill.post' | 'bill.prepare'
   | 'invoice.receive' | 'invoice.computeMatch' | 'invoice.requestMatchApproval'
-  | 'invoice.approveMatch' | 'invoice.executeMatch';
+  | 'invoice.approveMatch' | 'invoice.executeMatch' | 'invoice.revise' | 'invoice.reject'
+  | 'invoice.reviewDuplicate' | 'bill.cancel' | 'bill.prepareCorrection' | 'bill.requestCorrection'
+  | 'bill.approveCorrection' | 'bill.executeCorrection';
 export type Duty = 'pm' | 'accountant';
 export interface Person { id: string; displayName: string }
 export interface Capabilities {
@@ -100,9 +102,26 @@ export interface MatchPacket extends Provenance, MatchApproval {
   changes: Change[]; effect: { invoiceStatus: 'matched'; billLinked: boolean; workingLedgerJournalDelta: 0; apPayableDeltaCents: 0 };
   availableActions: APAction[]; blockedReasons: Problem[];
 }
+export interface InvoiceException extends Provenance {
+  version: string; invoice: Invoice; availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface BillException extends Provenance {
+  version: string; bill: Bill; correction: { id: string; status: string; reason: string; requestedBy: Person; requestedAt: string } | null;
+  correctionPeriods: Period[]; availableActions: APAction[]; blockedReasons: Problem[];
+}
+export interface CorrectionApproval {
+  id: string; approvalId: string; version: string; projectId: string; projectName: string; billId: string;
+  sequence: number; supplierName: string; status: string; effectiveStatus: string; requestedBy: Person;
+  approvedBy: Person | null; requestedAt: string; approvedAt: string | null; expiresAt: string;
+  amountDueCents: number; correctionId: string; reason: string;
+}
+export interface CorrectionPacket extends Provenance, CorrectionApproval {
+  bill: Bill; boundFacts: Record<string, SafeValue>; currentFacts: Record<string, SafeValue>; changes: Change[];
+  effect: Record<string, SafeValue>; availableActions: APAction[]; blockedReasons: Problem[]; correctionPeriods: Period[];
+}
 export interface Records {
   projects: Project; commitments: Commitment; bills: Bill; approvals: Approval; 'posting-queue': PostingQueueRow;
-  invoices: Invoice; 'invoice-evidence': InvoiceEvidence; 'match-approvals': MatchApproval;
+  invoices: Invoice; 'invoice-evidence': InvoiceEvidence; 'match-approvals': MatchApproval; 'correction-approvals': CorrectionApproval;
 }
 export type Collection = keyof Records;
 export interface Envelope<T> extends Provenance {
