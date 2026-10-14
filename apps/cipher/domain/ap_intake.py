@@ -914,9 +914,9 @@ class Plugin:
         invoice attached to a live bill can take only that bill (one invoice, one live bill)."""
         out, notes = [], []
         attached = self._attached_bill(inv)
-        if attached is not None and attached["status"] not in ("draft", "posted"):
+        if attached is not None and attached["status"] not in ("draft", "approved", "posted"):
             notes.append(f"the invoice is attached to bill {attached['sequence']} ({attached['id']}, {attached['status']})")
-        for r in self.db.query("SELECT id FROM bills WHERE commitment_id=? AND status IN ('draft','posted') ORDER BY sequence", (commitment_id,)):
+        for r in self.db.query("SELECT id FROM bills WHERE commitment_id=? AND status IN ('draft','approved','posted') ORDER BY sequence", (commitment_id,)):
             b = self.c.bills.get(r["id"])
             if attached is not None and b["id"] != attached["id"]:
                 notes.append(f"bill {b['sequence']} is not bill {attached['sequence']} ({attached['id']}), which carries this invoice; "

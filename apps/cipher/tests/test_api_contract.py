@@ -9,6 +9,7 @@ from apps.cipher import api_contract
 from apps.cipher.core.approvals import build_manifest
 from apps.cipher.core.money import money
 from apps.cipher.service import Cipher
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 
 
 class PracticeReadContractTests(unittest.TestCase):
@@ -25,7 +26,7 @@ class PracticeReadContractTests(unittest.TestCase):
         self.cb = self.commitment(self.beta["id"], "Beta pumping", "10000.02", execute=True)
         self.draft = self.commitment(self.alpha["id"], "Alpha draft", "12.34")
         self.ba = self.bill(self.ca, "1000.01")
-        self.c.approve_and_execute("bill.approve", self.ba["id"], period_id="P1")
+        approve_and_post_bill(self.c, self.ba["id"], approver="business-reviewer", poster="accountant-poster", period_id="P1")
         self.bb = self.bill(self.cb, "500.02")
         self.c.request_approval("bill.approve", self.bb["id"], actor_role="accountant")
         release = self.c.request_approval("payment.release", self.ba["id"], actor_role="treasury")
@@ -50,8 +51,8 @@ class PracticeReadContractTests(unittest.TestCase):
         self.assertEqual(result["contractVersion"], "cipher.practice-read.v1")
         self.assertEqual((result["mode"], result["synthetic"], result["currency"], result["readOnly"]),
                          ("practice", True, "USD", True))
-        self.assertEqual(result["capabilities"]["billApprovalEffect"], "posts_to_working_ledger")
-        self.assertFalse(result["capabilities"]["separateBillApprovalAndPosting"])
+        self.assertEqual(result["capabilities"]["billApprovalEffect"], "journal_free_business_approval")
+        self.assertTrue(result["capabilities"]["separateBillApprovalAndPosting"])
         self.assertFalse(result["capabilities"]["authenticatedReadPermissions"])
         self.assertEqual(result["collections"], ["projects", "commitments", "bills", "approvals"])
 

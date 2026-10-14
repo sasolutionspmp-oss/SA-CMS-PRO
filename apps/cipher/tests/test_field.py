@@ -7,6 +7,7 @@ import unittest
 from decimal import Decimal
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import sha256_hex
 from apps.cipher.domain.commitments import CommitmentError
@@ -197,7 +198,7 @@ class FieldGoldenTests(unittest.TestCase):
 
         # progress bill so that retainage is actually held
         bill = c.bills.certify(commitment_id=cm["id"], period_id="P1", installed=[{"sov_line_id": line1, "cumulative_installed": "20000"}], actor="o")
-        c.approve_and_execute("bill.approve", bill["id"])
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         self.assertEqual(c.ledger.balance("2050"), Decimal("2000.00"))
 
         # closeout: blocked by an open punch item and a missing item

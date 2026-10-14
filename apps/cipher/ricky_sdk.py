@@ -243,7 +243,7 @@ from .domain.forecast import OP_REVISE
 from .domain.ledger import PeriodNotOpen
 from .domain.payments import ReleaseQuarantined
 from .domain.receivables import DEFAULT_PAYMENT_TERMS_DAYS, OP_APPLY_DEPOSIT, OP_CREDIT_MEMO, OP_WRITE_OFF, ReceivableDuplicate
-from .domain.ricky import ROLE_AUTHORITY, Ricky
+from .domain.ricky import BILL_PREPARER_ROLES, ROLE_AUTHORITY, Ricky
 
 if TYPE_CHECKING:  # pragma: no cover - typing only (service imports plugins at load time)
     from .service import Cipher
@@ -540,31 +540,37 @@ def validate(value: Any, schema: dict[str, Any], path: str = "$") -> list[str]:
 # release rules and release previews, contract agreements, signatures and insurance
 # certificates); the catalog describes every classified operation (``operations``) and receipts
 # may carry the caller's resolved ``identity``.  Every earlier tool keeps its version and schema.
-CATALOG_VERSION = "1.2.0"
+# 1.3.0: supplier bills are request-only; draft preparation uses its actual duty,
+# business approval is journal-free, and human bill.post is explicitly restricted.
+CATALOG_VERSION = "1.3.0"
 SIDE_EFFECTS = ("none", "draft", "approval_request", "execute_granted", "external_lookup")
 APPROVAL_NONE = "none"
 APPROVAL_HUMAN = "human approval required before execution"
 APPROVAL_TYPES = (APPROVAL_NONE, APPROVAL_HUMAN)
 # Authority is "read" (any known role), a fixed operation name checked with
-# Ricky.can, or one of these markers for an operation known only at call time.
+# Ricky.can, or one of these explicit markers for a call-time operation or bill preparation duty.
 # The markers are a declared deviation from the two specified forms (an operation
 # name or "read"): every catalog entry states its ``authority_kind`` and the exact
 # ``authority_check`` made, so a consumer never has to parse the marker text.
 AUTH_READ = "read"
 AUTH_ARGS_OPERATION = "operation named in args.operation"
 AUTH_APPROVAL_OPERATION = "operation bound in the approval (and its acting role)"
-DYNAMIC_AUTHORITIES = (AUTH_ARGS_OPERATION, AUTH_APPROVAL_OPERATION)
+AUTH_BILL_PREPARATION = "bill preparation duty"
+DYNAMIC_AUTHORITIES = (AUTH_ARGS_OPERATION, AUTH_APPROVAL_OPERATION, AUTH_BILL_PREPARATION)
 AUTHORITY_KINDS = ("read", "operation", "dynamic")
 _SPEC_DEVIATION = ("Spec deviation, declared: the specified authority forms are an operation name or 'read'; ")
 _AUTHORITY_CHECKS = {
     AUTH_READ: "any known role (ROLE_AUTHORITY); the role comes from the caller's verified identity, never from the arguments",
     AUTH_ARGS_OPERATION: _SPEC_DEVIATION + "this tool's operation is known only from args.operation, so the check runs at call time: "
                          "the operation must be one Ricky may route (ROUTABLE_OPERATIONS, never a RESTRICTED_OPERATIONS one that changes "
-                         "policy, roles, delegations, destinations, secrets or workspace controls) and Ricky.can(actor_role, args.operation)",
+                         "policy, roles, delegations, destinations, secrets or workspace controls); for request-only bill.approve the caller must hold "
+                         "BILL_PREPARER_ROLES, otherwise Ricky.can(actor_role, args.operation)",
     AUTH_APPROVAL_OPERATION: _SPEC_DEVIATION + "the operation is fixed by the human-granted approval, so the check runs at call time: "
                              "the operation must be one Ricky may route (ROUTABLE_OPERATIONS), Ricky.can(actor_role, approval.operation), "
                              "actor_role equal to the approval's bound acting role, and a period_id only for POSTING_PERIOD_OPERATIONS, "
-                             "equal to the posting period the approved manifest binds",
+                             "equal to the posting period the approved manifest binds; request-only bill.approve is refused before receipt replay",
+    AUTH_BILL_PREPARATION: _SPEC_DEVIATION + "the verified caller must hold a bill preparation role: pm, accountant, controller or owner; "
+                           "this permits a draft and a business approval request, never granting or posting",
 }
 RECEIPT_STATUSES = ("ok", "refused", "error", "timed_out")
 
@@ -591,6 +597,9 @@ ROUTABLE_OPERATIONS = frozenset({
     "handoff.acknowledge", "ap_intake.match_invoice",
     "contract.approve_agreement", "contract.sign",
 })
+# Bill business approval is completed by the person's grant. Ricky may prepare,
+# preview and request it, but cannot execute it or post the approved bill.
+REQUEST_ONLY_OPERATIONS = frozenset({"bill.approve"})
 # Operations owned by a governor module (GOVERNOR = True: policy over other modules'
 # approvals) are business operations only when listed here; any other operation of a
 # governor is treated as restricted even if someone lists it as routable.
@@ -598,6 +607,7 @@ GOVERNED_ROUTABLE_OPERATIONS = frozenset({"contract.approve_agreement", "contrac
 # Operations the SDK never requests or executes, whatever a role holds (the owner's '*'
 # included) and even after a person granted them, with the reason given in the refusal.
 RESTRICTED_OPERATIONS: MappingProxyType = MappingProxyType({
+    "bill.post": "is a human accounting posting command requiring a distinct authorized poster; Ricky never posts a supplier bill",
     "people.grant_role": "grants a role",
     "people.revoke_role": "revokes a role",
     "people.delegate": "lends a role to another person",
@@ -616,7 +626,7 @@ RESTRICTED_OPERATION_TERMS = ("destination", "policy", "secret", "credential", "
 # (bindings.period_id): only for these may execute_approved_action pass a period_id,
 # and only that one.  Elsewhere a bound period_id is a fact about the subject (bill.correct
 # binds the bill's period and posts by its target_rule) or there is none.
-POSTING_PERIOD_OPERATIONS = frozenset({"bill.approve", "prime_bill.approve"})
+POSTING_PERIOD_OPERATIONS = frozenset({"prime_bill.approve"})
 # The catalog tools specific to an operation Ricky may route: the drafts that prepare its subject
 # or the facts its approval binds, and the release preview.  An operation without an entry is
 # reached on a subject a person, or an earlier approval, created.  ``preview`` (Ricky.propose)
@@ -657,20 +667,25 @@ def _restricted_reason(operation: str) -> str | None:
 
 
 def operation_class(operation: str) -> str:
-    """'restricted' (never requested or executed by the SDK), 'routable' (on the list, still
-    subject to role authority and, for a governor's operation, GOVERNED_ROUTABLE_OPERATIONS)
-    or 'unlisted' (refused until classified)."""
+    """Classify a request-only preparation route, an executable route subject to role
+    and governor authority, a restricted operation, or an unlisted operation."""
     if _restricted_reason(operation) is not None:
         return "restricted"
+    if operation in REQUEST_ONLY_OPERATIONS:
+        return "request_only"
     return "routable" if operation in ROUTABLE_OPERATIONS else "unlisted"
 
 
 def operation_route(operation: str) -> dict[str, Any]:
     """How Ricky reaches ``operation``: a routable one with the tools that lead to it (its own
-    drafts and previews, ``preview`` where Ricky.propose evaluates it, then ROUTE_TOOLS), a
-    restricted one with the reason it is excluded, or an unlisted one, refused until someone
-    classifies it."""
+    drafts and previews, ``preview`` where Ricky.propose evaluates it, then ROUTE_TOOLS),
+    a request-only one ending at a business approval request, a restricted one with its reason,
+    or an unlisted one refused until classified."""
     cls = operation_class(operation)
+    if cls == "request_only":
+        tools = list(OPERATION_TOOLS.get(operation, ())) + ["preview", "request_approval"]
+        return {"operation": operation, "class": cls, "reachable": True, "tools": tools,
+                "executable": False, "reason": "A person grants business approval without posting; a different authorized person posts through bill.post."}
     if cls == "routable":
         tools = list(OPERATION_TOOLS.get(operation, ())) + ([] if operation in PREVIEW_UNEVALUATED else ["preview"]) + list(ROUTE_TOOLS)
         return {"operation": operation, "class": cls, "reachable": True, "tools": tools, "reason": None}
@@ -682,7 +697,8 @@ def operation_route(operation: str) -> dict[str, Any]:
 for _op in ROUTABLE_OPERATIONS:
     if _restricted_reason(_op) is not None:
         raise RuntimeError(f"ricky_sdk: {_op} is listed as routable but is restricted ({_restricted_reason(_op)})")
-if not (GOVERNED_ROUTABLE_OPERATIONS <= ROUTABLE_OPERATIONS and POSTING_PERIOD_OPERATIONS <= ROUTABLE_OPERATIONS
+if not (REQUEST_ONLY_OPERATIONS <= ROUTABLE_OPERATIONS and GOVERNED_ROUTABLE_OPERATIONS <= ROUTABLE_OPERATIONS
+        and POSTING_PERIOD_OPERATIONS <= ROUTABLE_OPERATIONS - REQUEST_ONLY_OPERATIONS
         and set(OPERATION_TOOLS) <= ROUTABLE_OPERATIONS and PREVIEW_UNEVALUATED <= set(OPERATION_TOOLS)):
     raise RuntimeError("ricky_sdk: GOVERNED_ROUTABLE_OPERATIONS, POSTING_PERIOD_OPERATIONS and OPERATION_TOOLS must name routable operations, "
                        "and an operation preview does not evaluate needs a tool of its own")
@@ -922,9 +938,10 @@ CATALOG: tuple[ToolSpec, ...] = (
         timeout_seconds=15, retry=_EFFECT_RETRY, handler="_tool_draft_change",
     ),
     ToolSpec(
-        name="draft_supplier_bill", version="1.0.0",
+        name="draft_supplier_bill", version="1.1.0",
         description="Certify a draft supplier progress bill (bills.certify) with cumulative installed values and stored-material "
-                    "transfers. Nothing posts until a human-granted bill.approve approval is executed; the period must be open.",
+                    "transfers. A person grants journal-free business approval; a distinct authorized person posts the approved bill "
+                    "outside Ricky; the period must be open.",
         input_schema=_obj({
             "commitment_id": _ID, "period_id": _ID,
             "installed": {"type": "array", "minItems": 1, "maxItems": 500, "items": _obj(
@@ -932,16 +949,17 @@ CATALOG: tuple[ToolSpec, ...] = (
             "transfers": {"type": "array", "maxItems": 500, "items": _obj({"lot_id": _ID, "amount": _NON_NEGATIVE_MONEY}, ["lot_id", "amount"])},
         }, ["commitment_id", "period_id", "installed"]),
         output="{bill_id, commitment_id, period_id, sequence, status: 'draft', amount_due, retainage_this_period, cumulative_gross, next_step}",
-        side_effects="draft", authority="bill.approve", approval_type=APPROVAL_NONE,
-        idempotency="creates one draft bill; a second draft while one is open is refused by the bills service inside its own write "
+        side_effects="draft", authority=AUTH_BILL_PREPARATION, approval_type=APPROVAL_NONE,
+        idempotency="creates one draft bill; another bill while a draft or approved unposted bill is open is refused by the bills service inside its own write "
                     "transaction; " + _KEYED,
         timeout_seconds=15, retry=_EFFECT_RETRY, handler="_tool_draft_supplier_bill",
     ),
     ToolSpec(
-        name="request_approval", version="1.1.0",
+        name="request_approval", version="1.2.0",
         description="Ask a human to approve an operation on a subject (Cipher.request_approval). The server builds and binds the "
                     "manifest; the approval is created pending and this tool can never grant it. Only operations on the SDK's list of "
-                    "operations Ricky may route are accepted (ROUTABLE_OPERATIONS); operations that grant, revoke or delegate roles, adopt "
+                    "operations Ricky may route are accepted (ROUTABLE_OPERATIONS). bill.approve is request-only: a bill preparer may request "
+                    "fixed-PM business approval, which never posts. Operations that grant, revoke or delegate roles, adopt "
                     "identity or payment policies, switch workspace controls or change payee destinations are refused for every role.",
         input_schema=_obj({"operation": _OPERATION, "subject_id": _ID}, ["operation", "subject_id"]),
         output="{approval_id, operation, subject, actor_role, status: 'pending', granted: false, expires_at, manifest_hash, material_hash, "
@@ -955,16 +973,17 @@ CATALOG: tuple[ToolSpec, ...] = (
         timeout_seconds=10, retry=_EFFECT_RETRY, handler="_tool_request_approval",
     ),
     ToolSpec(
-        name="execute_approved_action", version="1.1.0",
+        name="execute_approved_action", version="1.2.0",
         description="Execute an approval a human has already granted (Cipher.execute): the manifest is rebuilt from current state and "
                     "consumed atomically. Refuses pending, invalidated, expired (including granted ones past their expiry) and consumed "
-                    "approvals, operations Ricky may not route, and any role other than the approval's bound acting role. The caller never "
+                    "approvals, request-only bill.approve (before any receipt replay), operations Ricky may not route, and any role other than "
+                    "the approval's bound acting role. The caller never "
                     "chooses the accounting period: period_id is accepted only for an operation whose approved manifest binds the period the "
-                    "effect posts in (bill.approve, prime_bill.approve) and only when it equals that period; for every other operation, "
+                    "effect posts in (prime_bill.approve) and only when it equals that period; for every other operation, "
                     "including those that post by a target_rule (bill.correct, bill.credit_note, receivable postings, reversals), it is "
                     "refused and the service's own default applies.",
         input_schema=_obj({"approval_id": _ID, "period_id": {
-            **_ID, "description": "optional; accepted only for bill.approve and prime_bill.approve and only equal to the posting period the "
+            **_ID, "description": "optional; accepted only for prime_bill.approve and only equal to the posting period the "
                                   "approved manifest binds (bindings.period_id), else refused"}},
             ["approval_id"]),
         output="{approval_id, operation, subject_type, subject_id, op_id, replayed, command_result}",
@@ -1761,6 +1780,10 @@ class RickySDK:
     def _check_authority(self, spec: ToolSpec, args: dict[str, Any], actor_role: str) -> None:
         if spec.authority == AUTH_READ:
             return  # any known role reads; the role itself was checked already
+        if spec.authority == AUTH_BILL_PREPARATION:
+            if actor_role not in BILL_PREPARER_ROLES:
+                raise ToolRefused(f"role {actor_role!r} is not authorized for bill preparation")
+            return
         if spec.authority == AUTH_ARGS_OPERATION:
             self._require_operation(actor_role, args["operation"])
             return
@@ -1788,11 +1811,17 @@ class RickySDK:
             if getattr(owner, "GOVERNOR", False) is True:
                 reason = "belongs to a governor module (policy over other modules' approvals) and is not one of its listed business operations"
         if reason is not None:
+            if operation == "bill.post":
+                raise ToolRefused(f"{operation} {reason}; Ricky never requests or executes it, and a person handles it outside Ricky")
             raise ToolRefused(f"{operation} {reason}: it changes policy, roles, delegations, destinations, secrets or workspace controls or "
                               "authority, so Ricky never requests or executes it, whatever the role and even after a person granted it")
         if operation not in ROUTABLE_OPERATIONS:
             raise ToolRefused(f"{operation} is not on the SDK's list of operations Ricky may route (ROUTABLE_OPERATIONS); Ricky neither "
                               "requests nor executes it, and a person handles it directly")
+        if operation in REQUEST_ONLY_OPERATIONS:
+            if actor_role not in BILL_PREPARER_ROLES:
+                raise ToolRefused(f"role {actor_role!r} is not authorized for bill preparation")
+            return
         if not Ricky.can(actor_role, operation):
             raise ToolRefused(f"role {actor_role!r} is not authorized for {operation}")
 
@@ -1809,6 +1838,9 @@ class RickySDK:
         the service's rule."""
         approval_id = args["approval_id"]
         ap = self.c.approvals.get(approval_id)  # unknown -> ApprovalError -> refused
+        if ap["operation"] in REQUEST_ONLY_OPERATIONS:
+            raise ToolRefused("bill.approve is request-only: a person grants journal-free business approval; "
+                              "a distinct authorized person posts the approved bill through bill.post outside Ricky")
         self._require_operation(actor_role, ap["operation"])
         if ap["actor_role"] != actor_role:
             raise ToolRefused(f"approval {approval_id} binds acting role {ap['actor_role']!r}; it cannot be executed as {actor_role!r}")
@@ -2410,7 +2442,8 @@ class RickySDK:
     def _tool_preview(self, args: dict[str, Any], *, actor: str, actor_role: str) -> dict[str, Any]:
         p = self.c.ricky.propose(args["workflow"], actor_role=actor_role, context=dict(args["context"]))
         return {"proposal_id": p["id"], "workflow": p["workflow"], "decision": p["decision"], "reason": p["reason"], "manifest": p["manifest"],
-                "note": "preview only: nothing executes until a human grants an approval"}
+                "note": ("preview only: a person grants journal-free business approval; a distinct authorized person posts outside Ricky"
+                         if args["workflow"] == "bill.approve" else "preview only: nothing executes until a human grants an approval")}
 
     def _tool_draft_change(self, args: dict[str, Any], *, actor: str, actor_role: str) -> dict[str, Any]:
         amount = fmt(money(args["amount"]))
@@ -2439,7 +2472,8 @@ class RickySDK:
         return {"bill_id": b["id"], "commitment_id": b["commitment_id"], "period_id": b["period_id"], "sequence": b["sequence"],
                 "status": b["status"], "amount_due": b["amount_due"], "retainage_this_period": b["retainage_this_period"],
                 "cumulative_gross": b["cumulative_gross"],
-                "next_step": {"tool": "request_approval", "operation": "bill.approve", "subject_id": b["id"]}}
+                "next_step": {"tool": "request_approval", "operation": "bill.approve", "subject_id": b["id"],
+                              "note": "A person grants business approval without posting; a distinct authorized person posts outside Ricky."}}
 
     # ---- tools: approvals and execution ------------------------------------------------ #
 
@@ -2468,7 +2502,8 @@ class RickySDK:
         return {"approval_id": ap["id"], "operation": ap["operation"], "subject": ap["manifest"]["subject"], "actor_role": ap["actor_role"],
                 "status": ap["status"], "granted": False, "expires_at": ap["expires_at"], "manifest_hash": ap["manifest_hash"],
                 "material_hash": ap["material_hash"], "manifest": ap["manifest"], "stale_open_approvals": stale,
-                "note": "a human must review and grant this approval outside Ricky; Ricky cannot grant it"
+                "note": ("a human must grant journal-free business approval outside Ricky; a distinct authorized person must then post the bill"
+                         if operation in REQUEST_ONLY_OPERATIONS else "a human must review and grant this approval outside Ricky; Ricky cannot grant it")
                         + (f"; open approval(s) {', '.join(stale)} on this subject no longer match it and can never execute: a person may "
                            "reject them" if stale else "")}
 
@@ -2876,8 +2911,8 @@ __all__ = [
     "OP_CONTRACT_SIGN", "PAYMENT_POLICY_PLUGIN", "PEOPLE_PLUGIN", "RELEASE_OPERATIONS", "RELEASE_RULES_UNTRUSTED_FIELDS", "ROUND4_TOOLS",
     "OPERATION_TOOLS", "PREVIEW_UNEVALUATED", "ROUTE_TOOLS", "operation_route",
     "GOVERNED_ROUTABLE_OPERATIONS", "POSTING_PERIOD_OPERATIONS", "RESTRICTED_OPERATION_PREFIXES", "RESTRICTED_OPERATION_TERMS",
-    "RESTRICTED_OPERATIONS", "ROUTABLE_OPERATIONS", "operation_class",
-    "APPROVAL_HUMAN", "APPROVAL_NONE", "APPROVAL_TYPES", "AUTH_APPROVAL_OPERATION", "AUTH_ARGS_OPERATION", "AUTH_READ", "AUTHORITY_KINDS",
+    "RESTRICTED_OPERATIONS", "REQUEST_ONLY_OPERATIONS", "ROUTABLE_OPERATIONS", "operation_class",
+    "APPROVAL_HUMAN", "APPROVAL_NONE", "APPROVAL_TYPES", "AUTH_APPROVAL_OPERATION", "AUTH_ARGS_OPERATION", "AUTH_BILL_PREPARATION", "AUTH_READ", "AUTHORITY_KINDS",
     "CATALOG", "CATALOG_BY_NAME", "CATALOG_HASH", "CATALOG_VERSION", "DESTINATION_DERIVED_KEYS", "DYNAMIC_AUTHORITIES", "FINGERPRINT_PREFIX",
     "GUARDS_SCHEMA_NAME", "GUARDS_SCHEMA_STATEMENTS", "IMMUTABILITY_TRIGGERS", "MAX_ACTOR_LENGTH", "MAX_ARG_DEPTH", "PLUGIN_NAME", "Plugin",
     "RECEIPT_SCHEMA", "RECEIPT_STATUSES", "RECEIPTS_TABLE", "REDACTION_KEY_TABLE", "REDACTION_SCHEMA_NAME", "RESERVATIONS_SCHEMA_NAME",

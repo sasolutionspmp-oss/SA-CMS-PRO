@@ -112,6 +112,162 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(status, 400)
 
 
+class BillPostingHttpTests(unittest.TestCase):
+    """A human business grant and an independent accounting post are separate acts."""
+
+    def setUp(self):
+        self.c = Cipher()
+        supplier = self.c.add_party(kind="supplier", name="Synthetic HTTP bill supplier")
+        project = self.c.create_project(name="Synthetic HTTP posting project", entity="Synthetic LLC", budget="5000")
+        self.project_id = project["id"]
+        self.c.open_period("P1", "Certification month", "2026-10-01", "2026-10-31")
+        self.c.open_period("P2", "Posting month", "2026-11-01", "2026-11-30")
+        self.commitment = self.c.commitments.create(
+            project_id=project["id"], supplier_id=supplier["id"], title="Synthetic HTTP subcontract",
+            sov_lines=[{"description": "Installed work", "amount": "4000"}], actor="preparer")
+        self.c.approve_and_execute("commitment.execute", self.commitment["id"])
+        self.bill = self.c.bills.certify(
+            commitment_id=self.commitment["id"], period_id="P1",
+            installed=[{"sov_line_id": self.commitment["sov"][0]["id"], "cumulative_installed": "1000"}], actor="preparer")
+        self.server = BackgroundServer(self.c).__enter__()
+        self.addCleanup(self.server.__exit__, None, None, None)
+
+    def post(self, name, body):
+        return _post(self.server.url + f"/api/action/{name}", body)
+
+    def grant(self, *, requester="preparer", requester_role="pm", approver="owner", approver_role="owner"):
+        status, body = self.post("request_approval", {
+            "operation": "bill.approve", "subject_id": self.bill["id"], "actor": requester, "actor_role": requester_role})
+        self.assertEqual(status, 200, body)
+        approval_id = body["result"]["id"]
+        status, body = self.post("approve", {"approval_id": approval_id, "actor": approver, "approver_role": approver_role})
+        self.assertEqual(status, 200, body)
+        return approval_id
+
+    def assert_unposted(self):
+        self.assertEqual(self.c.bills.get(self.bill["id"])["status"], "approved")
+        self.assertEqual(self.c.db.scalar("SELECT COUNT(*) FROM journals WHERE source_id=?", (self.bill["id"],)), 0)
+        self.assertEqual(self.c.bills.ap_open_items(self.project_id)["subledger_total"], "0.00")
+
+    def test_business_grant_is_journal_free_and_legacy_execute_is_refused(self):
+        approval_id = self.grant()
+        self.assert_unposted()
+        status, body = self.post("execute", {"approval_id": approval_id, "actor": "accountant"})
+        self.assertEqual(status, 400, body)
+        self.assertEqual(self.c.approvals.get(approval_id)["status"], "granted")
+        status, body = self.post("request_approval", {
+            "operation": "payment.release", "subject_id": self.bill["id"], "actor_role": "treasury"})
+        self.assertEqual(status, 400, body)
+        self.assertEqual(self.c.payments.list(), [])
+        self.assert_unposted()
+
+    def test_post_requires_explicit_distinct_human_actor(self):
+        self.grant()
+        for body in ({"bill_id": self.bill["id"]}, {"bill_id": self.bill["id"], "actor": "  OWNER  "}):
+            with self.subTest(body=body):
+                status, result = self.post("post_bill", body)
+                self.assertEqual(status, 400, result)
+                self.assert_unposted()
+
+    def test_selected_period_preview_post_and_retry_match(self):
+        approval_id = self.grant()
+        status, body = self.post("bill_journal_preview", {"bill_id": self.bill["id"], "period_id": "P2"})
+        self.assertEqual(status, 200, body)
+        preview = body["result"]
+        self.assertTrue(preview)
+        self.assertTrue(all(j["period_id"] == "P2" for j in preview))
+        self.assert_unposted()  # reviewing the entry creates no accounting effect
+        payload = {"bill_id": self.bill["id"], "actor": "accountant", "period_id": "P2",
+                   "reason": "Received after the certification month", "op_id": "http:bill-post"}
+        status, body = self.post("post_bill", payload)
+        self.assertEqual(status, 200, body)
+        posted = body["result"]
+        self.assertFalse(posted["replayed"])
+        self.assertEqual(posted["result"]["status"], "posted")
+        self.assertEqual(posted["result"]["posting_period_id"], "P2")
+        self.assertTrue(posted["result"]["posting_receipt_id"])
+        self.assertEqual(self.c.bills.get(self.bill["id"])["period_id"], "P1")
+        self.assertEqual(self.c.approvals.get(approval_id)["status"], "consumed")
+        journals = self.c.db.query("SELECT id, period_id FROM journals WHERE source_id=?", (self.bill["id"],))
+        self.assertEqual([j["period_id"] for j in journals], ["P2"] * len(preview))
+        for journal, planned in zip(journals, preview):
+            actual = self.c.ledger.journal(journal["id"])
+            self.assertEqual(actual["description"], planned["description"])
+            self.assertEqual([
+                {"account": line["account_code"], **{key: line[key] for key in ("debit", "credit", "project_id", "party_id", "memo")}}
+                for line in actual["lines"]], planned["lines"])
+        self.assertEqual(self.c.bills.ap_open_items(self.project_id)["subledger_total"], "900.00")
+        status, body = self.post("post_bill", payload)
+        self.assertEqual(status, 200, body)
+        self.assertTrue(body["result"]["replayed"])
+        self.assertEqual(body["result"]["result"], posted["result"])
+        self.assertEqual(self.c.db.query("SELECT id, period_id FROM journals WHERE source_id=?", (self.bill["id"],)), journals)
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+    def test_cross_period_post_requires_reason_and_open_period(self):
+        self.grant()
+        payload = {"bill_id": self.bill["id"], "actor": "accountant", "period_id": "P2"}
+        status, body = self.post("post_bill", payload)
+        self.assertEqual(status, 400, body)
+        self.assert_unposted()
+        self.c.ledger.close_period("P2", actor="owner")
+        self.c.ledger.lock_period("P2", actor="owner")
+        status, body = self.post("post_bill", {**payload, "reason": "Late receipt"})
+        self.assertEqual(status, 400, body)
+        self.assert_unposted()
+
+    def test_changed_business_facts_refuse_human_post(self):
+        self.grant()
+        change = self.c.commitments.propose_change(self.commitment["id"], amount="100", reason="Revised subcontract", actor="owner")
+        self.c.approve_and_execute("change.execute", change["id"])
+        status, body = self.post("post_bill", {"bill_id": self.bill["id"], "actor": "accountant"})
+        self.assertEqual(status, 400, body)
+        self.assert_unposted()
+
+    def test_payload_role_cannot_elevate_pm_or_owner_to_posting_duty(self):
+        people = self.c.plugin("people")
+        people.bootstrap_owner("owner", "Synthetic owner")
+        for login, role in (("pm", "pm"), ("accountant", "accountant")):
+            people.register_person(login, f"Synthetic {login}", actor="owner")
+            request = people.request_grant(login, role, reason="Synthetic staffing", actor="owner")
+            self.c.approve_and_execute("people.grant_role", request["id"])
+        policy = people.prepare_policy(enforce=True, segregate=True, reason="Synthetic identity enforcement", actor="owner")
+        self.c.approve_and_execute("people.set_policy", policy["id"])
+        self.grant(requester="accountant", requester_role="accountant", approver="pm", approver_role="pm")
+        for role_key in ("actor_role", "actorRole"):
+            status, body = self.post("post_bill", {"bill_id": self.bill["id"], "actor": "accountant", role_key: "owner"})
+            self.assertEqual(status, 400, body)
+            self.assertIn(f"unsupported fields: {role_key}", body["error"])
+            self.assert_unposted()
+        for actor in ("pm", "owner"):
+            status, body = self.post("post_bill", {"bill_id": self.bill["id"], "actor": actor})
+            self.assertEqual(status, 400, body)
+            self.assert_unposted()
+        status, body = self.post("post_bill", {"bill_id": self.bill["id"], "actor": "accountant"})
+        self.assertEqual(status, 200, body)
+
+    def test_approved_unposted_withdrawal_requires_approver_person_and_reason(self):
+        approval_id = self.grant()
+        for payload in ({"bill_id": self.bill["id"], "reason": "Invoice withdrawn"},
+                        {"bill_id": self.bill["id"], "actor": "owner", "reason": ""},
+                        {"bill_id": self.bill["id"], "actor": "accountant", "reason": "Invoice withdrawn"}):
+            with self.subTest(payload=payload):
+                status, body = self.post("void_bill", payload)
+                self.assertEqual(status, 400, body)
+                self.assert_unposted()
+                self.assertEqual(self.c.approvals.get(approval_id)["status"], "granted")
+        status, body = self.post("void_bill", {
+            "bill_id": self.bill["id"], "actor": "  OWNER  ", "reason": "Original business approver withdrew the invoice"})
+        self.assertEqual(status, 200, body)
+        self.assertEqual(body["result"]["status"], "void")
+        self.assertEqual(self.c.approvals.get(approval_id)["status"], "invalidated")
+        self.assertEqual(self.c.db.scalar("SELECT COUNT(*) FROM journals WHERE source_id=?", (self.bill["id"],)), 0)
+        self.assertEqual(self.c.bills.ap_open_items(self.project_id)["subledger_total"], "0.00")
+        status, body = self.post("post_bill", {"bill_id": self.bill["id"], "actor": "accountant"})
+        self.assertEqual(status, 400, body)
+        self.assertTrue(self.c.audit.verify_chain()["ok"])
+
+
 class GovernedActionTests(unittest.TestCase):
     """Authorities that became approval-bound stay approval-bound over HTTP."""
 

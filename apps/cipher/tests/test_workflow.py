@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.domain.bills import BillError
@@ -173,7 +174,7 @@ class AdversarialTests(unittest.TestCase):
         with self.assertRaises(BillError):
             self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "60001"}], actor="o")
         b1 = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b1["id"])
+        approve_and_post_bill(self.c, b1["id"], approver="owner", approver_role="owner", poster="accountant")
         with self.assertRaises(BillError):
             self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "19000"}], actor="o")
 
@@ -220,7 +221,7 @@ class AdversarialTests(unittest.TestCase):
 
     def test_stored_material_respects_the_sov_line_cap(self):
         b1 = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "55000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b1["id"])
+        approve_and_post_bill(self.c, b1["id"], approver="owner", approver_role="owner", poster="accountant")
         with self.assertRaises(BillError) as cm:  # 55,000 installed + 6,000 stored would exceed line 1 (60,000)
             self.s.add_lot("pipe", "6000")
         self.assertIn("SOV line 1", str(cm.exception))
@@ -228,18 +229,20 @@ class AdversarialTests(unittest.TestCase):
         self.assertEqual(self.c.ledger.balance("2050"), Decimal("5500.00"))
         self.assertTrue(self.c.ledger.trial_balance()["balanced"])
 
-    def test_bill_manifest_binds_entity_currency_and_journal_preview(self):
+    def test_business_review_binds_entity_currency_and_posting_receipt_binds_preview(self):
         lot = self.s.add_lot("pipe", "10000")
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
         ap = self.c.request_approval("bill.approve", b["id"], actor_role="accountant")
         m = ap["manifest"]
         self.assertEqual((m["entity"], m["currency"]), ("E", "USD"))
-        preview = m["bindings"]["journal_preview"]
+        self.assertNotIn("journal_preview", m["bindings"])
+        preview = self.c.bills.journal_preview(b["id"])
         self.assertEqual([[(ln["account"], ln["debit"], ln["credit"]) for ln in j["lines"]] for j in preview],
                          [[("5000", "20000.00", "0.00"), ("1300", "10000.00", "0.00"), ("2000", "0.00", "27000.00"), ("2050", "0.00", "3000.00")]])
         self.assertEqual(m["bindings"]["stored_lots"], [{"lot_id": lot["id"], "evidence_revision_id": lot["evidence_revision_id"], "evidence_status": "current"}])
         self.c.approve(ap["id"], approver="controller", approver_role="controller")
-        res = self.c.execute(ap["id"], actor="accountant")
+        res = self.c.post_bill(b["id"], actor="accountant")
+        self.assertEqual(self.c.bills.posting_receipt(b["id"])["preview"], preview)
         posted = self.c.ledger.journals(source_type="bill", source_id=b["id"])
         self.assertEqual([[{k: ln[k if k != "account" else "account_code"] for k in ("account", "debit", "credit", "project_id", "party_id", "memo")} for ln in j["lines"]] for j in posted],
                          [j["lines"] for j in preview])
@@ -257,13 +260,13 @@ class AdversarialTests(unittest.TestCase):
         ch = self.c.commitments.propose_change(self.s.cmt["id"], amount="5000", reason="x", sov_line_id=self.s.line1, actor="o")
         self.c.approve_and_execute("change.execute", ch["id"])
         with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
-            self.c.execute(ap["id"])
+            self.c.post_bill(b["id"], actor="accountant")
         self.assertEqual(self.c.approvals.get(ap["id"])["status"], "invalidated")
         self.assertTrue(self.c.bills.get(b["id"])["stale"])
 
     def test_changed_payee_destination_invalidates_payment_approval(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         ap = self.c.request_approval("payment.release", b["id"], actor_role="treasury")
         self.c.approve(ap["id"])
         self.c.verify_destination(self.s.supplier["id"], destination="ACH-ATTACKER", verified_by="owner")
@@ -278,14 +281,14 @@ class AdversarialTests(unittest.TestCase):
         self.c.approve_and_execute("commitment.execute", cmt2["id"])
         line = self.c.commitments.get(cmt2["id"])["sov"][0]["id"]
         b = self.c.bills.certify(commitment_id=cmt2["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "1000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         with self.assertRaises(PaymentError):
             self.c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
         self.assertEqual(self.c.ricky.propose("payment.release", actor_role="treasury", context={"bill_id": b["id"]})["decision"], "abstained")
 
     def test_duplicate_dispatch_and_concurrent_release_create_one_transfer(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         ap = self.c.request_approval("payment.release", b["id"], actor_role="treasury")
         self.c.approve(ap["id"])
         self.c.execute(ap["id"], actor="treasury")
@@ -300,7 +303,7 @@ class AdversarialTests(unittest.TestCase):
 
     def test_rejected_payment_keeps_obligation_open(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         self.c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
         self.c.provider.mode = "reject"
         res = self.c.dispatch_payments()
@@ -310,7 +313,7 @@ class AdversarialTests(unittest.TestCase):
 
     def test_unavailable_provider_holds_unknown_outcome_without_retry(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         self.c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
         self.c.provider.mode = "unavailable"
         self.assertEqual(self.c.dispatch_payments()[0]["status"], "outcome_unknown")
@@ -321,7 +324,7 @@ class AdversarialTests(unittest.TestCase):
 
     def test_returned_payment_reinstates_payable(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "20000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         r = self.c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
         self.c.dispatch_payments()
         intent = self.c.payments.get(r.result["intent"])
@@ -362,7 +365,7 @@ class AdversarialTests(unittest.TestCase):
 
     def test_retainage_release_only_after_closeout(self):
         b = self.c.bills.certify(commitment_id=self.s.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.s.line1, "cumulative_installed": "60000"}, {"sov_line_id": self.s.line2, "cumulative_installed": "40000"}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         self.assertEqual(self.c.ledger.balance("2050"), Decimal("10000.00"))
         self.assertEqual(self.c.ricky.propose("retainage.release", actor_role="owner", context={"commitment_id": self.s.cmt["id"]})["decision"], "abstained")
         with self.assertRaises(BillError):  # the service refuses too, not only Ricky: no release before closeout
@@ -403,7 +406,7 @@ class RestoreQuarantineTests(unittest.TestCase):
         c.approve_and_execute("commitment.execute", cmt["id"])
         line = c.commitments.get(cmt["id"])["sov"][0]["id"]
         b = c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "1000"}], actor="o")
-        c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury")
         c.provider.mode = "timeout_after_accept"
         c.dispatch_payments()  # transfer exists at the provider, Cipher does not know

@@ -29,6 +29,7 @@ from decimal import Decimal
 from fractions import Fraction
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import Approvals, StaleApprovalError, build_manifest
 from apps.cipher.core.audit import Audit
 from apps.cipher.core.db import SCHEMA_CATALOG, Database, WriteAuthorityError
@@ -1123,7 +1124,7 @@ class GovernedReversalTests(unittest.TestCase):
         c.approve_and_execute("commitment.execute", cmt["id"], actor_role="pm")
         line = c.commitments.get(cmt["id"])["sov"][0]["id"]
         bill = c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "10000"}], actor="pm")
-        res = c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
+        res = approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         return bill["id"], c.ledger.journal(res.result["journal_id"])
 
     def test_subledger_journals_are_corrected_by_their_module_not_by_journal_reverse(self):

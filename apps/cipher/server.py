@@ -8,8 +8,9 @@ GET  /api/audit-export      audit export with schema manifest
 GET  /api/schema            schema lifecycle status
 POST /api/action/<name>     JSON body; names listed in ACTIONS
 
-Every action maps to one service method with an explicit argument allowlist;
-nothing on this surface can bypass approvals or post to the ledger directly.
+Every action maps to one service method with an explicit argument allowlist.
+Bill posting is a human command that consumes its existing business approval;
+the served Ricky surface remains read and draft only.
 """
 from __future__ import annotations
 
@@ -41,6 +42,19 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
             raise ValueError(f"missing fields: {', '.join(missing)}")
         return [d[k] for k in keys]
 
+    def post_bill(d):
+        unsupported = [key for key in ("actor_role", "actorRole") if key in d]
+        if unsupported:
+            raise ValueError(f"unsupported fields: {', '.join(unsupported)}; bill posting duty is fixed by the server")
+        bill_id, actor = p(d, "bill_id", "actor")
+        return c.post_bill(bill_id, actor=actor, actor_role="accountant", period_id=d.get("period_id"),
+                           reason=d.get("reason", ""), op_id=d.get("op_id")).__dict__
+
+    def void_bill(d):
+        bill_id = p(d, "bill_id")[0]
+        actor = p(d, "actor")[0] if c.bills.get(bill_id)["status"] == "approved" else d.get("actor", "owner")
+        return c.bills.void(bill_id, actor=actor, reason=d.get("reason", ""))
+
     return {
         "add_party": lambda d: c.add_party(kind=d["kind"], name=d["name"], destination=d.get("destination")),
         # A payee destination change is never one call on this surface: request it, record the
@@ -66,7 +80,11 @@ def _actions(c: Cipher) -> dict[str, Callable[[dict[str, Any]], Any]]:
         "close_commitment": lambda d: c.close_commitment(d["commitment_id"], actor=d.get("actor", "owner")),
         "add_stored_material": lambda d: c.bills.add_stored_material(commitment_id=d["commitment_id"], sov_line_id=d["sov_line_id"], description=d.get("description", ""), eligible_amount=d["eligible_amount"], evidence_hash=d.get("evidence_hash", ""), location=d.get("location", ""), actor=d.get("actor", "owner")),
         "certify_bill": lambda d: c.bills.certify(commitment_id=d["commitment_id"], period_id=d["period_id"], installed=d["installed"], transfers=d.get("transfers"), actor=d.get("actor", "owner")),
-        "void_bill": lambda d: c.bills.void(d["bill_id"], actor=d.get("actor", "owner"), reason=d.get("reason", "")),
+        "void_bill": void_bill,
+        "bill_journal_preview": lambda d: c.bills.journal_preview(*p(d, "bill_id"), period_id=d.get("period_id")),
+        # The synthetic human console names its poster explicitly. A payload cannot
+        # choose owner authority or turn business approval into an accounting post.
+        "post_bill": post_bill,
         # drafts only: each becomes effective through its approval (bill.credit_note / bill.correct)
         "prepare_credit_note": lambda d: c.bills.prepare_credit_note(*p(d, "bill_id", "amount", "reason", "evidence_hash"), d.get("actor", "owner")),
         "prepare_bill_correction": lambda d: c.bills.prepare_correction(*p(d, "bill_id", "reason"), d.get("actor", "owner")),

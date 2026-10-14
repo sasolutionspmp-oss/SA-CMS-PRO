@@ -5,6 +5,7 @@ import sqlite3
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.domain.banking import PLUGIN_NAME, BankingError, line_fingerprint
 from apps.cipher.domain.payments import SimulatedProvider
@@ -949,7 +950,7 @@ class PaymentBankReconciliationTests(unittest.TestCase):
     def settled_payment(self, cumulative="20000", *, process=True):
         c = self.c
         bill = c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.cmt["sov"][0]["id"], "cumulative_installed": cumulative}], actor="pm")
-        c.approve_and_execute("bill.approve", bill["id"])
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         res = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
         self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
         intent = c.payments.get(res.result["intent"])

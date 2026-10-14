@@ -40,6 +40,7 @@ import unittest
 from decimal import Decimal
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core import approvals as approvals_module
 from apps.cipher.core.approvals import ApprovalExpired, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
@@ -111,7 +112,7 @@ class World:
         if line2 is not None:
             installed.append({"sov_line_id": self.line2, "cumulative_installed": line2})
         b = self.c.bills.certify(commitment_id=self.cid, period_id="P1", installed=installed, actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"], actor_role="accountant", actor="accountant")
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def granted_release(self, bill_id):
@@ -246,9 +247,9 @@ class AdversarialVariantTests(unittest.TestCase):
         c.evidence.add_revision(document_id=ev["document_id"], content=b"adversarial synthetic stored-material evidence rev 2 (insurance lapsed)", actor="pm")
         journals_before = c.ledger.trial_balance()["journal_count"]
         with self.assertRaises(StaleApprovalError):
-            c.execute(ap2["id"], actor="accountant")
+            c.post_bill(bill2["id"], actor="accountant")
         self.assertEqual(c.approvals.get(ap2["id"])["status"], "invalidated")
-        self.assertEqual((c.bills.get(bill2["id"])["status"], c.ledger.trial_balance()["journal_count"]), ("draft", journals_before))
+        self.assertEqual((c.bills.get(bill2["id"])["status"], c.ledger.trial_balance()["journal_count"]), ("approved", journals_before))
         flagged = c.bills.lot(lot["id"])
         self.assertEqual((flagged["evidence_status"], flagged["frozen"], flagged["eligibility_confirmation_required"]), ("superseded", True, True))
         w.assert_books(self)
@@ -277,9 +278,9 @@ class AdversarialVariantTests(unittest.TestCase):
         c.approve(ap2["id"], approver="controller", approver_role="controller")
         c.db.execute("UPDATE projects SET entity=? WHERE id=?", (ENTITY, w.pid))
         journals = c.ledger.trial_balance()["journal_count"]
-        with self.assertRaisesRegex(StaleApprovalError, "entity"):
-            c.execute(ap2["id"], actor="accountant")
-        self.assertEqual((c.bills.get(b2["id"])["status"], c.ledger.trial_balance()["journal_count"]), ("draft", journals))
+        with self.assertRaisesRegex(StaleApprovalError, "approved business facts changed"):
+            c.post_bill(b2["id"], actor="accountant")
+        self.assertEqual((c.bills.get(b2["id"])["status"], c.ledger.trial_balance()["journal_count"]), ("approved", journals))
         # the unchanged entity executes
         intent = w.release(bill["id"])
         self.assertEqual((intent["entity"], intent["currency"]), (ENTITY, "USD"))
@@ -940,7 +941,7 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         ap = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="accountant")
         self.assertEqual((ap["manifest"]["bindings"]["supplier_invoice"]["id"], ap["manifest"]["bindings"]["supplier_invoice"]["number"]), (inv["id"], "SPD-ADV-0001"))
         c.approve(ap["id"], approver="controller", approver_role="controller")
-        c.execute(ap["id"], actor="accountant")
+        c.post_bill(bill["id"], actor="accountant")
         intent = w.release(bill["id"])
         self.assertEqual(intent["amount"], "27000.00")
         self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
@@ -1002,9 +1003,9 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         reissue("26000.00", "supplier deducted a back-charge on the face of the invoice")
         journals = c.ledger.trial_balance()["journal_count"]
         with self.assertRaises(StaleApprovalError):
-            c.execute(bill_ap["id"], actor="accountant")
+            c.post_bill(bill["id"], actor="accountant")
         self.assertEqual((c.approvals.get(bill_ap["id"])["status"], c.bills.get(bill["id"])["status"], c.ledger.trial_balance()["journal_count"]),
-                         ("invalidated", "draft", journals))
+                         ("invalidated", "approved", journals))
         with self.assertRaises(BillIneligible):  # no new bill approval rests on an invoice that no longer agrees
             c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="accountant")
         self.assertEqual(intake.match(inv["id"], "ap-clerk")["exceptions"], ["amount_mismatch"])  # it stays on its bill, and no longer fits it
@@ -1016,7 +1017,7 @@ class FirstSliceAdversarialVariantTests(unittest.TestCase):
         reissue("27000.00", "supplier reissued the invoice at the certified amount; the back-charge follows as a credit note")
         self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
         c.execute(w.granted_match(inv["id"])["id"], actor="accountant")
-        self.assertEqual(c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant").result["amount_due"], "27000.00")
+        self.assertEqual(approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant").result["amount_due"], "27000.00")
         self.assertEqual(w.release(bill["id"])["amount"], "27000.00")
         self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
         self.assertEqual(c.ledger.balance("1000"), D("0.00"))  # accepted, not yet settled: the cash moves at settlement

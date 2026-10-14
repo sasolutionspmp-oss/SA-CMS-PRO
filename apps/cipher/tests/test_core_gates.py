@@ -44,6 +44,7 @@ from apps.cipher.domain.ledger import RULE_VERSION
 from apps.cipher.domain.payments import DestinationChangeError
 from apps.cipher.domain.receivables import ReceivableError, ReceivableIneligible
 from apps.cipher.service import Cipher, run_golden_fixture
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.tools import core_gates as cg
 from apps.cipher.tools.core_gates import (
     ALLOCATION_CASES, ASSUMED_CRITERIA, ERPNEXT_UNAVAILABLE, G6_INVOICE_KEYS, G6_PAYEE_KEYS, G9_ADJUSTMENT_KEYS, GATE_IDS, REFUSAL_CONTROLS,
@@ -197,7 +198,7 @@ class RestoreScenario:
         c.approve_and_execute("commitment.execute", cmt["id"], actor="test")
         line = c.commitments.get(cmt["id"])["sov"][0]["id"]
         bill = c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "10000"}], actor="test")
-        c.approve_and_execute("bill.approve", bill["id"], actor="test")
+        approve_and_post_bill(c, bill["id"], approver="test-controller", poster="test-accountant", approver_role="controller")
         prime = c.receivables.certify(project_id=project["id"], period_id="P1", certified_cumulative="10000", retainage_rate="0.10", actor="test")
         c.approve_and_execute("prime_bill.approve", prime["id"], actor="test")
         c.approve_and_execute("prime_bill.send", prime["id"], actor="test")
@@ -353,7 +354,7 @@ class ProbeWorld:
 
     def posted_bill(self, cumulative):
         b = self.c.bills.certify(commitment_id=self.cid, period_id="P1", installed=[{"sov_line_id": self.line, "cumulative_installed": cumulative}], actor="test")
-        self.c.approve_and_execute("bill.approve", b["id"], actor_role="accountant", actor="test-accountant")
+        approve_and_post_bill(self.c, b["id"], approver="test-controller", poster="test-accountant", approver_role="controller")
         return self.c.bills.get(b["id"])
 
     def journals(self):
@@ -617,7 +618,7 @@ class DepositApplicationsIgnored(NativeCipherAdapter):
 # gate check key -> (adapter, gate, every hard check the re-opened control must fail, evidence the gate prints)
 ROUND_THREE_REOPENED = {
     "g6.supplier_invoice_change": (InvoiceBlindBillApproval, "G6", {"g6.supplier_invoice_change", "g6.supplier_invoice_fresh_approval"},
-                                   "executing the earlier approval was ACCEPTED; status consumed; bill posted; journals 1 -> 2"),
+                                   "posting under the earlier approval was ACCEPTED; status consumed; bill posted; journals 1 -> 2"),
     "g6.payee_change_two_person": (SelfVerifiedPayeeChange, "G6", {"g6.payee_change_two_person", "g6.payee_change_raw_self_verification"},
                                    "verification by the named requester (as ' Gate-Site-PM ') was ACCEPTED"),
     "g6.payee_change_requires_evidence": (PendingChangeApprovable, "G6", {"g6.payee_change_requires_evidence"},
@@ -945,7 +946,7 @@ class NativeGateTests(unittest.TestCase):
         self.assertIn("refused (IntegrityError: posted journals are immutable: the journal already holds its sealed line count); "
                       "that journal is now Dr 100.00 / Cr 100.00 over 2 lines (fingerprint unchanged)", g3)
         self.assertIn("period G4-SVC closed holding 1 journal; bill of 18000.00", g4)
-        self.assertIn("service path: executing the granted bill approval into the closed period refused (PeriodNotOpen: period G4-SVC is closed); journals 1 -> 1", g4)
+        self.assertIn("service path: posting the business-approved bill into the closed period refused (PeriodNotOpen: period G4-SVC is closed); journals 1 -> 1", g4)
         self.assertIn("raw INSERT of a journal header into the locked period refused (IntegrityError: period is not open for posting)", g4)
         self.assertIn("raw UPDATE setting locked period G4-SVC back to open refused (IntegrityError: locked periods are immutable); the period is locked", g4)
         self.assertIn("privileged path: a raw UPDATE reopening closed period G4-REOPEN citing 'apr_gate_unrecorded_reopen' refused "
@@ -969,10 +970,10 @@ class NativeGateTests(unittest.TestCase):
     def test_round_three_g6_evidence(self):
         g6 = self.evidence("G6")
         self.assertIn("PASS: supplier invoice GATE-SI-0001 for 9000.00 (due 2026-11-14) was matched to bill ", g6)
-        self.assertIn("the supplier then reissued it (version 2, due 2026-12-15): executing the earlier approval was refused (BillIneligible: bill 2 (", g6)
+        self.assertIn("the supplier then reissued it (version 2, due 2026-12-15): posting under the earlier approval was refused (BillIneligible: bill 2 (", g6)
         self.assertIn("was revised to version 2 after it was attached", g6)
-        self.assertIn("status invalidated; bill draft; journals 1 -> 1", g6)
-        self.assertIn("PASS: control case: re-matching the reissued invoice and a fresh bill.approve post the bill (posted; journals 1 -> 2); "
+        self.assertIn("status invalidated; bill approved; journals 1 -> 1", g6)
+        self.assertIn("PASS: control case: re-matching the reissued invoice and granting fresh bill.approve let a separate accountant post the bill (posted; journals 1 -> 2); "
                       "it carries invoice version 2 due 2026-12-15 (hash matches the invoice record: True)", g6)
         self.assertIn("verification by the named requester (as ' Gate-Site-PM ') refused (DestinationChangeError: 'Gate-Site-PM' requested this destination change, "
                       "so cannot also verify it; the two-person rule", g6)
@@ -1169,6 +1170,25 @@ class RoundThreeReopenedTests(unittest.TestCase):
 class RoundThreeCoreProbeTests(unittest.TestCase):
     """The behavior the new G6 and G9 checks report, reproduced on Cipher directly."""
 
+    def test_bill_grant_and_posting_are_explicit_distinct_adapter_acts(self):
+        adapter = NativeCipherAdapter()
+        adapter.reset()
+        self.addCleanup(adapter.close)
+        adapter.open_period("SPLIT", "2026-10-01", "2026-10-31")
+        project = adapter.setup_project()
+        commitment = adapter.setup_commitment(project)
+        bill = adapter.certify_bill(commitment["commitment_id"], "SPLIT", commitment["line_ids"][0], "10000")
+        before = adapter.journal_count()
+        approval = adapter.request_and_grant("bill.approve", bill["bill_id"], actor_role="accountant")
+        self.assertEqual(adapter.bill_status(bill["bill_id"]), "approved")
+        self.assertEqual(adapter.approval_status(approval), "granted")
+        self.assertEqual(adapter.journal_count(), before)
+        posted = adapter.post_bill(bill["bill_id"], actor="gate-accountant", period_id="SPLIT")
+        self.assertEqual(posted["result"]["status"], "posted")
+        self.assertEqual(adapter.approval_status(approval), "consumed")
+        self.assertEqual(adapter.journal_count(), before + 1)
+        self.assertNotEqual(adapter.c.approvals.get(approval)["approver"], adapter.c.ledger.journals()[-1]["posted_by"])
+
     def test_a_reissued_supplier_invoice_invalidates_the_bill_approval_granted_before(self):
         w = ProbeWorld()
         c = w.c
@@ -1186,13 +1206,13 @@ class RoundThreeCoreProbeTests(unittest.TestCase):
         ap_intake.revise_invoice(inv["id"], "probe-ap-clerk", reason="supplier reissued the invoice with a corrected due date", due_date="2026-12-15")
         before = w.journals()
         with self.assertRaises(StaleApprovalError):
-            c.execute(approval["id"], actor="test-accountant")
-        self.assertEqual((c.approvals.get(approval["id"])["status"], c.bills.get(bill["id"])["status"], w.journals()), ("invalidated", "draft", before))
+            c.post_bill(bill["id"], actor="test-accountant")
+        self.assertEqual((c.approvals.get(approval["id"])["status"], c.bills.get(bill["id"])["status"], w.journals()), ("invalidated", "approved", before))
         self.assertTrue(any("revised to version 2" in p for p in c.bills.supplier_invoice_state(bill["id"])["problems"]))
         # the stale approval is final: re-match and approve afresh
         self.assertEqual(ap_intake.match(inv["id"], "probe-ap-clerk")["status"], "matched")
         c.approve_and_execute("ap_intake.match_invoice", inv["id"], actor_role="accountant", actor="test-accountant")
-        c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="test-accountant")
+        approve_and_post_bill(c, bill["id"], approver="test-controller", poster="test-accountant", approver_role="controller")
         posted = c.bills.get(bill["id"])
         self.assertEqual((posted["status"], posted["due_date"], posted["supplier_invoice_hash"]), ("posted", "2026-12-15", ap_intake.invoice(inv["id"])["content_hash"]))
         ap = c.bills.ap_open_items(w.pid)

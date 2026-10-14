@@ -11,13 +11,14 @@ import tempfile
 import unittest
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core import db as core_db
-from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
+from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError, build_manifest
 from apps.cipher.core.ids import new_id, sha256_hex, utcnow_iso
 from apps.cipher.core.money import MoneyError, fmt
 from apps.cipher.domain.ap_intake import INTEGRITY_SCHEMA_NAME as AP_INTAKE_INTEGRITY_SCHEMA_NAME
 from apps.cipher.domain.bills import (
-    BILLS_HARDENING_SCHEMA_NAME, BILLS_LIFECYCLE_SCHEMA_NAME, BILLS_LINK_PAYMENT_SCHEMA_NAME, BILLS_SCHEMA_NAME, BillError, BillIneligible,
+    BILL_POSTING_SCHEMA_NAME, BILLS_HARDENING_SCHEMA_NAME, BILLS_LIFECYCLE_SCHEMA_NAME, BILLS_LINK_PAYMENT_SCHEMA_NAME, BILLS_SCHEMA_NAME, BillError, BillIneligible,
 )
 from apps.cipher.domain.commitments import COMMITMENTS_SCHEMA_NAME, CommitmentError
 from apps.cipher.domain.ledger import LedgerError, PeriodNotOpen
@@ -26,7 +27,7 @@ from apps.cipher.service import Cipher, RoleNotAuthorized, run_golden_fixture
 
 ENTITY = "S&A Solutions LLC (synthetic)"
 # entries that build on bills_invoices_credits_corrections: a workspace older than it has none of them
-AFTER_LIFECYCLE = (BILLS_LINK_PAYMENT_SCHEMA_NAME, AP_INTAKE_INTEGRITY_SCHEMA_NAME)
+AFTER_LIFECYCLE = (BILLS_LINK_PAYMENT_SCHEMA_NAME, AP_INTAKE_INTEGRITY_SCHEMA_NAME, BILL_POSTING_SCHEMA_NAME)
 
 
 def lines_of(journal):
@@ -62,6 +63,32 @@ def raw_journal(c, period_id, lines):
                 (new_id("jln"), jid, n, account, debit, credit, None, None, "probe"),
             )
     return jid
+
+
+def seed_historical_posted_bill(c, bill_id, *, approver, poster):
+    """Seed an old combined posting only inside an intentionally pre-split schema.
+
+    This upgrade fixture writes the historical records directly. It never
+    exposes a compatibility posting path in the current application.
+    """
+    if "business_approval_id" in {r["name"] for r in c.db.query("PRAGMA table_info(bills)")}:
+        raise AssertionError("historical fixture requires a pre-split bill table")
+    plan = c.bills.journal_preview(bill_id)
+    manifest = c.bills.manifest(bill_id, actor_role="accountant")
+    manifest["bindings"].pop("approval_flow")
+    manifest["bindings"]["journal_preview"] = plan
+    approval = c.approvals.request(manifest, requested_by=poster)
+    c.approvals.grant(approval["id"], approver=approver)
+    with c.db.transaction() as conn:
+        c.approvals.consume(approval["id"], current_manifest=manifest, consumer=poster)
+        journals = [c.ledger.post(period_id=p["period_id"], description=p["description"], lines=p["lines"],
+                                  source_type="bill", source_id=bill_id, source_version=p["source_version"],
+                                  posted_by=poster, approval_id=approval["id"])["id"] for p in plan]
+        conn.execute("UPDATE bills SET status='posted', approval_id=?, journal_id=? WHERE id=?",
+                     (approval["id"], journals[-1], bill_id))
+        c.audit.record(poster, "bill.posted", "bill", bill_id,
+                       {"approval_id": approval["id"], "journals": journals, "amount_due": c.bills.get(bill_id)["amount_due"]})
+    return c.bills.get(bill_id)
 
 
 class World:
@@ -110,7 +137,7 @@ class World:
                                     transfers=transfers, actor="pm")
 
     def post(self, bill_id):
-        return self.c.approve_and_execute("bill.approve", bill_id, actor_role="accountant", actor="accountant")
+        return approve_and_post_bill(self.c, bill_id, approver="owner", approver_role="owner", poster="accountant")
 
     def assert_books(self, tc):
         c = self.c
@@ -238,17 +265,17 @@ class StoredMaterialEvidenceTests(unittest.TestCase):
         c.approve(ap["id"], approver="controller", approver_role="controller")
         rev2 = w.revise(doc, "valves: title transferred to a different yard")
         with self.assertRaises(StaleApprovalError):
-            c.execute(ap["id"], actor="accountant")
+            c.post_bill(b["id"], actor="accountant")
         self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
         # a fresh approval sees the superseded evidence, and posting still refuses it
         ap2 = c.request_approval("bill.approve", b["id"], actor_role="accountant")
         c.approve(ap2["id"])
         with self.assertRaises(BillError):
-            c.execute(ap2["id"], actor="accountant")
+            c.post_bill(b["id"], actor="accountant")
         c.reject(ap2["id"], reason="lot evidence must be re-confirmed")
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
-        self.assertEqual(c.bills.get(b["id"])["status"], "draft")
+        self.assertEqual(c.bills.get(b["id"])["status"], "approved")
         # re-confirmed: a new approval binds the new revision and posts
         c.bills.confirm_lot_evidence(lot["id"], rev2["content_hash"], "pm")
         res = w.post(b["id"])
@@ -484,10 +511,10 @@ class JournalPreviewTests(unittest.TestCase):
         c = w.c
         b, ap = self.granted_bill_approval(w)
         self.assertEqual(ap["manifest"]["bindings"]["retainage_rate"], "0.100000")
-        self.assertIn(("2050", "0.00", "3000.00"), [(ln["account"], ln["debit"], ln["credit"]) for ln in ap["manifest"]["bindings"]["journal_preview"][0]["lines"]])
+        self.assertIn(("2050", "0.00", "3000.00"), [(ln["account"], ln["debit"], ln["credit"]) for ln in c.bills.journal_preview(b["id"])[0]["lines"]])
         c.db.execute("UPDATE commitments SET retainage_rate='0.050000' WHERE id=?", (w.cid,))  # a silent edit; the version is untouched
         with self.assertRaises(StaleApprovalError):
-            c.execute(ap["id"], actor="accountant")
+            c.post_bill(b["id"], actor="accountant")
         self.assertEqual(c.approvals.get(ap["id"])["status"], "invalidated")
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
         bill = c.bills.get(b["id"])
@@ -497,7 +524,7 @@ class JournalPreviewTests(unittest.TestCase):
             w.post(b["id"])
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
         # void and re-certify: the preview follows the current rate
-        c.bills.void(b["id"], actor="pm", reason="retainage rate corrected")
+        c.bills.void(b["id"], actor="controller", reason="retainage rate corrected")
         b2 = w.certify({1: "20000"})
         self.assertEqual((b2["cumulative_retainage"], b2["amount_due"]), ("1500.00", "28500.00"))
         res = w.post(b2["id"])
@@ -511,7 +538,7 @@ class JournalPreviewTests(unittest.TestCase):
         b, ap = self.granted_bill_approval(w)
         c.db.execute("UPDATE sov_lines SET description=? WHERE id=?", ("Scope 1 (edited silently)", w.line(1)))
         with self.assertRaises(StaleApprovalError):
-            c.execute(ap["id"], actor="accountant")
+            c.post_bill(b["id"], actor="accountant")
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
         self.assertIn("schedule of values changed", c.bills.get(b["id"])["stale_reasons"])
         c.db.execute("UPDATE sov_lines SET description=? WHERE id=?", ("Scope 1", w.line(1)))
@@ -522,7 +549,7 @@ class JournalPreviewTests(unittest.TestCase):
         ch = c.commitments.propose_change(w.cid, amount="5000", reason="added sheet piling (synthetic)", sov_line_id=w.line(2), actor="pm")
         c.approve_and_execute("change.execute", ch["id"], actor_role="pm")
         with self.assertRaises((ApprovalNotGranted, StaleApprovalError)):
-            c.execute(ap2["id"], actor="accountant")
+            c.post_bill(b["id"], actor="accountant")
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
         w.assert_books(self)
 
@@ -530,29 +557,32 @@ class JournalPreviewTests(unittest.TestCase):
         w = World()
         c = w.c
         b, ap = self.granted_bill_approval(w)
-        approved_preview = ap["manifest"]["bindings"]["journal_preview"]
+        self.assertNotIn("journal_preview", ap["manifest"]["bindings"])
+        approved_preview = c.bills.journal_preview(b["id"])
         original_post = c.bills.post
 
-        def tampering_post(bill_id, *, approval_id, actor):
+        def tampering_post(bill_id, *, approval_id, actor, **kwargs):
             # simulate the bill's figures changing between consumption and posting
             c.db.execute("UPDATE bills SET amount_due='26000.00', retainage_this_period='4000.00' WHERE id=?", (bill_id,))
-            return original_post(bill_id, approval_id=approval_id, actor=actor)
+            return original_post(bill_id, approval_id=approval_id, actor=actor, **kwargs)
 
         c.bills.post = tampering_post
         with self.assertRaises(BillError) as cm:
-            c.execute(ap["id"], actor="accountant")
-        self.assertIn("journal preview", str(cm.exception))
+            c.post_bill(b["id"], actor="accountant")
+        self.assertIn("approved business facts changed", str(cm.exception))
         c.bills.post = original_post
         self.assertEqual(c.ledger.journals(source_type="bill"), [])
-        self.assertEqual((c.bills.get(b["id"])["amount_due"], c.approvals.get(ap["id"])["status"]), ("27000.00", "granted"))  # rolled back
+        self.assertEqual((c.bills.get(b["id"])["amount_due"], c.approvals.get(ap["id"])["status"]), ("27000.00", "invalidated"))  # figures rolled back; changed business authority needs fresh review
         # a consumed approval for another subject cannot post this bill either
         with self.assertRaises(BillError):
             c.bills.post(b["id"], approval_id=c.commitments.get(w.cid)["approval_id"], actor="accountant")
-        res = c.execute(ap["id"], actor="accountant")
+        res = w.post(b["id"])
+        self.assertEqual(c.bills.posting_receipt(b["id"])["preview"], approved_preview)
         posted = c.ledger.journal(res.result["journal_id"])
         self.assertEqual([{"account": ln["account_code"], "debit": ln["debit"], "credit": ln["credit"], "project_id": ln["project_id"],
                            "party_id": ln["party_id"], "memo": ln["memo"]} for ln in posted["lines"]], approved_preview[0]["lines"])
-        self.assertEqual((posted["period_id"], posted["approval_id"]), (approved_preview[0]["period_id"], ap["id"]))
+        self.assertEqual((posted["period_id"], posted["approval_id"]),
+                         (approved_preview[0]["period_id"], c.bills.get(b["id"])["business_approval_id"]))
         w.assert_books(self)
 
     def test_commitment_and_change_approvals_bind_entity_and_currency(self):
@@ -895,7 +925,7 @@ class FrozenLotCapTests(unittest.TestCase):
         rev2 = w.revise(doc, "valves: delivery ticket reissued")
         with self.assertRaises(BillError):  # the draft transfers from a lot whose evidence was revised
             w.post(draft["id"])
-        self.assertEqual(c.bills.get(draft["id"])["status"], "draft")
+        self.assertEqual(c.bills.get(draft["id"])["status"], "approved")
         confirmed = c.bills.confirm_lot_evidence(lot["id"], rev2["content_hash"], "pm")
         self.assertEqual((confirmed["evidence_status"], confirmed["remaining_amount"]), ("current", "0.00"))
         w.post(draft["id"])
@@ -1149,11 +1179,28 @@ class LegacyBillingHistoryTests(unittest.TestCase):
                 return bid
 
             lot1 = legacy_lot("PZ sheet piling", "10000.00")
-            bill1 = legacy_bill(1, "posted", ("20000.00", "10000.00", "30000.00", "3000.00", "27000.00", "0.00", "27000.00", "3000.00", "20000.00", "10000.00", "0.00"))
-            j = c.ledger.post(period_id="P1", description="Supplier bill 1 (older release)", source_type="bill", source_id=bill1, source_version="2", posted_by="accountant",
-                              lines=[{"account": "5000", "debit": "20000", "project_id": w.pid}, {"account": "1300", "debit": "10000", "project_id": w.pid},
-                                     {"account": "2000", "credit": "27000", "project_id": w.pid}, {"account": "2050", "credit": "3000", "project_id": w.pid}])
-            c.db.execute("UPDATE bills SET journal_id=? WHERE id=?", (j["id"], bill1))
+            bill1 = legacy_bill(1, "draft", ("20000.00", "10000.00", "30000.00", "3000.00", "27000.00", "0.00", "27000.00", "3000.00", "20000.00", "10000.00", "0.00"))
+            # Genuine pre-split evidence: the old business authorization bound
+            # the complete posting plan and was consumed by the original poster.
+            plan = c.bills.journal_preview(bill1)
+            manifest = build_manifest(
+                operation="bill.approve", subject_type="bill", subject_id=bill1, actor_role="accountant",
+                amounts={"amount_due": "27000.00", "retainage_this_period": "3000.00", "cumulative_gross": "30000.00"},
+                bindings={"bill_hash": c.bills.get(bill1)["content_hash"], "bill_status": "draft",
+                          "period_id": "P1", "commitment_id": w.cid, "journal_preview": plan}, entity=ENTITY,
+            )
+            approval = c.approvals.request(manifest, requested_by="accountant")
+            c.approvals.grant(approval["id"], approver="controller")
+            with c.db.transaction() as conn:
+                c.approvals.consume(approval["id"], current_manifest=manifest, consumer="accountant")
+                journal_ids = [c.ledger.post(
+                    period_id=p["period_id"], description=p["description"], source_type="bill", source_id=bill1,
+                    source_version=p["source_version"], posted_by="accountant", approval_id=approval["id"], lines=p["lines"],
+                )["id"] for p in plan]
+                conn.execute("UPDATE bills SET status='posted', approval_id=?, journal_id=? WHERE id=?",
+                             (approval["id"], journal_ids[-1], bill1))
+                c.audit.record("accountant", "bill.posted", "bill", bill1,
+                               {"approval_id": approval["id"], "journals": journal_ids, "amount_due": "27000.00"})
             lot2 = legacy_lot("Dewatering pumps", "15000.00")  # recorded after bill 1, in the same second
             bill2 = legacy_bill(2, "draft", ("20000.00", "25000.00", "45000.00", "4500.00", "40500.00", "27000.00", "13500.00", "1500.00", "0.00", "15000.00", "0.00"))
             c.db.close()
@@ -1171,9 +1218,9 @@ class LegacyBillingHistoryTests(unittest.TestCase):
             self.assertEqual([lot["evidence_status"] for lot in c.bills.lots(w.cid)], ["unbound", "unbound"])
             # so the draft that first bills the never-verified lot cannot be posted
             with self.assertRaises(BillError) as cm:
-                c.approve_and_execute("bill.approve", bill2, actor_role="accountant", actor="accountant")
+                approve_and_post_bill(c, bill2, approver="owner", approver_role="owner", poster="accountant")
             self.assertIn(lot2, str(cm.exception))
-            self.assertEqual((c.bills.get(bill2)["status"], str(c.ledger.balance("1300"))), ("draft", "10000.00"))
+            self.assertEqual((c.bills.get(bill2)["status"], str(c.ledger.balance("1300"))), ("approved", "10000.00"))
             self.assertEqual(c.bills.stored_material_items()["items"][0]["lots_requiring_confirmation"], [lot1])
             self.assertEqual(c.db.migrate(), [])
             self.assertTrue(c.ledger.trial_balance()["balanced"])
@@ -1581,11 +1628,11 @@ class BillCorrectionTests(unittest.TestCase):
             self.assertNotIn("corrected", c.db.scalar("SELECT sql FROM sqlite_master WHERE type='table' AND name='bills'"))
             lot1, _, _ = w.lot("sheet piling", "10000")
             b1 = w.certify({1: "20000"})
-            w.post(b1["id"])
+            seed_historical_posted_bill(c, b1["id"], approver="controller", poster="accountant")
             c.approve_and_execute("payment.release", b1["id"], actor_role="treasury", actor="treasury")
             self.assertEqual([r["status"] for r in c.dispatch_payments()], ["accepted"])
             b2 = w.certify({1: "45000"}, transfers=[{"lot_id": lot1["id"], "amount": "10000"}])
-            w.post(b2["id"])
+            seed_historical_posted_bill(c, b2["id"], approver="controller", poster="accountant")
             draft = w.certify({2: "1000"})
             before = c.db.query("SELECT * FROM bills ORDER BY sequence")
             bill_triggers = {r["name"] for r in c.db.query("SELECT name FROM sqlite_master WHERE type='trigger' AND tbl_name='bills'")}

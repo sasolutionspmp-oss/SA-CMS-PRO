@@ -70,7 +70,7 @@ class ServedRickyTests(unittest.TestCase):
                 },
             }))
             run.assert_not_called()
-        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "draft")
+        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "approved")
         self.assertEqual(self.w.c.approvals.get(ap["id"])["status"], "granted")
         self.assertEqual(self.w.c.db.scalar("SELECT COUNT(*) FROM idempotency"), commands)
         self.assertEqual(self.w.c.db.scalar("SELECT COUNT(*) FROM journals"), journals)
@@ -209,12 +209,39 @@ class ServedRickyTests(unittest.TestCase):
         self.assertEqual((status, body["result"]["status"]), (200, "ok"), body)
         raw = self.w.c.sdk.receipt(body["result"]["receipt_provenance"]["id"])
         self.assertEqual(body["result"]["result"], raw["result"])
-        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "draft")
+        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "approved")
 
-    def test_standalone_synthetic_sdk_keeps_its_execution_workflow(self):
-        bill, ap = self.bill_approval()
+    def test_standalone_sdk_keeps_execution_for_routable_business_actions(self):
         names = {t["name"] for t in synthetic_catalog()["tools"]}
         self.assertTrue({"execute_approved_action", "request_approval", "reconcile_payments"} <= names)
+        change = self.w.c.commitments.propose_change(commitment_id=self.w.commitment["id"], amount="100", reason="Synthetic change", actor="preparer")
+        ap = self.w.c.request_approval("change.execute", change["id"], actor_role="pm", requested_by="preparer")
+        self.w.c.approve(ap["id"], approver="approver", approver_role="pm")
         result = self.w.c.sdk.invoke("execute_approved_action", {"approval_id": ap["id"]}, actor="executor", actor_role="pm")
         self.assertEqual(result["status"], "ok", result)
-        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "posted")
+        self.assertEqual(self.w.c.commitments.change(change["id"])["status"], "executed")
+
+    def test_served_bill_instructions_preserve_journal_free_approval_and_human_posting(self):
+        routes = {row["operation"]: row for row in served_catalog()["operations"]}
+        self.assertIn("journal-free business approval", routes["bill.approve"]["reason"])
+        self.assertIn("distinct authorized person", routes["bill.post"]["reason"])
+        self.assertEqual(routes["bill.post"]["tools"], [])
+        status, body = self.call("draft_supplier_bill", {
+            "commitment_id": self.w.commitment["id"], "period_id": "2026-10",
+            "installed": [{"sov_line_id": self.w.line1, "cumulative_installed": "1000"}],
+        }, actor="accountant-preparer", actor_role="accountant")
+        self.assertEqual((status, body["result"]["status"]), (200, "ok"), body)
+        view = body["result"]
+        self.assertIn("without posting", view["result"]["next_step"]["note"])
+        self.assertNotIn("tool", view["result"]["next_step"])
+        raw = self.w.c.sdk.receipt(view["receipt_provenance"]["id"])
+        self.assertEqual(raw["result"]["next_step"]["tool"], "request_approval")
+        self.assertTrue(self.w.c.sdk.verify_receipts()["ok"])
+
+    def test_standalone_sdk_refuses_bill_execution_after_journal_free_grant(self):
+        bill, ap = self.bill_approval()
+        result = self.w.c.sdk.invoke("execute_approved_action", {"approval_id": ap["id"]}, actor="executor", actor_role="pm")
+        self.assertEqual((result["status"], result["effect_applied"]), ("refused", False))
+        self.assertIn("request-only", result["error"])
+        self.assertEqual(self.w.c.bills.get(bill["id"])["status"], "approved")
+        self.assertEqual(self.w.c.db.scalar("SELECT COUNT(*) FROM journals"), 0)

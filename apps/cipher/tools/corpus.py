@@ -343,14 +343,24 @@ class Corpus:
 
     def _approval(self, b: _Bill, operation: str, subject_id: str, *, actor_role: str, approver: str, executor: str) -> Iterator[Any]:
         """Request (the accountant), wait the approver's latency, grant, wait, execute."""
+        if operation == "bill.approve":
+            raise CorpusError("bill business approval and posting are distinct steps; use _post")
+        ap = yield from self._grant(b, operation, subject_id, actor_role=actor_role, approver=approver)
+        yield EXECUTE_MINUTES
+        return self.c.execute(ap["id"], actor=executor).result
+
+    def _grant(self, b: _Bill, operation: str, subject_id: str, *, actor_role: str, approver: str) -> Iterator[Any]:
+        """Request and grant the business decision; return its original authorization."""
         ap = self.c.request_approval(operation, subject_id, actor_role=actor_role, requested_by=ACCOUNTANT)
         b.subjects.add(subject_id)
         requested = self.clock.minutes()
         yield LATENCY_MINUTES[approver]
+        before = self.c.db.scalar("SELECT COUNT(*) FROM journals") if operation == "bill.approve" else None
         self.c.approve(ap["id"], approver=approver, approver_role=ROLE_OF[approver])
+        if before is not None and self.c.db.scalar("SELECT COUNT(*) FROM journals") != before:
+            raise CorpusError("a bill business grant must create no journal")
         b.waits.append({"operation": operation, "approver": approver, "minutes": self.clock.minutes() - requested})
-        yield EXECUTE_MINUTES
-        return self.c.execute(ap["id"], actor=executor).result
+        return self.c.approvals.get(ap["id"])
 
     def _match(self, b: _Bill, invoice_id: str) -> Iterator[Any]:
         res = self.intake.match(invoice_id, CLERK)
@@ -369,7 +379,11 @@ class Corpus:
         if bill["amount_due"] != amount:
             raise CorpusError(f"item {b.spec['item']}: certified {bill['amount_due']}, the invoice says {amount}")
         approver = OWNER if money(amount) >= OWNER_THRESHOLD else CONTROLLER
-        yield from self._approval(b, "bill.approve", bill["id"], actor_role="accountant", approver=approver, executor=ACCOUNTANT)
+        approval = yield from self._grant(b, "bill.approve", bill["id"], actor_role="accountant", approver=approver)
+        if self.c.bills.get(bill["id"])["status"] != "approved" or approval["status"] != "granted":
+            raise CorpusError("a bill business grant must remain journal-free until the accountant posts")
+        yield EXECUTE_MINUTES
+        return self.c.post_bill(bill["id"], actor=ACCOUNTANT, actor_role="accountant", period_id=PERIOD[0]).result
 
     def _release(self, b: _Bill, bill_id: str) -> Iterator[Any]:
         """Request, route, grant and release; each refusal the payment policy raises is supplied

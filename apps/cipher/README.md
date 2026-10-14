@@ -8,7 +8,7 @@ Nothing here touches production systems, real payment rails or live records. Sta
 
 Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) and `AGENTS.md` (the rules that keep workspaces and controls intact).
 
-The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. Recover and reuse the Odoo checkpoint while continuing the [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md). Preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
+The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) now works in the synthetic engine; immutable workspace modes and authenticated action contracts come next. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
 
 ## Start
 
@@ -90,6 +90,7 @@ Enforced in code and covered by tests (see `BUILD_STATUS.md` for counts):
 - a payee destination changes only through a request, independent evidence recorded by someone other than the requester, and a `party.verify_destination` approval;
 - once configured, the governor modules hold approvals other modules own: the people registry checks every approver and executor, the payment policy holds high-risk releases for an independent releaser, step-up, co-signature and cooling-off, and contracts hold commitment execution for a signed agreement and bills and releases for certificates in force;
 - configured modules must load successfully; startup fails on an import, schema or initialization failure. Grant preflight checks are read-only; the grant and its self-approval record commit together, including when a caller already has a transaction open;
+- a bill business grant creates only an approved state. A distinct accountant/controller calls `post_bill` with an explicit actor and selected period; it consumes the original authorization and records the actual journals once. PM/owner authority alone cannot post, and `execute`/`approve_and_execute` refuse `bill.approve`. Immutable approved facts and posting receipts are checked against audit evidence before financial reads or payment;
 - a restored copy is read-only at the SQLite level until the owner claims it; claims bind to that copy's challenge when `CIPHER_OWNER_SECRET` is set (otherwise they are attestation only and Ricky flags it); releases stay quarantined until recovery reconciliation resolves every in-flight and queued payment;
 - the HTTP boundary requires JSON with a same-origin Origin (no CSRF), rejects foreign Host headers in loopback mode (no DNS rebinding), and needs a token for any non-loopback bind; the console escapes every server value before rendering it; period close and commitment close go through their checklists.
 

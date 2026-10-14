@@ -54,6 +54,7 @@ import tempfile
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import hash_json, sha256_hex
@@ -510,12 +511,12 @@ class VerticalV1:
         match = self.approve_supplier_invoice_match(tc, 1, self.bill1)
         ap = c.request_approval("bill.approve", self.bill1["id"], actor_role="accountant", requested_by="accountant")
         tc.assertEqual(ap["manifest"]["amounts"], {"amount_due": "27000.00", "retainage_this_period": "3000.00", "cumulative_gross": "30000.00"})
-        tc.assertEqual(ap["manifest"]["bindings"]["posting_rule"], "cipher-posting-rules/1")
+        tc.assertNotIn("journal_preview", ap["manifest"]["bindings"])
         bound = ap["manifest"]["bindings"]["supplier_invoice"]
         tc.assertEqual(pick(bound, ("id", "number", "invoice_date", "due_date", "approval_id")),
                        {"id": self.invoices[1]["id"], "number": "SPD-2026-0101", "invoice_date": "2026-10-20", "due_date": "2026-11-19", "approval_id": match["id"]})
         c.approve(ap["id"], approver="controller")
-        res = c.execute(ap["id"], actor="accountant")
+        res = c.post_bill(self.bill1["id"], actor="accountant")
         tc.assertEqual((res.result["status"], res.result["amount_due"]), ("posted", "27000.00"))
         js = c.ledger.journals(source_type="bill", source_id=self.bill1["id"])
         tc.assertEqual(len(js), 1)  # nothing moved from stored to installed in period 1
@@ -602,7 +603,7 @@ class VerticalV1:
         self.receive_supplier_invoice(tc, 2, bill, number="SPD-2026-0102", invoice_date="2026-11-20", due_date="2026-12-20", service_period=PERIODS["P2"],
                                       description="Pay application 2: cofferdam installed to 45,000 (10,000 from stored) and pumps stored 5,000, less retainage and prior net")
         self.approve_supplier_invoice_match(tc, 2, bill)
-        res = c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
+        res = approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         js = c.ledger.journals(source_type="bill", source_id=bill["id"])
         tc.assertEqual([lines_of(j) for j in js], [
             [("5000", "10000.00", "0.00"), ("1300", "0.00", "10000.00")],  # transfer: stored -> installed
@@ -732,7 +733,7 @@ class VerticalV1:
         self.receive_supplier_invoice(tc, 3, bill, number="SPD-2026-0103", invoice_date="2026-12-12", due_date="2027-01-11", service_period=PERIODS["P3"],
                                       description="Pay application 3 (final): cofferdam to 70,000 and pump station 40,000, less retainage and prior net")
         self.approve_supplier_invoice_match(tc, 3, bill)
-        c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         tc.assertEqual([lines_of(j) for j in c.ledger.journals(source_type="bill", source_id=bill["id"])], [
             [("5000", "5000.00", "0.00"), ("1300", "0.00", "5000.00")],
             [("5000", "60000.00", "0.00"), ("2000", "0.00", "54000.00"), ("2050", "0.00", "6000.00")],
@@ -1155,7 +1156,7 @@ class World:
 
     def posted_bill(self, cumulative, period="P1"):
         b = self.c.bills.certify(commitment_id=self.cid, period_id=period, installed=[{"sov_line_id": self.line1, "cumulative_installed": cumulative}], actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"], actor_role="accountant")
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def document(self, kind, title, content):
@@ -1309,7 +1310,7 @@ class VerticalV1VariantTests(unittest.TestCase):
         inv = intake.receive_invoice(w.supplier["id"], "SPD-VAR-0101", "2026-10-20", "27000.00", pdf["content_hash"], "ap-clerk", project_id=w.pid, commitment_id=w.cid)
         self.assertEqual(intake.match(inv["id"], "ap-clerk")["status"], "matched")
         c.approve_and_execute("ap_intake.match_invoice", inv["id"], actor_role="accountant", actor="accountant")
-        c.approve_and_execute("bill.approve", bill["id"], actor_role="accountant", actor="accountant")
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         release = c.request_approval("payment.release", bill["id"], actor_role="treasury", requested_by="accountant")
         self.assertEqual(release["manifest"]["amounts"], {"amount": "27000.00"})
         c.approve(release["id"], approver="treasury", approver_role="treasury")  # approved, not yet executed, when the credit arrives

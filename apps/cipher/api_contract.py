@@ -6,9 +6,8 @@ Project filters are browsing filters, not authenticated read permissions. This
 contract must not be mounted on a live workspace or the legacy console.
 
 Responses contain only named economic/display fields. A manifest is read privately
-to check a supported approval's scope; it never leaves the presenter. The current
-``bill.approve`` operation also posts, so this milestone supplies no command actions
-and does not claim that approval and posting have been separated.
+to check a supported approval's scope; it never leaves the presenter. Supplier-bill
+business approval is journal-free; a distinct authorized person posts the approved bill. This practice milestone supplies no command actions.
 """
 from __future__ import annotations
 
@@ -131,8 +130,8 @@ class PracticeReadEnvelope(TypedDict):
 
 
 class PracticeCapabilities(TypedDict):
-    billApprovalEffect: Literal["posts_to_working_ledger"]
-    separateBillApprovalAndPosting: Literal[False]
+    billApprovalEffect: Literal["journal_free_business_approval"]
+    separateBillApprovalAndPosting: Literal[True]
     authenticatedReadPermissions: Literal[False]
     commands: Literal[False]
     unsupportedApprovalScopesExcluded: Literal[True]
@@ -163,7 +162,7 @@ _APPROVAL_SUBJECTS = {
 }
 _OPERATION_LABELS = {
     "estimate.approve": "Estimate approval", "commitment.execute": "Commitment execution",
-    "change.execute": "Change execution", "bill.approve": "Bill approval and posting",
+    "change.execute": "Change execution", "bill.approve": "Bill business approval",
     "payment.release": "Simulated payment release", "prime_bill.approve": "Owner bill approval and posting",
     "retainage.release": "Retainage release", "payment.release_retainage": "Simulated retainage payment release",
 }
@@ -210,7 +209,7 @@ def contract_snapshot(cipher: Cipher) -> PracticeContractSnapshot:
     return {
         "contractVersion": CONTRACT_VERSION, "mode": "practice", "synthetic": True, "currency": "USD", "readOnly": True,
         "collections": list(COLLECTIONS),
-        "capabilities": {"billApprovalEffect": "posts_to_working_ledger", "separateBillApprovalAndPosting": False,
+        "capabilities": {"billApprovalEffect": "journal_free_business_approval", "separateBillApprovalAndPosting": True,
                          "authenticatedReadPermissions": False, "commands": False, "unsupportedApprovalScopesExcluded": True},
         "limits": {"maxTop": MAX_TOP, "maxSearchLength": MAX_SEARCH, "maxCursorLength": MAX_CURSOR,
                    "maxIntegerCents": MAX_SAFE_INTEGER},

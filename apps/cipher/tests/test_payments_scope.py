@@ -6,6 +6,7 @@ import tempfile
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, build_manifest
 from apps.cipher.core.db import SCHEMA_CATALOG, Database
 from apps.cipher.domain.ledger import PeriodNotOpen
@@ -63,7 +64,7 @@ class ReimbursementWorld:
         self.c.approve_and_execute("commitment.execute", cmt["id"])
         line = self.c.commitments.get(cmt["id"])["sov"][0]["id"]
         b = self.c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": installed}], actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
 
@@ -604,7 +605,7 @@ class CorePaymentScopeTests(unittest.TestCase):
 
     def posted_bill(self, installed):
         b = self.c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=installed, actor="o")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def test_bill_payment_carries_scope_and_still_accepts_settles_and_returns(self):

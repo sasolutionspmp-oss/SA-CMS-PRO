@@ -97,7 +97,7 @@ class World:
     def post(self, bill_id):
         ap = self.c.request_approval("bill.approve", bill_id, actor_role="accountant", requested_by="pm")
         self.c.approve(ap["id"], approver="controller", approver_role="controller")
-        return self.execute(ap["id"])
+        return self.c.post_bill(bill_id, actor="accountant")
 
     def assert_books(self, tc):
         c = self.c
@@ -342,7 +342,7 @@ class ProgressMatchTests(unittest.TestCase):
         self.assertEqual((si["id"], si["number"], si["evidence_hash"], si["invoice_hash"], si["due_date"]),
                          (inv["id"], "SP-1001", inv["evidence_hash"], inv["content_hash"], "2026-11-19"))
         c.approve(bap["id"], approver="controller", approver_role="controller")
-        w.execute(bap["id"])
+        w.c.post_bill(bill["id"], actor="accountant")
         self.assertEqual([lines_of(j) for j in c.ledger.journals(source_type="bill", source_id=bill["id"])],
                          [[("5000", "30000.00", "0.00"), ("2000", "0.00", "27000.00"), ("2050", "0.00", "3000.00")]])
         ap_items = c.bills.ap_open_items(w.pid)
@@ -616,8 +616,8 @@ class BillApproveInvoiceBindingTests(unittest.TestCase):
         # the supplier reissues the invoice: a new revision of its PDF, bound by a revision of the invoice
         rev2 = w.revise_pdf(doc, "SP-8001 reissued with the correct bank remittance block")
         with self.assertRaises(StaleApprovalError):  # the PDF alone already makes the approval stale
-            w.execute(bap["id"])
-        self.assertEqual((c.approvals.get(bap["id"])["status"], c.bills.get(bill["id"])["status"]), ("invalidated", "draft"))
+            w.c.post_bill(bill["id"], actor="accountant")
+        self.assertEqual((c.approvals.get(bap["id"])["status"], c.bills.get(bill["id"])["status"]), ("invalidated", "approved"))
         revised = w.ap.revise_invoice(inv["id"], "ap clerk", reason="supplier reissued the invoice", evidence_hash=rev2["content_hash"])
         self.assertEqual((revised["version"], revised["status"]), (2, "received"))
         with self.assertRaises(BillIneligible):  # the bill's attached invoice is not the current one
@@ -778,7 +778,7 @@ class AttachFromRecordTests(unittest.TestCase):
         si = bap["manifest"]["bindings"]["supplier_invoice"]
         self.assertEqual((si["number"], si["due_date"], si["current"]["due_date"]), ("SP-500", "2026-10-01", "2026-10-01"))
         c.approve(bap["id"], approver="controller", approver_role="controller")
-        w.execute(bap["id"])
+        w.c.post_bill(bill["id"], actor="accountant")
         item = item_for(c, w.pid, bill["id"])
         self.assertEqual((item["due_date"], item["due_date_basis"], item["supplier_invoice_number"], item["supplier_invoice_current"]),
                          ("2026-10-01", "supplier_invoice", "SP-500", True))

@@ -104,7 +104,7 @@ from .core.commands import CommandResult, Commands
 from .core.db import Database
 from .core.ids import new_id, sha256_hex, utcnow_iso
 from .core.money import fmt, money
-from .domain.bills import Bills
+from .domain.bills import Bills, register_bill_posting_schema
 from .domain.commitments import Commitments
 from .domain.estimates import Estimates
 from .domain.evidence import Evidence
@@ -117,6 +117,7 @@ from .ricky_sdk import RickySDK
 
 # Append only after every historical domain and SDK schema has registered.
 register_audit_schema()
+register_bill_posting_schema()
 
 
 class CipherError(RuntimeError):
@@ -145,6 +146,7 @@ class CoreReconciliationChecks:
 
     def close_checks(self, period_id: str) -> list[dict[str, Any]]:
         out = []
+        out.extend(self.c.bills.lifecycle_integrity_checks())
         for label, domain_name, method in self.CHECKS:
             fn = getattr(getattr(self.c, domain_name), method, None)
             if fn is None:
@@ -207,6 +209,9 @@ class Cipher:
             self.db.close()
             raise
         self.register_plugin("core_reconciliation", CoreReconciliationChecks(self))
+        self.bills.business_manifest_builder = lambda bill_id, role: self._manifest("bill.approve", bill_id, "pm")
+        self.bills.posting_authorizer = self._check_bill_post
+        self.bills.cancellation_authorizer = self._check_bill_cancellation
         # Ricky's typed tool surface (registers itself as the "ricky_sdk" module)
         self.sdk = RickySDK(self)
         # Plugins that post to accounts receivable (1100) expose ar_open_items(project_id)
@@ -353,7 +358,7 @@ class Cipher:
         if operation == "change.execute":
             return self.commitments.change_manifest(subject_id, actor_role=actor_role)
         if operation == "bill.approve":
-            return self.bills.manifest(subject_id, actor_role=actor_role)
+            return self.bills.manifest(subject_id, actor_role="pm")
         if operation == "prime_bill.approve":
             return self.receivables.manifest(subject_id, actor_role=actor_role)
         if operation == "payment.release":
@@ -373,9 +378,16 @@ class Cipher:
         """The manifest's actor_role is the role that will execute the operation; it
         must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
-        if not Ricky.can(actor_role, operation):
+        if operation == "bill.approve":
+            people = self._plugins.get("people")
+            if people is None or not callable(getattr(people, "check_bill_request", None)):
+                raise RoleNotAuthorized("Bill preparation requires the configured identity governor.")
+            people.check_bill_request(manifest, actor_role=actor_role, requested_by=requested_by)
+        elif not Ricky.can(actor_role, operation):
             raise RoleNotAuthorized(f"role {actor_role!r} is not authorized for {operation}")
         for _name, governor in self._governors():
+            if operation == "bill.approve" and _name == "people":
+                continue  # its preparation and decision duties are separate
             check = getattr(governor, "check_request", None)
             if check is not None:
                 check(operation, manifest, actor_role=actor_role, requested_by=requested_by)
@@ -397,7 +409,7 @@ class Cipher:
                         raise RoleNotAuthorized(f"role {approver_role!r} cannot approve {ap['operation']}")
                     governors = self._governors()
                     for _name, governor in governors:
-                        check = getattr(governor, "check_grant", None)
+                        check = getattr(governor, "check_bill_grant" if ap["operation"] == "bill.approve" and _name == "people" else "check_grant", None)
                         if check is not None:
                             check(ap, approver=approver, approver_role=approver_role)
                     granted = self.approvals.grant(approval_id, approver=approver)
@@ -405,6 +417,8 @@ class Cipher:
                         hook = getattr(governor, "on_grant", None)
                         if hook is not None:
                             hook(granted, approver=approver, approver_role=approver_role)
+                    if ap["operation"] == "bill.approve":
+                        self.bills.record_business_approval(ap["subject_id"], approval_id=approval_id, actor=approver)
                 except BaseException:
                     if conn.in_transaction:
                         conn.execute(f"ROLLBACK TO {savepoint}")
@@ -432,6 +446,8 @@ class Cipher:
     def execute(self, approval_id: str, *, actor: str = "owner", op_id: str | None = None, period_id: str | None = None) -> CommandResult:
         ap = self.approvals.get(approval_id)
         operation, subject_id = ap["operation"], ap["subject_id"]
+        if operation == "bill.approve":
+            raise CipherError("Bill business approval does not post. An independent accounting person must use post_bill.")
         op_id = op_id or f"exec:{approval_id}"
         payload = {"approval_id": approval_id, "operation": operation, "subject_id": subject_id}
 
@@ -475,13 +491,12 @@ class Cipher:
         if operation == "change.execute":
             ch = self.commitments.execute_change(subject_id, approval_id=approval_id, actor=actor)
             for b in self.bills.list(commitment_id=ch["commitment_id"]):
-                if b["status"] == "draft":
+                if b["status"] in ("draft", "approved"):
                     self.approvals.invalidate_for_subject("bill", b["id"], reason="commitment changed after the bill was certified", actor=actor)
             c = self.commitments.get(ch["commitment_id"])
             return {"change": ch["id"], "commitment_executed_amount": c["executed_amount"], "commitment_version": c["version"]}
         if operation == "bill.approve":
-            b = self.bills.post(subject_id, approval_id=approval_id, actor=actor)
-            return {"bill": b["id"], "status": b["status"], "journal_id": b["journal_id"], "amount_due": b["amount_due"]}
+            raise CipherError("The combined bill approval/posting route is retired; use post_bill.")
         if operation == "prime_bill.approve":
             b = self.receivables.post(subject_id, approval_id=approval_id, actor=actor)
             return {"prime_bill": b["id"], "status": b["status"], "journal_id": b["journal_id"]}
@@ -502,9 +517,96 @@ class Cipher:
     def approve_and_execute(self, operation: str, subject_id: str, *, actor_role: str = "owner", actor: str = "owner", period_id: str | None = None) -> CommandResult:
         """Convenience for scripts and tests: request, grant and execute in one go.
         Each step is still recorded separately."""
+        if operation == "bill.approve":
+            raise CipherError("Bill business approval and posting require separate people and explicit acts.")
         ap = self.request_approval(operation, subject_id, actor_role=actor_role, requested_by=actor)
         self.approve(ap["id"], approver=actor)
         return self.execute(ap["id"], actor=actor, period_id=period_id)
+
+    def _check_bill_post(self, approval: dict[str, Any], manifest: dict[str, Any], actor: str, period_id: str,
+                         *, actor_role: str = "accountant") -> None:
+        people = self._plugins.get("people")
+        if people is None or not callable(getattr(people, "check_bill_post", None)):
+            raise RoleNotAuthorized("Bill posting requires the configured identity governor.")
+        if approval["manifest"].get("governance") != manifest.get("governance"):
+            raise StaleApprovalError("Bill approval no longer matches its governed policy; request fresh approval.")
+        people.check_bill_post(approval, manifest, actor=actor, actor_role=actor_role)
+        for name, governor in self._governors():
+            if name == "people":
+                continue
+            check = getattr(governor, "check_execute", None)
+            if check is not None:
+                check(approval, manifest, actor=actor)
+
+    def _check_bill_cancellation(self, approval: dict[str, Any], manifest: dict[str, Any], actor: str) -> None:
+        people = self._plugins.get("people")
+        if people is None or not callable(getattr(people, "check_bill_cancellation", None)):
+            raise RoleNotAuthorized("Withdrawing an approved bill requires its human business approver.")
+        people.check_bill_cancellation(approval, actor=actor)
+
+    def post_bill(self, bill_id: str, *, actor: str, actor_role: str = "accountant", period_id: str | None = None,
+                  reason: str = "", op_id: str | None = None) -> CommandResult:
+        """Post once under the bill's original human business authorization.
+
+        The domain rechecks/consumes that grant and seals the actual posting receipt.
+        This synthetic facade receives a declared duty; the live API must derive
+        identity/duties from its authenticated session, never request-body claims.
+        """
+        if not isinstance(actor, str) or not actor.strip():
+            raise RoleNotAuthorized("Name the independent accounting person posting this bill.")
+        bill = self.bills.get(bill_id)
+        approval_id = bill.get("business_approval_id")
+        if not approval_id:
+            raise CipherError("This bill has no recorded business approval for independent posting.")
+        if self.approvals.get(approval_id)["status"] == "invalidated":
+            raise StaleApprovalError("The bill's business approval was invalidated; request fresh approval before posting.")
+        selected_period = period_id or bill["period_id"]
+        payload = {"operation": "bill.post", "bill_id": bill_id, "approval_id": approval_id,
+                   "period_id": selected_period, "reason": reason, "actor": actor.strip().casefold(), "actor_role": actor_role}
+        op_id = op_id or f"bill.post:{bill_id}:{approval_id}"
+
+        def result_for(posted, receipt):
+            return {"bill": posted["id"], "status": "posted", "journal_id": posted["journal_id"],
+                    "amount_due": posted["amount_due"], "posting_receipt_id": receipt["id"],
+                    "posting_period_id": receipt["period_id"]}
+
+        def handler():
+            posted = self.bills.post(bill_id, approval_id=approval_id, actor=actor, actor_role=actor_role,
+                                     period_id=selected_period, reason=reason)
+            return result_for(posted, self.bills.posting_receipt(bill_id))
+
+        try:
+            with self.db.transaction() as conn:
+                savepoint = new_id("post")
+                conn.execute(f"SAVEPOINT {savepoint}")
+                try:
+                    receipt = self.bills.posting_receipt(bill_id)
+                    if receipt is not None:
+                        people = self._plugins.get("people")
+                        if people is None:
+                            raise RoleNotAuthorized("Bill posting requires the configured identity governor.")
+                        people.check_bill_post(self.approvals.get(approval_id), actor=actor, actor_role=actor_role, replay=True)
+                    result = self.commands.run(op_id, payload, handler, actor=actor)
+                    if result.replayed:
+                        receipt = self.bills.posting_receipt(bill_id)
+                        if receipt is None or result.result != result_for(self.bills.get(bill_id), receipt):
+                            raise CipherError("The cached posting result does not match its immutable audited receipt.")
+                except BaseException:
+                    if conn.in_transaction:
+                        conn.execute(f"ROLLBACK TO {savepoint}")
+                    raise
+                finally:
+                    if conn.in_transaction:
+                        conn.execute(f"RELEASE {savepoint}")
+                return result
+        except StaleApprovalError as exc:
+            if self.approvals.get(approval_id)["status"] == "granted":
+                self.approvals.invalidate(approval_id, reason=str(exc), actor=actor)
+            raise
+        except ApprovalExpired:
+            if self.approvals.get(approval_id)["status"] == "granted":
+                self.approvals.mark_expired(approval_id, actor=actor)
+            raise
 
     # ---- periods ------------------------------------------------------------------------ #
 
@@ -744,7 +846,9 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     pipe_rev = c.evidence.add_revision(document_id=pipe_evidence["id"], content=b"synthetic stored-material evidence: DI pipe", note="title, insurance, location", actor=owner)
     lot1 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Ductile iron pipe, on site", eligible_amount="10000", evidence_hash=pipe_rev["content_hash"], location="laydown yard", actor=owner)
     bill1 = c.bills.certify(commitment_id=commitment["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "20000"}], actor=owner)
-    c.approve_and_execute("bill.approve", bill1["id"], actor_role="owner")
+    bill1_approval = c.request_approval("bill.approve", bill1["id"], actor_role="accountant", requested_by="accountant")
+    c.approve(bill1_approval["id"], approver=owner, approver_role="owner")
+    c.post_bill(bill1["id"], actor="accountant", period_id="2026-10")
     bill1 = c.bills.get(bill1["id"])
 
     # payment with provider timeout, reconciliation, replay
@@ -766,7 +870,9 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     valve_rev = c.evidence.add_revision(document_id=valve_evidence["id"], content=b"synthetic stored-material evidence: valves", note="title, insurance, location", actor=owner)
     lot2 = c.bills.add_stored_material(commitment_id=commitment["id"], sov_line_id=line1, description="Valves, on site", eligible_amount="5000", evidence_hash=valve_rev["content_hash"], location="laydown yard", actor=owner)
     bill2 = c.bills.certify(commitment_id=commitment["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "45000"}], transfers=[{"lot_id": lot1["id"], "amount": "10000"}], actor=owner)
-    c.approve_and_execute("bill.approve", bill2["id"], actor_role="owner")
+    bill2_approval = c.request_approval("bill.approve", bill2["id"], actor_role="accountant", requested_by="accountant")
+    c.approve(bill2_approval["id"], approver=owner, approver_role="owner")
+    c.post_bill(bill2["id"], actor="accountant", period_id="2026-10")
     bill2 = c.bills.get(bill2["id"])
 
     pending_change = c.commitments.propose_change(commitment["id"], amount="12000", reason="Pending alternative - not executed", sov_line_id=line1, actor=owner)
@@ -796,7 +902,7 @@ def run_golden_fixture(cipher: Cipher | None = None) -> dict[str, Any]:
     c.approve_and_execute("change.execute", pending_change["id"], actor_role="owner")
     stale_result = None
     try:
-        c.execute(ap_bill3["id"])
+        c.post_bill(bill3["id"], actor="accountant", period_id="2026-11")
     except Exception as exc:  # StaleApprovalError or ApprovalNotGranted
         stale_result = type(exc).__name__
 

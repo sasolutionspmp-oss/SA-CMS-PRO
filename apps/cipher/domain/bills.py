@@ -98,13 +98,14 @@ Supplier invoices, credit notes and corrections (schema entry
 from __future__ import annotations
 
 import datetime as _dt
+from contextlib import contextmanager
 from decimal import Decimal
 from typing import Any
 
-from ..core.approvals import Approvals, StaleApprovalError, build_manifest
+from ..core.approvals import Approvals, StaleApprovalError, build_manifest, material_hash
 from ..core.audit import Audit
 from ..core.db import Database, register_schema_version
-from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow_iso
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow, utcnow_iso
 from ..core.money import ZERO, D, MoneyError, fmt, money, pct, total
 from .commitments import Commitments
 from .ledger import Ledger, PeriodNotOpen, lines_fingerprint
@@ -609,6 +610,91 @@ register_schema_version(BILLS_LINK_PAYMENT_SCHEMA_NAME, BILLS_LINK_PAYMENT_SCHEM
 # Every entry this module registers, oldest first (an older workspace lacks a suffix of them).
 BILLS_SCHEMA_ENTRIES = (BILLS_SCHEMA_NAME, BILLS_HARDENING_SCHEMA_NAME, BILLS_LIFECYCLE_SCHEMA_NAME, BILLS_LINK_PAYMENT_SCHEMA_NAME)
 
+# Registered explicitly by service only after the historical catalog (including
+# audit indexes). Historical statement lists above remain unchanged.
+BILL_APPROVAL_FLOW = "cipher-bill-business-approval/1"
+BILL_POSTING_SCHEMA_NAME = "bills_business_approval_posting"
+BILLS_SCHEMA_ENTRIES = (*BILLS_SCHEMA_ENTRIES, BILL_POSTING_SCHEMA_NAME)
+BILL_POSTING_SCHEMA_STATEMENTS = [
+    "ALTER TABLE bills ADD COLUMN business_approval_id TEXT REFERENCES approvals(id)",
+    "ALTER TABLE bills ADD COLUMN approval_record_id TEXT REFERENCES bill_business_approvals(id)",
+    "ALTER TABLE bills ADD COLUMN posting_period_id TEXT REFERENCES periods(id)",
+    "ALTER TABLE bills ADD COLUMN posting_receipt_id TEXT REFERENCES bill_posting_receipts(id)",
+    """CREATE TABLE bill_business_approvals (
+        id TEXT PRIMARY KEY, bill_id TEXT NOT NULL REFERENCES bills(id), approval_id TEXT NOT NULL UNIQUE REFERENCES approvals(id),
+        business_hash TEXT NOT NULL, snapshot_json TEXT NOT NULL, approved_by TEXT NOT NULL, granted_at TEXT NOT NULL,
+        recorded_at TEXT NOT NULL, record_hash TEXT NOT NULL)""",
+    "CREATE INDEX bill_business_approvals_bill ON bill_business_approvals(bill_id)",
+    """CREATE TABLE bill_posting_receipts (
+        id TEXT PRIMARY KEY, bill_id TEXT NOT NULL UNIQUE REFERENCES bills(id), approval_id TEXT NOT NULL UNIQUE REFERENCES approvals(id),
+        approval_record_id TEXT NOT NULL REFERENCES bill_business_approvals(id), period_id TEXT NOT NULL REFERENCES periods(id),
+        reason TEXT NOT NULL, posted_by TEXT NOT NULL, actor_role TEXT NOT NULL CHECK(actor_role IN ('accountant','controller')), posted_at TEXT NOT NULL,
+        preview_json TEXT NOT NULL, preview_hash TEXT NOT NULL, journal_ids_json TEXT NOT NULL, receipt_hash TEXT NOT NULL)""",
+    "CREATE TRIGGER bill_business_approvals_no_update BEFORE UPDATE ON bill_business_approvals BEGIN SELECT RAISE(ABORT,'business approval records are immutable'); END",
+    "CREATE TRIGGER bill_business_approvals_no_delete BEFORE DELETE ON bill_business_approvals BEGIN SELECT RAISE(ABORT,'business approval records are append-only'); END",
+    "CREATE TRIGGER bill_posting_receipts_no_update BEFORE UPDATE ON bill_posting_receipts BEGIN SELECT RAISE(ABORT,'bill posting receipts are immutable'); END",
+    "CREATE TRIGGER bill_posting_receipts_no_delete BEFORE DELETE ON bill_posting_receipts BEGIN SELECT RAISE(ABORT,'bill posting receipts are append-only'); END",
+    """CREATE TRIGGER bill_business_approvals_insert BEFORE INSERT ON bill_business_approvals BEGIN
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM bill_business_approvals WHERE id=NEW.id OR approval_id=NEW.approval_id)
+          OR NOT EXISTS(SELECT 1 FROM approvals WHERE id=NEW.approval_id AND operation='bill.approve' AND subject_id=NEW.bill_id AND status='granted')
+          OR NOT EXISTS(SELECT 1 FROM audit_log WHERE action='bill.business_approved' AND entity_type='bill' AND entity_id=NEW.bill_id
+              AND json_extract(payload_json,'$.record_id')=NEW.id AND json_extract(payload_json,'$.record_hash')=NEW.record_hash)
+          THEN RAISE(ABORT,'business approval requires its granted authorization and audited record') END; END""",
+    """CREATE TRIGGER bill_posting_receipts_insert BEFORE INSERT ON bill_posting_receipts BEGIN
+        SELECT CASE WHEN EXISTS(SELECT 1 FROM bill_posting_receipts WHERE id=NEW.id OR bill_id=NEW.bill_id OR approval_id=NEW.approval_id)
+          OR NOT EXISTS(SELECT 1 FROM approvals WHERE id=NEW.approval_id AND operation='bill.approve' AND subject_id=NEW.bill_id AND status='consumed')
+          OR NOT EXISTS(SELECT 1 FROM bills b JOIN bill_business_approvals a ON a.id=b.approval_record_id
+              WHERE b.id=NEW.bill_id AND b.status='approved' AND a.id=NEW.approval_record_id AND a.approval_id=NEW.approval_id)
+          OR NOT EXISTS(SELECT 1 FROM audit_log WHERE action='bill.posting_receipt_recorded' AND entity_type='bill' AND entity_id=NEW.bill_id
+              AND json_extract(payload_json,'$.receipt_id')=NEW.id AND json_extract(payload_json,'$.receipt_hash')=NEW.receipt_hash)
+          THEN RAISE(ABORT,'posting receipt requires the consumed business grant and audited posting act') END; END""",
+    "DROP TRIGGER bills_status_transitions",
+    """CREATE TRIGGER bills_status_transitions BEFORE UPDATE OF status ON bills
+        WHEN NEW.status IS NOT OLD.status AND NOT (
+          (OLD.status IN ('draft','approved') AND NEW.status='approved' AND EXISTS(
+              SELECT 1 FROM bill_business_approvals a JOIN approvals p ON p.id=a.approval_id
+              WHERE a.id=NEW.approval_record_id AND a.bill_id=NEW.id AND a.approval_id=NEW.business_approval_id AND p.status='granted'))
+          OR (OLD.status IN ('draft','approved') AND NEW.status='void')
+          OR (OLD.status='approved' AND NEW.status='posted' AND EXISTS(
+              SELECT 1 FROM bill_posting_receipts r JOIN journals j ON j.id=NEW.journal_id
+              WHERE r.id=NEW.posting_receipt_id AND r.bill_id=NEW.id AND r.approval_id=NEW.approval_id
+                AND r.period_id=NEW.posting_period_id AND j.source_type='bill' AND j.source_id=NEW.id AND j.approval_id=r.approval_id))
+          OR (OLD.status='posted' AND NEW.status='paid') OR (OLD.status='paid' AND NEW.status='posted')
+          OR (OLD.status='posted' AND NEW.status='corrected' AND EXISTS(
+              SELECT 1 FROM bill_corrections k JOIN approvals a ON a.id=k.approval_id WHERE k.id=NEW.correction_id AND k.bill_id=NEW.id
+                AND k.status='executed' AND a.status='consumed' AND a.operation='bill.correct' AND a.subject_id=NEW.id)
+              AND EXISTS(SELECT 1 FROM journals j WHERE j.source_type='bill' AND j.source_id=NEW.id AND j.reversal_of IS NULL)
+              AND NOT EXISTS(SELECT 1 FROM journals j WHERE j.source_type='bill' AND j.source_id=NEW.id AND j.reversal_of IS NULL
+                  AND NOT EXISTS(SELECT 1 FROM journals r WHERE r.reversal_of=j.id))))
+        BEGIN SELECT RAISE(ABORT,'bill lifecycle requires a recorded business grant and separate posting receipt'); END""",
+    """CREATE TRIGGER bills_business_links_guard BEFORE UPDATE OF business_approval_id,approval_record_id ON bills
+        WHEN NEW.business_approval_id IS NOT OLD.business_approval_id OR NEW.approval_record_id IS NOT OLD.approval_record_id
+        BEGIN SELECT CASE WHEN NEW.status NOT IN ('draft','approved') OR NOT EXISTS(
+          SELECT 1 FROM bill_business_approvals a WHERE a.id=NEW.approval_record_id AND a.bill_id=NEW.id AND a.approval_id=NEW.business_approval_id)
+          THEN RAISE(ABORT,'a bill business grant is linked only to its audited record before posting') END; END""",
+    """CREATE TRIGGER bills_posting_links_guard BEFORE UPDATE OF posting_period_id,posting_receipt_id ON bills
+        WHEN NEW.posting_period_id IS NOT OLD.posting_period_id OR NEW.posting_receipt_id IS NOT OLD.posting_receipt_id
+        BEGIN SELECT CASE WHEN OLD.status!='approved' OR NEW.status!='posted' OR NOT EXISTS(
+          SELECT 1 FROM bill_posting_receipts r WHERE r.id=NEW.posting_receipt_id AND r.bill_id=NEW.id
+              AND r.period_id=NEW.posting_period_id AND r.approval_id=NEW.approval_id)
+          THEN RAISE(ABORT,'posting period and receipt are recorded only in the approved-to-posted act') END; END""",
+    "DROP TRIGGER stored_material_lots_billing_history",
+    """CREATE TRIGGER stored_material_lots_billing_history BEFORE UPDATE OF billed_bill_id ON stored_material_lots
+        WHEN NEW.billed_bill_id IS NOT OLD.billed_bill_id BEGIN SELECT CASE
+          WHEN NEW.billed_bill_id IS NOT NULL AND (SELECT status FROM bills WHERE id=NEW.billed_bill_id AND commitment_id=NEW.commitment_id) IS NOT 'draft'
+            THEN RAISE(ABORT,'a lot is first billed by its own draft bill')
+          WHEN OLD.billed_bill_id IS NOT NULL AND COALESCE((SELECT status FROM bills WHERE id=OLD.billed_bill_id),'') NOT IN ('draft','approved','corrected')
+            THEN RAISE(ABORT,'posted lot billing history is permanent') END; END""",
+    "DROP TRIGGER bills_supplier_invoice_attached",
+    next(s for s in BILLS_LIFECYCLE_SCHEMA_STATEMENTS if s.startswith("CREATE TRIGGER bills_supplier_invoice_attached")).replace(
+        "OLD.status NOT IN ('draft','posted')", "OLD.status NOT IN ('draft','approved','posted')"),
+]
+
+
+def register_bill_posting_schema() -> int:
+    """Append the split lifecycle after all historical schema entries."""
+    return register_schema_version(BILL_POSTING_SCHEMA_NAME, BILL_POSTING_SCHEMA_STATEMENTS)
+
 
 class BillError(RuntimeError):
     pass
@@ -637,6 +723,10 @@ class Bills:
         self.commitments = commitments
         self.ledger = ledger
         self.approvals = Approvals(db, audit)
+        self.posting_authorizer = None
+        self.cancellation_authorizer = None
+        self.business_manifest_builder = None
+        self._lifecycle_savepoint = 0
         # a credit note's journal follows its credit-note record: a bare journal.reverse would
         # leave the credit note posted while AP moves, so the governed reversal refuses it
         reversal_owners = getattr(ledger, "reversal_owners", None)
@@ -1139,10 +1229,21 @@ class Bills:
         return [self.get(r["id"]) for r in rows]
 
     def void(self, bill_id: str, *, actor: str, reason: str) -> dict[str, Any]:
-        with self.db.transaction() as conn:
+        with self._lifecycle_transaction() as conn:
             b = self.get(bill_id)
-            if b["status"] != "draft":
-                raise BillError("only draft bills can be voided; posted bills are corrected by reversal")
+            if b["status"] not in ("draft", "approved"):
+                raise BillError("only unposted bills can be voided; posted bills are corrected by reversal")
+            self._text(reason, "a cancellation reason")
+            if self.db.one("SELECT id FROM bills WHERE commitment_id=? AND sequence>? AND status NOT IN ('void','corrected') LIMIT 1",
+                           (b["commitment_id"], b["sequence"])):
+                raise BillError("void the cumulative successor before canceling this bill")
+            if b.get("approval_record_id"):
+                self._business_record(b)
+            if b["status"] == "approved":
+                if not callable(self.cancellation_authorizer):
+                    raise BillError("approved bill cancellation requires the original approver's current authority")
+                ap = self.approvals.get(b["business_approval_id"])
+                self.cancellation_authorizer(ap, ap["manifest"], actor)
             # restore lot balances consumed by this draft's transfers
             for t in conn.execute("SELECT lot_id, amount FROM bill_transfers WHERE bill_id=?", (bill_id,)).fetchall():
                 lot = self.lot(t["lot_id"])
@@ -1150,23 +1251,24 @@ class Bills:
             # lots first billed by this draft are unbilled again
             conn.execute("UPDATE stored_material_lots SET billed_bill_id=NULL WHERE billed_bill_id=?", (bill_id,))
             conn.execute("UPDATE bills SET status='void' WHERE id=?", (bill_id,))
+            self.approvals.invalidate_for_subject("bill", bill_id, reason=reason, actor=actor)
             self.audit.record(actor, "bill.voided", "bill", bill_id, {"reason": reason})
         return self.get(bill_id)
 
     # ---- approval and posting ---------------------------------------------- #
 
-    def journal_preview(self, bill_id: str) -> list[dict[str, Any]]:
+    def journal_preview(self, bill_id: str, *, period_id: str | None = None) -> list[dict[str, Any]]:
         """The exact journals posting this bill writes, in order."""
-        return self._journal_plan(self.get(bill_id))
+        return self._journal_plan(self.get(bill_id), period_id=period_id)
 
-    def _journal_plan(self, b: dict[str, Any]) -> list[dict[str, Any]]:
+    def _journal_plan(self, b: dict[str, Any], *, period_id: str | None = None) -> list[dict[str, Any]]:
         pid, sup, seq = b["project_id"], b["supplier_id"], b["sequence"]
         source_version = str(b["commitment_version"])
         plan: list[dict[str, Any]] = []
         transferred = money(b["stored_transferred_this_period"])
         if transferred > 0:
             plan.append({
-                "period_id": b["period_id"], "source_version": source_version,
+                "period_id": period_id or b["period_id"], "source_version": source_version,
                 "description": f"Stored material transferred to installed, bill {seq}",
                 "lines": [
                     _line("5000", debit=transferred, project_id=pid, party_id=sup, memo="stored -> installed"),
@@ -1186,7 +1288,7 @@ class Bills:
             lines.append(_line("2050", credit=money(b["retainage_this_period"]), project_id=pid, party_id=sup, memo="retainage withheld"))
         if lines:
             plan.append({
-                "period_id": b["period_id"], "source_version": source_version,
+                "period_id": period_id or b["period_id"], "source_version": source_version,
                 "description": f"Supplier bill {seq} on commitment {b['commitment_id']}",
                 "lines": lines,
             })
@@ -1211,6 +1313,10 @@ class Bills:
 
     def manifest(self, bill_id: str, *, actor_role: str) -> dict[str, Any]:
         b = self.get(bill_id)
+        if b["status"] not in ("draft", "approved"):
+            raise BillIneligible("only an unposted bill receives business approval")
+        if b["stale"]:
+            raise BillIneligible("the billed commitment facts changed; re-certify the bill")
         supplier = self.db.one("SELECT * FROM parties WHERE id=?", (b["supplier_id"],))
         c = self.db.one("SELECT retainage_rate FROM commitments WHERE id=?", (b["commitment_id"],))
         bindings: dict[str, Any] = {
@@ -1218,7 +1324,11 @@ class Bills:
             "commitment_version": b["commitment_current_version"],
             "bill_version": b["commitment_version"],
             "bill_hash": b["content_hash"],
-            "bill_status": b["status"],
+            "bill_immutable": self._immutable_bill_facts(b),
+            "bill_lines_hash": hash_json(b["lines"]),
+            "bill_transfers_hash": hash_json(b["transfers"]),
+            "approval_flow": BILL_APPROVAL_FLOW,
+            "supplier_identity": {"party_id": supplier["id"], "name": supplier["name"], "kind": supplier["kind"]},
             "project_id": b["project_id"],
             "period_id": b["period_id"],
             "sequence": b["sequence"],
@@ -1230,7 +1340,6 @@ class Bills:
                 {"lot_id": l["id"], "evidence_revision_id": l["evidence_revision_id"], "evidence_status": l["evidence_status"]}
                 for l in self._bill_lots(b)
             ],
-            "journal_preview": self._journal_plan(b),
         }
         invoice = self._supplier_invoice_binding(b)
         if invoice is not None:  # bills without a supplier invoice keep the manifest they always had
@@ -1242,34 +1351,188 @@ class Bills:
             actor_role=actor_role,
             amounts={"amount_due": b["amount_due"], "retainage_this_period": b["retainage_this_period"], "cumulative_gross": b["cumulative_gross"]},
             bindings=bindings,
-            destination={"party_id": supplier["id"], "destination": supplier["destination"], "destination_version": supplier["destination_version"]},
             **self._scope(b["project_id"]),
         )
 
-    def post(self, bill_id: str, *, approval_id: str, actor: str) -> dict[str, Any]:
-        """Approve and post the bill's journal(s).  The caller has consumed ``approval_id``;
-        the journals written are exactly the approved ``journal_preview``."""
+    @contextmanager
+    def _lifecycle_transaction(self):
+        """Rollback this act even when a caller catches its refusal in an outer transaction."""
         with self.db.transaction() as conn:
+            self._lifecycle_savepoint += 1
+            savepoint = f"bill_lifecycle_{self._lifecycle_savepoint}"
+            conn.execute(f"SAVEPOINT {savepoint}")
+            try:
+                yield conn
+            except BaseException:
+                conn.execute(f"ROLLBACK TO {savepoint}")
+                conn.execute(f"RELEASE {savepoint}")
+                raise
+            else:
+                conn.execute(f"RELEASE {savepoint}")
+
+    @staticmethod
+    def _immutable_bill_facts(b: dict[str, Any]) -> dict[str, Any]:
+        fields = ("id", "commitment_id", "period_id", "sequence", "cumulative_installed", "cumulative_stored", "cumulative_gross",
+                  "cumulative_retainage", "cumulative_net", "prior_net", "amount_due", "retainage_this_period", "installed_this_period",
+                  "stored_added_this_period", "stored_transferred_this_period", "commitment_version", "content_hash", "created_at", "retainage_rate", "sov_hash")
+        return {key: b.get(key) for key in fields}
+
+    def _audited_authorization(self, approval_id: str, bill_id: str, *, status: str = "granted", new_flow: bool = True) -> dict[str, Any]:
+        if not self.audit.verify_chain()["ok"]:
+            raise BillError("bill authorization audit chain is broken")
+        ap = self.approvals.get(approval_id)
+        manifest = ap["manifest"]
+        try:
+            stored_expiry, original_expiry = parse_iso(ap["expires_at"]), parse_iso(manifest["expires_at"])
+            if stored_expiry.utcoffset() is None or original_expiry.utcoffset() is None:
+                raise ValueError("an authorization expiry needs a time zone")
+            extended = stored_expiry > original_expiry
+        except (ValueError, TypeError, AttributeError, KeyError, OverflowError) as exc:
+            raise BillError("bill business authorization has an invalid expiry date") from exc
+        if extended:
+            raise BillError("bill business authorization expiry exceeds its original audited deadline")
+        if (ap["operation"] != "bill.approve" or ap["subject_type"] != "bill" or ap["subject_id"] != bill_id or ap["status"] != status
+                or manifest.get("operation") != "bill.approve" or manifest.get("subject") != {"type": "bill", "id": bill_id}
+                or hash_json(manifest) != ap["manifest_hash"] or material_hash(manifest) != ap["material_hash"]
+                or ap["actor_role"] != manifest.get("actor_role") or ap["nonce"] != manifest.get("nonce")
+                or ap["policy_version"] != manifest.get("policy_version")
+                or new_flow and (manifest.get("bindings") or {}).get("approval_flow") != BILL_APPROVAL_FLOW
+                or not new_flow and (manifest.get("bindings") or {}).get("approval_flow") is not None):
+            raise BillError("bill requires a fresh, intact separate-posting business authorization")
+        history = {r["action"]: {**loads(r["payload_json"]), "actor": r["actor"]} for r in self.db.query(
+            "SELECT action,actor,payload_json FROM audit_log WHERE entity_type='approval' AND entity_id=? ORDER BY seq", (approval_id,))}
+        requested, granted = history.get("approval.requested") or {}, history.get("approval.granted") or {}
+        if (requested.get("manifest_hash") != ap["manifest_hash"] or requested.get("operation") != ap["operation"]
+                or requested.get("subject") != manifest["subject"] or requested.get("actor") != ap["requested_by"]
+                or granted.get("material_hash") != ap["material_hash"]
+                or granted.get("operation") != ap["operation"] or granted.get("actor") != ap["approver"]):
+            raise BillError("bill business authorization does not match its audited request and grant")
+        if status == "consumed":
+            consumed = history.get("approval.consumed") or {}
+            if (consumed.get("material_hash") != ap["material_hash"] or consumed.get("operation") != "bill.approve"
+                    or consumed.get("actor") != ap["consumed_by"]):
+                raise BillError("bill posting authorization has no intact audited consumption")
+        elif status in ("invalidated", "expired") and f"approval.{status}" not in history:
+            raise BillError("bill authorization lifecycle does not match its audited history")
+        return ap
+
+    def _current_business_manifest(self, bill_id: str, ap: dict[str, Any]) -> dict[str, Any]:
+        builder = self.business_manifest_builder
+        current = builder(bill_id, ap["actor_role"]) if callable(builder) else self.manifest(bill_id, actor_role=ap["actor_role"])
+        if (material_hash(current) != ap["material_hash"] or current.get("governance") != ap["manifest"].get("governance")):
+            raise BillIneligible("the approved business facts changed; request a fresh business approval")
+        return current
+
+    def _business_history(self, bill_id: str) -> None:
+        """Every append-only grant record must still match its audited creation."""
+        records = {r["id"]: r for r in self.db.query("SELECT * FROM bill_business_approvals WHERE bill_id=?", (bill_id,))}
+        expected = {}
+        for event in self.db.query("SELECT payload_json FROM audit_log WHERE action='bill.business_approved' AND entity_type='bill' AND entity_id=? ORDER BY seq", (bill_id,)):
+            payload = loads(event["payload_json"])
+            if not isinstance(payload, dict):
+                raise BillError("bill business approval history has malformed audited evidence")
+            expected[payload.get("record_id")] = payload.get("record_hash")
+        if records.keys() != expected.keys():
+            raise BillError("bill business approval history has missing or unaudited records")
+        for record_id, record in records.items():
+            actual = hash_json({key: value for key, value in record.items() if key != "record_hash"})
+            if record["record_hash"] != actual or expected[record_id] != actual:
+                raise BillError("bill business approval history differs from its audited snapshots")
+
+    def _business_record(self, b: dict[str, Any]) -> dict[str, Any]:
+        self._business_history(b["id"])
+        row = self.db.one("SELECT * FROM bill_business_approvals WHERE id=?", (b.get("approval_record_id"),))
+        if row is None or row["bill_id"] != b["id"] or row["approval_id"] != b.get("business_approval_id"):
+            raise BillError("bill business approval link does not match its recorded grant")
+        expected = hash_json({k: v for k, v in row.items() if k != "record_hash"})
+        if row["record_hash"] != expected or self.db.one(
+            """SELECT 1 AS x FROM audit_log WHERE action='bill.business_approved' AND entity_type='bill' AND entity_id=?
+               AND json_extract(payload_json,'$.record_id')=? AND json_extract(payload_json,'$.record_hash')=?""",
+            (b["id"], row["id"], expected)) is None:
+            raise BillError("bill business approval record does not match its audited snapshot")
+        status = "consumed" if b["status"] in ("posted", "paid", "corrected") else self.approvals.get(row["approval_id"])["status"]
+        ap = self._audited_authorization(row["approval_id"], b["id"], status=status)
+        if (row["snapshot_json"] != canonical_json(ap["manifest"]) or row["business_hash"] != ap["material_hash"]
+                or row["approved_by"] != ap["approver"] or row["granted_at"] != ap["granted_at"]):
+            raise BillError("bill business approval snapshot differs from its original authorization")
+        return row
+
+    def record_business_approval(self, bill_id: str, *, approval_id: str, actor: str) -> dict[str, Any]:
+        """Record the real granted business decision without consuming it or posting."""
+        with self._lifecycle_transaction() as conn:
             b = self.get(bill_id)
-            if b["status"] != "draft":
+            if b["status"] not in ("draft", "approved"):
+                raise BillError("only an unposted bill receives business approval")
+            ap = self._audited_authorization(approval_id, bill_id)
+            if actor != ap["approver"]:
+                raise BillError("the business record is written by its actual approver")
+            self._current_business_manifest(bill_id, ap)
+            if parse_iso(ap["expires_at"]) <= utcnow():
+                raise BillError("the business authorization expired before its grant was recorded")
+            if b.get("business_approval_id") == approval_id:
+                self._business_record(b)
+                return b
+            if b.get("business_approval_id"):
+                self._business_record(b)
+                old = self.approvals.get(b["business_approval_id"])
+                if old["status"] in ("pending", "granted"):
+                    self.approvals.invalidate(old["id"], reason="replaced by a fresh bill business approval", actor=actor)
+            record = {"id": new_id("bap"), "bill_id": bill_id, "approval_id": approval_id, "business_hash": ap["material_hash"],
+                      "snapshot_json": canonical_json(ap["manifest"]), "approved_by": ap["approver"], "granted_at": ap["granted_at"], "recorded_at": utcnow_iso()}
+            record["record_hash"] = hash_json(record)
+            self.audit.record(actor, "bill.business_approved", "bill", bill_id,
+                              {"record_id": record["id"], "record_hash": record["record_hash"], "approval_id": approval_id})
+            conn.execute("""INSERT INTO bill_business_approvals(id,bill_id,approval_id,business_hash,snapshot_json,approved_by,granted_at,recorded_at,record_hash)
+                            VALUES(:id,:bill_id,:approval_id,:business_hash,:snapshot_json,:approved_by,:granted_at,:recorded_at,:record_hash)""", record)
+            conn.execute("UPDATE bills SET status='approved',business_approval_id=?,approval_record_id=? WHERE id=?", (approval_id, record["id"], bill_id))
+        return self.get(bill_id)
+
+    def post(self, bill_id: str, *, approval_id: str, actor: str, period_id: str | None = None, reason: str = "", actor_role: str = "accountant") -> dict[str, Any]:
+        """Consume one recorded business grant in a separate, authorized posting act."""
+        with self._lifecycle_transaction() as conn:
+            b = self.get(bill_id)
+            if b["status"] != "approved":
                 raise BillError(f"bill {bill_id} is {b['status']}")
+            record = self._business_record(b)
+            if approval_id != record["approval_id"]:
+                raise BillError("post using this bill's actual recorded business approval")
+            ap = self._audited_authorization(approval_id, bill_id)
+            current = self._current_business_manifest(bill_id, ap)
+            if actor.strip().casefold() == ap["approver"].strip().casefold():
+                raise BillError("the business approver cannot post their own bill")
+            if not callable(self.posting_authorizer):
+                raise BillError("posting requires an authoritative posting-duty check")
+            if actor_role not in ("accountant", "controller"):
+                raise BillError("only an actual accountant or controller posting duty may post")
             if b["stale"]:
                 raise BillError(f"the commitment changed after this bill was certified ({', '.join(b['stale_reasons'])}); re-certify it")
-            self.ledger.require_open(b["period_id"])
+            target = self.ledger.require_open(period_id or b["period_id"])
+            if target["start_date"] < self.ledger.period(b["period_id"])["start_date"]:
+                raise BillError("posting cannot precede the certification period")
+            if not isinstance(reason, str) or len(reason) > MAX_TEXT_LENGTH:
+                raise BillError("the posting reason must be text of at most 500 characters")
+            reason = reason.strip()
+            if target["id"] != b["period_id"] and not reason:
+                raise BillError("posting in another period requires a reason")
+            prior = self.db.one("SELECT id,status FROM bills WHERE commitment_id=? AND sequence<? AND status NOT IN ('void','corrected') ORDER BY sequence DESC LIMIT 1",
+                                (b["commitment_id"], b["sequence"]))
+            if prior and prior["status"] not in ("posted", "paid"):
+                raise BillError("post the cumulative predecessor before this successor")
+            if prior:
+                prior_period = self.ledger.period(self._actual_posting_period(self.get(prior["id"])))
+                if target["start_date"] < prior_period["start_date"]:
+                    raise BillError("a cumulative successor cannot be dated before its predecessor's actual posting")
             # every lot this bill bills for the first time or transfers from must still rest on current evidence
             frozen = [l["id"] for l in self._bill_lots(b) if l["evidence_status"] != "current"]
             if frozen:
                 raise BillError(f"stored material lot(s) {', '.join(frozen)} have revised evidence; confirm_lot_evidence and approve again")
-            plan = self._journal_plan(b)
+            plan = self._journal_plan(b, period_id=target["id"])
             if not plan:
                 raise BillError(f"bill {bill_id} has nothing to post")
-            invoice = self._supplier_invoice_binding(b)  # a replaced or rejected supplier invoice stops the posting
-            approved = self._approved_manifest(approval_id, "bill.approve", bill_id)
+            self._supplier_invoice_binding(b)
             self._refuse_spent_approval(approval_id)
-            if canonical_json((approved.get("bindings") or {}).get("journal_preview")) != canonical_json(plan):
-                raise BillError("the approved journal preview does not match the posting this bill would write; nothing was posted")
-            if canonical_json((approved.get("bindings") or {}).get("supplier_invoice")) != canonical_json(invoice):
-                raise BillIneligible("the supplier invoice attached to this bill is not the one the approval bound; nothing was posted")
+            self.posting_authorizer(ap, current, actor, target["id"], actor_role=actor_role)
+            self.approvals.consume(approval_id, current_manifest=current, consumer=actor)
             journal_ids = []
             for jp in plan:
                 j = self.ledger.post(
@@ -1277,9 +1540,117 @@ class Bills:
                     source_type="bill", source_id=bill_id, source_version=jp["source_version"], posted_by=actor, approval_id=approval_id,
                 )
                 journal_ids.append(j["id"])
-            conn.execute("UPDATE bills SET status='posted', approval_id=?, journal_id=? WHERE id=?", (approval_id, journal_ids[-1], bill_id))
+            receipt = {"id": new_id("bpr"), "bill_id": bill_id, "approval_id": approval_id, "approval_record_id": record["id"],
+                       "period_id": target["id"], "reason": reason, "posted_by": actor, "actor_role": actor_role, "posted_at": utcnow_iso(),
+                       "preview_json": canonical_json(plan), "preview_hash": hash_json(plan), "journal_ids_json": canonical_json(journal_ids)}
+            receipt["receipt_hash"] = hash_json(receipt)
+            self.audit.record(actor, "bill.posting_receipt_recorded", "bill", bill_id,
+                              {"receipt_id": receipt["id"], "receipt_hash": receipt["receipt_hash"], "approval_id": approval_id})
+            conn.execute("""INSERT INTO bill_posting_receipts(id,bill_id,approval_id,approval_record_id,period_id,reason,posted_by,actor_role,posted_at,preview_json,preview_hash,journal_ids_json,receipt_hash)
+                            VALUES(:id,:bill_id,:approval_id,:approval_record_id,:period_id,:reason,:posted_by,:actor_role,:posted_at,:preview_json,:preview_hash,:journal_ids_json,:receipt_hash)""", receipt)
+            conn.execute("UPDATE bills SET status='posted', approval_id=?, journal_id=?,posting_period_id=?,posting_receipt_id=? WHERE id=?",
+                         (approval_id, journal_ids[-1], target["id"], receipt["id"], bill_id))
             self.audit.record(actor, "bill.posted", "bill", bill_id, {"approval_id": approval_id, "journals": journal_ids, "amount_due": b["amount_due"]})
         return self.get(bill_id)
+
+    def posting_receipt(self, bill_id: str) -> dict[str, Any] | None:
+        """Return and verify the immutable actual posting act, with legacy fallback."""
+        b = self.get(bill_id)
+        if not self._table_exists("bill_posting_receipts"):
+            if b["status"] in ("posted", "paid", "corrected"):
+                self._legacy_posting_proof(b)
+            return None  # a historical schema fixture has no split receipt yet
+        row = self.db.one("SELECT * FROM bill_posting_receipts WHERE bill_id=?", (bill_id,))
+        if row is None:
+            if b.get("posting_receipt_id") or b.get("business_approval_id") and b["status"] in ("posted", "paid", "corrected"):
+                raise BillError("bill posting receipt is missing")
+            if b["status"] in ("posted", "paid", "corrected"):
+                self._legacy_posting_proof(b)
+            return None
+        if b["status"] not in ("posted", "paid", "corrected"):
+            raise BillError("a bill with a posting receipt cannot become unposted")
+        expected = hash_json({k: v for k, v in row.items() if k != "receipt_hash"})
+        if (not self.audit.verify_chain()["ok"] or row["receipt_hash"] != expected
+                or b.get("posting_receipt_id") != row["id"] or b.get("posting_period_id") != row["period_id"]
+                or b.get("approval_id") != row["approval_id"] or b.get("approval_record_id") != row["approval_record_id"]
+                or self.db.one("""SELECT 1 AS x FROM audit_log WHERE action='bill.posting_receipt_recorded' AND entity_type='bill' AND entity_id=?
+                    AND json_extract(payload_json,'$.receipt_id')=? AND json_extract(payload_json,'$.receipt_hash')=?""", (bill_id, row["id"], expected)) is None):
+            raise BillError("bill posting receipt differs from its audited posting act")
+        business = self._business_record(b)
+        approved = loads(business["snapshot_json"])
+        bound = approved.get("bindings") or {}
+        if (bound.get("bill_immutable") != self._immutable_bill_facts(b) or bound.get("bill_lines_hash") != hash_json(b["lines"])
+                or bound.get("bill_transfers_hash") != hash_json(b["transfers"])):
+            raise BillError("the posted bill's immutable economic facts differ from its approved snapshot")
+        preview, ids = loads(row["preview_json"]), loads(row["journal_ids_json"])
+        if hash_json(preview) != row["preview_hash"] or len(ids) != len(preview) or not ids or b["journal_id"] != ids[-1]:
+            raise BillError("bill posting receipt journal plan is inconsistent")
+        actual = self.db.query("SELECT id FROM journals WHERE source_type='bill' AND source_id=? AND reversal_of IS NULL ORDER BY id", (bill_id,))
+        if sorted(ids) != sorted(j["id"] for j in actual):
+            raise BillError("bill posting receipt does not name every original bill journal")
+        for journal_id, plan in zip(ids, preview):
+            journal = self.ledger.journal(journal_id)
+            expected_lines = [{"line_no": index, "account_code": line["account"], "debit": line["debit"], "credit": line["credit"],
+                               "project_id": line["project_id"], "party_id": line["party_id"], "memo": line["memo"]}
+                              for index, line in enumerate(plan["lines"], 1)]
+            if (journal["period_id"] != row["period_id"] or journal["approval_id"] != row["approval_id"]
+                    or journal["posted_by"] != row["posted_by"] or journal["description"] != plan["description"]
+                    or journal["source_version"] != plan["source_version"]
+                    or lines_fingerprint(journal["lines"]) != lines_fingerprint(expected_lines)):
+                raise BillError("bill posting journal differs from its immutable receipt")
+        return {**row, "journal_ids": ids, "preview": preview, "posting_period_id": row["period_id"]}
+
+    def _legacy_posting_proof(self, b: dict[str, Any]) -> None:
+        """Absence of new metadata is not proof of an authentic historical posting."""
+        if not b.get("approval_id") or not b.get("journal_id"):
+            raise BillError("historical bill lacks its original posting authorization and journal")
+        ap = self._audited_authorization(b["approval_id"], b["id"], status="consumed", new_flow=False)
+        event = self.db.one("SELECT payload_json FROM audit_log WHERE action='bill.posted' AND entity_type='bill' AND entity_id=? ORDER BY seq LIMIT 1", (b["id"],))
+        if event is None:
+            raise BillError("historical bill has no audited posting act")
+        posted = loads(event["payload_json"])
+        journals = self.db.query("SELECT id FROM journals WHERE source_type='bill' AND source_id=? AND reversal_of IS NULL ORDER BY id", (b["id"],))
+        plan = (ap["manifest"].get("bindings") or {}).get("journal_preview")
+        ids = posted.get("journals") or []
+        if (posted.get("approval_id") != b["approval_id"] or posted.get("amount_due") != b["amount_due"] or not isinstance(plan, list)
+                or not ids or ids[-1] != b["journal_id"] or sorted(ids) != sorted(j["id"] for j in journals) or len(ids) != len(plan)
+                or canonical_json(plan) != canonical_json(self._journal_plan(b))):
+            raise BillError("historical bill economic facts do not match its audited posting and approved journal plan")
+        for journal_id, preview in zip(ids, plan):
+            journal = self.ledger.journal(journal_id)
+            expected_lines = [{"line_no": i, "account_code": line["account"], "debit": line["debit"], "credit": line["credit"],
+                               "project_id": line["project_id"], "party_id": line["party_id"], "memo": line["memo"]}
+                              for i, line in enumerate(preview["lines"], 1)]
+            if (journal["period_id"] != preview["period_id"] or journal["approval_id"] != b["approval_id"]
+                    or journal["source_version"] != preview["source_version"] or journal["posted_by"] != ap["consumed_by"]
+                    or journal["description"] != preview["description"] or lines_fingerprint(journal["lines"]) != lines_fingerprint(expected_lines)):
+                raise BillError("historical bill journal does not match its approved source proof")
+
+    def lifecycle_integrity_checks(self, bill_id: str | None = None) -> list[dict[str, Any]]:
+        """Check current lifecycle links against immutable audited evidence."""
+        rows = [self.get(bill_id)] if bill_id else self.list()
+        out = []
+        for b in rows:
+            try:
+                if self._table_exists("bill_business_approvals"):
+                    self._business_history(b["id"])
+                if b.get("business_approval_id") or b.get("approval_record_id"):
+                    self._business_record(b)
+                elif b["status"] == "approved" or self.db.one(
+                        "SELECT 1 AS x FROM audit_log WHERE action='bill.business_approved' AND entity_type='bill' AND entity_id=? LIMIT 1", (b["id"],)):
+                    raise BillError("approved bill lacks an audited business grant")
+                self.posting_receipt(b["id"])
+                out.append({"check": f"bill {b['id']} lifecycle intact", "ok": True, "detail": "recorded business approval and posting history agree"})
+            except (BillError, ValueError, TypeError) as exc:
+                out.append({"check": f"bill {b['id']} lifecycle intact", "ok": False, "detail": str(exc)})
+        return out
+
+    def _actual_posting_period(self, b: dict[str, Any]) -> str:
+        receipt = self.posting_receipt(b["id"])
+        if receipt is not None:
+            return receipt["period_id"]
+        journal = self.db.one("SELECT period_id FROM journals WHERE id=?", (b["journal_id"],)) if b.get("journal_id") else None
+        return journal["period_id"] if journal else b["period_id"]
 
     def mark_paid(self, bill_id: str, *, actor: str, intent_id: str) -> None:
         with self.db.transaction() as conn:
@@ -1343,6 +1714,7 @@ class Bills:
             raise BillError(f"unknown bill {bill_id}")
         if b["status"] not in ("posted", "paid"):
             return ZERO
+        self.posting_receipt(bill_id)
         return money(money(b["amount_due"]) - self._paid(bill_id) - self.credited(bill_id))
 
     def _target_period(self, period_id: str | None, *, not_before: str, what: str) -> dict[str, Any]:
@@ -1490,7 +1862,7 @@ class Bills:
             if used is not None:
                 raise BillError(f"approval {approval_id} already attached a supplier invoice to bill {used['id']}; an approval takes effect once")
             b = self.get(bill_id)
-            if b["status"] not in ("draft", "posted"):
+            if b["status"] not in ("draft", "approved", "posted"):
                 raise BillError(f"bill {b['sequence']} ({bill_id}) is {b['status']}; a supplier invoice is attached only to a draft or posted bill")
             if b["status"] == "draft" and b["stale"]:
                 raise BillError(f"bill {b['sequence']} ({bill_id}) was certified before its commitment changed ({', '.join(b['stale_reasons'])}); re-certify it first")
@@ -1681,7 +2053,7 @@ class Bills:
                 raise BillIneligible(f"supplier credit note {credit_note_id} no longer matches the approved credit; nothing was posted")
             self._approved_manifest(approval_id, OP_CREDIT_NOTE, credit_note_id)
             self._refuse_spent_approval(approval_id)
-            target = self._target_period(period_id, not_before=b["period_id"], what="supplier credit note")
+            target = self._target_period(period_id, not_before=self._actual_posting_period(b), what="supplier credit note")
             j = self.ledger.post(
                 period_id=target["id"], description=f"Supplier credit note {n['id']} on bill {b['sequence']} ({b['id']})", lines=f["lines"],
                 source_type=CREDIT_NOTE_SOURCE, source_id=n["id"], source_version="1", posted_by=actor, approval_id=approval_id,
@@ -1792,7 +2164,7 @@ class Bills:
         if f["problems"]:
             raise BillIneligible(f"bill {bill_id} cannot be corrected: " + "; ".join(f["problems"]))
         b, c, req = f["bill"], f["commitment"], f["request"]
-        period = self.ledger.period(b["period_id"])
+        period = self.ledger.period(self._actual_posting_period(b))
         return build_manifest(
             operation=OP_CORRECT,
             subject_type="bill",
@@ -1830,7 +2202,7 @@ class Bills:
                 raise BillIneligible(f"bill {bill_id} no longer matches the approved correction; nothing was reversed")
             self._approved_manifest(approval_id, OP_CORRECT, bill_id)
             self._refuse_spent_approval(approval_id)
-            target = self._target_period(period_id, not_before=b["period_id"], what="correction")
+            target = self._target_period(period_id, not_before=self._actual_posting_period(b), what="correction")
             reason = req["reason"]
             reversals = []
             for j in f["journals"]:
@@ -1863,7 +2235,9 @@ class Bills:
     # ---- retainage ------------------------------------------------------------ #
 
     def _retainage_retained(self, commitment_id: str) -> Decimal:
-        rows = self.db.query("SELECT retainage_this_period FROM bills WHERE commitment_id=? AND status IN ('posted','paid')", (commitment_id,))
+        rows = self.db.query("SELECT id,retainage_this_period FROM bills WHERE commitment_id=? AND status IN ('posted','paid')", (commitment_id,))
+        for row in rows:
+            self.posting_receipt(row["id"])
         return total(r["retainage_this_period"] for r in rows) if rows else ZERO
 
     def _retainage_released(self, commitment_id: str) -> Decimal:
@@ -1973,6 +2347,7 @@ class Bills:
             b = self.db.one("SELECT id, sequence, cumulative_stored FROM bills WHERE commitment_id=? AND status IN ('posted','paid') ORDER BY sequence DESC LIMIT 1", (c["id"],))
             if b is None:
                 continue
+            self.posting_receipt(b["id"])
             stored = money(b["cumulative_stored"])
             posted = {r["id"] for r in self.db.query("SELECT id FROM bills WHERE commitment_id=? AND status IN ('posted','paid')", (c["id"],))}
             carried = [l for l in self.lots(c["id"]) if l["billed_bill_id"] in posted and money(l["remaining_amount"]) > 0]
@@ -2070,6 +2445,7 @@ class Bills:
         items = []
         open_total = ZERO
         for b in self.db.query(sql, params):
+            self.posting_receipt(b["id"])
             paid_total = self._paid(b["id"])
             credited = self.credited(b["id"])
             open_amt = money(b["amount_due"]) - paid_total - credited

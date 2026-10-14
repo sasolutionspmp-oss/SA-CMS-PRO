@@ -2,7 +2,7 @@
 
 Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read this first, then `AGENTS.md` (the rules), `BUILD_STATUS.md` (what was verified and the known gaps) and `README.md` (commands, modules and controls).
 
-For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. The next coding milestone is B01–B02, specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md). Its design is complete; the lifecycle and authority changes are not implemented yet.
+For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md): six usable milestones, their acceptance gates and the next 15 work items. B01's separate bill approval/posting engine is implemented as specified in [docs/BILL_POSTING_SPLIT_PLAN.md](docs/BILL_POSTING_SPLIT_PLAN.md), including bill-specific duties from B02. Next are B03's immutable practice/live boundary and the authenticated API/action foundation; B02's other operation duties remain open.
 
 The current [product goal](docs/PRODUCT_GOAL.md) records the owner's full scope: Cipher owns proposals, estimating/takeoffs, all AP/AR business work, projects/CMS, engineering and specification/contract libraries, with a Fluent 2 interface and an accounting adapter. Internal completion and enterprise qualification are separate evidence gates. Follow the existing UI templates across those workflows; enterprise quality is an architectural direction, not a readiness claim.
 
@@ -11,11 +11,12 @@ The owner confirmed QuickBooks use and prior Odoo catch-up work on 2026-10-14. T
 ## Where it stands
 
 - **Code:** `apps/cipher` on `cipher/synthetic-prototype`, in open PR #27. The original handoff incorrectly said it had merged; GitHub still showed it open when Codex resumed on 2026-10-14. Python standard library only.
-- **Tests:** `python -m apps.cipher test` runs 1347 unique tests, all passing (Linux, Python 3.12, 2026-10-14). The previous continuation's console self-test passed 16 of 16, core gates passed 9 of 9 with 127 of 127 checks, and golden fixture/corpus matched their recorded numbers. The practice read contract/server add 27 tests; `BUILD_STATUS.md` records the separate Fluent checks.
+- **Tests:** `python -m apps.cipher test` runs 1426 unique tests, all passing (Linux, Python 3.12, 2026-10-14; 338.180 seconds). Console self-test: 20 of 20. Core gates: 9 of 9 with 127 of 127 checks. Golden fixture/corpus retain their financial results. The separate Fluent actual-API run passes 18 views and 7 contract/precision checks; `BUILD_STATUS.md` records coverage and limits.
 - **Built:** a synthetic, single-owner, single-entity engine:
   - ledger, approvals, the hash-chained audit log and restore safety;
   - AP and AR, payments through an outbox and simulator, banking, labor, procurement, field, close, assets, the accountant hand-off, content rights, supplier invoice intake;
   - three governor modules (`people`, `payment_policy`, `contracts`);
+  - journal-free bill business grants, independent explicit posting and audit-backed immutable posting receipts;
   - Ricky's SDK;
   - a test-bench HTTP console.
 - **Reviewed:** four build rounds, each with adversarial review and fixes, then a cross-module critic (26 confirmed findings, all fixed but one declined) and a Codex review on the PR. `BUILD_STATUS.md` lists what each found.
@@ -39,7 +40,7 @@ The spec lists 15 backend fixes; the first four block any use by real people. Th
 
 Confirm each item against the code before starting. Codex's first continuation addressed item 11 (configured module failures now stop startup) and item 13 (grant preflight checks are read-only, with self-approval records committed atomically with successful grants). Item 2 is partly addressed: the HTTP Ricky catalog and invocation route allow only explicit read and draft tools, reject execution, approval requests and payment reconciliation with a typed 403, and block the generic SDK module-call bypass. The standalone SDK keeps its synthetic execution tools; the new API and authenticated session identity are still pending. The remaining items stay open.
 
-Item 1 (separate approving from posting) is the next engine blocker. Its implementation and migration acceptance criteria are in `docs/BILL_POSTING_SPLIT_PLAN.md`; B01–B02 are designed and remain open. Finish item 2 when the new API supplies authenticated session identity. Items 3 and 4 (retire the old action API; derive identity from Microsoft 365 sign-in) go with decisions 13 and 10.
+Item 1 (separate approving from posting) is addressed in the synthetic engine. Bill grants create no journals; an independent accountant/controller posts under the original authorization, and the old combined bill execution is refused. Schema 65 preserves historical schema text and authentic pre-split postings. Synthetic actor arguments are not authenticated sessions: finish item 2 when the new API derives person/duties from its session. Items 3 and 4 (retire the old action API; derive identity from Microsoft 365 sign-in) go with decisions 13 and 10.
 
 ### 2. Known gaps from review
 

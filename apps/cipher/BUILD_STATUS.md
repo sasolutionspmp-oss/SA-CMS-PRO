@@ -6,6 +6,10 @@ Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-
 
 | Date | Check | Result |
 |---|---|---|
+| 2026-10-14 | Full suite after separate bill approval/posting and final source/expiry review fixes | 1426 unique tests, OK; 338.180 seconds; 65 bill lifecycle/duty/service/review cases included |
+| 2026-10-14 | Historical bill upgrade and bill workflow acceptance | genuine schema-64 postings, journals and audit history preserved; all prior schema statement text unchanged; atomic failure, scoped/person duties, tampered source/receipt/history, expiry and exact retry checks pass |
+| 2026-10-14 | Current bill-split Chromium checks | console 20 of 20; Fluent actual API 18 views at 1440/1024/390 plus 7 contract/precision checks; zero browser/CSP errors or application axe findings; manual screen-reader acceptance remains open |
+| 2026-10-14 | Golden fixture, core gates and corpus after the final bill expiry fix | bills 27,000.00/18,000.00 and one provider transfer; 9 of 9 hard gates, 127 of 127 checks; corpus 19 releases for 405,700.00, 1 blocked, 61 approvals and exact timing/report assertions pass |
 | 2026-10-14 | Fluent 2 practice client typecheck and static release build | both pass; exact direct pins and lockfile; authored CSS and nonce-backed Griffel; development dependencies excluded from the engine image context |
 | 2026-10-14 | Chromium Fluent checks against fixture and actual practice API | each covers 6 views at 1440, 1024 and 390 px (36 page/viewport cases total); no browser/CSP errors or application axe findings; narrowly excluded hidden Tabster library sentinels after keyboard verification; manual screen-reader acceptance remains open |
 | 2026-10-14 | Fluent malformed-data, money, filtering and focus regressions | 7 API contract/precision checks pass, including missing/object/null fields, a live envelope, exact maximum cents, intermediate sum precision and controlled final-total overflow; URL filters, Help/Ctrl+K focus and mobile navigation pass; independent review clear |
@@ -47,7 +51,7 @@ Continued from the exact PR #27 head, `4bbe9842`, after reproducing the handoff'
 - **Audit lookups:** new named schema entry `audit_log_lookup_indexes` adds entity/sequence and action/sequence indexes. Upgrades of a workspace created by the prior head preserve all 63 historical schema rows and 94 audit entries through both CLI and service startup; copied workspaces remain read-only.
 - **Container packaging:** the non-root startup check reproduced unreadable application files copied from a private checkout. The Dockerfile now normalizes source read/traverse permissions before its tests; the rebuilt image and an independent runtime check both pass upgrade, token sign-in, health and restart checks.
 
-The pre-pilot approval/posting split, authenticated session identity and replacement of the old action API remain open. This continuation does not open the production gates or settle the owner's UI decisions.
+The bill approval/posting engine split is implemented below. Authenticated session identity, the remaining operation duties and replacement of the old action API remain open. These foundations do not open the production gates or settle the owner's financial policies or final UI acceptance.
 
 ### Architecture context correction (2026-10-14)
 
@@ -59,7 +63,19 @@ The owner's subsequent direction expands Cipher to proposals, estimating/takeoff
 
 The first B04/B08 read subset is implemented: typed, allowlisted project/commitment/bill/approval presenters with exact cents, filtered totals and bounded query-bound paging; a separate loopback-only server owns a fresh golden in-memory fixture, freezes it through the Database's managed read-only guard, and serves the built Fluent client. It has no file database, actor, credentials, provider, action API or old-console option. Static files use explicit MIME types, confined paths and per-response Fluent style nonces. Frontend dependencies are pinned and locked; the existing engine Docker context excludes the new web development tree.
 
-This is a connected local read prototype, not the authenticated operational backend. Production OpenAPI, scoped identity, action contracts, external IDs and accounting/provider routes remain open. The bill approval/posting split is still unimplemented. The new design and practice interface do not close full internal workflow or enterprise gates.
+This is a connected local read prototype, not the authenticated operational backend. Production OpenAPI, scoped identity, action contracts, external IDs and accounting/provider routes remain open. At that checkpoint the bill split was unimplemented; the next continuation below implements its engine. The design and practice interface do not close full internal workflow or enterprise gates.
+
+### Separate bill approval and posting (2026-10-14)
+
+B01 is implemented in the synthetic engine. A fixed PM business manifest is prepared by an allowed preparer; a PM/controller/owner business grant records `approved` without a journal, payable or payment intent. A different accountant/controller calls `post_bill` with an explicit actor, selected period and any cross-period reason. This command consumes the original grant once and seals the actual journal plan, period, person and reason in an immutable audited receipt. Combined `execute` and `approve_and_execute` bill routes refuse before effects. The old console exposes the separate human act; Fluent remains read-only.
+
+New schema 65, `bills_business_approval_posting`, appends after audit indexes. Historical schema text and stored codes are unchanged. Genuine schema-64 history upgrades with original journals and audit entries preserved. Legacy posting requires its consumed authorization, exact approved journal plan and audited posting; missing new metadata alone is not historical proof.
+
+The domain and service recheck governed business facts, expiry, coverage, scoped duty and canonical person separation at posting. An approval's mutable deadline cannot extend its original audited deadline. Direct domain calls enforce the same posting boundary; caught failures inside an outer transaction roll back the whole act. Retried commands verify their cached result against the immutable receipt. Completed receipts remain valid after legitimate supplier display/destination changes without reopening the completed business decision.
+
+Financial reads and payment requests verify the approved economics and original posting proof. Focused review reproduced false historical postings, altered posted headers/lines, changed journal source versions, rewritten request actors, missing superseded approval records and extended expiry; regression checks now refuse these paths. Approved-unposted withdrawal is limited to the original business approver with a reason and restores reservations; correction/credit chronology uses the actual posting period. Intake rematching includes approved-unposted bills; cumulative successors cannot post before their predecessors.
+
+Bill-specific B02 duties are implemented. Other operation duties, authenticated session identity, Entra account-alias binding, production APIs and consequential Fluent screens remain open. Synthetic actor/duty arguments do not prove a caller's identity. No live data or external provider was connected; the earlier 1,320-test Docker image is historical evidence and has not been rebuilt for this milestone.
 
 ## Round 4 (governor modules)
 

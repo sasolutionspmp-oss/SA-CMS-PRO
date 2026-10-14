@@ -28,6 +28,7 @@ class ServedHandlerBoundaryTests(unittest.TestCase):
             ("Cipher._apply", w.c, "_apply"),
             ("Ledger.post", w.c.ledger, "post"),
             ("Cipher.execute", w.c, "execute"),
+            ("Cipher.post_bill", w.c, "post_bill"),
             ("Cipher.request_approval", w.c, "request_approval"),
             ("Cipher.approve", w.c, "approve"),
             ("Approvals.request", w.c.approvals, "request"),

@@ -100,10 +100,12 @@ try {
     await page.locator('main[aria-busy="false"]').waitFor();
     const billSearch = page.getByRole('textbox', { name: 'Search sub pay apps' });
     await billSearch.fill('No matching practice pay app');
-    await page.getByRole('combobox', { name: 'Filter by status' }).selectOption('draft');
+    const selectedStatus = records.bills[0]?.status;
+    assert.ok(selectedStatus, 'The synthetic fixture needs a recorded bill status for combined filter checks.');
+    await page.getByRole('combobox', { name: 'Filter by status' }).selectOption(selectedStatus);
     assert.equal(await billSearch.inputValue(), 'No matching practice pay app');
     assert.ok(new URL(page.url()).searchParams.has('search'));
-    assert.equal(new URL(page.url()).searchParams.get('status'), 'draft');
+    assert.equal(new URL(page.url()).searchParams.get('status'), selectedStatus);
     report.widths.push(width);
     await context.close();
   }

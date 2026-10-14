@@ -21,6 +21,10 @@ from .ledger import Ledger
 from .payments import Payments
 from .receivables import Receivables
 
+BILL_APPROVER_ROLES = frozenset(("pm", "controller", "owner"))
+BILL_POSTER_ROLES = frozenset(("accountant", "controller"))
+BILL_PREPARER_ROLES = BILL_APPROVER_ROLES | BILL_POSTER_ROLES
+
 ROLE_AUTHORITY: dict[str, set[str]] = {
     "owner": {"*"},
     "estimator": {"estimate.approve"},
@@ -33,7 +37,7 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
     "legal": {"contract.approve_agreement"},
     "signer": {"contract.sign"},
     "accountant": {
-        "bill.approve", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
+        "bill.post", "prime_bill.approve", "period.close", "asset.capitalise", "asset.post_depreciation", "asset.reverse_depreciation",
         "asset.dispose", "reimbursement.approve", "reimbursement.pay", "banking.post_fee", "banking.lock_reconciliation",
         "close.close_period", "close.reopen_period", "close.lock_period", "close.post_wip_adjustment", "close.reverse_wip_adjustment",
         "labor.post_payroll", "labor.bill", "prime_bill.send", "prime_retainage.release", "journal.reverse", "handoff.acknowledge",
@@ -41,7 +45,7 @@ ROLE_AUTHORITY: dict[str, set[str]] = {
         "receivable.apply_deposit",
     },
     "controller": {
-        "bill.approve", "prime_bill.approve", "period.close", "close.close_period", "close.reopen_period", "close.lock_period",
+        "bill.approve", "bill.post", "prime_bill.approve", "period.close", "close.close_period", "close.reopen_period", "close.lock_period",
         "close.post_wip_adjustment", "close.reverse_wip_adjustment", "journal.reverse", "banking.lock_reconciliation", "banking.post_fee",
         "labor.post_payroll", "labor.bill", "handoff.acknowledge", "prime_retainage.release", "asset.capitalise", "asset.post_depreciation",
         "asset.reverse_depreciation", "asset.dispose", "reimbursement.approve", "retainage.release",
@@ -75,6 +79,8 @@ class Ricky:
 
     @staticmethod
     def can(actor_role: str, operation: str) -> bool:
+        if operation == "bill.post":
+            return actor_role in BILL_POSTER_ROLES  # owner authority does not imply an accounting posting duty
         allowed = ROLE_AUTHORITY.get(actor_role)
         return bool(allowed) and ("*" in allowed or operation in allowed)
 
@@ -112,6 +118,8 @@ class Ricky:
 
         now_iso = utcnow_iso()
         for ap in self.db.query("SELECT id, operation, subject_type, subject_id, status, manifest_json, expires_at FROM approvals WHERE status IN ('pending','granted') ORDER BY requested_at"):
+            if ap["operation"] == "bill.approve" and ap["status"] == "granted":
+                continue  # the business decision is recorded; accounting posting is separate work below
             if not self.can(actor_role, ap["operation"]):
                 continue
             if ap["expires_at"] <= now_iso:
@@ -143,6 +151,15 @@ class Ricky:
             add("blocker", "ar_unreconciled", f"AR subledger {ar_items['subledger_total']} does not match the control account {ar_items['control_balance']}.")
 
         for b in self.bills.list(project_id=project_id):
+            if b["status"] == "approved":
+                recorded = self.db.one("SELECT status,expires_at FROM approvals WHERE id=?", (b.get("business_approval_id"),))
+                if b["stale"]:
+                    add("review", "bill_stale", f"Approved supplier bill {b['sequence']} changed before posting; request a fresh business approval.", b["id"], "bill.approve")
+                elif recorded is None or recorded["status"] != "granted" or recorded["expires_at"] <= now_iso:
+                    add("review", "bill_approval_stale", f"Supplier bill {b['sequence']} no longer has a current business approval; request it again before posting.", b["id"], "bill.approve")
+                elif self.can(actor_role, "bill.post"):
+                    add("execute", "bill_approved", f"Supplier bill {b['sequence']} ({b['amount_due']} due) has business approval and awaits an independent accounting posting.", b["id"], "bill.post")
+                continue
             if b["status"] != "draft":
                 continue
             if b["stale"]:
@@ -202,7 +219,7 @@ class Ricky:
         allowed = ROLE_AUTHORITY.get(actor_role)
         if allowed is None:
             raise _Abstain(f"unknown role {actor_role!r}; Ricky does not infer authority from the request")
-        if "*" not in allowed and operation not in allowed:
+        if not self.can(actor_role, operation):
             raise _Abstain(f"role {actor_role!r} is not authorized for {operation}; route to a role that is")
 
     def _evaluate(self, workflow: str, actor_role: str, ctx: dict[str, Any]) -> tuple[dict[str, Any], str]:
@@ -237,7 +254,8 @@ class Ricky:
             return self.commitments.change_manifest(ch["id"], actor_role=actor_role), f"execute change of {ch['amount']}: {ch['reason']}"
 
         if workflow == "bill.approve":
-            self._require_role(actor_role, workflow)
+            if actor_role not in BILL_PREPARER_ROLES:
+                raise _Abstain(f"role {actor_role!r} cannot prepare a bill business approval request")
             b = self.bills.get(ctx["bill_id"])
             if b["status"] != "draft":
                 raise _Abstain(f"bill is {b['status']}")
@@ -245,7 +263,7 @@ class Ricky:
                 raise _Abstain("the commitment changed after this bill was certified; re-certify")
             if self.ledger.period(b["period_id"])["status"] != "open":
                 raise _Abstain("the bill's period is not open")
-            return self.bills.manifest(b["id"], actor_role=actor_role), f"approve supplier bill {b['sequence']}: {b['amount_due']} due, {b['retainage_this_period']} retained"
+            return self.bills.manifest(b["id"], actor_role="pm"), f"request business approval for supplier bill {b['sequence']}: {b['amount_due']} due, {b['retainage_this_period']} retained; posting remains a separate human act"
 
         if workflow == "prime_bill.approve":
             self._require_role(actor_role, workflow)

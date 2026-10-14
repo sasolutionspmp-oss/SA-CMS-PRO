@@ -81,7 +81,7 @@ async function refresh() {
   render();
 }
 
-function statusClass(s) { return ({granted:'warn', pending:'warn', consumed:'ok', posted:'ok', paid:'ok', executed:'ok', settled:'ok', accepted:'ok', invalidated:'bad', expired:'bad', failed:'bad', returned:'bad', outcome_unknown:'warn', draft:'', closed:'ok', open:'ok'})[s] || ''; }
+function statusClass(s) { return ({granted:'warn', pending:'warn', approved:'warn', consumed:'ok', posted:'ok', paid:'ok', executed:'ok', settled:'ok', accepted:'ok', invalidated:'bad', expired:'bad', failed:'bad', returned:'bad', outcome_unknown:'warn', draft:'', closed:'ok', open:'ok'})[s] || ''; }
 const st = s => `<span class="status ${statusClass(s)}">${s}</span>`;
 
 function render() {
@@ -127,8 +127,28 @@ function render() {
     <table><tr><th>Operation</th><th>Subject</th><th class="num">Amounts</th><th>Status</th><th></th></tr>
     ${aps.slice(0,25).map(a => `<tr><td>${a.operation}<br><span class="muted">${a.actor_role}</span></td><td><code>${a.subject_id.slice(0,14)}</code></td><td class="num">${Object.entries(a.manifest.amounts||{}).map(([k,v])=>`${k}: ${money(v)}`).join('<br>')}</td><td>${st(a.status)}${a.invalidated_reason?`<br><span class="muted">${a.invalidated_reason}</span>`:''}</td>
       <td>${a.status==='pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(a.id)}})">Approve</button> <button onclick="api('reject',{approval_id:${js(a.id)},reason:'rejected in console'})">Reject</button>`:''}
-          ${a.status==='granted'?`<button class="lime" onclick="api('execute',{approval_id:${js(a.id)}})">Execute</button>`:''}</td></tr>`).join('')}
+          ${a.status==='granted' && a.operation!=='bill.approve'?`<button class="lime" onclick="api('execute',{approval_id:${js(a.id)}})">Execute</button>`:''}
+          ${a.status==='granted' && a.operation==='bill.approve'?'<a href="#post-approved-bills">Review posting</a>':''}</td></tr>`).join('')}
     </table></section>`);
+
+  const approvedBills = s.commitments.flatMap(c => c.bills.filter(b=>b.status==='approved').map(b=>({...b, commitment_title:c.title})));
+  parts.push(`<section class="wide" id="post-approved-bills"><h2>Post approved bills <span class="muted">${approvedBills.length} waiting</span></h2>
+    <p class="muted">Business approval creates no journal or payable. A different person with the accounting posting duty reviews the exact entry and posts it. This console uses synthetic identities only.</p>
+    ${approvedBills.map(b=>`<details id="bill-post-${b.id}"><summary>${b.commitment_title} · bill ${b.sequence} · ${money(b.amount_due)} due${b.stale?' · stale business facts':''}</summary>
+      <p class="muted">Certification period ${b.period_id}. A different posting period requires a reason.</p>
+      <form data-certification-period="${b.period_id}" onsubmit="event.preventDefault(); reviewBillPost(this,${js(b.id)})" oninput="clearBillPostReview(this)" onchange="clearBillPostReview(this)">
+        <label>Posting person <input name="poster" placeholder="accountant" required></label>
+        <label>Posting period <select name="posting_period" required>${s.periods.filter(x=>x.status==='open').map(x=>`<option value="${x.id}"${x.id===b.period_id?' selected':''}>${x.id}</option>`).join('')}</select></label>
+        <label>Reason <input name="posting_reason" placeholder="Required for another period"></label><button class="primary">Review exact entry</button>
+        <div data-post-preview style="flex-basis:100%"></div>
+      </form>
+      <p class="muted">The original business approver can withdraw this approval and void the unposted bill. To seek fresh approval, review its evidence and certify a new bill.</p>
+      <form onsubmit="event.preventDefault(); withdrawApprovedBill(this,${js(b.id)})">
+        <label>Withdrawing person <input name="withdraw_actor" placeholder="Original business approver" required></label>
+        <label>Reason <input name="withdraw_reason" placeholder="Why this approval is being withdrawn" required></label>
+        <button>Withdraw approval and void bill</button>
+      </form></details>`).join('') || '<p class="muted">No approved bills are waiting to post.</p>'}
+    </section>`);
 
   // ricky brief
   if (s.ricky_brief) {
@@ -151,7 +171,7 @@ function render() {
 
   // commitments
   for (const c of s.commitments) {
-    const draftBillExists = c.bills.some(b=>b.status==='draft');
+    const unpostedBillExists = c.bills.some(b=>b.status==='draft' || b.status==='approved');
     parts.push(`<section class="wide"><h2>${c.title} <span>${st(c.status)} <span class="muted">v${c.version} · ${c.supplier.name} · retainage ${Number(c.retainage_rate)*100}%</span></span></h2>
       <div class="kv"><span>Original / executed</span><b>${money(c.original_amount)} / ${money(c.executed_amount)}</b><span>Pending exposure</span><b>${money(c.pending_exposure)}</b>${c.estimate?`<span>Estimate</span><b>${c.estimate.status}${c.estimate.stale?' · <span class="status bad">stale evidence</span>':''}</b>`:''}</div>
       ${c.status==='draft'?`<p><button class="primary" onclick="api('request_approval',{operation:'commitment.execute',subject_id:${js(c.id)}})">Request execution approval</button></p>`:''}
@@ -164,9 +184,10 @@ function render() {
         ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('add_stored_material',{commitment_id:${js(c.id)},sov_line_id:this.line.value,description:this.d.value,eligible_amount:this.a.value,evidence_hash:this.e.value,location:this.loc.value})"><select name="line">${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><input name="d" placeholder="description" required><input name="a" placeholder="eligible amount" required><input name="e" placeholder="evidence hash" required><input name="loc" placeholder="location"><button>Add lot</button></form>`:''}</details>
       <details open><summary>Bills (${c.bills.length})</summary><table><tr><th>#</th><th>Period</th><th class="num">Cum. gross</th><th class="num">Retainage</th><th class="num">Due</th><th>Status</th><th></th></tr>
         ${c.bills.map(b=>`<tr><td>${b.sequence}</td><td>${b.period_id}</td><td class="num">${money(b.cumulative_gross)}</td><td class="num">${money(b.cumulative_retainage)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}${b.stale?' <span class="status bad">stale</span>':''}</td>
-          <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'bill.approve',subject_id:${js(b.id)}})">Request approval</button> <button onclick="api('void_bill',{bill_id:${js(b.id)}})">Void</button>`:''}
+          <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'bill.approve',subject_id:${js(b.id)}})">Request approval</button> <button onclick="voidDraftBill(${js(b.id)})">Void</button>`:''}
+              ${b.status==='approved'?`<a href="#bill-post-${b.id}">Review posting</a>`:''}
               ${b.status==='posted'?`<button onclick="api('request_approval',{operation:'payment.release',subject_id:${js(b.id)},actor_role:'treasury'})">Request payment</button>`:''}</td></tr>`).join('')}</table>
-        ${c.status==='executed' && !draftBillExists ? `<form onsubmit="event.preventDefault(); certify(this,${js(c.id)})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select>
+        ${c.status==='executed' && !unpostedBillExists ? `<form onsubmit="event.preventDefault(); certify(this,${js(c.id)})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select>
           ${c.sov.map(l=>`<input name="line:${l.id}" placeholder="cum. installed line ${l.line_no}">`).join('')}
           ${c.stored_lots.filter(l=>Number(l.remaining_amount)>0).map(l=>`<input name="lot:${l.id}" placeholder="transfer from ${l.description}">`).join('')}
           <button class="primary">Certify bill</button></form>`:''}</details></section>`);
@@ -240,6 +261,50 @@ function renderGeneric(v, depth=0) {
   return String(v);
 }
 
+// ---- human review and posting of approved supplier bills ----
+function clearBillPostReview(form) {
+  form._postingReview = null;
+  form.elements.posting_reason.required = form.elements.posting_period.value !== form.dataset.certificationPeriod;
+  $('[data-post-preview]', form).innerHTML = '';
+}
+
+async function reviewBillPost(form, billId) {
+  clearBillPostReview(form);
+  if (!form.reportValidity()) return;
+  const payload = {bill_id:billId, actor:form.elements.poster.value, period_id:form.elements.posting_period.value,
+    reason:form.elements.posting_reason.value};
+  const r = await fetch('/api/action/bill_journal_preview', {method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({bill_id:payload.bill_id, period_id:payload.period_id})});
+  const j = await r.json();
+  if (!j.ok) { toast('bill_journal_preview: ' + j.error, true); return; }
+  // Any edits made while the preview was loading require another review.
+  if (payload.actor !== form.elements.poster.value || payload.period_id !== form.elements.posting_period.value
+      || payload.reason !== form.elements.posting_reason.value) return;
+  form._postingReview = payload;
+  const plan = escDeep(j.result);
+  $('[data-post-preview]', form).innerHTML = plan.map(entry=>`<p><b>${entry.description}</b> · period ${entry.period_id}</p>
+    <table><tr><th>Account</th><th>Memo</th><th class="num">Debit</th><th class="num">Credit</th></tr>${entry.lines.map(line=>`<tr><td>${line.account}</td><td>${line.memo}</td><td class="num">${money(line.debit)}</td><td class="num">${money(line.credit)}</td></tr>`).join('')}</table>`).join('')
+    + `<p>Posting person ${esc(payload.actor)}${payload.reason?` · reason: ${esc(payload.reason)}`:''}</p><button type="button" class="lime" onclick="postReviewedBill(this.form)">Post approved bill</button>`;
+}
+
+async function postReviewedBill(form) {
+  const payload = form._postingReview;
+  if (!payload) { toast('Review the entry before posting.', true); return; }
+  try { await api('post_bill', payload); } catch (e) { /* api already displays the refusal */ }
+}
+
+async function withdrawApprovedBill(form, billId) {
+  if (!form.reportValidity()) return;
+  try { await api('void_bill', {bill_id:billId, actor:form.elements.withdraw_actor.value,
+    reason:form.elements.withdraw_reason.value}); } catch (e) { /* api already displays the refusal */ }
+}
+
+async function voidDraftBill(billId) {
+  const reason = window.prompt('Reason for voiding this draft bill');
+  if (!reason || !reason.trim()) return;
+  try { await api('void_bill', {bill_id:billId, reason}); } catch (e) { /* api already displays the refusal */ }
+}
+
 // ---- browser self-test (used by tools/browser_check.py with headless Chrome) ----
 async function selfTest() {
   const out = document.createElement('section'); out.className = 'wide'; out.id = 'selftest';
@@ -278,8 +343,19 @@ async function selfTest() {
     const bill = await post('certify_bill', {commitment_id: cmt.id, period_id: periodId, installed:[{sov_line_id: line, cumulative_installed:'2000'}]});
     check('bill due 1,800 after 10% retainage', bill.amount_due === '1800.00');
     ap = await post('request_approval', {operation:'bill.approve', subject_id: bill.id});
-    await post('approve', {approval_id: ap.id}); ex = await post('execute', {approval_id: ap.id});
+    const beforeBillGrant = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    await post('approve', {approval_id: ap.id, actor:'owner'});
+    const approvedState = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    check('business approval creates no journal or payable', approvedState.commitments[0].bills[0].status === 'approved'
+      && approvedState.trial_balance.journal_count === beforeBillGrant.trial_balance.journal_count && approvedState.ap.subledger_total === '0.00');
+    let legacyPost = false; try { await post('execute', {approval_id: ap.id, actor:'accountant'}); } catch (e) { legacyPost = true; }
+    check('combined bill approval execution is refused', legacyPost);
+    let ownPost = false; try { await post('post_bill', {bill_id:bill.id, actor:'owner', period_id:periodId}); } catch (e) { ownPost = true; }
+    check('business approver cannot post the bill', ownPost);
+    ex = await post('post_bill', {bill_id:bill.id, actor:'accountant', period_id:periodId});
     check('bill posted', ex.result.status === 'posted');
+    const postReplay = await post('post_bill', {bill_id:bill.id, actor:'accountant', period_id:periodId});
+    check('bill posting retry replays its receipt', postReplay.replayed && postReplay.result.posting_receipt_id === ex.result.posting_receipt_id);
     const ricky = await post('ricky_propose', {workflow:'payment.release', actor_role:'treasury', context:{bill_id: bill.id}});
     check('ricky proposes payment release', ricky.decision === 'proposed');
     ap = await post('request_approval', {operation:'payment.release', subject_id: bill.id, actor_role:'treasury'});
@@ -315,7 +391,8 @@ function renderBrief(b) {
   return `<p class="muted">${Object.entries(b.counts).filter(([,n])=>n).map(([k,n])=>`${n} ${k}`).join(' · ')}</p>
     <table>${b.items.map(it=>`<tr><td><span class="status ${cls(it.level)}">${it.level}</span></td><td>${it.text}</td>
       <td>${it.kind==='approval_pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(it.ref)}})">Approve</button>`:''}
-          ${it.kind==='approval_granted'?`<button class="lime" onclick="api('execute',{approval_id:${js(it.ref)}})">Execute</button>`:''}
+          ${it.kind==='approval_granted' && it.operation!=='bill.approve'?`<button class="lime" onclick="api('execute',{approval_id:${js(it.ref)}})">Execute</button>`:''}
+          ${it.operation==='bill.post' || (it.kind==='approval_granted' && it.operation==='bill.approve')?'<a href="#post-approved-bills">Review posting</a>':''}
           ${it.kind==='outbox'?`<button onclick="api('dispatch_payments')">Dispatch</button>`:''}
           ${it.kind==='payment_unknown'?`<button onclick="api('reconcile_payments')">Reconcile</button>`:''}
           ${it.kind==='quarantine'?`<button onclick="api('complete_recovery')">Recovery reconciliation</button>`:''}

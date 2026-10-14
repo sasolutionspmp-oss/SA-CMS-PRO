@@ -9,6 +9,7 @@ import unittest
 
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import hash_json, utcnow
+from apps.cipher.domain.bills import BillError
 from apps.cipher.domain.contracts import (
     COVERAGE_KINDS, OP_APPROVE, OP_REQUIRE, OP_SIGN, PLUGIN_NAME, SCHEMA_NAME, WORKSPACE_SUBJECT_ID, AgreementIneligible, ContractError,
     CoverageError,
@@ -128,7 +129,8 @@ class World:
         return ap
 
     def post(self, bill_id):
-        return self.c.execute(self.request_post(bill_id)["id"], actor="accountant")
+        self.request_post(bill_id)
+        return self.c.post_bill(bill_id, actor="accountant")
 
     def request_release(self, bill_id):
         ap = self.c.request_approval("payment.release", bill_id, actor_role="treasury", requested_by="ap-clerk")
@@ -641,7 +643,7 @@ class CoverageGovernanceTests(unittest.TestCase):
         self.assertEqual(facts["requirement_sets"][0]["commitment_id"], cid)
         [cov] = facts["coverage"]
         self.assertEqual((cov["kind"], cov["min_limit"], [x["id"] for x in cov["certificates"]]), ("general_liability", "1000000.00", [cert["id"]]))
-        res = c.execute(ap["id"], actor="accountant")
+        res = c.post_bill(bill["id"], actor="accountant")
         self.assertEqual(res.result["status"], "posted")
         check = c.db.one("SELECT * FROM contract_coverage_checks WHERE approval_id=?", (ap["id"],))
         self.assertEqual((check["operation"], check["checked_on"], cert["id"] in check["coverage_json"]), ("bill.approve", day(), True))
@@ -706,7 +708,7 @@ class CoverageGovernanceTests(unittest.TestCase):
         bill = w.certify(cid)
         ap = w.request_post(bill["id"])
         self.assertEqual([x["id"] for x in ap["manifest"]["governance"][PLUGIN_NAME]["coverage"][0]["certificates"]], [current["id"], renewal["id"]])
-        c.execute(ap["id"], actor="accountant")
+        c.post_bill(bill["id"], actor="accountant")
         self.assertIn(current["id"], c.db.scalar("SELECT coverage_json FROM contract_coverage_checks WHERE approval_id=?", (ap["id"],)))
         self.assertTrue(w.checks()[COVERAGE_CHECK]["ok"])  # the renewal is on file: nothing is expiring uncovered
 
@@ -719,8 +721,8 @@ class CoverageGovernanceTests(unittest.TestCase):
         ap = w.request_post(bill["id"])
         k.withdraw_certificate(cert["id"], "recorded against the wrong policy", "contracts-admin")
         with self.assertRaises(StaleApprovalError):
-            c.execute(ap["id"], actor="accountant")
-        self.assertEqual(c.bills.get(bill["id"])["status"], "draft")
+            c.post_bill(bill["id"], actor="accountant")
+        self.assertEqual(c.bills.get(bill["id"])["status"], "approved")
 
     def test_a_retainage_payment_needs_the_coverage_of_every_commitment_it_may_pay(self):
         w = World()
@@ -749,9 +751,11 @@ class CoverageGovernanceTests(unittest.TestCase):
         cid = w.signed_commitment(requirements=GL)
         bill = w.certify(cid)
         ap = w.request_post(bill["id"])
-        c.execute(ap["id"], actor="accountant")
-        with self.assertRaises(ApprovalConsumed):  # a replay under another operation id
-            c.execute(ap["id"], actor="accountant", op_id="retry-bill-approve")
+        c.post_bill(bill["id"], actor="accountant")
+        with self.assertRaises(BillError):  # another posting command cannot reuse the recorded business authority
+            c.post_bill(bill["id"], actor="accountant", op_id="retry-bill-approve")
+        self.assertEqual(len(c.ledger.journals(source_type="bill", source_id=bill["id"])), 1)
+        self.assertEqual(c.approvals.get(ap["id"])["status"], "consumed")
         executed = next(a for a in c.approvals.list(status="consumed") if a["operation"] == "commitment.execute")
         with self.assertRaises(ApprovalConsumed):
             c.execute(executed["id"], actor="pm-pat", op_id="retry-commitment-execute")
@@ -947,7 +951,13 @@ class TamperingTests(unittest.TestCase):
         ap = c.approvals.request(m, requested_by="ap-clerk")
         c.approvals.grant(ap["id"], approver="controller")
         c.approvals.consume(ap["id"], current_manifest=m, consumer="accountant")
-        c.bills.post(bill["id"], approval_id=ap["id"], actor="accountant")
+        with self.assertRaises(BillError):  # consumed authorization without a recorded business decision cannot post
+            c.bills.post(bill["id"], approval_id=ap["id"], actor="accountant")
+        self.assertEqual(c.ledger.journals(source_type="bill", source_id=bill["id"]), [])
+        w.post(bill["id"])
+        ap = c.approvals.get(c.bills.get(bill["id"])["business_approval_id"])
+        c.db.execute("DROP TRIGGER contract_coverage_checks_no_delete")
+        c.db.execute("DELETE FROM contract_coverage_checks WHERE approval_id=?", (ap["id"],))
         chk = w.checks()[INTEGRITY_CHECK]
         self.assertFalse(chk["ok"])
         self.assertIn(f"bill {bill['id']} was posted under approval {ap['id']} without a recorded coverage check", chk["detail"])
@@ -1095,7 +1105,7 @@ class UnconfiguredTests(unittest.TestCase):
         bill = w.certify(cid)
         ap = w.request_post(bill["id"])
         self.assertNotIn(PLUGIN_NAME, ap["manifest"].get("governance") or {})
-        c.execute(ap["id"], actor="accountant")
+        c.post_bill(bill["id"], actor="accountant")
         rel = w.request_release(bill["id"])
         self.assertNotIn(PLUGIN_NAME, rel["manifest"].get("governance") or {})
         c.execute(rel["id"], actor="treasury")

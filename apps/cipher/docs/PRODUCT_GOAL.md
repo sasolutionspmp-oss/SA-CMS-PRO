@@ -79,6 +79,6 @@ Years of internal use should produce acceptance records, reconciliation history,
 
 ## Immediate execution
 
-Continue the bill approval/posting and authority split (B01–B02) as the first consequential backend change. In parallel, build B04/B08's practice read contract and Fluent shell against deterministic backend data; this establishes the integration pattern before action screens depend on it. The separate practice server is a loopback, in-memory, read-only demonstration with no connection to a file workspace, QuickBooks, Odoo or a payment provider. It does not close the live API, identity, accounting or enterprise gates.
+The bill approval/posting engine (B01) and its bill-specific duties from B02 are implemented, alongside B04/B08's practice read contract and Fluent shell against deterministic backend data. Continue with B03's immutable workspace modes, the remaining operation duties and the typed authenticated action/API foundation. The separate practice server is a loopback, in-memory, read-only demonstration with no connection to a file workspace, QuickBooks, Odoo or a payment provider. These implemented foundations do not close the live API, identity, accounting or enterprise gates.
 
 Then complete the practice AP workflow, scoped authenticated API and one reconciled internal pilot. Expand to the required proposal/estimate/takeoff, AR, CMS and engineering/library workflows with accepted end-to-end slices. Preserve all unfinished gates and use each completed internal cycle to prioritize the next demonstrable capability.

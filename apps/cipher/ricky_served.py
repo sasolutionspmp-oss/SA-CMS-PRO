@@ -14,7 +14,7 @@ from typing import Any
 from .core.ids import hash_json
 from .ricky_sdk import CATALOG, CATALOG_BY_NAME, CATALOG_HASH, RickySDK, catalog as sdk_catalog
 
-CATALOG_VERSION = "ricky-served/1.0.0"
+CATALOG_VERSION = "ricky-served/1.1.0"
 # Adding an SDK tool never exposes it here automatically. A new served tool
 # needs an explicit review of its handler as well as its declared side effects.
 SERVED_TOOLS = frozenset({
@@ -70,7 +70,11 @@ def catalog() -> dict[str, Any]:
             "operation": route["operation"], "class": "read_draft" if preparation else "human_only",
             "reachable": False, "tools": preparation, "preparation_available": bool(preparation),
             "human_action_required": True,
-            "reason": "A person must request, approve, and apply this operation outside Ricky's served tools.",
+            "reason": ("A person requests and grants journal-free business approval; a distinct authorized person posts the approved bill outside Ricky's served tools."
+                       if route["operation"] == "bill.approve" else
+                       "A distinct authorized person posts a currently approved supplier bill outside Ricky's served tools."
+                       if route["operation"] == "bill.post" else
+                       "A person must request, approve, and apply this operation outside Ricky's served tools."),
         })
     body = {"catalog_version": CATALOG_VERSION, "tools": tools, "operations": operations}
     return {**body, "catalog_hash": hash_json(body), "scope": "read_draft", "receipt_catalog_hash": CATALOG_HASH}
@@ -95,9 +99,13 @@ def _presentation(receipt: dict[str, Any]) -> dict[str, Any]:
             step["action"] = "review_approval"
             step["note"] = ("Only the named signer can approve this signature. A person must apply it in the contract workflow."
                             if step.get("operation") == "contract.sign" else
+                            "A person must request and grant business approval without posting; a distinct authorized person must post the approved bill."
+                            if step.get("operation") == "bill.approve" else
                             "Open the approval page. A person must request, approve, and apply this operation in its workflow.")
         if receipt["tool"] == "preview":
-            result["note"] = "Preview only. A person must request, approve, and apply this operation in its workflow."
+            result["note"] = ("Preview only. A person must grant business approval without posting; a distinct authorized person must post the approved bill."
+                              if result.get("workflow") == "bill.approve" else
+                              "Preview only. A person must request, approve, and apply this operation in its workflow.")
     if receipt["tool"] == "compute_invoice_match" and isinstance(view.get("error"), str):
         # This exact clause is generated for a still-holding match approval.
         # Avoid a general text substitution that could alter recorded data.

@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.domain.payments import (
@@ -73,7 +74,7 @@ class World:
 
     def posted_bill(self, cumulative: str) -> dict:
         b = self.c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.line1, "cumulative_installed": cumulative}], actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def release(self, bill_id: str) -> dict:

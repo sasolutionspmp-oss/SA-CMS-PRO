@@ -8,6 +8,7 @@ import unittest
 from decimal import Decimal
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalConsumed, ApprovalExpired, ApprovalNotGranted, StaleApprovalError, build_manifest
 from apps.cipher.core.ids import hash_json
 from apps.cipher.domain.close import (
@@ -20,7 +21,7 @@ from apps.cipher.service import Cipher, CoreReconciliationChecks, RoleNotAuthori
 D = Decimal
 
 # Sibling plugins are built independently and may contribute their own blocking close
-# checks; the scenarios keep only this module, the reimbursement plugin (whose
+# checks; the scenarios keep this module, the required identity governor, the reimbursement plugin (whose
 # employee-payable reconciliation the checklist reads) and the core subledger checks
 # ("core_reconciliation": retainage payable 2050, stored materials 1300, retainage
 # receivable 1150, provider clearing 1200), so the expected checklist is deterministic.
@@ -28,7 +29,7 @@ D = Decimal
 # a banking reconciliation, a stale close approval, the WIP adjustment, its reversal and
 # the lock) also runs with every registered plugin, and one more test checks the
 # checklist shape against every registered plugin.
-KEEP_PLUGINS = ("close", "reimbursement", "core_reconciliation")
+KEEP_PLUGINS = ("close", "reimbursement", "people", "core_reconciliation")
 CORE_SOURCE = "core_reconciliation"
 
 
@@ -62,7 +63,7 @@ class Scenario:
     def supplier_bill(self, cmt, cumulative_installed, *, period="P1", post=True):
         bill = self.c.bills.certify(commitment_id=cmt["id"], period_id=period, installed=[{"sov_line_id": cmt["sov"][0]["id"], "cumulative_installed": cumulative_installed}], actor="owner")
         if post:
-            self.c.approve_and_execute("bill.approve", bill["id"])
+            approve_and_post_bill(self.c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(bill["id"])
 
     def prime_bill(self, certified, *, period="P1", post=True):
@@ -128,7 +129,7 @@ class CloseGoldenTests(unittest.TestCase):
             c.approve_and_execute("close.close_period", "P1")
         self.assertEqual(c.ledger.period("P1")["status"], "open")
 
-        c.approve_and_execute("bill.approve", bill["id"])
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         self.assertTrue(cl.checklist_report("P1")["all_ok"])
 
         # a draft prime bill blocks it too
@@ -239,7 +240,7 @@ class CloseGoldenTests(unittest.TestCase):
         cl.set_contract_value(s.pid, "150000.00", actor="owner")
         bill = s.supplier_bill(cmt, "45000", post=False)
         self.assertIn("no_draft_supplier_bills", cl.checklist_report("P1")["failing"])
-        c.approve_and_execute("bill.approve", bill["id"])
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         prime = s.prime_bill("60000")
         s.send(prime)
         s.ach_collection(prime, "54000", fee="5", ref="ach_sim_rcv_0001")
@@ -1211,12 +1212,17 @@ class CoreSubledgerCheckTests(unittest.TestCase):
         s = Scenario()
         c, cl = s.c, s.close
         cmt = s.commitment()
-        s.supplier_bill(cmt, "20000")  # 2,000 retainage payable
+        bill = s.supplier_bill(cmt, "20000")  # 2,000 retainage payable
         s.prime_bill("30000")  # 3,000 retainage receivable
         s.owner_contribution("1000")
-        expected = [label for label, domain, method in CoreReconciliationChecks.CHECKS if hasattr(getattr(c, domain), method)]
+        expected = [f"bill {bill['id']} lifecycle intact"] + [
+            label for label, domain, method in CoreReconciliationChecks.CHECKS if hasattr(getattr(c, domain), method)]
         report = cl.checklist_report("P1")
-        self.assertEqual([ch["check"] for ch in report["checks"] if ch["source"] == CORE_SOURCE], expected)
+        core_checks = [ch["check"] for ch in report["checks"] if ch["source"] == CORE_SOURCE]
+        self.assertEqual(core_checks, expected)
+        lifecycle = [ch for ch in report["checks"] if ch["check"] == f"bill {bill['id']} lifecycle intact"]
+        self.assertEqual(len(lifecycle), 1)
+        self.assertTrue(lifecycle[0]["ok"])
         names = [ch["check"] for ch in report["checks"]]
         self.assertEqual(len(names), len(set(names)), names)  # nothing is reported twice
         self.assertTrue(report["all_ok"], report["failing"])

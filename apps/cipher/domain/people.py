@@ -115,7 +115,7 @@ from typing import Any
 
 from ..core.approvals import StaleApprovalError, build_manifest
 from ..core.ids import canonical_json, hash_json, loads, new_id, utcnow
-from .ricky import ROLE_AUTHORITY, Ricky
+from .ricky import BILL_APPROVER_ROLES, BILL_POSTER_ROLES, BILL_PREPARER_ROLES, ROLE_AUTHORITY, Ricky
 
 SCHEMA_NAME = "people"
 PLUGIN_NAME = "people"
@@ -844,6 +844,30 @@ class Plugin:
         """The identity behind a login with what it currently holds, or None."""
         p = self._person_row(login)
         return self._person_summary(p) if p is not None else None
+
+    def same_person(self, first: Any, second: Any) -> bool:
+        """Compare normalized logins and, when known, their canonical registry person IDs.
+
+        The current registry stores one login per person.  The shared ``person_for``
+        interface may also describe multiple accounts with the same canonical ID.
+        A failure to inspect that identity is never treated as a second person.
+        """
+        left, right = _norm(first), _norm(second)
+        if left is None or right is None:
+            return False
+        if left == right:
+            return True
+        try:
+            persons = (self.person_for(left), self.person_for(right))
+        except Exception as exc:
+            raise IdentityRefused("the canonical person behind a bill actor could not be verified") from exc
+        keys = []
+        for person in persons:
+            key = None
+            if isinstance(person, dict):
+                key = person.get("person_id") or person.get("id")
+            keys.append(str(key) if key is not None else None)
+        return keys[0] is not None and keys[0] == keys[1]
 
     def enforcing(self) -> bool:
         """The current identity policy enforces.  A policy chain that no longer verifies counts
@@ -1724,6 +1748,8 @@ class Plugin:
         if approval["status"] != "pending":
             return  # Approvals.grant refuses anything that is not pending
         operation, manifest = approval["operation"], approval["manifest"]
+        if operation == "bill.approve" and approver_role not in BILL_APPROVER_ROLES:
+            raise IdentityRefused("bill business approval requires the PM, controller, or owner duty; accountants prepare and post")
         who = _norm(approver)
         person = self._person_row(who)
         if operation in SUBJECT_TYPES:
@@ -1752,6 +1778,103 @@ class Plugin:
             if not (policy["solo_owner_self_approval"] and self._holds_by_grant(person, OWNER_ROLE, None)):
                 raise IdentityRefused(f"segregation: {person['login']} requested {operation} and cannot also approve it"
                                       + ("" if not policy["solo_owner_self_approval"] else "; only an owner may self-approve in solo-owner mode"))
+
+    def check_bill_request(self, manifest: dict[str, Any], *, actor_role: str, requested_by: str) -> None:
+        """Read-only preparation authority for a bill's fixed PM business manifest."""
+        if manifest.get("operation") != "bill.approve" or manifest.get("actor_role") != "pm":
+            raise IdentityRefused("bill requests use the fixed PM business approval manifest")
+        if actor_role not in BILL_PREPARER_ROLES or _norm(requested_by) is None:
+            raise IdentityRefused("bill preparation requires the PM, accountant, controller, or owner duty")
+        self.check_request("bill.approve", manifest, actor_role=actor_role, requested_by=requested_by)
+        if not self.enforcing():
+            return
+        person = self._person_row(requested_by)
+        scope = self._scope_of(manifest)
+        if person is None or person["kind"] != "person" or not self.holds(requested_by, actor_role, project_id=scope):
+            raise IdentityRefused(f"{requested_by!r} does not hold the bill preparation duty {actor_role!r} in this project's scope")
+
+    def check_bill_grant(self, approval: dict[str, Any], *, approver: str, approver_role: str) -> None:
+        """Read-only business decision authority, separate from accounting posting."""
+        approval = self.approvals.get(approval["id"])
+        if approval["operation"] != "bill.approve" or approval["manifest"].get("actor_role") != "pm":
+            raise StaleApprovalError("bill approval requires the current fixed PM business manifest; request it again")
+        if approver_role not in BILL_APPROVER_ROLES or _norm(approver) is None:
+            raise IdentityRefused("bill business approval requires the PM, controller, or owner duty; accountants prepare and post")
+        self.check_grant(approval, approver=approver, approver_role=approver_role)
+
+    def _holds_posting_grant(self, person: dict[str, Any], role: str, project_id: str | None) -> bool:
+        """Only the person's own current accounting grant counts for bill posting.
+
+        An owner wildcard or an accounting delegation cannot supply this duty.
+        Project grants also require current membership in that same project.
+        """
+        return any(grant["role"] == role and (grant["scope"] == "entity" or
+                   (grant["scope"] == "project" and project_id is not None and grant["project_id"] == project_id
+                    and self._membership(person["id"], project_id) is not None))
+                   for grant in self._live_grants(person["id"], self._today()))
+
+    def check_bill_post(self, approval: dict[str, Any], manifest: dict[str, Any] | None = None, *,
+                        actor: str, actor_role: str = "accountant", replay: bool = False) -> None:
+        """Read-only checks before posting an already granted business approval.
+
+        Posting always requires a different canonical person and an accounting duty.
+        Enforcing workspaces require an active person's explicit grant, recheck the
+        original approver's current authority, and preserve the original policy binding.
+        A replay reads an already verified posting receipt: it requires consumed proof
+        and current poster authority without revisiting a completed business decision.
+        """
+        approval = self.approvals.get(approval["id"])
+        stored = approval["manifest"]
+        manifest = stored if manifest is None else manifest
+        required_status = "consumed" if replay else "granted"
+        if approval["operation"] != "bill.approve" or approval["status"] != required_status:
+            raise IdentityRefused(f"bill {'receipt replay' if replay else 'posting'} requires its {required_status} business approval")
+        if actor_role not in BILL_POSTER_ROLES or _norm(actor) is None or _norm(approval.get("approver")) is None:
+            raise IdentityRefused("bill posting requires the accountant or controller duty and a named human actor")
+        if self.same_person(actor, approval["approver"]):
+            raise IdentityRefused("the same person cannot approve and post a bill")
+        if stored.get("actor_role") != "pm":
+            raise StaleApprovalError("the bill requires the current fixed PM business manifest")
+        if not replay and (manifest.get("actor_role") != "pm"
+                or manifest.get("operation") != "bill.approve" or manifest.get("subject") != stored.get("subject")
+                or self._scope_of(stored) != self._scope_of(manifest)):
+            raise StaleApprovalError("the bill's business approval scope or duty changed before posting; request it again")
+        bound = (stored.get("governance") or {}).get(PLUGIN_NAME)
+        if not replay and (bound != self._binding() or bound != (manifest.get("governance") or {}).get(PLUGIN_NAME)):
+            raise StaleApprovalError("the bill's identity policy changed before posting; request a fresh business approval")
+        if not self.enforcing():
+            return
+        self._require_intact()
+        scope = self._scope_of(stored)
+        approver = self._person_row(approval["approver"])
+        if not replay and (approver is None or approver["status"] != "active" or approver["kind"] != "person"
+                           or not self._authorized_for(approver["login"], "bill.approve", scope)):
+            raise StaleApprovalError("the bill's business approver is no longer authorized; request a fresh business approval")
+        person = self._person_row(actor)
+        if (person is None or person["status"] != "active" or person["kind"] != "person"
+                or not self._holds_posting_grant(person, actor_role, scope)):
+            raise IdentityRefused(f"{actor!r} lacks an active explicit {actor_role!r} posting grant in this project's scope")
+
+    def check_bill_cancellation(self, approval: dict[str, Any], *, actor: str) -> None:
+        """Only the original business approver may withdraw an unposted approval.
+
+        This check grants no new authority.  It verifies the canonical person and
+        their current business duty before the domain records the withdrawal.
+        """
+        approval = self.approvals.get(approval["id"])
+        if (approval["operation"] != "bill.approve" or approval["status"] not in ("granted", "expired", "invalidated")
+                or _norm(actor) is None or _norm(approval.get("approver")) is None):
+            raise IdentityRefused("bill cancellation requires an unposted recorded business approval")
+        if not self.same_person(actor, approval["approver"]):
+            raise IdentityRefused("only the original business approver may withdraw the approved bill")
+        if not self.enforcing():
+            return
+        self._require_intact()
+        person = self._person_row(actor)
+        scope = self._scope_of(approval["manifest"])
+        if (person is None or person["status"] != "active" or person["kind"] != "person"
+                or not self._authorized_for(person["login"], "bill.approve", scope)):
+            raise IdentityRefused("the bill cancellation actor no longer holds its original business approval duty")
 
     def on_grant(self, approval: dict[str, Any], *, approver: str, approver_role: str) -> None:
         """Record a solo-owner self-approval with its successful service grant."""

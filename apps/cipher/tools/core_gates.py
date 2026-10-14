@@ -433,8 +433,13 @@ class LedgerAdapter:
         self._unsupported("commitment_amount")
 
     # ---- approvals -------------------------------------------------------------- #
-    def request_and_grant(self, operation: str, subject_id: str, *, actor_role: str = "owner") -> str:
+    def request_and_grant(self, operation: str, subject_id: str, *, actor_role: str = "owner",
+                          approver: str = "gate-approver", approver_role: str = "owner") -> str:
         self._unsupported("request_and_grant")
+
+    def post_bill(self, bill_id: str, *, actor: str, period_id: str | None = None) -> dict[str, Any]:
+        """Apply a bill's already-granted business authorization through a separate posting act."""
+        self._unsupported("post_bill")
 
     def execute_approval(self, approval_id: str, *, op_id: str | None = None, period_id: str | None = None, actor: str = "gate") -> dict[str, Any]:
         self._unsupported("execute_approval")
@@ -934,10 +939,14 @@ class NativeCipherAdapter(LedgerAdapter):
         return self.c.commitments.get(commitment_id)["executed_amount"]
 
     # ---- approvals -------------------------------------------------------------- #
-    def request_and_grant(self, operation, subject_id, *, actor_role="owner") -> str:
+    def request_and_grant(self, operation, subject_id, *, actor_role="owner", approver="gate-approver", approver_role="owner") -> str:
         ap = self.c.request_approval(operation, subject_id, actor_role=actor_role, requested_by="gate")
-        self.c.approve(ap["id"], approver="gate-approver")
+        self.c.approve(ap["id"], approver=approver, approver_role=approver_role)
         return ap["id"]
+
+    def post_bill(self, bill_id, *, actor, period_id=None) -> dict[str, Any]:
+        r = self.c.post_bill(bill_id, actor=actor, actor_role="accountant", period_id=period_id)
+        return {"replayed": r.replayed, "result": r.result, "op_id": r.op_id}
 
     def execute_approval(self, approval_id, *, op_id=None, period_id=None, actor="gate") -> dict[str, Any]:
         r = self.c.execute(approval_id, actor=actor, op_id=op_id, period_id=period_id)
@@ -1510,6 +1519,13 @@ def _recompute_chain(entries: list[dict[str, Any]]) -> tuple[bool, int | None]:
 
 # ---- G1 ---------------------------------------------------------------------- #
 
+def _approve_and_post_bill(a: LedgerAdapter, bill_id: str, *, approver: str, poster: str,
+                           period_id: str | None = None) -> dict[str, Any]:
+    """Fixture workflow with two explicitly named people and one business authorization."""
+    a.request_and_grant("bill.approve", bill_id, actor_role="accountant", approver=approver, approver_role="controller")
+    return a.post_bill(bill_id, actor=poster, period_id=period_id)
+
+
 def gate_g1(a: LedgerAdapter, r: _Recorder) -> None:
     a.reset()
     money_control = (CONTROL_EXACT_MONEY,)
@@ -1716,8 +1732,9 @@ def gate_g4(a: LedgerAdapter, r: _Recorder) -> None:
         after = a.journal_count()
         r.check(outcome == "refused" and after == before, f"{label} {_verdict(outcome, why)}; journals {before} -> {after}", key=key)
 
-    lock_refusal("service path: executing the granted bill approval into the closed period", "g4.service_closed", a.execute_approval, approval)
-    r.check(a.bill_status(bill["bill_id"]) == "draft", f"the bill stays {a.bill_status(bill['bill_id'])}", key="g4.bill_stays_draft")
+    lock_refusal("service path: posting the business-approved bill into the closed period", "g4.service_closed",
+                 a.post_bill, bill["bill_id"], actor="gate-accountant", period_id="G4-SVC")
+    r.check(a.bill_status(bill["bill_id"]) == "approved", f"the bill stays {a.bill_status(bill['bill_id'])}", key="g4.bill_stays_draft")
     lock_refusal("ledger path: posting into the closed period", "g4.ledger_closed", a.post_journal, period_id="G4-SVC",
                  lines=[_line("5000", "debit", "10.00"), _line("2000", "credit", "10.00")], source_id="g4-ledger")
     lock_refusal("raw INSERT of a journal header into the closed period", "g4.raw_header_closed", a.privileged_insert_journal, "G4-SVC")
@@ -1853,7 +1870,7 @@ def gate_g5(a: LedgerAdapter, r: _Recorder) -> None:
     project = a.setup_project()
     cmt = a.setup_commitment(project)
     bill = a.certify_bill(cmt["commitment_id"], "G5", cmt["line_ids"][0], "20000")
-    a.approve_and_execute("bill.approve", bill["bill_id"])
+    _approve_and_post_bill(a, bill["bill_id"], approver="gate-approver", poster="gate-accountant")
     approval = a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury")
     e1 = a.execute_approval(approval, actor="treasury")
     e2 = a.execute_approval(approval, actor="treasury")
@@ -1872,7 +1889,7 @@ def gate_g5(a: LedgerAdapter, r: _Recorder) -> None:
 
     # Advisory (beyond the G5 specification): two independently approved releases for one in-flight bill.
     bill2 = a.certify_bill(cmt["commitment_id"], "G5", cmt["line_ids"][0], "30000")
-    a.approve_and_execute("bill.approve", bill2["bill_id"])
+    _approve_and_post_bill(a, bill2["bill_id"], approver="gate-approver", poster="gate-accountant")
     first_release = a.request_and_grant("payment.release", bill2["bill_id"], actor_role="treasury")
     a.execute_approval(first_release, actor="treasury")
 
@@ -1921,7 +1938,7 @@ def gate_g6(a: LedgerAdapter, r: _Recorder) -> None:
             f"from {approved_base} to {before} (resulting {_s(current_result)}): {why}; status {status}; commitment stays {after}", key="g6.changed_base")
 
     bill = a.certify_bill(cmt["commitment_id"], "G6", line, "20000")
-    a.approve_and_execute("bill.approve", bill["bill_id"])
+    _approve_and_post_bill(a, bill["bill_id"], approver="gate-approver", poster="gate-accountant")
     verified = a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury")
     a.change_destination(project["supplier_id"], "ACH-SIM-GATE-CHANGED", verified=True)
     refused, why, _ = _attempt(a.execute_approval, verified, actor="treasury")
@@ -1972,24 +1989,24 @@ def _g6_supplier_invoice(a: LedgerAdapter, r: _Recorder, project: dict[str, Any]
         approval = a.request_and_grant("bill.approve", bill["bill_id"], actor_role="accountant")
         reissued = a.revise_supplier_invoice(invoice, reason="gate drill: the supplier reissued the invoice with a corrected due date", due_date=G6_REISSUED_DUE)
         before = a.journal_count()
-        refused, why, _ = _attempt(a.execute_approval, approval, actor="gate-accountant")
+        refused, why, _ = _attempt(a.post_bill, bill["bill_id"], actor="gate-accountant")
         after = a.journal_count()
         status, bill_status = a.approval_status(approval), a.bill_status(bill["bill_id"])
         r.check(matched["bill_id"] == bill["bill_id"] and attached.get("invoice_id") == invoice and refused and status == "invalidated"
-                and bill_status == "draft" and after == before,
+                and bill_status in ("draft", "approved") and after == before,
                 f"supplier invoice {G6_INVOICE_NUMBER} for {bill['amount_due']} (due {attached.get('due_date')}) was matched to bill {bill['bill_id']} "
                 f"(match linked bill {matched['bill_id']}) and bill.approve granted; the supplier then reissued it (version {reissued['version']}, due {reissued['due_date']}): "
-                f"executing the earlier approval {'was refused (' + why + ')' if refused else 'was ACCEPTED'}; status {status}; bill {bill_status}; journals {before} -> {after}",
+                f"posting under the earlier approval {'was refused (' + why + ')' if refused else 'was ACCEPTED'}; status {status}; bill {bill_status}; journals {before} -> {after}",
                 key="g6.supplier_invoice_change")
         a.match_supplier_invoice(invoice)
         before = a.journal_count()
-        a.approve_and_execute("bill.approve", bill["bill_id"], actor_role="accountant")
+        _approve_and_post_bill(a, bill["bill_id"], approver="gate-approver", poster="gate-accountant")
         carried = a.bill_supplier_invoice(bill["bill_id"]) or {}
         current = a.supplier_invoice(invoice)
         bill_status = a.bill_status(bill["bill_id"])
         r.check(bill_status == "posted" and a.journal_count() == before + 1 and carried.get("invoice_hash") == current["content_hash"]
                 and carried.get("due_date") == G6_REISSUED_DUE == current["due_date"],
-                f"control case: re-matching the reissued invoice and a fresh bill.approve post the bill ({bill_status}; journals {before} -> {a.journal_count()}); "
+                f"control case: re-matching the reissued invoice and granting fresh bill.approve let a separate accountant post the bill ({bill_status}; journals {before} -> {a.journal_count()}); "
                 f"it carries invoice version {current['version']} due {carried.get('due_date')} (hash matches the invoice record: "
                 f"{carried.get('invoice_hash') == current['content_hash']})", key="g6.supplier_invoice_fresh_approval")
 
@@ -2004,7 +2021,7 @@ def _g6_payee_change(a: LedgerAdapter, r: _Recorder, project: dict[str, Any]) ->
         # the supplier-invoice scenario.
         cmt = a.setup_commitment(project, amounts=("30000.00",))
         bill = a.certify_bill(cmt["commitment_id"], "G6", cmt["line_ids"][0], "10000")
-        a.approve_and_execute("bill.approve", bill["bill_id"], actor_role="accountant")
+        _approve_and_post_bill(a, bill["bill_id"], approver="gate-approver", poster="gate-accountant")
         start = a.party_destination(supplier)
 
         own = a.request_destination_change(project, "ACH-SIM-GATE-SELF", requested_by="gate-site-pm", actor="gate-ap-clerk")
@@ -2157,7 +2174,7 @@ def gate_g8(a: LedgerAdapter, r: _Recorder) -> None:
         project = a.setup_project()
         cmt = a.setup_commitment(project)
         bill = a.certify_bill(cmt["commitment_id"], "G8-P1", cmt["line_ids"][0], "20000")
-        a.approve_and_execute("bill.approve", bill["bill_id"])
+        _approve_and_post_bill(a, bill["bill_id"], approver="gate-approver", poster="gate-accountant")
         prime = a.setup_sent_prime_bill(project, "G8-P1", "10000")
         release = a.request_and_grant("payment.release", bill["bill_id"], actor_role="treasury")
         a.execute_approval(release, actor="treasury")

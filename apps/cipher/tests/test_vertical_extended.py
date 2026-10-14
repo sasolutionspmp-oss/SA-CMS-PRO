@@ -407,7 +407,10 @@ class ExtendedJob:
         tc.assertEqual(c.bills.get(bill["id"])["supplier_invoice_number"], "PV-7781")
         self.po_invoice = self.intake.invoice(inv_id)
 
-        ap, res = self.run("bill.approve", bill["id"], requester="acct.ivy", approver="ctrl.ana", executor="acct.ivy", actor_role="accountant")
+        ap = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="acct.ivy")
+        c.approve(ap["id"], approver="ctrl.ana", approver_role="controller")
+        tc.assertEqual(c.bills.get(bill["id"])["status"], "approved")
+        res = c.post_bill(bill["id"], actor="acct.ivy", actor_role="accountant").result
         tc.assertEqual(lines_of(c.ledger.journal(res["journal_id"])), [("5000", "19000.00", "0.00"), ("2000", "0.00", "19000.00")])
         tc.assertNotIn("contract", ap["manifest"].get("governance") or {})  # the PO carries no insurance requirements
         self.po_bill = c.bills.get(bill["id"])
@@ -453,7 +456,10 @@ class ExtendedJob:
         _, rev = self.evidence("insurance_certificate", "Subcontractor payment bond", actor="sub.sue")
         self.certificates["payment_bond"] = k.record_certificate(self.sub["id"], "payment_bond", "Synthetic Surety Co", "BOND-SIM-EXT-PAY", "60000",
                                                                  day(-30), day(335), rev["content_hash"], "sub.sue")
-        ap, res = self.run("bill.approve", bill["id"], requester="acct.ivy", approver="ctrl.ana", executor="acct.ivy", actor_role="accountant")
+        ap = c.request_approval("bill.approve", bill["id"], actor_role="accountant", requested_by="acct.ivy")
+        c.approve(ap["id"], approver="ctrl.ana", approver_role="controller")
+        tc.assertEqual(c.bills.get(bill["id"])["status"], "approved")
+        res = c.post_bill(bill["id"], actor="acct.ivy", actor_role="accountant").result
         bound = ap["manifest"]["governance"]["contract"]
         tc.assertEqual({cov["kind"]: [x["id"] for x in cov["certificates"]] for cov in bound["coverage"]},
                        {kind: [cert["id"]] for kind, cert in self.certificates.items()})

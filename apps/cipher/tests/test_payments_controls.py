@@ -16,6 +16,7 @@ import unittest
 from decimal import Decimal
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError, material_hash
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import canonical_json, hash_json, utcnow
@@ -62,7 +63,7 @@ class World:
         if cumulative_line2 is not None:
             installed.append({"sov_line_id": self.line2, "cumulative_installed": cumulative_line2})
         b = self.c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=installed, actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def release(self, bill_id):
@@ -665,7 +666,7 @@ class RestoreDoublePaymentTests(unittest.TestCase):
             restored.request_approval("payment.adopt_transfer", "sim_000001", actor_role="owner")
         # re-key the lost bill in the copy (certifying and posting a bill is not a release)
         rekeyed = restored.bills.certify(commitment_id=w.cmt["id"], period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "20000"}], actor="pm")
-        restored.approve_and_execute("bill.approve", rekeyed["id"])
+        approve_and_post_bill(restored, rekeyed["id"], approver="owner", approver_role="owner", poster="accountant")
         self.assertEqual(restored.bills.get(rekeyed["id"])["amount_due"], "18000.00")
         for subject, pattern in (("sim_000001=bill", "<provider_ref>=<source_type>:<source_id>"), ("sim_000001=nothing:x", "no adoption path"),
                                  ("sim_000001=bill:bil_missing", "does not exist in this copy"), ("sim_000099", "holds no transfer"), ("", "provider reference")):
@@ -1280,7 +1281,7 @@ class ForecastIsolationTests(unittest.TestCase):
         c.approve_and_execute("commitment.execute", cmt_b["id"])
         line_b = c.commitments.get(cmt_b["id"])["sov"][0]["id"]
         bill_b = c.bills.certify(commitment_id=cmt_b["id"], period_id="P1", installed=[{"sov_line_id": line_b, "cumulative_installed": "10000"}], actor="pm")
-        c.approve_and_execute("bill.approve", bill_b["id"])
+        approve_and_post_bill(c, bill_b["id"], approver="owner", approver_role="owner", poster="accountant")
         c.approve_and_execute("payment.release", bill_b["id"], actor_role="treasury", actor="treasury")
         r = c.plugin(REIMBURSEMENT)
         emp = c.add_party(kind="employee", name="Field Engineer", destination="ACH-SIM-EMP-B")
@@ -1568,7 +1569,7 @@ class ProviderReferenceTests(unittest.TestCase):
         self.addCleanup(c.db.close)
         self.assertEqual(c.provider.ref_floor, 1)
         b = c.bills.certify(commitment_id=w.cmt["id"], period_id="P1", installed=[{"sov_line_id": w.line1, "cumulative_installed": "40000"}], actor="pm")
-        c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         second = c.payments.get(c.approve_and_execute("payment.release", b["id"], actor_role="treasury", actor="treasury").result["intent"])
         self.assertEqual([(r["status"], r.get("provider_ref")) for r in c.dispatch_payments()], [("accepted", "sim_000002")])
         out = self.settle(c, second)
@@ -1701,7 +1702,7 @@ class PaymentPostingPeriodTests(unittest.TestCase):
         c.approve_and_execute("commitment.execute", cmt["id"])
         line = c.commitments.get(cmt["id"])["sov"][0]["id"]
         bill = c.bills.certify(commitment_id=cmt["id"], period_id="CUR", installed=[{"sov_line_id": line, "cumulative_installed": "20000"}], actor="pm")
-        c.approve_and_execute("bill.approve", bill["id"], period_id="CUR")
+        approve_and_post_bill(c, bill["id"], approver="owner", approver_role="owner", poster="accountant", period_id="CUR")
         res = c.approve_and_execute("payment.release", bill["id"], actor_role="treasury", actor="treasury")
         self.op = c.payments.get(res.result["intent"])["logical_op_id"]
 

@@ -3,6 +3,7 @@ import os
 import tempfile
 import unittest
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.service import Cipher, run_golden_fixture
 
 
@@ -49,7 +50,7 @@ class RickyBriefTests(unittest.TestCase):
         c.approve_and_execute("commitment.execute", cmt["id"])
         line = c.commitments.get(cmt["id"])["sov"][0]["id"]
         b = c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "1000"}], actor="o")
-        c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         ap = c.request_approval("payment.release", b["id"], actor_role="treasury")
         treasury = c.ricky.brief(prj["id"], actor_role="treasury")
         estimator = c.ricky.brief(prj["id"], actor_role="estimator")

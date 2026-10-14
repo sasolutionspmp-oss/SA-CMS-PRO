@@ -11,6 +11,7 @@ import re
 import sqlite3
 import unittest
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.ids import canonical_json, hash_json, sha256_hex, utcnow
 from apps.cipher.domain import payment_policy as pp_mod
@@ -57,7 +58,7 @@ class World:
         """Certify and post a bill whose amount due is ``amount``."""
         self.installed += amount
         b = self.c.bills.certify(commitment_id=self.cmt["id"], period_id="P1", installed=[{"sov_line_id": self.line1, "cumulative_installed": str(self.installed)}], actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def adopt(self, *, high="10000.00", cosign="50000.00", age=300, cooling=10, first=True, parties=("ext-accountant",), cosign_all=False,
@@ -386,7 +387,7 @@ class ClassificationTests(unittest.TestCase):
         w.c.approve_and_execute("commitment.execute", cmt["id"])
         line = w.c.commitments.get(cmt["id"])["sov"][0]["id"]
         b = w.c.bills.certify(commitment_id=cmt["id"], period_id="P1", installed=[{"sov_line_id": line, "cumulative_installed": "60000"}], actor="pm")
-        w.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(w.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         w.c.commitments.close(cmt["id"], actor="pm")
         w.c.approve_and_execute("retainage.release", cmt["id"], actor_role="accountant", period_id="P1")
         emp = w.c.add_party(kind="employee", name="Field Engineer (synthetic)", destination="ACH-SIM-EMP-0001")

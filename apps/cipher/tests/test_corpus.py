@@ -152,6 +152,29 @@ class CorpusTests(unittest.TestCase):
             self.assertTrue(a["operation"] == "payment.release" and a["manifest"]["governance"]["payment_policy"]["classification"] == "high_risk"
                             or D(a["manifest"]["amounts"].get("amount_due") or a["manifest"]["amounts"].get("amount")) >= D("25000.00"), a["id"])
 
+    def test_business_grants_precede_independent_accountant_posting(self):
+        c = self.corpus.c
+        approvals = [a for a in c.approvals.list(status="consumed") if a["operation"] == "bill.approve"]
+        self.assertEqual(len(approvals), 20)
+        for approval in approvals:
+            bill = c.bills.get(approval["subject_id"])
+            journals = [j for j in c.ledger.journals() if j["source_type"] == "bill" and j["source_id"] == bill["id"] and not j["reversal_of"]]
+            self.assertTrue(journals, bill["id"])
+            self.assertTrue(all(j["posted_by"] == corpus_mod.ACCOUNTANT for j in journals))
+            self.assertNotEqual(approval["approver"], corpus_mod.ACCOUNTANT)
+            grant = c.audit.entries(entity_type="approval", entity_id=approval["id"])
+            grant_sequence = next(e["seq"] for e in grant if e["action"] == "approval.granted")
+            postings = c.audit.entries(entity_type="bill", entity_id=bill["id"])
+            business = next(e for e in postings if e["action"] == "bill.business_approved")
+            receipt = c.bills.posting_receipt(bill["id"])
+            self.assertEqual(business["actor"], approval["approver"])
+            self.assertEqual(receipt["approval_id"], approval["id"])
+            self.assertEqual(receipt["posted_by"], corpus_mod.ACCOUNTANT)
+            self.assertEqual(receipt["period_id"], corpus_mod.PERIOD[0])
+            posted_sequence = next(e["seq"] for e in postings if e["action"] == "bill.posted")
+            self.assertLess(grant_sequence, posted_sequence)
+            self.assertLess(business["seq"], posted_sequence)
+
     def test_release_times_come_from_the_system_clock(self):
         """The release instant is the clearance the payment policy recorded with its injectable
         clock -- the corpus's simulated clock, not the wall clock."""

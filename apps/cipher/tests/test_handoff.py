@@ -11,6 +11,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.audit import GENESIS
 from apps.cipher.core.db import WriteAuthorityError
@@ -156,7 +157,7 @@ class Scenario:
         self.c.approve_and_execute("commitment.execute", cmt["id"])
         cmt = self.c.commitments.get(cmt["id"])
         bill = self.c.bills.certify(commitment_id=cmt["id"], period_id=period, installed=[{"sov_line_id": cmt["sov"][0]["id"], "cumulative_installed": "20000"}], actor="owner")
-        self.c.approve_and_execute("bill.approve", bill["id"])
+        approve_and_post_bill(self.c, bill["id"], approver="owner", approver_role="owner", poster="accountant")
         prime = self.c.receivables.certify(project_id=self.pid, period_id=period, certified_cumulative="30000", retainage_rate="0.10", actor="owner")
         self.c.approve_and_execute("prime_bill.approve", prime["id"])
         return cmt, self.c.bills.get(bill["id"]), self.c.receivables.get(prime["id"])

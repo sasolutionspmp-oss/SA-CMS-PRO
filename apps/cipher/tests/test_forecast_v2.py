@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from decimal import Decimal
 
+from apps.cipher.tests.bill_helpers import approve_and_post_bill
 from apps.cipher.core.approvals import ApprovalNotGranted, StaleApprovalError
 from apps.cipher.core.db import WriteAuthorityError
 from apps.cipher.core.ids import utcnow_iso
@@ -97,7 +98,7 @@ class World:
     def bill(self, cmt: dict, installed: list[tuple[str, str]]) -> dict:
         b = self.c.bills.certify(commitment_id=cmt["id"], period_id="P1",
                                  installed=[{"sov_line_id": sid, "cumulative_installed": amt} for sid, amt in installed], actor="pm")
-        self.c.approve_and_execute("bill.approve", b["id"])
+        approve_and_post_bill(self.c, b["id"], approver="owner", approver_role="owner", poster="accountant")
         return self.c.bills.get(b["id"])
 
     def credit_note(self, bill: dict, amount: str, reason: str = "Backcharge for damaged sheet piles") -> dict:
@@ -177,7 +178,7 @@ def golden_first_half(c: Cipher) -> tuple[str, dict]:
     lot1 = c.bills.add_stored_material(commitment_id=cmt["id"], sov_line_id=line1, description="Ductile iron pipe, on site", eligible_amount="10000",
                                        evidence_hash=ev1r["content_hash"], location="laydown yard", actor=owner)
     bill1 = c.bills.certify(commitment_id=cmt["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "20000"}], actor=owner)
-    c.approve_and_execute("bill.approve", bill1["id"])
+    approve_and_post_bill(c, bill1["id"], approver="owner", approver_role="owner", poster="accountant")
     ap = c.request_approval("payment.release", bill1["id"], actor_role="treasury", requested_by="owner")
     c.approve(ap["id"], approver="owner")
     first = c.execute(ap["id"], actor="treasury")
@@ -193,7 +194,7 @@ def golden_first_half(c: Cipher) -> tuple[str, dict]:
                                 evidence_hash=ev2r["content_hash"], location="laydown yard", actor=owner)
     bill2 = c.bills.certify(commitment_id=cmt["id"], period_id="2026-10", installed=[{"sov_line_id": line1, "cumulative_installed": "45000"}],
                             transfers=[{"lot_id": lot1["id"], "amount": "10000"}], actor=owner)
-    c.approve_and_execute("bill.approve", bill2["id"])
+    approve_and_post_bill(c, bill2["id"], approver="owner", approver_role="owner", poster="accountant")
     c.commitments.propose_change(cmt["id"], amount="12000", reason="Pending alternative - not executed", sov_line_id=line1, actor=owner)
     return project["id"], c.forecast.project(project["id"])
 
