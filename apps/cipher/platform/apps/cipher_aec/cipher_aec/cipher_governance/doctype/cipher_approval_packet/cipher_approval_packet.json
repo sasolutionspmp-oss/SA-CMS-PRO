@@ -1,0 +1,108 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Approval Packet",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "action",
+    "subject_type",
+    "subject_id",
+    "requester_person",
+    "policy_revision",
+    "manifest_json",
+    "manifest_hash",
+    "source_version",
+    "created_at",
+    "expires_at"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "action",
+      "label": "Action",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject_type",
+      "label": "Subject Type",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject_id",
+      "label": "Subject Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "requester_person",
+      "label": "Requester Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "policy_revision",
+      "label": "Policy Revision",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Approval Policy Revision"
+    },
+    {
+      "fieldname": "manifest_json",
+      "label": "Manifest Json",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "manifest_hash",
+      "label": "Manifest Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "source_version",
+      "label": "Source Version",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "created_at",
+      "label": "Created At",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "expires_at",
+      "label": "Expires At",
+      "fieldtype": "Data",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

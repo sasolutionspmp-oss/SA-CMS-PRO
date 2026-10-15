@@ -1,0 +1,109 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Estimate",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "title",
+    "currency",
+    "pricing_date",
+    "revision_number",
+    "current_revision"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "reqd": 1,
+      "options": "Currency"
+    },
+    {
+      "fieldname": "pricing_date",
+      "fieldtype": "Date",
+      "label": "Pricing Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "current_revision",
+      "fieldtype": "Link",
+      "label": "Current Revision",
+      "reqd": 0,
+      "options": "Cipher Estimate Revision"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

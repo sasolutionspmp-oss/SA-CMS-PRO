@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "runtime": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8",
+    "node": "24.22.0",
+    "upstream_image": "registry-1.docker.io/frappe/erpnext@sha256:772d0f84dd308632aa8cecd615564bd7597eb98e0a7d2208bd9aa04678ced1ee",
+    "development_flat_image_id": "sha256:c72e96cac528f411b81a5462afd7d047d061240549057b008dec5965d7bf0cf5",
+    "mariadb_image": "mariadb@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15",
+    "redis_image": "redis@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea"
+  },
+  "image_preparation": {
+    "tool": "crane",
+    "version": "0.20.3",
+    "release_archive_sha256": "36c67a932f489b3f2724b64af90b599a8ef2aa7b004872597373c0ad694dc059",
+    "reason": "Managed vfs daemon amplified upstream layer storage; flattened development import preserves the upstream root filesystem and runtime config without changing daemon settings."
+  },
+  "qualification": "Persistent synthetic runtime installed and actual R0 HTTP/database/restart/restore boundaries verified; remaining approval/master/OpenAPI/fresh-site contracts active. Live model/accounting unqualified.",
+  "frontend_lock": "../product/package-lock.json",
+  "hrms": {
+    "status": "deferred until workforce slice; not installed or qualified"
+  }
+}

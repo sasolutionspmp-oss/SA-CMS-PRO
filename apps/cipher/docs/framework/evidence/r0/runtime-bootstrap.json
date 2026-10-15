@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-10-15T14:56:52.489586+00:00",
+  "result": "passed",
+  "environment": "persistent synthetic development site",
+  "site": "cipher.localhost",
+  "app_install": "completed via supported bench install-app",
+  "repeat_migrate": "completed via bench migrate; after_migrate hooks executed",
+  "runtime_versions": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8",
+    "node": "24.22.0",
+    "upstream_image": "registry-1.docker.io/frappe/erpnext@sha256:772d0f84dd308632aa8cecd615564bd7597eb98e0a7d2208bd9aa04678ced1ee",
+    "development_flat_image_id": "sha256:c72e96cac528f411b81a5462afd7d047d061240549057b008dec5965d7bf0cf5",
+    "mariadb_image": "mariadb@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15",
+    "redis_image": "redis@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea"
+  },
+  "observed_containers": {
+    "cipher-r0-db-1": {
+      "state": "running",
+      "health": "healthy",
+      "restart_policy": "unless-stopped"
+    },
+    "cipher-r0-redis-1": {
+      "state": "running",
+      "health": "healthy",
+      "restart_policy": "unless-stopped"
+    },
+    "cipher-r0-runtime-1": {
+      "state": "running",
+      "health": "healthy",
+      "restart_policy": "unless-stopped"
+    }
+  },
+  "private_log_sha256": {
+    "bench-install-app.log": "360117d68574908166cababc302f84159ee9dbfb1ce6b5a6fa6cf18379fe62dc",
+    "app-migrate.log": "87a824b81a6f2e66e9f07bfe3c8e7c45636af2df6568b3185e2b653e74df88b5"
+  },
+  "qualification_limit": "Single-container development process group; production service isolation and operational deployment are later backlog work."
+}

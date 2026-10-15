@@ -1,0 +1,87 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Command Receipt",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "person",
+    "operation_id",
+    "company",
+    "project",
+    "command",
+    "request_hash",
+    "result_hash",
+    "result_json",
+    "state"
+  ],
+  "fields": [
+    {
+      "fieldname": "person",
+      "label": "Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "operation_id",
+      "label": "Operation Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "command",
+      "label": "Command",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "request_hash",
+      "label": "Request Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "result_hash",
+      "label": "Result Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "result_json",
+      "label": "Result Json",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "state",
+      "label": "State",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "Succeeded"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

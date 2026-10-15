@@ -1,0 +1,20 @@
+{
+  "checked_at": "2026-10-15T14:55:53.848534+00:00",
+  "result": "passed",
+  "method": "independent actual Frappe/MariaDB read before and after unauthorized assignment attempts",
+  "before": {
+    "task": "TASK-2026-00027",
+    "todo_count": 0,
+    "task_assignment": null,
+    "task_modified": "2026-10-15 20:21:57.949928",
+    "file_url": "/private/files/synthetic-r0-sourcede4317.txt"
+  },
+  "after": {
+    "task": "TASK-2026-00027",
+    "todo_count": 0,
+    "task_assignment": null,
+    "task_modified": "2026-10-15 20:21:57.949928",
+    "file_url": "/private/files/synthetic-r0-sourcede4317.txt"
+  },
+  "probe_sha256": "0b60dcd884d41b1b487a80d8a989ce89f6fd23d475aa40e856b03efe1d36d126"
+}

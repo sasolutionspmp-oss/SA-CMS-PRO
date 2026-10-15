@@ -1,0 +1,554 @@
+{
+  "DocumentRevision": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "revision_number": {
+        "type": "integer"
+      },
+      "filename": {
+        "type": "string"
+      },
+      "mime_type": {
+        "type": "string"
+      },
+      "byte_length": {
+        "type": "integer"
+      },
+      "sha256": {
+        "type": "string"
+      },
+      "scan_status": {
+        "type": "string"
+      },
+      "retrieval_status": {
+        "type": "string"
+      },
+      "extraction_status": {
+        "type": "string"
+      },
+      "extractor_version": {
+        "type": "string"
+      },
+      "page_count": {
+        "type": "integer"
+      },
+      "extraction_warning": {
+        "type": [
+          "string",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "revision_number",
+      "filename",
+      "mime_type",
+      "byte_length",
+      "sha256",
+      "scan_status",
+      "retrieval_status",
+      "extraction_status",
+      "extractor_version",
+      "page_count",
+      "extraction_warning"
+    ],
+    "additionalProperties": false
+  },
+  "Document": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "revision_number": {
+        "type": "integer"
+      },
+      "filename": {
+        "type": "string"
+      },
+      "mime_type": {
+        "type": "string"
+      },
+      "byte_length": {
+        "type": "integer"
+      },
+      "sha256": {
+        "type": "string"
+      },
+      "scan_status": {
+        "type": "string"
+      },
+      "retrieval_status": {
+        "type": "string"
+      },
+      "extraction_status": {
+        "type": "string"
+      },
+      "extractor_version": {
+        "type": "string"
+      },
+      "page_count": {
+        "type": "integer"
+      },
+      "extraction_warning": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "title": {
+        "type": "string"
+      },
+      "company": {
+        "type": "string"
+      },
+      "project": {
+        "type": "string"
+      },
+      "current_revision": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "id",
+      "revision_number",
+      "filename",
+      "mime_type",
+      "byte_length",
+      "sha256",
+      "scan_status",
+      "retrieval_status",
+      "extraction_status",
+      "extractor_version",
+      "page_count",
+      "extraction_warning",
+      "title",
+      "company",
+      "project",
+      "current_revision"
+    ],
+    "additionalProperties": false
+  },
+  "DocumentUploadResponse": {
+    "type": "object",
+    "properties": {
+      "document": {
+        "$ref": "#/$defs/Document"
+      },
+      "revision": {
+        "$ref": "#/$defs/DocumentRevision"
+      },
+      "operation": {
+        "$ref": "#/$defs/Operation"
+      },
+      "history_id": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "document",
+      "revision",
+      "operation",
+      "history_id"
+    ],
+    "additionalProperties": false
+  },
+  "DocumentDetail": {
+    "type": "object",
+    "properties": {
+      "document": {
+        "$ref": "#/$defs/Document"
+      },
+      "revisions": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/DocumentRevision"
+        }
+      }
+    },
+    "required": [
+      "document",
+      "revisions"
+    ],
+    "additionalProperties": false
+  },
+  "DocumentList": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Document"
+        }
+      },
+      "capabilities": {
+        "type": "object",
+        "properties": {
+          "antivirus": {
+            "type": "boolean"
+          },
+          "ocr": {
+            "type": "boolean"
+          },
+          "formats": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "semantic_search": {
+            "type": "boolean"
+          },
+          "storage": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "antivirus",
+          "ocr",
+          "formats",
+          "semantic_search",
+          "storage"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "required": [
+      "items",
+      "capabilities"
+    ],
+    "additionalProperties": false
+  },
+  "Citation": {
+    "type": "object",
+    "properties": {
+      "citation_id": {
+        "type": "string"
+      },
+      "document_id": {
+        "type": "string"
+      },
+      "revision_id": {
+        "type": "string"
+      },
+      "document_title": {
+        "type": "string"
+      },
+      "revision_number": {
+        "type": "integer"
+      },
+      "page": {
+        "type": "integer"
+      },
+      "page_label": {
+        "type": "string"
+      },
+      "excerpt": {
+        "type": "string"
+      },
+      "excerpt_sha256": {
+        "type": "string"
+      },
+      "source_sha256": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "document_id",
+      "revision_id",
+      "document_title",
+      "revision_number",
+      "page",
+      "excerpt"
+    ],
+    "additionalProperties": true
+  },
+  "CitationList": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Citation"
+        }
+      }
+    },
+    "required": [
+      "items"
+    ],
+    "additionalProperties": false
+  },
+  "DocumentPreview": {
+    "type": "object",
+    "properties": {
+      "document_id": {
+        "type": "string"
+      },
+      "revision_id": {
+        "type": "string"
+      },
+      "page": {
+        "type": "integer"
+      },
+      "page_count": {
+        "type": "integer"
+      },
+      "text": {
+        "type": "string"
+      },
+      "content_type": {
+        "type": "string"
+      },
+      "citation": {
+        "$ref": "#/$defs/Citation"
+      }
+    },
+    "required": [
+      "document_id",
+      "revision_id",
+      "page",
+      "page_count",
+      "text",
+      "content_type",
+      "citation"
+    ],
+    "additionalProperties": false
+  },
+  "SourceBytes": {
+    "type": "string",
+    "format": "binary"
+  },
+  "ModelStatus": {
+    "type": "object",
+    "properties": {
+      "available": {
+        "type": "boolean"
+      },
+      "status": {
+        "type": "string"
+      },
+      "code": {
+        "type": "string"
+      },
+      "message": {
+        "type": "string"
+      },
+      "adapter_kind": {
+        "type": "string"
+      },
+      "requirements": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cloud_fallback": {
+        "type": "boolean"
+      },
+      "capabilities": {
+        "type": "object"
+      }
+    },
+    "required": [
+      "available",
+      "status"
+    ],
+    "additionalProperties": true
+  },
+  "RickyRun": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "company": {
+        "type": "string"
+      },
+      "project": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "question": {
+        "type": "string"
+      },
+      "answer": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "proposal_ids": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "error": {
+        "type": [
+          "object",
+          "null"
+        ]
+      },
+      "cancel_requested": {
+        "type": "boolean"
+      },
+      "created_at": {
+        "type": "string"
+      },
+      "completed_at": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "completed_effects": {
+        "type": "array",
+        "items": {
+          "type": "object"
+        }
+      },
+      "citations": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Citation"
+        }
+      },
+      "model": {
+        "type": "object",
+        "properties": {
+          "profile_fingerprint": {
+            "type": "string"
+          },
+          "version": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "prompt_version": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "profile_fingerprint",
+          "version",
+          "prompt_version"
+        ],
+        "additionalProperties": false
+      },
+      "operation": {
+        "$ref": "#/$defs/Operation"
+      }
+    },
+    "required": [
+      "id",
+      "company",
+      "project",
+      "status",
+      "question",
+      "proposal_ids",
+      "cancel_requested",
+      "citations"
+    ],
+    "additionalProperties": true
+  },
+  "RickyEvents": {
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "description": "Persisted authorized run step/event; provider-specific diagnostics remain server-side."
+        }
+      }
+    },
+    "required": [
+      "items"
+    ],
+    "additionalProperties": false
+  },
+  "RickyProposal": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "run_id": {
+        "type": "string"
+      },
+      "status": {
+        "type": "string"
+      },
+      "version": {
+        "type": "integer"
+      },
+      "fields": {
+        "type": "object",
+        "properties": {
+          "subject": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject"
+        ],
+        "additionalProperties": false
+      },
+      "sources": {
+        "type": "array",
+        "items": {
+          "$ref": "#/$defs/Citation"
+        }
+      },
+      "content_digest": {
+        "type": "string"
+      },
+      "expires_at": {
+        "type": "string"
+      },
+      "receipt": {
+        "type": [
+          "object",
+          "null"
+        ]
+      }
+    },
+    "required": [
+      "id",
+      "run_id",
+      "status",
+      "version",
+      "fields",
+      "sources",
+      "content_digest",
+      "expires_at",
+      "receipt"
+    ],
+    "additionalProperties": false
+  },
+  "ProposalCommitResponse": {
+    "$ref": "#/$defs/CreateTaskResponse"
+  },
+  "CommandResult": {
+    "type": "object",
+    "properties": {
+      "operation": {
+        "$ref": "#/$defs/Operation"
+      }
+    },
+    "required": [
+      "operation"
+    ],
+    "description": "Original command-specific result plus receipt metadata. The command result fields follow the original command response schema."
+  }
+}

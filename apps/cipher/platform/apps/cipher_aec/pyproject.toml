@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cipher_aec"
+version = "0.1.0"
+description = "Cipher AEC project operations and governed integration services for ERPNext"
+requires-python = ">=3.12"
+authors = [{name = "S&A Solutions"}]
+license = {text = "GPL-3.0-or-later"}
+dependencies = ["pypdf==6.15.0"]
+
+[project.optional-dependencies]
+validation = ["jsonschema>=4.23,<5", "openapi-spec-validator==0.7.2"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cipher_aec*"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.bench.frappe-dependencies]
+frappe = ">=16.0.0,<17.0.0"
+erpnext = ">=16.0.0,<17.0.0"

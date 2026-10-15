@@ -1,0 +1,28 @@
+{
+  "site": "cipher-restore-20261015145100.localhost",
+  "result": "passed",
+  "project": "PROJ-0001",
+  "restored_task_count": 8,
+  "new_effect_denied": "execution_quarantined",
+  "dispatcher_effects": 0,
+  "scheduler_paused": true,
+  "artifacts": [
+    {
+      "revision": "REV-054afc16984d417ca65f29b3903a8f32",
+      "sha256": "ae887f69099e10d189373ee7cd67d7e0e6932c8858987e0dfa3a6a30bbc5f935",
+      "bytes": 151
+    },
+    {
+      "revision": "REV-7b9a2bc3f67942f88eb7f07f6de9c4bf",
+      "sha256": "d7c1b3b47516e20c9d5d5a3b1befe3b8f35577cc2fc447f82f89782c29e53aeb",
+      "bytes": 151
+    },
+    {
+      "revision": "REV-48bb35d67f2042bdade38dcdd1011311",
+      "sha256": "cd953407905be6319b9772460d4e6dd3966804937ff59aa3a3d23315ff1486f3",
+      "bytes": 151
+    }
+  ],
+  "backup_prefix": "20261015_202043-cipher_localhost",
+  "snapshot_encryption_key_preserved": true
+}

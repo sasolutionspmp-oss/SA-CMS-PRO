@@ -1,0 +1,937 @@
+{
+  "schema_version": 1,
+  "implementation_authorized": true,
+  "tasks": [
+    {
+      "id": "PLT-01",
+      "release": "R0",
+      "dependencies": [],
+      "scope": "Resolve supported storage capacity and lock compatible ERPNext/Frappe/UI5/runtime versions",
+      "evidence": "Recorded capacity check and exact resolved versions/digests; successful isolated platform startup",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "platform/versions.lock.json",
+        "docs/framework/evidence/r0/image-preparation.json"
+      ]
+    },
+    {
+      "id": "PLT-02",
+      "release": "R0",
+      "dependencies": [
+        "PLT-01"
+      ],
+      "scope": "Create installable cipher_aec app, deployment profiles and migrations bootstrap",
+      "evidence": "Fresh site installs app and repeat migrate is safe; workers/scheduler readiness reported",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/runtime-bootstrap.json"
+      ]
+    },
+    {
+      "id": "PLT-03",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Persistent volumes, artifact development adapter, backup and restore quarantine",
+      "evidence": "Restart retains records; isolated restore does not send external effects",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/restore-verification-final.json",
+        "docs/framework/evidence/r0/http-restart-readback.json"
+      ]
+    },
+    {
+      "id": "GOV-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Canonical person/identity bindings and company/project duties",
+      "evidence": "Alias identities cannot self-approve; cross-company and revoked membership access denied",
+      "status": "active",
+      "local_contract_status": "implementation_under_verification",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "GOV-02",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01"
+      ],
+      "scope": "Command receipt registry, version/manifest checks and exact-value primitives",
+      "evidence": "Duplicate command has one effect; reused key with changed company/payload conflicts; decimals round correctly",
+      "status": "active",
+      "local_contract_status": "implementation_under_verification",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "GOV-03",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02"
+      ],
+      "scope": "Approval packet/decision service and generic-route document hooks",
+      "evidence": "Direct submit/cancel/import attempts cannot bypass required authority",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_synthetic_policy",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/governance-approval-acceptance.json",
+        "docs/framework/evidence/r0/approval-concurrency.json",
+        "docs/framework/evidence/r0/approvals-browser/verification.json"
+      ]
+    },
+    {
+      "id": "MIG-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Design independent canonical import/export contracts and fresh synthetic master/dimension fixtures",
+      "evidence": "Target schemas and fixtures stand alone; no Odoo/prior-code access or compatibility needed",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/migration-acceptance.json",
+        "docs/framework/evidence/r0/migration-http-acceptance.json"
+      ]
+    },
+    {
+      "id": "API-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01",
+        "GOV-02"
+      ],
+      "scope": "Same-origin session, typed envelopes, errors, paging and OpenAPI generation",
+      "evidence": "Contract checks validate auth/CSRF, permissions, cursor scope, stale errors and generated client",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "platform/apps/cipher_aec/cipher_aec/api/openapi.json",
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/fresh-validation.json"
+      ]
+    },
+    {
+      "id": "PRJ-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "ERPNext Project/Task read/write services and project profile",
+      "evidence": "Authorized project/task persists across restart; inaccessible records and counts stay private",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/http-closed-project.json",
+        "docs/framework/evidence/r0/http-project-revoked.json"
+      ]
+    },
+    {
+      "id": "DOC-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01",
+        "PLT-03"
+      ],
+      "scope": "Canonical document/revision, upload quarantine and authorized byte download",
+      "evidence": "Uploaded bytes verified by hash; unauthorized and superseded URL access handled correctly",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/http-source-revoked.json",
+        "docs/framework/evidence/r0/http-native-artifact.json"
+      ]
+    },
+    {
+      "id": "AI-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "Recover existing Ricky contract and implement replaceable adapter with honest capability status",
+      "evidence": "Fixture and connected-model modes distinct; no presumed protocol, embeddings or tool support",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "UX-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "Official UI5 shell, company/project context, work inbox and truthful states",
+      "evidence": "Real Horizon UI5 navigation at three widths; keyboard focus and session expiration handled",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/browser/verification.json",
+        "docs/framework/evidence/r0/browser/served-build-provenance.json"
+      ]
+    },
+    {
+      "id": "QA-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02",
+        "API-01"
+      ],
+      "scope": "CI/test runners, real Frappe database fixtures and release evidence manifest",
+      "evidence": "Reproducible fresh build/type checks/integration checks; evidence binds source version",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "hosted_workflow_not_run",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/QA01_VALIDATION.md",
+        "docs/framework/evidence/r0/fresh-validation-initial.json",
+        "docs/framework/evidence/r0/fresh-validation-reporter-initial.json",
+        "docs/framework/evidence/r0/fresh-validation-registry-initial.json",
+        "docs/framework/evidence/r0/fresh-validation.json"
+      ],
+      "qualification_limit": "Local fresh-site gate passed; hosted workflow execution is separate. Explicit model/worker fixtures do not qualify real model/provider connections."
+    },
+    {
+      "id": "INT-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02",
+        "PLT-03"
+      ],
+      "scope": "Generic durable outbox/inbox, attempts, leases and recovery scheduler",
+      "evidence": "Crash after commit before queueing still delivers work; duplicate callback has one effect",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/outbox-acceptance.json"
+      ],
+      "qualification_limit": "Registered internal local Task effect only; no normal public enqueue route. Current user/person/duty revocation is checked; original browser session authority is not persisted by this generic internal outbox. A public workflow must supply its session or durable-delegation authorization contract; external provider delivery is separate."
+    },
+    {
+      "id": "DOC-02",
+      "release": "R0",
+      "dependencies": [
+        "DOC-01",
+        "INT-01"
+      ],
+      "scope": "Text/PDF extraction, source/page citations and exact search",
+      "evidence": "Known source fact returns exact accessible revision/page; failed extraction remains visible",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json"
+      ]
+    },
+    {
+      "id": "AI-02",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02",
+        "API-01",
+        "INT-01"
+      ],
+      "scope": "Persist Ricky runs/steps/delegations/tool receipts with budgets and cancellation",
+      "evidence": "Worker restart resumes original operation; late worker fenced; cancellation preserves completed effects",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "AI-03",
+      "release": "R0",
+      "dependencies": [
+        "DOC-02",
+        "AI-01",
+        "AI-02",
+        "PRJ-01"
+      ],
+      "scope": "Permission-aware cited answer and task-proposal/commit tool",
+      "evidence": "Revoked access and injected source instructions cannot create unauthorized task; repeat commit creates one task",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "UX-02",
+      "release": "R0",
+      "dependencies": [
+        "UX-01",
+        "PRJ-01",
+        "DOC-02",
+        "AI-03"
+      ],
+      "scope": "Connect project/document/Ricky/proposed task/history journey",
+      "evidence": "Actual browser captures plus persistent restart, one task after retry and second-user denial",
+      "status": "active",
+      "local_contract_status": "implementation_under_verification",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "COM-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-01",
+        "GOV-03",
+        "MIG-01"
+      ],
+      "scope": "Extend Opportunity/Quotation with pursuit, proposal sections and immutable revisions",
+      "evidence": "Scope/alternates/terms survive revision comparison without creating a duplicate customer master",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "EST-01",
+      "release": "R1",
+      "dependencies": [
+        "DOC-02",
+        "GOV-02"
+      ],
+      "scope": "Units/conversions, rate sources, assembly revisions and exact estimate calculation",
+      "evidence": "Known quantity/rate/waste examples and invalid-dimension cases produce deterministic results",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_authored_sources",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/est01-acceptance.json",
+        "docs/framework/evidence/r1/est01-schema-samples.json",
+        "docs/framework/evidence/r1/est01-http-acceptance.json",
+        "docs/framework/evidence/r0/fresh-validation.json"
+      ]
+    },
+    {
+      "id": "EST-02",
+      "release": "R1",
+      "dependencies": [
+        "EST-01",
+        "DOC-02"
+      ],
+      "scope": "Takeoff measurement, calibration, geometric/manual lineage and revision comparison",
+      "evidence": "Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "EST-03",
+      "release": "R1",
+      "dependencies": [
+        "EST-02",
+        "GOV-03"
+      ],
+      "scope": "Estimate acceptance and frozen baseline",
+      "evidence": "Changed material source rejects stale acceptance; successor estimate does not reprice baseline",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "COM-02",
+      "release": "R1",
+      "dependencies": [
+        "COM-01",
+        "EST-03",
+        "INT-01"
+      ],
+      "scope": "Proposal review, output snapshots, issue and controlled distribution contract",
+      "evidence": "Issued output matches approved revision; send is separate and fixture delivery labeled",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-01",
+        "GOV-03"
+      ],
+      "scope": "Construction contract/SOV base schemas, terms and retainage policies before award orchestration",
+      "evidence": "SOV caps cannot fall below certified amounts without correction; no manufacturing-subcontract shortcut",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "PRJ-02",
+      "release": "R1",
+      "dependencies": [
+        "COM-02",
+        "EST-03",
+        "FIN-01"
+      ],
+      "scope": "Atomic award to project, WBS, budget, contract and Sales Order links",
+      "evidence": "Repeated award yields one project/baseline; line lineage and totals reconcile",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "BUY-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-02"
+      ],
+      "scope": "Requests/RFQs/quote comparisons and project procurement packages",
+      "evidence": "Supplier quote normalization preserves original; unauthorized award blocked",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "BUY-02",
+      "release": "R1",
+      "dependencies": [
+        "BUY-01",
+        "FIN-01"
+      ],
+      "scope": "Purchase orders, construction commitments and controlled release",
+      "evidence": "Commitment links standard PO and approved contract without creating a payable",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "BUY-03",
+      "release": "R1",
+      "dependencies": [
+        "BUY-02",
+        "DOC-01"
+      ],
+      "scope": "Partial receipts, inspection evidence and stored-material inventory links",
+      "evidence": "Delivered/accepted/rejected quantities and remaining PO reconcile after partial receipt",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-04",
+      "release": "R1",
+      "dependencies": [
+        "COM-01",
+        "EST-03",
+        "AI-03"
+      ],
+      "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
+      "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "UX-03",
+      "release": "R1",
+      "dependencies": [
+        "COM-02",
+        "EST-03",
+        "BUY-03",
+        "UX-02"
+      ],
+      "scope": "Commercial/estimate/award/procurement pages including dense editing",
+      "evidence": "Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-02",
+      "release": "R2",
+      "dependencies": [
+        "FIN-01",
+        "BUY-03"
+      ],
+      "scope": "Invoice intake, duplicate detection, matching and service/no-PO exceptions",
+      "evidence": "Original supplier evidence retained; duplicate/variance resolution explicit; no accidental posting",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-03",
+      "release": "R2",
+      "dependencies": [
+        "FIN-02"
+      ],
+      "scope": "Installed-work certificates, supplier applications and stored-material consumption",
+      "evidence": "Prior/current/cumulative work reconciles; material is not billed twice when installed",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-04",
+      "release": "R2",
+      "dependencies": [
+        "FIN-03",
+        "GOV-03",
+        "INT-01"
+      ],
+      "scope": "Independent approval and Purchase Invoice posting with exact GL comparison",
+      "evidence": "Changed facts/self-posting denied; invoice, consumed grant, receipt and outbox commit together",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-05",
+      "release": "R2",
+      "dependencies": [
+        "FIN-04"
+      ],
+      "scope": "Retainage withholding/release and linked credits/corrections",
+      "evidence": "Release transfers retained to ordinary payable without duplicate cost; paid/closed-period cases explicit",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-02",
+      "release": "R2",
+      "dependencies": [
+        "INT-01",
+        "MIG-01",
+        "FIN-04"
+      ],
+      "scope": "QuickBooks capabilities, mapping, OAuth storage and sandbox handoff/readback",
+      "evidence": "Provider supported document mapping proven where credentials exist; unknown outcomes do not create duplicates",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-03",
+      "release": "R2",
+      "dependencies": [
+        "INT-02",
+        "FIN-05"
+      ],
+      "scope": "BILL/payment route mapping, status import and reconciliation",
+      "evidence": "One nominated payment creator; confirmed/held/failed/unknown distinct; retry never pays twice",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-04",
+      "release": "R2",
+      "dependencies": [
+        "INT-02"
+      ],
+      "scope": "Inventory/asset/labor/adjustment effect classification and official-origin import rules",
+      "evidence": "No unclassified GL effect exported; QuickBooks-origin adjustments do not echo back",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-06",
+      "release": "R2",
+      "dependencies": [
+        "FIN-01",
+        "FIN-05"
+      ],
+      "scope": "Owner applications, Sales Invoice posting and retainage receivable",
+      "evidence": "Claimed/reviewed/SOV totals reconcile; issue/send separate from posting",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-07",
+      "release": "R2",
+      "dependencies": [
+        "FIN-06",
+        "INT-02"
+      ],
+      "scope": "Receipts, allocation, returns, deposits, credits and collections",
+      "evidence": "Allocation bounded by actual open balances; returned receipt restores eligible amount only",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-08",
+      "release": "R2",
+      "dependencies": [
+        "FIN-05",
+        "FIN-07",
+        "INT-04"
+      ],
+      "scope": "Operational/official reconciliation, WIP and period close",
+      "evidence": "Unresolved differences reported; policy-driven close blocks incompatible postings",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "UX-04",
+      "release": "R2",
+      "dependencies": [
+        "FIN-08",
+        "UX-03"
+      ],
+      "scope": "Unified AP/AR/retained balance/collections/reconciliation pages",
+      "evidence": "Human can complete supplier and owner journeys without Desk; real captures include exception states",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-05",
+      "release": "R2",
+      "dependencies": [
+        "FIN-08",
+        "AI-04"
+      ],
+      "scope": "Ricky coding/matching/explanations and granted-action execution",
+      "evidence": "Tool cannot invent debt or bypass posting duties; exact proposal/source binding verified",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "PRJ-03",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-02",
+        "FIN-01"
+      ],
+      "scope": "Change events, contract changes, budget transfers and forecast versions",
+      "evidence": "RFI impact alone does not change contract; approved/pending exposure distinctly reported",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "PRJ-04",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-03"
+      ],
+      "scope": "Schedule baseline, dependencies, calendars, progress and lookahead",
+      "evidence": "Cycle invalidation and changed baseline history tested; forecast uses declared progress basis",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-01",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-01",
+        "DOC-01"
+      ],
+      "scope": "Daily reports, photos, installed quantities and T&M tickets",
+      "evidence": "Accepted records amend with lineage; acknowledged T&M does not silently amend contract",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-02",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "GOV-02"
+      ],
+      "scope": "Offline capture envelopes and explicit conflict resolution",
+      "evidence": "Repeated reconnect does not duplicate event; revoked project access prevents sync effects",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-01",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "INT-04"
+      ],
+      "scope": "Compatible Frappe HR installation, crews/classifications/time approval, payroll handoff and job-cost allocation",
+      "evidence": "Provider totals reconcile to approved time; no duplicate payroll execution or inferred rates",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-02",
+      "release": "R3",
+      "dependencies": [
+        "OPS-01",
+        "INT-04"
+      ],
+      "scope": "Asset/rental equipment allocations, meters, maintenance and costing",
+      "evidence": "Rate revision/source retained; operational usage and official asset accounting reconcile",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-01",
+      "release": "R3",
+      "dependencies": [
+        "DOC-02",
+        "GOV-03"
+      ],
+      "scope": "RFI and submittal revisions, checking/dispositions and controlled distribution",
+      "evidence": "Successor revisions retain originals; technical response does not authorize commercial change",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-02",
+      "release": "R3",
+      "dependencies": [
+        "ENG-01"
+      ],
+      "scope": "Engineering work packages, design basis, calculations, checking and deliverables",
+      "evidence": "Author/checker and source units enforced; completed calculation is not automatically issued",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-03",
+      "release": "R3",
+      "dependencies": [
+        "ENG-02",
+        "AI-02"
+      ],
+      "scope": "Existing Ricky CAD/takeoff/calculation tool adapters and isolated jobs",
+      "evidence": "Actual supported tool input/output fixture passes; cancellation/readback and immutable output verified",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "DOC-03",
+      "release": "R3",
+      "dependencies": [
+        "DOC-02",
+        "ENG-01"
+      ],
+      "scope": "Issued sets/transmittals, specifications/contracts library and adopted revisions",
+      "evidence": "Source update does not overwrite adopted/executed text; current rights enforced",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "DOC-04",
+      "release": "R3",
+      "dependencies": [
+        "DOC-03",
+        "AI-03"
+      ],
+      "scope": "Qdrant semantic index and actual embedding adapter with ACL rechecks",
+      "evidence": "Unauthorized snippets/citations never enter context; deletion/reindex reproducible",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-03",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "ENG-01"
+      ],
+      "scope": "QA/QC inspections, deficiencies, safety observations/incidents and permits",
+      "evidence": "Closure requires evidence; sensitive incident fields hidden from general project users",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-04",
+      "release": "R3",
+      "dependencies": [
+        "ENG-02",
+        "DOC-03",
+        "FLD-03"
+      ],
+      "scope": "Commissioning, punch, O&M/warranties and asset handover/closeout",
+      "evidence": "Required missing evidence blocks completion; turnover package contains exact accepted revisions",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "RPT-01",
+      "release": "R3",
+      "dependencies": [
+        "FIN-08",
+        "PRJ-03",
+        "OPS-02"
+      ],
+      "scope": "Project/portfolio dashboards, job cost, forecasts and snapshot exports",
+      "evidence": "As-of watermarks visible; private project values excluded from aggregates and exports",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "UX-05",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-04",
+        "FLD-02",
+        "ENG-04",
+        "RPT-01",
+        "UX-04"
+      ],
+      "scope": "Connect remaining field/engineering/library/schedule/reporting workflows",
+      "evidence": "Full required internal journeys usable in one UI/session with manual paths during model outage",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-06",
+      "release": "R3",
+      "dependencies": [
+        "ENG-03",
+        "DOC-04",
+        "AI-05"
+      ],
+      "scope": "Cross-domain Ricky AEC workflows and controlled automation inbox",
+      "evidence": "Multi-step source/tool provenance retained; budgets, revocation and ambiguous outcomes enforced",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "QA-02",
+      "release": "R3",
+      "dependencies": [
+        "UX-05",
+        "AI-06"
+      ],
+      "scope": "Integrated permission/recovery/accessibility/performance qualification",
+      "evidence": "Completion matrix evidence with actual dataset/hardware; no hidden critical workflow gaps",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "MIG-02",
+      "release": "R4",
+      "dependencies": [
+        "MIG-01",
+        "FIN-08",
+        "DOC-03"
+      ],
+      "scope": "Optional source-specific business-data onboarding into the finalized target model",
+      "evidence": "If selected for rollout, imported IDs/counts/balances reconcile; optional transfer never alters architecture to inherit prior workflows",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-03",
+      "release": "R4",
+      "dependencies": [
+        "QA-02"
+      ],
+      "scope": "Operational identity/secrets, monitored deployment and actual restore rehearsal",
+      "evidence": "Approved environment demonstrates recovery target or reports measured shortfall",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-05",
+      "release": "R4",
+      "dependencies": [
+        "INT-03",
+        "MIG-02",
+        "OPS-03"
+      ],
+      "scope": "Authorized real accounting integration and controlled writer cutover",
+      "evidence": "Actual external acknowledgments/reconciled balances; old writer disabled per migrated class",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "REL-01",
+      "release": "R4",
+      "dependencies": [
+        "INT-05",
+        "QA-02"
+      ],
+      "scope": "Internal pilot rollout, support runbooks, training and defect closure",
+      "evidence": "Named scenarios completed on operational setup; acceptance and unresolved limits recorded",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-01",
+      "release": "R5",
+      "dependencies": [
+        "REL-01"
+      ],
+      "scope": "Multi-company/intercompany and separate-site enterprise qualification",
+      "evidence": "Isolation and supported consolidation/intercompany transactions verified on declared requirements",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-02",
+      "release": "R5",
+      "dependencies": [
+        "ENT-01"
+      ],
+      "scope": "Enterprise SSO/SCIM/delegation, legal hold/retention and audit export",
+      "evidence": "Identity lifecycle and retention verified; no unsupported certification claims",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-03",
+      "release": "R5",
+      "dependencies": [
+        "ENT-02"
+      ],
+      "scope": "Scale, disaster recovery, security review and commercial packaging",
+      "evidence": "Measured enterprise workloads, resolved findings, license obligations and support evidence",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    }
+  ]
+}

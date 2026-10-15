@@ -1,0 +1,66 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Delivery Attempt",
+  "module": "Cipher Integrations",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "operation",
+    "fencing_token",
+    "outcome",
+    "safe_details",
+    "company",
+    "project"
+  ],
+  "fields": [
+    {
+      "fieldname": "operation",
+      "label": "Operation",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Integration Operation"
+    },
+    {
+      "fieldname": "fencing_token",
+      "label": "Fencing Token",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "outcome",
+      "label": "Outcome",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "Succeeded\nFailed\nUnknown"
+    },
+    {
+      "fieldname": "safe_details",
+      "label": "Safe Details",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

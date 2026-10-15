@@ -1,0 +1,73 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Project Duty",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "person",
+    "company",
+    "project",
+    "ability",
+    "active",
+    "valid_from",
+    "valid_until"
+  ],
+  "fields": [
+    {
+      "fieldname": "person",
+      "label": "Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "ability",
+      "label": "Ability",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "approval.decide\napproval.execute\napproval.request\ndocument.read\ndocument.write\nestimate.read\nestimate.write\nproject.read\nproject.write\nricky.run\ntask.create"
+    },
+    {
+      "fieldname": "active",
+      "label": "Active",
+      "fieldtype": "Check",
+      "reqd": 0
+    },
+    {
+      "fieldname": "valid_from",
+      "label": "Valid From",
+      "fieldtype": "Date",
+      "reqd": 0
+    },
+    {
+      "fieldname": "valid_until",
+      "label": "Valid Until",
+      "fieldtype": "Date",
+      "reqd": 0
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

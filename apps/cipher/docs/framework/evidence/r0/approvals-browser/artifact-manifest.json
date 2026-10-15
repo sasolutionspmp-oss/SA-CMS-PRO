@@ -1,0 +1,30 @@
+{
+  "captured_at": "2026-10-15T15:13:46.516370+00:00",
+  "artifacts": [
+    {
+      "name": "connected-approval-executed.png",
+      "sha256": "48f5527a988a7cc825699b906d665faab0acaf1c68ba3c3dea83828682b02690",
+      "byte_length": 175549
+    },
+    {
+      "name": "connected-approval-independent-review.png",
+      "sha256": "74a4297c202e6497125f3a8fecbd74b07a2a4ff02fe55a87d27092f4d9132558",
+      "byte_length": 170364
+    },
+    {
+      "name": "connected-approval-requested.png",
+      "sha256": "051b60d136704e08f0417f0eb6c5c0007cd2600a80c7fec3006a938baa572d78",
+      "byte_length": 177806
+    },
+    {
+      "name": "served-build-provenance.json",
+      "sha256": "10e8f5e677d571e61a5b36b32d3f5082fbd1485dbde7fd994f6180580622f547",
+      "byte_length": 88219
+    },
+    {
+      "name": "verification.json",
+      "sha256": "8e56b6b75842c45675d0bd3ca904614c96feaa7504c0a22275824351f2fadc74",
+      "byte_length": 786
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "recorded_at": "2026-10-15T15:33:48.479044+00:00",
+  "reason": "Fresh-site QA found generated OpenAPI artifact stale after final estimating schema publication.",
+  "change": "Regenerated from final domain schemas, references canonical ListEstimateUnitsResponse directly, removed duplicate generator-owned alias.",
+  "checks": {
+    "contracts_and_openapi_tests": {
+      "passed": 14,
+      "failed": 0
+    },
+    "generator_check": "passed",
+    "openapi_3_1_validator": "openapi-spec-validator0.7.2 passed",
+    "embedded_canonical_manifest_resolution": "jsonschema Draft202012Validator passed",
+    "route_count": 39
+  },
+  "scope": "No domain services, DocTypes, migrations or company-scope implementation changes. Fresh-site full rerun remains QA-owned.",
+  "sha256": {
+    "api/catalog.py": "1383f4ccaca4562866d02a410bd8ac24c00ed4ee6727bcecc8009a3fff504bdc",
+    "api/openapi.py": "1eef57e06c7e95df7b075a20d7a9ec27e35d7d49b9e1b2b7b10683d0bb266416",
+    "api/openapi.json": "3128fe8f65a5185993976e4bbfc3f144233762fe8c58edceb3cf0ca1c5c312cb",
+    "api/schema.json": "709e25884717e4116d59075b82515949e7353da1d82ca9a6647dfe401b73397a",
+    "api/domain-schemas.json": "326accdbb95467ad0ad9ba40dfb1383dea2ff5f5e5ae4b6e5d46cd929f4f5aa8",
+    "estimating/schemas/api-v1.schema.json": "8c5296687071ef33395322460562f73c78f03277fe64c0037e1dc41d7e4ea119",
+    "migrations/schemas/canonical-v1.schema.json": "03a6c857ee3c8189b16242ebd87746b2820a4e12b3a815bc4b4fea776e83c1f9",
+    "migrations/schemas/canonical-api-v1.schema.json": "bcec806f305e4d92cf868004ff37ef5941dbfe0d8e9e9e329ceddf8b34050293"
+  }
+}

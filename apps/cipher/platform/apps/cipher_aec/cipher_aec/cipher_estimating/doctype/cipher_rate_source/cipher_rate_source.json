@@ -1,0 +1,171 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Rate Source",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "source_id",
+    "revision_number",
+    "predecessor",
+    "title",
+    "currency",
+    "unit",
+    "rate_amount",
+    "rate_precision",
+    "item",
+    "party_type",
+    "party",
+    "quote_date",
+    "expiry_date"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "source_id",
+      "fieldtype": "Data",
+      "label": "Source Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Link",
+      "label": "Predecessor",
+      "reqd": 0,
+      "options": "Cipher Rate Source"
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "reqd": 1,
+      "options": "Currency"
+    },
+    {
+      "fieldname": "unit",
+      "fieldtype": "Link",
+      "label": "Unit",
+      "reqd": 1,
+      "options": "UOM"
+    },
+    {
+      "fieldname": "rate_amount",
+      "fieldtype": "Data",
+      "label": "Rate Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "rate_precision",
+      "fieldtype": "Int",
+      "label": "Rate Precision",
+      "reqd": 1
+    },
+    {
+      "fieldname": "item",
+      "fieldtype": "Link",
+      "label": "Item",
+      "reqd": 0,
+      "options": "Item"
+    },
+    {
+      "fieldname": "party_type",
+      "fieldtype": "Select",
+      "label": "Party Type",
+      "reqd": 0,
+      "options": "\nSupplier\nCustomer"
+    },
+    {
+      "fieldname": "party",
+      "fieldtype": "Dynamic Link",
+      "label": "Party",
+      "reqd": 0,
+      "options": "party_type"
+    },
+    {
+      "fieldname": "quote_date",
+      "fieldtype": "Date",
+      "label": "Quote Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "expiry_date",
+      "fieldtype": "Date",
+      "label": "Expiry Date",
+      "reqd": 0
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

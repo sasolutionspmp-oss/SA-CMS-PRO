@@ -1,0 +1,332 @@
+{
+  "schema": "cipher.canonical.v1",
+  "dataset_id": "df666cc2-aaa3-52df-aa10-192bed26025e",
+  "scope": {
+    "company": "Cipher MIG-01 Synthetic Design Company",
+    "project": "MIG01-FIXTURE-PROJECT"
+  },
+  "label": "Fresh independent MIG-01 design fixtures; no company policy or source-system compatibility claim.",
+  "records": [
+    {
+      "id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+      "kind": "company",
+      "revision": 1,
+      "fields": {
+        "name": "Cipher MIG-01 Synthetic Design Company",
+        "currency": "USD",
+        "timezone": "America/New_York"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "company"
+      }
+    },
+    {
+      "id": "2f55d50c-807f-5019-a7b7-5dbf752ef1b0",
+      "kind": "customer",
+      "revision": 1,
+      "fields": {
+        "name": "Synthetic County Facilities",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "active": true
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "customer"
+      }
+    },
+    {
+      "id": "5f7993eb-623b-5582-a525-14c1a3c5a694",
+      "kind": "supplier",
+      "revision": 1,
+      "fields": {
+        "name": "Synthetic Materials Supply",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "active": true
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "supplier"
+      }
+    },
+    {
+      "id": "ddb9ee1d-30a3-5f5b-b8bb-f97c28dcedd3",
+      "kind": "project",
+      "revision": 1,
+      "fields": {
+        "title": "Synthetic municipal foundation package",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "customer_id": "2f55d50c-807f-5019-a7b7-5dbf752ef1b0",
+        "status": "Open"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "project"
+      }
+    },
+    {
+      "id": "b8a62dca-c86d-572d-9425-3211d832547d",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "in",
+        "dimension": "length",
+        "precision": 6
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "inch"
+      }
+    },
+    {
+      "id": "26d8f98f-0323-5540-9621-8e4bbb56fd63",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "ft",
+        "dimension": "length",
+        "precision": 6
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "foot"
+      }
+    },
+    {
+      "id": "20d0d15b-1ebe-5ced-b978-ff83f8b99249",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "ft2",
+        "dimension": "area",
+        "precision": 6
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "square-foot"
+      }
+    },
+    {
+      "id": "c18f1f1d-e179-5096-b9e9-7edfe86c17f1",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "ft3",
+        "dimension": "volume",
+        "precision": 6
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cubic-foot"
+      }
+    },
+    {
+      "id": "f31f3c58-00c6-5913-975a-29979e6ec751",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "lb",
+        "dimension": "mass",
+        "precision": 3
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "pound"
+      }
+    },
+    {
+      "id": "7207fb6b-c7c3-555f-b086-d03fc7c8de09",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "ea",
+        "dimension": "count",
+        "precision": 0
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "each"
+      }
+    },
+    {
+      "id": "1929b914-a708-55b8-9c27-ca95b716e4f2",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "labor h",
+        "dimension": "labor_time",
+        "precision": 4
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "labor-hour"
+      }
+    },
+    {
+      "id": "3026abb6-8cec-5687-9db4-2659657c56c4",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "equipment h",
+        "dimension": "equipment_time",
+        "precision": 4
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "equipment-hour"
+      }
+    },
+    {
+      "id": "f67d0467-9ca2-5310-a154-31a97eec39eb",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "h",
+        "dimension": "time",
+        "precision": 6
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "hour"
+      }
+    },
+    {
+      "id": "d6745ed2-de8a-542a-b51d-18a0ecda3a2c",
+      "kind": "item",
+      "revision": 1,
+      "fields": {
+        "code": "SYN-CONCRETE-4000",
+        "name": "Synthetic concrete example",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "stock_uom_id": "c18f1f1d-e179-5096-b9e9-7edfe86c17f1",
+        "is_stock_item": false
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "item"
+      }
+    },
+    {
+      "id": "899fbc0e-78a1-57c9-a542-edcff27c79a2",
+      "kind": "cost_center",
+      "revision": 1,
+      "fields": {
+        "code": "SYN-ROOT",
+        "name": "Synthetic controls root",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "is_group": true
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "root-cost-center"
+      }
+    },
+    {
+      "id": "1cd888b6-4bbd-59d5-a552-013e463cbc48",
+      "kind": "cost_center",
+      "revision": 1,
+      "fields": {
+        "code": "SYN-FOUND",
+        "name": "Synthetic foundations",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "is_group": false,
+        "parent_id": "899fbc0e-78a1-57c9-a542-edcff27c79a2"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-center"
+      }
+    },
+    {
+      "id": "a16352fd-7d60-5de9-9c02-1c688691038e",
+      "kind": "cost_code",
+      "revision": 1,
+      "fields": {
+        "code": "03 30 00",
+        "title": "Synthetic cast-in-place concrete",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-code"
+      }
+    },
+    {
+      "id": "9bcb9d63-46c9-5344-9838-c05d9c5c046e",
+      "kind": "cost_type",
+      "revision": 1,
+      "fields": {
+        "code": "MATERIAL",
+        "title": "Synthetic material cost",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-type-material"
+      }
+    },
+    {
+      "id": "c8c9a094-bc20-5b8a-8daa-c56b33aefdc2",
+      "kind": "cost_type",
+      "revision": 1,
+      "fields": {
+        "code": "LABOR",
+        "title": "Synthetic labor cost",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-type-labor"
+      }
+    },
+    {
+      "id": "6f8c69ee-8abc-5378-92b3-9c07cfb8ab0f",
+      "kind": "cost_type",
+      "revision": 1,
+      "fields": {
+        "code": "EQUIPMENT",
+        "title": "Synthetic equipment cost",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-type-equipment"
+      }
+    },
+    {
+      "id": "a69de7ec-025b-5b70-a4b9-35c2a7583ae0",
+      "kind": "accounting_dimension",
+      "revision": 1,
+      "fields": {
+        "code": "COST-TYPE",
+        "title": "Synthetic cost-type dimension definition",
+        "company_id": "8c442dc2-03ef-58c7-8c79-517f692eaf99",
+        "value_kind": "cost_type"
+      },
+      "source": {
+        "system": "fresh-synthetic-target-design",
+        "record_id": "cost-type-dimension"
+      }
+    }
+  ],
+  "unit_conversions": [
+    {
+      "id": "f19a65b3-40cd-51b1-a709-13fe67ec704a",
+      "revision": 1,
+      "from_unit_id": "b8a62dca-c86d-572d-9425-3211d832547d",
+      "to_unit_id": "26d8f98f-0323-5540-9621-8e4bbb56fd63",
+      "dimension": "length",
+      "numerator": "1",
+      "denominator": "12",
+      "source": "Synthetic exact example: 12 in = 1 ft; no business-data import."
+    }
+  ],
+  "quantities": [
+    {
+      "id": "69d2f1bf-c878-54bc-b4a7-70f39dad6ee2",
+      "amount": "12",
+      "unit_id": "b8a62dca-c86d-572d-9425-3211d832547d",
+      "convert_to_unit_id": "26d8f98f-0323-5540-9621-8e4bbb56fd63"
+    }
+  ]
+}

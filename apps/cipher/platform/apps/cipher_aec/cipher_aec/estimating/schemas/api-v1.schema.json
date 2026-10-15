@@ -1,0 +1,3606 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:estimating:api:v1",
+  "title": "Cipher EST-01 authored exact draft estimating",
+  "description": "Request fields are closed. POST operation_id may be supplied by the required Idempotency-Key header. Inputs are authored quantities, never calibrated geometry. Sources remain subject to current project/document access. Permission basis is an authored assertion, not a derived license entitlement. No estimate acceptance or external provider action is exposed.",
+  "$defs": {
+    "EstQuantity": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "amount",
+        "unit_id",
+        "precision"
+      ],
+      "additionalProperties": false
+    },
+    "EstCitationReference": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "page",
+        "excerpt_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EstCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EstConversionDefinition": {
+      "type": "object",
+      "properties": {
+        "from_unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "to_unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "dimension": {
+          "enum": [
+            "length",
+            "area",
+            "volume",
+            "mass",
+            "count",
+            "time",
+            "labor_time",
+            "equipment_time"
+          ]
+        },
+        "numerator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "maxLength": 25
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "maxLength": 25
+        },
+        "source": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "from_unit_id",
+        "to_unit_id",
+        "dimension",
+        "numerator",
+        "denominator",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EstRateInput": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "cost_type": {
+          "enum": [
+            "material",
+            "labor",
+            "equipment",
+            "subcontract",
+            "other"
+          ]
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate_amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "rate_precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "quote_reference": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quote_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "expiry_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "geography": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "inclusions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "exclusions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "freight_tax_assumptions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "permission_basis": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitationReference"
+          },
+          "maxItems": 8
+        },
+        "item": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "party_type": {
+          "enum": [
+            null,
+            "Supplier",
+            "Customer"
+          ]
+        },
+        "party": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "cost_type",
+        "unit_id",
+        "rate_amount",
+        "rate_precision",
+        "currency",
+        "quote_reference",
+        "quote_date",
+        "expiry_date",
+        "geography",
+        "inclusions",
+        "exclusions",
+        "freight_tax_assumptions",
+        "permission_basis",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EstRateDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "cost_type": {
+          "enum": [
+            "material",
+            "labor",
+            "equipment",
+            "subcontract",
+            "other"
+          ]
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate_amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "rate_precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "quote_reference": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quote_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "expiry_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "geography": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "inclusions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "exclusions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "freight_tax_assumptions": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "permission_basis": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 8
+        },
+        "item": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "party_type": {
+          "enum": [
+            null,
+            "Supplier",
+            "Customer"
+          ]
+        },
+        "party": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "cost_type",
+        "unit_id",
+        "rate_amount",
+        "rate_precision",
+        "currency",
+        "quote_reference",
+        "quote_date",
+        "expiry_date",
+        "geography",
+        "inclusions",
+        "exclusions",
+        "freight_tax_assumptions",
+        "permission_basis",
+        "source_citations",
+        "item",
+        "party_type",
+        "party",
+        "id",
+        "source_id",
+        "revision",
+        "predecessor"
+      ],
+      "additionalProperties": false
+    },
+    "EstAssemblyComponent": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate_source_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "material",
+            "labor",
+            "equipment",
+            "subcontract",
+            "other"
+          ]
+        },
+        "work_quantity": {
+          "$ref": "#/$defs/EstQuantity"
+        },
+        "resource_quantity": {
+          "$ref": "#/$defs/EstQuantity"
+        },
+        "material_factor": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "waste_fraction": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "line_id",
+        "rate_source_id",
+        "kind",
+        "work_quantity",
+        "resource_quantity",
+        "material_factor",
+        "waste_fraction"
+      ],
+      "additionalProperties": false
+    },
+    "EstAssemblyDefinition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "assembly_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "basis_unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAssemblyComponent"
+          },
+          "maxItems": 50
+        },
+        "author_basis": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "id",
+        "assembly_id",
+        "revision",
+        "predecessor",
+        "title",
+        "basis_unit_id",
+        "components",
+        "author_basis"
+      ],
+      "additionalProperties": false
+    },
+    "EstDirectLine": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quantity": {
+          "$ref": "#/$defs/EstQuantity"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "alternate": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "included": {
+          "type": "boolean"
+        },
+        "rate_source_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "material_factor": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "waste_fraction": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        }
+      },
+      "required": [
+        "line_id",
+        "description",
+        "quantity",
+        "cost_code",
+        "notes",
+        "alternate",
+        "included",
+        "rate_source_id",
+        "material_factor",
+        "waste_fraction"
+      ],
+      "additionalProperties": false
+    },
+    "EstAssemblyLine": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quantity": {
+          "$ref": "#/$defs/EstQuantity"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "alternate": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "included": {
+          "type": "boolean"
+        },
+        "assembly_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "line_id",
+        "description",
+        "quantity",
+        "cost_code",
+        "notes",
+        "alternate",
+        "included",
+        "assembly_revision_id"
+      ],
+      "additionalProperties": false
+    },
+    "EstLineInput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EstDirectLine"
+        },
+        {
+          "$ref": "#/$defs/EstAssemblyLine"
+        }
+      ]
+    },
+    "EstAdjustment": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "indirect",
+            "contingency"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "method": {
+          "enum": [
+            "fixed",
+            "fraction_of_direct"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "basis_description": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "line_id",
+        "kind",
+        "label",
+        "method",
+        "value",
+        "basis_description"
+      ],
+      "additionalProperties": false
+    },
+    "EstMoney": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false
+    },
+    "EstRational": {
+      "type": "object",
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$"
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ],
+      "additionalProperties": false
+    },
+    "EstPricedComponent": {
+      "type": "object",
+      "properties": {
+        "component_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate_source_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "cost_type": {
+          "enum": [
+            "material",
+            "labor",
+            "equipment",
+            "subcontract",
+            "other"
+          ]
+        },
+        "source_unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "resource_quantity_exact": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "priced_quantity_exact": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "material_factor": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "waste_fraction": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "unrounded_cost": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "allocated_amount": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "rounding_increment": {
+          "$ref": "#/$defs/EstMoney"
+        }
+      },
+      "required": [
+        "component_id",
+        "rate_source_id",
+        "rate_revision",
+        "cost_type",
+        "source_unit_id",
+        "resource_quantity_exact",
+        "priced_quantity_exact",
+        "material_factor",
+        "waste_fraction",
+        "unrounded_cost",
+        "allocated_amount",
+        "rounding_increment"
+      ],
+      "additionalProperties": false
+    },
+    "EstCalculatedLine": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "quantity": {
+          "$ref": "#/$defs/EstQuantity"
+        },
+        "quantity_method": {
+          "const": "authored"
+        },
+        "included": {
+          "type": "boolean"
+        },
+        "alternate": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstPricedComponent"
+          },
+          "maxItems": 50
+        },
+        "unrounded_extension": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "extension": {
+          "$ref": "#/$defs/EstMoney"
+        }
+      },
+      "required": [
+        "line_id",
+        "description",
+        "quantity",
+        "quantity_method",
+        "included",
+        "alternate",
+        "cost_code",
+        "components",
+        "unrounded_extension",
+        "extension"
+      ],
+      "additionalProperties": false
+    },
+    "EstCalculatedAdjustment": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "indirect",
+            "contingency"
+          ]
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "method": {
+          "enum": [
+            "fixed",
+            "fraction_of_direct"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "basis_description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "unrounded_amount": {
+          "$ref": "#/$defs/EstRational"
+        },
+        "amount": {
+          "$ref": "#/$defs/EstMoney"
+        }
+      },
+      "required": [
+        "line_id",
+        "kind",
+        "label",
+        "method",
+        "value",
+        "basis_description",
+        "unrounded_amount",
+        "amount"
+      ],
+      "additionalProperties": false
+    },
+    "EstCalculationPolicy": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "const": "cipher.estimate.line-half-up.v1"
+        },
+        "rounding_mode": {
+          "const": "ROUND_HALF_UP"
+        },
+        "currency_exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "intermediate": {
+          "const": "exact-rational"
+        },
+        "line_rounding": {
+          "const": "sum-exact-components-then-round"
+        },
+        "component_allocation": {
+          "const": "nonnegative-largest-remainder-tie-by-stable-component-id"
+        },
+        "header_rounding": {
+          "const": "sum-rounded-lines"
+        }
+      },
+      "required": [
+        "version",
+        "rounding_mode",
+        "currency_exponent",
+        "intermediate",
+        "line_rounding",
+        "component_allocation",
+        "header_rounding"
+      ],
+      "additionalProperties": false
+    },
+    "EstCalculationResult": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.estimate.result.v1"
+        },
+        "policy": {
+          "$ref": "#/$defs/EstCalculationPolicy"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCalculatedLine"
+          },
+          "maxItems": 100
+        },
+        "adjustments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCalculatedAdjustment"
+          },
+          "maxItems": 30
+        },
+        "direct": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "indirect": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "contingency": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "total": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "conversion_references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "source": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "numerator": {
+                "type": "string"
+              },
+              "denominator": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "revision",
+              "source",
+              "numerator",
+              "denominator"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 64
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "schema",
+        "policy",
+        "lines",
+        "adjustments",
+        "direct",
+        "indirect",
+        "contingency",
+        "total",
+        "conversion_references",
+        "input_digest",
+        "output_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EstCanonicaluuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "EstCanonicalconversion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "from_unit_id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "to_unit_id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "dimension": {
+          "enum": [
+            "area",
+            "count",
+            "equipment_time",
+            "labor_time",
+            "length",
+            "mass",
+            "time",
+            "volume"
+          ]
+        },
+        "numerator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "from_unit_id",
+        "to_unit_id",
+        "dimension",
+        "numerator",
+        "denominator",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EstCanonicalquantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+          "maxLength": 50
+        },
+        "unit_id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "convert_to_unit_id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        }
+      },
+      "required": [
+        "id",
+        "amount",
+        "unit_id"
+      ],
+      "additionalProperties": false
+    },
+    "EstUnitManifest": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.v1"
+        },
+        "dataset_id": {
+          "$ref": "#/$defs/EstCanonicaluuid"
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "records": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 500,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "company"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "timezone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "currency",
+                      "timezone"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Company"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "project"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "status": {
+                        "enum": [
+                          "Open",
+                          "On hold",
+                          "Completed",
+                          "Cancelled"
+                        ]
+                      },
+                      "customer_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "company_id",
+                      "status"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Project"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "customer"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "company_id",
+                      "active"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Customer"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "supplier"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "active": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "company_id",
+                      "active"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Supplier"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "item"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "stock_uom_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "is_stock_item": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "name",
+                      "company_id",
+                      "stock_uom_id",
+                      "is_stock_item"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Item"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "uom"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "dimension": {
+                        "enum": [
+                          "area",
+                          "count",
+                          "equipment_time",
+                          "labor_time",
+                          "length",
+                          "mass",
+                          "time",
+                          "volume"
+                        ]
+                      },
+                      "precision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 12
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "dimension",
+                      "precision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "UOM"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "cost_center"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "is_group": {
+                        "type": "boolean"
+                      },
+                      "parent_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "name",
+                      "company_id",
+                      "is_group"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Cost Center"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "cost_code"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "title",
+                      "company_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "cost_type"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "title",
+                      "company_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EstCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "accounting_dimension"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "title": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "company_id": {
+                        "$ref": "#/$defs/EstCanonicaluuid"
+                      },
+                      "value_kind": {
+                        "enum": [
+                          "project",
+                          "cost_center",
+                          "cost_code",
+                          "cost_type"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "title",
+                      "company_id",
+                      "value_kind"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "maxItems": 1000,
+          "items": {
+            "$ref": "#/$defs/EstCanonicalconversion"
+          }
+        },
+        "quantities": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/EstCanonicalquantity"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "dataset_id",
+        "scope",
+        "records",
+        "unit_conversions"
+      ],
+      "additionalProperties": false,
+      "title": "Cipher independent canonical master/dimension manifest v1",
+      "$comment": "Structural interchange schema. Server validator additionally enforces exact references, scoped company, reduced rational factors, conversion consistency, precision and current authorization."
+    },
+    "EstCalculationInputs": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.estimate.inputs.v1"
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EstUnitManifest"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "currency_exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "pricing_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "policy_version": {
+          "const": "cipher.estimate.line-half-up.v1"
+        },
+        "basis_description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "basis_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 8
+        },
+        "rates": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/EstRateDefinition"
+          },
+          "maxProperties": 500
+        },
+        "assemblies": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/EstAssemblyDefinition"
+          },
+          "maxProperties": 100
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstLineInput"
+          },
+          "maxItems": 100
+        },
+        "adjustments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAdjustment"
+          },
+          "maxItems": 30
+        }
+      },
+      "required": [
+        "schema",
+        "unit_manifest",
+        "currency",
+        "currency_exponent",
+        "pricing_date",
+        "policy_version",
+        "basis_description",
+        "basis_citations",
+        "rates",
+        "assemblies",
+        "lines",
+        "adjustments"
+      ],
+      "additionalProperties": false
+    },
+    "EstUnitRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "const": "uom"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "dimension": {
+              "enum": [
+                "length",
+                "area",
+                "volume",
+                "mass",
+                "count",
+                "time",
+                "labor_time",
+                "equipment_time"
+              ]
+            },
+            "precision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          },
+          "required": [
+            "symbol",
+            "dimension",
+            "precision"
+          ],
+          "additionalProperties": false
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "doctype": {
+              "const": "UOM"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "revision",
+        "fields",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "EstConversionRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "object",
+          "properties": {
+            "from_unit_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "to_unit_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "dimension": {
+              "enum": [
+                "length",
+                "area",
+                "volume",
+                "mass",
+                "count",
+                "time",
+                "labor_time",
+                "equipment_time"
+              ]
+            },
+            "numerator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "maxLength": 25
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]*$",
+              "maxLength": 25
+            },
+            "source": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "required": [
+            "from_unit_id",
+            "to_unit_id",
+            "dimension",
+            "numerator",
+            "denominator",
+            "source",
+            "id",
+            "revision"
+          ],
+          "additionalProperties": false
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        },
+        "permission_basis": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EstUnitManifest"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "definition",
+        "predecessor",
+        "source_citations",
+        "permission_basis",
+        "unit_manifest"
+      ],
+      "additionalProperties": false
+    },
+    "EstRateRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "rate": {
+          "$ref": "#/$defs/EstRateDefinition"
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EstUnitManifest"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "rate",
+        "unit_manifest",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EstAssemblyRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "assembly": {
+          "$ref": "#/$defs/EstAssemblyDefinition"
+        },
+        "rates": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/EstRateDefinition"
+          }
+        },
+        "conversion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 64
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EstUnitManifest"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "assembly",
+        "rates",
+        "conversion_ids",
+        "unit_manifest",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EstEstimateRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "pricing_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "current_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "title",
+        "currency",
+        "pricing_date",
+        "revision_number",
+        "current_revision"
+      ],
+      "additionalProperties": false
+    },
+    "EstRevisionRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "estimate": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calculation_snapshot": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "pricing_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "policy_version": {
+          "const": "cipher.estimate.line-half-up.v1"
+        },
+        "line_record_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 100
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        },
+        "basis_description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "direct": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "indirect": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "contingency": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "total": {
+          "$ref": "#/$defs/EstMoney"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "estimate",
+        "revision_number",
+        "predecessor",
+        "calculation_snapshot",
+        "currency",
+        "pricing_date",
+        "policy_version",
+        "line_record_ids",
+        "source_citations",
+        "basis_description",
+        "direct",
+        "indirect",
+        "contingency",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EstLineRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "estimate": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "estimate_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "authored": {
+          "$ref": "#/$defs/EstLineInput"
+        },
+        "calculated": {
+          "$ref": "#/$defs/EstCalculatedLine"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "estimate",
+        "estimate_revision",
+        "line_id",
+        "authored",
+        "calculated"
+      ],
+      "additionalProperties": false
+    },
+    "EstSnapshotRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string"
+        },
+        "subject_type": {
+          "const": "Cipher Estimate Revision"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "inputs": {
+          "$ref": "#/$defs/EstCalculationInputs"
+        },
+        "result": {
+          "$ref": "#/$defs/EstCalculationResult"
+        },
+        "currency_policy": {
+          "type": "object",
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "currency_exponent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            },
+            "fraction_units": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "native_currency_version": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "currency",
+            "currency_exponent",
+            "fraction_units",
+            "native_currency_version"
+          ],
+          "additionalProperties": false
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_type",
+        "subject_id",
+        "inputs",
+        "result",
+        "currency_policy",
+        "input_digest",
+        "output_digest",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EstRecordResponse": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EstConversionRecord"
+        },
+        {
+          "$ref": "#/$defs/EstRateRecord"
+        },
+        {
+          "$ref": "#/$defs/EstAssemblyRecord"
+        },
+        {
+          "$ref": "#/$defs/EstEstimateRecord"
+        },
+        {
+          "$ref": "#/$defs/EstRevisionRecord"
+        },
+        {
+          "$ref": "#/$defs/EstLineRecord"
+        },
+        {
+          "$ref": "#/$defs/EstSnapshotRecord"
+        }
+      ]
+    },
+    "EstListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstRecordResponse"
+          },
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EstOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "RegisterUnitRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "uom": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "dimension": {
+          "enum": [
+            "length",
+            "area",
+            "volume",
+            "mass",
+            "count",
+            "time",
+            "labor_time",
+            "equipment_time"
+          ]
+        },
+        "quantity_precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "uom",
+        "dimension",
+        "quantity_precision"
+      ],
+      "additionalProperties": false
+    },
+    "CreateConversionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/EstConversionDefinition"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitationReference"
+          },
+          "maxItems": 8
+        },
+        "permission_basis": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "definition",
+        "source_citations",
+        "permission_basis"
+      ],
+      "additionalProperties": false
+    },
+    "CreateRateRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rate": {
+          "$ref": "#/$defs/EstRateInput"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "rate"
+      ],
+      "additionalProperties": false
+    },
+    "CreateAssemblyRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "basis_unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAssemblyComponent"
+          },
+          "maxItems": 50
+        },
+        "author_basis": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "conversion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 64
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "title",
+        "basis_unit_id",
+        "components",
+        "author_basis",
+        "conversion_ids"
+      ],
+      "additionalProperties": false
+    },
+    "CreateEstimateRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "pricing_date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "title",
+        "currency",
+        "pricing_date"
+      ],
+      "additionalProperties": false
+    },
+    "CalculateRevisionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstLineInput"
+          },
+          "maxItems": 100
+        },
+        "adjustments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAdjustment"
+          },
+          "maxItems": 30
+        },
+        "conversion_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 64
+        },
+        "basis_description": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "basis_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitationReference"
+          },
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "estimate_id",
+        "expected_revision",
+        "lines",
+        "adjustments",
+        "conversion_ids",
+        "basis_description",
+        "basis_citations"
+      ],
+      "additionalProperties": false
+    },
+    "GetEstimateRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "conversion",
+            "rate",
+            "assembly",
+            "estimate",
+            "revision",
+            "line",
+            "snapshot"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "ListEstimateRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "conversion",
+            "rate",
+            "assembly",
+            "estimate"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "ListEstimateUnitsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "RegisterUnitResponse": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "$ref": "#/$defs/EstUnitRecord"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "unit",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CreateConversionResponse": {
+      "type": "object",
+      "properties": {
+        "conversion": {
+          "$ref": "#/$defs/EstConversionRecord"
+        },
+        "history_id": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "conversion",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CreateRateResponse": {
+      "type": "object",
+      "properties": {
+        "rate_source": {
+          "$ref": "#/$defs/EstRateRecord"
+        },
+        "history_id": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "rate_source",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CreateAssemblyResponse": {
+      "type": "object",
+      "properties": {
+        "assembly_revision": {
+          "$ref": "#/$defs/EstAssemblyRecord"
+        },
+        "history_id": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "assembly_revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CreateEstimateResponse": {
+      "type": "object",
+      "properties": {
+        "estimate": {
+          "$ref": "#/$defs/EstEstimateRecord"
+        },
+        "history_id": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "estimate",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CalculateRevisionResponse": {
+      "type": "object",
+      "properties": {
+        "estimate": {
+          "$ref": "#/$defs/EstEstimateRecord"
+        },
+        "revision": {
+          "$ref": "#/$defs/EstRevisionRecord"
+        },
+        "calculation": {
+          "$ref": "#/$defs/EstSnapshotRecord"
+        },
+        "history_id": {
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/EstOperation"
+        }
+      },
+      "required": [
+        "estimate",
+        "revision",
+        "calculation",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "ListEstimateUnitsResponse": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "items"
+      ],
+      "properties": {
+        "items": {
+          "type": "array",
+          "maxItems": 200,
+          "items": {
+            "$ref": "#/$defs/EstUnitRecord"
+          }
+        }
+      }
+    }
+  }
+}

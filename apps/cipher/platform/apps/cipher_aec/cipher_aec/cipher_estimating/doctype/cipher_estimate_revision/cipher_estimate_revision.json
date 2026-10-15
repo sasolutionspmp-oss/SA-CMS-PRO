@@ -1,0 +1,158 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Estimate Revision",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "estimate",
+    "revision_number",
+    "predecessor",
+    "calculation_snapshot",
+    "currency",
+    "pricing_date",
+    "policy_version",
+    "direct_amount",
+    "indirect_amount",
+    "contingency_amount",
+    "total_amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "estimate",
+      "fieldtype": "Link",
+      "label": "Estimate",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Cipher Estimate"
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Link",
+      "label": "Predecessor",
+      "reqd": 0,
+      "options": "Cipher Estimate Revision"
+    },
+    {
+      "fieldname": "calculation_snapshot",
+      "fieldtype": "Link",
+      "label": "Calculation Snapshot",
+      "reqd": 1,
+      "options": "Cipher Calculation Snapshot"
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "reqd": 1,
+      "options": "Currency"
+    },
+    {
+      "fieldname": "pricing_date",
+      "fieldtype": "Date",
+      "label": "Pricing Date",
+      "reqd": 1
+    },
+    {
+      "fieldname": "policy_version",
+      "fieldtype": "Data",
+      "label": "Policy Version",
+      "reqd": 1
+    },
+    {
+      "fieldname": "direct_amount",
+      "fieldtype": "Data",
+      "label": "Direct Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "indirect_amount",
+      "fieldtype": "Data",
+      "label": "Indirect Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "contingency_amount",
+      "fieldtype": "Data",
+      "label": "Contingency Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "total_amount",
+      "fieldtype": "Data",
+      "label": "Total Amount",
+      "reqd": 1,
+      "length": 50
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,62 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Approval Policy Revision",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "action",
+    "version",
+    "enabled",
+    "label",
+    "lifetime_seconds",
+    "definition_json"
+  ],
+  "fields": [
+    {
+      "fieldname": "action",
+      "label": "Action",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "version",
+      "label": "Version",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "enabled",
+      "label": "Enabled",
+      "fieldtype": "Check",
+      "reqd": 1
+    },
+    {
+      "fieldname": "label",
+      "label": "Label",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "lifetime_seconds",
+      "label": "Lifetime Seconds",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "definition_json",
+      "label": "Definition Json",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,81 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Approval Decision",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "packet",
+    "actor_person",
+    "decision",
+    "manifest_hash",
+    "reason",
+    "decided_at"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "packet",
+      "label": "Packet",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Approval Packet"
+    },
+    {
+      "fieldname": "actor_person",
+      "label": "Actor Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "decision",
+      "label": "Decision",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "Grant\nReject\nWithdraw"
+    },
+    {
+      "fieldname": "manifest_hash",
+      "label": "Manifest Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "reason",
+      "label": "Reason",
+      "fieldtype": "Small Text",
+      "reqd": 0
+    },
+    {
+      "fieldname": "decided_at",
+      "label": "Decided At",
+      "fieldtype": "Data",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,2204 @@
+{
+  "CalculateRevisionRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0024",
+    "operation_id": "45e436b6-7ee5-4c7d-af28-762f886b23a9",
+    "estimate_id": "157c7b80-bd45-429c-a36c-155914faa486",
+    "expected_revision": null,
+    "lines": [
+      {
+        "line_id": "3af1eef5-05d1-4732-9b38-56e6f51bb56f",
+        "description": "Explicit material/labor/equipment build-up",
+        "quantity": {
+          "amount": "100",
+          "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+          "precision": 6
+        },
+        "cost_code": "EST-TEST-01",
+        "notes": "Authored quantity with no geometry or calibration claim",
+        "alternate": "",
+        "included": true,
+        "assembly_revision_id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b"
+      }
+    ],
+    "adjustments": [
+      {
+        "line_id": "addfecf8-36a8-4469-b17b-63b464e0aa32",
+        "kind": "indirect",
+        "label": "Explicit overhead",
+        "method": "fraction_of_direct",
+        "value": "0.10",
+        "basis_description": "Ten percent of rounded direct lines"
+      },
+      {
+        "line_id": "d6655e7f-8c80-4878-a4f8-7995fa0c743c",
+        "kind": "contingency",
+        "label": "Explicit contingency",
+        "method": "fixed",
+        "value": "10.00",
+        "basis_description": "Authored fixed allowance"
+      }
+    ],
+    "conversion_ids": [],
+    "basis_description": "Explicit authored estimate; no measured geometry",
+    "basis_citations": [
+      {
+        "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+        "page": 1,
+        "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+      }
+    ]
+  },
+  "CalculateRevisionResponse": {
+    "estimate": {
+      "author_person": "EST-FIXTURE-e91cb58a2163",
+      "author_user": "est.fixture.e91cb58a2163@cipher.example",
+      "company": "Cipher Synthetic Company",
+      "created_at": "2026-10-15T15:28:31.198653+00:00",
+      "currency": "USD",
+      "current_revision": "9b9d97b7-caf4-4c3e-ab49-e26d7497a33a",
+      "id": "157c7b80-bd45-429c-a36c-155914faa486",
+      "pricing_date": "2026-10-15",
+      "project": "PROJ-0024",
+      "revision_number": 1,
+      "status": "draft",
+      "title": "Explicit authored estimate e91cb58a2163"
+    },
+    "revision": {
+      "id": "9b9d97b7-caf4-4c3e-ab49-e26d7497a33a",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0024",
+      "author_person": "EST-FIXTURE-e91cb58a2163",
+      "author_user": "est.fixture.e91cb58a2163@cipher.example",
+      "created_at": "2026-10-15T15:28:31.386511+00:00",
+      "status": "draft-calculated",
+      "estimate": "157c7b80-bd45-429c-a36c-155914faa486",
+      "revision_number": 1,
+      "predecessor": null,
+      "calculation_snapshot": "da3e3101-7f4a-43dd-aa3e-55bfe9ab5b6c",
+      "currency": "USD",
+      "pricing_date": "2026-10-15",
+      "policy_version": "cipher.estimate.line-half-up.v1",
+      "line_record_ids": [
+        "881d4b8e-443f-4c94-a33e-3ee1e1ced76a"
+      ],
+      "source_citations": [
+        {
+          "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+          "document_title": "Explicit EST source e91cb58a2163",
+          "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+          "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+          "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+          "revision_number": 1,
+          "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+        }
+      ],
+      "basis_description": "Explicit authored estimate; no measured geometry",
+      "direct": {
+        "amount": "923.10",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "92.31",
+        "currency": "USD"
+      },
+      "contingency": {
+        "amount": "10.00",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "1025.41",
+        "currency": "USD"
+      }
+    },
+    "calculation": {
+      "id": "da3e3101-7f4a-43dd-aa3e-55bfe9ab5b6c",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0024",
+      "author_person": "EST-FIXTURE-e91cb58a2163",
+      "author_user": "est.fixture.e91cb58a2163@cipher.example",
+      "created_at": "2026-10-15T15:28:31.305819+00:00",
+      "status": "calculated",
+      "subject_type": "Cipher Estimate Revision",
+      "subject_id": "9b9d97b7-caf4-4c3e-ab49-e26d7497a33a",
+      "inputs": {
+        "schema": "cipher.estimate.inputs.v1",
+        "unit_manifest": {
+          "schema": "cipher.canonical.v1",
+          "dataset_id": "da3e3101-7f4a-43dd-aa3e-55bfe9ab5b6c",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": "PROJ-0024"
+          },
+          "records": [
+            {
+              "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+              "kind": "company",
+              "revision": 1,
+              "fields": {
+                "name": "Cipher Synthetic Company",
+                "currency": "USD",
+                "timezone": "Asia/Kolkata"
+              },
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "sfe91cb58a2163",
+                "dimension": "area",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST fixture sf e91cb58a2163"
+              }
+            },
+            {
+              "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "cye91cb58a2163",
+                "dimension": "volume",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST fixture cy e91cb58a2163"
+              }
+            },
+            {
+              "id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "lhe91cb58a2163",
+                "dimension": "labor_time",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST fixture lh e91cb58a2163"
+              }
+            },
+            {
+              "id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "ehe91cb58a2163",
+                "dimension": "equipment_time",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST fixture eh e91cb58a2163"
+              }
+            },
+            {
+              "id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "cfe91cb58a2163",
+                "dimension": "volume",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST fixture cf e91cb58a2163"
+              }
+            }
+          ],
+          "unit_conversions": [
+            {
+              "denominator": "27",
+              "dimension": "volume",
+              "from_unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+              "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+              "numerator": "1",
+              "revision": 1,
+              "source": "Authored exact definition:27 cubic feet per cubic yard",
+              "to_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+            }
+          ]
+        },
+        "currency": "USD",
+        "currency_exponent": 2,
+        "pricing_date": "2026-10-15",
+        "policy_version": "cipher.estimate.line-half-up.v1",
+        "basis_description": "Explicit authored estimate; no measured geometry",
+        "basis_citations": [
+          {
+            "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+            "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+            "document_title": "Explicit EST source e91cb58a2163",
+            "revision_number": 1,
+            "page": 1,
+            "page_label": "1",
+            "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+            "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+            "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+            "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2"
+          }
+        ],
+        "rates": {
+          "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5": {
+            "cost_type": "equipment",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "No freight or tax in this fixture",
+            "geography": "Explicit synthetic region",
+            "id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+            "inclusions": "Authored fixture only",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+            "predecessor": null,
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+            "rate_amount": "40",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+                "document_title": "Explicit EST source e91cb58a2163",
+                "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+                "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+                "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+                "revision_number": 1,
+                "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+              }
+            ],
+            "source_id": "96341527-dfd9-47c0-a4e7-be5b04ef9a9e",
+            "title": "Explicit authored equipment",
+            "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718"
+          },
+          "bd106887-3572-431b-8b8e-2624c5adf1a4": {
+            "cost_type": "labor",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "No freight or tax in this fixture",
+            "geography": "Explicit synthetic region",
+            "id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+            "inclusions": "Authored fixture only",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+            "predecessor": null,
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+            "rate_amount": "25",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+                "document_title": "Explicit EST source e91cb58a2163",
+                "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+                "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+                "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+                "revision_number": 1,
+                "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+              }
+            ],
+            "source_id": "1c485916-988b-4cd1-adfb-8945bdfc9d8c",
+            "title": "Explicit authored labor",
+            "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474"
+          },
+          "f9340670-57d7-4ed0-808e-171bedd70f2d": {
+            "cost_type": "material",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "No freight or tax in this fixture",
+            "geography": "Explicit synthetic region",
+            "id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+            "inclusions": "Authored fixture only",
+            "item": "EST-item-e91cb58a2163",
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+            "predecessor": null,
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+            "rate_amount": "27",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+                "document_title": "Explicit EST source e91cb58a2163",
+                "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+                "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+                "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+                "revision_number": 1,
+                "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+              }
+            ],
+            "source_id": "52be6d2c-0982-4c56-ba6c-e0d533b07a96",
+            "title": "Explicit authored material",
+            "unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+          }
+        },
+        "assemblies": {
+          "eaf3d034-bc77-4430-8cd5-fddedba9b37b": {
+            "assembly_id": "328aecbf-dade-41ed-a55f-0a575b0cb968",
+            "author_basis": "Authored productivity, equipment duration, material factor and waste fixture",
+            "basis_unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+            "components": [
+              {
+                "kind": "material",
+                "line_id": "19d8f225-2bfb-4234-a4b7-0dfa35ced83e",
+                "material_factor": "1.1",
+                "rate_source_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+                "resource_quantity": {
+                  "amount": "2",
+                  "precision": 6,
+                  "unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72"
+                },
+                "waste_fraction": "0.05",
+                "work_quantity": {
+                  "amount": "10",
+                  "precision": 6,
+                  "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+                }
+              },
+              {
+                "kind": "labor",
+                "line_id": "86746324-6a51-4c9c-a2f5-94576ce57060",
+                "material_factor": "1",
+                "rate_source_id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+                "resource_quantity": {
+                  "amount": "2",
+                  "precision": 6,
+                  "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474"
+                },
+                "waste_fraction": "0",
+                "work_quantity": {
+                  "amount": "10",
+                  "precision": 6,
+                  "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+                }
+              },
+              {
+                "kind": "equipment",
+                "line_id": "02f0dcc1-c359-4570-900a-7b3ace5b9d2d",
+                "material_factor": "1",
+                "rate_source_id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+                "resource_quantity": {
+                  "amount": "1",
+                  "precision": 6,
+                  "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718"
+                },
+                "waste_fraction": "0",
+                "work_quantity": {
+                  "amount": "10",
+                  "precision": 6,
+                  "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+                }
+              }
+            ],
+            "id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+            "predecessor": null,
+            "revision": 1,
+            "title": "Explicit EST assembly"
+          }
+        },
+        "lines": [
+          {
+            "line_id": "3af1eef5-05d1-4732-9b38-56e6f51bb56f",
+            "description": "Explicit material/labor/equipment build-up",
+            "quantity": {
+              "amount": "100",
+              "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+              "precision": 6
+            },
+            "cost_code": "EST-TEST-01",
+            "notes": "Authored quantity with no geometry or calibration claim",
+            "alternate": "",
+            "included": true,
+            "assembly_revision_id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b"
+          }
+        ],
+        "adjustments": [
+          {
+            "line_id": "addfecf8-36a8-4469-b17b-63b464e0aa32",
+            "kind": "indirect",
+            "label": "Explicit overhead",
+            "method": "fraction_of_direct",
+            "value": "0.10",
+            "basis_description": "Ten percent of rounded direct lines"
+          },
+          {
+            "line_id": "d6655e7f-8c80-4878-a4f8-7995fa0c743c",
+            "kind": "contingency",
+            "label": "Explicit contingency",
+            "method": "fixed",
+            "value": "10.00",
+            "basis_description": "Authored fixed allowance"
+          }
+        ]
+      },
+      "result": {
+        "schema": "cipher.estimate.result.v1",
+        "policy": {
+          "version": "cipher.estimate.line-half-up.v1",
+          "rounding_mode": "ROUND_HALF_UP",
+          "currency_exponent": 2,
+          "intermediate": "exact-rational",
+          "line_rounding": "sum-exact-components-then-round",
+          "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+          "header_rounding": "sum-rounded-lines"
+        },
+        "lines": [
+          {
+            "line_id": "3af1eef5-05d1-4732-9b38-56e6f51bb56f",
+            "description": "Explicit material/labor/equipment build-up",
+            "quantity": {
+              "amount": "100",
+              "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "EST-TEST-01",
+            "components": [
+              {
+                "component_id": "19d8f225-2bfb-4234-a4b7-0dfa35ced83e",
+                "rate_source_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef",
+                "resource_quantity_exact": {
+                  "numerator": "20",
+                  "denominator": "27"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "77",
+                  "denominator": "90"
+                },
+                "material_factor": {
+                  "numerator": "11",
+                  "denominator": "10"
+                },
+                "waste_fraction": {
+                  "numerator": "1",
+                  "denominator": "20"
+                },
+                "unrounded_cost": {
+                  "numerator": "231",
+                  "denominator": "10"
+                },
+                "allocated_amount": {
+                  "amount": "23.10",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              },
+              {
+                "component_id": "86746324-6a51-4c9c-a2f5-94576ce57060",
+                "rate_source_id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+                "rate_revision": 1,
+                "cost_type": "labor",
+                "source_unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+                "resource_quantity_exact": {
+                  "numerator": "20",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "20",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "500",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "500.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              },
+              {
+                "component_id": "02f0dcc1-c359-4570-900a-7b3ace5b9d2d",
+                "rate_source_id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+                "rate_revision": 1,
+                "cost_type": "equipment",
+                "source_unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+                "resource_quantity_exact": {
+                  "numerator": "10",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "10",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "400",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "400.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "9231",
+              "denominator": "10"
+            },
+            "extension": {
+              "amount": "923.10",
+              "currency": "USD"
+            }
+          }
+        ],
+        "adjustments": [
+          {
+            "line_id": "addfecf8-36a8-4469-b17b-63b464e0aa32",
+            "kind": "indirect",
+            "label": "Explicit overhead",
+            "method": "fraction_of_direct",
+            "value": "0.10",
+            "basis_description": "Ten percent of rounded direct lines",
+            "unrounded_amount": {
+              "numerator": "9231",
+              "denominator": "100"
+            },
+            "amount": {
+              "amount": "92.31",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "d6655e7f-8c80-4878-a4f8-7995fa0c743c",
+            "kind": "contingency",
+            "label": "Explicit contingency",
+            "method": "fixed",
+            "value": "10.00",
+            "basis_description": "Authored fixed allowance",
+            "unrounded_amount": {
+              "numerator": "10",
+              "denominator": "1"
+            },
+            "amount": {
+              "amount": "10.00",
+              "currency": "USD"
+            }
+          }
+        ],
+        "direct": {
+          "amount": "923.10",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "92.31",
+          "currency": "USD"
+        },
+        "contingency": {
+          "amount": "10.00",
+          "currency": "USD"
+        },
+        "total": {
+          "amount": "1025.41",
+          "currency": "USD"
+        },
+        "conversion_references": [
+          {
+            "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+            "revision": 1,
+            "source": "Authored exact definition:27 cubic feet per cubic yard",
+            "numerator": "1",
+            "denominator": "27"
+          }
+        ],
+        "input_digest": "69888d88f8c4c678b32d042db09ab70d0d014d426966c18f8d640978b65027fd",
+        "output_digest": "6bf4d136bf938691bacaa174f277aaaee87eb1b44bc93ee498b94a0a49fca0ef"
+      },
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-15 20:58:27.920363"
+      },
+      "input_digest": "69888d88f8c4c678b32d042db09ab70d0d014d426966c18f8d640978b65027fd",
+      "output_digest": "6bf4d136bf938691bacaa174f277aaaee87eb1b44bc93ee498b94a0a49fca0ef",
+      "source_citations": [
+        {
+          "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+          "document_title": "Explicit EST source e91cb58a2163",
+          "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+          "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+          "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+          "revision_number": 1,
+          "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+        }
+      ]
+    },
+    "history_id": "qpqmqo0puh",
+    "operation": {
+      "id": "45e436b6-7ee5-4c7d-af28-762f886b23a9",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "EstSnapshotRecord": {
+    "author_person": "EST-FIXTURE-e91cb58a2163",
+    "author_user": "est.fixture.e91cb58a2163@cipher.example",
+    "company": "Cipher Synthetic Company",
+    "created_at": "2026-10-15T15:28:31.305819+00:00",
+    "currency_policy": {
+      "currency": "USD",
+      "currency_exponent": 2,
+      "fraction_units": 100,
+      "native_currency_version": "2026-10-15 20:58:27.920363"
+    },
+    "id": "da3e3101-7f4a-43dd-aa3e-55bfe9ab5b6c",
+    "input_digest": "69888d88f8c4c678b32d042db09ab70d0d014d426966c18f8d640978b65027fd",
+    "inputs": {
+      "adjustments": [
+        {
+          "basis_description": "Ten percent of rounded direct lines",
+          "kind": "indirect",
+          "label": "Explicit overhead",
+          "line_id": "addfecf8-36a8-4469-b17b-63b464e0aa32",
+          "method": "fraction_of_direct",
+          "value": "0.10"
+        },
+        {
+          "basis_description": "Authored fixed allowance",
+          "kind": "contingency",
+          "label": "Explicit contingency",
+          "line_id": "d6655e7f-8c80-4878-a4f8-7995fa0c743c",
+          "method": "fixed",
+          "value": "10.00"
+        }
+      ],
+      "assemblies": {
+        "eaf3d034-bc77-4430-8cd5-fddedba9b37b": {
+          "assembly_id": "328aecbf-dade-41ed-a55f-0a575b0cb968",
+          "author_basis": "Authored productivity, equipment duration, material factor and waste fixture",
+          "basis_unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+          "components": [
+            {
+              "kind": "material",
+              "line_id": "19d8f225-2bfb-4234-a4b7-0dfa35ced83e",
+              "material_factor": "1.1",
+              "rate_source_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+              "resource_quantity": {
+                "amount": "2",
+                "precision": 6,
+                "unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72"
+              },
+              "waste_fraction": "0.05",
+              "work_quantity": {
+                "amount": "10",
+                "precision": 6,
+                "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+              }
+            },
+            {
+              "kind": "labor",
+              "line_id": "86746324-6a51-4c9c-a2f5-94576ce57060",
+              "material_factor": "1",
+              "rate_source_id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+              "resource_quantity": {
+                "amount": "2",
+                "precision": 6,
+                "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474"
+              },
+              "waste_fraction": "0",
+              "work_quantity": {
+                "amount": "10",
+                "precision": 6,
+                "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+              }
+            },
+            {
+              "kind": "equipment",
+              "line_id": "02f0dcc1-c359-4570-900a-7b3ace5b9d2d",
+              "material_factor": "1",
+              "rate_source_id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+              "resource_quantity": {
+                "amount": "1",
+                "precision": 6,
+                "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718"
+              },
+              "waste_fraction": "0",
+              "work_quantity": {
+                "amount": "10",
+                "precision": 6,
+                "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+              }
+            }
+          ],
+          "id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+          "predecessor": null,
+          "revision": 1,
+          "title": "Explicit EST assembly"
+        }
+      },
+      "basis_citations": [
+        {
+          "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+          "document_title": "Explicit EST source e91cb58a2163",
+          "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+          "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+          "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+          "revision_number": 1,
+          "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+        }
+      ],
+      "basis_description": "Explicit authored estimate; no measured geometry",
+      "currency": "USD",
+      "currency_exponent": 2,
+      "lines": [
+        {
+          "alternate": "",
+          "assembly_revision_id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+          "cost_code": "EST-TEST-01",
+          "description": "Explicit material/labor/equipment build-up",
+          "included": true,
+          "line_id": "3af1eef5-05d1-4732-9b38-56e6f51bb56f",
+          "notes": "Authored quantity with no geometry or calibration claim",
+          "quantity": {
+            "amount": "100",
+            "precision": 6,
+            "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+          }
+        }
+      ],
+      "policy_version": "cipher.estimate.line-half-up.v1",
+      "pricing_date": "2026-10-15",
+      "rates": {
+        "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5": {
+          "cost_type": "equipment",
+          "currency": "USD",
+          "exclusions": "",
+          "expiry_date": "2026-10-31",
+          "freight_tax_assumptions": "No freight or tax in this fixture",
+          "geography": "Explicit synthetic region",
+          "id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+          "inclusions": "Authored fixture only",
+          "item": null,
+          "party": null,
+          "party_type": null,
+          "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+          "predecessor": null,
+          "quote_date": "2026-10-01",
+          "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+          "rate_amount": "40",
+          "rate_precision": 6,
+          "revision": 1,
+          "source_citations": [
+            {
+              "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+              "document_title": "Explicit EST source e91cb58a2163",
+              "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+              "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+              "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+              "page": 1,
+              "page_label": "1",
+              "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+              "revision_number": 1,
+              "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+            }
+          ],
+          "source_id": "96341527-dfd9-47c0-a4e7-be5b04ef9a9e",
+          "title": "Explicit authored equipment",
+          "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718"
+        },
+        "bd106887-3572-431b-8b8e-2624c5adf1a4": {
+          "cost_type": "labor",
+          "currency": "USD",
+          "exclusions": "",
+          "expiry_date": "2026-10-31",
+          "freight_tax_assumptions": "No freight or tax in this fixture",
+          "geography": "Explicit synthetic region",
+          "id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+          "inclusions": "Authored fixture only",
+          "item": null,
+          "party": null,
+          "party_type": null,
+          "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+          "predecessor": null,
+          "quote_date": "2026-10-01",
+          "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+          "rate_amount": "25",
+          "rate_precision": 6,
+          "revision": 1,
+          "source_citations": [
+            {
+              "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+              "document_title": "Explicit EST source e91cb58a2163",
+              "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+              "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+              "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+              "page": 1,
+              "page_label": "1",
+              "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+              "revision_number": 1,
+              "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+            }
+          ],
+          "source_id": "1c485916-988b-4cd1-adfb-8945bdfc9d8c",
+          "title": "Explicit authored labor",
+          "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474"
+        },
+        "f9340670-57d7-4ed0-808e-171bedd70f2d": {
+          "cost_type": "material",
+          "currency": "USD",
+          "exclusions": "",
+          "expiry_date": "2026-10-31",
+          "freight_tax_assumptions": "No freight or tax in this fixture",
+          "geography": "Explicit synthetic region",
+          "id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+          "inclusions": "Authored fixture only",
+          "item": "EST-item-e91cb58a2163",
+          "party": null,
+          "party_type": null,
+          "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+          "predecessor": null,
+          "quote_date": "2026-10-01",
+          "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+          "rate_amount": "27",
+          "rate_precision": 6,
+          "revision": 1,
+          "source_citations": [
+            {
+              "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+              "document_title": "Explicit EST source e91cb58a2163",
+              "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+              "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+              "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+              "page": 1,
+              "page_label": "1",
+              "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+              "revision_number": 1,
+              "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+            }
+          ],
+          "source_id": "52be6d2c-0982-4c56-ba6c-e0d533b07a96",
+          "title": "Explicit authored material",
+          "unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+        }
+      },
+      "schema": "cipher.estimate.inputs.v1",
+      "unit_manifest": {
+        "dataset_id": "da3e3101-7f4a-43dd-aa3e-55bfe9ab5b6c",
+        "records": [
+          {
+            "fields": {
+              "currency": "USD",
+              "name": "Cipher Synthetic Company",
+              "timezone": "Asia/Kolkata"
+            },
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "area",
+              "precision": 6,
+              "symbol": "sfe91cb58a2163"
+            },
+            "id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST fixture sf e91cb58a2163"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "volume",
+              "precision": 6,
+              "symbol": "cye91cb58a2163"
+            },
+            "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST fixture cy e91cb58a2163"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "labor_time",
+              "precision": 6,
+              "symbol": "lhe91cb58a2163"
+            },
+            "id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST fixture lh e91cb58a2163"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "equipment_time",
+              "precision": 6,
+              "symbol": "ehe91cb58a2163"
+            },
+            "id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST fixture eh e91cb58a2163"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "volume",
+              "precision": 6,
+              "symbol": "cfe91cb58a2163"
+            },
+            "id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST fixture cf e91cb58a2163"
+            }
+          }
+        ],
+        "schema": "cipher.canonical.v1",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0024"
+        },
+        "unit_conversions": [
+          {
+            "denominator": "27",
+            "dimension": "volume",
+            "from_unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+            "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+            "numerator": "1",
+            "revision": 1,
+            "source": "Authored exact definition:27 cubic feet per cubic yard",
+            "to_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+          }
+        ]
+      }
+    },
+    "output_digest": "6bf4d136bf938691bacaa174f277aaaee87eb1b44bc93ee498b94a0a49fca0ef",
+    "project": "PROJ-0024",
+    "result": {
+      "adjustments": [
+        {
+          "amount": {
+            "amount": "92.31",
+            "currency": "USD"
+          },
+          "basis_description": "Ten percent of rounded direct lines",
+          "kind": "indirect",
+          "label": "Explicit overhead",
+          "line_id": "addfecf8-36a8-4469-b17b-63b464e0aa32",
+          "method": "fraction_of_direct",
+          "unrounded_amount": {
+            "denominator": "100",
+            "numerator": "9231"
+          },
+          "value": "0.10"
+        },
+        {
+          "amount": {
+            "amount": "10.00",
+            "currency": "USD"
+          },
+          "basis_description": "Authored fixed allowance",
+          "kind": "contingency",
+          "label": "Explicit contingency",
+          "line_id": "d6655e7f-8c80-4878-a4f8-7995fa0c743c",
+          "method": "fixed",
+          "unrounded_amount": {
+            "denominator": "1",
+            "numerator": "10"
+          },
+          "value": "10.00"
+        }
+      ],
+      "contingency": {
+        "amount": "10.00",
+        "currency": "USD"
+      },
+      "conversion_references": [
+        {
+          "denominator": "27",
+          "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+          "numerator": "1",
+          "revision": 1,
+          "source": "Authored exact definition:27 cubic feet per cubic yard"
+        }
+      ],
+      "direct": {
+        "amount": "923.10",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "92.31",
+        "currency": "USD"
+      },
+      "input_digest": "69888d88f8c4c678b32d042db09ab70d0d014d426966c18f8d640978b65027fd",
+      "lines": [
+        {
+          "alternate": "",
+          "components": [
+            {
+              "allocated_amount": {
+                "amount": "23.10",
+                "currency": "USD"
+              },
+              "component_id": "19d8f225-2bfb-4234-a4b7-0dfa35ced83e",
+              "cost_type": "material",
+              "material_factor": {
+                "denominator": "10",
+                "numerator": "11"
+              },
+              "priced_quantity_exact": {
+                "denominator": "90",
+                "numerator": "77"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+              "resource_quantity_exact": {
+                "denominator": "27",
+                "numerator": "20"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef",
+              "unrounded_cost": {
+                "denominator": "10",
+                "numerator": "231"
+              },
+              "waste_fraction": {
+                "denominator": "20",
+                "numerator": "1"
+              }
+            },
+            {
+              "allocated_amount": {
+                "amount": "500.00",
+                "currency": "USD"
+              },
+              "component_id": "86746324-6a51-4c9c-a2f5-94576ce57060",
+              "cost_type": "labor",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "20"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "20"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "500"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            },
+            {
+              "allocated_amount": {
+                "amount": "400.00",
+                "currency": "USD"
+              },
+              "component_id": "02f0dcc1-c359-4570-900a-7b3ace5b9d2d",
+              "cost_type": "equipment",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "10"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "10"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "400"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            }
+          ],
+          "cost_code": "EST-TEST-01",
+          "description": "Explicit material/labor/equipment build-up",
+          "extension": {
+            "amount": "923.10",
+            "currency": "USD"
+          },
+          "included": true,
+          "line_id": "3af1eef5-05d1-4732-9b38-56e6f51bb56f",
+          "quantity": {
+            "amount": "100",
+            "precision": 6,
+            "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a"
+          },
+          "quantity_method": "authored",
+          "unrounded_extension": {
+            "denominator": "10",
+            "numerator": "9231"
+          }
+        }
+      ],
+      "output_digest": "6bf4d136bf938691bacaa174f277aaaee87eb1b44bc93ee498b94a0a49fca0ef",
+      "policy": {
+        "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+        "currency_exponent": 2,
+        "header_rounding": "sum-rounded-lines",
+        "intermediate": "exact-rational",
+        "line_rounding": "sum-exact-components-then-round",
+        "rounding_mode": "ROUND_HALF_UP",
+        "version": "cipher.estimate.line-half-up.v1"
+      },
+      "schema": "cipher.estimate.result.v1",
+      "total": {
+        "amount": "1025.41",
+        "currency": "USD"
+      }
+    },
+    "source_citations": [
+      {
+        "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+        "document_title": "Explicit EST source e91cb58a2163",
+        "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+        "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+        "page": 1,
+        "page_label": "1",
+        "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+        "revision_number": 1,
+        "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+      }
+    ],
+    "status": "calculated",
+    "subject_id": "9b9d97b7-caf4-4c3e-ab49-e26d7497a33a",
+    "subject_type": "Cipher Estimate Revision"
+  },
+  "EstAssemblyRecord": {
+    "id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0024",
+    "author_person": "EST-FIXTURE-e91cb58a2163",
+    "author_user": "est.fixture.e91cb58a2163@cipher.example",
+    "created_at": "2026-10-15T15:28:31.143011+00:00",
+    "status": "authored",
+    "assembly": {
+      "id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+      "assembly_id": "328aecbf-dade-41ed-a55f-0a575b0cb968",
+      "revision": 1,
+      "predecessor": null,
+      "title": "Explicit EST assembly",
+      "basis_unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+      "components": [
+        {
+          "line_id": "19d8f225-2bfb-4234-a4b7-0dfa35ced83e",
+          "rate_source_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+          "kind": "material",
+          "work_quantity": {
+            "amount": "10",
+            "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+            "precision": 6
+          },
+          "resource_quantity": {
+            "amount": "2",
+            "unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+            "precision": 6
+          },
+          "material_factor": "1.1",
+          "waste_fraction": "0.05"
+        },
+        {
+          "line_id": "86746324-6a51-4c9c-a2f5-94576ce57060",
+          "rate_source_id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+          "kind": "labor",
+          "work_quantity": {
+            "amount": "10",
+            "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+            "precision": 6
+          },
+          "resource_quantity": {
+            "amount": "2",
+            "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+            "precision": 6
+          },
+          "material_factor": "1",
+          "waste_fraction": "0"
+        },
+        {
+          "line_id": "02f0dcc1-c359-4570-900a-7b3ace5b9d2d",
+          "rate_source_id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+          "kind": "equipment",
+          "work_quantity": {
+            "amount": "10",
+            "unit_id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+            "precision": 6
+          },
+          "resource_quantity": {
+            "amount": "1",
+            "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+            "precision": 6
+          },
+          "material_factor": "1",
+          "waste_fraction": "0"
+        }
+      ],
+      "author_basis": "Authored productivity, equipment duration, material factor and waste fixture"
+    },
+    "rates": {
+      "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5": {
+        "cost_type": "equipment",
+        "currency": "USD",
+        "exclusions": "",
+        "expiry_date": "2026-10-31",
+        "freight_tax_assumptions": "No freight or tax in this fixture",
+        "geography": "Explicit synthetic region",
+        "id": "33daa04d-ebfe-49c4-8d0e-dea5c1029cf5",
+        "inclusions": "Authored fixture only",
+        "item": null,
+        "party": null,
+        "party_type": null,
+        "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+        "predecessor": null,
+        "quote_date": "2026-10-01",
+        "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+        "rate_amount": "40",
+        "rate_precision": 6,
+        "revision": 1,
+        "source_citations": [
+          {
+            "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+            "document_title": "Explicit EST source e91cb58a2163",
+            "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+            "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+            "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+            "page": 1,
+            "page_label": "1",
+            "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+            "revision_number": 1,
+            "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+          }
+        ],
+        "source_id": "96341527-dfd9-47c0-a4e7-be5b04ef9a9e",
+        "title": "Explicit authored equipment",
+        "unit_id": "dc66b0d6-0996-43be-92e3-9d42b56d1718"
+      },
+      "bd106887-3572-431b-8b8e-2624c5adf1a4": {
+        "cost_type": "labor",
+        "currency": "USD",
+        "exclusions": "",
+        "expiry_date": "2026-10-31",
+        "freight_tax_assumptions": "No freight or tax in this fixture",
+        "geography": "Explicit synthetic region",
+        "id": "bd106887-3572-431b-8b8e-2624c5adf1a4",
+        "inclusions": "Authored fixture only",
+        "item": null,
+        "party": null,
+        "party_type": null,
+        "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+        "predecessor": null,
+        "quote_date": "2026-10-01",
+        "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+        "rate_amount": "25",
+        "rate_precision": 6,
+        "revision": 1,
+        "source_citations": [
+          {
+            "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+            "document_title": "Explicit EST source e91cb58a2163",
+            "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+            "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+            "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+            "page": 1,
+            "page_label": "1",
+            "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+            "revision_number": 1,
+            "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+          }
+        ],
+        "source_id": "1c485916-988b-4cd1-adfb-8945bdfc9d8c",
+        "title": "Explicit authored labor",
+        "unit_id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474"
+      },
+      "f9340670-57d7-4ed0-808e-171bedd70f2d": {
+        "cost_type": "material",
+        "currency": "USD",
+        "exclusions": "",
+        "expiry_date": "2026-10-31",
+        "freight_tax_assumptions": "No freight or tax in this fixture",
+        "geography": "Explicit synthetic region",
+        "id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+        "inclusions": "Authored fixture only",
+        "item": "EST-item-e91cb58a2163",
+        "party": null,
+        "party_type": null,
+        "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+        "predecessor": null,
+        "quote_date": "2026-10-01",
+        "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+        "rate_amount": "27",
+        "rate_precision": 6,
+        "revision": 1,
+        "source_citations": [
+          {
+            "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+            "document_title": "Explicit EST source e91cb58a2163",
+            "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+            "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+            "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+            "page": 1,
+            "page_label": "1",
+            "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+            "revision_number": 1,
+            "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+          }
+        ],
+        "source_id": "52be6d2c-0982-4c56-ba6c-e0d533b07a96",
+        "title": "Explicit authored material",
+        "unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+      }
+    },
+    "conversion_ids": [
+      "133acfcd-7b21-447b-a584-eec72fb392d0"
+    ],
+    "unit_manifest": {
+      "schema": "cipher.canonical.v1",
+      "dataset_id": "eaf3d034-bc77-4430-8cd5-fddedba9b37b",
+      "scope": {
+        "company": "Cipher Synthetic Company",
+        "project": "PROJ-0024"
+      },
+      "records": [
+        {
+          "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+          "kind": "company",
+          "revision": 1,
+          "fields": {
+            "name": "Cipher Synthetic Company",
+            "currency": "USD",
+            "timezone": "Asia/Kolkata"
+          },
+          "target": {
+            "doctype": "Company",
+            "name": "Cipher Synthetic Company"
+          }
+        },
+        {
+          "id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "sfe91cb58a2163",
+            "dimension": "area",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture sf e91cb58a2163"
+          }
+        },
+        {
+          "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "cye91cb58a2163",
+            "dimension": "volume",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture cy e91cb58a2163"
+          }
+        },
+        {
+          "id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "lhe91cb58a2163",
+            "dimension": "labor_time",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture lh e91cb58a2163"
+          }
+        },
+        {
+          "id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "ehe91cb58a2163",
+            "dimension": "equipment_time",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture eh e91cb58a2163"
+          }
+        },
+        {
+          "id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "cfe91cb58a2163",
+            "dimension": "volume",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture cf e91cb58a2163"
+          }
+        }
+      ],
+      "unit_conversions": [
+        {
+          "denominator": "27",
+          "dimension": "volume",
+          "from_unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+          "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+          "numerator": "1",
+          "revision": 1,
+          "source": "Authored exact definition:27 cubic feet per cubic yard",
+          "to_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+        }
+      ]
+    },
+    "source_citations": [
+      {
+        "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+        "document_title": "Explicit EST source e91cb58a2163",
+        "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+        "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+        "page": 1,
+        "page_label": "1",
+        "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+        "revision_number": 1,
+        "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+      }
+    ]
+  },
+  "EstConversionRecord": {
+    "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0024",
+    "author_person": "EST-FIXTURE-e91cb58a2163",
+    "author_user": "est.fixture.e91cb58a2163@cipher.example",
+    "created_at": "2026-10-15T15:28:30.782336+00:00",
+    "status": "authored",
+    "definition": {
+      "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+      "revision": 1,
+      "from_unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+      "to_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef",
+      "dimension": "volume",
+      "numerator": "1",
+      "denominator": "27",
+      "source": "Authored exact definition:27 cubic feet per cubic yard"
+    },
+    "predecessor": null,
+    "source_citations": [
+      {
+        "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+        "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+        "document_title": "Explicit EST source e91cb58a2163",
+        "revision_number": 1,
+        "page": 1,
+        "page_label": "1",
+        "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+        "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2"
+      }
+    ],
+    "permission_basis": "Explicit synthetic source authored for internal estimate verification",
+    "unit_manifest": {
+      "schema": "cipher.canonical.v1",
+      "dataset_id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+      "scope": {
+        "company": "Cipher Synthetic Company",
+        "project": "PROJ-0024"
+      },
+      "records": [
+        {
+          "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+          "kind": "company",
+          "revision": 1,
+          "fields": {
+            "name": "Cipher Synthetic Company",
+            "currency": "USD",
+            "timezone": "Asia/Kolkata"
+          },
+          "target": {
+            "doctype": "Company",
+            "name": "Cipher Synthetic Company"
+          }
+        },
+        {
+          "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "cye91cb58a2163",
+            "dimension": "volume",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture cy e91cb58a2163"
+          }
+        },
+        {
+          "id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+          "kind": "uom",
+          "revision": 1,
+          "fields": {
+            "symbol": "cfe91cb58a2163",
+            "dimension": "volume",
+            "precision": 6
+          },
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture cf e91cb58a2163"
+          }
+        }
+      ],
+      "unit_conversions": [
+        {
+          "id": "133acfcd-7b21-447b-a584-eec72fb392d0",
+          "revision": 1,
+          "from_unit_id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+          "to_unit_id": "3fc8849a-7a35-4031-8885-6224092162ef",
+          "dimension": "volume",
+          "numerator": "1",
+          "denominator": "27",
+          "source": "Authored exact definition:27 cubic feet per cubic yard"
+        }
+      ]
+    }
+  },
+  "EstRateRecord": {
+    "author_person": "EST-FIXTURE-e91cb58a2163",
+    "author_user": "est.fixture.e91cb58a2163@cipher.example",
+    "company": "Cipher Synthetic Company",
+    "created_at": "2026-10-15T15:28:30.907825+00:00",
+    "id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+    "project": "PROJ-0024",
+    "rate": {
+      "cost_type": "material",
+      "currency": "USD",
+      "exclusions": "",
+      "expiry_date": "2026-10-31",
+      "freight_tax_assumptions": "No freight or tax in this fixture",
+      "geography": "Explicit synthetic region",
+      "id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+      "inclusions": "Authored fixture only",
+      "item": "EST-item-e91cb58a2163",
+      "party": null,
+      "party_type": null,
+      "permission_basis": "Explicit synthetic content authored for internal estimate tests",
+      "predecessor": null,
+      "quote_date": "2026-10-01",
+      "quote_reference": "EXPLICIT-EST-FIXTURE-e91cb58a2163",
+      "rate_amount": "27",
+      "rate_precision": 6,
+      "revision": 1,
+      "source_citations": [
+        {
+          "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+          "document_title": "Explicit EST source e91cb58a2163",
+          "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+          "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+          "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+          "revision_number": 1,
+          "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+        }
+      ],
+      "source_id": "52be6d2c-0982-4c56-ba6c-e0d533b07a96",
+      "title": "Explicit authored material",
+      "unit_id": "3fc8849a-7a35-4031-8885-6224092162ef"
+    },
+    "source_citations": [
+      {
+        "document_id": "DOC-6fa3027be9cb4546949133e96f8bdb63",
+        "document_title": "Explicit EST source e91cb58a2163",
+        "excerpt": "Explicit synthetic EST-01 authored source. One cubic yard equals 27 cubic feet. Concrete rate: USD27 per cubic yard. Labor: USD25 per labor hour. Equipment: USD40 per equipment hour. Tiny rate fixture: USD0.000000000001 per cubic foot. No freight or tax. Per ten square feet:2 cubic feet material,2 labor hours,1 equipment hour; material factor1.1 and waste0.05.",
+        "excerpt_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+        "id": "b53bbece1444237de21fbeeea824ea17864b0f92dc770eca61f8cc71f86fe2a2",
+        "page": 1,
+        "page_label": "1",
+        "revision_id": "REV-b201f7e8aaae47b4b00521e2e1401614",
+        "revision_number": 1,
+        "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483"
+      }
+    ],
+    "status": "authored",
+    "unit_manifest": {
+      "dataset_id": "f9340670-57d7-4ed0-808e-171bedd70f2d",
+      "records": [
+        {
+          "fields": {
+            "currency": "USD",
+            "name": "Cipher Synthetic Company",
+            "timezone": "Asia/Kolkata"
+          },
+          "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+          "kind": "company",
+          "revision": 1,
+          "target": {
+            "doctype": "Company",
+            "name": "Cipher Synthetic Company"
+          }
+        },
+        {
+          "fields": {
+            "dimension": "volume",
+            "precision": 6,
+            "symbol": "cye91cb58a2163"
+          },
+          "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "EST fixture cy e91cb58a2163"
+          }
+        }
+      ],
+      "schema": "cipher.canonical.v1",
+      "scope": {
+        "company": "Cipher Synthetic Company",
+        "project": "PROJ-0024"
+      },
+      "unit_conversions": []
+    }
+  },
+  "ListEstimateUnitsResponse": {
+    "items": [
+      {
+        "id": "e5dcecc5-13c1-4ca2-86fc-237dd0fe86eb",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cf19b37ec98e26",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cf 19b37ec98e26"
+        }
+      },
+      {
+        "id": "0884e65c-36ba-49a2-af52-a88b2eb65591",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cf5151443b0204",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cf 5151443b0204"
+        }
+      },
+      {
+        "id": "3e1fdc32-2281-4b88-b681-f48c753c40d9",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cf67677131abe6",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cf 67677131abe6"
+        }
+      },
+      {
+        "id": "efa1f048-1dc6-4aaf-b833-118747c49c18",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cfbe71057c5b2a",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cf be71057c5b2a"
+        }
+      },
+      {
+        "id": "e1ddb7d9-c8b0-4405-b3e5-64aacc842b72",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cfe91cb58a2163",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cf e91cb58a2163"
+        }
+      },
+      {
+        "id": "7496da6c-c998-4dae-8d26-1ee42377a2e1",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cy19b37ec98e26",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cy 19b37ec98e26"
+        }
+      },
+      {
+        "id": "c221fae2-8c8e-41fd-80cd-0a761589e07a",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cy5151443b0204",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cy 5151443b0204"
+        }
+      },
+      {
+        "id": "809445e2-fa8d-4ada-9eee-46514b2b6f11",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cy67677131abe6",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cy 67677131abe6"
+        }
+      },
+      {
+        "id": "781e269b-5e3b-4509-ab9c-6a8713c74844",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cybe71057c5b2a",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cy be71057c5b2a"
+        }
+      },
+      {
+        "id": "3fc8849a-7a35-4031-8885-6224092162ef",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "cye91cb58a2163",
+          "dimension": "volume",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture cy e91cb58a2163"
+        }
+      },
+      {
+        "id": "e4b57f5d-3a45-4cea-b553-21fd85c3d917",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "eh19b37ec98e26",
+          "dimension": "equipment_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture eh 19b37ec98e26"
+        }
+      },
+      {
+        "id": "a5b9c504-3630-4851-b4c8-6bf5af488d1c",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "eh5151443b0204",
+          "dimension": "equipment_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture eh 5151443b0204"
+        }
+      },
+      {
+        "id": "04bf3477-167c-40f7-831c-c120247cd787",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "eh67677131abe6",
+          "dimension": "equipment_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture eh 67677131abe6"
+        }
+      },
+      {
+        "id": "d71c9236-b305-40e6-806e-7859ee05474b",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "ehbe71057c5b2a",
+          "dimension": "equipment_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture eh be71057c5b2a"
+        }
+      },
+      {
+        "id": "dc66b0d6-0996-43be-92e3-9d42b56d1718",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "ehe91cb58a2163",
+          "dimension": "equipment_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture eh e91cb58a2163"
+        }
+      },
+      {
+        "id": "9d74ffae-7bf9-48b9-9c89-a3af9a676349",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "lh19b37ec98e26",
+          "dimension": "labor_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture lh 19b37ec98e26"
+        }
+      },
+      {
+        "id": "df40175e-7a3b-4003-9ce5-4aaa2830b9e3",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "lh5151443b0204",
+          "dimension": "labor_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture lh 5151443b0204"
+        }
+      },
+      {
+        "id": "f8bc900b-9717-4765-8cf6-d344434a0adb",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "lh67677131abe6",
+          "dimension": "labor_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture lh 67677131abe6"
+        }
+      },
+      {
+        "id": "3f495d92-6617-49b5-a534-20e0fc289e6b",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "lhbe71057c5b2a",
+          "dimension": "labor_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture lh be71057c5b2a"
+        }
+      },
+      {
+        "id": "a0ad4a2c-7cee-4b5a-90d8-311377ba2474",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "lhe91cb58a2163",
+          "dimension": "labor_time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture lh e91cb58a2163"
+        }
+      },
+      {
+        "id": "c7884045-3363-465a-a0a8-52bd36c5bdb6",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "sf19b37ec98e26",
+          "dimension": "area",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture sf 19b37ec98e26"
+        }
+      },
+      {
+        "id": "de33e28f-268e-4163-ab5b-495cc43cd248",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "sf5151443b0204",
+          "dimension": "area",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture sf 5151443b0204"
+        }
+      },
+      {
+        "id": "f822c298-9231-441a-9264-f5b7b92d246f",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "sf67677131abe6",
+          "dimension": "area",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture sf 67677131abe6"
+        }
+      },
+      {
+        "id": "7481ec30-5575-417c-927a-d10210e1b6e3",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "sfbe71057c5b2a",
+          "dimension": "area",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture sf be71057c5b2a"
+        }
+      },
+      {
+        "id": "3641a194-a7da-4bbc-b82e-a7377cfead7a",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "sfe91cb58a2163",
+          "dimension": "area",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture sf e91cb58a2163"
+        }
+      },
+      {
+        "id": "75eed905-cb29-4452-b335-eb4dd59a1e32",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "time19b37ec98e26",
+          "dimension": "time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture time 19b37ec98e26"
+        }
+      },
+      {
+        "id": "5a9e9227-b99c-4f44-907c-fc2086cef8ab",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "time5151443b0204",
+          "dimension": "time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture time 5151443b0204"
+        }
+      },
+      {
+        "id": "d98dd10e-88ea-4293-b0d6-8d69898031e3",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "time67677131abe6",
+          "dimension": "time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture time 67677131abe6"
+        }
+      },
+      {
+        "id": "01cf1691-b06f-4c8e-b879-a1aaf30586d1",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "timebe71057c5b2a",
+          "dimension": "time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture time be71057c5b2a"
+        }
+      },
+      {
+        "id": "b630c344-49d9-4796-956c-575a51c10108",
+        "kind": "uom",
+        "revision": 1,
+        "fields": {
+          "symbol": "timee91cb58a2163",
+          "dimension": "time",
+          "precision": 6
+        },
+        "target": {
+          "doctype": "UOM",
+          "name": "EST fixture time e91cb58a2163"
+        }
+      }
+    ]
+  }
+}

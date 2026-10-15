@@ -1,0 +1,132 @@
+{
+  "kind": "planning-only framework package",
+  "product": "Cipher \u2014 The AEC/CMS Pro",
+  "worktree": "/workspace/cipher-framework-draft",
+  "branch": "cipher/framework-final-draft",
+  "base_commit": "a84cde6ac1b633450d7a122549b6bf9589ec8bc3",
+  "implementation_authorized": false,
+  "design_basis": "Current owner requirements plus selected open-source foundations; no prior Cipher/Odoo design dependency",
+  "existing_ricky": "External local model integration through new contracts; actual runtime not verified",
+  "work_packages": 66,
+  "completion_scenarios": 26,
+  "module_boundaries": 16,
+  "main_word_count": 13461,
+  "files": [
+    {
+      "path": "apps/cipher/docs/framework/BACKEND_FRAMEWORK.md",
+      "sha256": "d3f3f1fef80a2115bf8227bfbd662ee159278e90cecb932f17e7403b7f5df3b5"
+    },
+    {
+      "path": "apps/cipher/docs/framework/COMPLETION_MATRIX.md",
+      "sha256": "16351603a00647f77bacd781a858394e2f1212eac47770eef58dd139881ffb30"
+    },
+    {
+      "path": "apps/cipher/docs/framework/DECISIONS_AND_DEPENDENCIES.md",
+      "sha256": "afa3df0ed51774c3ba3b10440de325b680bfbd06f3f712e513edbf60bd6a4a79"
+    },
+    {
+      "path": "apps/cipher/docs/framework/EXECUTION_BACKLOG.md",
+      "sha256": "c4272295df5c96c98ec7abd93d33e7a1117419bff9202e806b763fc9f1cd7d3f"
+    },
+    {
+      "path": "apps/cipher/docs/framework/README.md",
+      "sha256": "fc20c676e18d880cac1457f1cd350b1310109494498eb64afe2fb8243be72f59"
+    },
+    {
+      "path": "apps/cipher/docs/framework/backlog.json",
+      "sha256": "866b16f4bebf9424a83193ce7fcadf78f5207d0b7bfe16c229639263c73ca2f0"
+    },
+    {
+      "path": "apps/cipher/platform/AGENTS.md",
+      "sha256": "e46219777984bd37e9da87c12b72e996eba10c5ca89b2b71bb80661613576087"
+    },
+    {
+      "path": "apps/cipher/platform/README.md",
+      "sha256": "b95f46a5bec1b17052ae5aa927647fe285450c1d00224fd9a3b6819462c11478"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/README.md",
+      "sha256": "498c582bb989eb0bf4d3455e917aefe2818dd4cffd98ee167b4ba5fdc2afc3b1"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/README.md",
+      "sha256": "2932789a3f75473980c317dad346a9d1fed3f71d020c6cbd2f9097cc5d090959"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/README.md",
+      "sha256": "c7d31867e92a995149bd266e2897d66e4804693df33441a0e3891035d0b90b92"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/README.md",
+      "sha256": "5e0455b2e6a827cf3adca3d7e7360a7d9a060dfb4218b9232eabc51c31d7616c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/README.md",
+      "sha256": "bceca34733eb54b876720ea36c3c4da0b1ca06d76322d56a5f567ae16e0b2dcd"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/README.md",
+      "sha256": "796f02d58042d5902b0a10e4330ace44094b7a8114d01e2c275fdb656985f920"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/README.md",
+      "sha256": "ceec1a7ff436ab52ec244cbf0c7857b9bbe6f7e5a698640b80acdb0dd0fe4ad0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/README.md",
+      "sha256": "aed1a0483dac87e92206af568a6d1a5bd480b29e0fbb203a1c4c43ac9280d543"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/README.md",
+      "sha256": "7df9b70f1fe78a4058454e62c690b4002281f5e185b1f77d3c0e15bc9532cb8b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/README.md",
+      "sha256": "84feca66c185fa8f4f1dfc9fa1a7ef9be7c326d729ec1275304297552eadaa2d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/README.md",
+      "sha256": "a84f4e2c9195e76de973e24b3bf31b1d02e41721a8f7cbf8645446fff6cf513b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/README.md",
+      "sha256": "5a680c806c755efe5f18c95160ca1b94b30aad9fa927d776ece417777a014658"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/README.md",
+      "sha256": "b004eb7a6ff83a8d7ae1bc9749cf6356883db4681d9c169e33be65cc629bf852"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/reporting/README.md",
+      "sha256": "e8d3b9f957212cb0d71e29816876ba85a1ab4871315eb3890a6291bf4fd358b4"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/README.md",
+      "sha256": "1e138a3f3d199bca78663177ca388200d09fe3d86e82a1b4f549227e9f18fcd3"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/README.md",
+      "sha256": "fc549bf861a8242b0a3d1a9182a78c56afe9fd98a01fcdbf9cda39cea9fd7b35"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/workforce_assets/README.md",
+      "sha256": "d429c32271ab9d1b3dffd73cf328794eb4d444d11457c5bc87bf51c2c1e868f1"
+    },
+    {
+      "path": "apps/cipher/platform/deployment/README.md",
+      "sha256": "7767127f32aee452b88ed32da8f65662baaa3bdfa0540249750f075d23342798"
+    },
+    {
+      "path": "apps/cipher/platform/operations/README.md",
+      "sha256": "23d20dd2d443a31377297af9db751a1a9a14220cc7a8e677cee640c5e7c9a132"
+    },
+    {
+      "path": "apps/cipher/product/AGENTS.md",
+      "sha256": "bcad2877611715874cc5c499a769e984a458b74e2981d5ff45b6cd00b9f7a001"
+    },
+    {
+      "path": "apps/cipher/product/README.md",
+      "sha256": "fbc01c794659baeaa86e5f674bd08dc9692da7b8538d0d67a32126ec4577ecdf"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "mode": "actual-frappe-read-only-reviewer",
+  "captured_at": "2026-10-15T15:19:17.805Z",
+  "mocked_requests": false,
+  "business_writes": false,
+  "browser_errors": 0,
+  "document_http_statuses": [
+    403
+  ],
+  "checks": [
+    "permanent permission state has plain current-access message",
+    "no retry for HTTP403",
+    "approval inbox remains usable",
+    "no task-create authority"
+  ]
+}

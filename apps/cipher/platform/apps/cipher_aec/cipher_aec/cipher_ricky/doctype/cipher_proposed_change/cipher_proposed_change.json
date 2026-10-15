@@ -1,0 +1,92 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposed Change",
+  "module": "Cipher Ricky",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 1,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "requested_by",
+    "person_id",
+    "run_id",
+    "status",
+    "operation_key",
+    "data_json"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "options": "Company",
+      "label": "Company",
+      "reqd": 1,
+      "in_list_view": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "options": "Project",
+      "label": "Project",
+      "reqd": 1,
+      "in_list_view": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "requested_by",
+      "fieldtype": "Link",
+      "options": "User",
+      "label": "Requested By",
+      "reqd": 1
+    },
+    {
+      "fieldname": "person_id",
+      "fieldtype": "Data",
+      "label": "Person ID",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "run_id",
+      "fieldtype": "Link",
+      "options": "Cipher Ricky Run",
+      "label": "Run ID",
+      "search_index": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1,
+      "in_list_view": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "operation_key",
+      "fieldtype": "Data",
+      "label": "Operation Key",
+      "unique": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Durable State JSON",
+      "reqd": 1,
+      "hidden": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

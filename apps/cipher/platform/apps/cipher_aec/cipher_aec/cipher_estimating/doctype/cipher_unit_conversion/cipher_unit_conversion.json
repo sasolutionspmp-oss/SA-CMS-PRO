@@ -1,0 +1,119 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Unit Conversion",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "from_unit_id",
+    "to_unit_id",
+    "from_uom",
+    "to_uom",
+    "revision_number",
+    "predecessor"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "from_unit_id",
+      "fieldtype": "Data",
+      "label": "From Unit Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "to_unit_id",
+      "fieldtype": "Data",
+      "label": "To Unit Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "from_uom",
+      "fieldtype": "Link",
+      "label": "From Uom",
+      "reqd": 1,
+      "options": "UOM"
+    },
+    {
+      "fieldname": "to_uom",
+      "fieldtype": "Link",
+      "label": "To Uom",
+      "reqd": 1,
+      "options": "UOM"
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Link",
+      "label": "Predecessor",
+      "reqd": 0,
+      "options": "Cipher Unit Conversion"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

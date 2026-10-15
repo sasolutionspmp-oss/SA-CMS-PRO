@@ -1,0 +1,65 @@
+{
+  "recorded_at": "2026-10-15T15:13:36.791047+00:00",
+  "site_mode": "synthetic",
+  "runtime": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8"
+  },
+  "checks": [
+    {
+      "suite": "cipher_aec.tests.test_approvals",
+      "tests": 12,
+      "result": "passed",
+      "elapsed_seconds": 2.403,
+      "log": "container:/tmp/cipher-approvals-tests.log"
+    },
+    {
+      "suite": "cipher_aec.tests.test_governance_projects",
+      "tests": 20,
+      "result": "passed",
+      "elapsed_seconds": 2.004,
+      "log": "container:/tmp/cipher-governance-tests.log"
+    },
+    {
+      "suite": "cipher_aec.tests.test_contracts + test_openapi",
+      "tests": 14,
+      "result": "passed",
+      "environment": "host Python3.12"
+    },
+    {
+      "check": "full OpenAPI3.1 validation",
+      "validator": "openapi-spec-validator0.7.2",
+      "result": "passed"
+    },
+    {
+      "check": "embedded canonical schema actual valid fixture and malformed UUID rejection",
+      "validator": "jsonschema Draft202012Validator",
+      "result": "passed"
+    },
+    {
+      "check": "two separate MariaDB connection lock ordering and single grant consumption",
+      "result": "passed",
+      "evidence": "approval-concurrency.json"
+    }
+  ],
+  "limits": [
+    "One qualified synthetic Project status action; no financial posting/payment approval qualification.",
+    "Human request context in DB suite uses real persisted test Sessions and Werkzeug request; actual HTTP approval UX qualified separately.",
+    "Source fingerprints are a checkpoint; further EST route additions change OpenAPI artifact."
+  ],
+  "sha256": {
+    "governance/approvals.py": "90892b4c046002441b51eb5aab7ea321502ca58b6cee37cc66ef94f80c8002b5",
+    "governance/commands.py": "f005d37fe6c6fe9605516c7f1fbca4cbeafafe47cc8972229be9fdb54a31989b",
+    "governance/context.py": "9e2204d7b02f815e49a1dca86fb929ef63b1c8b851d14bb8c454320cbe270771",
+    "projects/guards.py": "b68c12835313e7b3e663135b6de4b1282076f4183240836469519361e2fabb7b",
+    "api/approvals.py": "5fddad636ba4da09d19a31a9382773c24dd16856ce22eb66198a0e46899eb6e8",
+    "api/catalog.py": "cd57f44fab7be01e1f25492c9019b3374d33df4986b97305bab8e706f497401b",
+    "api/openapi.py": "78b1742fa532d7f427c238e58c6d8f643c307b7cff29cebc51c69557d24acdac",
+    "api/openapi.json": "4b4e40f37e5d1cddda8eb19b46e18cff539c3274ce24053ad58b8f6bf34fedd3",
+    "tests/test_approvals.py": "2cefd6e78f781d9282939d6a96433ac6cfc89398628d0158a63f0bcc9a52db72",
+    "tests/test_governance_projects.py": "12b76279406bd45cd55602cb7d1db9e60eb1114efc71066a2addf35f877fa1e2",
+    "tests/test_openapi.py": "ac048fc5d49085a3285a5e4b02cac6970d7a047068e6a8c02f0de7a4df3880c5"
+  },
+  "openapi_route_count": 39
+}

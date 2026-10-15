@@ -1,0 +1,67 @@
+name: cipher-r0
+services:
+  db:
+    restart: unless-stopped
+    image: mariadb@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --skip-character-set-client-handshake]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${CIPHER_DB_ROOT_PASSWORD:?Set the local development secret}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  redis:
+    restart: unless-stopped
+    image: redis@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea
+    command: [redis-server, --appendonly, 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  runtime:
+    restart: unless-stopped
+    image: ${CIPHER_RUNTIME_IMAGE:-cipher-erpnext:v16.51.0-flat}
+    entrypoint: [python, /opt/cipher/deployment/run-dev-services.py]
+    command: []
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      CIPHER_SITE: cipher.localhost
+      CIPHER_DB_ROOT_PASSWORD: ${CIPHER_DB_ROOT_PASSWORD:?Set the local development secret}
+      CIPHER_ADMIN_PASSWORD: ${CIPHER_ADMIN_PASSWORD:?Set the local development secret}
+      CIPHER_SYNTHETIC: '1'
+      REQUESTS_CA_BUNDLE: /run/cipher-ca-bundle.crt
+      SSL_CERT_FILE: /run/cipher-ca-bundle.crt
+      PIP_CERT: /run/cipher-ca-bundle.crt
+      NODE_EXTRA_CA_CERTS: /run/cipher-ca-bundle.crt
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+      - ../apps/cipher_aec:/home/frappe/frappe-bench/apps/cipher_aec
+      - ./:/opt/cipher/deployment:ro
+      - ../../product:/opt/cipher/product:ro
+      - /etc/ssl/certs/ca-certificates.crt:/run/cipher-ca-bundle.crt:ro
+    ports:
+      - '127.0.0.1:18880:8080'
+      - '127.0.0.1:18881:8000'
+    healthcheck:
+      test: [CMD, python, -c, "import socket; s=socket.create_connection(('127.0.0.1',8080),3); s.close()"]
+      interval: 15s
+      timeout: 5s
+      start_period: 90s
+      retries: 5
+    init: true
+volumes:
+  db-data:
+  redis-data:
+  sites:
+  logs:

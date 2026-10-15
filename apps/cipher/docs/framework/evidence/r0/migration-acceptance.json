@@ -1,0 +1,73 @@
+{
+  "schema": "cipher.r0.migration-acceptance.v1",
+  "status": "passed",
+  "label": "fresh-native-master-fixtures-real-frappe-read-only-export",
+  "project": "PROJ-0018",
+  "user": "migration.fixture.fdb713f1d7@cipher.example",
+  "record_count": 9,
+  "manifest_sha256": "399d95be329f021ef574fd6b8923d4d4b7a5a9ca4e7ce92c86d8b753d54a0571",
+  "kinds": [
+    "company",
+    "cost_center",
+    "customer",
+    "item",
+    "project",
+    "supplier",
+    "uom"
+  ],
+  "stable_uuid_reordered_export": true,
+  "roundtrip_native_fields_match": true,
+  "unregistered_uom_authority_not_inferred": true,
+  "exact_rational_12_to_1": true,
+  "stale_target_detected": true,
+  "native_on_hold_roundtrip": true,
+  "native_master_permission_enforced": true,
+  "native_read_without_export_denied": true,
+  "private_target_existence_indistinguishable": true,
+  "export_preview_writes": 0,
+  "apply_import_available": false,
+  "warnings": [
+    "Company time zone is unconfigured: exported null; no operational company policy was inferred.",
+    "The cost-center parent link was omitted because that explicit target was not requested.",
+    "UOM dimension and precision are explicit operator declarations; the native UOM name does not prove dimensional equivalence."
+  ],
+  "fixture_native_names": {
+    "customer": "Synthetic MIG customer fdb713f1d7",
+    "supplier": "Synthetic MIG supplier fdb713f1d7",
+    "item": "MIG-01-fdb713f1d7",
+    "cost_center": "MIG-fdb713f1d7 - MIG-01 work fdb713f1d7 - CSA",
+    "units": {
+      "count": "MIG-01 count fdb713f1d7",
+      "inch": "MIG-01 inch fdb713f1d7",
+      "foot": "MIG-01 foot fdb713f1d7"
+    }
+  },
+  "qualification_limits": [
+    "No external source import or applied cutover.",
+    "UOM dimension/precision declarations are explicit synthetic inputs; no native-name dimensional inference or standards approval.",
+    "Source UUID bindings supplied explicitly; no persistent external-reference mapping created."
+  ],
+  "captured_at": "2026-10-15T15:11:06.822554+00:00",
+  "command": "bench --site cipher.localhost execute cipher_aec.tests.test_migrations_acceptance.run_acceptance",
+  "contract_tests": {
+    "count": 18,
+    "local": "passed",
+    "locked_runtime": "passed",
+    "command": "env/bin/python -m unittest cipher_aec.tests.test_migrations -q"
+  },
+  "published_schema_validation": "Draft 2020-12 manifest/response schema checks and standalone fixture validation passed",
+  "source_sha256": {
+    "migrations/README.md": "9d6a4fd885351db3b3ef34f6a9ae1a6e66f644f7361c05daff798f4e990d2d49",
+    "migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "migrations/api.py": "d09fb8cbb421ea9e100b2395a4f5eb2ad29a3d6685e4cb87ad425f9d5affef41",
+    "migrations/contracts.py": "4e8ff1684355b4f6c0b620b5fde87949333ee17827916e7f9cca89805124bb1f",
+    "migrations/export.py": "25f83828d90f1775e716437d76cc76650c05efbcd62ff15e43af7eeb3600559c",
+    "migrations/fixtures/canonical-masters-v1.json": "559dd8de01651929487543bb0dee07b10fa78e967557eee5195910cd6fae53ba",
+    "migrations/preview.py": "d7acc20ad8fb32f59262afcd0ada90ec08be9e5826febc278bf18f569394139f",
+    "migrations/schemas/canonical-api-v1.schema.json": "bcec806f305e4d92cf868004ff37ef5941dbfe0d8e9e9e329ceddf8b34050293",
+    "migrations/schemas/canonical-v1.schema.json": "03a6c857ee3c8189b16242ebd87746b2820a4e12b3a815bc4b4fea776e83c1f9",
+    "migrations/validation.py": "39ba1841d2530d59041d81e322c8cc352c109ba4e4a70b586407b99d1346a440",
+    "tests/test_migrations_acceptance.py": "30de59baf8f98549765a25e7a0f4e0da4ba4c330a64a5d86e042fcbdd1ad48fe"
+  },
+  "provenance_note": "An isolated HTTP fixture helper was appended after native acceptance; the native acceptance runner is unchanged. Optional lock=False native resolver support was added for EST; default reads remain unchanged and were exercised by subsequent actual HTTP export."
+}

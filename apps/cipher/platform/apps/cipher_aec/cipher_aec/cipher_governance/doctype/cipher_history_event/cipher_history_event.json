@@ -1,0 +1,100 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher History Event",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "actor_person",
+    "event",
+    "subject_type",
+    "subject_id",
+    "operation_id",
+    "details_json",
+    "previous_hash",
+    "event_hash",
+    "event_payload"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "actor_person",
+      "label": "Actor Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "event",
+      "label": "Event",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject_type",
+      "label": "Subject Type",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject_id",
+      "label": "Subject Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "operation_id",
+      "label": "Operation Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "details_json",
+      "label": "Details Json",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "previous_hash",
+      "label": "Previous Hash",
+      "fieldtype": "Data",
+      "reqd": 0
+    },
+    {
+      "fieldname": "event_hash",
+      "label": "Event Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "event_payload",
+      "label": "Event Payload",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,84 @@
+{
+  "captured_at": "2026-10-15T15:00:48.660462+00:00",
+  "evidence_kind": "actual-same-origin-frappe-not-mocked",
+  "served_bundle_assets": [
+    {
+      "path": "/assets/index-CPBmPmom.js",
+      "sha256": "d719d918d5fb8dfb85116f5bd3bcbdf441f9de8f25d198df33724e2407fba230",
+      "byte_length": 1888345
+    },
+    {
+      "path": "/assets/index-CPBmPmom.js.map",
+      "sha256": "4d4b44b628dc3c86be22175d9dbe22c66b45cd2931b680ce5174390104c7272d",
+      "byte_length": 5304264
+    },
+    {
+      "path": "/assets/index-BNQLRKAC.css",
+      "sha256": "74c09ab1c1c781d96c511188cd8db6e4dbf70f89b7064229c1551a39ef3cf927",
+      "byte_length": 17821
+    }
+  ],
+  "source_files_from_served_source_map": 10,
+  "artifacts": [
+    {
+      "name": "connected-document-register.png",
+      "sha256": "84f5bb16d7d9e3445cbac4a2b69fc98ac52bf7ae46e076eca1533462fde04bee",
+      "byte_length": 130850
+    },
+    {
+      "name": "connected-document-source.png",
+      "sha256": "83b1bc46fe1710ac02cc0853f7dcef5358f5c3f19acdadbcc80b1f0d1fd8cd79",
+      "byte_length": 115549
+    },
+    {
+      "name": "connected-navigation-keyboard-focus.png",
+      "sha256": "fa9a3a54bb4f6222947cae958fa4b02fbe4c71a2121ef1556421fda9593bf191",
+      "byte_length": 106931
+    },
+    {
+      "name": "connected-project-object-page.png",
+      "sha256": "146fe20b47ca10f16eba4d647b069c8e494f3d88a9749d86922e5455059371e0",
+      "byte_length": 176946
+    },
+    {
+      "name": "connected-project-register-mobile.png",
+      "sha256": "791ecfea2de61b490d81798104ba81dbb45cddbfe546af163e45cc7ebf775b35",
+      "byte_length": 44044
+    },
+    {
+      "name": "connected-project-register-tablet.png",
+      "sha256": "4ca898c59f4e92bd11ca08a76214380e9de3e89a03d0717376c3ac0683404d41",
+      "byte_length": 71352
+    },
+    {
+      "name": "connected-project-register.png",
+      "sha256": "cdec97e2634c9931e06edb812dd45ff8be1bb8a4ea65f4bd907884b1ee174899",
+      "byte_length": 93722
+    },
+    {
+      "name": "connected-ricky-unavailable.png",
+      "sha256": "bceab28f5b2572bfa7abb760fab936f29816cc43da3de87710a736f3ec5269ea",
+      "byte_length": 192246
+    },
+    {
+      "name": "connected-sign-in-keyboard-focus.png",
+      "sha256": "336a276985c30c32af7365e45d095381bd7e71de510f1f4ad1b6733e27374727",
+      "byte_length": 51594
+    },
+    {
+      "name": "connected-sign-in.png",
+      "sha256": "bf0d663551c2cf0ce4a5e04c13a7a491407bb222d6adcae132f088a3bf6bfc2e",
+      "byte_length": 51581
+    },
+    {
+      "name": "served-build-provenance.json",
+      "sha256": "52ab76723807d8dd65901087ddf619ec537c001d7ff2f4c12f0ac19efa123aa4",
+      "byte_length": 71869
+    },
+    {
+      "name": "verification.json",
+      "sha256": "8d9751ef74a6e07427e8ba635fecad2807d11d09f18699bd7750c3da6e4fec81",
+      "byte_length": 771
+    }
+  ]
+}

@@ -1,6 +1,18 @@
 # Cipher handoff
 
-Written 2026-10-13, when Cipher moved from a Claude Code session to Codex. Read this first, then `AGENTS.md` (the rules), `BUILD_STATUS.md` (what was verified and the known gaps) and `README.md` (commands, modules and controls).
+**Latest owner correction:** New Cipher ERP/CMS design must be independent of all prior Cipher/Odoo work. Odoo is interim operations only; it is not a design, implementation or data-recovery dependency. The existing Ricky model remains an explicitly requested integration through new contracts. The planning worktree framework supersedes earlier reuse instructions.
+
+**Current task and authority:** The owner authorized “Execute this plan as written and do not stray.” Continue autonomous implementation in `/workspace/cipher-framework-draft`, branch `cipher/framework-final-draft`. Read [current implementation status](docs/framework/IMPLEMENTATION_STATUS.md), [framework entry](docs/framework/README.md) and `backlog.json`. One Astra ultra agent orchestrates/reviews/escalates; implementation subagents are GPT-6.1 Sol. The persistent development runtime and actual browser/API/database evidence exist. Continue ready dependencies; do not ask for routine implementation approval again.
+
+**Latest product clarification:** Cipher — The AEC/CMS Pro names the whole unified ERP/CMS, with Ricky embedded across all modules. The approved framework includes the local-model adapter, tool gateway, AEC jobs, retrieval, governed automation and integrated Ricky/project journey. Prior prototype architecture is excluded as a design input; its files are retained only to preserve unrelated work.
+
+**Active owner decision, October 15, 2026:** Follow [the committed SAP UI5 and ERPNext implementation plan](docs/SAP_ERPNEXT_IMPLEMENTATION_PLAN.md). The target is UI5 Web Components for React + ERPNext/Frappe + Cipher AEC extensions, with QuickBooks as official accounting authority. Earlier Fluent/platform comparison checkpoints and native practice UI expansion are superseded. Existing prototype instructions and evidence remain applicable to preserving that prototype.
+
+## Historical prototype handoff
+
+The remainder describes the earlier separate prototype. Its architecture, Odoo-reuse instructions, Fluent screens and completion claims do not govern the new platform/product subtrees. Preserve that work; do not import it into the new ERP. Current new-stack status is linked above.
+
+Written 2026-10-13, when the earlier Cipher prototype moved from a Claude Code session to Codex. Its `BUILD_STATUS.md`, `README.md` and commands describe that historical implementation.
 
 For ongoing delivery, use [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md) and the existing Fluent templates. The bounded AP/accounting, commercial, owner-billing, authored-library and RFI workflows are implemented and connected to separate Fluent 2 practice entries. The main backend passes 2703 unique tests in 1703.859 seconds with zero failures, errors or skips; all 266 Python source/test hashes remain unchanged. The four main Fluent workflows and the separate nine-case recovery-remount check also pass on their captured runtime/UI/configuration/served-JavaScript snapshots. The two test expectation corrections retain exact original-to-current provenance. Broader PO/stored-material, supplier credit/payment and settlement screens, operational identity and live integration remain work to build and qualify.
 
