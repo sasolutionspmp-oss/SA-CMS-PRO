@@ -3,7 +3,8 @@ import type { EstSnapshotRecord, EstLineInput } from './api/estimating.generated
 import { exactDisplay } from './estimate-editing';
 import { Status } from './components';
 
-export default function EstimateComparison({ before, after, beforeLabel, afterLabel }: { before: EstSnapshotRecord; after: EstSnapshotRecord; beforeLabel: string; afterLabel: string }) {
+type ComparableSnapshot = Pick<EstSnapshotRecord, 'result'> & { inputs: Pick<EstSnapshotRecord['inputs'], 'lines'> };
+export default function EstimateComparison({ before, after, beforeLabel, afterLabel }: { before: ComparableSnapshot; after: ComparableSnapshot; beforeLabel: string; afterLabel: string }) {
   const ids = [...new Set([...before.inputs.lines.map(line => line.line_id), ...after.inputs.lines.map(line => line.line_id)])];
   return <div className="estimate-comparison"><div className="comparison-summary"><div><span className="caption">{beforeLabel}</span><strong>{before.result.total.currency} {exactDisplay(before.result.total.amount)}</strong></div><span aria-hidden="true">→</span><div><span className="caption">{afterLabel}</span><strong>{after.result.total.currency} {exactDisplay(after.result.total.amount)}</strong></div></div>
     <Table accessibleName="Estimate revision comparison" headerRow={<TableHeaderRow><TableHeaderCell minWidth="15rem">Stable line</TableHeaderCell><TableHeaderCell width="7rem">Change</TableHeaderCell><TableHeaderCell minWidth="9rem" horizontalAlign="End">{beforeLabel}</TableHeaderCell><TableHeaderCell minWidth="9rem" horizontalAlign="End">{afterLabel}</TableHeaderCell></TableHeaderRow>}>

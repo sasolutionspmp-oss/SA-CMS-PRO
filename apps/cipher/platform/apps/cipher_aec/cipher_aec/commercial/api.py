@@ -74,3 +74,36 @@ def create_proposal(company, pursuit_id, composition, operation_id):
 @endpoint(methods=["POST"])
 def save_proposal_revision(company, proposal_id, expected_revision, expected_native_fingerprint, composition, operation_id):
     return service.save_proposal_revision(company, proposal_id, _integer(expected_revision), expected_native_fingerprint, _object(composition), operation_id)
+
+
+@endpoint(methods=["POST"])
+def prepare_proposal_output(company, proposal_id, revision_id, expected_revision_digest, recipients, cover, operation_id):
+    from .outputs import prepare_output
+    if isinstance(recipients, str):
+        try:
+            recipients = json.loads(recipients)
+        except ValueError:
+            raise DomainError("invalid_commercial", "Use a recipient array.") from None
+    return prepare_output(company, proposal_id, revision_id, expected_revision_digest, recipients, cover, operation_id)
+
+
+@endpoint(methods=["GET"])
+def prepared_output(company, revision_id):
+    from .outputs import read_output
+    return read_output(company, revision_id)
+
+
+@endpoint(methods=["GET"])
+def issue(company, issue_id):
+    return service._read("issue", issue_id, company, service._actor(company))[1]
+
+
+@endpoint(methods=["GET"])
+def issues(company, proposal_id, limit=30, cursor=None, count_mode="none"):
+    return service.list_issues(company, proposal_id, _integer(limit), cursor, count_mode)
+
+
+@endpoint(methods=["GET"])
+def proposal_output_subject(company, proposal_id):
+    from .outputs import output_subject
+    return output_subject(company, proposal_id)

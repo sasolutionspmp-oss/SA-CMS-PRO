@@ -1,0 +1,170 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Estimate Acceptance",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "estimate",
+    "estimate_revision",
+    "calculation_snapshot",
+    "baseline_number",
+    "predecessor",
+    "packet_id",
+    "decision_id",
+    "accepted_by_person",
+    "manifest_digest",
+    "currency",
+    "total_amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "search_index": 1,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "estimate",
+      "label": "Estimate",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Estimate",
+      "search_index": 1
+    },
+    {
+      "fieldname": "estimate_revision",
+      "label": "Estimate Revision",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Estimate Revision",
+      "search_index": 1
+    },
+    {
+      "fieldname": "calculation_snapshot",
+      "label": "Calculation Snapshot",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Calculation Snapshot"
+    },
+    {
+      "fieldname": "baseline_number",
+      "label": "Baseline Number",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "label": "Predecessor",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Cipher Estimate Acceptance"
+    },
+    {
+      "fieldname": "packet_id",
+      "label": "Packet Id",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Approval Packet"
+    },
+    {
+      "fieldname": "decision_id",
+      "label": "Decision Id",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Approval Decision"
+    },
+    {
+      "fieldname": "accepted_by_person",
+      "label": "Accepted By Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "manifest_digest",
+      "label": "Manifest Digest",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "currency",
+      "label": "Currency",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Currency"
+    },
+    {
+      "fieldname": "total_amount",
+      "label": "Total Amount",
+      "fieldtype": "Data",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

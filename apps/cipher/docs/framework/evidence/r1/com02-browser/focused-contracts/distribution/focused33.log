@@ -1,0 +1,177 @@
+[WebServer] (node:677076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 33 tests using 3 workers
+
+(node:677100) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:677101) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:677102) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/33] tests/company.spec.ts:7:1 › Company estimate loads and calculates exact lines without Project authority parameters
+[2/33] tests/company.spec.ts:23:1 › a successful operation UUID with wrong estimate subject remains unknown until matching replay
+[3/33] tests/company.spec.ts:14:1 › Company unknown calculation keeps exact recovery reachable through later412 without exposing rebase
+[WebServer] 8:15:47 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:15:47 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:15:47 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[4/33] tests/company.spec.ts:28:1 › Company upload recovery uses retained bytes after the local File becomes unreadable
+[5/33] tests/company.spec.ts:36:1 › Company source text remains literal and source preview uses Company endpoint
+[6/33] tests/company.spec.ts:41:1 › Company source revision links open the exact owned stored revision
+[WebServer] 8:15:52 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+[WebServer] 8:15:52 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:15:53 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[7/33] tests/company.spec.ts:46:1 › a foreign Company revision link never reads bytes or preview under the wrong document title
+[8/33] tests/distribution.spec.ts:12:1 › saved fixture instruction chooses a canonical issued subset and remains discoverable after leaving its deep URL
+[9/33] tests/distribution.spec.ts:15:62 › instruction lost then current-right denial retains exact payload and UUID
+[WebServer] 8:15:56 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:15:57 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[10/33] tests/distribution.spec.ts:15:62 › instruction wrong-parent then current-right denial retains exact payload and UUID
+[WebServer] 8:15:58 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:00 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:01 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[11/33] tests/distribution.spec.ts:18:1 › independent fixture distribution review opens the exact body and issued PDF before separate queue authorization
+[12/33] tests/distribution.spec.ts:21:63 › malformed dispatch lineage success and later denial recover the original queue authorization only once
+[13/33] tests/distribution.spec.ts:21:63 › malformed dispatch domain action success and later denial recover the original queue authorization only once
+[WebServer] 8:16:04 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:06 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:06 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:09 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:10 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:11 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:13 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:15 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:15 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[14/33] tests/distribution.spec.ts:24:1 › partial acknowledgment survives stop response loss, denial and exact same-key stop recovery
+[15/33] tests/distribution.spec.ts:27:1 › Unknown delivery means original-key fixture readback pending without a replacement dispatch action
+[WebServer] 8:16:18 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:19 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:19 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[16/33] tests/distribution.spec.ts:30:1 › explicit denied instruction refresh removes cached message, recipients and PDF review controls
+[WebServer] 8:16:22 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:23 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:24 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[17/33] tests/distribution.spec.ts:33:1 › configured fixture profile does not claim worker health and disabled profile preserves read-only records
+[WebServer] 8:16:27 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:28 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:29 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:30 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[18/33] tests/distribution.spec.ts:36:1 › distribution authoring retains keyboard focus and page bounds at desktop tablet and phone widths
+[WebServer] 8:16:32 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:32 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:34 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:35 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[19/33] tests/distribution.spec.ts:39:1 › a mismatched instruction version in the manifest blocks independent distribution approval
+[20/33] tests/distribution.spec.ts:44:1 › refresh cannot display a fixture acknowledgment for a recipient outside the approved instruction
+[WebServer] 8:16:37 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[21/33] tests/distribution.spec.ts:49:76 › refreshed copied-recipient receipts cannot count as exact recipient fixture acknowledgments
+[WebServer] 8:16:39 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:39 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:42 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:44 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[22/33] tests/distribution.spec.ts:49:76 › refreshed missing-expectations receipts cannot count as exact recipient fixture acknowledgments
+[WebServer] 8:16:44 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:46 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:48 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:49 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:50 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:51 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:53 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[23/33] tests/proposal-output.spec.ts:9:1 › Company proposal source choices attach server citation and accepted-reference digests with no Project authority
+[WebServer] 8:16:55 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:55 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[24/33] tests/proposal-output.spec.ts:15:1 › prepared proposal PDF uses canonical authorized bytes and freezes recipients and cover for its saved revision
+[WebServer] 8:16:58 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:16:58 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[25/33] tests/proposal-output.spec.ts:20:57 › prepared output recovers exact original bytes-bound request after lost and later denial
+[26/33] tests/proposal-output.spec.ts:20:57 › prepared output recovers exact original bytes-bound request after wrong-subject and later denial
+[WebServer] 8:17:02 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:03 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[27/33] tests/proposal-output.spec.ts:24:1 › definitive stale output rejection preserves cover for reviewed correction and a new operation
+[WebServer] 8:17:07 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[28/33] tests/proposal-output.spec.ts:28:1 › proposal issue reviews the exact prepared PDF independently and preserves a not-sent issued snapshot
+[29/33] tests/proposal-output.spec.ts:35:34 › denied 403 output refresh hides cached prepared PDF and issue controls after preparation
+[WebServer] 8:17:10 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:11 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[30/33] tests/proposal-output.spec.ts:35:34 › denied 404 output refresh hides cached prepared PDF and issue controls after preparation
+[WebServer] 8:17:17 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[31/33] tests/proposal-output.spec.ts:40:1 › a wrong-subject prepared PDF manifest cannot authorize independent Issue
+[WebServer] 8:17:19 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:20 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:23 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[32/33] tests/proposal-output.spec.ts:44:1 › a long proposal title retains readable phone width and reachable actions after desktop resize
+[WebServer] 8:17:25 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:27 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:17:27 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[33/33] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:17:29 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  33 passed (1.9m)

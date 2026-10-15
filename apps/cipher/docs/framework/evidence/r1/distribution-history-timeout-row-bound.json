@@ -1,0 +1,5 @@
+{
+  "company_history_native_rows": 150,
+  "performance_schema_enabled": false,
+  "qualification": "Read-only row bound after first-page40secondtimeout; doesnotmeasureper-requestSQLvolume."
+}

@@ -1,0 +1,95 @@
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 309, in execute
+    ret = frappe.get_attr(method)(*fn_args, **fn_kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 205, in run_generated_union_acceptance
+    command(gov + "execute_packet", {"packet_id": packet["id"], "manifest_hash": packet["manifest_hash"]})
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 148, in command
+    return values, rpc.invoke(method, values)
+                   ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py", line 393, in invoke
+    result=function(**(values or {}))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/api/company_approvals.py", line 23, in execute_packet
+    return service.execute_packet(company, None, packet_id, manifest_hash, operation_id, scope_type="Company")
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 444, in execute_packet
+    _event(actor, packet, operation_id, "approval.executed", {"manifest_hash": packet.manifest_hash, "action": packet.action, "result_hash": digest(result), "status": record.status if scope_type == "Project" else None, "task_changes": []})
+       ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 71, in _command
+    return run_company_command(company=company, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 16, in run_company_command
+    return _run_scoped_command(company=company, project=None, scope_type="Company", operation_id=operation_id,
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 89, in _run_scoped_command
+    with trusted_write():
+                 ^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 435, in effect
+    _, _, apply_effect = domain_approvals.callbacks(packet.action, scope_type)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    with _exact_effect(packet, manifest):
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/governance.py", line 20, in wrapped
+    return function(*args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/lockplan.py", line 346, in wrapped
+    return function(*args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/governance.py", line 83, in apply_verification
+    repository.insert("verification", verified, calibration=subject_id, packet_id=packet_id, decision_id=decision_id,
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                      verified_by_person=decision.actor_person)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/repository.py", line 28, in insert
+    doc.insert(ignore_permissions=True, set_name=value["id"])
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 487, in insert
+    self.run_before_save_methods()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1414, in run_before_save_methods
+    self.run_method("validate")
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1262, in run_method
+    out = Document.hook(fn)(self, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1664, in composer
+    return composed(self, method, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1638, in runner
+    add_to_return_value(self, fn(self, *args, **kwargs))
+                              ~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 1259, in fn
+    return method_object(*args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/scopes.py", line 140, in wrapped
+    return function(doc, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/records.py", line 58, in validate
+    calibrated = service._read("calibration", value["calibration_id"], self.company, self.project, actor, lock=True, new_use=True)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/service.py", line 78, in _read
+    current, _ = _source(company, project, source_input(value), actor, lock=lock, new_use=new_use, calibrated=kind == "calibration" or value["definition"]["method"] == "calibrated")
+                 ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/takeoff/service.py", line 38, in _source
+    sources.require_raw_mutation_source(company, source["revision_id"], actor)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/sources.py", line 141, in require_raw_mutation_source
+    raise DomainError("source_dependency_unqualified", "Generated proposal outputs are not yet qualified as new estimate/takeoff inputs. Use an authorized raw canonical source.", 409)
+cipher_aec.api.errors.DomainError: Generated proposal outputs are not yet qualified as new estimate/takeoff inputs. Use an authorized raw canonical source.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+           ~~~~~~~~~~~~~~^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1970, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1353, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 907, in invoke
+    return callback(*args, **kwargs)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/__init__.py", line 28, in _func
+    ret = f(ctx.obj, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 313, in execute
+    ret = eval(code, globals(), locals())  # nosemgrep
+  File "<bench execute>", line 1, in <module>
+NameError: name 'cipher_aec' is not defined
+
+name 'cipher_aec' is not defined

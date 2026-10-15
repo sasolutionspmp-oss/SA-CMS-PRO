@@ -16,6 +16,8 @@ def after_migrate():
         ("Cipher Rate Source", ["source_id", "revision_number"], "cipher_rate_source_revision"),
         ("Cipher Assembly Revision", ["assembly_id", "revision_number"], "cipher_assembly_revision"),
         ("Cipher Estimate Revision", ["estimate", "revision_number"], "cipher_estimate_revision"),
+        ("Cipher Estimate Acceptance", ["estimate", "baseline_number"], "cipher_estimate_acceptance_number"),
+        ("Cipher Estimate Acceptance", ["estimate_revision"], "cipher_estimate_acceptance_revision"),
         ("Cipher Estimate Line", ["estimate_revision", "line_id"], "cipher_estimate_revision_line"),
         ("Cipher Unit Conversion", ["company", "project", "from_unit_id", "to_unit_id", "revision_number"], "cipher_unit_conversion_revision"),
     ):

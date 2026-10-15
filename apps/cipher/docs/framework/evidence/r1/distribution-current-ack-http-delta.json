@@ -1,0 +1,224 @@
+{
+  "schema": "cipher.r1.distribution-current-ack-http.v1",
+  "status": "passed",
+  "business_commands_sent": 0,
+  "started_at": "2026-10-15T20:21:10.259355+00:00",
+  "cases": {
+    "queued-restart": {
+      "operation_id": "u1tg6if7ie",
+      "dispatch_id": "a5c49eb9-46d9-417e-a616-3f0e36762769",
+      "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+      "payload_hash": "f6b914ab6252fb459f437f83a58e1c570c36b2766dd1199184a1990e350fccfd",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+        "payload_hash": "f6b914ab6252fb459f437f83a58e1c570c36b2766dd1199184a1990e350fccfd",
+        "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+        "byte_length": 12624,
+        "acknowledgment_id": "9bf84c43-12e1-401e-a894-c9e462cde04b",
+        "accepted_at": "2026-10-15T20:07:21.338193+00:00"
+      },
+      "original_command_receipt_hashes": {
+        "create": "d21f0352257a43234ca717abecc1c76471def342f65ae3d141f869d9e54a2be8",
+        "execute": "6717391ef7da4f731bb68a6a2554b0415f7b951c93fa572fece1fbd966517d2a"
+      }
+    },
+    "redis-publication-failure": {
+      "operation_id": "ucn4babims",
+      "dispatch_id": "1363c26e-e189-4479-9130-1112d695917a",
+      "logical_key": "647d1fd518c359f5499fec8bc4125cce5792633bb5c624350c09bf55a00dfb67",
+      "payload_hash": "9c28929f31b314ceb6e71fb1b4cbc5ae8040abd18e123af4a20c55d43278bd2d",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "647d1fd518c359f5499fec8bc4125cce5792633bb5c624350c09bf55a00dfb67",
+        "payload_hash": "9c28929f31b314ceb6e71fb1b4cbc5ae8040abd18e123af4a20c55d43278bd2d",
+        "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+        "byte_length": 12377,
+        "acknowledgment_id": "0309d785-68f7-4ccb-9b36-cfbd60ad4add",
+        "accepted_at": "2026-10-15T20:08:06.436317+00:00"
+      },
+      "original_command_receipt_hashes": {
+        "create": "b0550a5a3a700ab534d2eebe5532cb85e51bd4a1318484761122458ce3ed6eab",
+        "execute": "8fc5f857d6212a39549d292c7d3760022980de72e29efec97800b86174d2b3d9"
+      }
+    },
+    "operator-quarantine": {
+      "operation_id": "uofcdn69oc",
+      "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+      "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+      "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+        "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+        "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+        "byte_length": 12377,
+        "acknowledgment_id": "475a6be4-e532-45ba-9fda-78ee0e619bd8",
+        "accepted_at": "2026-10-15T20:09:56.578408+00:00"
+      },
+      "original_command_receipt_hashes": {
+        "create": "8cc1c840e9168f102f454983561d76cff792a31f7579bf5b6126f41e7d593505",
+        "execute": "a8c0b337336c60a46bf5884522bb8ab7b8e8ed839804d244885b6d0742a65e62"
+      }
+    }
+  },
+  "fault_sequence_repeated": false,
+  "legacy_cancellation": {
+    "dispatch_id": "6829c4f6-9c2a-4f6c-9bb9-2214d330e02c",
+    "original_command_receipt_hash": "c9d15271ead876d042585042ba147619dd9964ea177104cd23e01c81dbdbfcf7",
+    "current_state": "Cancelled",
+    "historical_embedded_receipt_unchanged": true
+  },
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_instruction",
+      "http_status": 200,
+      "request_id": "3ed15df3-9bd2-44c4-b582-828eb135c592",
+      "server_time": "2026-10-15T20:21:11.537473Z",
+      "request_seconds": 0.865377
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "074ca231-74b6-4c41-baea-c4869627b1c2",
+      "server_time": "2026-10-15T20:21:12.293363Z",
+      "request_seconds": 0.717574
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "e8bbd2ce-6624-4361-bdf9-25aa8c4797fa",
+      "server_time": "2026-10-15T20:21:13.075758Z",
+      "request_seconds": 0.782014
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "39e291f0-5a9f-4163-82ef-d872964f5aa4",
+      "server_time": "2026-10-15T20:21:13.578668Z",
+      "request_seconds": 0.502262
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "4a8bd463-a766-4bda-a639-c1a127cd2140",
+      "server_time": "2026-10-15T20:21:14.218163Z",
+      "request_seconds": 0.639578
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_instruction",
+      "http_status": 200,
+      "request_id": "108bbcdd-851a-42dd-8038-8fde3885dd9c",
+      "server_time": "2026-10-15T20:21:14.870895Z",
+      "request_seconds": 0.651789
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "22995253-053e-4b31-b992-38a2161e7fb1",
+      "server_time": "2026-10-15T20:21:15.496940Z",
+      "request_seconds": 0.625058
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "cbf1ee1b-9c5a-496c-9090-eeb94fb595ec",
+      "server_time": "2026-10-15T20:21:16.201597Z",
+      "request_seconds": 0.703833
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "32b43557-1d45-42a1-92c9-faac877cfad5",
+      "server_time": "2026-10-15T20:21:16.598242Z",
+      "request_seconds": 0.396464
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "e277be1c-72d2-40de-9295-97cf8cf55831",
+      "server_time": "2026-10-15T20:21:16.978890Z",
+      "request_seconds": 0.380115
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_instruction",
+      "http_status": 200,
+      "request_id": "e91212e2-612c-4dde-83c0-0225bbe527d2",
+      "server_time": "2026-10-15T20:21:17.655390Z",
+      "request_seconds": 0.681424
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "4aecc87d-326b-49aa-80a5-cdd47a3aac6b",
+      "server_time": "2026-10-15T20:21:18.360825Z",
+      "request_seconds": 0.698989
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "162939d3-8546-489f-9490-8d74ca57a59e",
+      "server_time": "2026-10-15T20:21:19.055516Z",
+      "request_seconds": 0.694076
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "c76bafd3-c152-4cf6-9632-83eed597f30f",
+      "server_time": "2026-10-15T20:21:19.436252Z",
+      "request_seconds": 0.380455
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "53fadc03-16a6-4364-abaf-32afbdc4fd85",
+      "server_time": "2026-10-15T20:21:19.871935Z",
+      "request_seconds": 0.435397
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "bdff2480-3952-42ae-a85e-429f4edbdc33",
+      "server_time": "2026-10-15T20:21:20.529488Z",
+      "request_seconds": 0.656615
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "c60ad8e1-1bf4-4da7-94df-efd4b53b9d62",
+      "server_time": "2026-10-15T20:21:21.236858Z",
+      "request_seconds": 0.70671
+    }
+  ],
+  "schema_samples": 17,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.376354,
+      "session_seconds": 0.03074,
+      "status": "passed",
+      "total_seconds": 0.4071
+    }
+  ],
+  "completed_at": "2026-10-15T20:21:21.238888+00:00",
+  "native_original_operation_receipt_and_sink_baseline_unchanged": true,
+  "source_files_unchanged": 348,
+  "qualification": "Current read-model/command receipt HTTP delta after root joint coherent HUP. No worker/fault/approval sequence repeated."
+}

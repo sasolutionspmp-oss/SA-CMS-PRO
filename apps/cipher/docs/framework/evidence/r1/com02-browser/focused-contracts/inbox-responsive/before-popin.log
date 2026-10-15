@@ -1,0 +1,49 @@
+[WebServer] (node:696144) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 1 test using 1 worker
+
+(node:696168) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] tests/company-approvals.spec.ts:76:1 › Company inbox keeps subject state and exact review controls inside nested workspace bounds at three widths
+[WebServer] 8:37:48 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  1) tests/company-approvals.spec.ts:76:1 › Company inbox keeps subject state and exact review controls inside nested workspace bounds at three widths 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+    Call Log:
+    - Timeout 10000ms exceeded while waiting on the predicate
+
+      89 |     for (const content of [subject, state, review, link]) {
+      90 |       await expect(content).toBeVisible();
+    > 91 |       await expect.poll(async () => { const box = (await content.boundingBox())!; return box.x >= 0 && box.x + box.width <= width; }).toBe(true);
+         |                                                                                                                                       ^
+      92 |     }
+      93 |     await review.focus(); await review.press('Tab'); await expect(link).toBeFocused();
+      94 |   }
+        at /workspace/cipher-framework-draft/apps/cipher/product/tests/company-approvals.spec.ts:91:135
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/company-approvals-Company--34faa-pace-bounds-at-three-widths/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/company-approvals-Company--34faa-pace-bounds-at-three-widths/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/company-approvals-Company--34faa-pace-bounds-at-three-widths/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/company-approvals-Company--34faa-pace-bounds-at-three-widths/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    tests/company-approvals.spec.ts:76:1 › Company inbox keeps subject state and exact review controls inside nested workspace bounds at three widths 

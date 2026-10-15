@@ -15,6 +15,7 @@ from .contracts import (MAX_ADJUSTMENTS, MAX_LINES, MAX_MONEY, POLICY_VERSION, a
                         business_date, closed, exact, fail, identifier, quantity, rate_source, visible)
 
 SCHEMA = "cipher.estimate.inputs.v1"
+COMPANY_SCHEMA = "cipher.estimate.inputs.v2"
 
 
 def bounded(value):
@@ -94,7 +95,7 @@ def calculate(inputs):
     visible(inputs["basis_description"], "basis_description", 2000)
     if type(inputs["basis_citations"]) is not list or len(inputs["basis_citations"]) > 8:
         fail("Use up to eight explicit drawing/specification basis citations.", "basis_citations")
-    if inputs["schema"] != SCHEMA or inputs["policy_version"] != POLICY_VERSION:
+    if inputs["schema"] not in (SCHEMA, COMPANY_SCHEMA) or inputs["policy_version"] != POLICY_VERSION:
         fail("Use the supported versioned exact estimate calculation policy.", "policy_version")
     exponent, currency = inputs["currency_exponent"], inputs["currency"]
     if type(exponent) is not int or not 0 <= exponent <= 6:
@@ -106,6 +107,8 @@ def calculate(inputs):
         manifest = parse_manifest(inputs["unit_manifest"])
     except ManifestError as error:
         fail(error.message, error.path, "invalid_dimension")
+    if (inputs["schema"] == COMPANY_SCHEMA) != (manifest["schema"] == "cipher.canonical.v2"):
+        fail("Calculation schema and explicit canonical scope must agree.", "schema", "invalid_scope")
     units = {row["id"]: row for row in manifest["records"] if row["kind"] == "uom"}
     rates, assemblies = inputs["rates"], inputs["assemblies"]
     if type(rates) is not dict or len(rates) > 500 or type(assemblies) is not dict or len(assemblies) > 100:

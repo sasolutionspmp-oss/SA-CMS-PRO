@@ -1,0 +1,68 @@
+[WebServer] (node:689083) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 9 tests using 2 workers
+
+(node:689108) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:689107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/9] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current403 and removes action controls without inbox reads
+[2/9] tests/company-approvals.spec.ts:37:1 › copied exact review preserves authorized second Company through sign-in and never fetches inbox
+[WebServer] 8:29:57 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:29:57 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[3/9] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current404 and removes action controls without inbox reads
+[WebServer] 8:29:59 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[4/9] tests/company-approvals.spec.ts:59:1 › ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links
+[WebServer] 8:30:00 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:01 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:02 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[5/9] tests/company-approvals.spec.ts:67:1 › exact review lost grant stays mounted and recovers original payload through later denial
+[6/9] tests/distribution.spec.ts:21:63 › malformed dispatch lineage success and later denial recover the original queue authorization only once
+[WebServer] 8:30:04 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:04 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[7/9] tests/distribution.spec.ts:21:63 › malformed dispatch domain action success and later denial recover the original queue authorization only once
+[WebServer] 8:30:07 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:08 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:10 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:10 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[8/9] tests/distribution.spec.ts:24:1 › partial acknowledgment survives stop response loss, denial and exact same-key stop recovery
+[WebServer] 8:30:12 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:13 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[9/9] tests/proposal-output.spec.ts:28:1 › proposal issue reviews the exact prepared PDF independently and preserves a not-sent issued snapshot
+[WebServer] 8:30:15 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:17 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:18 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:21 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:22 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:23 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:24 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:30:26 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  9 passed (34.2s)

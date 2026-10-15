@@ -1,0 +1,39 @@
+{
+  "label": "observe-operator-quarantine-quarantined_noop",
+  "script": "distribution-observe.py",
+  "helper_sha256": "f6fc92a6fc39fd870d7f1f37901ca82d87f743e57b6eb667853202491c044677",
+  "arguments": [
+    "--context",
+    "/tmp/cipher-r0-runtime/distribution-operator-quarantine-stage/distribution-http-context.json",
+    "--mode",
+    "quarantined_noop",
+    "--output",
+    "/tmp/cipher-r0-runtime/distribution-operator-quarantine-quarantined_noop.json"
+  ],
+  "started_at": "2026-10-15T20:08:32.596291+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:33.998748+00:00",
+  "result": {
+    "schema": "cipher.r1.distribution-queue-observation.v1",
+    "status": "passed",
+    "mode": "quarantined_noop",
+    "observed_at": "2026-10-15T20:08:33.769890+00:00",
+    "operation_id": "uofcdn69oc",
+    "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+    "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+    "canonical_state": "Queued",
+    "worker_attempt_count": 0,
+    "fencing_token": 0,
+    "rq_job_id": "cipher.localhost||cipher-outbox-uofcdn69oc",
+    "rq_state": "finished",
+    "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+    "queue_contains_job": false,
+    "sink_receipt_count": 0,
+    "original_healthy_common_redis_used": true,
+    "manual_deliver_or_publish_invoked": false,
+    "live_external_provider_qualified": false,
+    "rq_result": {
+      "state": "Quarantined"
+    }
+  }
+}

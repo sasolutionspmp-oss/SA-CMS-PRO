@@ -1,0 +1,14 @@
+{
+  "status": "incomplete",
+  "stage": "actual PDF pointer anchors and explicit scale relation",
+  "created": {
+    "document": "DOC-91f5d81f30dd46df953ff787d9c22fdd",
+    "original_revision": "REV-d4d79952d71942e6abd0ec72f8dd0b4a",
+    "takeoff_set": "8e4f5940-d869-4a94-bfbe-2c7f4fe6b404"
+  },
+  "browser_errors": [],
+  "unexpected_console_errors": [
+    "Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of \"application/octet-stream\". Strict MIME type checking is enforced for module scripts per HTML spec."
+  ],
+  "unexpected_http_errors": []
+}

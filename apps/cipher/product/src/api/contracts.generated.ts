@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: efa57ff2851909c5696fd202556bd42caca7c8590691f26801bb056aaae8c2f4
+ * Source SHA-256: 845e557872cb2a74fbce8be75dd3709e64a7fa2060cc0f3bb44f8ecc6c6ec1ed
  * Regenerate: npm run generate:api
  */
 
@@ -262,10 +262,10 @@ export interface DomainApprovalPacket {
   id: string;
   company: string;
   project: string;
-  action: "calibration.verify.v1" | "contract.baseline.activate.v1";
+  action: "calibration.verify.v1" | "contract.baseline.activate.v1" | "estimate.accept.v1";
   subject: {
     id: string;
-    type: "Cipher Calibration" | "Cipher Construction Contract";
+    type: "Cipher Calibration" | "Cipher Construction Contract" | "Cipher Estimate Revision";
     label: string;
   };
   requester: Person;
@@ -343,4 +343,176 @@ export interface DomainApprovalExecutionResponse {
     [k: string]: unknown;
   };
   operation: Operation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "CompanyApprovalPacket".
+ */
+export interface CompanyApprovalPacket {
+  id: string;
+  company: string;
+  project: null;
+  action: "calibration.verify.v1" | "estimate.accept.v1" | "proposal.issue.v1" | "proposal.distribute.v1";
+  subject: {
+    id: string;
+    type:
+      | "Cipher Calibration"
+      | "Cipher Estimate Revision"
+      | "Cipher Proposal Revision"
+      | "Cipher Distribution Instruction";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: string;
+      name: string;
+      label: string;
+    };
+    sources: {
+      [k: string]: unknown;
+    }[];
+    effect: {
+      [k: string]: unknown;
+    };
+    summary: {
+      [k: string]: unknown;
+    };
+  };
+  scope_type: "Company";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "CompanyApprovalList".
+ */
+export interface CompanyApprovalList {
+  items: CompanyApprovalPacket[];
+  total: number | null;
+  limit: number;
+  next_cursor: string | null;
+  count_mode: "none" | "exact";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "CompanyApprovalCommandResponse".
+ */
+export interface CompanyApprovalCommandResponse {
+  packet: CompanyApprovalPacket;
+  operation: Operation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "CompanyApprovalExecutionResponse".
+ */
+export interface CompanyApprovalExecutionResponse {
+  packet: CompanyApprovalPacket;
+  effect: {
+    [k: string]: unknown;
+  };
+  operation: Operation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeMasterChoice".
+ */
+export interface NativeMasterChoice {
+  id: string;
+  label: string;
+  kind: "Customer" | "Lead" | "Price List" | "UOM" | "Currency" | "Item";
+  version: string;
+  unit_id?: string;
+  revision?: number;
+  dimension?: string;
+  precision?: number;
+  exponent?: number;
+  currency?: string;
+  stock_uom?: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeMasterList".
+ */
+export interface NativeMasterList {
+  items: NativeMasterChoice[];
+  total: number | null;
+  limit: number;
+  next_cursor: string | null;
+  count_mode: "none" | "exact";
+  company_currency: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativePartiesRequest".
+ */
+export interface NativePartiesRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+  party_type: "Customer" | "Lead";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativePriceListsRequest".
+ */
+export interface NativePriceListsRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+  currency?: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeUnitsRequest".
+ */
+export interface NativeUnitsRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+  dimension?: null | "length" | "area" | "volume" | "mass" | "count" | "time" | "labor_time" | "equipment_time";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeCurrenciesRequest".
+ */
+export interface NativeCurrenciesRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeItemsRequest".
+ */
+export interface NativeItemsRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+  unit_id?: string | null;
 }

@@ -1,0 +1,600 @@
+{
+  "mode": "actual-frappe-company-commercial-sources-estimate",
+  "captured_at": "2026-10-15T17:46:05.999Z",
+  "attempt_id": "b26e5047-40b3-4906-966b-441c8e8161c1",
+  "commercial_continuation_of_attempt": "712aafb1-72cc-438b-8716-c3b7c1d72c17",
+  "source_hashes": {
+    "../src/App.tsx": "6284f95edb2078d26e64c234fb782d6f5e350e75a1a70e4663c3fc3e376868ab",
+    "../src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "../src/Commercial.tsx": "ca5b4961cad87dbfd28cedc4ab2160a1fc342634ca3bcaf62c2ea0a72c9ae3c5",
+    "../src/CompanyApprovals.tsx": "d08482666427096810c3713833c8006f037a6be52c8f1cdd7ba303ee1092547c",
+    "../src/CompanyDocuments.tsx": "15adfbd8a64b805e0f05bf8abb4488516d18267cb45aea6db28a1bcae57060fc",
+    "../src/CompanyEstimates.tsx": "11c4202044cd053f201ab7ec19007699e1084012035970da6e0b033a6a4964db",
+    "../src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "../src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "../src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "../src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "../src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "../src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "../src/PdfDrawing.tsx": "81a3ac0a0a9a9905e9a4f7fdf48db429a95ce3c6935f23160e9666c0b5b1c948",
+    "../src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "../src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "../src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "../src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "../src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "../src/Takeoff.tsx": "e16cd958e4416e079fc812aa7f55596dfed142377a10bd7fd5eea5975a156742",
+    "../src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "../src/api/commercial.generated.ts": "35b5e70136e618f09150b376f94aaf4176fda824d0ee5ce46ff57472ca2fc0e5",
+    "../src/api/commercial.ts": "c3ddd09c6009bf6692988a565c45036b285475570d22f0c5c7edaa76856e2172",
+    "../src/api/company-approvals.ts": "bbd454e179641c8b8ce6915b14cb01c373e425570d06bb46ab236a7fdb10edd6",
+    "../src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "../src/api/company-estimating.generated.ts": "b96ad2e9f43d484e3c7a229b332758064969b33dc75cac295a4d11a743af47e2",
+    "../src/api/company-estimating.ts": "400de8e6954c57ced96e180524409e4ae69981a7ccd18560980797413cc17241",
+    "../src/api/contracts.generated.ts": "51fb251ef909daaafa64e9a36164267fb0d01c94be8f04cb1c7a09fe11a59590",
+    "../src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "../src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "../src/api/masters.ts": "1d8ad7f5e3add764ad1631734acd2eca900494127f4f39d4be592e3984257a00",
+    "../src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "../src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "../src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "../src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "../src/components.tsx": "cf04a64eaa058ffe94e1282b5b9df51a330ef390fa46d561da61538aef5fd08e",
+    "../src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "../src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "../src/main.tsx": "1dd45d45d97474eadb18976d33fcee2cfe1628ac3e6e9782fa1c4a7126debaa7",
+    "../src/styles.css": "cb7f1627242b39f273fd9e6e1cf5bb7335426b794c6c4a08f331c835b6b024f1",
+    "../src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "../scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "../scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "../scripts/connected-company.mjs": "676577597644bd7bfdc63cecbfeb1fcd10c7a33308d1ac92087d34753d84df06",
+    "../scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "../scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "../scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "../scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "../scripts/connected-takeoff.mjs": "507351d0d74d684ca235143bade979826b663a08ca2b5da74e4c5f153678809a",
+    "../scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "../scripts/generate-api.mjs": "e0fc5fe25beb8689965037d9e0e1f2f3d9e821e2d0ed29ffc57822ff337c4701",
+    "../package.json": "da049761001530552192eb95a6df4a4cedafda084ac0a22cbd0a4b03292ecb5a",
+    "../package-lock.json": "fd89c56a85d0d5f16fee82d0acb4671b7064385f4a4a87b709d51a86c2f85a64"
+  },
+  "company": "Company chain A 20b85fd4edd2",
+  "created": {
+    "pursuit": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+    "proposal": "511bdce1-827a-49ba-b788-855f6e65972b",
+    "original_proposal_revision": "945bcd51-3ed5-425a-85de-c838fee5bcb7",
+    "quotation": "SAL-QTN-2026-00006",
+    "proposal_revision": "ffad1cc9-61a8-4ff1-90f9-d1adcd7888bd",
+    "document": "DOC-433cfe51c42b4949b205eb10b4e812da",
+    "source_revision": "REV-75221da84c8a4309bf640bc2835d1280",
+    "estimate": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+    "estimate_revision": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+    "snapshot": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+    "packet": "97c5oblb9t",
+    "acceptance": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071"
+  },
+  "mutations": [
+    {
+      "at": "2026-10-15T17:41:13.539Z",
+      "stage": "create company-only pursuit using native Customer",
+      "path": "/api/method/cipher_aec.commercial.api.create_pursuit",
+      "operation_id": "ef5eb514-6794-4a07-8b57-76627906f285",
+      "idempotency_key": "ef5eb514-6794-4a07-8b57-76627906f285",
+      "raw_payload_sha256": "9266440276920f053cbf624a40da051fc55d6ab7dec04f6431489a5aea0c3727",
+      "title": "Synthetic UI utility pursuit 26a3b346"
+    },
+    {
+      "at": "2026-10-15T17:41:15.154Z",
+      "stage": "native Quotation draft with exact price lines and authored scope",
+      "path": "/api/method/cipher_aec.commercial.api.create_proposal",
+      "operation_id": "cdce4b41-7066-49fe-926b-c204495c3fca",
+      "idempotency_key": "cdce4b41-7066-49fe-926b-c204495c3fca",
+      "raw_payload_sha256": "f70ae661fd70a978b5e6ae570e6e8ae951cf6a8112f8c2895e410855c4150836"
+    },
+    {
+      "at": "2026-10-15T17:41:15.821Z",
+      "stage": "save exact successor and compare stable line identities",
+      "path": "/api/method/cipher_aec.commercial.api.save_proposal_revision",
+      "operation_id": "1b955f12-cf98-44f0-b80a-c55318f6adf2",
+      "idempotency_key": "1b955f12-cf98-44f0-b80a-c55318f6adf2",
+      "raw_payload_sha256": "578e923c6a7f36611e5ae18e002489715bcba66de232ef71022ac79bc469687d"
+    },
+    {
+      "at": "2026-10-15T17:42:19.049Z",
+      "stage": "canonical Company document upload and literal preview",
+      "path": "/api/method/cipher_aec.documents.company_api.upload_document",
+      "operation_id": "808ec7c8-c594-47ce-a5a0-d905f9d3c96a",
+      "idempotency_key": "808ec7c8-c594-47ce-a5a0-d905f9d3c96a",
+      "raw_payload_sha256": "00847fff8f7b4d928c28924b6137601f11f3a34632c1887ec7b24dff7307a7d8",
+      "title": "Synthetic UI basis 81352e90",
+      "filename": "synthetic-company-basis.txt",
+      "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+    },
+    {
+      "at": "2026-10-15T17:42:20.956Z",
+      "stage": "scoped Company estimate draft and actual source library",
+      "path": "/api/method/cipher_aec.estimating.company_api.create_estimate",
+      "operation_id": "c809c0d0-a57b-4780-8142-3a7e2757b03d",
+      "idempotency_key": "c809c0d0-a57b-4780-8142-3a7e2757b03d",
+      "raw_payload_sha256": "ed13ad732533dadda10b68999916e45926c0ec03c8070871e649ce1ba0e55877",
+      "title": "Synthetic UI utility pursuit 26a3b346 estimate"
+    },
+    {
+      "at": "2026-10-15T17:42:21.608Z",
+      "stage": "scoped Company estimate draft and actual source library",
+      "path": "/api/method/cipher_aec.estimating.company_api.calculate_revision",
+      "operation_id": "46afe881-74cc-4425-9fd2-5dc7dadbdb98",
+      "idempotency_key": "46afe881-74cc-4425-9fd2-5dc7dadbdb98",
+      "raw_payload_sha256": "d81fc187a56367a4551063d1812d771425e97e6ebe24948b2f7159ab3202fb24"
+    },
+    {
+      "at": "2026-10-15T17:42:22.004Z",
+      "stage": "independent Company baseline approval",
+      "path": "/api/method/cipher_aec.api.company_approvals.request_action",
+      "operation_id": "25fc6f13-62eb-4b9e-baba-70c0d8cd6cdb",
+      "idempotency_key": "25fc6f13-62eb-4b9e-baba-70c0d8cd6cdb",
+      "raw_payload_sha256": "b90c3eceae8cf480fcaca863ba3fa7d71554ee74d5ac262ef80a81245d0edacb"
+    },
+    {
+      "at": "2026-10-15T17:45:12.109Z",
+      "stage": "open exact Company packet for independent reviewer",
+      "path": "/api/method/cipher_aec.api.company_approvals.decide_packet",
+      "operation_id": "1800a6ba-a40a-4f18-b6a3-057c4815a0e6",
+      "idempotency_key": "1800a6ba-a40a-4f18-b6a3-057c4815a0e6",
+      "raw_payload_sha256": "f2ba343e6d380bdbba8cdf50f7b8627bf16134a4673c9d38201336b5526a9ec0"
+    },
+    {
+      "at": "2026-10-15T17:46:03.828Z",
+      "stage": "execute independently granted Company packet",
+      "path": "/api/method/cipher_aec.api.company_approvals.execute_packet",
+      "operation_id": "3355fc02-f62d-42a1-8e21-abe19073ffc2",
+      "idempotency_key": "3355fc02-f62d-42a1-8e21-abe19073ffc2",
+      "raw_payload_sha256": "07acf80717e74b859d30cd9c9f3ed812da201fec21407b95bf61cbbb8d404d56"
+    }
+  ],
+  "mocked_requests": false,
+  "uses_placeholder_project": false,
+  "project_api_requests": [],
+  "native_saved_total": "2589.12",
+  "estimate_server_result": {
+    "adjustments": [],
+    "contingency": {
+      "amount": "0.00",
+      "currency": "USD"
+    },
+    "conversion_references": [],
+    "direct": {
+      "amount": "154.25",
+      "currency": "USD"
+    },
+    "indirect": {
+      "amount": "0.00",
+      "currency": "USD"
+    },
+    "input_digest": "88d0a5a4af90781fa87d786db8ec4d91a5fa5ba1170d2934cb2c6c81ee69b306",
+    "lines": [
+      {
+        "alternate": "",
+        "components": [
+          {
+            "allocated_amount": {
+              "amount": "154.25",
+              "currency": "USD"
+            },
+            "component_id": "e28fd2fe-3377-4f18-94d3-e8ee9f224031",
+            "cost_type": "material",
+            "material_factor": {
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "priced_quantity_exact": {
+              "denominator": "2",
+              "numerator": "25"
+            },
+            "rate_revision": 1,
+            "rate_source_id": "5764a337-5023-4d0b-bec5-b8e0a5526adc",
+            "resource_quantity_exact": {
+              "denominator": "2",
+              "numerator": "25"
+            },
+            "rounding_increment": {
+              "amount": "0.00",
+              "currency": "USD"
+            },
+            "source_unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+            "unrounded_cost": {
+              "denominator": "4",
+              "numerator": "617"
+            },
+            "waste_fraction": {
+              "denominator": "1",
+              "numerator": "0"
+            }
+          }
+        ],
+        "cost_code": "UI-MANUAL",
+        "description": "Manual utility survey allowance",
+        "extension": {
+          "amount": "154.25",
+          "currency": "USD"
+        },
+        "included": true,
+        "line_id": "e28fd2fe-3377-4f18-94d3-e8ee9f224031",
+        "quantity": {
+          "amount": "12.500000",
+          "precision": 6,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9"
+        },
+        "quantity_method": "authored",
+        "unrounded_extension": {
+          "denominator": "4",
+          "numerator": "617"
+        }
+      }
+    ],
+    "output_digest": "19f950ae5ad906677e13634fadf147696501643c5130f0f36891b115da15f6b1",
+    "policy": {
+      "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+      "currency_exponent": 2,
+      "header_rounding": "sum-rounded-lines",
+      "intermediate": "exact-rational",
+      "line_rounding": "sum-exact-components-then-round",
+      "rounding_mode": "ROUND_HALF_UP",
+      "version": "cipher.estimate.line-half-up.v1"
+    },
+    "schema": "cipher.estimate.result.v1",
+    "total": {
+      "amount": "154.25",
+      "currency": "USD"
+    }
+  },
+  "accepted_baselines": [
+    {
+      "accepted_by_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "accepted_result": {
+        "adjustments": [],
+        "contingency": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "conversion_references": [],
+        "direct": {
+          "amount": "154.25",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "input_digest": "88d0a5a4af90781fa87d786db8ec4d91a5fa5ba1170d2934cb2c6c81ee69b306",
+        "lines": [
+          {
+            "alternate": "",
+            "components": [
+              {
+                "allocated_amount": {
+                  "amount": "154.25",
+                  "currency": "USD"
+                },
+                "component_id": "e28fd2fe-3377-4f18-94d3-e8ee9f224031",
+                "cost_type": "material",
+                "material_factor": {
+                  "denominator": "1",
+                  "numerator": "1"
+                },
+                "priced_quantity_exact": {
+                  "denominator": "2",
+                  "numerator": "25"
+                },
+                "rate_revision": 1,
+                "rate_source_id": "5764a337-5023-4d0b-bec5-b8e0a5526adc",
+                "resource_quantity_exact": {
+                  "denominator": "2",
+                  "numerator": "25"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                },
+                "source_unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+                "unrounded_cost": {
+                  "denominator": "4",
+                  "numerator": "617"
+                },
+                "waste_fraction": {
+                  "denominator": "1",
+                  "numerator": "0"
+                }
+              }
+            ],
+            "cost_code": "UI-MANUAL",
+            "description": "Manual utility survey allowance",
+            "extension": {
+              "amount": "154.25",
+              "currency": "USD"
+            },
+            "included": true,
+            "line_id": "e28fd2fe-3377-4f18-94d3-e8ee9f224031",
+            "quantity": {
+              "amount": "12.500000",
+              "precision": 6,
+              "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9"
+            },
+            "quantity_method": "authored",
+            "unrounded_extension": {
+              "denominator": "4",
+              "numerator": "617"
+            }
+          }
+        ],
+        "output_digest": "19f950ae5ad906677e13634fadf147696501643c5130f0f36891b115da15f6b1",
+        "policy": {
+          "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+          "currency_exponent": 2,
+          "header_rounding": "sum-rounded-lines",
+          "intermediate": "exact-rational",
+          "line_rounding": "sum-exact-components-then-round",
+          "rounding_mode": "ROUND_HALF_UP",
+          "version": "cipher.estimate.line-half-up.v1"
+        },
+        "schema": "cipher.estimate.result.v1",
+        "total": {
+          "amount": "154.25",
+          "currency": "USD"
+        }
+      },
+      "author_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "author_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "baseline_number": 1,
+      "calculation_snapshot": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T17:46:04.225323+00:00",
+      "currency": "USD",
+      "decision_id": "asi2be4hcl",
+      "estimate": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+      "estimate_revision": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+      "id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+      "manifest": {
+        "effect": {
+          "action": "estimate.accept.v1",
+          "facts": {
+            "bindings": [],
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-15 22:37:40.135587"
+            },
+            "drawing_calibration_policy": "current-working-head-v1",
+            "estimate": {
+              "current_revision": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+              "digest": "071b25aa7df4ecba228409ce83dc1860bf38e577031571a3d9b3cfdd27387777",
+              "id": "c8858bc4-9d36-4d38-b485-abf344d2adee"
+            },
+            "native_references": [
+              {
+                "doctype": "Customer",
+                "name": "Company chain customer a 20b85fd4edd2",
+                "version": "2026-10-15 22:37:51.406604"
+              },
+              {
+                "doctype": "Item",
+                "name": "CHAIN-a-20b85fd4edd2",
+                "version": "2026-10-15 22:37:51.727243"
+              },
+              {
+                "doctype": "Opportunity",
+                "name": "CRM-OPP-2026-00011",
+                "version": "2026-10-15 23:11:13.559383"
+              }
+            ],
+            "pinned_records": [
+              {
+                "digest": "998363ca5cafea808953d74606bacf65d0d730c827d2023de547c958cafbaefb",
+                "id": "5764a337-5023-4d0b-bec5-b8e0a5526adc",
+                "kind": "rate"
+              }
+            ],
+            "policy": "cipher.estimate.acceptance-facts.v1",
+            "pricing_sources_policy": "pinned-revision-at-pricing-date",
+            "pursuit": {
+              "company": "Company chain A 20b85fd4edd2",
+              "native_refs": [
+                {
+                  "doctype": "Customer",
+                  "name": "Company chain customer a 20b85fd4edd2"
+                },
+                {
+                  "doctype": "Opportunity",
+                  "name": "CRM-OPP-2026-00011"
+                }
+              ],
+              "party_id": "Company chain customer a 20b85fd4edd2",
+              "party_type": "Customer",
+              "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+              "record_digest": "fa1484cc5c41db0eab02ad329ddd0a90a24b06986b4bd17af2e44e48f156d18d",
+              "revision_number": 1
+            },
+            "qualified_units": [
+              {
+                "fields": {
+                  "dimension": "count",
+                  "precision": 6,
+                  "symbol": "chain20b85fd4edd2"
+                },
+                "id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "Company chain quantity 20b85fd4edd2"
+                }
+              }
+            ],
+            "revision": {
+              "digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+              "id": "098ffb13-e441-4c45-b7cf-59434ee486eb"
+            },
+            "rounding_policy": "cipher.estimate.line-half-up.v1",
+            "scope": {
+              "company": "Company chain A 20b85fd4edd2",
+              "project": null,
+              "scope_type": "Company"
+            },
+            "snapshot": {
+              "digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+              "id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+              "input_digest": "88d0a5a4af90781fa87d786db8ec4d91a5fa5ba1170d2934cb2c6c81ee69b306",
+              "output_digest": "19f950ae5ad906677e13634fadf147696501643c5130f0f36891b115da15f6b1"
+            }
+          },
+          "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb"
+        },
+        "sources": [
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "document_id": "DOC-913b6b19facc4f90bdd8b8ead7f2717f",
+            "document_title": "Company chain source http 20b85fd4edd2",
+            "excerpt": "Explicit synthetic Company chain 20b85fd4edd2 http\nAuthored material rate USD12.34 per fixture quantity.",
+            "excerpt_sha256": "c5c2e8798cc6b9824d4f1fe89c3d4eedbf32ab227f33c713e0266d044ff71cde",
+            "id": "3aab80dd1eb97b0a896598b82f9f9480d5677fddd9dbe92d40be7c885f28d4fe",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-ceabe5116b524795bacaceae7370485b",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b"
+          }
+        ],
+        "subject": {
+          "doctype": "Cipher Estimate Revision",
+          "label": "Estimate revision 1",
+          "name": "098ffb13-e441-4c45-b7cf-59434ee486eb"
+        },
+        "summary": {
+          "binding_count": 0,
+          "currency": "USD",
+          "independent_acceptance_required": true,
+          "rounding_policy": "cipher.estimate.line-half-up.v1",
+          "total": {
+            "amount": "154.25",
+            "currency": "USD"
+          }
+        }
+      },
+      "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+      "packet_id": "97c5oblb9t",
+      "predecessor": null,
+      "project": null,
+      "scope_type": "Company",
+      "source_citations": [
+        {
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-913b6b19facc4f90bdd8b8ead7f2717f",
+          "document_title": "Company chain source http 20b85fd4edd2",
+          "excerpt": "Explicit synthetic Company chain 20b85fd4edd2 http\nAuthored material rate USD12.34 per fixture quantity.",
+          "excerpt_sha256": "c5c2e8798cc6b9824d4f1fe89c3d4eedbf32ab227f33c713e0266d044ff71cde",
+          "id": "3aab80dd1eb97b0a896598b82f9f9480d5677fddd9dbe92d40be7c885f28d4fe",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-ceabe5116b524795bacaceae7370485b",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b"
+        }
+      ],
+      "status": "accepted",
+      "total": {
+        "amount": "154.25",
+        "currency": "USD"
+      }
+    }
+  ],
+  "actual_native_selections": true,
+  "keyboard_price_quantity_focus": true,
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "served_assets": [
+    {
+      "path": "/assets/index-Bjd2HKAT.js",
+      "sha256": "764ec052f18abc0dc6cc432f98b38a075ed2d94dbbf309441ad215176fe00b31"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-YBpNm_ni.js",
+      "sha256": "48113973171dc7fc0b6fbe6541ad4ccf28d82aee84e9fc9a19fc326caa8bcb39"
+    },
+    {
+      "path": "/assets/components-DP82IPLA.js",
+      "sha256": "0b18271a02abaf523d06f2730f873300b4834ccb3fa47f1facadb975a2dd25c7"
+    },
+    {
+      "path": "/assets/TextArea-SzPm31lO.js",
+      "sha256": "ac9a5da78283d5f2bdbd1c507830c06105ef94f701790bd00182e283507dd93c"
+    },
+    {
+      "path": "/assets/Input-BJakfZ5M.js",
+      "sha256": "e9c08d15d93703ca9ce9776a9b7dd74062bc5e67f7a1ebb2879ad853347de940"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964"
+    },
+    {
+      "path": "/assets/Link-CQ5hQPT1.js",
+      "sha256": "6c8093d6ddc6850ffa24c0031895f93fd39cdc7537b585368d399566e3e0897d"
+    },
+    {
+      "path": "/assets/useMutation-Dt9feF1o.js",
+      "sha256": "e4b17f117772f07f15a4e6f9f15b304e29e8de2e0e6ce521c12398d597b9cc2c"
+    },
+    {
+      "path": "/assets/estimating-Cum2OZ-t.js",
+      "sha256": "e97163a72551f4666cd334b3dbdc0a6ff8b74918b187c24b7c96443807568215"
+    },
+    {
+      "path": "/assets/index-DRXGNCUl.css",
+      "sha256": "afdf0a30efd5eeccc5c9928161602a92c884f06e7b19ccd4a1fa59b68cd48725"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/Commercial-uAGbS3EV.js",
+      "sha256": "4812b8e6a9901cc6719fbadad5fb82ad30854487e2d935efdf2b1e635fce78ee"
+    },
+    {
+      "path": "/assets/NativeChoice-C5CW0FOU.js",
+      "sha256": "e08d00a91100c1c3000a73045698aa1ee110447ea506f17ccfe4518bf4824df7"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-BYNal6i6.js",
+      "sha256": "599f26f1deff29ba8baf9a5a689554ac0087da46e430966d10dbe695b89f1c50"
+    },
+    {
+      "path": "/assets/CompanyApprovals-DNkwt7d2.js",
+      "sha256": "dd1aa4c289332033c50db7c4a091150e28afd23ab02609f725c785903808c73f"
+    },
+    {
+      "path": "/assets/CompanyEstimates-CW8oFVzL.js",
+      "sha256": "5f833589bdcc6a1f3e3789eac6840e5cc0af1589489ffed94e7b8c54b4a51a60"
+    }
+  ]
+}

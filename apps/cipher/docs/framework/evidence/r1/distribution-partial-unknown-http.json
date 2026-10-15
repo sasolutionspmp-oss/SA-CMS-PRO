@@ -1,0 +1,133 @@
+{
+  "schema": "cipher.r1.distribution-state-http.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:13:03.682343+00:00",
+  "live_external_provider_qualified": false,
+  "dispatch_id": "c4dcca16-c237-4c19-8bf4-182569abd539",
+  "detail": {
+    "dispatch": {
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T19:02:36.466345Z",
+      "decision_id": "o5untc57u8",
+      "execute_session_reference": "3181bb4e2f769e67d771d3f9d11238d7f2e807384eb8424e9d6598691acda232",
+      "id": "c4dcca16-c237-4c19-8bf4-182569abd539",
+      "instruction_digest": "e899e9b44593d27052c748b5b10d0aa0f7d0eece1eabd58fd281e65ab079588b",
+      "instruction_id": "92a4a1a3-2ce6-4a02-852d-7e933e1d8350",
+      "issue_id": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+      "mode": "fixture",
+      "packet_id": "o3u2m8f2q8",
+      "packet_manifest_hash": "e6d224b8d7b76bdfbcb5625a157caade951c7a871d2a5bb5e014da817b1c7814",
+      "policy_revision": "CIPHER-PROPOSAL-DISTRIBUTE-POLICY-V1-COMPANY",
+      "profile": {
+        "attempt_seconds": 30,
+        "enabled": true,
+        "id": "local-fixture-v1",
+        "mandate_seconds": 86400,
+        "max_recipients": 30,
+        "mode": "fixture",
+        "version": 1
+      },
+      "project": null,
+      "request_session_reference": "3181bb4e2f769e67d771d3f9d11238d7f2e807384eb8424e9d6598691acda232",
+      "requester_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "requester_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "review_session_reference": "5dbb4e20746999284d0bdf678c0f2a17512cf346894fc0ed59f0d1a02c62b07f",
+      "reviewer_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "reviewer_user": "company.chain.reviewer.20b85fd4edd2@cipher.example",
+      "scope_type": "Company",
+      "valid_until": "2026-10-16T19:02:19.922107Z"
+    },
+    "state": "Unknown",
+    "mode": "fixture",
+    "deliveries": [
+      {
+        "operation_id": "o7slh68mnq",
+        "recipient_id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+        "state": "Unknown",
+        "mode": "fixture",
+        "receipt": {
+          "attempt_not_after": "2026-10-15T19:13:29.722663Z",
+          "mode": "fixture"
+        },
+        "error_code": "fixture_delivery_unavailable"
+      },
+      {
+        "operation_id": "o7slp39odp",
+        "recipient_id": "1aa829e811e19d64004da54a905f6abbb4bd303682be2187ef969cc048a36d8f",
+        "state": "Succeeded",
+        "mode": "fixture",
+        "receipt": {
+          "mode": "fixture",
+          "receipt": {
+            "accepted_at": "2026-10-15T19:13:03.281095+00:00",
+            "acknowledgment_id": "38d8d22f-7b5e-46a1-8fa3-ea800d706b14",
+            "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+            "byte_length": 12624,
+            "logical_key": "c0ca317f7decd7db22291bc5a7ca29721c3d0113fd97e746c84f76258b42ebfc",
+            "mode": "fixture",
+            "payload_hash": "1d800233d102863cbd33c7f5c240d5c64eee7651e9d61e66baa6e1fa7206cb58"
+          }
+        },
+        "error_code": null
+      }
+    ],
+    "cancellation": null
+  },
+  "profile": [
+    {
+      "id": "local-fixture-v1",
+      "version": 1,
+      "mode": "fixture",
+      "enabled": true,
+      "max_recipients": 30,
+      "mandate_seconds": 86400,
+      "attempt_seconds": 30
+    }
+  ],
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.profiles",
+      "http_status": 200,
+      "request_id": "28ab9b8c-6f50-40aa-a84c-a8b39ff64d44",
+      "server_time": "2026-10-15T19:13:04.047217Z",
+      "request_seconds": 0.00845
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "a42391e4-0a93-4e49-80cd-5bd3055f8fca",
+      "server_time": "2026-10-15T19:13:05.066545Z",
+      "request_seconds": 0.981493
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "8d0b7793-8257-4844-8bb6-ecc181163647",
+      "server_time": "2026-10-15T19:13:05.844436Z",
+      "request_seconds": 0.776732
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "69690ce8-50fb-4b04-bc58-5bcc56020f84",
+      "server_time": "2026-10-15T19:13:06.578803Z",
+      "request_seconds": 0.733542
+    }
+  ],
+  "schema_samples": 4,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.249601,
+      "session_seconds": 0.100505,
+      "status": "passed",
+      "total_seconds": 0.350108
+    }
+  ],
+  "completed_at": "2026-10-15T19:13:06.580374+00:00"
+}

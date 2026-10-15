@@ -1,0 +1,33 @@
+{
+  "external_provider_qualified": false,
+  "initial_attempt": {
+    "native_error_code": 1020,
+    "preserved_log": "Traceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py\", line 272, in sql\n    self.execute_query(query, values)\n    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py\", line 372, in execute_query\n    return self._cursor.execute(query, values)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py\", line 179, in execute\n    res = self._query(mogrified_query)\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py\", line 330, in _query\n    db.query(q)\n    ~~~~~~~~^^^\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/connections.py\", line 280, in query\n    _mysql.connection.query(self, query)\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nMySQLdb.OperationalError: (1020, \"Record has changed since last read in table 'tabCompany'; try restarting transaction\")\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py\", line 309, in execute\n    ret = frappe.get_attr(method)(*fn_args, **fn_kwargs)\n  File \"/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_takeoff_company_acceptance.py\", line 88, in run_company_current_read_acceptance\n    require_company(company, actor=current_actor(), lock=True)\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/context.py\", line 187, in require_company\n    record = frappe.get_doc(\"Company\", company, for_update=lock)\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/model/utils/__init__.py\", line 225, in wrapper\n    return dispatch(args[0])(*args, **kw)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py\", line 145, in get_doc_str\n    doc = controller(doctype, name, **kwargs)\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py\", line 228, in __init__\n    self.load_from_db()\n    ~~~~~~~~~~~~~~~~~^^\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py\", line 277, in load_from_db\n    d = frappe.db.sql(\n    \t\"SELECT * FROM {table_name} WHERE `name` = %s {for_update}\".format(\n    ...<4 lines>...\n    \tas_dict=True,\n    )\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py\", line 278, in sql\n    raise frappe.QueryDeadlockError(e) from e\nfrappe.exceptions.QueryDeadlockError: (1020, \"Record has changed since last read in table 'tabCompany'; try restarting transaction\")\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py\", line 48, in invoke\n    return super().invoke(ctx)\n           ~~~~~~~~~~~~~~^^^^^\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py\", line 1970, in invoke\n    return _process_result(sub_ctx.command.invoke(sub_ctx))\n                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py\", line 1353, in invoke\n    return ctx.invoke(self.callback, **ctx.params)\n           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py\", line 907, in invoke\n    return callback(*args, **kwargs)\n  File \"/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/decorators.py\", line 34, in new_func\n    return f(get_current_context(), *args, **kwargs)\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/commands/__init__.py\", line 28, in _func\n    ret = f(ctx.obj, *args, **kwargs)\n  File \"/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py\", line 313, in execute\n    ret = eval(code, globals(), locals())  # nosemgrep\n  File \"<bench execute>\", line 1, in <module>\nNameError: name 'cipher_aec' is not defined\n\nname 'cipher_aec' is not defined\n",
+    "reason": "Fixture initially required promotion of an old Company snapshot to a current locking read; MariaDB instead refused with1020. Restoration ran in finally.",
+    "report_sha256": "9f9f77b513d4479d49c88c4ea8b8dcaa31e019c9db9b29d0552859d759f12930",
+    "status": "fixture-assumption-failed-before-qualification"
+  },
+  "live_model_qualified": false,
+  "qualification_limit": "Observed old RR snapshot plus separate committed writer, fail-closed native1020 on current lock, full rollback and fresh-transaction manifest. Does not claim current data returned inside the original old snapshot.",
+  "recorded_at": "2026-10-15T17:28:24.459729+00:00",
+  "result": {
+    "company": "Company chain A 20b85fd4edd2",
+    "different_connection_ids": true,
+    "external_provider_qualified": false,
+    "fixture_only_scalar_restored": true,
+    "fresh_transaction_after_conflict": true,
+    "isolation": "REPEATABLE-READ",
+    "live_model_qualified": false,
+    "locking_manifest_currency": "EUR",
+    "old_snapshot_lock_conflict": {
+      "native_code": 1020,
+      "type": "QueryDeadlockError"
+    },
+    "ordinary_snapshot_currency": "USD",
+    "qualification": "real-mariadb-separate-connection-old-RR-snapshot-current-read-or-fail-closed-and-fresh-transaction",
+    "qualified_old_snapshot_current_read_return": false,
+    "status": "passed"
+  },
+  "schema": "cipher.r1.est-company-current-read.v1",
+  "status": "passed"
+}

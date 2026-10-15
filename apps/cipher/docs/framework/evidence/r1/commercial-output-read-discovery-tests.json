@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T20:00:41.925468+00:00",
+  "qualification": "Narrow structural branch regression only; no native latency or permission qualification claimed by these mocked branch tests. Existing domain checks and native source authority are unchanged.",
+  "change": "Skip complete mutation-only lock-plan discovery in read_output and issue_source_reference when lock=False; keep lock=True full plan and output-own-node admission.",
+  "before_regression": "Both nonlocking branch tests failed at the prior unused discovery calls; both locking tests passed.",
+  "tests": {
+    "passed": 4,
+    "failed": 0,
+    "output": "....\n----------------------------------------------------------------------\nRan 4 tests in 0.003s\n\nOK\n",
+    "log_sha256": "56e03afda220e7ba78bbcecf9a2e53a0149cfc3e311fa10bbd01b25e8e5ba671"
+  },
+  "combined_compatibility_slice": {
+    "passed": 61,
+    "includes_prior_owned_slice": 57,
+    "overlap_not_additive": true
+  },
+  "assertions": [
+    "Nonlocking reads never invoke the discarded discovery paths.",
+    "Original _read authority and canonical source reader still execute.",
+    "Source-rights denial, original-byte failures and changed output SHA/provenance still deny.",
+    "Locking paths retain all dependency resources and their exact own output node admission."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/outputs.py": "a6101c98d19c779064921dbbbba299be3979c401223ed1924e661e5d0ecbb946",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_output_reads.py": "05a7d7f713146be3076a1cb1ca2ddf825055aabb815eb784e73fbe43353b4724"
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposal Issue",
+  "module": "Cipher Commercial",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "author_person",
+    "proposal",
+    "proposal_revision",
+    "revision_number",
+    "predecessor",
+    "packet_id",
+    "decision_id",
+    "output_revision",
+    "native_fingerprint",
+    "record_digest",
+    "data_json"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "proposal",
+      "label": "Proposal",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Proposal",
+      "search_index": 1
+    },
+    {
+      "fieldname": "proposal_revision",
+      "label": "Proposal Revision",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Proposal Revision",
+      "search_index": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "label": "Revision Number",
+      "fieldtype": "Int",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "label": "Predecessor",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 0,
+      "options": "Cipher Proposal Issue"
+    },
+    {
+      "fieldname": "packet_id",
+      "label": "Packet Id",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Approval Packet"
+    },
+    {
+      "fieldname": "decision_id",
+      "label": "Decision Id",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Approval Decision"
+    },
+    {
+      "fieldname": "output_revision",
+      "label": "Output Revision",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "reqd": 1,
+      "options": "Cipher Document Revision"
+    },
+    {
+      "fieldname": "native_fingerprint",
+      "label": "Native Fingerprint",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "read_only": 1,
+      "reqd": 1,
+      "hidden": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher User",
+      "read": 1
+    },
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,14 @@
+{
+  "label": "quarantine-hup",
+  "script": "reload-web.py",
+  "helper_sha256": "56040170178f322da77afcd2abc70d96a24bbdac97a1f268caba77eab1177f50",
+  "arguments": [],
+  "started_at": "2026-10-15T20:08:31.742338+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:31.857265+00:00",
+  "result": {
+    "action": "graceful_gunicorn_reload",
+    "master_pid": 17,
+    "previous_worker_count": 2
+  }
+}

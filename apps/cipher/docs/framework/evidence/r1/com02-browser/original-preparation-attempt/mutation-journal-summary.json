@@ -1,0 +1,20 @@
+{
+  "attempt": "55c3d2ea-952e-4f47-8dbd-ef46a366fffc",
+  "private_journal": "/tmp/cipher-r0-runtime/com02-ui-55c3d2ea-952e-4f47-8dbd-ef46a366fffc.private.jsonl",
+  "mutations": [
+    {
+      "at": "2026-10-15T19:14:59.680Z",
+      "stage": "save source-bound proposal successor",
+      "path": "/api/method/cipher_aec.commercial.api.save_proposal_revision",
+      "operation_id": "fde236c8-da4a-4898-9790-02550949ff02",
+      "raw_payload_sha256": "3223991446bb08c0fa0ebd70deebfe566672d457343eed38b2b4c09c65287093"
+    },
+    {
+      "at": "2026-10-15T19:15:01.526Z",
+      "stage": "prepare exact PDF recipients and cover",
+      "path": "/api/method/cipher_aec.commercial.api.prepare_proposal_output",
+      "operation_id": "aa0c80fa-46be-4108-b6ea-a376e90ee8c1",
+      "raw_payload_sha256": "c81d252e9f01ec6cf3b7d50c847f13b5246e7778a069da5409f7ce233cfad6ad"
+    }
+  ]
+}

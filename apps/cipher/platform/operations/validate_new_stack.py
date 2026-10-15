@@ -56,6 +56,22 @@ def source_inventory():
     return result
 
 
+def acceptance_contracts(tests):
+    """Fail before installation if a canonical fixture needs site-bound inputs."""
+    sources=[]
+    for source in sorted(Path(tests).glob('test_*_acceptance.py')):
+        functions={node.name:node for node in ast.parse(source.read_text()).body if isinstance(node,ast.FunctionDef)}
+        if 'run_acceptance' in functions:
+            arguments=functions['run_acceptance'].args
+            positional=[*arguments.posonlyargs,*arguments.args]
+            required=[node.arg for node in positional[:len(positional)-len(arguments.defaults)]]
+            required.extend(node.arg for node,default in zip(arguments.kwonlyargs,arguments.kw_defaults) if default is None)
+            require(not required, source.name+' run_acceptance requires '+', '.join(required)+
+                    '; canonical fresh fixtures must run without supplied inputs. Rename site-bound procedures explicitly.')
+        sources.append((source,set(functions)))
+    return sources
+
+
 class Runner:
     def __init__(self, args):
         self.args = args
@@ -226,8 +242,7 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
         require(not missing, "The app runner omitted declared test cases; inspect the JUnit collection")
         if self.args.extended_fixtures:
             tests = CIPHER / "platform/apps/cipher_aec/cipher_aec/tests"
-            for source in sorted(tests.glob("test_*_acceptance.py")):
-                functions = {node.name for node in ast.parse(source.read_text()).body if isinstance(node, ast.FunctionDef)}
+            for source,functions in self.acceptance_sources:
                 if "run_acceptance" not in functions:
                     self.separate_acceptance_procedures.append({"module": source.stem,
                         "entries": sorted(name for name in functions if name.startswith("run_")),
@@ -280,9 +295,24 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
                 "Browser contract cases must pass without flaky/skipped cases")
         self.results[-1]["test_summary"] = browser
 
+    def deployment_checks(self):
+        script = """import json,sys,unittest
+suite=unittest.defaultTestLoader.discover('apps/cipher/platform/deployment/tests')
+result=unittest.TextTestRunner(verbosity=2).run(suite)
+summary={'tests':result.testsRun,'failures':len(result.failures),'errors':len(result.errors),'skipped':len(result.skipped)}
+print('CIPHER_VALIDATION_RESULT='+json.dumps(summary))
+sys.exit(0 if result.wasSuccessful() and result.testsRun and not result.skipped else 1)
+"""
+        output = self.stage("deployment-process-lifecycle", [sys.executable, "-c", script],
+                            classification="actual-linux-process-lifecycle")
+        self.results[-1]["test_summary"] = self.result_object(output)
+
     def run(self):
         failure = None
         try:
+            if self.args.extended_fixtures:
+                self.acceptance_sources=acceptance_contracts(CIPHER / 'platform/apps/cipher_aec/cipher_aec/tests')
+            self.deployment_checks()
             self.bootstrap()
             self.database_checks()
             self.frontend_checks()

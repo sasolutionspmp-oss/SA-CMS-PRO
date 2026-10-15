@@ -1,0 +1,146 @@
+{
+  "schema": "cipher.r1.company-approval-inbox-http.v1",
+  "status": "passed",
+  "started_at": "2026-10-15T20:31:42.384163+00:00",
+  "business_commands_sent": 0,
+  "decisions_or_executions_attempted": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "packet_id": "76pdnacsi8",
+  "manifest_hash": "bb5b8e7f5928dcc18c01d43283bf6e870a15d3498d825f72aadb195c1e0edcd7",
+  "original_granted_packet_unchanged": true,
+  "first_page_items": 10,
+  "second_page_items": 10,
+  "count_mode": "none",
+  "reviewer_cannot_execute": true,
+  "reviewer_cannot_reuse_author_cursor": true,
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 200,
+      "request_id": "85e61902-1480-46d5-9584-e0e9e3456cad",
+      "server_time": "2026-10-15T20:31:43.756871Z",
+      "request_seconds": 1.185143
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 200,
+      "request_id": "dfaa0417-9929-4910-bb32-25eee65bb8c2",
+      "server_time": "2026-10-15T20:31:45.255914Z",
+      "request_seconds": 1.456876
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 200,
+      "request_id": "d7a29488-f42d-479a-a6ae-0a8c5125d1e2",
+      "server_time": "2026-10-15T20:31:45.628612Z",
+      "request_seconds": 0.368945
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 200,
+      "request_id": "ba1d33cf-602e-4ab8-a42b-b98ac8da7246",
+      "server_time": "2026-10-15T20:31:46.151358Z",
+      "request_seconds": 0.41189
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 422,
+      "request_id": "3ee226b7-18ae-42f1-8227-c4f8ef67acb0",
+      "server_time": "2026-10-15T20:31:46.159806Z",
+      "request_seconds": 0.00755,
+      "error_code": "invalid_cursor"
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 200,
+      "request_id": "7d99a227-09dc-4200-92fe-2cc97c3b95b2",
+      "server_time": "2026-10-15T20:31:47.119067Z",
+      "request_seconds": 0.961003
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 404,
+      "request_id": "2846800a-b4dd-4b15-b6c9-04d1785639b9",
+      "server_time": "2026-10-15T20:31:47.201053Z",
+      "request_seconds": 0.005001,
+      "error_code": "not_found"
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 404,
+      "request_id": "5f00f660-ea61-4f84-b391-6fc241621291",
+      "server_time": "2026-10-15T20:31:47.205517Z",
+      "request_seconds": 0.00434,
+      "error_code": "not_found"
+    },
+    {
+      "role": "project_only",
+      "method": "cipher_aec.api.company_approvals.list_packets",
+      "http_status": 404,
+      "request_id": "55265742-ff2e-4795-a765-0fcfa707df86",
+      "server_time": "2026-10-15T20:31:47.302237Z",
+      "request_seconds": 0.005389,
+      "error_code": "not_found"
+    },
+    {
+      "role": "project_only",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 404,
+      "request_id": "572fd799-1f16-4e3e-bb8b-21d3b3aba429",
+      "server_time": "2026-10-15T20:31:47.307106Z",
+      "request_seconds": 0.004842,
+      "error_code": "not_found"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 200,
+      "request_id": "37b14572-3141-40df-b46a-9ce8ba0ceb94",
+      "server_time": "2026-10-15T20:31:47.674519Z",
+      "request_seconds": 0.368195
+    }
+  ],
+  "schema_samples": 6,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.150557,
+      "session_seconds": 0.030199,
+      "status": "passed",
+      "total_seconds": 0.18076
+    },
+    {
+      "role": "reviewer",
+      "login_seconds": 0.092364,
+      "session_seconds": 0.011962,
+      "status": "passed",
+      "total_seconds": 0.104329
+    },
+    {
+      "role": "outsider",
+      "login_seconds": 0.058251,
+      "session_seconds": 0.008122,
+      "status": "passed",
+      "total_seconds": 0.066376
+    },
+    {
+      "role": "project_only",
+      "login_seconds": 0.058332,
+      "session_seconds": 0.02725,
+      "status": "passed",
+      "total_seconds": 0.085585
+    }
+  ],
+  "completed_at": "2026-10-15T20:31:47.676683+00:00",
+  "original_three_operations_receipts_sink_unchanged": true,
+  "source_files_unchanged": 350,
+  "qualification": "Actual normal count_mode none/limit10 Company approval pages/cursor and original Granted packet. Read-only current request timings; full-history/exact-count performance not qualified."
+}

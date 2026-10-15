@@ -1,0 +1,20 @@
+{
+  "artifact_hashes_verified": 5,
+  "captured_manifest": "est-company-and-est03-source-manifest.json",
+  "external_provider_qualified": false,
+  "later_integration_change": {
+    "captured_sha256": "257c36c304568d4b85c7a5827f517276d009ebe1bbe145338195cd0576d8d331",
+    "later_sha256": "23490a8a3afece1f542acb3c9624f5325001485c02d3b2081aca0e159c7e2274",
+    "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py",
+    "reason": "Backend staged new COM02 API routes after the captured slice. This does not relabel the earlier executed source or evidence."
+  },
+  "live_model_qualified": false,
+  "next_work": "Complete generated-source dependency union in EST/takeoff, separately qualified before enabling admission.",
+  "owned_source_hashes_verified": 82,
+  "recorded_at": "2026-10-15T17:33:42.691729+00:00",
+  "reviewer": "Astra targeted source/evidence review",
+  "schema": "cipher.r1.company-est-review-closure.v1",
+  "shared_source_hashes_current_at_review": 20,
+  "shared_source_hashes_total": 21,
+  "status": "review-approved"
+}

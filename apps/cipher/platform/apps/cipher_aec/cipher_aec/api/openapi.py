@@ -11,6 +11,7 @@ from pathlib import Path
 import sys
 
 from .catalog import ROUTES
+from cipher_aec.governance.domain_approvals import ACTIONS as APPROVAL_ACTIONS
 from cipher_aec.migrations.contracts import MAX_RECORDS, MAX_JSON_BYTES, NATIVE_DOCTYPES, DIMENSIONS
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,7 +48,7 @@ def _signature(identifier):
 
 
 def _parameter(name, default, schemas):
-    strings={"company","project","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id","subject_id"}
+    strings={"company","project","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id","subject_id","currency","unit_id","dimension"}
     if name=="operation_id":return {"type":"string","format":"uuid","description":"Canonical UUIDv4; exactly equals Idempotency-Key."}
     if name=="manifest":return {"oneOf":[_ref("CanonicalManifest"),{"type":"string","maxLength":MAX_JSON_BYTES}]}
     if name=="references":return {"type":"array","maxItems":MAX_RECORDS,"items":_object({"id":{"type":"string","format":"uuid"},"kind":{"type":"string","enum":sorted(NATIVE_DOCTYPES)},"name":{"type":"string"},"unit_definition":_object({"dimension":{"type":"string","enum":sorted(DIMENSIONS)},"precision":{"type":"integer","minimum":0,"maximum":12}})},["id","kind","name"])}
@@ -58,7 +59,8 @@ def _parameter(name, default, schemas):
     if name=="count_mode":return {"type":"string","enum":["none","exact"],"default":"none"}
     if name in {"page","expected_revision","proposal_version","byte_length"}:return {"type":"integer","minimum":0 if name in {"expected_revision","byte_length"} else 1}
     if name=="status":return {"type":"string","enum":["Open","On hold","Completed","Cancelled"]}
-    if name=="action":return {"type":"string","enum":["calibration.verify.v1","contract.baseline.activate.v1"]}
+    if name=="action":return {"type":"string","enum":sorted(action for action,spec in APPROVAL_ACTIONS.items() if spec.enabled)}
+    if name=="party_type":return {"type":"string","enum":["Customer","Lead"]}
     if name=="decision":return {"type":"string","enum":["Grant","Reject"]}
     if name=="content_base64":return {"type":"string","contentEncoding":"base64","maxLength":13981016}
     if name in strings:return {"type":"string"}
@@ -97,12 +99,16 @@ def generate():
     schemas.update(response_refs(migration_responses["$defs"]))
     estimating=json.loads((ROOT/"estimating/schemas/api-v1.schema.json").read_text())
     schemas.update(_rewrite(estimating["$defs"]))
-    est_requests={"register_unit":"RegisterUnitRequest","create_conversion":"CreateConversionRequest","create_rate":"CreateRateRequest","create_assembly":"CreateAssemblyRequest","create_estimate":"CreateEstimateRequest","calculate_revision":"CalculateRevisionRequest","get_record":"GetEstimateRecordRequest","list_records":"ListEstimateRecordsRequest","list_units":"ListEstimateUnitsRequest"}
-    typed_requests = {"cipher_aec.estimating.api": est_requests}
+    est_requests={"register_unit":"RegisterUnitRequest","create_conversion":"CreateConversionRequest","create_rate":"CreateRateRequest","create_assembly":"CreateAssemblyRequest","create_estimate":"CreateEstimateRequest","calculate_revision":"CalculateRevisionRequest","get_record":"GetEstimateRecordRequest","list_records":"ListEstimateRecordsRequest","list_units":"ListEstimateUnitsRequest","list_acceptances":"ListEstimateAcceptancesRequest","acceptance_subject":"EstimateAcceptanceSubjectRequest"}
+    typed_requests = {"cipher_aec.estimating.api": est_requests, "cipher_aec.api.masters":{"parties":"NativePartiesRequest","price_lists":"NativePriceListsRequest","units":"NativeUnitsRequest","currencies":"NativeCurrenciesRequest","items":"NativeItemsRequest"}}
     for module, filename, requests in (
+        ("cipher_aec.estimating.company_api", "estimating/schemas/api-company-v2.schema.json", {**{name:"Company"+request for name,request in est_requests.items()}, "accepted_baseline_reference":"CompanyAcceptedBaselineReferenceRequest"}),
+        ("cipher_aec.takeoff.company_api", "takeoff/schemas/api-company-v2.schema.json", {"create_set":"CompanyTakeoffCreateSetRequest", "create_calibration":"CompanyTakeoffCreateCalibrationRequest", "create_measurement":"CompanyTakeoffCreateMeasurementRequest", "bind_line":"CompanyTakeoffBindLineRequest", "get_record":"CompanyTakeoffGetRequest", "list_records":"CompanyTakeoffListRequest", "drawing_impact":"CompanyTakeoffImpactRequest", "compare_measurements":"CompanyTakeoffCompareRequest"}),
+        ("cipher_aec.documents.company_api", "documents/schemas/company-api-v1.schema.json", {"upload_document":"CompanyDocumentUploadRequest","list_documents":"CompanyDocumentListRequest","get_document":"CompanyDocumentDetailRequest","preview_revision":"CompanyDocumentPreviewRequest","search_documents":"CompanyDocumentSearchRequest","download_revision":"CompanyDocumentDownloadRequest","get_citation":"CompanyCitationRequest"}),
         ("cipher_aec.takeoff.api", "takeoff/schemas/api-v1.schema.json", {"create_set":"TakeoffCreateSetRequest", "create_calibration":"TakeoffCreateCalibrationRequest", "create_measurement":"TakeoffCreateMeasurementRequest", "bind_line":"TakeoffBindLineRequest", "get_record":"TakeoffGetRequest", "list_records":"TakeoffListRequest", "drawing_impact":"TakeoffImpactRequest", "compare_measurements":"TakeoffCompareRequest"}),
-        ("cipher_aec.commercial.api", "commercial/schemas/api-v1.schema.json", {"pursuits":"ComPursuitsRequest", "pursuit":"ComPursuitRequest", "proposals":"ComProposalsRequest", "proposal":"ComProposalRequest", "proposal_revision":"ComRevisionRequest", "compare_revisions":"ComCompareRequest", "create_pursuit":"ComCreatePursuitRequest", "update_pursuit":"ComUpdatePursuitRequest", "create_proposal":"ComCreateProposalRequest", "save_proposal_revision":"ComSaveRevisionRequest"}),
+        ("cipher_aec.commercial.api", "commercial/schemas/api-v1.schema.json", {"pursuits":"ComPursuitsRequest", "pursuit":"ComPursuitRequest", "proposals":"ComProposalsRequest", "proposal":"ComProposalRequest", "proposal_revision":"ComRevisionRequest", "compare_revisions":"ComCompareRequest", "create_pursuit":"ComCreatePursuitRequest", "update_pursuit":"ComUpdatePursuitRequest", "create_proposal":"ComCreateProposalRequest", "save_proposal_revision":"ComSaveRevisionRequest","prepare_proposal_output":"ComPrepareOutputRequest","prepared_output":"ComPreparedOutputRequest","proposal_output_subject":"ComOutputSubjectRequest","issue":"ComIssueRequest","issues":"ComIssuesRequest"}),
         ("cipher_aec.construction_finance.api", "construction_finance/schemas/api-v1.schema.json", {"create_contract":"CreateContractRequest", "author_revision":"AuthorContractRevisionRequest", "get_record":"GetContractRecordRequest", "list_contracts":"ListContractsRequest"}),
+        ("cipher_aec.integrations.distribution_api", "integrations/schemas/distribution-v1.schema.json", {"create_instruction":"DistCreateInstructionRequest", "get_instruction":"DistGetInstructionRequest", "get_dispatch":"DistGetDispatchRequest", "get_recipient_delivery":"DistGetRecipientRequest", "list_dispatches":"DistListDispatchesRequest", "cancel_dispatch":"DistCancelRequest", "profiles":"DistProfilesRequest", "recipient_choices":"DistRecipientChoicesRequest", "list_instructions":"DistListInstructionsRequest"}),
     ):
         domain = json.loads((ROOT/filename).read_text())
         for name, value in _rewrite(domain["$defs"]).items():
@@ -126,7 +132,10 @@ def generate():
         else:
             properties={name:_parameter(name,default,schemas) for name,required,default in signature}
             required=[name for name,is_required,default in signature if (is_required or name=="expected_version") and name!="operation_id"]
-        if identifier=="cipher_aec.documents.api.search_documents":
+        if module in {"cipher_aec.api.approvals", "cipher_aec.api.company_approvals"} and "action" in properties:
+            action_scope = "Company" if module.endswith("company_approvals") else "Project"
+            properties["action"] = {"enum": sorted(action for action,spec in APPROVAL_ACTIONS.items() if spec.enabled and action_scope in spec.scopes)}
+        if identifier in {"cipher_aec.documents.api.search_documents", "cipher_aec.documents.company_api.search_documents"}:
             properties["limit"]["maximum"]=20
         data=_ref(route.response)
         body=_object({"message":_object({"schema":{"const":"cipher.api.v1"},"request_id":{"type":"string","format":"uuid"},"meta":_ref("Meta"),"data":data})})

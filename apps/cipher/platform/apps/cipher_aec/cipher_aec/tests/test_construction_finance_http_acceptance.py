@@ -24,7 +24,8 @@ def provision_http_fixture():
     role='FIN01 HTTP source reader ' + marker
     with trusted_write():
         frappe.get_doc({'doctype':'Role','role_name':role}).insert(ignore_permissions=True)
-        add_permission('Customer',role,0); update_permission_property('Customer',role,0,'read',1)
+        for doctype in ('Customer','UOM','Currency'):
+            add_permission(doctype,role,0); update_permission_property(doctype,role,0,'read',1)
         for user in users:
             account=frappe.get_doc('User',user)
             assert role not in [row.role for row in account.roles]

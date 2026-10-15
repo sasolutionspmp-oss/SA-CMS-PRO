@@ -24,9 +24,9 @@ class MemoryMetadata:
     def document(self, name, lock=False):
         return copy.deepcopy(self.docs[name])
     def revision_scope(self, name):
-        return {k: self.revs[name][k] for k in ('name', 'company', 'project')}
+        return {k: self.revs[name][k] for k in ('name', 'company', 'project', 'scope_type')}
     def revision_locator(self, name):
-        return {k: self.revs[name][k] for k in ("name", "document", "company", "project")}
+        return {k: self.revs[name][k] for k in ("name", "document", "company", "project", "scope_type")}
     def revision(self, name, lock=False):
         return copy.deepcopy(self.revs[name])
     def documents(self, company, project):
@@ -240,3 +240,23 @@ class SourceReferenceTests(unittest.TestCase):
         (Path(self.temp.name)/rid).unlink()
         with self.assertRaises(ArtifactError):
             self.service.source_reference('Synthetic Company','PROJECT-A',rid,1,lock=True)
+
+
+    def test_locked_citation_preserves_current_parent_and_producer_check_mode(self):
+        from unittest.mock import patch
+        source=self.upload();rid=source['revision']['id'];modes=[]
+        self.service.source_authorize=lambda row,lock=False:modes.append(lock)
+        original=self.repo.document
+        def current_parent(name,lock=False):
+            if not lock:
+                raise AssertionError("Locked citation used an old nonlocking parent read")
+            return original(name,lock=lock)
+        with patch.object(self.repo,'document',side_effect=current_parent):
+            result=self.service.citation('Synthetic Company',rid,1,lock=True)
+        self.assertEqual(result['document_id'],source['document']['id'])
+        self.assertTrue(modes)
+        self.assertTrue(all(modes))
+        modes.clear()
+        self.service.citation('Synthetic Company',rid,1)
+        self.assertTrue(modes)
+        self.assertFalse(any(modes))

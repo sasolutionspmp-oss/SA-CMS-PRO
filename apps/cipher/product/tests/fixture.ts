@@ -89,7 +89,7 @@ export async function mockWorkspace(page: Page, options: { model?: boolean; lose
       expect(Buffer.from(String(body.content_base64), 'base64').toString()).toBe('Fixture upload source.');
       expect(body.sha256).toMatch(/^[a-f0-9]{64}$/);
       const doc = { ...documents[0], id: 'TEST-DOC-002', current_revision: 'TEST-REV-002', title: String(body.title), filename: String(body.filename), sha256: String(body.sha256), byte_length: Number(body.byte_length) }; documents.push(doc);
-      return envelope(route, { document: doc, revision: { ...doc, id: doc.current_revision }, operation: { replayed: false } });
+      return envelope(route, { document: doc, revision: { ...doc, id: doc.current_revision }, operation: { id: body.operation_id, status: 'succeeded', replayed: false } });
     }
     if (method === 'get_document') return envelope(route, { document: documents[0], revisions: [{ id: documents[0].current_revision, revision_number: 1, sha256: documents[0].sha256, extraction_status: 'ready', scan_status: 'not_scanned' }] });
     if (method === 'preview_revision') return envelope(route, { document_id: citation.document_id, revision_id: citation.revision_id, page: 1, page_count: 1, text: sourceText, content_type: 'text/plain', citation });

@@ -3,11 +3,14 @@ import json
 from frappe.model.document import Document
 from cipher_aec.api.contracts import digest
 from cipher_aec.api.errors import DomainError
-from cipher_aec.governance.context import current_actor, require_project, require_trusted_write
+from cipher_aec.governance.context import current_actor, require_trusted_write
+from cipher_aec.estimating.scopes import require as require_project, record_scope
+from cipher_aec.estimating import scopes
 from . import geometry, repository
 
 
 class TakeoffRecord(Document):
+    @record_scope
     def validate(self):
         require_trusted_write()
         if not self.is_new():
@@ -50,7 +53,7 @@ class TakeoffRecord(Document):
             if value["source_citations"]:
                 verify(self.company, self.project, value["source_citations"], actor, lock=True)
         elif self.doctype == "Cipher Calibration Verification":
-            from cipher_aec.governance.approvals import require_approval_effect
+            from cipher_aec.estimating.scopes import approval_effect as require_approval_effect
             require_approval_effect(action="calibration.verify.v1", subject_id=value["calibration_id"], packet_id=value["packet_id"])
             calibrated = service._read("calibration", value["calibration_id"], self.company, self.project, actor, lock=True, new_use=True)
             import frappe

@@ -8,3 +8,5 @@ def after_migrate():
         {"fieldname": "cipher_alternate_group", "label": "Cipher Alternate Group UUID", "fieldtype": "Data", "read_only": 1, "hidden": 1, "no_copy": 1},
     ]}, update=True)
     frappe.db.add_unique("Cipher Proposal Revision", ["proposal", "revision_number"], constraint_name="cipher_proposal_revision_sequence")
+    frappe.db.add_unique("Cipher Proposal Issue", ["proposal_revision"], constraint_name="cipher_issue_exact_revision_unique")
+    frappe.db.add_unique("Cipher Proposal Issue", ["proposal", "revision_number"], constraint_name="cipher_issue_sequence_unique")

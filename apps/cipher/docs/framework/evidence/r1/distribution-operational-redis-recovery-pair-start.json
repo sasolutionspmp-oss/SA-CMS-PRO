@@ -1,0 +1,21 @@
+{
+  "label": "redis-recovery-pair-start",
+  "script": "distribution-pair-control.py",
+  "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+  "arguments": [
+    "start"
+  ],
+  "started_at": "2026-10-15T20:08:01.584999+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:01.776267+00:00",
+  "result": {
+    "action": "start",
+    "process": {
+      "pid": 14521,
+      "start_ticks": "11455726",
+      "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+      "started_at": 1792094881.7492208
+    },
+    "outer_restart": "operator-managed"
+  }
+}

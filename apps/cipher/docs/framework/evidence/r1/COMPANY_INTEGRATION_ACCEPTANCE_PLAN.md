@@ -1,17 +1,37 @@
 # Planned Company/Pursuit integration acceptance
 
-This is a next-wave acceptance plan, not executed evidence. Implementation stays
-on hold until the current combined checkpoint is complete and root releases it.
+This acceptance wave was released after committed/pushed checkpoint `e21ed89f`.
+The plan is active. The manual Company DOC → Pursuit → EST → independent accepted
+baseline now has separate [native proof](company-chain-native-acceptance.json),
+[cookie/CSRF HTTP proof](company-chain-http-manual-acceptance.json), and
+[post-reload source/receipt/private-File proof](company-chain-http-source-acceptance.json).
+The primary fixture Company has zero Projects. Temporary source and reviewer
+native permissions are restored; original Project receipt/event hash controls
+remain unchanged. The manual chain now continues through exact COM source
+composition and [prepared PDF HTTP proof](company-com02-preparation-http.json),
+[independent Issue approval/consumption HTTP proof](company-com02-issue-http.json),
+and [post-reload consumed receipt/source revocation](company-com02-issued-source-http.json).
+[Independent native readback](company-com02-issue-native-readback.json) confirms
+one Issue, a draft native Quotation, zero Company Projects and no financial or
+ledger effects. The issued PDF, original receipt and six protected history rows
+survive working successors and restored current access. Issue distribution is
+explicitly `not-sent`; separate [local distribution/outbox evidence](DISTRIBUTION_ACCEPTANCE_STATUS.md)
+now covers the durable fixture sink and bounded operational recovery. No external
+transmission is qualified. These manual artifacts do not qualify calibrated Company takeoff.
+The [source inventory](company-com02-issue-http-source-inventory.json) records
+the actual service reload boundaries and the initial session timeout separately.
 Domain owners retain the canonical DOC, EST, GOV and COM services; this QA lane
-will own independent integration qualification after their contracts are agreed.
+owns independent integration qualification as those contracts land.
 No live model or external provider is required.
 
 Use two explicitly authorized synthetic Company scopes and existing identities
 where possible. Prepare one author and alias sharing a canonical person, an
 independent reviewer, and an outsider. The primary Company has two Pursuits and
 no Project. Keep an existing Project scope as an independent regression control.
-Native customers, qualified units and rates belong to their explicitly selected
-Company; fixture setup must not infer Company authority from Project duties.
+Native parties and price lists use the selected Company's admitted associations.
+Qualified UOMs remain native shared masters with current native permissions;
+Company rate records have explicit scope. Fixture setup must not infer Company
+authority from Project duties or create a duplicate Company-owned UOM registry.
 Temporary role/duty changes must be restored and recorded.
 
 | Boundary | Intended independent proof |

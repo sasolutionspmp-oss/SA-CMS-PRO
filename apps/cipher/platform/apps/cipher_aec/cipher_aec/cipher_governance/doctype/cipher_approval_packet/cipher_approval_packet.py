@@ -1,5 +1,5 @@
-from cipher_aec.governance.controllers import ImmutableDocument
+from cipher_aec.governance.controllers import ScopedImmutableDocument
 
 
-class CipherApprovalPacket(ImmutableDocument):
+class CipherApprovalPacket(ScopedImmutableDocument):
     pass

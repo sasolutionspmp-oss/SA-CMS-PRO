@@ -1,0 +1,73 @@
+{
+  "schema": "cipher.r1.distribution-supervised-runtime-lifecycle.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T19:53:35.109135+00:00",
+  "start": {
+    "action": "start",
+    "process": {
+      "pid": 13508,
+      "start_ticks": "11318657",
+      "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+      "started_at": 1792093511.0561895
+    },
+    "outer_restart": "operator-managed",
+    "recorded_at": "2026-10-15T19:45:11.069567+00:00"
+  },
+  "stop": {
+    "action": "stop",
+    "pid": 13508,
+    "child_sessions": [
+      13509,
+      13510
+    ],
+    "remaining_active_processes": 0,
+    "recorded_at": "2026-10-15T19:46:55.085133+00:00"
+  },
+  "consumer_observation": {
+    "schema": "cipher.r1.distribution-automatic-consumer.v1",
+    "status": "passed",
+    "observed_at": "2026-10-15T19:46:10.034079+00:00",
+    "operation_id": "gka2def6dh",
+    "dispatch_id": "6761201a-88d6-4d90-97ba-bad9136382d6",
+    "state": "Succeeded",
+    "worker_attempt_count": 1,
+    "fencing_token": 1,
+    "rq_job_id": "cipher.localhost||cipher-outbox-gka2def6dh",
+    "rq_state": "JobStatus.FINISHED",
+    "sink_receipt_count": 1,
+    "acknowledgment": {
+      "accepted_at": "2026-10-15T19:45:14.379830+00:00",
+      "acknowledgment_id": "29590768-6e60-4162-bf0b-2c6c6c4a2481",
+      "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+      "byte_length": 12377,
+      "logical_key": "0387693f89b1cd930f4448c2677ff2e2c48b3747279265dbd7ee04f22e1bdf5c",
+      "mode": "fixture",
+      "payload_hash": "c8a08d1b9f82f8c59272b5801c8b8a77e84f9862b0b8599f230edcfa24775a3c"
+    },
+    "source_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+    "manual_deliver_or_publish_invoked": false,
+    "live_external_provider_qualified": false
+  },
+  "publication_observation": {
+    "schema": "cipher.r1.distribution-registered-publication.v1",
+    "status": "passed",
+    "operation_id": "gka2def6dh",
+    "canonical_state": "Queued",
+    "logical_key": "0387693f89b1cd930f4448c2677ff2e2c48b3747279265dbd7ee04f22e1bdf5c",
+    "dispatch_id": "6761201a-88d6-4d90-97ba-bad9136382d6",
+    "rq_job_id": "cipher.localhost||cipher-outbox-gka2def6dh",
+    "rq_state": "JobStatus.QUEUED",
+    "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+    "queue_contains_job": true,
+    "registered_timeout": 120,
+    "manual_deliver_or_publish_invoked": false
+  },
+  "artifact_sha256": {
+    "distribution-pair-start-first.json": "954d6877a5d619cd3c3c05da0933e8f3488304bf72877622164901fed83df22b",
+    "distribution-pair-stop-first.json": "6a4bfaa01c559e6788ccf7be5d743d0fa908ed98df8c5a6d35f5851c5363a3e5",
+    "distribution-automatic-consumer-first.json": "b6bc0d49d35e6b96e223907a4f6a3ccb8078150b33c6cc6ee83bb263e1d74672",
+    "distribution-registered-publication-first.json": "160bb4895e941ae4111cff8e2dcc5c19603ef5cfb68ae77cc4e7e6b0f07987b4"
+  },
+  "supervisor_source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+  "qualification": "First real registered-RQ consumption by the fixed supervised consumer/publisher pair, followed by controlled clean shutdown. Standalone outer restart is operator-managed. Pair restart, actual Redis publication failure, operator quarantine and full restored-site/sink reconciliation are separate unqualified cases. No live provider."
+}

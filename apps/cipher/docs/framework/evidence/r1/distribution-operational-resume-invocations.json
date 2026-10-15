@@ -1,0 +1,204 @@
+[
+  {
+    "label": "resume-initial-pair-status",
+    "script": "distribution-pair-control.py",
+    "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+    "arguments": [
+      "status"
+    ],
+    "started_at": "2026-10-15T20:09:50.972420+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:51.105960+00:00",
+    "result": {
+      "action": "status",
+      "running": false,
+      "process": {
+        "pid": 14638,
+        "start_ticks": "11458810",
+        "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+        "started_at": 1792094912.581951
+      },
+      "children": []
+    }
+  },
+  {
+    "label": "quarantine-exact-key-restore",
+    "script": "distribution-quarantine-control.py",
+    "helper_sha256": "cca94d71d8c7381d16be6409e5fcdd3b0c52e433d2f7ac7fd5b25d59a99dba81",
+    "arguments": [
+      "restore"
+    ],
+    "started_at": "2026-10-15T20:09:51.106348+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:52.173481+00:00",
+    "result": {
+      "status": "passed",
+      "original_key_presence_preserved": true,
+      "original_key_value_preserved": true,
+      "exact_site_configuration_restored": true,
+      "exact_common_configuration_preserved": true
+    }
+  },
+  {
+    "label": "quarantine-exact-restored-hup",
+    "script": "reload-web.py",
+    "helper_sha256": "56040170178f322da77afcd2abc70d96a24bbdac97a1f268caba77eab1177f50",
+    "arguments": [],
+    "started_at": "2026-10-15T20:09:52.274687+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:52.388885+00:00",
+    "result": {
+      "action": "graceful_gunicorn_reload",
+      "master_pid": 17,
+      "previous_worker_count": 2
+    }
+  },
+  {
+    "label": "quarantine-lifted-pair-start",
+    "script": "distribution-pair-control.py",
+    "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+    "arguments": [
+      "start"
+    ],
+    "started_at": "2026-10-15T20:09:53.006136+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:53.131377+00:00",
+    "result": {
+      "action": "start",
+      "process": {
+        "pid": 14854,
+        "start_ticks": "11466863",
+        "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+        "started_at": 1792094993.1159596
+      },
+      "outer_restart": "operator-managed"
+    }
+  },
+  {
+    "label": "observe-operator-quarantine-succeeded",
+    "script": "distribution-observe.py",
+    "helper_sha256": "f6fc92a6fc39fd870d7f1f37901ca82d87f743e57b6eb667853202491c044677",
+    "arguments": [
+      "--context",
+      "/tmp/cipher-r0-runtime/distribution-operator-quarantine-stage/distribution-http-context.json",
+      "--mode",
+      "succeeded",
+      "--output",
+      "/tmp/cipher-r0-runtime/distribution-operator-quarantine-succeeded.json"
+    ],
+    "started_at": "2026-10-15T20:09:53.132004+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:56.893699+00:00",
+    "result": {
+      "schema": "cipher.r1.distribution-queue-observation.v1",
+      "status": "passed",
+      "mode": "succeeded",
+      "observed_at": "2026-10-15T20:09:56.663039+00:00",
+      "operation_id": "uofcdn69oc",
+      "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+      "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+      "canonical_state": "Succeeded",
+      "worker_attempt_count": 1,
+      "fencing_token": 1,
+      "rq_job_id": "cipher.localhost||cipher-outbox-uofcdn69oc",
+      "rq_state": "finished",
+      "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+      "queue_contains_job": false,
+      "sink_receipt_count": 1,
+      "original_healthy_common_redis_used": true,
+      "manual_deliver_or_publish_invoked": false,
+      "live_external_provider_qualified": false,
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+        "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+        "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+        "byte_length": 12377,
+        "acknowledgment_id": "475a6be4-e532-45ba-9fda-78ee0e619bd8",
+        "accepted_at": "2026-10-15T20:09:56.578408+00:00"
+      },
+      "source_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380"
+    }
+  },
+  {
+    "label": "quarantine-lifted-pair-status",
+    "script": "distribution-pair-control.py",
+    "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+    "arguments": [
+      "status"
+    ],
+    "started_at": "2026-10-15T20:09:56.894256+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:57.020678+00:00",
+    "result": {
+      "action": "status",
+      "running": true,
+      "process": {
+        "pid": 14854,
+        "start_ticks": "11466863",
+        "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+        "started_at": 1792094993.1159596
+      },
+      "children": [
+        {
+          "pid": 14855,
+          "state": "S",
+          "parent": 14854,
+          "start_ticks": "11466866",
+          "session": 14855,
+          "role": "consumer"
+        },
+        {
+          "pid": 14856,
+          "state": "S",
+          "parent": 14854,
+          "start_ticks": "11466866",
+          "session": 14856,
+          "role": "publisher"
+        }
+      ]
+    }
+  },
+  {
+    "label": "quarantine-lifted-pair-stop",
+    "script": "distribution-pair-control.py",
+    "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+    "arguments": [
+      "stop"
+    ],
+    "started_at": "2026-10-15T20:09:57.021162+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:57.258682+00:00",
+    "result": {
+      "action": "stop",
+      "pid": 14854,
+      "child_sessions": [
+        14855,
+        14856
+      ],
+      "remaining_active_processes": 0
+    }
+  },
+  {
+    "label": "resume-finally-pair-status",
+    "script": "distribution-pair-control.py",
+    "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+    "arguments": [
+      "status"
+    ],
+    "started_at": "2026-10-15T20:09:57.259258+00:00",
+    "state": "completed",
+    "completed_at": "2026-10-15T20:09:57.395701+00:00",
+    "result": {
+      "action": "status",
+      "running": false,
+      "process": {
+        "pid": 14854,
+        "start_ticks": "11466863",
+        "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+        "started_at": 1792094993.1159596
+      },
+      "children": []
+    }
+  }
+]

@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T19:06:14.327082+00:00",
+  "qualification": "Owned DOC logical-operation lifetime and compatibility regression slice only. Shared command-hook transaction tests and measured native EST speed/authority delta remain separate evidence; no generated EST public admission or production-performance claim.",
+  "runtime": "Frappe16.52.0 / Python3.14.8 / cipher-r0-runtime-1",
+  "test_result": {
+    "passed": 51,
+    "failures": 0,
+    "errors": 0,
+    "output": "...................................................\n----------------------------------------------------------------------\nRan 51 tests in 0.912s\n\nOK\n",
+    "path": "/tmp/cipher-com02-logical-command-memo-tests.log",
+    "sha256": "6bd437d0fe1ac47a7589b3d80c23ee44e0ddf84caad2a603ed4cffb88b5c8509"
+  },
+  "contracts": [
+    "logical_operation(Company,command,operationUUID) grants no admission; producer content remains unavailable until each callback establishes exact full source prelock admission.",
+    "Only successful locked-original authority survives between callback contexts in that one logical operation. Exact actor/user/person/Company, complete resources/nodes, phase, Document and input digest form the cache key.",
+    "Each callback retains complete union discovery/acquisition and current permission/head/eligibility/manifest/byte checks. No nonlocking reuse.",
+    "Different nested operation refuses; same operation may nest. Root exit/reentry/exception and full commit/rollback invalidate. Shared backend wrapper must exit before supported savepoint rollback.",
+    "Failed authorizations, bytes/current heads and current acceptance facts are not cached; existing128-entry bound remains fail-closed.",
+    "Internal stats return a copy and expose no public diagnostics or authority."
+  ],
+  "prior_attribution": "commercial-producer-readonly-profile.json",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "781543e29bbd233a1af770f5a1fe47e4346aa5d19f65f5fcfa2f144d5f73dc37",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py": "32d655efa73574c2ef3eee0c9343ed735f830913bce84b5f0ff237cc4d51fee2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents.py": "c36cf10281d50c52a12a9d77400d9ef6b8d85dfcc03950943d7980132d5b1236",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_preparation.py": "0ee8837f4a8d504f59c477897ca01d61cfea6fbc4760b67c5eff6665b876ca7c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_lockplan.py": "5de16a915b3cfa4e36825dbc28cf12ede46f1a5c838fcb1db7ab48d1f09cbcac"
+  }
+}

@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "company",
     "project",
     "actor_user",
@@ -19,9 +20,19 @@
     "lease_until",
     "attempt_count",
     "result_json",
-    "last_error_code"
+    "last_error_code",
+    "distribution_dispatch",
+    "recipient_id"
   ],
   "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
     {
       "fieldname": "company",
       "label": "Company",
@@ -33,8 +44,9 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
-      "options": "Project"
+      "reqd": 0,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
     },
     {
       "fieldname": "actor_user",
@@ -117,6 +129,19 @@
       "label": "Last Error Code",
       "fieldtype": "Data",
       "reqd": 0
+    },
+    {
+      "fieldname": "distribution_dispatch",
+      "label": "Distribution Dispatch",
+      "fieldtype": "Link",
+      "options": "Cipher Distribution Dispatch",
+      "search_index": 1
+    },
+    {
+      "fieldname": "recipient_id",
+      "label": "Recipient ID",
+      "fieldtype": "Data",
+      "length": 64
     }
   ],
   "permissions": [

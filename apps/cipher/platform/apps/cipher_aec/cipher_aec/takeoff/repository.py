@@ -24,7 +24,7 @@ def read(kind, record_id, *, lock=False):
 def insert(kind, value, **fields):
     with trusted_write():
         doc = frappe.get_doc({"doctype": DOCTYPES[kind], "name": value["id"], "company": value["company"], "project": value["project"],
-                              "author_person": value["author_person"], "status": value["status"], "data_json": canonical_json(value), "record_digest": digest(value), **fields})
+                              "scope_type": value.get("scope_type", "Project"), "author_person": value["author_person"], "status": value["status"], "data_json": canonical_json(value), "record_digest": digest(value), **fields})
         doc.insert(ignore_permissions=True, set_name=value["id"])
     return value
 

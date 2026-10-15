@@ -10,14 +10,19 @@ class FrappeTargetReader:
     def __init__(self, company, project, actor=None):
         from cipher_aec.governance.context import current_actor, require_project
         self.actor = actor or current_actor()
-        self.company, self.project = company, project
+        self.company, self.project, self.scope_type = company, project, "Project"
         self.project_doc = require_project(company, project, ability="project.read", actor=self.actor)
+
+    def _refresh_scope(self, lock=False):
+        from cipher_aec.governance.context import require_project
+        self.project_doc = require_project(self.company, self.project, ability="project.read", actor=self.actor, lock=lock)
 
     def fetch(self, kind, name, *, for_export=False, lock=False):
         import frappe
-        from cipher_aec.governance.context import require_project
         # Refresh identity/duties for each explicit target; an Actor is not an entitlement cache.
-        self.project_doc = require_project(self.company, self.project, ability="project.read", actor=self.actor, lock=lock)
+        self._refresh_scope(lock)
+        if kind == "project" and self.scope_type == "Company":
+            return None
         doctype = NATIVE_DOCTYPES.get(kind)
         if not doctype:
             return None
@@ -36,7 +41,7 @@ class FrappeTargetReader:
             if kind == "item" and not any(row.company == self.company for row in record.get("item_defaults", [])):
                 return None
             if kind in {"customer", "supplier"}:
-                linked = kind == "customer" and self.project_doc.get("customer") == record.name
+                linked = self.scope_type == "Project" and kind == "customer" and self.project_doc.get("customer") == record.name
                 scoped_account = any(row.company == self.company for row in record.get("accounts", []))
                 if not linked and not scoped_account:
                     return None
@@ -68,6 +73,26 @@ class FrappeTargetReader:
             return None
         return TargetSnapshot(fields, version, authority="registered_unit" if row["kind"] == "uom" else "native",
                               warnings=tuple(warnings))
+
+
+class FrappeCompanyTargetReader(FrappeTargetReader):
+    """Same native resolver, with exact Company authority and no Project exception.
+
+    An effect precollects every native reference after its sorted UOM/Currency
+    locks, then calls fetch(lock=True) to recheck only those held source rows.
+    Native eligibility (enabled/disabled) remains the consuming domain's policy;
+    this resolver establishes current read, Company association and export rights.
+    """
+    def __init__(self, company, actor=None, *, ability="company.read"):
+        from cipher_aec.governance.context import current_actor
+        self.actor = actor or current_actor()
+        self.company, self.project, self.scope_type = company, None, "Company"
+        self.ability = ability
+        self._refresh_scope()
+
+    def _refresh_scope(self, lock=False):
+        from cipher_aec.governance.context import require_company
+        self.company_doc = require_company(self.company, ability=self.ability, actor=self.actor, lock=lock)
 
 
 def _fields(kind, record, records, unit_definition=None):

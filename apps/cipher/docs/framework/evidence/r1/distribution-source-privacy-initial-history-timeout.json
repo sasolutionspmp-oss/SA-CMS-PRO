@@ -1,0 +1,45 @@
+{
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "request_id": "68a8ec97-0eb4-40d2-bc95-0dd326d77d89",
+      "request_seconds": 0.994006,
+      "role": "author",
+      "server_time": "2026-10-15T19:17:52.167403Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.operation",
+      "request_id": "d89804b0-11d3-4c7c-b3da-59bf5201199e",
+      "request_seconds": 0.443751,
+      "role": "author",
+      "server_time": "2026-10-15T19:17:52.651750Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.operation",
+      "request_id": "cda80ca9-8b53-4791-b12a-3fa8f07bddd6",
+      "request_seconds": 0.449946,
+      "role": "author",
+      "server_time": "2026-10-15T19:17:53.102192Z"
+    }
+  ],
+  "completed_at": "2026-10-15T19:18:33.120438+00:00",
+  "failure_type": "TimeoutError",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "live_external_provider_qualified": false,
+  "schema": "cipher.r1.distribution-source-privacy-http.v1",
+  "schema_samples": 3,
+  "session_timings": [
+    {
+      "login_seconds": 0.072667,
+      "role": "author",
+      "session_seconds": 0.016668,
+      "status": "passed",
+      "total_seconds": 0.089339
+    }
+  ],
+  "started_at": "2026-10-15T19:17:51.076971+00:00",
+  "status": "failed"
+}

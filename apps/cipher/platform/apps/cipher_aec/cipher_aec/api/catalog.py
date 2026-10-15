@@ -90,5 +90,67 @@ _module("cipher_aec.construction_finance.api", {
     "list_contracts": ("GET", "ListContractsResponse"),
 })
 
+_module("cipher_aec.api.company_approvals", {
+    "list_packets": ("GET", "CompanyApprovalList"), "read_packet": ("GET", "CompanyApprovalPacket"),
+    "request_action": ("POST", "CompanyApprovalCommandResponse", True),
+    "decide_packet": ("POST", "CompanyApprovalCommandResponse", True),
+    "withdraw_packet": ("POST", "CompanyApprovalCommandResponse", True),
+    "execute_packet": ("POST", "CompanyApprovalExecutionResponse", True),
+})
+_module("cipher_aec.api.masters", {name:("GET", "NativeMasterList") for name in ("parties", "price_lists", "units", "currencies", "items")})
+
+
+_module("cipher_aec.documents.company_api", {
+    "upload_document": ("POST", "CompanyDocumentUploadResponse", True),
+    "list_documents": ("GET", "CompanyDocumentList"), "get_document": ("GET", "CompanyDocumentDetail"),
+    "preview_revision": ("GET", "CompanyDocumentPreview"), "search_documents": ("GET", "CompanyCitationList"),
+    "get_citation": ("GET", "CompanyCitation"), "download_revision": ("GET", "SourceBytes", False, True),
+})
+
+_module("cipher_aec.estimating.api", {"list_acceptances": ("GET", "ListEstimateAcceptancesResponse"), "acceptance_subject": ("GET", "EstimateAcceptanceSubjectResponse")})
+_module("cipher_aec.estimating.company_api", {
+    "register_unit": ("POST", "CompanyRegisterUnitResponse", True),
+    "create_conversion": ("POST", "CompanyCreateConversionResponse", True),
+    "create_rate": ("POST", "CompanyCreateRateResponse", True),
+    "create_assembly": ("POST", "CompanyCreateAssemblyResponse", True),
+    "create_estimate": ("POST", "CompanyCreateEstimateResponse", True),
+    "calculate_revision": ("POST", "CompanyCalculateRevisionResponse", True),
+    "get_record": ("GET", "CompanyEstRecordResponse"),
+    "list_records": ("GET", "CompanyEstListResponse"),
+    "list_units": ("GET", "CompanyListEstimateUnitsResponse"),
+    "list_acceptances": ("GET", "CompanyListEstimateAcceptancesResponse"),
+    "acceptance_subject": ("GET", "CompanyEstimateAcceptanceSubjectResponse"),
+    "accepted_baseline_reference": ("GET", "CompanyAcceptedBaselineReferenceResponse"),
+})
+_module("cipher_aec.takeoff.company_api", {
+    "create_set": ("POST", "CompanyTakeoffCreateSetResponse", True),
+    "create_calibration": ("POST", "CompanyTakeoffCreateCalibrationResponse", True),
+    "create_measurement": ("POST", "CompanyTakeoffCreateMeasurementResponse", True),
+    "bind_line": ("POST", "CompanyTakeoffBindLineResponse", True),
+    "get_record": ("GET", "CompanyTakeoffGetResponse"),
+    "list_records": ("GET", "CompanyTakeoffListResponse"),
+    "drawing_impact": ("GET", "CompanyTakeoffImpactResponse"),
+    "compare_measurements": ("GET", "CompanyTakeoffCompareResponse"),
+})
+
+_module("cipher_aec.commercial.api", {
+    "prepare_proposal_output": ("POST", "ComPreparedOutputCommand", True),
+    "prepared_output": ("GET", "ComPreparedOutput"),
+    "proposal_output_subject": ("GET", "ComOutputSubject"),
+    "issue": ("GET", "ComIssue"), "issues": ("GET", "ComIssueList"),
+})
+
+_module("cipher_aec.integrations.distribution_api", {
+    "create_instruction": ("POST", "DistCreateInstructionResponse", True),
+    "get_instruction": ("GET", "DistInstructionResponse"),
+    "get_dispatch": ("GET", "DistDispatchDetail"),
+    "get_recipient_delivery": ("GET", "DistRecipientDelivery"),
+    "list_dispatches": ("GET", "DistDispatchList"),
+    "cancel_dispatch": ("POST", "DistCancelResponse", True),
+    "profiles": ("GET", "DistProfiles"),
+    "recipient_choices": ("GET", "DistRecipientChoices"),
+    "list_instructions": ("GET", "DistInstructionList"),
+})
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

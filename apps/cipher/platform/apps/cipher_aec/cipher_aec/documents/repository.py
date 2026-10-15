@@ -3,6 +3,11 @@ from __future__ import annotations
 
 
 class FrappeDocumentRepository:
+    def __init__(self, scope_type="Project"):
+        if scope_type not in ("Project", "Company"):
+            raise ValueError("Bind an exact supported source scope")
+        self.scope_type = scope_type
+
     def document(self, name, lock=False):
         import frappe
         try:
@@ -14,7 +19,7 @@ class FrappeDocumentRepository:
     def revision_scope(self, name):
         import frappe
         from cipher_aec.api.errors import DomainError
-        row = frappe.db.get_value("Cipher Document Revision", name, ["name", "company", "project"], as_dict=True)
+        row = frappe.db.get_value("Cipher Document Revision", name, ["name", "document", "company", "project", "scope_type"], as_dict=True)
         if not row:
             raise DomainError("not_found", "Document revision was not found.", 404)
         return row
@@ -22,7 +27,7 @@ class FrappeDocumentRepository:
     def revision_locator(self, name):
         import frappe
         from cipher_aec.api.errors import DomainError
-        row = frappe.db.get_value("Cipher Document Revision", name, ["name", "document", "company", "project"], as_dict=True)
+        row = frappe.db.get_value("Cipher Document Revision", name, ["name", "document", "company", "project", "scope_type"], as_dict=True)
         if not row:
             raise DomainError("not_found", "Document revision was not found.", 404)
         return row
@@ -33,8 +38,8 @@ class FrappeDocumentRepository:
 
     def documents(self, company, project):
         import frappe
-        return frappe.get_all("Cipher Document", filters={"company": company, "project": project},
-                              fields=["name", "title", "company", "project", "current_revision", "revision_number"],
+        return frappe.get_all("Cipher Document", filters={"company": company, "project": project, "scope_type":self.scope_type},
+                              fields=["name", "title", "company", "project", "scope_type", "current_revision", "revision_number"],
                               order_by="modified desc", limit_page_length=100)
 
     def revisions(self, document_id):

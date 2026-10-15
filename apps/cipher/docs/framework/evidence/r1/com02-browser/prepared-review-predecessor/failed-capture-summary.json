@@ -1,0 +1,23 @@
+{
+  "mode": "incomplete-actual-frappe-company-com02-ui",
+  "stage": "author separately executes independent grant",
+  "original_preparation_repeated": false,
+  "completed_new_commands": [
+    "request_action",
+    "decide_packet"
+  ],
+  "execute_attempted": false,
+  "packet_id": "76pdnacsi8",
+  "original_pdf_revision": "REV-531b7c0072a944d5b608323a13a418ad",
+  "screenshots_completed": 6,
+  "failure": "Author Company approval inbox stayed Loading beyond the30-second row assertion. No corresponding error HTTP response was observed before browser teardown.",
+  "in_flight_request_url_inferred_from_frozen_client": "/api/method/cipher_aec.api.company_approvals.list_packets?company=Company+chain+A+20b85fd4edd2&limit=50&count_mode=exact",
+  "request_completion_evidence": "Not captured: tooling records failed HTTP responses but not successful/in-flight timing. Browser closed after assertion; do not infer backend refusal or rollback.",
+  "browser_errors": [],
+  "unexpected_http_errors": [],
+  "unexpected_console_errors": [],
+  "backend_source_inventory_files": 348,
+  "backend_source_deltas": [],
+  "existing_reopen_paths": "Returned packet_id is known. Request-origin dialog only exists in mounted ProposalOutput local state; issued-snapshot review appears only after execution. Company approval inbox is the current normal reopen route; no packet deep-link route is implemented.",
+  "qualification": "Preparation and independent review screens succeeded. Full Issue and subset distribution remain unqualified pending normal inbox latency correction."
+}

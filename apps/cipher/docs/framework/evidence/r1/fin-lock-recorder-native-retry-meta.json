@@ -1,0 +1,9 @@
+{
+  "started_at": "2026-10-15T20:56:36.153451+00:00",
+  "completed_at": "2026-10-15T20:56:46.499098+00:00",
+  "duration_seconds": 10.345656831006636,
+  "exit_code": 0,
+  "site": "cipher-ci-20261015204745-cb1658.localhost",
+  "test_source_sha256": "00434103c7deccff5352cbc79597a2d225ef4a171cc1e4c8ccf3d5aeeec53459",
+  "private_log_sha256": "8a042cdf576d4def5ff3b5da720aa39a7ca54813735164ea86cf2aa292d712b4"
+}

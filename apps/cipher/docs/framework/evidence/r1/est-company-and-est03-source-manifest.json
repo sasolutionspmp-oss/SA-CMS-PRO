@@ -1,0 +1,468 @@
+{
+  "actual_native_record_schema_samples": 13,
+  "artifacts": [
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-project-native-master-acceptance.json",
+      "sha256": "02bec7f563a30619132e816be6039eb01fd9af973955f563e061edbbe4db1004"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-company-current-read-acceptance.json",
+      "sha256": "d382d5a785c722718fd8a65025e7da3d4df4db12432280d3dd24d7e04b4642eb"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est02-project-native-fixture-grant.json",
+      "sha256": "a380c8c937f09b0d1e4fc7b90fa001fdb94a2c70f416125cf20f9cfd224968f8"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-company-takeoff-acceptance.json",
+      "sha256": "e014e02549d0b378357b8ee4fbd5442ca8c214871df69551da7b18d461bbda82"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-company-pinned-successor-acceptance.json",
+      "sha256": "aacd8e6112be0657b38b9f3507475336e107642f521dd28a5783086556eba20f"
+    }
+  ],
+  "explicit_limits": [
+    "Native fixtures use synthetic Sessions and do not claim HTTP/CSRF qualification.",
+    "MariaDB old-Company-snapshot promotion refused with1020; evidence qualifies fail-closed conflict and fresh-transaction current result, not current data returned within old snapshot.",
+    "Unused quote successor follows pinned-revision-at-pricing-date; drawing/calibration follows current-working-head-v1.",
+    "Generated producer PDFs are explicitly refused as new EST/takeoff inputs until complete outer dependency union integration is qualified.",
+    "No live model, OCR, CAD, external pricing/provider, contractual issue, budget/award adoption or financial posting qualification."
+  ],
+  "external_provider_qualified": false,
+  "fixture_only_amendments": [
+    "Project private fixture entry renamed after execution to exclude canonical no-argument runner; body/assertions unchanged.",
+    "Canonical EST01 native fixture now explicitly grants UOM/Currency read in its newly created private role, preserving all auth/concurrency assertions.",
+    "EST01-only fixture report now states estimate_acceptance_exercised:false; EST03 qualification resides in separate artifacts."
+  ],
+  "live_model_qualified": false,
+  "pure_tests": {
+    "passed": 29,
+    "project_golden_hashes_preserved": true,
+    "suites": [
+      "test_estimating_core (12)",
+      "test_takeoff_geometry (9)",
+      "test_estimating_company (8)"
+    ]
+  },
+  "qualification": "Company canonical EST/scoped takeoff and EST03 real-storage native fixtures; actual Company HTTP manual/revocation evidence is separately QA-owned.",
+  "recorded_at": "2026-10-15T17:31:31.192466+00:00",
+  "schema": "cipher.r1.company-est-and-est03-source-manifest.v1",
+  "source_owned": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.json",
+      "sha256": "9eff3a4f5c7b87a252802716673f47104d7d4af8e9108f149a93a6c4c8970adb"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.py",
+      "sha256": "57f860cbc32634ce3e4e68bf9d20671e9ceecc9f2356e02cb3fa3756bd571efa"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.json",
+      "sha256": "337a3f8b795c0e8f4466459b04b8a166d899e215f4764c30fda8b8c84c9f829d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.py",
+      "sha256": "6eb83daee9317f23938d752ca2d4a3543db3b49c874ca6071ce22e593282af15"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/cipher_calibration.json",
+      "sha256": "f298378e4a27af3d6d3157b9d6c20f5edda4488b7e89b608b23419446133b488"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/cipher_calibration.py",
+      "sha256": "90c07df8f711ef5b98da7b919d50a78422d6ab2d70d613261ee239366087e435"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.json",
+      "sha256": "ca8130db44123a6d6745326699ac6b7bd882a24ba8c2058ace851385bc8d374f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.py",
+      "sha256": "5c3395197de04241bd1bf20f032aa31b0eff16ee1f5d3fc12015c528ef0f6725"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/cipher_estimate.json",
+      "sha256": "7772ef9a2e0c3d03bd0306c4a4c06308ce83bac2a156cd3ddf73a2eddf819051"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/cipher_estimate.py",
+      "sha256": "f285405714db10f5be367b922256628c1048729d75be9372f52aa7d02a54b308"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_acceptance/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.json",
+      "sha256": "fa66f89a1a8fa3f8110efe3779316dea5ea62457b4f060acc0d9d9d7c97616f7"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.py",
+      "sha256": "1dbf9413663f8055548cc5723bdb84f1509c721ee7dd65d93a0daddee2c42c0c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.json",
+      "sha256": "664cf155b119fb3a6ee8d30a55bac285d88447e0696dec80fbbd9b9cd54c4417"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.py",
+      "sha256": "7870fcbf63b36b6e2a50ad6c9569c5a736fd5984c0fef54d471c5e64ec4e8447"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.json",
+      "sha256": "286fad8a46295e1e944ba56dea6f7958177ac22d0246a1ee7554fbd68ef0bf97"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.py",
+      "sha256": "2a0a6c1d1249079d68eeda900999be4214be4048c7d3885196364f21d271856c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.json",
+      "sha256": "043fa1b6b639d2209a54472b298b5d6faf19fbc4db928bc7b5f71ad0119f30ac"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.py",
+      "sha256": "50d6ae00629c67d5a783a355c81ed1092865991ed0f2f74c6ace94db82bb194f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.json",
+      "sha256": "a94871777f04eb3e13edd2caba036dc7f0fbdd0e476b4cb1e1bd1ec5eaf2326a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.py",
+      "sha256": "431d93ceed7a21b236f00b9ef78ae1e4b63f7f6ad70d9cc1bb890d849045cb16"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.json",
+      "sha256": "a83c25ea9fdbf39dbdf4601c87ae54f2ca651837070072a3f84a7cb27826461b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.py",
+      "sha256": "c433a35805073004731b7861af4996992722a843d6c16a276dfc242cd0635990"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.json",
+      "sha256": "544f8898a2a42705a04988df7d1a4a9add8927d590286aa9dd75c0d37c64d922"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.py",
+      "sha256": "0a37e983db6c4393fc7b9fdc09fdbd393604851ac57862f5720e4127725956f9"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.json",
+      "sha256": "0f5b3d8f8f231d68168f8e51f47e30406fe1ac6c5619ec3a6fa314c14d6c1e52"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.py",
+      "sha256": "55b22a601b4e6d69b5a963003ee91c11aa1b939d8081293a065677771e767ecb"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/COMPANY_ACCEPTANCE.md",
+      "sha256": "7804db092a49740d85c023993dc6c79d5533a9d49150cb543f5afb11c8c11591"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/README.md",
+      "sha256": "ceec1a7ff436ab52ec244cbf0c7857b9bbe6f7e5a698640b80acdb0dd0fe4ad0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/__init__.py",
+      "sha256": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/api.py",
+      "sha256": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/calculation.py",
+      "sha256": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_api.py",
+      "sha256": "2cc642037ad5dcd4bc13336d15799d14435f63cc3e7a11a59bdc48b8e8b7dc28"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_service.py",
+      "sha256": "65fa1b0bc552a4a14bfa3d748b240dc167fb3ea866cc9f1301df15cb4264ae4c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/contracts.py",
+      "sha256": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py",
+      "sha256": "2872f9612d57d7d17308b50030c99074f6975a8b180a69c820a48c0fd91709a3"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/guards.py",
+      "sha256": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/install.py",
+      "sha256": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/records.py",
+      "sha256": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/repository.py",
+      "sha256": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/schemas/api-company-v2.schema.json",
+      "sha256": "818759143f3e6d2dfaaef8d905258f706cea86b7f3e94bf8544b4e35c0dc0ead"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/schemas/api-v1.schema.json",
+      "sha256": "5091284c869b34dd686460903d1c420d8e40c7fce79befd370e6f63cedd15a13"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/scopes.py",
+      "sha256": "8f1daf8b8f2c607b2affa7f6f5db4dcbc8291dc296b04ec83f346c98a336a001"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+      "sha256": "3dbeb0a425cff4ed529e0e3a152d836662ddf5d8f44906dec7585606fd2c9299"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py",
+      "sha256": "b8d8a9dd18b452dc7e9c0d275ed05d3e8411e0162c94fdf5bb9b01a7d039dbef"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/units.py",
+      "sha256": "45f21184f6f9a7059d090424f5b2d01882b12b33111d7d613c1c1c8748a0d9a7"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/README.md",
+      "sha256": "d9ba2b9ba297f5d3e9388391539a0b93d4c16cbd67df856820cdf00d7cd40137"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/__init__.py",
+      "sha256": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/api.py",
+      "sha256": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/company_api.py",
+      "sha256": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/company_service.py",
+      "sha256": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/geometry.py",
+      "sha256": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/governance.py",
+      "sha256": "4dc9d48e9956f8b2e8a15102b2a3ec0643dd8e2c330ae1ac879f8eba3afb47fd"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/install.py",
+      "sha256": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/pdf.py",
+      "sha256": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/records.py",
+      "sha256": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/repository.py",
+      "sha256": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/schemas/api-company-v2.schema.json",
+      "sha256": "ae0b4a592aebcd4d87aff7bd83f104e5783b3e02b36eb24e7f1bc572264c4978"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/schemas/api-v1.schema.json",
+      "sha256": "a1a3dd44be6dde4ede9919d1a30c94c1956e20b717a82a1eab6d303c3ed7fa57"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py",
+      "sha256": "72646294740e4e1688b612bad9da48b05f6ce83a87a80b6b74203fe3036797c8"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+      "sha256": "6deba4995c1adf493f5d38a76e2e8b7c1e60772f7e2aedf09a7b899e81418039"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_company.py",
+      "sha256": "ef4131ae68cf71d9c8800c7e615b9000193a474039d95b86ed570d2a7e65d7b8"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_core.py",
+      "sha256": "adccb17656115fc1bfa0443af8113a887a34573f5792a0d78d7e2dc1886c4b79"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_project_native_acceptance.py",
+      "sha256": "cbacabd63522107e75bd2dfcddcc2bd16453ae1895ffb608a62d5ad509a926ca"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_acceptance.py",
+      "sha256": "663393397eac6dbb3e7f0626b3148147b7592a45b497ca106639938b202cb70d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_company_acceptance.py",
+      "sha256": "3b2b9f92125a6bc511868b74ec25d0e2d4d3705a28ad5983be213478646b2c7e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_geometry.py",
+      "sha256": "8e7919c3d24620d4cd9f5a2e39744f95632009b3273167bfba5c4967584b729a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_http_recorder.py",
+      "sha256": "22b9f2c7162144bb259a2150144cf1ee61d34ae062d0f2a6a0fad1162d191f27"
+    }
+  ],
+  "source_shared": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "922c0ed0802f20caf8fee810b6fbf8f3a917e797a1225ef4f0655a8c9845b90a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "2dadd3c285aadc92d9dfd632368351c8691c29117903c891aac55afde4f3b335"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py",
+      "sha256": "4593ac485cbb722944e3e4fa5eceb50fcf15f15cb106e3f287647226bf0be10e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py",
+      "sha256": "b59c2ab81ad685514f6376a8517e7a58e20d24bf53694612ff47580ed3bd159e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py",
+      "sha256": "c099773e9873a2136863cf5affe6a19346adf15a49a63800bf068287c7932608"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py",
+      "sha256": "a893e0a24c9b3bb0f5749f3be3b9163553fbaf1a1bb3952b88200ef7927240f2"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py",
+      "sha256": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py",
+      "sha256": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py",
+      "sha256": "ab056975151084954e198cd68f7ead2eb5557796ee21fe96999730f1346a8f94"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/scope.py",
+      "sha256": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/company_api.py",
+      "sha256": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py",
+      "sha256": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py",
+      "sha256": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/export.py",
+      "sha256": "d2ba4960b23037c439625db4b0146b5967d96ab9d6d094a200363fb1f5a36cea"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/schemas/canonical-v2.schema.json",
+      "sha256": "226b85bc00b75ff134a972cd0952c7179e55362bee1153eefe24a0592a81916a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py",
+      "sha256": "7403133ec3a7d1d20ad05aa8f8b288dbeb3b2d54047773b664d9ac16115cc24d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py",
+      "sha256": "07bed711927816aa45a787180495e1a3f80875b49f78fed51d3b862e329270a9"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/sources.py",
+      "sha256": "88fe7ec258dfc21911bf3dfd6d9be9403592eddc8d984e770b14f8f307452434"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/output_sources.py",
+      "sha256": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py",
+      "sha256": "257c36c304568d4b85c7a5827f517276d009ebe1bbe145338195cd0576d8d331"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/company_approvals.py",
+      "sha256": "a514710ccfeac64f27a814c9c8936584f1e9aa771548c8d0b4a8b3f6efeec4fa"
+    }
+  ],
+  "status": "passed"
+}

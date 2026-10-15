@@ -119,7 +119,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### GOV-03 — Approval packet/decision service and generic-route document hooks
 
-- Release: R0. Status: verified.
+- Release: R0. Status: active.
 - Required locally verified contracts: GOV-02.
 - Implement: Approval packet/decision service and generic-route document hooks.
 - Required acceptance evidence: Direct submit/cancel/import attempts cannot bypass required authority.
@@ -151,7 +151,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### DOC-01 — Canonical document/revision, upload quarantine and authorized byte download
 
-- Release: R0. Status: verified.
+- Release: R0. Status: active.
 - Required locally verified contracts: GOV-01, PLT-03.
 - Implement: Canonical document/revision, upload quarantine and authorized byte download.
 - Required acceptance evidence: Uploaded bytes verified by hash; unauthorized and superseded URL access handled correctly.
@@ -191,7 +191,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### DOC-02 — Text/PDF extraction, source/page citations and exact search
 
-- Release: R0. Status: verified.
+- Release: R0. Status: active.
 - Required locally verified contracts: DOC-01, INT-01.
 - Implement: Text/PDF extraction, source/page citations and exact search.
 - Required acceptance evidence: Known source fact returns exact accessible revision/page; failed extraction remains visible.
@@ -231,7 +231,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### EST-01 — Units/conversions, rate sources, assembly revisions and exact estimate calculation
 
-- Release: R1. Status: verified.
+- Release: R1. Status: active.
 - Required locally verified contracts: DOC-02, GOV-02.
 - Implement: Units/conversions, rate sources, assembly revisions and exact estimate calculation.
 - Required acceptance evidence: Known quantity/rate/waste examples and invalid-dimension cases produce deterministic results.
@@ -239,7 +239,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### EST-02 — Takeoff measurement, calibration, geometric/manual lineage and revision comparison
 
-- Release: R1. Status: verified.
+- Release: R1. Status: active.
 - Required locally verified contracts: EST-01, DOC-02.
 - Implement: Takeoff measurement, calibration, geometric/manual lineage and revision comparison.
 - Required acceptance evidence: Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies.
@@ -247,7 +247,9 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### EST-03 — Estimate acceptance and frozen baseline
 
-- Release: R1. Status: planned.
+Current qualification: raw/manual/geometry baseline lineage and original-authority revocation/restoration have connected evidence. Generated-document inputs remain disabled while command and full-history performance are qualified; the latest consume is 9.949 seconds against the 3-second target. The current frozen combined gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases.
+
+- Release: R1. Status: active.
 - Required locally verified contracts: EST-02, GOV-03.
 - Implement: Estimate acceptance and frozen baseline.
 - Required acceptance evidence: Changed material source rejects stale acceptance; successor estimate does not reprice baseline.
@@ -255,7 +257,9 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### COM-02 — Proposal review, output snapshots, issue and controlled distribution contract
 
-- Release: R1. Status: planned.
+Current qualification: preparation, independent Issue, separately approved fixture delivery, automatic recovery and actual responsive UI passed their named evidence. The current frozen combined gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases. External customer/provider delivery is unconfigured.
+
+- Release: R1. Status: active.
 - Required locally verified contracts: COM-01, EST-03, INT-01.
 - Implement: Proposal review, output snapshots, issue and controlled distribution contract.
 - Required acceptance evidence: Issued output matches approved revision; send is separate and fixture delivery labeled.
@@ -270,6 +274,8 @@ A dependency is satisfied when its required local schema/service/API contract is
 - Record schema/API/service and unified UI or worker changes, relevant positive/denied/failure/recovery checks, source revision and artifact paths. Keep local contract verification separate from external qualification; never count a fake result as a connected provider/model.
 
 ### PRJ-02 — Atomic award to project, WBS, budget, contract and Sales Order links
+
+Admission boundary: follow the current source checkpoint with qualified raw/manual/geometry accepted-baseline dependencies plus the native/WBS/cost/team/FIN prerequisites in the reviewed contracts. An issued PDF generated as output retains its producer provenance and is distinct from an estimate consuming a generated document as input. Award activation requires its own atomicity, rollback, concurrency, revocation and recovery evidence.
 
 - Release: R1. Status: planned.
 - Required locally verified contracts: COM-02, EST-03, FIN-01.

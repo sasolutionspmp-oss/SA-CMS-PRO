@@ -1,0 +1,180 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+ExpectError: expect(locator).toBeVisible() failed
+
+Locator: locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status')
+Expected: visible
+Timeout: 30000ms
+Error: element(s) not found
+
+Call log:
+  - Expect "toBeVisible" locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status') with timeout 30000ms
+  - waiting for locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status')
+
+    at captureRawStack (/workspace/cipher-framework-draft/apps/cipher/product/node_modules/playwright-core/lib/coreBundle.js:9282:17)
+    at callMatcherAsStep (/workspace/cipher-framework-draft/apps/cipher/product/node_modules/playwright/lib/matchers/expect.js:13316:57)
+    at Object.toBeVisible (/workspace/cipher-framework-draft/apps/cipher/product/node_modules/playwright/lib/matchers/expect.js:13308:23)
+    at /workspace/cipher-framework-draft/apps/cipher/product/scripts/connected-inbox-readonly.mjs:46:29 {
+  matcherResult: {
+    message: 'expect(locator).toBeVisible() failed\n' +
+      '\n' +
+      `Locator: locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status')\n` +
+      'Expected: visible\n' +
+      'Timeout: 30000ms\n' +
+      'Error: element(s) not found\n' +
+      '\n' +
+      'Call log:\n' +
+      `  - Expect "toBeVisible" locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status') with timeout 30000ms\n` +
+      `  - waiting for locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status')\n`,
+    pass: false,
+    actual: undefined,
+    name: 'toBeVisible',
+    expected: 'visible',
+    log: [
+      `  - Expect "toBeVisible" locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status') with timeout 30000ms`,
+      `  - waiting for locator('ui5-table[accessible-name="Company approval inbox"]').locator('ui5-table-row').first().locator('ui5-object-status')`
+    ],
+    timeout: 30000,
+    ariaSnapshot: '- alert\n' +
+      '- alert\n' +
+      '- link "Skip to content":\n' +
+      '  - /url: "#main-content"\n' +
+      '- banner:\n' +
+      '  - banner "Shell Bar":\n' +
+      '    - button "Toggle navigation"\n' +
+      '    - button "Cipher": Cipher The AEC/CMS Pro\n' +
+      '    - group "Additional Info":\n' +
+      '      - combobox "Company": Company chain A 20b85fd4edd2\n' +
+      '      - text: Tag Synthetic workspace\n' +
+      '    - search:\n' +
+      '      - searchbox "Search projects"\n' +
+      '    - button "Toggle Ricky assistant"\n' +
+      '    - button "Explicit Company chain author":\n' +
+      '      - img "Explicit Company chain author": EC\n' +
+      '- complementary:\n' +
+      '  - navigation "Cipher workspace navigation":\n' +
+      '    - tree "Primary Navigation Menu":\n' +
+      '      - treeitem "Projects"\n' +
+      '      - treeitem "Commercial"\n' +
+      '      - treeitem "Company documents"\n' +
+      '      - treeitem "Company estimates"\n' +
+      '      - treeitem "Company approvals"\n' +
+      '      - treeitem "Project work"\n' +
+      '      - treeitem "Estimates"\n' +
+      '      - treeitem "Drawing takeoff"\n' +
+      '      - treeitem "Documents"\n' +
+      '      - treeitem "Ricky"\n' +
+      '    - separator\n' +
+      '    - tree "Footer Navigation Menu":\n' +
+      '      - treeitem "Connections"\n' +
+      '- text: Company chain A 20b85fd4edd2 Company workspace\n' +
+      '- banner:\n' +
+      '  - text: COMPANY WORK\n' +
+      '  - heading "Company approvals" [level=1]\n' +
+      '  - paragraph: Company chain A 20b85fd4edd2 · Independent review and separately authorized execution.\n' +
+      '  - button "Refresh company approvals"\n' +
+      '- grid "Company approval inbox":\n' +
+      '  - row "Subject Action State Review":\n' +
+      '    - columnheader "Subject"\n' +
+      '    - columnheader "Action"\n' +
+      '    - columnheader "State"\n' +
+      '    - columnheader "Review"\n' +
+      '  - row "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 1 recipient(s) · Utility proposal fixture review 70ee36f5 Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 1 recipient(s) · Utility proposal fixture review 70ee36f5"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/dqsfgreidq?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Proposal revision 3 Proposal issue Review company packet Open exact review":\n' +
+      '    - gridcell "Proposal revision 3"\n' +
+      '    - gridcell "Proposal issue"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/76pdnacsi8?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution fa20083fa1af Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution fa20083fa1af"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/un6nddmcqd?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 18e5f7a57840 Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 18e5f7a57840"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/uarmkoo9g2?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 1 recipient(s) · QA distribution b656fc1306fa Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 1 recipient(s) · QA distribution b656fc1306fa"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/u07gibilps?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 79c5422cec1f Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 79c5422cec1f"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/gi2dm6atan?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution bc890fc96acf Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution bc890fc96acf"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/ovgv5ee1os?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 574bec3b36ae Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution 574bec3b36ae"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/olmihpbrpr?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution f6be78c4a905 Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6c200369-c843-424d-9faf-bcdf0acb7f20 · 1 recipient(s) · QA distribution f6be78c4a905"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/od8d3eq97c?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '  - row "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 2 recipient(s) · QA distribution e8c9f5077cfb Fixture distribution Review company packet Open exact review":\n' +
+      '    - gridcell "Issue 6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f · 2 recipient(s) · QA distribution e8c9f5077cfb"\n' +
+      '    - gridcell "Fixture distribution"\n' +
+      '    - gridcell:\n' +
+      '      - group: Object Status Executed Entry successfully validated\n' +
+      '    - gridcell "Review company packet Open exact review":\n' +
+      '      - button "Review company packet"\n' +
+      '      - link "Open exact review":\n' +
+      '        - /url: /company/work/o3u2m8f2q8?company=Company%20chain%20A%2020b85fd4edd2\n' +
+      '- button "Previous page" [disabled]\n' +
+      '- text: Page 1\n' +
+      '- button "Next page"'
+  }
+}
+
+Node.js v24.19.0

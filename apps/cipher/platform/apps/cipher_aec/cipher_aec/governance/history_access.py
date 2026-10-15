@@ -6,11 +6,11 @@ from cipher_aec.api.errors import DomainError
 from cipher_aec.governance.context import require_company, require_project
 
 EST_SUBJECTS = {"Cipher Unit Conversion":"conversion", "Cipher Rate Source":"rate", "Cipher Assembly Revision":"assembly",
-    "Cipher Estimate":"estimate", "Cipher Estimate Revision":"revision", "Cipher Estimate Line":"line", "Cipher Calculation Snapshot":"snapshot"}
+    "Cipher Estimate":"estimate", "Cipher Estimate Revision":"revision", "Cipher Estimate Line":"line", "Cipher Calculation Snapshot":"snapshot", "Cipher Estimate Acceptance":"acceptance"}
 TAKEOFF_SUBJECTS = {"Cipher Takeoff Set":"set", "Cipher Calibration":"calibration", "Cipher Calibration Verification":"verification",
     "Cipher Takeoff Measurement":"measurement", "Cipher Takeoff Line Binding":"binding"}
 FIN_SUBJECTS = {"Cipher Construction Contract":"contract", "Cipher Contract Revision":"revision", "Cipher Retainage Policy Revision":"policy", "Cipher SOV Version":"sov", "Cipher SOV Line":"line"}
-COM_SUBJECTS = {"Cipher Pursuit":"pursuit", "Cipher Proposal":"proposal", "Cipher Proposal Revision":"revision"}
+COM_SUBJECTS = {"Cipher Pursuit":"pursuit", "Cipher Proposal":"proposal", "Cipher Proposal Revision":"revision", "Cipher Proposal Issue":"issue"}
 
 
 def readable(event, actor, company, project):
@@ -31,28 +31,31 @@ def readable(event, actor, company, project):
                 return False
             return bool(require_project(company, project, actor=actor) and frappe.has_permission("Task", "read", doc=row, user=actor.user))
         if subject in {"Cipher Document", "Cipher Document Revision"}:
+            if project is None:
+                from cipher_aec.documents.service import authorize_company_subject
+                authorize_company_subject(actor, company, subject, identifier)
+                return True
             row = frappe.get_doc(subject, identifier)
             if row.company != company or row.project != project:
                 return False
             require_project(company, project, ability="document.read", actor=actor)
             return bool(frappe.has_permission(subject, "read", doc=row, user=actor.user))
         if subject == "Cipher Approval Packet":
-            if not project:
-                return False
-            from .approvals import read_packet
-            read_packet(company, project, identifier)
+            from .approvals import authorize_history_packet
+            authorize_history_packet(company, project, identifier, actor=actor,
+                scope_type="Project" if project is not None else "Company")
             return True
         if subject in EST_SUBJECTS:
-            if not project:
-                return False
             from cipher_aec.estimating.service import _scoped
-            _scoped(EST_SUBJECTS[subject], identifier, company, project, actor)
+            from cipher_aec.estimating.scopes import activate
+            with activate("Project" if project is not None else "Company", company, project):
+                _scoped(EST_SUBJECTS[subject], identifier, company, project, actor)
             return True
         if subject in TAKEOFF_SUBJECTS:
-            if not project:
-                return False
             from cipher_aec.takeoff.service import _read
-            _read(TAKEOFF_SUBJECTS[subject], identifier, company, project, actor, new_use=False)
+            from cipher_aec.estimating.scopes import activate
+            with activate("Project" if project is not None else "Company", company, project):
+                _read(TAKEOFF_SUBJECTS[subject], identifier, company, project, actor, new_use=False)
             return True
         if subject in FIN_SUBJECTS:
             if not project:
@@ -76,6 +79,13 @@ def readable(event, actor, company, project):
             require_company(company, ability="commercial.read", actor=actor)
             from cipher_aec.commercial.service import _read
             _read(COM_SUBJECTS[subject], identifier, company, actor)
+            return True
+        if subject in {"Cipher Distribution Instruction", "Cipher Distribution Dispatch", "Cipher Distribution Cancellation"}:
+            if project is not None:
+                return False
+            from cipher_aec.integrations.distribution import TYPES, read
+            kind = next(kind for kind, name in TYPES.items() if name == subject)
+            read(kind, identifier, company, actor)
             return True
         return False
     except frappe.DoesNotExistError:

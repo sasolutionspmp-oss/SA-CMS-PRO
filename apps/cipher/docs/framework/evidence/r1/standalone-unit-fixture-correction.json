@@ -1,0 +1,63 @@
+{
+  "schema": "cipher.standalone-unit-fixture-correction.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:47:31.409533+00:00",
+  "original_failure": {
+    "report": "apps/cipher/docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2043.json",
+    "report_sha256": "d488848310cb50c9b0ed54bb7c56d8f093658deb6d34bd85b0874b5477568dd9",
+    "private_log": "/tmp/cipher-new-stack-rwbahkut/frappe-unit-tests.log",
+    "log_sha256": "64cf254215367d4342604c1ad00ded74ee4d0d72d46ad59391b5719448d1f410",
+    "unit_cases": 263,
+    "errors": 30,
+    "cause": "Three test fixtures dereferenced unbound frappe.db LocalProxy in the intentional no-site standalone runner. Original log/JUnit retained unchanged.",
+    "reproduction": "Captured original full standalone gate failure used; no redundant failing rerun, as directed by root."
+  },
+  "correction": {
+    "files": [
+      "test_company_approval_listing.py",
+      "test_distribution_reads.py",
+      "test_history_listing.py"
+    ],
+    "scope": "Only module-local frappe SimpleNamespace doubles; no global frappe.db replacement, site setup, skips, reclassification, assertion removal, product or runner edits. SQLite executes the same production query text/keyset predicates.",
+    "cleanup": "Each successful setup patch registers cleanup immediately, preserving earlier cleanup if a later start fails."
+  },
+  "verification": {
+    "targeted": {
+      "cases": 37,
+      "errors": 0,
+      "failures": 0,
+      "seconds": 0.08,
+      "private_log": "/tmp/cipher-unit-proxy-targeted.log",
+      "log_sha256": "435b2880d52b9fbf80614cea9ea58a6751fcc90b31e851eb651342d446c60639"
+    },
+    "standalone": {
+      "cases": 263,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0,
+      "seconds": 13.722,
+      "invocation": "Same validate_new_stack.py AST class selection and xmlrunner.XMLTestRunner loader, ordinary bench Python process, no frappe.init/connect.",
+      "private_script": "/tmp/cipher-unit-proxy-standalone.py",
+      "script_sha256": "17177a76e8d3c7b6bec1120bbda3a15b4d880f4cd1781494c7bfb93b9220aef9",
+      "private_log": "/tmp/cipher-unit-proxy-standalone-after.log",
+      "log_sha256": "d59502e80811ac44fb24567e2ca83f39cd85b3da3c4c37226c3958791f5ac1fb",
+      "private_xml": "/tmp/cipher-unit-proxy-standalone-after.xml",
+      "xml_sha256": "a4d475241a4e8549e20f1a5bb7d9b9b6bbeb152daec8241e74814035fade893c"
+    },
+    "compile": "passed",
+    "diff_check": "passed",
+    "non_test_app_source_changes_from_initial_gate": []
+  },
+  "before_source_sha256": {
+    "test_company_approval_listing.py": "da654d854a660cc67bf975d13265fb93320e806cf3fb683353f59304584f5483",
+    "test_distribution_reads.py": "084958c82b2a29d37e2c7457b8c6256e203cf73f2411ea6cc875ead4f16cb2ea",
+    "test_history_listing.py": "15f59f3dc76465d7f5e1a8b9b4d5b7747140dbdd2a5eab733fbc7fb9ac728be1"
+  },
+  "after_source_sha256": {
+    "test_company_approval_listing.py": "20eb3c7368277c79471375bfc48c9b1d7519412586d089ecd852187fc8860e18",
+    "test_distribution_reads.py": "b332407fe184264bd904a1352b8660a6d77360a82f0f3f0d0b15a785191d614f",
+    "test_history_listing.py": "a3dd7c6d768507e95c81ce38aa8a49464474b08992de2782eef306590c8ee107"
+  },
+  "review": "Astra source review clear at the final three test hashes; standalone263 result supplied separately.",
+  "qualification": "This proves the isolated unit-fixture correction. The failed fresh gate remains failed evidence; root owns a new combined gate, not relabeling the original result."
+}

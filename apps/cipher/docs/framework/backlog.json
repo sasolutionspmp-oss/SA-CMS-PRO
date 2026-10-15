@@ -88,8 +88,8 @@
       ],
       "scope": "Approval packet/decision service and generic-route document hooks",
       "evidence": "Direct submit/cancel/import attempts cannot bypass required authority",
-      "status": "verified",
-      "local_contract_status": "verified",
+      "status": "active",
+      "local_contract_status": "project_actions_verified_company_actions_in_progress",
       "external_qualification_status": "not_required_for_synthetic_policy",
       "evidence_paths": [
         "docs/framework/evidence/r0/governance-approval-acceptance.json",
@@ -157,14 +157,23 @@
       ],
       "scope": "Canonical document/revision, upload quarantine and authorized byte download",
       "evidence": "Uploaded bytes verified by hash; unauthorized and superseded URL access handled correctly",
-      "status": "verified",
-      "local_contract_status": "verified",
+      "status": "active",
+      "local_contract_status": "project_and_company_documents_native_http_ui_passed_fresh_gate_passed",
       "external_qualification_status": "not_required_for_current_local_scope",
       "evidence_paths": [
         "docs/framework/evidence/r0/http-journey-final.json",
         "docs/framework/evidence/r0/http-source-revoked.json",
-        "docs/framework/evidence/r0/http-native-artifact.json"
-      ]
+        "docs/framework/evidence/r0/http-native-artifact.json",
+        "docs/framework/evidence/r1/company-document-native-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-manual-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-source-acceptance.json",
+        "docs/framework/evidence/r1/company-com02-generated-source-http.json",
+        "docs/framework/evidence/r1/issue-original-read-authority-native.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+      ],
+      "qualification_limit": "Canonical Company documents, revisions, raw bytes and original generated-output provenance passed actual native/HTTP/connected UI checks. Current frozen fresh-site gate passed. Development uploads remain explicitly not_scanned; generated-document input mutations are still gated by their estimating dependency/performance qualification."
     },
     {
       "id": "AI-01",
@@ -208,8 +217,8 @@
       "scope": "CI/test runners, real Frappe database fixtures and release evidence manifest",
       "evidence": "Reproducible fresh build/type checks/integration checks; evidence binds source version",
       "status": "verified",
-      "local_contract_status": "verified",
-      "external_qualification_status": "hosted_workflow_verified_at_294d06d7",
+      "local_contract_status": "current_company_com02_fresh_gate_passed_hosted_current_checkpoint_pending",
+      "external_qualification_status": "hosted_workflow_verified_at_e21ed89f",
       "evidence_paths": [
         "docs/framework/evidence/r0/QA01_VALIDATION.md",
         "docs/framework/evidence/r0/fresh-validation-initial.json",
@@ -217,9 +226,16 @@
         "docs/framework/evidence/r0/fresh-validation-registry-initial.json",
         "docs/framework/evidence/r0/fresh-validation.json",
         "docs/framework/evidence/r0/hosted-validation-provenance.json",
-        "docs/framework/evidence/r1/combined-fresh-validation.json"
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2043.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T204745Z.json",
+        "docs/framework/evidence/r1/standalone-unit-fixture-correction.json",
+        "docs/framework/evidence/r1/fin-lock-recorder-correction.json"
       ],
-      "qualification_limit": "Local and hosted fresh-site gates passed at checkpoint294d06d7. Later source changes require relevant checks. Explicit model/worker fixtures do not qualify real model/provider connections."
+      "qualification_limit": "Local and hosted fresh-site gates passed at checkpoint e21ed89f (and earlier foundation 294d06d7). Current Company/COM02 frozen fresh-site gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases; hosted verification of this new checkpoint remains pending; failed attempts and reviewed test-only corrections are preserved. Explicit model/worker fixtures do not qualify real model/provider connections."
     },
     {
       "id": "INT-01",
@@ -247,8 +263,8 @@
       ],
       "scope": "Text/PDF extraction, source/page citations and exact search",
       "evidence": "Known source fact returns exact accessible revision/page; failed extraction remains visible",
-      "status": "verified",
-      "local_contract_status": "verified",
+      "status": "active",
+      "local_contract_status": "project_extraction_verified_company_source_access_in_progress",
       "external_qualification_status": "not_required_for_current_local_scope",
       "evidence_paths": [
         "docs/framework/evidence/r0/http-journey-final.json",
@@ -336,8 +352,8 @@
       ],
       "scope": "Units/conversions, rate sources, assembly revisions and exact estimate calculation",
       "evidence": "Known quantity/rate/waste examples and invalid-dimension cases produce deterministic results",
-      "status": "verified",
-      "local_contract_status": "verified_project_estimates_with_current_source_collection_privacy",
+      "status": "active",
+      "local_contract_status": "project_estimates_verified_company_pursuit_scope_in_progress",
       "external_qualification_status": "not_required_for_authored_sources",
       "evidence_paths": [
         "docs/framework/evidence/r1/est01-acceptance.json",
@@ -358,8 +374,8 @@
       ],
       "scope": "Takeoff measurement, calibration, geometric/manual lineage and revision comparison",
       "evidence": "Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies",
-      "status": "verified",
-      "local_contract_status": "verified_project_pdf_geometry_manual_lineage_and_change_impact",
+      "status": "active",
+      "local_contract_status": "project_geometry_verified_company_scope_and_viewer_in_progress",
       "external_qualification_status": "not_required_for_authored_drawings",
       "evidence_paths": [
         "docs/framework/evidence/r1/est02-acceptance.json",
@@ -377,9 +393,21 @@
       ],
       "scope": "Estimate acceptance and frozen baseline",
       "evidence": "Changed material source rejects stale acceptance; successor estimate does not reprice baseline",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "active",
+      "local_contract_status": "raw_manual_geometry_baselines_native_http_ui_passed_original_authority_passed_generated_input_performance_active_fresh_gate_passed",
+      "external_qualification_status": "not_required_for_local_accepted_baselines",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-chain-native-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-manual-acceptance.json",
+        "docs/framework/evidence/r1/est-company-and-est03-source-manifest.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/est-generated-authority-continuations-native.json",
+        "docs/framework/evidence/r1/est-original-read-authority-native.json",
+        "docs/framework/evidence/r1/history-literal-authority-partial-profile.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+      ],
+      "qualification_limit": "Raw/manual/geometry accepted-baseline lineage has connected native, HTTP and actual UI evidence. Original-only historical authority, revocation/restoration and unchanged accepted bytes passed. Latest generated-input consume took 9.949 seconds with 34,211 SQL calls, above the 3-second target; full history latency remains unqualified. Public generated-document input admission remains disabled. A normally generated proposal PDF output with original-producer provenance is a separate supported path."
     },
     {
       "id": "COM-02",
@@ -391,9 +419,39 @@
       ],
       "scope": "Proposal review, output snapshots, issue and controlled distribution contract",
       "evidence": "Issued output matches approved revision; send is separate and fixture delivery labeled",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "active",
+      "local_contract_status": "prepared_issue_distribution_native_http_operational_recovery_actual_ui_passed_fresh_gate_passed",
+      "external_qualification_status": "not_configured_for_external_distribution",
+      "evidence_paths": [
+        "docs/framework/COM02_PREPARED_OUTPUT_CONTRACT.md",
+        "docs/framework/evidence/r1/commercial-output-preparation-native-qualified.json",
+        "docs/framework/evidence/r1/commercial-complete-admission-native.json",
+        "docs/framework/evidence/r1/company-com02-preparation-http.json",
+        "docs/framework/evidence/r1/company-com02-generated-source-http.json",
+        "docs/framework/evidence/r1/proposal-issue-policy-install.json",
+        "docs/framework/evidence/r1/commercial-issue-native-acceptance.json",
+        "docs/framework/evidence/r1/company-com02-issue-http.json",
+        "docs/framework/evidence/r1/company-com02-issue-native-readback.json",
+        "docs/framework/evidence/r1/company-com02-issued-source-http.json",
+        "docs/framework/evidence/r1/distribution-migrate.json",
+        "docs/framework/evidence/r1/distribution-migration-preservation.json",
+        "docs/framework/evidence/r1/distribution-duty-metadata-reload.json",
+        "docs/framework/evidence/r1/distribution-duty-native-parity.json",
+        "docs/framework/evidence/r1/distribution-fixture-setup.json",
+        "docs/framework/evidence/r1/distribution-http-mandate.json",
+        "docs/framework/evidence/r1/distribution-worker-lost-ack.json",
+        "docs/framework/evidence/r1/distribution-worker-readback.json",
+        "docs/framework/evidence/r1/distribution-evidence-progress.json",
+        "docs/framework/evidence/r1/distribution-operational-acceptance.json",
+        "docs/framework/evidence/r1/distribution-current-ack-http-delta.json",
+        "docs/framework/evidence/r1/distribution-ui-automatic-delivery.json",
+        "docs/framework/evidence/r1/company-approval-inbox-http.json",
+        "docs/framework/evidence/r1/com02-browser/provenance.json",
+        "docs/framework/evidence/r1/issue-original-read-authority-native.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+      ],
+      "qualification_limit": "Separate preparation, independent issuance, recipient-subset approval and controlled fixture delivery are exercised. Actual restart, queue-publication fault and operator-quarantine recovery retained one original operation and acknowledgment. Responsive actual UI and exact current receipt readback passed. Fresh combined gate passed; live customer/provider delivery is not configured or qualified."
     },
     {
       "id": "FIN-01",
@@ -412,7 +470,8 @@
         "docs/framework/evidence/r1/fin01-native-acceptance.json",
         "docs/framework/evidence/r1/fin01-http-acceptance.json",
         "docs/framework/evidence/r1/fin01-http-history.json",
-        "docs/framework/evidence/r1/combined-fresh-validation.json"
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/fin01-native-master-rights-acceptance.json"
       ],
       "qualification_limit": "Synthetic independently approved baseline only; no legal execution, certification, posting or GL movement. Unsupported activity and reductions/deletions fail closed until qualified FIN03 floor/correction contracts exist."
     },
@@ -427,8 +486,14 @@
       "scope": "Atomic award to project, WBS, budget, contract and Sales Order links",
       "evidence": "Repeated award yields one project/baseline; line lineage and totals reconcile",
       "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "local_contract_status": "native_award_and_fin_admission_contracts_reviewed_writer_not_enabled",
+      "external_qualification_status": "not_evaluated",
+      "evidence_paths": [
+        "docs/framework/PRJ02_NATIVE_AWARD_CONTRACT.md",
+        "docs/framework/PRJ02_FIN_ADMISSION_CONTRACT.md",
+        "docs/framework/PRJ02_HANDOFF_SCHEMA.md"
+      ],
+      "qualification_limit": "Implementation follows the current source checkpoint using qualified raw/manual/geometry accepted-baseline dependency lineage and mandatory native/WBS/cost/team/FIN admission. Ordinary issued PDF output provenance does not constitute disabled generated-document input. Award activation still requires actual atomicity, rollback, concurrency, revocation and recovery evidence; no award writer is currently enabled."
     },
     {
       "id": "BUY-01",
@@ -439,8 +504,11 @@
       "scope": "Requests/RFQs/quote comparisons and project procurement packages",
       "evidence": "Supplier quote normalization preserves original; unauthorized award blocked",
       "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "local_contract_status": "native_procurement_controller_contract_reviewed_implementation_pending_award",
+      "external_qualification_status": "not_evaluated",
+      "evidence_paths": [
+        "docs/framework/BUY_NATIVE_PROCUREMENT_CONTRACT.md"
+      ]
     },
     {
       "id": "BUY-02",
@@ -494,14 +562,25 @@
       "scope": "Commercial/estimate/award/procurement pages including dense editing",
       "evidence": "Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs",
       "status": "active",
-      "local_contract_status": "estimating_draft_workspace_verified_other_r1_journeys_pending",
+      "local_contract_status": "company_project_estimate_preparation_issue_distribution_connected_responsive_passed_fresh_gate_passed_award_procurement_pending",
       "external_qualification_status": "not_required_for_current_estimate_drafts",
-      "qualification_limit": "Connected project-estimate draft/editor/source/comparison screens and mounted-view same-UUID recovery are qualified. Commercial, accepted estimate, award, procurement and takeoff viewer remain pending dependencies; no browser-restart recovery claim.",
+      "qualification_limit": "Connected Company pursuit/proposal/document/estimate acceptance and Project PDF measurement/binding/change-impact passed for captured sources. Actual prepared-PDF review, original Issue execution, separately approved recipient subset and exact fixture receipt readback passed. Final desktop/tablet/phone inbox captures verify nested workspace bounds and keyboard navigation; failed/clipped/loading captures remain explicitly unqualified. Current frozen fresh-site gate passed. Award/procurement UI await their domain dependencies. Recovery is mounted-view only; no browser-restart recovery claim.",
       "evidence_paths": [
         "docs/framework/evidence/r1/estimating-draft-workspace/verification.json",
         "docs/framework/evidence/r1/estimating-responsive-correction/verification.json",
         "docs/framework/evidence/r1/estimating-create-recovery-final/verification.json",
-        "docs/framework/evidence/r1/combined-fresh-validation.json"
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/project-pdf-workspace/verification.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/project-pdf-polish/verification.json",
+        "docs/framework/evidence/r1/company-polish/verification.json",
+        "docs/framework/evidence/r1/com02-browser/provenance.json",
+        "docs/framework/evidence/r1/com02-browser/exact-issue/verification.json",
+        "docs/framework/evidence/r1/com02-browser/subset-instruction-review/verification.json",
+        "docs/framework/evidence/r1/com02-browser/fixture-readback/verification.json",
+        "docs/framework/evidence/r1/com02-browser/inbox-responsive/verification.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
       ]
     },
     {

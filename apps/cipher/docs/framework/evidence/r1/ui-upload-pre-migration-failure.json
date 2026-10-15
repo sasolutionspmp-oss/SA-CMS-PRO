@@ -1,0 +1,29 @@
+{
+  "error_log_id": "34nv0anqkr",
+  "request_id": "b2a3c2d6-1b67-4050-9381-607b75ef42c9",
+  "native_error_created_at": "2026-10-15 23:01:59.195379",
+  "system_time_zone": "",
+  "error": "MySQLdb.OperationalError: (1054, \"Unknown column 'producer_kind' in 'SELECT'\")",
+  "counts_in_same_native_clock_four_minute_window": {
+    "Cipher Document": 0,
+    "Cipher Document Revision": 0,
+    "Cipher Command Receipt": 0,
+    "Cipher History Event": 0,
+    "File matching attempted filename": 0
+  },
+  "all_matching_document_titles": [
+    {
+      "name": "DOC-91f5d81f30dd46df953ff787d9c22fdd",
+      "title": "Synthetic UI drawing 7fdc2cc9",
+      "creation": "2026-10-15 22:56:10.704844"
+    }
+  ],
+  "schema": "cipher.r1.ui-upload-failure-reconciliation.v1",
+  "recorded_at": "2026-10-15T17:36:55.980581+00:00",
+  "method": "Independent read-only Frappe/MariaDB checks; exact request Error Log native timestamp anchors the window to avoid timezone assumptions.",
+  "qualification": "No database Document/Revision/receipt/history/File rows matching this upload scope in the four-minute native-clock window. Original operation UUID and exact title suffix were not captured, so this is bounded effect reconciliation, not exact UUID retry or proof about orphan filesystem bytes.",
+  "initial_http_status": 500,
+  "http_timestamp_utc": "2026-10-15T17:31:59Z",
+  "original_operation_id_available": false,
+  "status": "passed_bounded_database_reconciliation"
+}

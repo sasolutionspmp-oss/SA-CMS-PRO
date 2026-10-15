@@ -5,9 +5,9 @@ import { human } from './hooks';
 
 export function Status({ value }: { value: string }) {
   const normalized = value.toLowerCase();
-  const state = ['completed', 'complete', 'succeeded', 'saved', 'open', 'active', 'ready', 'executed', 'granted'].includes(normalized) ? 'Positive'
+  const state = ['completed', 'complete', 'succeeded', 'saved', 'open', 'active', 'ready', 'executed', 'granted', 'verified scale', 'current source'].includes(normalized) ? 'Positive'
     : ['failed', 'blocked', 'cancelled', 'rejected'].includes(normalized) ? 'Negative'
-    : ['waiting_for_review', 'waiting-for-review', 'pending', 'not_scanned', 'quarantined', 'overdue', 'stale', 'expired'].includes(normalized) ? 'Critical'
+    : ['waiting_for_review', 'waiting-for-review', 'pending', 'not_scanned', 'quarantined', 'overdue', 'stale', 'expired', 'stale source'].includes(normalized) ? 'Critical'
     : 'Information';
   return <ObjectStatus state={state}>{human(value)}</ObjectStatus>;
 }

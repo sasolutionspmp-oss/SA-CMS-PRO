@@ -1,4 +1,6 @@
 import json
+import uuid
+from contextlib import nullcontext
 
 import frappe
 
@@ -24,6 +26,12 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
     locking serializes source checks, task creation and the immutable history chain.
     Exceptions are rolled back by the transport or the surrounding worker transaction.
     """
+    if scope_type == "Company":
+        from cipher_aec.documents.provenance import logical_operation, logical_operation_stats
+        # Helpers may share one logical lifetime, but a recursive command must
+        # never acquire new locks or replace the outer command's savepoint.
+        if logical_operation_stats() is not None:
+            raise DomainError("nested_company_command", "Company commands cannot execute inside another Company command.", 409)
     assert_synthetic_site()
     operation_id = parse_operation_id(operation_id)
     company = text(company, "Company")
@@ -46,8 +54,15 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         frappe.db.sql("SELECT b.name,b.user,u.name FROM `tabCipher Identity Binding` b JOIN `tabUser` u ON u.name=b.user WHERE b.person IN (" + placeholders + ") ORDER BY b.name FOR UPDATE", people)
     actor = current_actor(lock=True)
     locked_project = authorize(actor, lock=True)
+    if scope_type == "Company":
+        for prefix, read_ability in (("document.", "document.read"), ("estimate.", "estimate.read"), ("takeoff.", "estimate.read")):
+            if command.startswith(prefix):
+                require_company(company, ability=read_ability, actor=actor, lock=True)
     if scope_type == "Company" and command.startswith("commercial."):
         require_company(company, ability="commercial.read", actor=actor, lock=True)
+    if scope_type == "Company" and command.startswith("distribution."):
+        require_company(company, ability="commercial.read", actor=actor, lock=True)
+        require_company(company, ability="document.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("contract."):
         require_project(company, project, ability="contract.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("takeoff."):
@@ -69,17 +84,21 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         result = json.loads(existing.result_json)
         if digest(result) != existing.result_hash:
             raise DomainError("receipt_integrity", "The original command receipt cannot be verified.", 409)
-        authorize_receipt(actor, command, company, project, result, scope_type=scope_type)
+        with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext():
+            authorize_receipt(actor, command, company, project, result, scope_type=scope_type)
         result["operation"] = {"id": operation_id, "status": "succeeded", "replayed": True}
         return result
     # Access is current for replay; lifecycle/source checks govern only a new effect.
     require_effects_enabled()
     if scope_type == "Project" and ability in {"project.write", "task.create", "document.write", "estimate.write", "contract.write"} and locked_project.status in {"Completed", "Cancelled"}:
         raise DomainError("project_closed", "This project is closed for new work.", 409)
-    savepoint = "cipher_command"
+    savepoint = "cipher_company_" + uuid.uuid4().hex if scope_type == "Company" else "cipher_command"
     frappe.db.savepoint(savepoint)
     try:
-        with trusted_write():
+        # The memo grants no source admission. Domain guards/controllers still
+        # acquire their complete current source union. Exit before either
+        # rollback branch so no success memo survives a failed local effect.
+        with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
             if guard is not None:
                 guard(actor, locked_project)
             result = effect(actor, locked_project)
@@ -124,6 +143,21 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             require_company(company, ability="commercial.read", actor=actor, lock=True)
             from cipher_aec.commercial.service import authorize_receipt as authorize_commercial
             authorize_commercial(actor, company, result, lock=True)
+        elif command.startswith("document."):
+            from cipher_aec.documents.service import authorize_company_receipt
+            authorize_company_receipt(actor, company, result, lock=True)
+        elif command.startswith("estimate."):
+            from cipher_aec.estimating.service import authorize_receipt as authorize_estimate
+            authorize_estimate(actor, company, None, result, scope_type="Company")
+        elif command.startswith("takeoff."):
+            from cipher_aec.takeoff.service import authorize_receipt as authorize_takeoff
+            authorize_takeoff(actor, company, None, result, scope_type="Company")
+        elif command.startswith("approval."):
+            from cipher_aec.governance.approvals import authorize_receipt as authorize_approval
+            authorize_approval(actor, company, None, result, scope_type="Company")
+        elif command.startswith("distribution."):
+            from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
+            authorize_distribution(actor, company, result, lock=True)
         return
     if command.startswith("document."):
         require_project(company, project, ability="document.read", actor=actor)
@@ -167,5 +201,7 @@ def read_company_operation(company, operation_id):
     result = json.loads(row.result_json)
     if digest(result) != row.result_hash:
         raise DomainError("receipt_integrity", "The original command receipt cannot be verified.", 409)
-    authorize_receipt(actor, row.command, company, None, result, scope_type="Company")
+    from cipher_aec.documents.provenance import logical_operation
+    with logical_operation(company, row.command, operation_id):
+        authorize_receipt(actor, row.command, company, None, result, scope_type="Company")
     return {**result, "operation": {"id": operation_id, "status": "succeeded", "replayed": True}}

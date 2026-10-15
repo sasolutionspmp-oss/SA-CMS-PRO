@@ -2,21 +2,29 @@
 import frappe
 from frappe.model.document import Document
 from cipher_aec.governance.context import require_trusted_write
+from cipher_aec.documents.scope import scope_of
 
 
 class CipherDocument(Document):
     def validate(self):
         require_trusted_write()
+        scope_of(self.as_dict())
+        from cipher_aec.documents.provenance import binding
+        generated = binding(self.as_dict())
+        from cipher_aec.documents.preparation import require_preparation
+        require_preparation(self.as_dict())
         if not self.is_new():
             previous = self.get_doc_before_save()
-            for field in ("company", "project", "title"):
+            for field in ("company", "project", "scope_type", "title", "producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json"):
                 if previous.get(field) != self.get(field):
                     frappe.throw("Document scope and title are immutable; create a new document.")
+            if generated is not None and previous.revision_number != 0:
+                frappe.throw("Prepared output documents contain one immutable revision.")
             if self.revision_number != previous.revision_number + 1:
                 frappe.throw("Document head must advance exactly one revision.")
             row = frappe.db.get_value("Cipher Document Revision", self.current_revision,
-                                      ["document", "revision_number", "company", "project"], as_dict=True)
-            if not row or row.document != self.name or row.revision_number != self.revision_number or row.company != self.company or row.project != self.project:
+                                      ["document", "revision_number", "company", "project", "scope_type"], as_dict=True)
+            if not row or row.document != self.name or row.revision_number != self.revision_number or row.company != self.company or row.project != self.project or row.scope_type != self.scope_type:
                 frappe.throw("Document head must identify its next stored revision.")
         elif self.revision_number != 0 or self.current_revision:
             frappe.throw("A new document starts without a revision.")

@@ -6,6 +6,7 @@
   "engine": "InnoDB",
   "field_order": [
     "document",
+    "scope_type",
     "company",
     "project",
     "revision_number",
@@ -20,7 +21,12 @@
     "extractor_version",
     "page_count",
     "pages_json",
-    "extraction_warning"
+    "extraction_warning",
+    "producer_kind",
+    "producer_reference",
+    "producer_input_digest",
+    "producer_binding_json",
+    "generation_json"
   ],
   "fields": [
     {
@@ -30,6 +36,15 @@
       "reqd": 1,
       "search_index": 1,
       "options": "Cipher Document"
+    },
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
     },
     {
       "fieldname": "company",
@@ -43,7 +58,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "search_index": 1,
       "options": "Project"
     },
@@ -130,6 +145,46 @@
       "label": "Extraction Warning",
       "fieldtype": "Small Text",
       "reqd": 0
+    },
+    {
+      "fieldname": "producer_kind",
+      "label": "Producer Kind",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_reference",
+      "label": "Producer Reference",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_input_digest",
+      "label": "Producer Input Digest",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_binding_json",
+      "label": "Producer Binding Json",
+      "fieldtype": "Long Text",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "generation_json",
+      "label": "Generation Provenance",
+      "fieldtype": "Long Text",
+      "hidden": 1,
+      "read_only": 1,
+      "no_copy": 1
     }
   ],
   "permissions": [

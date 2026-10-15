@@ -63,7 +63,7 @@ def run_acceptance():
         from frappe.permissions import add_permission, update_permission_property
         role = 'FIN01 native source reader ' + marker
         frappe.get_doc({'doctype':'Role','role_name':role}).insert(ignore_permissions=True)
-        for doctype in ('Customer','Supplier'):
+        for doctype in ('Customer','Supplier','UOM','Currency'):
             add_permission(doctype,role,0)
             update_permission_property(doctype,role,0,'read',1)
         for key in ('author','alias','reviewer'):
@@ -132,15 +132,28 @@ def run_acceptance():
         from unittest.mock import patch
         import re
         native_locks=[]
+        native_lock_queries=[]
         original_sql=frappe.db.sql
         def observed_sql(query, values=(), *args, **kwargs):
+            rows=original_sql(query,values,*args,**kwargs)
             text=str(query)
-            if 'FOR UPDATE' in text.upper():
-                match=re.search(r'`?tab(UOM|Currency|Customer|Supplier)`?',text)
+            if re.search(r'\bFOR\s+UPDATE\b',text,re.IGNORECASE):
+                # Match complete parent identifiers, never Customer Credit
+                # Limit/Supplier Number child tables. A qualified UUID lookup
+                # and the permission lookup by name lock the same physical row.
+                match=re.search(r'\bFROM\s+(?:`tab(UOM|Currency|Customer|Supplier)`|tab(UOM|Currency|Customer|Supplier)\b)(?=\s|$)',text,re.IGNORECASE)
                 if match:
-                    key=(match.group(1),tuple(str(value) for value in (values.values() if isinstance(values,dict) else values if isinstance(values,(list,tuple)) else (values,))))
-                    if key not in native_locks: native_locks.append(key)
-            return original_sql(query,values,*args,**kwargs)
+                    kind=next(name for name in ('UOM','Currency','Customer','Supplier') if name.lower()==(match.group(1) or match.group(2)).lower())
+                    columns=[column[0] for column in frappe.db._cursor.description]
+                    parameters=tuple(str(value) for value in (values.values() if isinstance(values,dict) else values if isinstance(values,(list,tuple)) else (values,)))
+                    for row in rows:
+                        name=row['name'] if isinstance(row,dict) else row[columns.index('name')]
+                        assert isinstance(name,str) and name, (kind,columns)
+                        key=(kind,name)
+                        first_acquisition=key not in native_locks
+                        native_lock_queries.append({'kind':kind,'name':name,'parameters':parameters,'first_acquisition':first_acquisition})
+                        if first_acquisition: native_locks.append(key)
+            return rows
         with patch.object(frappe.db,'sql',side_effect=observed_sql):
             first = service.author_revision(**arguments)
         ranks={'UOM':0,'Currency':1,'Customer':2,'Supplier':2}
@@ -148,6 +161,8 @@ def run_acceptance():
         for kind,identity in native_locks:
             if kind not in first_kind: first_kind.append(kind)
         assert [ranks[kind] for kind,identity in native_locks] == sorted(ranks[kind] for kind,identity in native_locks), native_locks
+        assert native_locks == [('UOM',native_unit.name),('Currency','USD'),('Customer',customer.name)],native_locks
+        author_lock_queries=deepcopy(native_lock_queries)
         frappe.db.commit()
         first_sov = deepcopy(first['sov']); first_policy = deepcopy(first['policy'])
         again = service.author_revision(**arguments)
@@ -226,11 +241,12 @@ def run_acceptance():
         denied(lambda: service.author_revision(**disabled_args), {'counterparty_disabled'})
         frappe.set_user('Administrator'); customer = frappe.get_doc('Customer',customer.name); customer.disabled=0; customer.save(ignore_permissions=True); frappe.db.commit()
         # Revoking native-party read rights affects historical reads and receipts.
-        user_doc=frappe.get_doc('User',participants['author']['user']); user_doc.set('roles',[row for row in user_doc.roles if row.role != role]); user_doc.save(ignore_permissions=True); frappe.db.commit()
+        from frappe.permissions import update_permission_property
+        update_permission_property('Customer',role,0,'read',0); frappe.db.commit()
         login('author')
         denied(lambda: service.get_record(company,project.name,'contract',contract['id']), {'not_found'})
         denied(lambda: read_operation(company,project.name,operation), {'not_found'})
-        frappe.set_user('Administrator'); user_doc=frappe.get_doc('User',participants['author']['user']); user_doc.append('roles',{'role':role}); user_doc.save(ignore_permissions=True); frappe.db.commit()
+        frappe.set_user('Administrator'); update_permission_property('Customer',role,0,'read',1); frappe.db.commit()
         login('author')
         checks.append('disabled_party_preserves_history_and_current_native_read_revocation_denies')
         # No arbitrary native financial draft can race the initial admission.
@@ -266,16 +282,21 @@ def run_acceptance():
         replacement_args['lines'][0]['quantity']['unit_id']=replacement['id']
         service.author_revision(**replacement_args); frappe.db.commit()
         native_locks.clear()
+        native_lock_queries.clear()
         with patch.object(frappe.db,'sql',side_effect=observed_sql):
             historic=read_operation(company,project.name,old_draft_args['operation_id'])
         assert historic['revision']['id'] == old_draft['revision']['id']
         assert [ranks[kind] for kind,identity in native_locks] == sorted(ranks[kind] for kind,identity in native_locks),native_locks
         assert sum(kind=='UOM' for kind,identity in native_locks)==2,native_locks
+        expected_units={unit['id']:native_unit.name,replacement['id']:replacement_unit.name}
+        assert native_locks == [('UOM',expected_units[identifier]) for identifier in sorted(expected_units)] + [('Currency','USD'),('Customer',customer.name)],native_locks
         checks.append('historical_receipt_prelocks_old_and_current_uom_union_before_party')
         result = {'schema':'cipher.finance.acceptance.v1','status':'passed','label':'explicit-synthetic-fin01-with-real-native-storage-and-governance',
                   'company':company,'project':project.name,'contract_id':contract['id'],'accepted_revision':first['revision']['id'],
                   'current_draft_revision':newest['revision']['id'],'native_customer':customer.name,'native_supplier':supplier.name,
                   'checks':checks,'shared_native_master_first_lock_order':first_kind,'legal_execution':False,'financial_posting':False,'certification':False,
+                  'native_parent_lock_queries':{'author_revision':author_lock_queries,'historical_receipt':native_lock_queries},
+                  'historical_receipt_first_native_acquisitions':native_locks,
                   'floor_provider_qualified':False,'live_model_qualified':False,'external_provider_qualified':False}
         frappe.db.commit()
         return result

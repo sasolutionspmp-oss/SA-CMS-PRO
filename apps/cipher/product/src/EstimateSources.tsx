@@ -47,7 +47,7 @@ export function EstimateSourceInspector({ company, project, kind, id, onClose, o
   </Dialog>;
 }
 
-export function SnapshotFacts({ snapshot }: { snapshot: EstSnapshotRecord }) {
+export function SnapshotFacts({ snapshot }: { snapshot: Pick<EstSnapshotRecord, 'currency_policy' | 'input_digest' | 'output_digest' | 'result'> }) {
   return <><Title level="H3">Saved calculation</Title><dl className="approval-metadata"><dt>Currency</dt><dd>{snapshot.currency_policy.currency}</dd><dt>Currency decimals</dt><dd>{snapshot.currency_policy.currency_exponent}</dd><dt>Rounding</dt><dd>Half up after exact line calculation</dd><dt>Input digest</dt><dd className="packet-hash">{snapshot.input_digest}</dd><dt>Output digest</dt><dd className="packet-hash">{snapshot.output_digest}</dd></dl><Table accessibleName="Saved calculation line totals" headerRow={<TableHeaderRow><TableHeaderCell minWidth="14rem">Line</TableHeaderCell><TableHeaderCell width="9rem" horizontalAlign="End">Extension</TableHeaderCell></TableHeaderRow>}>{snapshot.result.lines.map(line => <TableRow key={line.line_id}><TableCell><div className="record-cell"><strong>{line.description}</strong><span>Authored quantity · {line.included ? 'Included' : 'Excluded alternate'}</span></div></TableCell><TableCell horizontalAlign="End"><span className="exact-number">{line.extension.currency} {exactDisplay(line.extension.amount)}</span></TableCell></TableRow>)}</Table></>;
 }
 

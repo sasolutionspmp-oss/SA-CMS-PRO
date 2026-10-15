@@ -1,0 +1,18 @@
+{
+  "label": "queue-fault-begin",
+  "script": "distribution-queue-outage-control.py",
+  "helper_sha256": "e58c193437030365e5397e178ba2fe17697285a46deb58b3cf069a4b6b55a32a",
+  "arguments": [
+    "begin"
+  ],
+  "started_at": "2026-10-15T20:07:22.449246+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:07:23.987310+00:00",
+  "result": {
+    "action": "begin",
+    "phase": "fault_active",
+    "only_site_redis_queue_changed": true,
+    "cache_session_and_common_config_preserved": true,
+    "next": "Graceful web reload, actual journaled command, original healthy Redis inspection, then restore."
+  }
+}

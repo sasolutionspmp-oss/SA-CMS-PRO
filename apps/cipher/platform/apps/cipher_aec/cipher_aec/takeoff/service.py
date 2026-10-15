@@ -5,13 +5,16 @@ from copy import deepcopy
 import re
 
 import frappe
+from cipher_aec.estimating.lockplan import receipt_union
 from cipher_aec.api.contracts import digest
 from cipher_aec.api.errors import DomainError
 from cipher_aec.estimating import service as estimates, sources, units
 from cipher_aec.estimating.contracts import closed, identifier, visible
-from cipher_aec.governance.context import current_actor, require_project
-from cipher_aec.governance.commands import run_command
-from cipher_aec.governance.history import append_event
+from cipher_aec.governance.context import current_actor
+from cipher_aec.estimating.scopes import require as require_project
+from cipher_aec.estimating import scopes
+from cipher_aec.estimating.scopes import command as run_command
+from cipher_aec.estimating.scopes import event as append_event
 from cipher_aec.documents.service import source_reference
 
 from . import geometry, pdf, repository
@@ -20,7 +23,7 @@ HEAD_POLICY = "current-working-revision-v1"
 
 
 def _new(company, project, actor, *, record_id=None, status="authored", **values):
-    return {"id": record_id or str(uuid4()), "company": company, "project": project, "author_person": actor.person_id,
+    return {**scopes.current(company, project).fields(), "id": record_id or str(uuid4()), "company": company, "project": project, "author_person": actor.person_id,
             "author_user": actor.user, "created_at": datetime.now(timezone.utc).isoformat(), "status": status, **values}
 
 
@@ -29,7 +32,13 @@ def _source(company, project, source, actor, *, lock=False, new_use=False, calib
     visible(source["revision_id"], "source.revision_id", 140)
     if type(source["source_sha256"]) is not str or not re.fullmatch("[a-f0-9]{64}", source["source_sha256"]) or type(source["page"]) is not int or not 1 <= source["page"] <= 200:
         geometry.fail("Use the exact drawing SHA-256 and a supported integer page.", "source")
-    value = source_reference(company, project, source["revision_id"], source["page"], actor=actor, lock=lock)
+    if scopes.current(company, project).scope_type == "Company":
+        from cipher_aec.documents.service import company_source_reference
+        if lock:
+            sources.require_raw_mutation_source(company, source["revision_id"], actor)
+        value = company_source_reference(company, source["revision_id"], source["page"], actor=actor, lock=lock)
+    else:
+        value = source_reference(company, project, source["revision_id"], source["page"], actor=actor, lock=lock)
     if value["source_sha256"] != source["source_sha256"]:
         raise DomainError("source_mismatch", "The drawing bytes do not match this exact measurement source.", 412)
     if new_use and not value["is_current"]:
@@ -57,11 +66,15 @@ def _verify_measurement_sources(value, actor, *, lock=False):
     return citations
 
 
-def _read(kind, record_id, company, project, actor, *, lock=False, new_use=False):
+def _read(kind, record_id, company, project, actor, *, lock=False, new_use=False, _observations=None):
     require_project(company, project, ability="estimate.read", actor=actor, lock=lock)
     value = repository.read(kind, record_id, lock=lock)
-    if value["company"] != company or value["project"] != project:
+    if not scopes.current(company, project).matches(value):
         raise DomainError("not_found", "This takeoff record is not available.", 404)
+    if value.get("unit_manifest"):
+        from cipher_aec.estimating.units import verify_manifest_access
+        verify_manifest_access(value["unit_manifest"], None, actor)
+    current, verified = None, None
     if kind in {"calibration", "measurement"}:
         current, _ = _source(company, project, source_input(value), actor, lock=lock, new_use=new_use, calibrated=kind == "calibration" or value["definition"]["method"] == "calibrated")
         if current["document_id"] != value["source"]["document_id"]:
@@ -73,15 +86,21 @@ def _read(kind, record_id, company, project, actor, *, lock=False, new_use=False
         elif kind == "measurement":
             _verify_measurement_sources(value, actor, lock=lock)
         if kind == "measurement" and value["definition"]["method"] == "calibrated":
-            calibrated = _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use)
+            calibrated = _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
             verified = repository.verification(calibrated["id"], lock=lock)
             if not verified or verified["id"] != value["verification_id"] or verified["calibration_digest"] != digest(calibrated):
                 raise DomainError("calibration_unverified", "This measurement requires its exact independent calibration verification.", 409)
     elif kind == "verification":
-        _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use)
+        _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
     elif kind == "binding":
-        _read("measurement", value["measurement_id"], company, project, actor, lock=lock, new_use=new_use)
-        estimates._scoped("line", value["estimate_line_record"], company, project, actor, lock=lock)
+        _read("measurement", value["measurement_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
+        line = estimates._scoped("line", value["estimate_line_record"], company, project, actor, lock=lock)
+        if _observations is not None:
+            _observations[("line", line["id"])] = {"record": line}
+    # Observations only collect completed checks in this one recursive call.
+    # They never short-circuit a read or escape the calling fact builder.
+    if _observations is not None:
+        _observations[(kind, value["id"])] = {"record": value, "source": current, "verification": verified}
     return value
 
 
@@ -208,7 +227,13 @@ def create_measurement(company, project, operation_id, takeoff_set, source, defi
 def _binding_basis(company, project, measurement_id, estimate_line_record, quantity_basis, actor, *, lock=False):
     measured = _read("measurement", measurement_id, company, project, actor, lock=lock, new_use=True)
     line = estimates._scoped("line", estimate_line_record, company, project, actor, lock=lock)
-    if measured["result"]["quantity"] != line["authored"]["quantity"]:
+    _validate_binding_basis(measured, line, quantity_basis)
+    return measured, line
+
+
+def _validate_binding_basis(measured, line, quantity_basis):
+    selected, authored = measured["result"]["quantity"], line["authored"]["quantity"]
+    if selected["unit_id"] != authored["unit_id"] or selected["precision"] != authored["precision"] or geometry.exact(selected["amount"], "measurement.quantity.amount", precision=selected["precision"]) != geometry.exact(authored["amount"], "line.quantity.amount", precision=authored["precision"]):
         raise DomainError("quantity_mismatch", "The saved authored line must exactly match the selected measurement quantity, unit and precision.", 412)
     has_waste = geometry.exact(measured["definition"]["waste_fraction"], "measurement.waste_fraction") > 0
     expected_basis = "after-takeoff-waste-v1" if has_waste else "net-quantity-v1"
@@ -216,7 +241,37 @@ def _binding_basis(company, project, measurement_id, estimate_line_record, quant
         raise DomainError("quantity_basis_mismatch", "Explicitly select the exact net or after-takeoff-waste quantity basis.", 422)
     if has_waste and any(int(row["waste_fraction"]["numerator"]) for row in line["calculated"]["components"]):
         raise DomainError("ambiguous_double_waste", "A takeoff allowance cannot be combined with estimate component waste in this binding policy.", 422)
-    return measured, line
+
+
+def verified_binding_bundle(binding_id, company, project, actor, *, lock=False):
+    """One fresh binding traversal for a single current acceptance builder.
+
+    The caller first discovers metadata and acquires its complete master union.
+    This function rechecks all exact source bytes, heads, native permissions,
+    calibration verification and estimate-line basis once. No result is cached
+    or reused by a later builder, actor, transaction or public read.
+    """
+    observed = {}
+    binding = _read("binding", binding_id, company, project, actor, lock=lock, new_use=True, _observations=observed)
+    measurement_observation = observed[("measurement", binding["measurement_id"])]
+    measured = measurement_observation["record"]
+    line = observed[("line", binding["estimate_line_record"])]["record"]
+    _validate_binding_basis(measured, line, binding["quantity_basis"])
+    if (binding["measurement_digest"] != digest(measured) or binding["estimate_line_digest"] != digest(line)
+            or binding["quantity"] != measured["result"]["quantity"] or binding["estimate_revision"] != line["estimate_revision"]
+            or binding["estimate"] != line["estimate"] or binding["line_id"] != line["line_id"]
+            or binding["provenance"] != "subsequently-attached-takeoff-evidence-v1"
+            or binding["original_snapshot_claim"] != "authored-quantity-not-recomputed"):
+        raise DomainError("takeoff_integrity", "The binding must preserve its exact authorized measurement and estimate-line basis.", 409)
+    calibrated = observed[("calibration", measured["calibration_id"])]["record"] if measured["calibration_id"] else None
+    verified = measurement_observation["verification"]
+    current = measurement_observation["source"]
+    # new_use=True already refused any changed drawing/takeoff/calibration head
+    # and checked the exact verification. Derive the unchanged public DTO from
+    # those completed checks instead of traversing the same sources again.
+    state = {"eligible": True, "reasons": [], "current_working_revision": current["current_revision"], "head_policy": HEAD_POLICY,
+             "original_record_preserved": True, "verification": {"id": verified["id"], "verified_by_person": verified["verified_by_person"]} if verified else None}
+    return {"binding": binding, "measurement": measured, "calibration": calibrated, "current_use": state}
 
 
 def bind_line(company, project, operation_id, measurement_id, estimate_line_record, quantity_basis, reason):
@@ -276,9 +331,9 @@ def list_records(company, project, kind, takeoff_set=None, limit=20, cursor=None
     require_project(company, project, ability="document.read", actor=actor)
     limit, cursor, count_mode = page_options(limit, cursor, count_mode)
     scope = {"route": "takeoff.catalog", "kind": kind, "takeoff_set": takeoff_set, "user": actor.user, "person": actor.person_id,
-             "company": company, "project": project, "authority": authority_fingerprint(actor, company, project)}
+             "company": company, "project": project, "authority": scopes.current(company, project).authority(actor), **scopes.current(company, project).fields()}
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None
-    where, args = "company=%s AND project=%s", [company, project]
+    where, args = scopes.current(company, project).where()
     if takeoff_set:
         if kind not in {"calibration", "measurement"}:
             geometry.fail("Only calibration/measurement catalogs filter by takeoff set.")
@@ -306,8 +361,13 @@ def drawing_impact(company, project, revision_id):
     visible(revision_id, "revision_id", 140)
     actor = current_actor()
     require_project(company, project, ability="estimate.read", actor=actor)
-    reference = source_reference(company, project, revision_id, 1, actor=actor)
-    rows = frappe.db.sql("SELECT name FROM `tabCipher Takeoff Measurement` WHERE company=%s AND project=%s AND source_revision=%s ORDER BY name LIMIT 201", (company, project, revision_id))
+    if scopes.current(company, project).scope_type == "Company":
+        from cipher_aec.documents.service import company_source_reference
+        reference = company_source_reference(company, revision_id, 1, actor=actor)
+    else:
+        reference = source_reference(company, project, revision_id, 1, actor=actor)
+    where, arguments = scopes.current(company, project).where()
+    rows = frappe.db.sql("SELECT name FROM `tabCipher Takeoff Measurement` WHERE " + where + " AND source_revision=%s ORDER BY name LIMIT 201", (*arguments, revision_id))
     if len(rows) > 200:
         geometry.fail("Drawing impact exceeds the bounded 200-measurement scope.", code="impact_limit")
     affected = []
@@ -338,8 +398,10 @@ def compare_measurements(company, project, before_id, after_id):
             "original_records_preserved": True}
 
 
-def authorize_receipt(actor, company, project, result):
-    require_project(company, project, ability="estimate.read", actor=actor, lock=True)
-    for key, kind in (("takeoff_set", "set"), ("calibration", "calibration"), ("measurement", "measurement"), ("verification", "verification"), ("binding", "binding")):
-        if key in result:
-            _read(kind, result[key]["id"], company, project, actor, lock=True)
+@receipt_union
+def authorize_receipt(actor, company, project, result, scope_type="Project"):
+    with scopes.activate(scope_type, company, project):
+        require_project(company, project, ability="estimate.read", actor=actor, lock=True)
+        for key, kind in (("takeoff_set", "set"), ("calibration", "calibration"), ("measurement", "measurement"), ("verification", "verification"), ("binding", "binding")):
+            if key in result:
+                _read(kind, result[key]["id"], company, project, actor, lock=True)

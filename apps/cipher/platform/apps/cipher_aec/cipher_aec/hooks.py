@@ -73,9 +73,15 @@ has_permission["Company"] = "cipher_aec.governance.permissions.company_permissio
 
 for _commercial_native in ("Opportunity", "Quotation"):
     doc_events[_commercial_native] = {"validate": "cipher_aec.commercial.guards.native_validate", "on_trash": "cipher_aec.commercial.guards.native_trash"}
-for _kind, _doctype in (("pursuit", "Cipher Pursuit"), ("proposal", "Cipher Proposal"), ("revision", "Cipher Proposal Revision")):
+for _kind, _doctype in (("pursuit", "Cipher Pursuit"), ("proposal", "Cipher Proposal"), ("revision", "Cipher Proposal Revision"), ("issue", "Cipher Proposal Issue")):
     permission_query_conditions[_doctype] = "cipher_aec.commercial.permissions." + _kind + "_query"
     has_permission[_doctype] = "cipher_aec.commercial.permissions." + _kind + "_permission"
 for _finance_type in ("Cipher Construction Contract", "Cipher Contract Revision", "Cipher Retainage Policy Revision", "Cipher SOV Version", "Cipher SOV Line"):
     permission_query_conditions[_finance_type] = "cipher_aec.construction_finance.permissions.finance_query"
     has_permission[_finance_type] = "cipher_aec.construction_finance.permissions.finance_permission"
+for _distribution_type in ("Cipher Distribution Instruction", "Cipher Distribution Dispatch", "Cipher Distribution Cancellation"):
+    permission_query_conditions[_distribution_type] = "cipher_aec.integrations.distribution.query_denied"
+    has_permission[_distribution_type] = "cipher_aec.integrations.distribution.permission_denied"
+for _integration_type in ("Cipher Integration Operation", "Cipher Delivery Attempt"):
+    permission_query_conditions[_integration_type] = "cipher_aec.integrations.distribution_install.legacy_query"
+    has_permission[_integration_type] = "cipher_aec.integrations.distribution_install.legacy_permission"

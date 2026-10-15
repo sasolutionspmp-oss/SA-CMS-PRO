@@ -205,7 +205,7 @@ def run_acceptance(include_schema_samples=False):
                 assert error.code in {"capability_denied", "not_found"}
                 frappe.db.rollback()
         report = {"label": "explicit-authored-est01-fixture-with-real-frappe-storage", "live_provider_qualified": False,
-                "geometry_qualified": False, "estimate_acceptance_implemented": False, "project": project.name, "estimate": estimate["id"],
+                "geometry_qualified": False, "estimate_acceptance_exercised": False, "project": project.name, "estimate": estimate["id"],
                 "source_revision": citation["revision_id"], "source_sha256": citation["source_sha256"],
                 "first_revision": first["revision"]["id"], "second_revision": second["revision"]["id"],
                 "known_direct": "923.10", "known_total": "1025.41", "explicit_successor_total": "1028.24",
@@ -250,7 +250,7 @@ def _native_fixture(company, user, marker, uom):
                               "territory": "All Territories", "accounts": [{"company": foreign.name, "account": foreign.default_receivable_account}]}).insert(ignore_permissions=True)
     role = "EST native read " + marker
     frappe.get_doc({"doctype": "Role", "role_name": role}).insert(ignore_permissions=True)
-    for doctype in ("Item", "Supplier", "Customer"):
+    for doctype in ("Item", "Supplier", "Customer", "UOM", "Currency"):
         add_permission(doctype, role, 0)
         update_permission_property(doctype, role, 0, "read", 1)
     account = frappe.get_doc("User", user)

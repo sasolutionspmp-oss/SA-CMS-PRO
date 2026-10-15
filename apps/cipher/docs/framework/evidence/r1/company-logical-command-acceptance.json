@@ -1,0 +1,34 @@
+{
+  "schema": "cipher.qualification.v1",
+  "captured_at": "2026-10-15T19:10:54.942419+00:00",
+  "runtime": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8",
+    "site": "cipher.localhost"
+  },
+  "command": "bench --site cipher.localhost run-tests --app cipher_aec --module cipher_aec.tests.test_company_governance --skip-before-tests --failfast",
+  "result": "passed",
+  "integration_cases": 14,
+  "elapsed_seconds": 8.065,
+  "focused_checks": [
+    "Company guard, effect/controller and receipt insertion share one private logical lifetime with no source admission",
+    "Alias completed replay and explicit receipt read receive isolated authorization lifetimes",
+    "Effect failure exits memo before actual savepoint rollback; earlier history and receipt absent",
+    "Denied completed replay/read clear memo without exposing result",
+    "Both same-UUID and different-UUID recursive Company commands reject before authority/locks; earlier outer writes rolled back",
+    "Project path has no Company memo; original request/event hashes preserved",
+    "Existing Company current duty/native denial, quarantine read/replay, UUID scope conflicts and financial draft guard regressions pass"
+  ],
+  "limitations": [
+    "No source/byte result caching introduced; every domain admission and native/source authorization remains current",
+    "Does not qualify distribution transport or automatic queue recovery",
+    "No global seed, migration or committed fixture rows"
+  ],
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_company_governance.py": "f2ec82be83ae7ad63d300d8d7d4e099973d3ad0de632a4112a72246dbbca1951",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "781543e29bbd233a1af770f5a1fe47e4346aa5d19f65f5fcfa2f144d5f73dc37"
+  },
+  "log": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_company_governance, verbose=False, tests=(), force=False, profile=False, failfast=True, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 14 integration tests for cipher_aec\n\ncipher_aec.tests.test_company_governance.TestCompanyGovernance\n   \u001b[32m \u2714 \u001b[0m test_alias_replays_same_receipt_and_changed_payload_conflicts\n   \u001b[32m \u2714 \u001b[0m test_atomic_rollback_quarantine_and_read_only_receipt_recovery\n   \u001b[32m \u2714 \u001b[0m test_company_chain_keyset_cursor_and_current_duty_binding\n   \u001b[32m \u2714 \u001b[0m test_company_logical_lifetime_covers_guard_effect_and_receipt_only\n   \u001b[32m \u2714 \u001b[0m test_company_memo_exits_before_effect_rollback_and_receipt_denial\n   \u001b[32m \u2714 \u001b[0m test_company_native_permission_required_and_revocation_blocks_receipt\n   \u001b[32m \u2714 \u001b[0m test_company_only_identity_session_and_command_need_no_project\n   \u001b[32m \u2714 \u001b[0m test_cross_company_and_inactive_identity_denied\n   \u001b[32m \u2714 \u001b[0m test_person_uuid_namespace_conflicts_across_company_and_project_scopes\n   \u001b[32m \u2714 \u001b[0m test_project_and_company_duties_never_imply_each_other\n       \u25b8  /home/frappe/frappe-bench/apps/frappe/frappe/model/qb_query.py:163: V17FrappeDeprecationWarning: This codepath was marked (DATE: 2024-01-01) deprecated for removal (from v17 onwards); note:\n       \u25b8   The 'limit_page_length' parameter is deprecated. Use 'limit' instead.\n       \u25b8  \n       \u25b8    deprecation_warning(\n   \u001b[32m \u2714 \u001b[0m test_project_hash_and_history_body_remain_byte_compatible\n   \u001b[32m \u2714 \u001b[0m test_recursive_company_commands_refuse_before_locks_and_roll_back_outer_effect\n   \u001b[32m \u2714 \u001b[0m test_scope_shape_and_nullable_duty_uniqueness\n   \u001b[32m \u2714 \u001b[0m test_unqualified_financial_drafts_fail_before_native_mutation\n\n\n----------------------------------------------------------------------\nRan 14 tests in 8.065s\n\nOK\n"
+}

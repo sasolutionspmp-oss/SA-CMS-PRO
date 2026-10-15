@@ -1,0 +1,21 @@
+{
+  "mode": "actual-frappe-company-inbox-readonly",
+  "at": "2026-10-15T20:32:55.657Z",
+  "company": "Company chain A 20b85fd4edd2",
+  "reads": [
+    {
+      "url": "http://127.0.0.1:18880/api/method/cipher_aec.api.company_approvals.list_packets?company=Company+chain+A+20b85fd4edd2&limit=10&count_mode=none",
+      "status": 200,
+      "count": 10,
+      "count_mode": "none",
+      "total": null
+    }
+  ],
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "business_writes": 0,
+  "limits": "Normal first-page UI proof; QA separately qualified cursor/read authorization. Prior30second exact50 failure preserved."
+}

@@ -856,7 +856,8 @@
           "type": "string",
           "enum": [
             "calibration.verify.v1",
-            "contract.baseline.activate.v1"
+            "contract.baseline.activate.v1",
+            "estimate.accept.v1"
           ]
         },
         "subject": {
@@ -869,7 +870,8 @@
               "type": "string",
               "enum": [
                 "Cipher Calibration",
-                "Cipher Construction Contract"
+                "Cipher Construction Contract",
+                "Cipher Estimate Revision"
               ]
             },
             "label": {
@@ -1076,6 +1078,607 @@
         "packet",
         "effect",
         "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "null"
+        },
+        "action": {
+          "enum": [
+            "calibration.verify.v1",
+            "estimate.accept.v1",
+            "proposal.issue.v1",
+            "proposal.distribute.v1"
+          ]
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Cipher Calibration",
+                "Cipher Estimate Revision",
+                "Cipher Proposal Revision",
+                "Cipher Distribution Instruction"
+              ]
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "effect": {
+              "type": "object"
+            },
+            "summary": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "scope_type": {
+          "const": "Company"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "scope_type"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompanyApprovalPacket"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalCommandResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/CompanyApprovalPacket"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/CompanyApprovalPacket"
+        },
+        "effect": {
+          "type": "object"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "effect",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "NativeMasterChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "Customer",
+            "Lead",
+            "Price List",
+            "UOM",
+            "Currency",
+            "Item"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dimension": {
+          "type": "string"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "currency": {
+          "type": "string"
+        },
+        "stock_uom": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "kind",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "NativeMasterList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeMasterChoice"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "company_currency": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total",
+        "company_currency"
+      ],
+      "additionalProperties": false
+    },
+    "NativePartiesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "party_type": {
+          "enum": [
+            "Customer",
+            "Lead"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "party_type"
+      ],
+      "additionalProperties": false
+    },
+    "NativePriceListsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeUnitsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "dimension": {
+          "enum": [
+            null,
+            "length",
+            "area",
+            "volume",
+            "mass",
+            "count",
+            "time",
+            "labor_time",
+            "equipment_time"
+          ]
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCurrenciesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeItemsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "unit_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company"
       ],
       "additionalProperties": false
     }

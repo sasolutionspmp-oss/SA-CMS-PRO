@@ -1,0 +1,21 @@
+{
+  "schema": "cipher.r1.distribution-queue-observation.v1",
+  "status": "passed",
+  "mode": "queued",
+  "observed_at": "2026-10-15T20:34:50.285692+00:00",
+  "operation_id": "dum95oga61",
+  "dispatch_id": "c717b093-2892-4bc8-a210-47a617dc5ac2",
+  "logical_key": "46c2ecb37ebecb45fafb439a6a18358a1e7426e6b46b6d42adf6775d59aa6330",
+  "canonical_state": "Queued",
+  "worker_attempt_count": 0,
+  "fencing_token": 0,
+  "rq_job_id": "cipher.localhost||cipher-outbox-dum95oga61",
+  "rq_state": "queued",
+  "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+  "queue_contains_job": true,
+  "sink_receipt_count": 0,
+  "original_healthy_common_redis_used": true,
+  "manual_deliver_or_publish_invoked": false,
+  "live_external_provider_qualified": false,
+  "registered_timeout": 120
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "cipher.r1.distribution-http-mandate.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:03:11.504330+00:00",
+  "live_external_provider_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "issue_id": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+  "instruction_id": "cf65c150-794a-40eb-be5b-1e68d1e6b4de",
+  "dispatch_id": "6a1a4ca9-adbd-47a5-a698-cd01792128b1",
+  "queued_operations": [
+    "op9jlc2cj9"
+  ],
+  "recipient_count": 1,
+  "transport": "fixture",
+  "sink_acceptance_qualified": false,
+  "original_instruction_command_resumed": false,
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.profiles",
+      "http_status": 200,
+      "request_id": "7c420c2f-cc9c-4264-94ee-ece2c789e43f",
+      "server_time": "2026-10-15T19:03:11.681541Z",
+      "request_seconds": 0.008819
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_dispatches",
+      "http_status": 200,
+      "request_id": "52278fc5-233d-4fd2-a24e-4cd83fe8da0d",
+      "server_time": "2026-10-15T19:03:15.748938Z",
+      "request_seconds": 4.068776
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.create_instruction",
+      "http_status": 200,
+      "request_id": "f1f93758-4f86-4790-b5bc-900ac62c1fcf",
+      "server_time": "2026-10-15T19:03:16.690531Z",
+      "request_seconds": 0.941698
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.create_instruction",
+      "http_status": 200,
+      "request_id": "98dfd9ff-6a77-41f5-9ff2-c24a7d17407b",
+      "server_time": "2026-10-15T19:03:17.582781Z",
+      "request_seconds": 0.764715
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.get_instruction",
+      "http_status": 200,
+      "request_id": "fcf5cb8b-f206-41b1-b660-5c261e86815e",
+      "server_time": "2026-10-15T19:03:18.949201Z",
+      "request_seconds": 1.359741
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "http_status": 200,
+      "request_id": "6589856c-190b-470c-bfb8-7a2ae6da9633",
+      "server_time": "2026-10-15T19:03:22.606605Z",
+      "request_seconds": 3.66357
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "http_status": 403,
+      "request_id": "bea3e380-f933-45d9-b824-1a62beac3c42",
+      "server_time": "2026-10-15T19:03:23.427192Z",
+      "request_seconds": 0.813435,
+      "error_code": "independent_review_required"
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "http_status": 200,
+      "request_id": "e7d2a14c-32e6-48d1-90ea-412a09709648",
+      "server_time": "2026-10-15T19:03:27.221496Z",
+      "request_seconds": 3.671624
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 200,
+      "request_id": "31734779-0109-4d9b-a2ae-30f6e34d2253",
+      "server_time": "2026-10-15T19:03:33.232627Z",
+      "request_seconds": 6.007023
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 200,
+      "request_id": "fde12a39-b175-42fc-a22d-1b0777aa4e7a",
+      "server_time": "2026-10-15T19:03:34.262409Z",
+      "request_seconds": 1.017581
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "33b99562-baef-4b7e-a065-192f2c2a42bf",
+      "server_time": "2026-10-15T19:03:35.306822Z",
+      "request_seconds": 1.043928
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "2df810bf-704b-40b7-96f8-b5fa7f57b053",
+      "server_time": "2026-10-15T19:03:36.444351Z",
+      "request_seconds": 1.136475
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.list_dispatches",
+      "http_status": 200,
+      "request_id": "52ed3bf6-691f-479d-8984-a43f7caba66e",
+      "server_time": "2026-10-15T19:03:41.340657Z",
+      "request_seconds": 4.895079
+    }
+  ],
+  "schema_samples": 18,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.132823,
+      "session_seconds": 0.021399,
+      "status": "passed",
+      "total_seconds": 0.154225
+    },
+    {
+      "role": "alias",
+      "login_seconds": 0.071944,
+      "session_seconds": 0.015603,
+      "status": "passed",
+      "total_seconds": 0.08755
+    },
+    {
+      "role": "reviewer",
+      "login_seconds": 0.095907,
+      "session_seconds": 0.024226,
+      "status": "passed",
+      "total_seconds": 0.120136
+    }
+  ],
+  "completed_at": "2026-10-15T19:03:41.351255+00:00"
+}

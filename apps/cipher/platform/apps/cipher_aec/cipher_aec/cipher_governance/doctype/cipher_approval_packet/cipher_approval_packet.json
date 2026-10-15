@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "company",
     "project",
     "action",
@@ -20,6 +21,14 @@
   ],
   "fields": [
     {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
+    {
       "fieldname": "company",
       "label": "Company",
       "fieldtype": "Link",
@@ -30,7 +39,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "options": "Project"
     },
     {

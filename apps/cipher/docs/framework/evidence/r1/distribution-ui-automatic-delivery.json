@@ -1,0 +1,53 @@
+{
+  "schema": "cipher.r1.distribution-ui-automatic-delivery.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:37:52.998874+00:00",
+  "company": "Company chain A 20b85fd4edd2",
+  "issue_id": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+  "instruction_id": "d70e248c-84e2-40fb-aa23-e3ab373486ad",
+  "packet_id": "dqsfgreidq",
+  "dispatch_id": "c717b093-2892-4bc8-a210-47a617dc5ac2",
+  "operation_id": "dum95oga61",
+  "issued_recipient_count": 2,
+  "selected_recipient_count": 1,
+  "selected_recipient_id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+  "queued_before_worker": {
+    "canonical_state": "Queued",
+    "attempt_count": 0,
+    "actual_rq_membership": true,
+    "sink_receipt_count": 0
+  },
+  "automatic_completion": {
+    "canonical_state": "Succeeded",
+    "attempt_count": 1,
+    "fencing_token": 1,
+    "rq_state": "finished",
+    "sink_receipt_count": 1,
+    "acknowledgment": {
+      "mode": "fixture",
+      "logical_key": "46c2ecb37ebecb45fafb439a6a18358a1e7426e6b46b6d42adf6775d59aa6330",
+      "payload_hash": "f9befe83c701e9dd7b2a6f4f593ba449796543cfccf10953e1a84acff1d28a89",
+      "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624,
+      "acknowledgment_id": "6e3c4f8d-36de-4ed8-8138-cf19039a6cce",
+      "accepted_at": "2026-10-15T20:35:04.562682+00:00"
+    }
+  },
+  "source_files_unchanged": 350,
+  "supervisor_and_known_sessions_remaining_active": 0,
+  "ui_verification_sha256": "fa3a6ea3f5a2b59d49105d4cf05a138a444b97d858dda3daea9857a57c796b2b",
+  "ui_capture_origin": "Root/UI-owned actual connected subset bundle; exact verification hash binds this observer handoff.",
+  "business_commands_sent_by_qa": 0,
+  "manual_delivery_or_publication_invoked": false,
+  "operational_faults_repeated": false,
+  "config_or_rights_changed": false,
+  "live_external_provider_qualified": false,
+  "qualification": "One actual UI-approved recipient subset, independently observed real queued RQ job, root-supervised automatic fixture delivery, exact one independent sink receipt and known process cleanup. No replay of prior operational fault sequence.",
+  "artifact_sha256": {
+    "distribution-ui-subset-queued.json": "de8f6ae8d543648b0102a298bdc1322cc04be738b1966f8bbdfa2de2ace3fdde",
+    "distribution-ui-subset-succeeded.json": "64e161c8a3d04594198e6ae250e82ebaf5387336b3e9d79abd44c92429553acb",
+    "distribution-ui-subset-native-preservation.json": "6d88fdd5627975e5349a7de8271ce580069e6ed2b675345b391f2d4d61d99412",
+    "distribution-ui-operator-lifecycle.json": "27dd5618ab1912c022bcae84303bfb9b1484b322a60a30750aa359826a270462",
+    "distribution-ui-observer-source.json": "35c24bb3d046ca9a964aad6cfc567149eb6d2cf04b5194bd4c85a1db801ce527"
+  }
+}

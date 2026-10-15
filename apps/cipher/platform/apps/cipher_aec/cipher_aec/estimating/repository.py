@@ -13,7 +13,7 @@ from .contracts import identifier
 DOCTYPES = {
     "conversion": "Cipher Unit Conversion", "rate": "Cipher Rate Source", "assembly": "Cipher Assembly Revision",
     "estimate": "Cipher Estimate", "revision": "Cipher Estimate Revision", "line": "Cipher Estimate Line",
-    "snapshot": "Cipher Calculation Snapshot",
+    "snapshot": "Cipher Calculation Snapshot", "acceptance": "Cipher Estimate Acceptance",
 }
 
 
@@ -32,7 +32,7 @@ def read(kind, record_id, *, lock=False):
 def insert(kind, value, **fields):
     with trusted_write():
         doc = frappe.get_doc({"doctype": DOCTYPES[kind], "name": value["id"], "company": value["company"], "project": value["project"],
-                             "author_person": value["author_person"], "status": value["status"], "data_json": canonical_json(value), "record_digest": digest(value), **fields})
+                             "scope_type": value.get("scope_type", "Project"), "author_person": value["author_person"], "status": value["status"], "data_json": canonical_json(value), "record_digest": digest(value), **fields})
         doc.insert(ignore_permissions=True, set_name=value["id"])
     return doc
 
@@ -52,3 +52,13 @@ def latest(kind, field, group_id):
         raise ValueError("Unsupported immutable revision chain")
     rows = frappe.db.sql(f"SELECT data_json FROM `tab{DOCTYPES[kind]}` WHERE `{field}`=%s ORDER BY revision_number DESC LIMIT 1 FOR UPDATE", (group_id,))
     return json.loads(rows[0][0]) if rows else None
+
+
+def acceptance_for_revision(revision_id, *, lock=False):
+    rows = frappe.db.sql("SELECT name FROM `tabCipher Estimate Acceptance` WHERE estimate_revision=%s" + (" FOR UPDATE" if lock else ""), (revision_id,))
+    return read("acceptance", rows[0][0], lock=lock) if rows else None
+
+
+def latest_acceptance(estimate_id, *, lock=False):
+    rows = frappe.db.sql("SELECT name FROM `tabCipher Estimate Acceptance` WHERE estimate=%s ORDER BY baseline_number DESC LIMIT 1" + (" FOR UPDATE" if lock else ""), (estimate_id,))
+    return read("acceptance", rows[0][0], lock=lock) if rows else None

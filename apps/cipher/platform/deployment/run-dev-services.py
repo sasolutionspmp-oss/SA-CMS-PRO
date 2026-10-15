@@ -28,10 +28,15 @@ if stopping:
 # Editable app metadata is container-local; recreate it when a fresh development
 # container starts with an existing persistent site. Dependency versions are pinned.
 subprocess.run([str(BENCH / 'env/bin/pip'), 'install', '-e', str(BENCH / 'apps/cipher_aec')], check=True)
+# RQ validates named queues against common worker configuration before enqueue.
+# Merge only this fixed queue before any worker/web process caches its catalog.
+subprocess.run(['bench', '--site', 'cipher.localhost', 'execute',
+                'cipher_aec.integrations.distribution_install.configure_queue'], cwd=BENCH, check=True)
 commands = [
     ['bash', '/usr/local/bin/start.sh'],
     ['bench', 'worker', '--queue', 'short,default'],
     ['bench', 'worker', '--queue', 'long'],
+    [sys.executable, '/opt/cipher/deployment/run-distribution-services.py'],
     ['bench', 'schedule'],
     ['/home/frappe/.nvm/current/bin/node', 'apps/frappe/socketio.js'],
     ['/usr/sbin/nginx', '-c', '/opt/cipher/deployment/nginx.dev.conf', '-g', 'daemon off;'],

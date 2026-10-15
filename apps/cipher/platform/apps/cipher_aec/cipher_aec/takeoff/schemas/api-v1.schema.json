@@ -2967,6 +2967,9 @@
         },
         {
           "$ref": "#/$defs/EstSnapshotRecord"
+        },
+        {
+          "$ref": "#/$defs/EstAcceptanceRecord"
         }
       ]
     },
@@ -3378,7 +3381,8 @@
             "estimate",
             "revision",
             "line",
-            "snapshot"
+            "snapshot",
+            "acceptance"
           ]
         },
         "record_id": {
@@ -5574,6 +5578,745 @@
         "after",
         "changed",
         "original_records_preserved"
+      ],
+      "additionalProperties": false
+    },
+    "EstAcceptanceScope": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "EstNativeReference": {
+      "type": "object",
+      "properties": {
+        "doctype": {
+          "enum": [
+            "Item",
+            "Supplier",
+            "Customer",
+            "Lead",
+            "Opportunity"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
+      },
+      "required": [
+        "doctype",
+        "name",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "EstPursuitPlan": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "pursuit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "party_type": {
+          "enum": [
+            "Customer",
+            "Lead"
+          ]
+        },
+        "party_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "native_refs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "doctype": {
+                "enum": [
+                  "Customer",
+                  "Lead",
+                  "Opportunity"
+                ]
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 140
+              }
+            },
+            "required": [
+              "doctype",
+              "name"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 3
+        }
+      },
+      "required": [
+        "company",
+        "pursuit_id",
+        "record_digest",
+        "revision_number",
+        "party_type",
+        "party_id",
+        "native_refs"
+      ],
+      "additionalProperties": false
+    },
+    "EstPinnedRecord": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "rate",
+            "assembly",
+            "conversion"
+          ]
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "EstAcceptanceBinding": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "measurement_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "measurement_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "current_use": {
+          "type": "object",
+          "properties": {
+            "eligible": {
+              "const": true
+            },
+            "reasons": {
+              "type": "array",
+              "maxItems": 0
+            },
+            "current_working_revision": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "head_policy": {
+              "const": "current-working-revision-v1"
+            },
+            "original_record_preserved": {
+              "const": true
+            },
+            "verification": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "verified_by_person": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 140
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "verified_by_person"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "eligible",
+            "reasons",
+            "current_working_revision",
+            "head_policy",
+            "original_record_preserved",
+            "verification"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "digest",
+        "measurement_id",
+        "measurement_digest",
+        "current_use"
+      ],
+      "additionalProperties": false
+    },
+    "EstAcceptanceFacts": {
+      "type": "object",
+      "properties": {
+        "policy": {
+          "const": "cipher.estimate.acceptance-facts.v1"
+        },
+        "scope": {
+          "$ref": "#/$defs/EstAcceptanceScope"
+        },
+        "pricing_sources_policy": {
+          "const": "pinned-revision-at-pricing-date"
+        },
+        "drawing_calibration_policy": {
+          "const": "current-working-head-v1"
+        },
+        "estimate": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "current_revision": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "id",
+            "digest",
+            "current_revision"
+          ],
+          "additionalProperties": false
+        },
+        "revision": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "digest"
+          ],
+          "additionalProperties": false
+        },
+        "snapshot": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "input_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "output_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "digest",
+            "input_digest",
+            "output_digest"
+          ],
+          "additionalProperties": false
+        },
+        "rounding_policy": {
+          "const": "cipher.estimate.line-half-up.v1"
+        },
+        "pinned_records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstPinnedRecord"
+          },
+          "maxItems": 700
+        },
+        "qualified_units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstUnitRecord"
+          },
+          "maxItems": 200
+        },
+        "currency_policy": {
+          "type": "object",
+          "properties": {
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "currency_exponent": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            },
+            "fraction_units": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "native_currency_version": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "currency",
+            "currency_exponent",
+            "fraction_units",
+            "native_currency_version"
+          ],
+          "additionalProperties": false
+        },
+        "native_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstNativeReference"
+          },
+          "maxItems": 700
+        },
+        "pursuit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EstPursuitPlan"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAcceptanceBinding"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "policy",
+        "scope",
+        "pricing_sources_policy",
+        "drawing_calibration_policy",
+        "estimate",
+        "revision",
+        "snapshot",
+        "rounding_policy",
+        "pinned_records",
+        "qualified_units",
+        "currency_policy",
+        "native_references",
+        "pursuit",
+        "bindings"
+      ],
+      "additionalProperties": false
+    },
+    "EstAcceptanceManifest": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "object",
+          "properties": {
+            "doctype": {
+              "const": "Cipher Estimate Revision"
+            },
+            "name": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "doctype",
+            "name",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        },
+        "effect": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "const": "estimate.accept.v1"
+            },
+            "revision_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "facts": {
+              "$ref": "#/$defs/EstAcceptanceFacts"
+            }
+          },
+          "required": [
+            "action",
+            "revision_id",
+            "facts"
+          ],
+          "additionalProperties": false
+        },
+        "summary": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "$ref": "#/$defs/EstMoney"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "rounding_policy": {
+              "const": "cipher.estimate.line-half-up.v1"
+            },
+            "binding_count": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 200
+            },
+            "independent_acceptance_required": {
+              "const": true
+            }
+          },
+          "required": [
+            "total",
+            "currency",
+            "rounding_policy",
+            "binding_count",
+            "independent_acceptance_required"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "subject",
+        "sources",
+        "effect",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "EstAcceptanceRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "accepted"
+        },
+        "estimate": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "estimate_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "calculation_snapshot": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "baseline_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "accepted_by_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "manifest": {
+          "$ref": "#/$defs/EstAcceptanceManifest"
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "accepted_result": {
+          "$ref": "#/$defs/EstCalculationResult"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "total": {
+          "$ref": "#/$defs/EstMoney"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstCitation"
+          },
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "estimate",
+        "estimate_revision",
+        "calculation_snapshot",
+        "baseline_number",
+        "predecessor",
+        "packet_id",
+        "decision_id",
+        "accepted_by_person",
+        "manifest",
+        "manifest_digest",
+        "accepted_result",
+        "currency",
+        "total",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "ListEstimateAcceptancesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "estimate_id"
+      ],
+      "additionalProperties": false
+    },
+    "ListEstimateAcceptancesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EstAcceptanceRecord"
+          },
+          "maxItems": 200
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "EstimateAcceptanceSubjectRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "revision_id"
+      ],
+      "additionalProperties": false
+    },
+    "EstimateAcceptanceSubjectResponse": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "is_current": {
+          "type": "boolean"
+        },
+        "current_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_baseline_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "revision_id",
+        "record_digest",
+        "estimate_id",
+        "is_current",
+        "current_revision",
+        "accepted_baseline_id"
       ],
       "additionalProperties": false
     }

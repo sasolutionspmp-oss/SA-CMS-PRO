@@ -189,3 +189,50 @@ def run_acceptance():
             "label": "takeoff-parser-only-actual-pypdf-regression", "live_model_qualified": False, "live_provider_qualified": False,
             "qualification": "Parser-only PDF metadata regression; no fixture provisioning, calibration approval, takeoff persistence, HTTP or receipt qualification.",
             "parser": parser}
+
+
+def inspect_fixture_native_access(project, calibration_id, measurement_id):
+    """Read-only diagnosis of this historical fixture's current native rights."""
+    import frappe
+    from cipher_aec.governance.context import assert_synthetic_site
+    from cipher_aec.takeoff import repository, service
+    assert_synthetic_site()
+    if frappe.session.user != "Administrator" or not frappe.db.get_value("Project", project, "project_name").startswith("EST02 isolated takeoff fixture "):
+        raise RuntimeError("Only the isolated takeoff fixture administrator may inspect it")
+    rows = []
+    rights = {}
+    for kind, name in (("calibration", calibration_id), ("measurement", measurement_id)):
+        record = repository.read(kind, name)
+        assert record["project"] == project
+        from cipher_aec.governance.context import current_actor
+        source, content = service._source(record["company"], project, service.source_input(record), current_actor())
+        rows.append({"kind": kind, "id": name, "source_revision": source["revision_id"], "source_bytes_verified": len(content) == source["byte_length"]})
+        for user in ("morgan@cipher.example", "jordan@cipher.example"):
+            rights[user] = {"uom_read": all(frappe.has_permission("UOM", "read", doc=frappe.get_doc("UOM", unit["target"]["name"]), user=user) for unit in record["unit_manifest"]["records"] if unit["kind"] == "uom"),
+                            "currency_read": bool(frappe.has_permission("Currency", "read", doc=frappe.get_doc("Currency", "USD"), user=user))}
+    return {"project": project, "records": rows, "native_rights": rights, "mutations": 0}
+
+
+def grant_fixture_native_access(project):
+    """Supported isolated native-role repair; root serializes the User/Auth slot."""
+    import frappe
+    from frappe.permissions import add_permission, update_permission_property
+    from cipher_aec.governance.context import assert_synthetic_site
+    assert_synthetic_site()
+    if frappe.session.user != "Administrator" or not frappe.db.get_value("Project", project, "project_name").startswith("EST02 isolated takeoff fixture "):
+        raise RuntimeError("Only this isolated takeoff fixture administrator may assign the fixture role")
+    role = "EST02 native source read " + project
+    if not frappe.db.exists("Role", role):
+        frappe.get_doc({"doctype": "Role", "role_name": role}).insert(ignore_permissions=True)
+    for doctype in ("UOM", "Currency"):
+        add_permission(doctype, role, 0)
+        for permission in ("read", "select"):
+            update_permission_property(doctype, role, 0, permission, 1)
+    for user in ("morgan@cipher.example", "jordan@cipher.example"):
+        doc = frappe.get_doc("User", user)
+        if role not in [row.role for row in doc.roles]:
+            doc.append("roles", {"role": role})
+            doc.save(ignore_permissions=True)
+        frappe.clear_cache(user=user)
+    frappe.db.commit()
+    return {"project": project, "role": role, "users": ["morgan@cipher.example", "jordan@cipher.example"], "native_read_only": ["UOM", "Currency"], "passwords_and_bindings_unchanged": True}

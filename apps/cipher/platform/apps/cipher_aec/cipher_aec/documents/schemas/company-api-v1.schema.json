@@ -1,0 +1,564 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:company-documents:api:v1",
+  "description": "Exact Company ownership on the existing canonical Document/Revision/File authority. Existing Project API contracts are unchanged.",
+  "$defs": {
+    "CompanyDocument": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "revision_number": {
+          "type": "integer"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "byte_length": {
+          "type": "integer"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "scan_status": {
+          "type": "string"
+        },
+        "retrieval_status": {
+          "type": "string"
+        },
+        "extraction_status": {
+          "type": "string"
+        },
+        "extractor_version": {
+          "type": "string"
+        },
+        "page_count": {
+          "type": "integer"
+        },
+        "extraction_warning": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "null"
+        },
+        "current_revision": {
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Company"
+        }
+      },
+      "required": [
+        "id",
+        "revision_number",
+        "filename",
+        "mime_type",
+        "byte_length",
+        "sha256",
+        "scan_status",
+        "retrieval_status",
+        "extraction_status",
+        "extractor_version",
+        "page_count",
+        "extraction_warning",
+        "title",
+        "company",
+        "project",
+        "current_revision",
+        "scope_type"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "revision_number": {
+          "type": "integer"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "byte_length": {
+          "type": "integer"
+        },
+        "sha256": {
+          "type": "string"
+        },
+        "scan_status": {
+          "type": "string"
+        },
+        "retrieval_status": {
+          "type": "string"
+        },
+        "extraction_status": {
+          "type": "string"
+        },
+        "extractor_version": {
+          "type": "string"
+        },
+        "page_count": {
+          "type": "integer"
+        },
+        "extraction_warning": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "id",
+        "revision_number",
+        "filename",
+        "mime_type",
+        "byte_length",
+        "sha256",
+        "scan_status",
+        "retrieval_status",
+        "extraction_status",
+        "extractor_version",
+        "page_count",
+        "extraction_warning",
+        "scope_type",
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentDetail": {
+      "type": "object",
+      "properties": {
+        "document": {
+          "$ref": "#/$defs/CompanyDocument"
+        },
+        "revisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompanyDocumentRevision"
+          }
+        }
+      },
+      "required": [
+        "document",
+        "revisions"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompanyDocument"
+          }
+        },
+        "capabilities": {
+          "type": "object",
+          "properties": {
+            "antivirus": {
+              "type": "boolean"
+            },
+            "ocr": {
+              "type": "boolean"
+            },
+            "formats": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "semantic_search": {
+              "type": "boolean"
+            },
+            "storage": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "antivirus",
+            "ocr",
+            "formats",
+            "semantic_search",
+            "storage"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "items",
+        "capabilities"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentPreview": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer"
+        },
+        "page_count": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        },
+        "content_type": {
+          "type": "string"
+        },
+        "citation": {
+          "$ref": "#/$defs/CompanyCitation"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "page",
+        "page_count",
+        "text",
+        "content_type",
+        "citation",
+        "scope_type",
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyCitationList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompanyCitation"
+          }
+        }
+      },
+      "required": [
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentUploadResponse": {
+      "type": "object",
+      "properties": {
+        "document": {
+          "$ref": "#/$defs/CompanyDocument"
+        },
+        "revision": {
+          "$ref": "#/$defs/CompanyDocumentRevision"
+        },
+        "operation": {
+          "$ref": "#/$defs/CompanySourceOperation"
+        },
+        "history_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "document",
+        "revision",
+        "operation",
+        "history_id"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "document_title": {
+          "type": "string"
+        },
+        "page_label": {
+          "type": "string"
+        },
+        "excerpt": {
+          "type": "string"
+        },
+        "excerpt_sha256": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "project": {
+          "type": "null"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256",
+        "company",
+        "revision_number",
+        "page",
+        "scope_type",
+        "project"
+      ]
+    },
+    "CompanySourceOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentUploadRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "filename": {
+          "type": "string"
+        },
+        "content_base64": {
+          "type": "string",
+          "contentEncoding": "base64",
+          "maxLength": 13981016
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expected_revision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "company",
+        "title",
+        "filename",
+        "content_base64",
+        "sha256",
+        "byte_length"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentListRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentDetailRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "document_id"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentPreviewRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "required": [
+        "company",
+        "revision_id"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyCitationRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "excerpt_sha256": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "revision_id",
+        "page"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentSearchRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 500
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20,
+          "default": 8
+        }
+      },
+      "required": [
+        "company",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyDocumentDownloadRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "revision_id"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

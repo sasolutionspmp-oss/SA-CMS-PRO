@@ -1,0 +1,30 @@
+{
+  "checks": [
+    "separate_process_commits_original_pdf_and_payload",
+    "concurrent_same_key_one_durable_receipt_and_original_ack",
+    "lost_ack_original_key_readback",
+    "same_key_changed_message_or_pdf_refused_without_rewrite",
+    "expired_new_attempt_denied_and_prior_receipt_observable",
+    "original_issued_recipient_subset_only",
+    "corrupt_receipt_never_success",
+    "header_control_characters_refused",
+    "two_process_serialized_readback_waits_for_accept_that_passed_deadline_before_commit",
+    "explicit_operator_boolean_only_enables_profile",
+    "native_DOC_REV_names_validate_against_strict_attachment_schema"
+  ],
+  "duration_seconds": 2.182,
+  "qualification": "Independent local SQLite/process fixture only. No Frappe grant/intent/worker/current-rights/HTTP qualification in this artifact; no live provider or external recipient acknowledgment.",
+  "runtime": {
+    "environment": "cipher-r0-runtime-1 pinned virtualenv",
+    "python": "3.14.8"
+  },
+  "schema": "cipher.distribution.sink-acceptance.v1",
+  "source_hashes": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution_contracts.py": "04d7933fb51a25b71afb9ab06d10b8c633e56c2901c36d5a46de280cd672ef88",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution_sink.py": "66221b4bdc22e32edda2220c8c79cea3b17670fda6409d2280c2a535c2460484",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/schemas/distribution-v1.schema.json": "e0c28e6b16f0162399d2ab172c4d208dbdc87ad7a5e3832beb181f2121106111",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_distribution.py": "a05977a0f499bf67761de8c7695cf7915cf6531869125e03ba5a67364d58f64d"
+  },
+  "status": "passed",
+  "tests_passed": 11
+}

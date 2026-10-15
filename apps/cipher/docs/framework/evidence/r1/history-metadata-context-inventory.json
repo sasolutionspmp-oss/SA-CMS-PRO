@@ -1,0 +1,177 @@
+{
+  "schema": "cipher.history-metadata-context-inventory.v1",
+  "status": "passed",
+  "company": "Company chain A 20b85fd4edd2",
+  "qualification": "Metadata relationships only; no record content, permission decisions or foreign-source entitlement inferred",
+  "total_events": 155,
+  "unique_literal_authorization_contexts": 113,
+  "types": {
+    "Cipher Approval Packet": {
+      "events": 66,
+      "unique_exact_subject_contexts": 24
+    },
+    "Cipher Distribution Dispatch": {
+      "events": 6,
+      "unique_exact_subject_contexts": 6
+    },
+    "Cipher Distribution Instruction": {
+      "events": 6,
+      "unique_exact_subject_contexts": 6
+    },
+    "Cipher Document Revision": {
+      "events": 14,
+      "unique_exact_subject_contexts": 14
+    },
+    "Cipher Proposal Revision": {
+      "events": 9,
+      "unique_exact_subject_contexts": 9
+    },
+    "Cipher Distribution Cancellation": {
+      "events": 1,
+      "unique_exact_subject_contexts": 1
+    },
+    "Cipher Proposal Issue": {
+      "events": 3,
+      "unique_exact_subject_contexts": 3
+    },
+    "Cipher Estimate Acceptance": {
+      "events": 8,
+      "unique_exact_subject_contexts": 8
+    },
+    "Cipher Estimate Revision": {
+      "events": 16,
+      "unique_exact_subject_contexts": 16
+    },
+    "Cipher Estimate": {
+      "events": 7,
+      "unique_exact_subject_contexts": 7
+    },
+    "Cipher Pursuit": {
+      "events": 7,
+      "unique_exact_subject_contexts": 7
+    },
+    "Cipher Rate Source": {
+      "events": 7,
+      "unique_exact_subject_contexts": 7
+    },
+    "Cipher Takeoff Line Binding": {
+      "events": 2,
+      "unique_exact_subject_contexts": 2
+    },
+    "Cipher Takeoff Measurement": {
+      "events": 1,
+      "unique_exact_subject_contexts": 1
+    },
+    "Cipher Calibration": {
+      "events": 1,
+      "unique_exact_subject_contexts": 1
+    },
+    "Cipher Takeoff Set": {
+      "events": 1,
+      "unique_exact_subject_contexts": 1
+    }
+  },
+  "unique_resolved_issue_ancestors": 3,
+  "unique_resolved_baseline_ancestors": 8,
+  "issue_groups": [
+    {
+      "issue_key": "330fdc6d00fccc858903",
+      "event_references": 27,
+      "unique_subjects": 17,
+      "subject_types": {
+        "Cipher Approval Packet": 15,
+        "Cipher Distribution Dispatch": 5,
+        "Cipher Distribution Instruction": 5,
+        "Cipher Distribution Cancellation": 1,
+        "Cipher Proposal Issue": 1
+      }
+    },
+    {
+      "issue_key": "718bd05f1f29c6a094c0",
+      "event_references": 6,
+      "unique_subjects": 4,
+      "subject_types": {
+        "Cipher Approval Packet": 3,
+        "Cipher Distribution Dispatch": 1,
+        "Cipher Distribution Instruction": 1,
+        "Cipher Proposal Issue": 1
+      }
+    },
+    {
+      "issue_key": "7df8e0a58ad79d8a3c0d",
+      "event_references": 1,
+      "unique_subjects": 1,
+      "subject_types": {
+        "Cipher Proposal Issue": 1
+      }
+    }
+  ],
+  "baseline_groups": [
+    {
+      "baseline_key": "7ce98e8531341ab250c4",
+      "event_references": 52,
+      "unique_subjects": 33
+    },
+    {
+      "baseline_key": "5cb4ab046ca8ac2721fe",
+      "event_references": 2,
+      "unique_subjects": 2
+    },
+    {
+      "baseline_key": "72f6dc26a7cb40dd455f",
+      "event_references": 1,
+      "unique_subjects": 1
+    },
+    {
+      "baseline_key": "c6b99f1c55288d1ce730",
+      "event_references": 1,
+      "unique_subjects": 1
+    },
+    {
+      "baseline_key": "257a9aabd3c3b73254d9",
+      "event_references": 1,
+      "unique_subjects": 1
+    },
+    {
+      "baseline_key": "ad6eb27afb4e37bcc0ba",
+      "event_references": 1,
+      "unique_subjects": 1
+    },
+    {
+      "baseline_key": "0727cd8d027a82d506e2",
+      "event_references": 1,
+      "unique_subjects": 1
+    },
+    {
+      "baseline_key": "d7dbf174fa6066060801",
+      "event_references": 1,
+      "unique_subjects": 1
+    }
+  ],
+  "unresolved_relationship_events": {
+    "Cipher Document Revision": 14,
+    "Cipher Approval Packet": 37,
+    "Cipher Estimate Revision": 16,
+    "Cipher Estimate": 7,
+    "Cipher Proposal Revision": 2,
+    "Cipher Pursuit": 7,
+    "Cipher Rate Source": 7,
+    "Cipher Takeoff Line Binding": 2,
+    "Cipher Takeoff Measurement": 1,
+    "Cipher Calibration": 1,
+    "Cipher Takeoff Set": 1
+  },
+  "bounds": {
+    "Cipher Distribution Instruction": 6,
+    "Cipher Distribution Dispatch": 6,
+    "Cipher Distribution Cancellation": 1,
+    "Cipher Proposal Issue": 3,
+    "Cipher Proposal Revision": 9,
+    "Cipher Estimate Acceptance": 8,
+    "Cipher Approval Packet": 24
+  },
+  "queries": 8,
+  "elapsed_seconds": 0.008570121994125657,
+  "transaction_writes": 0,
+  "dataset_note": "The initial timeout involved about150events; this later inventory contains155events including later automatic-delivery events. Bounded6-event and13-event prefixes are source-aware diagnostic observations on evolving data, not an identical-dataset A/B benchmark. Final latency must qualify the actual current inventory."
+}

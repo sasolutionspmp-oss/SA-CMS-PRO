@@ -12,7 +12,7 @@ from uuid import UUID
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from .contracts import (DIMENSIONS, MAX_CONVERSIONS, MAX_JSON_BYTES, MAX_QUANTITIES, MAX_RECORDS,
-                        NATIVE_DOCTYPES, PROJECT_STATUSES, SCHEMA, SPECS)
+                        NATIVE_DOCTYPES, PROJECT_STATUSES, SCHEMA, COMPANY_SCHEMA, SPECS)
 
 
 class ManifestError(ValueError):
@@ -121,12 +121,18 @@ def parse_manifest(value):
     if len(encoded.encode("utf-8")) > MAX_JSON_BYTES:
         fail("manifest", "Manifest exceeds 2 MiB.")
     strict_object(value, {"schema", "dataset_id", "scope", "records", "unit_conversions"}, {"quantities", "label"}, "manifest")
-    if value["schema"] != SCHEMA:
+    if value["schema"] not in (SCHEMA, COMPANY_SCHEMA):
         fail("schema", "Unsupported canonical schema version.")
     uuid(value["dataset_id"], "dataset_id")
-    strict_object(value["scope"], {"company", "project"}, set(), "scope")
-    for key in ("company", "project"):
-        text(value["scope"][key], "scope." + key, 140)
+    if value["schema"] == SCHEMA:
+        strict_object(value["scope"], {"company", "project"}, set(), "scope")
+        for key in ("company", "project"):
+            text(value["scope"][key], "scope." + key, 140)
+    else:
+        strict_object(value["scope"], {"scope_type", "company", "project"}, set(), "scope")
+        if value["scope"]["scope_type"] != "Company" or value["scope"]["project"] is not None:
+            fail("scope", "Canonical v2 currently requires exact Company scope and a null Project.")
+        text(value["scope"]["company"], "scope.company", 140)
     if "label" in value:
         text(value["label"], "label")
     records = value["records"]
@@ -143,6 +149,8 @@ def parse_manifest(value):
             fail(path + ".kind", "Unsupported canonical entity kind.")
         if type(row["revision"]) is not int or not 1 <= row["revision"] <= 2**31 - 1:
             fail(path + ".revision", "Use a positive monotonic integer revision.")
+        if value["schema"] == COMPANY_SCHEMA and row["kind"] == "project":
+            fail(path + ".kind", "A Company manifest cannot bind a Project record.")
         spec = SPECS[row["kind"]]
         strict_object(row["fields"], spec["required"], spec["optional"], path + ".fields")
         for key, field in row["fields"].items():
@@ -176,6 +184,8 @@ def parse_manifest(value):
     if len(company_rows) != 1:
         fail("records", "Each manifest has exactly one scoped company record.")
     company_id = company_rows[0]["id"]
+    if value["schema"] == COMPANY_SCHEMA and "target" in company_rows[0] and company_rows[0]["target"]["name"] != value["scope"]["company"]:
+        fail("records", "The Company target must match the explicit manifest scope.")
     for row in records:
         if row["kind"] != "company" and "company_id" in row["fields"] and row["fields"]["company_id"] != company_id:
             fail("records." + row["id"], "Cross-company references are not supported.")

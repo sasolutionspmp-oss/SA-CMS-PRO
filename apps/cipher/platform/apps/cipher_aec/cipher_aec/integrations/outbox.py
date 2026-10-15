@@ -40,6 +40,12 @@ def _schedule(name):
     if execution_quarantined():
         return
     try:
+        if frappe.db.get_value("Cipher Integration Operation", name, "kind") == "company.proposal.fixture.v1":
+            from .distribution import require_current_effects_enabled
+            require_current_effects_enabled()
+            frappe.enqueue("cipher_aec.integrations.outbox.deliver", queue="cipher_distribution", timeout=120,
+                operation=name, job_id="cipher-outbox-" + name, deduplicate=True)
+            return
         frappe.enqueue("cipher_aec.integrations.outbox.deliver", queue="short", operation=name, job_id="cipher-outbox-" + name, deduplicate=True)
     except Exception:
         frappe.logger("cipher_outbox").warning("Queue unavailable; durable operation awaits scheduler")
@@ -50,6 +56,8 @@ def dispatch_pending():
     if execution_quarantined():
         return 0
     names = frappe.get_all("Cipher Integration Operation", or_filters={"state": "Queued", "lease_until": ["<", now_datetime()]}, filters={"state": ["in", ["Queued", "Claimed"]]}, pluck="name", limit_page_length=100)
+    # Company transport ambiguity requires observational readback/recovery.
+    names += frappe.get_all("Cipher Integration Operation", filters={"kind": "company.proposal.fixture.v1", "state": "Unknown", "lease_until": ["<", now_datetime()]}, pluck="name", limit_page_length=100)
     for name in names:
         _schedule(name)
     return len(names)
@@ -57,6 +65,9 @@ def dispatch_pending():
 
 def deliver(operation):
     """A local Task effect and final receipt commit together; expired claims recover."""
+    if frappe.db.get_value("Cipher Integration Operation", operation, "kind") == "company.proposal.fixture.v1":
+        from .distribution_worker import deliver as deliver_company
+        return deliver_company(operation)
     require_effects_enabled()
     original_user = frappe.session.user
     try:

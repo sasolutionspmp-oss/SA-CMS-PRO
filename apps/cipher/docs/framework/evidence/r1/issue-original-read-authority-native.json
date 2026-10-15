@@ -1,0 +1,133 @@
+{
+  "status": "passed",
+  "qualification": "Native bounded existing-graph delta only; no HTTP, renderer, approval effect, or transport qualification.",
+  "company": "Company chain A 20b85fd4edd2",
+  "issue_id": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+  "before": {
+    "issue_digest": "bdfb1faf92ca1f99a62034783a118238fd05aa52acdd1785055b27828443b001",
+    "issue_json_sha256": "bdfb1faf92ca1f99a62034783a118238fd05aa52acdd1785055b27828443b001",
+    "prepared_revision": "REV-202e4c0fd59c4acb9024d2037e299728",
+    "expected_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+    "canonical_revision": "36aa48d00fff3a2ce465c909f7d23cf1ed413c9b037b796cbd046b64530fb99d"
+  },
+  "journal": "cipher.localhost/private/cipher-fixtures/issue-original-read-proof-ccb44993bb5348c9a6baf8fe577cddf1.jsonl",
+  "first_root": {
+    "seconds": 0.30614931699528825,
+    "customer_read": true,
+    "commercial_read_retained": true,
+    "document_read_retained": true,
+    "proof": {
+      "prelocked_scopes": 0,
+      "producer_hits": 5,
+      "producer_misses": 1,
+      "producer_authorized": 1,
+      "original_proof_misses": 2,
+      "original_proof_authorized": 2,
+      "original_proof_hits": 4
+    },
+    "storage_reads": 11,
+    "sha_length_checks": 11,
+    "target_pdf_checks": 2
+  },
+  "revocation": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "role": "reviewer",
+    "doctype": "Customer",
+    "native_read_available": false,
+    "executor_native_read_retained": true
+  },
+  "next_root_denial": {
+    "seconds": 0.15955096700054128,
+    "customer_read": false,
+    "commercial_read_retained": true,
+    "document_read_retained": true,
+    "proof": {
+      "prelocked_scopes": 0,
+      "producer_hits": 0,
+      "producer_misses": 0,
+      "producer_authorized": 0,
+      "original_proof_misses": 2
+    },
+    "storage_reads": 0,
+    "sha_length_checks": 0,
+    "target_pdf_checks": 0,
+    "denials": [
+      {
+        "reader": "issue",
+        "code": "not_found"
+      },
+      {
+        "reader": "bytes",
+        "code": "not_found"
+      }
+    ]
+  },
+  "restoration": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "role": "reviewer",
+    "doctype": "Customer",
+    "native_read_available": true,
+    "executor_native_read_retained": true
+  },
+  "independent_restored_root": {
+    "seconds": 0.5725608729990199,
+    "customer_read": true,
+    "commercial_read_retained": true,
+    "document_read_retained": true,
+    "proof": {
+      "prelocked_scopes": 0,
+      "producer_hits": 5,
+      "producer_misses": 1,
+      "producer_authorized": 1,
+      "original_proof_misses": 2,
+      "original_proof_authorized": 2,
+      "original_proof_hits": 4
+    },
+    "storage_reads": 11,
+    "sha_length_checks": 11,
+    "target_pdf_checks": 2
+  },
+  "after": {
+    "issue_digest": "bdfb1faf92ca1f99a62034783a118238fd05aa52acdd1785055b27828443b001",
+    "issue_json_sha256": "bdfb1faf92ca1f99a62034783a118238fd05aa52acdd1785055b27828443b001",
+    "prepared_revision": "REV-202e4c0fd59c4acb9024d2037e299728",
+    "expected_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+    "canonical_revision": "36aa48d00fff3a2ce465c909f7d23cf1ed413c9b037b796cbd046b64530fb99d"
+  },
+  "independent_connection_changed": true,
+  "no_project": true,
+  "schema": "cipher.r1.original-read-authority-native.v1",
+  "captured_at_utc": "2026-10-15T20:22:25.815447+00:00",
+  "scope": "Bounded native private test-root repeated Issue authorization, next-transaction actual native source revoke/restore, actual canonical storage+SHA/length observation. Separate Company history inventory/latency evidence is owned by backend.",
+  "harness": {
+    "path": "apps/cipher/docs/framework/evidence/r1/issue-original-read-proof-native-harness.py.txt",
+    "sha256": "9e72632a3df6a6f901a4e1eb7c0c94b5594f845379d09171aea64529546943dd"
+  },
+  "original_permission": {
+    "read": 1,
+    "select": 1
+  },
+  "no_new_business_commands": true,
+  "no_user_auth_or_currency_writes": true,
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "5c59ec809a6c2009e0cffa9a72eeed5cbaa72881491ff46b3e09c5ddcfe9496a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py": "8af5d66c4a5c62b83b0788dd2bdf7be60a9bd1aa26d0d8b8b94492ae111e44fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/outputs.py": "a8d99f4236e26dcb77c473f5262bd00b51719e38468b37f6a72d3add28cc13ec",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py": "afcf0f3dcf8d089e9cc2dfeb6c1b34ab96de51418abd3d79d46ca8eb69531c81",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py": "ba726b569c5fc9c24e5cb12ade5846204a02af1b28c56b36908626ae26b7d5c1"
+  },
+  "preserved_initial_harness_failure": {
+    "stage": "Initial immutable-snapshot capture, before any permission mutation",
+    "error": "TypeError datetime is not JSON serializable in canonical revision snapshot",
+    "corrected": "Private harness snapshot serialization only uses deterministic json default=str; no product source changed.",
+    "harness_sha256": "0f33646dc9df986852744e3e1ead73b839b949a6c5883626d84068b0755ca2a0",
+    "stderr_sha256": "3abfba87ce87d2ac4daeac904ed004435fff27f8784f7e81bb5a089388846666",
+    "private_paths_preserved": true
+  },
+  "owned_test_source_hashes_still_match": true
+}

@@ -1,0 +1,77 @@
+{
+  "captured_at_utc": "2026-10-15T19:03:27.409810+00:00",
+  "status": "profile-recorded",
+  "qualification": "Read-only/no-FOR-UPDATE native attribution before logical-command lifetime refinement. Counter instrumentation adds overhead; capped phase is incomplete and is not successful performance qualification. No rows, Currency, User or duties changed.",
+  "fixture_company": "EST generated Company C 8e6c80ffb7b0",
+  "phases": [
+    {
+      "phase": "one_generated_citation",
+      "outcome": "completed",
+      "instrumented_seconds": 2.4547,
+      "sql_queries": 2481,
+      "exact_storage_reads": 33,
+      "calls": {
+        "document_authorize_read": 66,
+        "producer_authorize_binding_read": 6,
+        "commercial_revision_read": 6,
+        "document_source_plan_read": 36,
+        "producer_binding_plan_read": 8,
+        "commercial_native_sources_read": 6,
+        "commercial_proposal_read": 6,
+        "commercial_pursuit_read": 12,
+        "commercial_sources_verify_read": 6,
+        "accepted_baseline_reference_read": 6
+      },
+      "dominant_sql_path": {
+        "path": [
+          "document.authorize",
+          "producer.authorize_binding",
+          "commercial._read(revision)",
+          "commercial.sources.verify",
+          "accepted_baseline_reference"
+        ],
+        "sql_queries": 1104
+      }
+    },
+    {
+      "phase": "current_acceptance_manifest",
+      "outcome": "stopped_at_10000_query_budget",
+      "instrumented_seconds": 5.268,
+      "sql_queries": 10000,
+      "exact_storage_reads": 144,
+      "calls": {
+        "document_authorize_read": 288,
+        "producer_authorize_binding_read": 26,
+        "commercial_revision_read": 26,
+        "document_source_plan_read": 122,
+        "producer_binding_plan_read": 20,
+        "commercial_native_sources_read": 26,
+        "commercial_proposal_read": 26,
+        "commercial_pursuit_read": 52,
+        "commercial_sources_verify_read": 26,
+        "accepted_baseline_reference_read": 26
+      },
+      "dominant_sql_path": {
+        "path": [
+          "document.authorize",
+          "producer.authorize_binding",
+          "commercial._read(revision)",
+          "commercial.sources.verify",
+          "accepted_baseline_reference"
+        ],
+        "sql_queries": 4784
+      }
+    }
+  ],
+  "interpretation": "Ordinary nonlocking reads correctly cannot reuse the locked-original memo. Separate native locked consume metrics are owned by EST; this profile alone does not establish their exact lock-mode distribution. Proposed logical-command scope must preserve mode separation, fresh facts and bytes.",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "06ffbca9ce24502c9f28ffb76fa46f6f86dcdbe2ba5af69d02338e6d1d2370eb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py": "ad964e1a01aab744fbd7e529b74bd4e559c900cafeccf50439513bed3dc32997",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_service.py": "88776464fbf56d609c86e28947bebc28a317e7ab75e1864dc38c767493d0ed19",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py": "70cc174811cec10cf317be4db921c817c7f2f2a02a91f4cebea8273da7262ca7"
+  }
+}

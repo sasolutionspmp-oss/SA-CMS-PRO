@@ -1,0 +1,1047 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "DistRecipient": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "organization"
+      ],
+      "additionalProperties": false
+    },
+    "DistAttachment": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20971520
+        },
+        "media_type": {
+          "const": "application/pdf"
+        }
+      },
+      "required": [
+        "revision_id",
+        "document_id",
+        "sha256",
+        "byte_length",
+        "media_type"
+      ],
+      "additionalProperties": false
+    },
+    "DistProfile": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "const": "local-fixture-v1"
+        },
+        "version": {
+          "const": 1
+        },
+        "mode": {
+          "const": "fixture"
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "max_recipients": {
+          "const": 30
+        },
+        "mandate_seconds": {
+          "const": 86400
+        },
+        "attempt_seconds": {
+          "const": 30
+        }
+      },
+      "required": [
+        "id",
+        "version",
+        "mode",
+        "enabled",
+        "max_recipients",
+        "mandate_seconds",
+        "attempt_seconds"
+      ],
+      "additionalProperties": false
+    },
+    "DistMessage": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "subject",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "DistInstruction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "session_reference": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DistRecipient"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "attachment": {
+          "$ref": "#/$defs/DistAttachment"
+        },
+        "cover_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "message": {
+          "$ref": "#/$defs/DistMessage"
+        },
+        "message_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "profile": {
+          "$ref": "#/$defs/DistProfile"
+        },
+        "mode": {
+          "const": "fixture"
+        }
+      },
+      "required": [
+        "id",
+        "scope_type",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "session_reference",
+        "created_at",
+        "valid_until",
+        "issue_id",
+        "issue_digest",
+        "recipients",
+        "attachment",
+        "cover_digest",
+        "message",
+        "message_digest",
+        "profile",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "DistDispatch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "instruction_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "instruction_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "packet_manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "requester_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "requester_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "reviewer_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "reviewer_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "request_session_reference": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "execute_session_reference": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "review_session_reference": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "policy_revision": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "valid_until": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "profile": {
+          "$ref": "#/$defs/DistProfile"
+        },
+        "mode": {
+          "const": "fixture"
+        }
+      },
+      "required": [
+        "id",
+        "scope_type",
+        "company",
+        "project",
+        "instruction_id",
+        "instruction_digest",
+        "issue_id",
+        "packet_id",
+        "decision_id",
+        "packet_manifest_hash",
+        "requester_person",
+        "requester_user",
+        "reviewer_person",
+        "reviewer_user",
+        "request_session_reference",
+        "execute_session_reference",
+        "review_session_reference",
+        "policy_revision",
+        "created_at",
+        "valid_until",
+        "profile",
+        "mode"
+      ],
+      "additionalProperties": false
+    },
+    "DistCancellation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "dispatch_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "instruction_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "actor_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "in_flight_may_complete": {
+          "const": true
+        }
+      },
+      "required": [
+        "id",
+        "scope_type",
+        "company",
+        "project",
+        "dispatch_id",
+        "instruction_id",
+        "actor_person",
+        "reason",
+        "cancelled_at",
+        "in_flight_may_complete"
+      ],
+      "additionalProperties": false
+    },
+    "DistSinkReceipt": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "const": "fixture"
+        },
+        "logical_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "payload_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "attachment_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "acknowledgment_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "mode",
+        "logical_key",
+        "payload_hash",
+        "attachment_sha256",
+        "byte_length",
+        "acknowledgment_id",
+        "accepted_at"
+      ],
+      "additionalProperties": false
+    },
+    "DistDeliveryResult": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "receipt": {
+              "$ref": "#/$defs/DistSinkReceipt"
+            },
+            "mode": {
+              "const": "fixture"
+            }
+          },
+          "required": [
+            "receipt",
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "attempt_not_after": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "mode": {
+              "const": "fixture"
+            }
+          },
+          "required": [
+            "attempt_not_after",
+            "mode"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DistRecipientDelivery": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "recipient_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "state": {
+          "enum": [
+            "Queued",
+            "Claimed",
+            "Succeeded",
+            "Failed",
+            "Unknown",
+            "Cancelled"
+          ]
+        },
+        "mode": {
+          "const": "fixture"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DistDeliveryResult"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "error_code": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "logical_key": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Always present on current dispatch/recipient reads; optional only for byte-preserved historical embedded cancellation command receipts. Missing expected identity must remain unverified until current readback."
+        },
+        "payload_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Always present on current dispatch/recipient reads; optional only for byte-preserved historical embedded cancellation command receipts. Missing expected identity must remain unverified until current readback."
+        }
+      },
+      "required": [
+        "operation_id",
+        "recipient_id",
+        "state",
+        "mode",
+        "receipt",
+        "error_code"
+      ],
+      "additionalProperties": false
+    },
+    "DistDispatchDetail": {
+      "type": "object",
+      "properties": {
+        "dispatch": {
+          "$ref": "#/$defs/DistDispatch"
+        },
+        "state": {
+          "enum": [
+            "Unknown",
+            "SucceededFixture",
+            "PartiallySucceeded",
+            "Cancelled",
+            "Failed",
+            "Queued"
+          ]
+        },
+        "mode": {
+          "const": "fixture"
+        },
+        "deliveries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DistRecipientDelivery"
+          }
+        },
+        "cancellation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DistCancellation"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "dispatch",
+        "state",
+        "mode",
+        "deliveries",
+        "cancellation"
+      ],
+      "additionalProperties": false
+    },
+    "DistOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "DistInstructionResponse": {
+      "type": "object",
+      "properties": {
+        "instruction": {
+          "$ref": "#/$defs/DistInstruction"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "instruction",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "DistCreateInstructionResponse": {
+      "type": "object",
+      "properties": {
+        "instruction": {
+          "$ref": "#/$defs/DistInstruction"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "operation": {
+          "$ref": "#/$defs/DistOperation"
+        }
+      },
+      "required": [
+        "instruction",
+        "version",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DistCancelResponse": {
+      "type": "object",
+      "properties": {
+        "cancellation": {
+          "$ref": "#/$defs/DistCancellation"
+        },
+        "dispatch": {
+          "$ref": "#/$defs/DistDispatchDetail"
+        },
+        "operation": {
+          "$ref": "#/$defs/DistOperation"
+        }
+      },
+      "required": [
+        "cancellation",
+        "dispatch",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DistDispatchList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DistDispatch"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "DistProfiles": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DistProfile"
+          }
+        },
+        "live_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "items",
+        "live_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "DistCreateInstructionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "recipient_ids": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "minItems": 1,
+              "maxItems": 30,
+              "uniqueItems": true
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240
+        },
+        "body": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "profile_id": {
+          "const": "local-fixture-v1"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "issue_id",
+        "recipient_ids",
+        "subject",
+        "body",
+        "profile_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistGetInstructionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "instruction_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "instruction_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistGetDispatchRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "dispatch_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "dispatch_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistGetRecipientRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "dispatch_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "recipient_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "company",
+        "dispatch_id",
+        "recipient_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistListDispatchesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company",
+        "issue_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistCancelRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "dispatch_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "dispatch_id",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "DistProfilesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "DistRecipientChoicesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "issue_id"
+      ],
+      "additionalProperties": false
+    },
+    "DistRecipientChoices": {
+      "type": "object",
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/DistRecipient"
+          }
+        }
+      },
+      "required": [
+        "issue_id",
+        "issue_digest",
+        "recipients"
+      ],
+      "additionalProperties": false
+    },
+    "DistListInstructionsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "DistInstructionList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DistInstructionResponse"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": "integer"
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

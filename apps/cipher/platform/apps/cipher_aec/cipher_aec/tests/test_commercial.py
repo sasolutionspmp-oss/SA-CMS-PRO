@@ -45,13 +45,13 @@ class CommercialContracts(unittest.TestCase):
             value["price_lines"][0]["rate"] = bad
             with self.assertRaises(DomainError): composition(value)
 
-    def test_plain_text_and_stable_ids_and_deferred_source(self):
+    def test_plain_text_and_stable_ids_and_source_shape(self):
         value = sample()
         value["sections"][0]["text"] = "<script>untrusted authored text</script>"
         self.assertEqual(composition(value)["sections"][0]["text"], value["sections"][0]["text"])
         value["source_references"] = [{"document": "private"}]
         with self.assertRaises(DomainError) as error: composition(value)
-        self.assertEqual(error.exception.code, "company_reference_unavailable")
+        self.assertEqual(error.exception.code, "invalid_commercial")
         value.pop("source_references")
         value["price_lines"][1]["id"] = value["price_lines"][0]["id"]
         with self.assertRaises(DomainError): composition(value)
@@ -65,3 +65,20 @@ class CommercialContracts(unittest.TestCase):
         self.assertTrue(result["terms"]["changed"])
         self.assertEqual(len(result["sections"]["added"]), 1)
         self.assertEqual(len(result["price_lines"]["removed"]), 1)
+
+    def test_exact_sources_and_accepted_baseline_contract_preserves_empty_hash(self):
+        from cipher_aec.api.contracts import digest
+        value = sample()
+        original = composition(value)
+        self.assertNotIn("estimate_reference", original)
+        self.assertEqual(original["source_references"], [])
+        self.assertEqual(digest(original), digest(composition({**value, "estimate_reference": None})))
+        ref = {"revision_id": "REV-" + "a"*32, "page": 1, "source_sha256": "b"*64, "excerpt_sha256": "c"*64, "purpose": "Price basis", "permission_basis": "Authored synthetic permission declaration"}
+        baseline = {"acceptance_id": str(uuid4()), "acceptance_digest": "d"*64, "revision_id": str(uuid4()), "revision_digest": "e"*64}
+        parsed = composition({**value, "source_references": [ref], "estimate_reference": baseline})
+        self.assertEqual(parsed["source_references"], [ref])
+        self.assertEqual(parsed["estimate_reference"], baseline)
+        for bad in ({**ref, "page": True}, {**ref, "source_sha256": "B"*64}, {**ref, "project": "phantom"}):
+            with self.assertRaises(DomainError): composition({**value, "source_references": [bad]})
+        with self.assertRaises(DomainError): composition({**value, "source_references": [ref, ref]})
+        with self.assertRaises(DomainError): composition({**value, "estimate_revision": str(uuid4())})

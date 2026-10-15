@@ -1,0 +1,111 @@
+[WebServer] (node:688002) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 6 tests using 2 workers
+
+(node:688027) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:688026) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/6] tests/company-approvals.spec.ts:37:1 › copied exact review preserves authorized second Company through sign-in and never fetches inbox
+[2/6] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current403 and removes action controls without inbox reads
+[WebServer] 8:29:12 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:29:12 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:29:14 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  1) tests/company-approvals.spec.ts:37:1 › copied exact review preserves authorized second Company through sign-in and never fetches inbox 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 0
+    + Received  + 1
+
+      Array [
+        "read_packet",
+    +   "read_packet",
+      ]
+
+      42 |   await expect(page).toHaveURL(new RegExp('company=TEST-SECOND-COMPANY$'));
+      43 |   await expect(page.locator('ui5-select[accessible-name="Company"]')).toContainText('Second Company');
+    > 44 |   expect(mock.reads.map(url => url.pathname.split('.').pop())).toEqual(['read_packet']);
+         |                                                                ^
+      45 |   const link = page.getByRole('link', { name: 'Open exact review', exact: true }); await expect(link).toHaveAttribute('href', path);
+      46 | });
+      47 | for (const status of [403, 404]) test(`exact review refresh respects current${status} and removes action controls without inbox reads`, async ({ page }) => {
+        at /workspace/cipher-framework-draft/apps/cipher/product/tests/company-approvals.spec.ts:44:64
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/company-approvals-copied-e-3e3d1--in-and-never-fetches-inbox/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/company-approvals-copied-e-3e3d1--in-and-never-fetches-inbox/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/company-approvals-copied-e-3e3d1--in-and-never-fetches-inbox/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/company-approvals-copied-e-3e3d1--in-and-never-fetches-inbox/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:688345) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/6] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current404 and removes action controls without inbox reads
+[4/6] tests/company-approvals.spec.ts:54:1 › unavailable Company in copied review link does not fall back to the first Company or read packet
+[WebServer] 8:29:17 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:29:17 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[5/6] tests/company-approvals.spec.ts:59:1 › ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links
+[WebServer] 8:29:19 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:29:19 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[6/6] tests/company-approvals.spec.ts:67:1 › exact review lost grant stays mounted and recovers original payload through later denial
+  2) tests/company-approvals.spec.ts:59:1 › ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "signed-test-next"
+    Received: null
+
+      63 |   await expect(page.getByText(/total records|\d+ records total/)).toHaveCount(0);
+      64 |   await page.getByRole('button', { name: 'Next page', exact: true }).click(); await expect(table.locator('ui5-table-row')).toHaveCount(1);
+    > 65 |   expect(mock.reads[1].searchParams.get('cursor')).toBe('signed-test-next');
+         |                                                    ^
+      66 | });
+      67 | test('exact review lost grant stays mounted and recovers original payload through later denial', async ({ page }) => {
+      68 |   const mock = await fixture(page, { lost: true }); await page.goto(`/company/work/${packetId}?company=${company}`);
+        at /workspace/cipher-framework-draft/apps/cipher/product/tests/company-approvals.spec.ts:65:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/company-approvals-ordinary-f3a28--and-exposes-copyable-links/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/company-approvals-ordinary-f3a28--and-exposes-copyable-links/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/company-approvals-ordinary-f3a28--and-exposes-copyable-links/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/company-approvals-ordinary-f3a28--and-exposes-copyable-links/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[WebServer] 8:29:21 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  2 failed
+    tests/company-approvals.spec.ts:37:1 › copied exact review preserves authorized second Company through sign-in and never fetches inbox 
+    tests/company-approvals.spec.ts:59:1 › ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links 
+  4 passed (12.9s)

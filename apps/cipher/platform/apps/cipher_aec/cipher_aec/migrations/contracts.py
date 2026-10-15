@@ -1,5 +1,6 @@
 """Independent target contract; no source-specific importer or second ERP master."""
 SCHEMA = "cipher.canonical.v1"
+COMPANY_SCHEMA = "cipher.canonical.v2"
 PROJECT_STATUSES = frozenset({"Open", "On hold", "Completed", "Cancelled"})
 DIMENSIONS = frozenset({"length", "area", "volume", "mass", "count", "time", "labor_time", "equipment_time"})
 # Values describe the canonical format, not unrestricted native Frappe fields.

@@ -11,7 +11,7 @@ from cipher_aec.api.errors import DomainError
 
 _trusted = ContextVar("cipher_trusted_write", default=False)
 PROJECT_ABILITIES = frozenset({"project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write"})
-COMPANY_ABILITIES = frozenset({"company.read", "commercial.read", "commercial.write"})
+COMPANY_ABILITIES = frozenset({"company.read", "commercial.read", "commercial.write", "commercial.distribute", "document.read", "document.write", "estimate.read", "estimate.write", "approval.request", "approval.decide", "approval.execute"})
 ABILITIES = PROJECT_ABILITIES | COMPANY_ABILITIES
 
 

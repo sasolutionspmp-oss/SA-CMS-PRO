@@ -270,6 +270,7 @@ for (const status of [403, 404, 503] as const) {
 
 test('shared approval inbox renders domain manifests without invented project status effects', async ({ page }) => {
   await mockWorkspace(page, { domainApproval: true }); await page.goto(`/projects/${projects[0].id}`);
+  await expect(page.locator('ui5-table[accessible-name="Project approvals"]')).toContainText('Source page calibration');
   await page.getByRole('button', { name: 'Review packet', exact: true }).click();
   const dialog = page.locator('ui5-dialog[header-text="Review approval packet"]');
   await expect(dialog).toContainText('Verify calibration');
@@ -278,4 +279,14 @@ test('shared approval inbox renders domain manifests without invented project st
   await expect(dialog.getByText('Status at request', { exact: true })).toHaveCount(0);
   await expect(dialog.getByText('Resulting completion', { exact: true })).toHaveCount(0);
   await expect(dialog.getByRole('button', { name: 'Execute approved change', exact: true })).toHaveCount(0);
+});
+
+test('desktop-to-phone resize closes the navigation overlay and phone selections return focusable content', async ({ page }) => {
+  await mockWorkspace(page); await page.goto('/projects'); await expect(page.getByRole('heading', { name: 'Projects', exact: true })).toBeVisible();
+  await page.setViewportSize({ width: 390, height: 1000 }); const layout = page.locator('ui5-navigation-layout'); await expect(layout).toHaveAttribute('side-collapsed', '');
+  const heading = page.getByRole('heading', { name: 'Projects', exact: true }); const box = await heading.boundingBox(); expect(box).not.toBeNull();
+  await expect.poll(() => page.evaluate(({ x, y }) => !document.elementFromPoint(x, y)?.closest('ui5-side-navigation'), { x: box!.x + Math.min(50, box!.width / 2), y: box!.y + box!.height / 2 })).toBe(true);
+  await page.getByRole('button', { name: 'Toggle navigation', exact: true }).click(); await expect(layout).not.toHaveAttribute('side-collapsed', '');
+  await page.locator('ui5-side-navigation').getByText('Documents', { exact: true }).click(); await expect(page.getByRole('heading', { name: 'Documents', exact: true })).toBeVisible(); await expect(layout).toHaveAttribute('side-collapsed', '');
+  await page.getByRole('button', { name: 'Open projects', exact: true }).focus(); await expect(page.getByRole('button', { name: 'Open projects', exact: true })).toBeFocused();
 });

@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[4]
 CIPHER = ROOT / "apps/cipher"
 EXCLUDED = {"node_modules", "dist", "test-results", "playwright-report", "__pycache__", ".pytest_cache", ".git", ".venv"}
-SOURCE_SUFFIXES = {".py", ".json", ".ts", ".tsx", ".css", ".html", ".mjs", ".yml", ".yaml", ".sh", ".toml", ".txt", ".md", ".in"}
+SOURCE_SUFFIXES = {".py", ".json", ".ts", ".tsx", ".css", ".html", ".mjs", ".yml", ".yaml", ".sh", ".toml", ".txt", ".md", ".in", ".conf"}
 
 
 def sha(path: Path) -> str:
@@ -50,7 +50,9 @@ def main() -> None:
             if isinstance(data, dict) and isinstance(data.get("source_sha256"), dict):
                 changed, missing, matched = [], [], 0
                 for name, recorded in data["source_sha256"].items():
-                    candidate = ROOT / name if name.startswith("apps/") else CIPHER / "platform/apps/cipher_aec/cipher_aec" / name
+                    # Reports use explicit repository paths for app and workflow sources;
+                    # older backend-local paths retain their original fixed base.
+                    candidate = ROOT / name if name.startswith(("apps/", ".github/")) else CIPHER / "platform/apps/cipher_aec/cipher_aec" / name
                     if not candidate.is_file():
                         missing.append(name)
                     elif sha(candidate) != recorded:

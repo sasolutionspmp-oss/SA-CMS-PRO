@@ -14,6 +14,16 @@ Start with [current implementation status](IMPLEMENTATION_STATUS.md) for actual 
 
 The [live build walkthrough](LIVE_BUILD_WALKTHROUGH.md) links the actual container screenshots in workflow order.
 
+The [prepared proposal contract](COM02_PREPARED_OUTPUT_CONTRACT.md) binds exact PDF output and independent issuance. The [controlled distribution contract](COM02_DISTRIBUTION_CONTRACT.md) separates approved recipient delivery, durable outcomes and local fixture qualification from customer delivery. [Current status](IMPLEMENTATION_STATUS.md) identifies which connected proofs have passed and which remain active.
+
+The [PRJ-02 native award contract](PRJ02_NATIVE_AWARD_CONTRACT.md) records the pinned Sales Order source audit, immutable issue provenance, admission requirements and financial-floor dependencies. It does not enable award writers or claim runtime award qualification.
+
+Its [FIN admission rules](PRJ02_FIN_ADMISSION_CONTRACT.md) and [planned handoff schema](PRJ02_HANDOFF_SCHEMA.md) define the next implementation boundary, including exact source-line adoption, team authority and budget reconciliation.
+
+The [BUY-01–03 native procurement contract](BUY_NATIVE_PROCUREMENT_CONTRACT.md) records the pinned purchasing controllers, controlled RFQ transmission, receipt quantity meanings, operational stock/GL and official-accounting boundaries. Its runtime proof gates remain unexecuted and do not release writers ahead of PRJ-02/FIN dependencies.
+
+The [FIN-02–04 native payables contract](FIN_NATIVE_PAYABLES_CONTRACT.md) records the installed Purchase Invoice duplicate/matching, posting and correction behavior, AEC certification boundaries, and operational-to-official accounting reconciliation. All 13 runtime gates remain unexecuted; its inspected source hashes are recorded separately, and it enables no writer.
+
 The source worktree remains separate and retains its existing uncommitted development. This branch starts from `a84cde6ac1b633450d7a122549b6bf9589ec8bc3`; seven current planning documents were copied explicitly as historical planning context. The latest owner correction excludes all prior Cipher/Odoo work as design inputs. The standalone framework and its companion contracts govern this new product; inherited repository files are outside the target build/import boundary.
 
 ## Read in this order

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { Avatar, Bar, Button, Dialog, Icon, Link, MessageStrip, NavigationLayout, Option, Select, ShellBar, ShellBarBranding, ShellBarSearch, ShellBarSpacer, SideNavigation, SideNavigationItem, Tag, Title, ToggleButton, Toolbar, ToolbarSpacer } from '@ui5/webcomponents-react';
 import type { NavigationLayoutDomRef } from '@ui5/webcomponents-react';
 import NavigationLayoutMode from '@ui5/webcomponents-fiori/dist/types/NavigationLayoutMode.js';
@@ -13,15 +13,21 @@ import RickyPanel from './RickyPanel';
 import SignIn from './SignIn';
 import Approvals from './Approvals';
 import Estimates from './Estimates';
+const Takeoff = lazy(() => import('./Takeoff'));
+const Commercial = lazy(() => import('./Commercial'));
+const CompanyDocuments = lazy(() => import('./CompanyDocuments'));
+const CompanyEstimates = lazy(() => import('./CompanyEstimates'));
+const CompanyApprovals = lazy(() => import('./CompanyApprovals'));
 
 export default function App() {
   const { path, navigate } = useRoute();
   const session = useResource('session', signal => api.session(signal));
-  const [company, setCompany] = useState('');
+  const [companySelection, setCompany] = useState('');
   const [projectId, setProjectId] = useState('');
   const [rickyOpen, setRickyOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mode, setMode] = useState<NavigationLayoutMode>(NavigationLayoutMode.Auto);
+  const [phoneLayout, setPhoneLayout] = useState(() => window.matchMedia('(max-width: 599px)').matches);
   const [search, setSearch] = useState('');
   const [dataRevision, setDataRevision] = useState(0);
   const [authRequested, setAuthRequested] = useState(false);
@@ -31,18 +37,24 @@ export default function App() {
   const [projectPages, setProjectPages] = useState<(string | undefined)[]>([]);
   const layoutRef = useRef<NavigationLayoutDomRef>(null);
   const identity = session.data?.person.id ?? '';
-  const projects = useResource(company && identity ? `projects/${identity}/${company}/${projectCursor ?? ''}` : null, signal => api.projects(company, signal, projectCursor));
   const route = path.split('?')[0].split('/').filter(Boolean).map(segment => { try { return decodeURIComponent(segment); } catch { return segment; } });
+  const requestedCompany = route[0] === 'company' && route[1] === 'work' && route[2] ? new URLSearchParams(path.split('?')[1] || '').get('company') : null;
+  const requestedCompanyAllowed = Boolean(requestedCompany && session.data?.company_scopes.some(scope => scope.company === requestedCompany) && session.data.companies.some(item => item.id === requestedCompany));
+  const requestedCompanyDenied = Boolean(requestedCompany && session.data?.authenticated && !requestedCompanyAllowed);
+  const company = requestedCompany ? (requestedCompanyAllowed ? requestedCompany : '') : companySelection;
+  const companyCommercial = route[0] === 'commercial';
+  const companyWorkspace = companyCommercial || route[0] === 'company';
+  const projects = useResource(company && identity && !companyWorkspace ? `projects/${identity}/${company}/${projectCursor ?? ''}` : null, signal => api.projects(company, signal, projectCursor));
   const citedPage = Number(new URLSearchParams(path.split('?')[1] ?? '').get('page'));
   const routeProjectId = route[0] === 'projects' ? route[1] : undefined;
-  const contextId = routeProjectId || projectId;
+  const contextId = companyWorkspace ? undefined : routeProjectId || projectId;
   const contextProject = useResource(company && contextId && identity ? `project-context/${identity}/${company}/${contextId}` : null, signal => api.project(company, contextId!, signal));
   const selectedProject = contextProject.data ?? projects.data?.items.find(project => project.id === contextId);
 
   useEffect(() => {
     const currentSession = session.data;
-    if (currentSession) setCompany(current => currentSession.companies.some(item => item.id === current) ? current : currentSession.companies[0]?.id ?? '');
-  }, [session.data]);
+    if (currentSession) setCompany(current => requestedCompanyAllowed ? requestedCompany! : currentSession.companies.some(item => item.id === current) ? current : currentSession.companies[0]?.id ?? '');
+  }, [session.data, requestedCompany, requestedCompanyAllowed]);
   useEffect(() => { setProjectId(''); setProjectCursor(undefined); setProjectPages([]); setRickyOpen(false); }, [session.data?.user]);
   useEffect(() => {
     const signIn = () => { setAuthRequested(true); setRickyOpen(false); };
@@ -50,42 +62,54 @@ export default function App() {
     window.addEventListener('cipher:sign-in', signIn); window.addEventListener('cipher:session-expired', expired);
     return () => { window.removeEventListener('cipher:sign-in', signIn); window.removeEventListener('cipher:session-expired', expired); };
   }, []);
+  useEffect(() => {
+    const phone = window.matchMedia('(max-width: 599px)');
+    const resizeNavigation = () => { setPhoneLayout(phone.matches); setMode(phone.matches ? NavigationLayoutMode.Collapsed : NavigationLayoutMode.Auto); };
+    resizeNavigation(); phone.addEventListener('change', resizeNavigation);
+    return () => phone.removeEventListener('change', resizeNavigation);
+  }, []);
   useEffect(() => { if (routeProjectId) setProjectId(routeProjectId); }, [routeProjectId]);
-  useEffect(() => { document.title = `${selectedProject?.name ?? (route[0] === 'documents' ? 'Document' : route[0] === 'connections' ? 'Connections' : 'Projects')} · Cipher`; }, [selectedProject?.name, path]);
+  useEffect(() => { document.title = `${selectedProject?.name ?? (route[0] === 'commercial' ? 'Commercial' : route[0] === 'documents' ? 'Document' : route[0] === 'connections' ? 'Connections' : 'Projects')} · Cipher`; }, [selectedProject?.name, path]);
 
-  const changeCompany = (next: string) => { setCompany(next); setProjectId(''); setSearch(''); setProjectCursor(undefined); setProjectPages([]); navigate('/projects'); };
+  const changeCompany = (next: string) => { setCompany(next); setProjectId(''); setSearch(''); setProjectCursor(undefined); setProjectPages([]); navigate(companyWorkspace ? (companyCommercial ? '/commercial/pursuits' : `/company/${route[1] || 'documents'}`) : '/projects'); };
   const refresh = () => { projects.refresh(); contextProject.refresh(); setDataRevision(value => value + 1); };
   const toggleNavigation = () => setMode(layoutRef.current?.isSideCollapsed() ? NavigationLayoutMode.Expanded : NavigationLayoutMode.Collapsed);
   const documentsPath = selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/documents` : '/documents';
   const shellSession = !authRequested && !session.error && session.data?.authenticated ? session.data : undefined;
   const personName = shellSession?.person.display_name ?? 'Workspace session';
-  const navKey = route[0] === 'estimates' || route[2] === 'estimates' ? 'estimates' : route[0] === 'documents' || route[2] === 'documents' ? 'documents' : route[0] === 'work' ? 'work' : route[0] === 'connections' ? 'connections' : 'projects';
+  const navKey = route[0] === 'company' ? `company-${route[1]}` : companyCommercial ? 'commercial' : route[0] === 'takeoff' || route[2] === 'takeoff' ? 'takeoff' : route[0] === 'estimates' || route[2] === 'estimates' ? 'estimates' : route[0] === 'documents' || route[2] === 'documents' ? 'documents' : route[0] === 'work' || route[2] === 'work' ? 'work' : route[0] === 'connections' ? 'connections' : 'projects';
   return <>
     <a className="skip-link" href="#main-content">Skip to content</a>
     <NavigationLayout ref={layoutRef} id="cipher-navigation" mode={mode} className="product-layout"
-      header={<ShellBar id="cipher-shellbar" startButton={<Button icon="menu2" design="Transparent" accessibleName="Toggle navigation" onClick={toggleNavigation} />}
+      header={<ShellBar id="cipher-shellbar" showSearchField={phoneLayout ? false : undefined} startButton={<Button icon="menu2" design="Transparent" accessibleName="Toggle navigation" onClick={toggleNavigation} />}
         branding={<ShellBarBranding logo={<img src="/cipher-mark.svg" alt="" />} onClick={() => navigate('/projects')}>Cipher <span className="shell-product-subtitle">The AEC/CMS Pro</span></ShellBarBranding>}
         content={<><div className="company-switch">{shellSession?.companies.length ? <Select accessibleName="Company" valueState="None" onChange={event => changeCompany(event.detail.selectedOption.value ?? company)}>{shellSession.companies.map(item => <Option key={item.id} value={item.id} selected={company === item.id}>{item.name}</Option>)}</Select> : null}</div><ShellBarSpacer />{shellSession?.site_mode === 'synthetic' && <Tag design="Set2" colorScheme="7">Synthetic workspace</Tag>}</>}
         searchField={<ShellBarSearch placeholder="Find a project" accessibleName="Search projects" onSearch={event => { setSearch(event.currentTarget!.value); navigate('/projects'); }} />}
         assistant={<ToggleButton icon="da" pressed={rickyOpen} accessibleName="Toggle Ricky assistant" tooltip="Ricky · AEC intelligence" onClick={() => setRickyOpen(value => !value)} />}
         profile={<Avatar initials={initials(personName)} accessibleName={personName} size="XS" />} onProfileClick={() => { if (shellSession) setProfileOpen(true); }} />}
-      sideContent={<SideNavigation className="product-navigation" accessibleName="Cipher workspace navigation" onSelectionChange={event => { const next = event.detail.item.dataset.path; if (next) navigate(next); }} fixedItems={<SideNavigationItem text="Connections" icon="connected" selected={navKey === 'connections'} data-path="/connections" />}>
+      sideContent={<SideNavigation className="product-navigation" accessibleName="Cipher workspace navigation" onSelectionChange={event => { const next = event.detail.item.dataset.path; if (next) { navigate(next); if (window.matchMedia('(max-width: 599px)').matches) { setMode(NavigationLayoutMode.Collapsed); document.getElementById('main-content')?.focus(); } } }} fixedItems={<SideNavigationItem text="Connections" icon="connected" selected={navKey === 'connections'} data-path="/connections" />}>
         <SideNavigationItem text="Projects" icon="building" selected={navKey === 'projects'} data-path="/projects" />
+        {shellSession?.company_scopes.some(scope => scope.capabilities.includes('commercial.read')) && <SideNavigationItem text="Commercial" icon="sales-document" selected={navKey === 'commercial'} data-path="/commercial/pursuits" />}
+        {shellSession?.company_scopes.some(scope => scope.capabilities.includes('document.read')) && <SideNavigationItem text="Company documents" icon="documents" selected={navKey === 'company-documents'} data-path="/company/documents" />}
+        {shellSession?.company_scopes.some(scope => scope.capabilities.includes('estimate.read')) && <SideNavigationItem text="Company estimates" icon="simulate" selected={navKey === 'company-estimates'} data-path="/company/estimates" />}
+        {shellSession?.company_scopes.some(scope => scope.capabilities.some(value => value.startsWith('approval.'))) && <SideNavigationItem text="Company approvals" icon="task" selected={navKey === 'company-work'} data-path="/company/work" />}
         <SideNavigationItem text="Project work" icon="task" selected={navKey === 'work'} data-path="/work" />
         <SideNavigationItem text="Estimates" icon="simulate" selected={navKey === 'estimates'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/estimates` : '/estimates'} />
+        <SideNavigationItem text="Drawing takeoff" icon="measure" selected={navKey === 'takeoff'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/takeoff` : '/takeoff'} />
         <SideNavigationItem text="Documents" icon="documents" selected={navKey === 'documents'} data-path={documentsPath} />
-        <SideNavigationItem text="Ricky" icon="da" design="Action" unselectable onClick={() => setRickyOpen(true)} />
+        <SideNavigationItem text="Ricky" icon="da" design="Action" unselectable onClick={() => { setRickyOpen(true); if (window.matchMedia('(max-width: 599px)').matches) setMode(NavigationLayoutMode.Collapsed); }} />
       </SideNavigation>}>
       <div className={`workspace-frame${rickyOpen ? ' with-assistant' : ''}`}>
         <div className="workspace-main" id="main-content" tabIndex={-1}>
-          {session.loading ? <Loading label="Connecting to your workspace…" /> : authRequested || session.error?.status === 401 || (!session.error && !session.data?.authenticated) ? <SignIn onSignedIn={() => { setAuthRequested(false); session.refresh(); }} /> : session.error ? <WorkspaceUnavailable error={session.error} retry={session.refresh} /> : !session.data?.companies.length ? <div className="page"><Empty title="No company access" icon="locked">Your workspace administrator can assign company and project access.</Empty></div> : <>
-            <div className="workspace-context-bar"><div><Icon name="building" /><span>{companyLabel(session.data, company)}</span>{selectedProject && <><span className="context-separator">/</span><strong>{selectedProject.name}</strong></>}</div><Select accessibleName="Project context" onChange={event => { const id = event.detail.selectedOption.value ?? ''; setProjectId(id); navigate(id ? `/projects/${encodeURIComponent(id)}` : '/projects'); }}><Option value="" selected={!selectedProject}>All projects</Option>{projects.data?.items.map(project => <Option key={project.id} value={project.id} selected={selectedProject?.id === project.id}>{project.name}</Option>)}</Select></div>
-            {projects.loading && !projects.data ? <Loading label="Loading permitted projects…" /> : projects.error ? <div className="page"><Failure error={projects.error} onRetry={projects.refresh} /></div> : company && <>
-              {route[0] === 'estimates' || route[2] === 'estimates' ? (contextId && contextProject.loading ? <Loading label="Opening estimating project context…" /> : contextId && contextProject.error ? <div className="page"><Failure error={contextProject.error} onRetry={contextProject.refresh} /></div> : <Estimates key={`${company}/${selectedProject?.id}/${route[3] || ''}`} company={company} project={contextProject.data} estimateId={route[3]} revisionId={new URLSearchParams(path.split('?')[1] || '').get('revision') || undefined} navigate={navigate} askRicky={() => setRickyOpen(true)} />)
+          {session.loading ? <Loading label="Connecting to your workspace…" /> : authRequested || session.error?.status === 401 || (!session.error && !session.data?.authenticated) ? <SignIn onSignedIn={() => { setAuthRequested(false); session.refresh(); }} /> : session.error ? <WorkspaceUnavailable error={session.error} retry={session.refresh} /> : requestedCompanyDenied ? <div className="page"><Empty title="Company context unavailable" icon="locked">The Company in this review link is unavailable with your current access. Choose an authorized Company to continue.</Empty></div> : !session.data?.companies.length ? <div className="page"><Empty title="No company access" icon="locked">Your workspace administrator can assign company and project access.</Empty></div> : <>
+            <div className="workspace-context-bar"><div><Icon name="building" /><span>{companyLabel(session.data, company)}</span>{selectedProject && <><span className="context-separator">/</span><strong>{selectedProject.name}</strong></>}</div>{companyWorkspace ? <span className="caption">Company workspace</span> : <Select accessibleName="Project context" onChange={event => { const id = event.detail.selectedOption.value ?? ''; setProjectId(id); navigate(id ? `/projects/${encodeURIComponent(id)}` : '/projects'); }}><Option value="" selected={!selectedProject}>All projects</Option>{projects.data?.items.map(project => <Option key={project.id} value={project.id} selected={selectedProject?.id === project.id}>{project.name}</Option>)}</Select>}</div>
+            {route[0] === 'company' && company ? <Suspense fallback={<Loading label="Opening Company workspace…" />}>{route[1] === 'documents' ? <CompanyDocuments key={company} company={company} capabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} documentId={route[2]} revisionId={route[3] === 'revisions' ? route[4] : undefined} initialPage={Number.isInteger(citedPage) && citedPage > 0 ? citedPage : 1} navigate={navigate} /> : route[1] === 'estimates' ? <CompanyEstimates key={company} company={company} capabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} estimateId={route[2]} revisionId={new URLSearchParams(path.split('?')[1] || '').get('revision') || undefined} navigate={navigate} /> : <CompanyApprovals key={company} company={company} packetId={route[2]} navigate={navigate} />}</Suspense> : companyCommercial && company ? <Suspense fallback={<Loading label="Opening company commercial…" />}><Commercial key={company} company={company} personId={session.data.person.id} capabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} route={route} navigate={navigate} /></Suspense> : projects.loading && !projects.data ? <Loading label="Loading permitted projects…" /> : projects.error ? <div className="page"><Failure error={projects.error} onRetry={projects.refresh} /></div> : company && <>
+              {route[0] === 'takeoff' || route[2] === 'takeoff' ? (contextId && contextProject.loading ? <Loading label="Opening takeoff project context…" /> : contextId && contextProject.error ? <div className="page"><Failure error={contextProject.error} onRetry={contextProject.refresh} /></div> : <Suspense fallback={<Loading />}><Takeoff company={company} project={contextProject.data} setId={route[3]} navigate={navigate} /></Suspense>)
+                : route[0] === 'estimates' || route[2] === 'estimates' ? (contextId && contextProject.loading ? <Loading label="Opening estimating project context…" /> : contextId && contextProject.error ? <div className="page"><Failure error={contextProject.error} onRetry={contextProject.refresh} /></div> : <Estimates key={`${company}/${selectedProject?.id}/${route[3] || ''}`} company={company} project={contextProject.data} estimateId={route[3]} revisionId={new URLSearchParams(path.split('?')[1] || '').get('revision') || undefined} navigate={navigate} askRicky={() => setRickyOpen(true)} />)
                 : route[0] === 'connections' ? <Connections session={session.data} />
                 : route[0] === 'documents' && route[1] ? <DocumentPage key={`${company}/${path}`} company={company} documentId={route[1]} revisionId={route[2] === 'revisions' ? route[3] : undefined} initialPage={Number.isInteger(citedPage) && citedPage > 0 ? citedPage : 1} navigate={navigate} askRicky={id => { setProjectId(id); setRickyOpen(true); }} />
                 : route[0] === 'documents' || route[2] === 'documents' ? <DocumentsPage key={`${company}/${selectedProject?.id ?? ''}`} company={company} projectId={selectedProject?.id} projectName={selectedProject?.name} navigate={navigate} canUpload={contextProject.data?.capabilities?.includes('document.write') ?? false} />
-                : route[0] === 'work' ? <WorkPage key={`${company}/${selectedProject?.id}/${dataRevision}`} company={company} project={selectedProject} navigate={navigate} onEffect={() => { projects.refresh(); contextProject.refresh(); }} />
+                : route[0] === 'work' || route[2] === 'work' ? <WorkPage key={`${company}/${selectedProject?.id}/${dataRevision}`} company={company} project={selectedProject} navigate={navigate} onEffect={() => { projects.refresh(); contextProject.refresh(); }} />
                 : route[0] === 'projects' && routeProjectId ? <ProjectDetail key={`${company}/${routeProjectId}/${dataRevision}`} company={company} projectId={routeProjectId} navigate={navigate} refreshProjects={projects.refresh} onContext={project => setProjectId(project.id)} openRicky={() => setRickyOpen(true)} />
                 : <ProjectRegister company={companyLabel(session.data, company)} projects={projects.data?.items ?? []} total={projects.data?.total ?? undefined} search={search} setSearch={setSearch} navigate={navigate} refresh={projects.refresh} pagination={{ next: projects.data?.next_cursor, page: projectPages.length + 1, previous: Boolean(projectPages.length), onNext: () => { if (projects.data?.next_cursor) { setProjectPages([...projectPages, projectCursor]); setProjectCursor(projects.data.next_cursor); } }, onPrevious: () => { setProjectCursor(projectPages[projectPages.length - 1]); setProjectPages(projectPages.slice(0, -1)); } }} />}
             </>}

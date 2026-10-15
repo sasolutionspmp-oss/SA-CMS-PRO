@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "company",
     "project",
     "packet",
@@ -12,9 +13,18 @@
     "decision",
     "manifest_hash",
     "reason",
-    "decided_at"
+    "decided_at",
+    "session_reference"
   ],
   "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
     {
       "fieldname": "company",
       "label": "Company",
@@ -26,7 +36,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "options": "Project"
     },
     {
@@ -67,6 +77,13 @@
       "label": "Decided At",
       "fieldtype": "Data",
       "reqd": 1
+    },
+    {
+      "fieldname": "session_reference",
+      "label": "Session Reference",
+      "fieldtype": "Data",
+      "length": 64,
+      "hidden": 1
     }
   ],
   "permissions": [

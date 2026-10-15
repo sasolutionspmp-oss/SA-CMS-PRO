@@ -1,0 +1,34 @@
+{
+  "schema": "cipher.company-inbox-targeted-checks.v1",
+  "recorded_at": "2026-10-15T20:28:44.542314+00:00",
+  "status": "targeted_checks_passed_runtime_latency_pending",
+  "changes": [
+    "Company list_packets explicit existing read_graph after actor/Company/page/cursor validation; full present and current state/manifest/review/action checks unchanged",
+    "Company read_packet root after _load scope/integrity; prior-write fallback and active-invalid refusal preserved",
+    "Company exact mode uses one presentation traversal with native SQL datetime/name cursor selection; none mode seeks and stops at one extra visible row",
+    "Project list/read path retains existing behavior; no authority SQL consolidation, schema/route changes, effects or DDL"
+  ],
+  "checks": {
+    "new_company_inbox_cases": 14,
+    "neighbor_history_cases": 9,
+    "total": 23,
+    "elapsed_seconds": 0.024,
+    "runtime": "installed pinned Frappe/ERPNext Python; executable SQLite keyset SQL plus Frappe-bound orchestration tests",
+    "transaction_writes_before_rollback": 0,
+    "compile": "passed",
+    "diff_check": "passed",
+    "actual_inbox_http_latency": "pending root coordinated HUP and exact preserved packet/UI first-page read"
+  },
+  "preserved_actual_failure": {
+    "journal": "/workspace/cipher-live-r2/com02-issue-final/incomplete-journey.json",
+    "packet": "76pdnacsi8",
+    "state_boundary": "independent Grant recorded; no execute POST; do not replay request/grant"
+  },
+  "source_hashes": {
+    "governance/approvals.py": "e41b9927dec2e40dc72cad54d1c1c1a711e0acecf0c468e70dba3690ec2d4996",
+    "governance/approval_listing.py": "a0d0005d870a9511b6ca38c15afa166bfbb921f8320c898977720679e7442318",
+    "tests/test_company_approval_listing.py": "da654d854a660cc67bf975d13265fb93320e806cf3fb683353f59304584f5483",
+    "documents/provenance.py": "5c59ec809a6c2009e0cffa9a72eeed5cbaa72881491ff46b3e09c5ddcfe9496a"
+  },
+  "test_log_sha256": "4daffb1f66d959771ee7079a3ad5345ced9891dc81041cdb7c7c4ae912b4c5bf"
+}

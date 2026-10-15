@@ -18,7 +18,7 @@ export default function Approvals({ project, onEffect }: { project: Project; onE
     <Toolbar design="Transparent"><Title level="H2">Approval inbox</Title><ToolbarSpacer /><Button icon="refresh" onClick={packets.refresh}>Refresh approvals</Button>{project.capabilities?.includes('approval.request') && <Button design="Emphasized" disabled={! ['Open', 'On hold'].includes(project.status)} title={['Open', 'On hold'].includes(project.status) ? 'Create an independently reviewed status request' : 'Closed projects cannot be reopened through this approval policy'} onClick={() => setRequestOpen(true)}>Request status change</Button>}</Toolbar>
     {notice && <MessageStrip design="Positive" onClose={() => setNotice('')}>{notice}</MessageStrip>}
     {packets.loading ? <Loading label="Loading approval packets…" /> : packets.error ? <Failure error={packets.error} onRetry={packets.refresh} /> : packets.data?.items.length ? <Table accessibleName="Project approvals" headerRow={<TableHeaderRow><TableHeaderCell minWidth="14rem">Requested change</TableHeaderCell><TableHeaderCell width="9rem">State</TableHeaderCell><TableHeaderCell minWidth="10rem">Requested by</TableHeaderCell><TableHeaderCell width="10rem">Review</TableHeaderCell></TableHeaderRow>}>
-      {packets.data.items.map(packet => <TableRow key={packet.id} rowKey={packet.id}><TableCell><div className="record-cell"><strong>{packet.action === 'project.status.change.v1' ? `${packet.changes.status.from} → ${packet.changes.status.to}` : actionLabel(packet.action)}</strong><span>{timestamp(packet.created_at)}</span></div></TableCell><TableCell><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></TableCell><TableCell>{packet.requester.display_name}</TableCell><TableCell><Button onClick={() => setSelected(packet.id)}>Review packet</Button></TableCell></TableRow>)}
+      {packets.data.items.map(packet => <TableRow key={packet.id} rowKey={packet.id}><TableCell><div className="record-cell"><strong>{packet.action === 'project.status.change.v1' ? `${packet.changes.status.from} → ${packet.changes.status.to}` : actionLabel(packet.action)}</strong>{packet.action !== 'project.status.change.v1' && <span>{packet.subject.label}</span>}<span>{timestamp(packet.created_at)}</span></div></TableCell><TableCell><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></TableCell><TableCell>{packet.requester.display_name}</TableCell><TableCell><Button onClick={() => setSelected(packet.id)}>Review packet</Button></TableCell></TableRow>)}
     </Table> : <Empty title="No approval requests" icon="task">Requests preserve their exact sources and effects. Review and execution remain separate.</Empty>}
     <Pagination next={packets.data?.next_cursor} total={packets.data?.total} page={pages.length + 1} previous={Boolean(pages.length)} onNext={() => { if (packets.data?.next_cursor) { setPages([...pages, cursor]); setCursor(packets.data.next_cursor); } }} onPrevious={() => { setCursor(pages[pages.length - 1]); setPages(pages.slice(0, -1)); }} />
     {requestOpen && <RequestStatus project={project} onClose={() => setRequestOpen(false)} onSourceChanged={onEffect} onRequested={packet => { setRequestOpen(false); setSelected(packet.id); setCursor(undefined); setPages([]); packets.refresh(); setNotice('Status change requested. The project has not changed.'); }} />}
@@ -45,7 +45,7 @@ function RequestStatus({ project, onClose, onRequested, onSourceChanged }: { pro
   </div></Dialog>;
 }
 
-function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Project; packetId: string; onClose: () => void; onChanged: (effect: boolean) => void }) {
+export function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Project; packetId: string; onClose: () => void; onChanged: (effect: boolean) => void }) {
   const resource = useResource(`${project.company}/${project.id}/${packetId}`, signal => api.approval(project.company, project.id, packetId, signal));
   const [reviewed, setReviewed] = useState(false);
   const [reason, setReason] = useState('');
@@ -88,7 +88,7 @@ function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Proj
 }
 
 function actionLabel(action: ApprovalPacket['action']) { return action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
-function ReviewFacts({ value }: { value: unknown }) {
+export function ReviewFacts({ value }: { value: unknown }) {
   if (Array.isArray(value)) return <ol className="domain-review-list">{value.map((item, index) => <li key={index}><ReviewFacts value={item} /></li>)}</ol>;
   if (value && typeof value === 'object') return <dl className="approval-metadata">{Object.entries(value).map(([key, item]) => <div className="domain-review-field" key={key}><dt>{human(key)}</dt><dd><ReviewFacts value={item} /></dd></div>)}</dl>;
   return <span className="domain-review-value">{value === null ? 'None' : typeof value === 'boolean' ? value ? 'Yes' : 'No' : String(value ?? '')}</span>;

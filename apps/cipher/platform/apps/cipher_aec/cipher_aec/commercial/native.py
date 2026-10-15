@@ -31,29 +31,47 @@ def can_create(doctype, actor):
         raise DomainError("native_permission_denied", "Native create permission is required for this draft.", 403)
 
 
-def sources(value, company, actor, *, lock=False, for_new=True, party_ref=None, native_refs=()):
-    units = {}
-    for unit_id in sorted({line["unit_id"] for line in value["price_lines"]}):
-        units[unit_id] = qualified(unit_id, lock=lock, allow_disabled=not for_new)
-        require_native("UOM", units[unit_id]["target"]["name"], actor, lock=lock)
-    policy = currency_policy(value["currency"], lock=lock) if for_new else None
-    require_native("Currency", value["currency"], actor, lock=lock)
+def sources(value, company, actor, *, lock=False, for_new=True, party_ref=None, native_refs=(), extra_plan=None, include_plan=False):
+    extra_plan = extra_plan or {}
+    own_units = {line["unit_id"] for line in value["price_lines"]}
     references = set(native_refs)
     references.add(("Price List", value["price_list"]))
     references.update(("Item", line["item_code"]) for line in value["price_lines"] if line["item_code"])
     if party_ref:
         references.add(tuple(party_ref))
+    own_references = set(references)
+    references.update((row["doctype"], row["name"]) for row in extra_plan.get("native_refs", []))
+    from .sources import merge
+    currencies = {value["currency"]} | set(extra_plan.get("currencies", []))
+    if extra_plan.get("currency"):
+        currencies.add(extra_plan["currency"])
+    complete = merge(extra_plan, {"unit_ids": sorted(own_units), "currencies": sorted(currencies),
+        "native_refs": [{"doctype": kind, "name": name} for kind, name in sorted(references)]})
+    if lock:
+        from cipher_aec.documents.provenance import has_prelocked, is_prelocked
+        if has_prelocked() and not is_prelocked(complete, actor, company):
+            raise DomainError("source_prelock_required", "The outer mutation must acquire the complete source dependency union before nested reads.", 409)
+    all_units = {}
+    for unit_id in sorted(own_units | set(extra_plan.get("unit_ids", []))):
+        all_units[unit_id] = qualified(unit_id, lock=lock, allow_disabled=not for_new or unit_id not in own_units, actor=actor)
+        require_native("UOM", all_units[unit_id]["target"]["name"], actor, lock=lock)
+    units = {unit_id: all_units[unit_id] for unit_id in own_units}
+    policy = None
+    for currency in sorted(currencies):
+        if currency == value["currency"] and for_new:
+            policy = currency_policy(currency, lock=lock, actor=actor)
+        require_native("Currency", currency, actor, lock=lock)
     # One order across COM Company commands and EST Project commands. Nested
     # permission checks below may re-read only after this complete set is held.
     for doctype, name in sorted(references):
         record = require_native(doctype, name, actor, lock=lock)
-        if doctype == "Item" and (for_new and record.disabled or company not in {row.company for row in record.item_defaults}):
+        if doctype == "Item" and (doctype, name) in own_references and (for_new and record.disabled or company not in {row.company for row in record.item_defaults}):
             raise DomainError("not_found", "This commercial source is not available.", 404)
-        if doctype == "Price List" and for_new:
+        if doctype == "Price List" and name == value["price_list"] and for_new:
             if not record.enabled or not record.selling or record.currency != value["currency"]:
                 raise DomainError("price_list_setup_required", "Select an enabled native selling price list in the proposal currency.", 409)
             policy["price_list"] = {"name":record.name,"version":version_of(record),"currency":record.currency}
-        if doctype == "Customer" and record.get("accounts") and company not in {row.company for row in record.accounts}:
+        if doctype == "Customer" and (doctype, name) in own_references and record.get("accounts") and company not in {row.company for row in record.accounts}:
             raise DomainError("not_found", "This commercial source is not available.", 404)
     for line in value["price_lines"]:
         unit = units[line["unit_id"]]
@@ -62,15 +80,17 @@ def sources(value, company, actor, *, lock=False, for_new=True, party_ref=None, 
         q = Decimal(line["quantity"])
         if q != q.quantize(Decimal(1).scaleb(-unit["fields"]["precision"])):
             raise DomainError("unsupported_native_precision", "Line quantity exceeds the qualified unit precision.")
+    if include_plan:
+        return units, policy, complete
     return units, policy
 
 
-def persisted(quotation_id):
+def persisted(quotation_id, *, lock=False):
     # Database strings are authoritative: a Python float round-trip is insufficient.
     fields = ("total", "net_total", "grand_total", "base_total", "base_net_total", "base_grand_total", "conversion_rate", "plc_conversion_rate", "discount_amount", "additional_discount_percentage", "total_taxes_and_charges")
-    totals = frappe.db.sql("SELECT " + ",".join("CAST(`" + f + "` AS CHAR) AS `" + f + "`" for f in fields) + " FROM `tabQuotation` WHERE name=%s", (quotation_id,), as_dict=True)[0]
-    rows = frappe.db.sql("SELECT name,cipher_line_id,cipher_alternate_group,item_code,item_name,description,uom,stock_uom,is_alternative,has_alternative_item,idx," + ",".join("CAST(`" + f + "` AS CHAR) AS `" + f + "`" for f in ("qty", "rate", "amount", "base_rate", "base_amount", "conversion_factor", "discount_percentage", "discount_amount")) + " FROM `tabQuotation Item` WHERE parent=%s ORDER BY idx", (quotation_id,), as_dict=True)
-    doc = frappe.get_doc("Quotation", quotation_id)
+    totals = frappe.db.sql("SELECT " + ",".join("CAST(`" + f + "` AS CHAR) AS `" + f + "`" for f in fields) + " FROM `tabQuotation` WHERE name=%s" + (" FOR UPDATE" if lock else ""), (quotation_id,), as_dict=True)[0]
+    rows = frappe.db.sql("SELECT name,cipher_line_id,cipher_alternate_group,item_code,item_name,description,uom,stock_uom,is_alternative,has_alternative_item,idx," + ",".join("CAST(`" + f + "` AS CHAR) AS `" + f + "`" for f in ("qty", "rate", "amount", "base_rate", "base_amount", "conversion_factor", "discount_percentage", "discount_amount")) + " FROM `tabQuotation Item` WHERE parent=%s ORDER BY idx" + (" FOR UPDATE" if lock else ""), (quotation_id,), as_dict=True)
+    doc = frappe.get_doc("Quotation", quotation_id, for_update=lock)
     result = {"id": doc.name, "version": version_of(doc), "company": doc.company, "quotation_to": doc.quotation_to, "party_name": doc.party_name, "opportunity": doc.opportunity, "currency": doc.currency, "selling_price_list": doc.selling_price_list, "price_list_currency": doc.price_list_currency, "valid_till": str(doc.valid_till), "terms": doc.terms or "", "docstatus": doc.docstatus, "totals": dict(totals), "items": [dict(row) for row in rows], "taxes": [row.as_dict() for row in doc.taxes]}
     return result
 

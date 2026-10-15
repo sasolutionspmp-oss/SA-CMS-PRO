@@ -1,0 +1,18 @@
+{
+  "attempts": [
+    {
+      "reason": "Authored direct-line fixture omitted explicit material_factor and waste_fraction; stopped before calculation effect.",
+      "report": "company-chain-native-initial-factor.json",
+      "sha256": "3632870a0b7eaf0b395141196cdf051603cba968f5cd6a3b47f1ee26ab9a328e"
+    },
+    {
+      "reason": "Fixture helper read has_more; canonical paging DTO uses next_cursor. Manual independent acceptance and successor stale refusal had passed before helper stopped.",
+      "report": "company-chain-native-initial-pagination.json",
+      "sha256": "8291ce5b62b1a7977f3d0d2ff97b58bef0809cf4e818a7406e1150b013417bcc"
+    }
+  ],
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "qualification": "Native Session fixtures only. These are preserved failed attempts, not full Company chain or HTTP qualification; no domain service fix was required by either fixture failure.",
+  "schema": "cipher.r1.company-chain-initial-attempts.v1",
+  "status": "failed_attempts_preserved"
+}

@@ -1,0 +1,17 @@
+{
+  "label": "quarantine-begin",
+  "script": "distribution-quarantine-control.py",
+  "helper_sha256": "396b3c232526672fb802df5bd736e44240cfa55c9853e5df3ef57873edefabf2",
+  "arguments": [
+    "begin"
+  ],
+  "started_at": "2026-10-15T20:08:30.545582+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:31.653473+00:00",
+  "result": {
+    "phase": "quarantined",
+    "only_site_quarantine_flag_changed": true,
+    "common_and_unrelated_site_configuration_preserved": true,
+    "next": "Root coordinates HUP and proof; finally stop pair, restore, HUP and restart pair."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "schema": "cipher.r1.distribution-queue-outage-restoration.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:08:00.629176+00:00",
+  "original_key_presence_preserved": true,
+  "exact_site_configuration_restored": true,
+  "exact_common_configuration_preserved": true,
+  "site_sha256": "b9179832070499c883ef29c53b136928703607357192b06615593a214241ddd7",
+  "common_sha256": "12b8f59aa7a892829f0dfe3c2c31272283fa1e91b55f1cbd8b8fc7f62e981da1",
+  "qualification": "Configuration fault and exact restoration only; original intent, absent RQ job and automatic recovery have separate evidence."
+}

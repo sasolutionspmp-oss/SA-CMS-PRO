@@ -26,7 +26,14 @@ def list_visible(*, company, project, scope_type, actor, scope, limit, last, cou
             if seek:
                 clause += " AND (creation<%s OR (creation=%s AND name<%s))"
                 values.extend((seek[0],seek[0],seek[1]))
-            rows = frappe.db.sql("SELECT name,creation FROM `tabCipher History Event` WHERE " + clause + " ORDER BY creation DESC,name DESC LIMIT %s", (*values,CHUNK_SIZE+1), as_dict=True)
+            fields, selection_values = "name,creation", []
+            if count_mode == "exact" and last:
+                # Count the complete visible set while selecting the page using
+                # the very same native datetime/name keyset predicate. Do not
+                # compare timestamp strings or change the database tie order.
+                fields += ", (creation<%s OR (creation=%s AND name<%s)) AS after_cursor"
+                selection_values.extend((last[0],last[0],last[1]))
+            rows = frappe.db.sql("SELECT " + fields + " FROM `tabCipher History Event` WHERE " + clause + " ORDER BY creation DESC,name DESC LIMIT %s", (*selection_values,*values,CHUNK_SIZE+1), as_dict=True)
             chunk = rows[:CHUNK_SIZE]
             for row in chunk:
                 scanned += 1
@@ -39,11 +46,18 @@ def list_visible(*, company, project, scope_type, actor, scope, limit, last, cou
                 return
             seek = [str(chunk[-1].creation),chunk[-1].name]
     selected = []
-    for row,event in visible(last):
-        selected.append((row,event))
-        if len(selected)>limit:
-            break
-    total = sum(1 for _ in visible()) if count_mode == "exact" else None
+    total = None
+    if count_mode == "exact":
+        total = 0
+        for row,event in visible():
+            total += 1
+            if len(selected) <= limit and (not last or row.after_cursor):
+                selected.append((row,event))
+    else:
+        for row,event in visible(last):
+            selected.append((row,event))
+            if len(selected)>limit:
+                break
     page = selected[:limit]
     return page_result([present_event(event) for _,event in page], has_more=len(selected)>limit,
         last=[str(page[-1][0].creation),page[-1][0].name] if page else None,

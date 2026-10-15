@@ -55,11 +55,11 @@ def approval_manifest(*, actor, company, project, subject_id, expected_version, 
     else:
         floor = sources.require_initial_admission(contract, lock=lock)
     from cipher_aec.estimating import units
-    currency_policy = units.currency_policy(contract['definition']['currency'], lock=lock)
+    currency_policy = units.currency_policy(contract['definition']['currency'], lock=lock, actor=actor)
     if currency_policy != contract['currency_policy']:
         raise DomainError('stale_currency_policy', 'The native currency policy changed before baseline acceptance.', 412)
     for registered in revision['units']:
-        if units.qualified(registered['id'], lock=lock) != registered:
+        if units.qualified(registered['id'], lock=lock, actor=actor) != registered:
             raise DomainError('stale_unit', 'A new baseline requires enabled qualified native units.', 412)
     party = sources.party_snapshot(company, project, contract['definition'], actor, lock=lock)
     return {'subject': {'doctype': repository.DOCTYPES['contract'], 'name': subject_id, 'label': contract['definition']['number']},

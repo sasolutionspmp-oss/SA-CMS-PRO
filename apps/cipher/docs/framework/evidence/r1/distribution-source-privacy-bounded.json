@@ -1,0 +1,315 @@
+{
+  "schema": "cipher.r1.distribution-source-privacy-http.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:24:46.093737+00:00",
+  "live_external_provider_qualified": false,
+  "history_qualified": false,
+  "document_read_revoked": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "scope_type": "Company",
+    "company": "Company chain A 20b85fd4edd2",
+    "role": "author",
+    "ability": "document.read",
+    "active": 0
+  },
+  "internal_reconciliation": {
+    "schema": "cipher.r1.distribution-readback-native.v1",
+    "status": "passed",
+    "operation_id": "o7slh68mnq",
+    "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+    "state": "Succeeded",
+    "fencing_token": 2,
+    "acknowledgment": {
+      "accepted_at": "2026-10-15T19:12:59.793121+00:00",
+      "acknowledgment_id": "083e312c-9dd2-4cf4-a89c-c46ea13e9a20",
+      "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624,
+      "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+      "mode": "fixture",
+      "payload_hash": "d7c2941506b7d70196ce9e985aee5e6139ecd4141785c76a92772c711930fd34"
+    },
+    "new_accept_calls": 0,
+    "fixture_controlled_lease_expiry": true,
+    "transport": "fixture",
+    "live_external_provider_qualified": false
+  },
+  "document_read_restored": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "scope_type": "Company",
+    "company": "Company chain A 20b85fd4edd2",
+    "role": "author",
+    "ability": "document.read",
+    "active": 1
+  },
+  "dispatch_id": "c4dcca16-c237-4c19-8bf4-182569abd539",
+  "restored_detail": {
+    "dispatch": {
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T19:02:36.466345Z",
+      "decision_id": "o5untc57u8",
+      "execute_session_reference": "3181bb4e2f769e67d771d3f9d11238d7f2e807384eb8424e9d6598691acda232",
+      "id": "c4dcca16-c237-4c19-8bf4-182569abd539",
+      "instruction_digest": "e899e9b44593d27052c748b5b10d0aa0f7d0eece1eabd58fd281e65ab079588b",
+      "instruction_id": "92a4a1a3-2ce6-4a02-852d-7e933e1d8350",
+      "issue_id": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+      "mode": "fixture",
+      "packet_id": "o3u2m8f2q8",
+      "packet_manifest_hash": "e6d224b8d7b76bdfbcb5625a157caade951c7a871d2a5bb5e014da817b1c7814",
+      "policy_revision": "CIPHER-PROPOSAL-DISTRIBUTE-POLICY-V1-COMPANY",
+      "profile": {
+        "attempt_seconds": 30,
+        "enabled": true,
+        "id": "local-fixture-v1",
+        "mandate_seconds": 86400,
+        "max_recipients": 30,
+        "mode": "fixture",
+        "version": 1
+      },
+      "project": null,
+      "request_session_reference": "3181bb4e2f769e67d771d3f9d11238d7f2e807384eb8424e9d6598691acda232",
+      "requester_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "requester_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "review_session_reference": "5dbb4e20746999284d0bdf678c0f2a17512cf346894fc0ed59f0d1a02c62b07f",
+      "reviewer_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "reviewer_user": "company.chain.reviewer.20b85fd4edd2@cipher.example",
+      "scope_type": "Company",
+      "valid_until": "2026-10-16T19:02:19.922107Z"
+    },
+    "state": "SucceededFixture",
+    "mode": "fixture",
+    "deliveries": [
+      {
+        "operation_id": "o7slh68mnq",
+        "recipient_id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+        "state": "Succeeded",
+        "mode": "fixture",
+        "receipt": {
+          "mode": "fixture",
+          "receipt": {
+            "accepted_at": "2026-10-15T19:12:59.793121+00:00",
+            "acknowledgment_id": "083e312c-9dd2-4cf4-a89c-c46ea13e9a20",
+            "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+            "byte_length": 12624,
+            "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+            "mode": "fixture",
+            "payload_hash": "d7c2941506b7d70196ce9e985aee5e6139ecd4141785c76a92772c711930fd34"
+          }
+        },
+        "error_code": null
+      },
+      {
+        "operation_id": "o7slp39odp",
+        "recipient_id": "1aa829e811e19d64004da54a905f6abbb4bd303682be2187ef969cc048a36d8f",
+        "state": "Succeeded",
+        "mode": "fixture",
+        "receipt": {
+          "mode": "fixture",
+          "receipt": {
+            "accepted_at": "2026-10-15T19:13:03.281095+00:00",
+            "acknowledgment_id": "38d8d22f-7b5e-46a1-8fa3-ea800d706b14",
+            "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+            "byte_length": 12624,
+            "logical_key": "c0ca317f7decd7db22291bc5a7ca29721c3d0113fd97e746c84f76258b42ebfc",
+            "mode": "fixture",
+            "payload_hash": "1d800233d102863cbd33c7f5c240d5c64eee7651e9d61e66baa6e1fa7206cb58"
+          }
+        },
+        "error_code": null
+      }
+    ],
+    "cancellation": null
+  },
+  "protected_history_rows": null,
+  "history_omission_reason": "Known40second first-page history failure is preserved and awaits independent owner fix/qualification.",
+  "exact_original_receipts_restored": true,
+  "internal_readback_is_not_new_delivery_or_source_entitlement": true,
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "55c852c4-8fe7-4c21-8908-211d2fbaa2a1",
+      "server_time": "2026-10-15T19:24:47.454631Z",
+      "request_seconds": 0.944436
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "7e7dc524-a974-4a4d-ac89-81f8157f220f",
+      "server_time": "2026-10-15T19:24:47.924055Z",
+      "request_seconds": 0.427051
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "d77b5348-398d-40f3-be2f-aae426e4acc5",
+      "server_time": "2026-10-15T19:24:48.391264Z",
+      "request_seconds": 0.466548
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_instruction",
+      "http_status": 403,
+      "request_id": "c4f63a65-c0f7-451f-8a91-8c645b6dc77c",
+      "server_time": "2026-10-15T19:24:49.607052Z",
+      "request_seconds": 0.02104,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 403,
+      "request_id": "a5a760fd-9834-4a9a-ab1a-42d3b08e7b97",
+      "server_time": "2026-10-15T19:24:49.627239Z",
+      "request_seconds": 0.010751,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_dispatches",
+      "http_status": 403,
+      "request_id": "f43f4479-8c9f-40da-893a-083aaf9f57f7",
+      "server_time": "2026-10-15T19:24:49.636336Z",
+      "request_seconds": 0.008553,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 403,
+      "request_id": "00cb6d2f-edcd-4273-a9df-d3f596019917",
+      "server_time": "2026-10-15T19:24:49.647291Z",
+      "request_seconds": 0.010974,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 403,
+      "request_id": "3c8216b0-8482-4a3f-a19e-9f70d2805df0",
+      "server_time": "2026-10-15T19:24:49.661285Z",
+      "request_seconds": 0.014371,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 403,
+      "request_id": "b48bfb3d-9f13-4d01-9d41-45f3ffaea40b",
+      "server_time": "2026-10-15T19:24:49.669336Z",
+      "request_seconds": 0.008014,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 403,
+      "request_id": "b9118a8c-fd47-4bb5-94d1-2460b3892475",
+      "server_time": "2026-10-15T19:24:49.685387Z",
+      "request_seconds": 0.01591,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 403,
+      "request_id": "555886e2-1f15-4cc7-bab7-3e84a16a29cb",
+      "server_time": "2026-10-15T19:24:49.701429Z",
+      "request_seconds": 0.01571,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.create_instruction",
+      "http_status": 403,
+      "request_id": "98cd07ba-1cf3-4141-8032-b14830b71db0",
+      "server_time": "2026-10-15T19:24:49.713799Z",
+      "request_seconds": 0.011648,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 403,
+      "request_id": "6ec4b3f4-c006-48a5-a63e-5f2ca6bc57f3",
+      "server_time": "2026-10-15T19:24:49.809307Z",
+      "request_seconds": 0.019524,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 403,
+      "request_id": "dbb72f59-f63c-4670-9097-336c72d2b614",
+      "server_time": "2026-10-15T19:24:51.384822Z",
+      "request_seconds": 0.013421,
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 200,
+      "source_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "9f91d36a-d93d-4055-a78f-1222e7c3e72d",
+      "server_time": "2026-10-15T19:24:53.231288Z",
+      "request_seconds": 0.420739
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "9eb962c2-08ef-480a-8388-1d3d50c31e7b",
+      "server_time": "2026-10-15T19:24:53.744578Z",
+      "request_seconds": 0.513124
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "150c972f-7f8d-439c-af74-4390214f41f9",
+      "server_time": "2026-10-15T19:24:54.461810Z",
+      "request_seconds": 0.716654
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 200,
+      "source_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624
+    }
+  ],
+  "schema_samples": 6,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.382701,
+      "session_seconds": 0.02925,
+      "status": "passed",
+      "total_seconds": 0.411966
+    },
+    {
+      "role": "alias",
+      "login_seconds": 0.059991,
+      "session_seconds": 0.00951,
+      "status": "passed",
+      "total_seconds": 0.069504
+    },
+    {
+      "role": "reviewer",
+      "login_seconds": 0.087151,
+      "session_seconds": 0.010944,
+      "status": "passed",
+      "total_seconds": 0.098099
+    }
+  ],
+  "completed_at": "2026-10-15T19:24:54.550165+00:00"
+}

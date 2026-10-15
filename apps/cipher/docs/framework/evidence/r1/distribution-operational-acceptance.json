@@ -1,0 +1,140 @@
+{
+  "schema": "cipher.r1.distribution-operational-acceptance.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:12:17.334392+00:00",
+  "read_models": {
+    "http_observations": 15,
+    "schema_samples": 6,
+    "duration_seconds": 8.260169,
+    "maximum_request_seconds": 1.751978,
+    "qualification": "Actual cookie/CSRF existing records only: original canonical recipient order/digest, saved instruction/version register, exact Issue filter/count, bounded keyset pages, cursor filter mismatch, foreign-source and denied Company/Project-only isolation."
+  },
+  "http_stages": {
+    "queued-restart": {
+      "dispatch_id": "a5c49eb9-46d9-417e-a616-3f0e36762769",
+      "operation_ids": [
+        "u1tg6if7ie"
+      ],
+      "http_observations": 14,
+      "schema_samples": 19,
+      "recipient_count": 1,
+      "canonical_recipient_subset_qualified": true
+    },
+    "redis-publication-failure": {
+      "dispatch_id": "1363c26e-e189-4479-9130-1112d695917a",
+      "operation_ids": [
+        "ucn4babims"
+      ],
+      "http_observations": 13,
+      "schema_samples": 18,
+      "recipient_count": 1,
+      "canonical_recipient_subset_qualified": false
+    },
+    "operator-quarantine": {
+      "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+      "operation_ids": [
+        "uofcdn69oc"
+      ],
+      "http_observations": 13,
+      "schema_samples": 18,
+      "recipient_count": 1,
+      "canonical_recipient_subset_qualified": false
+    }
+  },
+  "operational_cases": {
+    "queued_restart": {
+      "operation_id": "u1tg6if7ie",
+      "qualification": "Actual RQ Queued membership before operator restart of supervised consumer/publisher, then exact same job canonical success and one independent sink receipt."
+    },
+    "after_commit_publication_failure": {
+      "operation_id": "ucn4babims",
+      "qualification": "Pair stopped; site-only Redis queue endpoint port1 and fresh web workers. Actual HTTP committed Queued intent; exact job absent on original healthy Redis and sink absent before restore. Exact configuration restoration and normal pair startup discovered/republished same ID automatically; finished RQ job and one exact sink acknowledgment."
+    },
+    "operator_quarantine": {
+      "operation_id": "uofcdn69oc",
+      "qualification": "Fresh queued intent. Real consumer finished Quarantined NoOp while canonical attempt0/sink0; automatic publisher alive over more than one interval. Exact flag restoration and new process lifetime automatically requeued same finished job ID; canonical attempt1/one sink receipt. Operator flag only, no actual restored-site rehearsal."
+    }
+  },
+  "preserved_failure": {
+    "report": "distribution-quarantine-restoration-initial-mismatch.json",
+    "cause": "Private helper used --parse None for an absent key. Pinned installer stored JSON null; corrected supported unparsed string None removed the owned key. Entire common/unrelated site configs always matched; exact full restoration verified before same-intent recovery.",
+    "first_failed_cleanup": "distribution-operational-finally.json",
+    "corrected_finally": "distribution-operational-resume-finally.json"
+  },
+  "restoration_report": "distribution-operational-independent-restoration.json",
+  "source_files_unchanged": 347,
+  "manual_delivery_or_publication_invoked": false,
+  "general_scheduler_enabled": false,
+  "outer_supervisor_restart": "operator managed",
+  "live_external_provider_qualified": false,
+  "actual_restored_site_rehearsal_qualified": false,
+  "history_privacy_and_performance_qualified": false,
+  "qualification": "Local durable fixture sink and literal supervised distribution queue only. HTTP observations/schema samples are evidence, not additional behavioral test counts.",
+  "artifact_sha256": {
+    "distribution-first-readonly-current-snapshot.json": "e54428ea139edb5806ae450b6bb6147386a9161926bde7083fbe099b9327be91",
+    "distribution-operational-completion.json": "53afe8b6efef25a9f732ab4aeda907f7de4282dbfa119f5e5d940942397b54c2",
+    "distribution-operational-finally-pair-status.json": "f8954b3cd7acd8dbb1fb1160fa58fd7923140ca2fc373568ab59f645ff3016cc",
+    "distribution-operational-finally-restored-config-hup-workers.json": "76eeea192f8e0c01054c799813404ad3c727ecac146d000ba9ecb04aa34865c5",
+    "distribution-operational-finally-restored-config-hup.json": "a3b3b405bd763263aa1f941def1451f15fff0c164cb1b2871f0bfb4dcb5f0b08",
+    "distribution-operational-finally.json": "544d0c77d4a61ae8d12e133103b124a446082cfa8dd013035e262ccc9bdeab7d",
+    "distribution-operational-independent-restoration.json": "448e3591942cb275f0556634fe192b946883a9be16d9eb006e093e558bc2bc7e",
+    "distribution-operational-initial-pair-status.json": "b69acab60c9c9ae40c18657b0a33adb569c1e1aec5a70e5422a24fb123a71b2f",
+    "distribution-operational-invocations.json": "f1ccc2312da6f6e4adf3a77bb698c6d7378e87d6b91ff5c82c013a35c8caa1a7",
+    "distribution-operational-observe-operator-quarantine-quarantined_noop.json": "3cfebeda3180bddae7896949f352e4060cf17217778c14b21191f05b2835b32d",
+    "distribution-operational-observe-operator-quarantine-queued.json": "9b7000f43b76939c3d6a51b4b4789a4dd309af77fe3489aee02b8fa864a3dfe3",
+    "distribution-operational-observe-operator-quarantine-succeeded.json": "283ba3ec5661c0637a02485e931a22ae6236943483b731625d33389ef8989233",
+    "distribution-operational-observe-quarantine-second.json": "f180cb79a588f76366bb4b338a32028f23029853fe6e387b58d70767dee5d90a",
+    "distribution-operational-observe-queued-restart-queued.json": "cddd77b315515f5a802193a87a70e733311a4afd09ccf310a77ccdf73125af85",
+    "distribution-operational-observe-queued-restart-succeeded.json": "944daad0bbd22c186443fea09b7ec589bc8bb83b7da58efdfad6961b41792707",
+    "distribution-operational-observe-redis-publication-failure-publication_absent.json": "b46002278b9564ed536e905d6ff639090770423439f9522465a179bb0847e4b2",
+    "distribution-operational-observe-redis-publication-failure-succeeded.json": "9896b8db37820cc9ca61eb59f7f22b24db7defd092320623168bb50660001c40",
+    "distribution-operational-quarantine-begin.json": "36b2abf49ae903e900f99937bd313721e5bb4290e8f9ae6e8ed2fddbbebdc83a",
+    "distribution-operational-quarantine-exact-key-restore.json": "5b9942dba78e223422463c65f9b5a89d34fb6dd59723c8dc028d153c26c2e8b0",
+    "distribution-operational-quarantine-exact-restored-hup-workers.json": "2e0eeb0dd8eaff0e8d773f0b680344c1b2c23d8212fcc8baece3260340a388e2",
+    "distribution-operational-quarantine-exact-restored-hup.json": "1f6c3ac2acdcad1c0605aa087e98261ff53207906a9e620efdb20b98c6da5046",
+    "distribution-operational-quarantine-hup-workers.json": "83ec9b2ed54350c12d3d07692ae1c27b70fd8bdbfdaa8ce890ded21adb37eecb",
+    "distribution-operational-quarantine-hup.json": "b69e17f5e75655213ac837d89295837f601f13a83fbb6fac473cd30e05d5ee7c",
+    "distribution-operational-quarantine-lifted-pair-start.json": "dd567d35c976035dccab02c692875a7c2f076b8d2f9a134aaa05f62591ca5d90",
+    "distribution-operational-quarantine-lifted-pair-status.json": "5368abaaaf72b4037f5fd83cbe8b1d64b6f807f4e08a0291a204246658112c88",
+    "distribution-operational-quarantine-lifted-pair-stop.json": "049f2b928f6c440e276bb958daecc30c1d9fdfcbb20ffe90a950be715c9a89f1",
+    "distribution-operational-quarantine-pair-start.json": "48270dcff9e0c060f8b55119de60b6ba1b8bc49fe867c707232718d28a9e0826",
+    "distribution-operational-quarantine-pair-status.json": "9d98bee61b2740665bd1083fdbc50777500cd07ff9fbe724f5c66eeca6ef185d",
+    "distribution-operational-quarantine-pair-stop.json": "d5c90de7458a240f1d7caaaa9521ead0cb3f3c6c15838c72670862b609260a76",
+    "distribution-operational-queue-fault-begin.json": "7df9bdde9abec35e2c4be9e70ca71aaac95ec0cd23ac135a781b5a1d06a75c3f",
+    "distribution-operational-queue-fault-hup-workers.json": "5c7529ad387f9862ecbb250af93c3beef7277802bd166c57759acaefd5a55f50",
+    "distribution-operational-queue-fault-hup.json": "6c9ee5304e1be129daae2b3944b7353841bb64f06d7f53b134daffa0fec3e758",
+    "distribution-operational-queue-fault-restore.json": "291c8746ae34836f1e2bd949bbbd7d4823306d6824b894cb30f5bc0c65c14103",
+    "distribution-operational-queue-restored-hup-workers.json": "d0a80cfe7340ad941b99c71c3865d1f179ff9386a5406f7a46d78e86fea09bf0",
+    "distribution-operational-queue-restored-hup.json": "1b56b99e75dbe7ca8452e6ba0fbd039748005a1473afb4c23f0849f9d5188545",
+    "distribution-operational-queued-restart-pair-start.json": "c4f38dd85fa033ba1f94e4171aee8862a47506f1610b4bad0f999d5690eb49de",
+    "distribution-operational-queued-restart-pair-status.json": "b3cd0d3d55a935f835e21f97b6396ba3a72b3c2532380fca76a68ee037dc7fe3",
+    "distribution-operational-queued-restart-pair-stop.json": "2d461b5bc46796f2444f8e7ae4fb314ba578e401b6dd4ea1edfb24c4b0a94c24",
+    "distribution-operational-redis-recovery-pair-start.json": "f5086e3ee5976d7e5aa2f7ac7a911662b300f8022b8f77cad07cbf770cb7d201",
+    "distribution-operational-redis-recovery-pair-status.json": "801f3b61c8a7e3e978d7d86d1784a058399f2b97df59843590df2b1ed4b4754b",
+    "distribution-operational-redis-recovery-pair-stop.json": "6cef347232ca34089575691abd1c5307ead7bfc4ce7d7398c352d12c208ca1ef",
+    "distribution-operational-resume-finally-pair-status.json": "64c0dcc027ebff71cad9cc84f80d62f8d5fbd0a1468c8d35fbb0289f97e47c40",
+    "distribution-operational-resume-finally.json": "65144c2c7d458bd6abe34af1748b13a35131c06bea138a1996302d38f2e0eaa7",
+    "distribution-operational-resume-initial-pair-status.json": "509150139fa93e1dda26309da8a87a5c63870e280baa49d28ab5329a50eb5c2c",
+    "distribution-operational-resume-invocations.json": "0eb62c7620406854093aa6f4a9f8624a4d9f99495de34dc057afa0cb11228b0e",
+    "distribution-operational-stage-operator-quarantine.json": "473fde771afb993ab1dbf294c1a1ac883e9183faae3fe73fde2653c6e5aabbe8",
+    "distribution-operational-stage-queued-restart.json": "9b6e32ad597fb453207afc32c8fc221a06e32851d82fbc609d6a577bf9a323b5",
+    "distribution-operational-stage-redis-publication-failure.json": "fd7f78a45005036aba46ce7190377706b41d1c4d4903f54f2d1c0d324e85f6b7",
+    "distribution-operator-quarantine-quarantined_noop.json": "775a552d3341984c3d8ef8867f32be77d2ebbe5198322e2039491602fb60dd53",
+    "distribution-operator-quarantine-queued.json": "09e18b829f793f6b824f8792f28a9977d1d7e5f9ca6b879065c9590b164be3e1",
+    "distribution-operator-quarantine-second-noop.json": "59c4fa48f29358f294af5e745c0ca89dd605dedd9f33dc3f61ecff0462c95b87",
+    "distribution-operator-quarantine-source-before.json": "569842584c590dc7b3b77b151a7c1c099f2ac4d3c7d971d399c5a7fadcc370e9",
+    "distribution-operator-quarantine-stage.json": "bb5800ebb9e1eb3359c3db2ee10bde9686bae4584a9ed735961a666aacf40f78",
+    "distribution-operator-quarantine-succeeded.json": "0622095a44062e252209ee5e904dc9fb1ce90a00b746d4175b492e8d09f7f355",
+    "distribution-quarantine-restoration-initial-mismatch.json": "0f5a79a80f03cafc9cf153540465cbb7747f49d43299df154aeae0f1af2ab9cf",
+    "distribution-quarantine-restoration.json": "8d12392e134361423a029bad479965e879881f39183a95b22ebfc2ba430caa72",
+    "distribution-queued-restart-queued.json": "fc868994b4234a65dfd40fecbcaf4c51bfb94ab99b2b28102482dd9f34681faf",
+    "distribution-queued-restart-source-before.json": "e05247956ac9882c8247583897063751e48a44974d0d999dcf763290513ea32d",
+    "distribution-queued-restart-stage.json": "49c58c67dc8553930b54604ffb0876cfc7cb9cda9c5523eee0983bc723bf1840",
+    "distribution-queued-restart-succeeded.json": "1188abcaa3bd3a833d4222c9ff634f7d701560cff95112901b930e640aed3acd",
+    "distribution-read-model-http.json": "e0bc454e47f7cd4aecff07309e9e5a6446e95ecd9708b516b80a56ef52e7d52e",
+    "distribution-redis-publication-failure-publication_absent.json": "e17c9f05df82e78be4612027a9239cb0eee9223b51ca87a22437db05fde05933",
+    "distribution-redis-publication-failure-source-before.json": "4721405a18349381851191fad8004eb5e493900f5968d4c1d02ab5555fdd2535",
+    "distribution-redis-publication-failure-stage.json": "a89413ce43d3c3ae80ae3b5409ea51d1a96104a85bd8b7cdc4504ae7722afe03",
+    "distribution-redis-publication-failure-succeeded.json": "0a297352171c11b07aeed5cda805b51b8990ccf7f9ff526cff81204a0779392c"
+  }
+}

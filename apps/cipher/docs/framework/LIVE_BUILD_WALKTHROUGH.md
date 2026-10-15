@@ -56,8 +56,155 @@ and [original operation recovered](evidence/r1/estimating-create-recovery-final/
 The injected faults are explicitly recorded; actual permissions were unchanged.
 This recovery is qualified while the view remains mounted, not across browser restarts.
 
-Company pursuits/proposals, PDF takeoff calculations and construction contract/SOV
-baselines also have actual backend acceptance. Their complete user journeys,
-accepted estimates, award, procurement, AP/AR and later AEC workflows remain in
-the approved sequence. See [current status](IMPLEMENTATION_STATUS.md) and the
-[66-package backlog](EXECUTION_BACKLOG.md).
+## PDF takeoff in the running product
+
+The connected Project journey uses actual authorized PDF bytes and pointer
+coordinates in the local PDF.js viewer. A second person reviewed the scale;
+the backend calculated 200 square feet, which was attached to an exact saved
+estimate line. Replacing the drawing made the old measurement stale for new
+use while preserving its saved quantity and the original estimate result.
+The proof checks pointer picks within a one-point PDF-space bound, then enters
+the known exact coordinates before calculating the 200-square-foot fixture.
+It does not claim perfect pointer snapping.
+
+| Step | Actual capture |
+|---|---|
+| Independently review the drawing scale | [Calibration review](evidence/r1/project-pdf-workspace/actual-independent-calibration-review.png) |
+| Attach the measured quantity to a saved estimate line | [Measurement and binding](evidence/r1/project-pdf-workspace/actual-pdf-measurement-and-estimate-binding.png) |
+| Inspect changed-drawing impact without repricing history | [Drawing change impact](evidence/r1/project-pdf-workspace/actual-drawing-change-impact-preserves-estimate.png) |
+| Reopen the original drawing revision | [Historical drawing](evidence/r1/project-pdf-workspace/actual-historical-drawing-revision.png) |
+| Use the same viewer at smaller widths | [Tablet](evidence/r1/project-pdf-workspace/actual-pdf-takeoff-tablet.png), [phone](evidence/r1/project-pdf-workspace/actual-pdf-takeoff-phone.png) |
+
+The [verification record](evidence/r1/project-pdf-workspace/verification.json)
+records all eleven mutation IDs and payload hashes, exact before/after results,
+served assets and zero unexpected browser/network errors. Private raw requests
+were journaled before sending. Prior blocked fixture/MIME attempts remain
+separate. These captures precede the targeted density and source-label cleanup;
+technical fixture names shown here are actual stored values.
+
+A subsequent read-only pass improves the measurement summary and saved-line
+selection, displays the saved rectangle, and prevents attaching a stale source
+to a new line. It also corrects the navigation panel covering content when an
+already mounted desktop view shrinks to phone width. These new captures show
+the same persisted records: [desktop](evidence/r1/project-pdf-polish/actual-measurement-binding-desktop.png),
+[tablet](evidence/r1/project-pdf-polish/actual-measurement-binding-tablet.png),
+[phone](evidence/r1/project-pdf-polish/actual-measurement-binding-phone.png), and
+[drawing impact](evidence/r1/project-pdf-polish/actual-readable-drawing-impact.png).
+The [read-only verification](evidence/r1/project-pdf-polish/verification.json)
+records no business writes and preserves the actual stored unit labels. Its
+served UI sources are bound separately; it does not repeat the original mutation
+proof or claim that all backend sources were frozen during this later capture.
+
+## Company commercial work and accepted estimates
+
+This connected journey stays in Company scope before a Project exists. It
+created a pursuit and proposal, saved a successor proposal totaling 2,589.12,
+uploaded a source document and calculated an estimate of 154.25. A second
+person reviewed the exact estimate, then the requester executed its acceptance.
+
+| Step | Actual capture |
+|---|---|
+| Open the pursuit | [Pursuit](evidence/r1/company-workspace/actual-company-pursuit.png) |
+| Edit proposal pricing and alternatives | [Desktop proposal](evidence/r1/company-workspace/actual-company-proposal-desktop.png) |
+| Compare the saved proposal revisions | [Proposal comparison](evidence/r1/company-workspace/actual-company-proposal-comparison.png) |
+| Inspect an uploaded Company source | [Source document](evidence/r1/company-workspace/actual-company-source.png) |
+| Calculate the estimate | [Company estimate](evidence/r1/company-workspace/actual-company-estimate.png) |
+| Review as an independent person | [Estimate review](evidence/r1/company-workspace/actual-company-independent-estimate-review.png) |
+| Inspect the accepted estimate | [Accepted baseline](evidence/r1/company-workspace/actual-company-accepted-estimate.png) |
+| Use smaller screens | [Tablet proposal](evidence/r1/company-workspace/actual-company-proposal-tablet.png), [phone proposal](evidence/r1/company-workspace/actual-company-proposal-phone.png) |
+
+The [verification record](evidence/r1/company-workspace/verification.json) records
+no placeholder Project, no Project API calls, exact persisted results and zero
+unexpected browser/network errors. It identifies continuation of the same saved
+records after correcting keyboard and packet-label assumptions in the proof
+script. An actual precision refusal for an unrepresentable proposal rate is
+preserved separately. The [backend source window](evidence/r1/connected-browser-backend-freeze.json)
+confirms all 337 captured app/test/metadata files stayed unchanged through both
+connected journeys. These screens precede the targeted wording and density
+cleanup; they do not imply proposal issuance or external delivery.
+
+The later wording and responsive correction has a separate read-only capture
+of those same records: [desktop proposal](evidence/r1/company-polish/actual-company-proposal-desktop.png),
+[tablet proposal](evidence/r1/company-polish/actual-company-proposal-tablet.png),
+[phone proposal](evidence/r1/company-polish/actual-company-proposal-phone.png),
+[accepted estimate](evidence/r1/company-polish/actual-company-accepted-estimate.png),
+and [source document](evidence/r1/company-polish/actual-company-source.png).
+Its [verification](evidence/r1/company-polish/verification.json) records zero
+business writes and unexpected errors, with the navigation geometry checked
+after resizing the mounted application. Prior timeout attempts do not qualify
+these views; the successful capture followed restored permissions and the
+coherent runtime reload.
+
+Construction contract/SOV baselines have actual backend acceptance. Award,
+procurement, AP/AR and later AEC workflows remain in the approved sequence. See
+[current status](IMPLEMENTATION_STATUS.md) and the [66-package backlog](EXECUTION_BACKLOG.md).
+
+## Exact proposal PDF, Issue and fixture distribution
+
+This Company-only journey prepared the proposal PDF with fixed intended
+recipients and cover text. An independent person viewed that exact stored PDF
+and granted its Issue. The requester later executed the preserved grant once;
+the original preparation, request and Grant were not repeated. The resulting
+Issue retains the same PDF and a native Quotation draft snapshot. Issue did not
+send it.
+
+| Step | Actual capture |
+|---|---|
+| Inspect the prepared PDF | [Desktop](evidence/r1/com02-browser/prepared-review-predecessor/actual-prepared-proposal-desktop.png), [tablet](evidence/r1/com02-browser/prepared-review-predecessor/actual-prepared-proposal-tablet.png), [phone](evidence/r1/com02-browser/prepared-review-predecessor/actual-prepared-proposal-phone.png) |
+| Independently review the PDF, recipient and cover | [Desktop](evidence/r1/com02-browser/prepared-review-predecessor/actual-independent-issue-pdf-review-desktop.png), [phone](evidence/r1/com02-browser/prepared-review-predecessor/actual-independent-issue-pdf-review-phone.png) |
+| Reopen the exact Company-bound grant | [Desktop](evidence/r1/com02-browser/exact-issue/actual-granted-exact-issue-desktop.png), [tablet](evidence/r1/com02-browser/exact-issue/actual-granted-exact-issue-tablet.png), [phone](evidence/r1/com02-browser/exact-issue/actual-granted-exact-issue-phone.png) |
+| Execute that grant separately | [Executed Issue](evidence/r1/com02-browser/exact-issue/actual-original-issue-executed.png) |
+
+The [exact execution verification](evidence/r1/com02-browser/exact-issue/verification.json)
+records its one execution UUID, the original packet and PDF identities, actual
+stored-byte hash verification, native draft status and no unexpected browser or
+HTTP errors. The exact review URL carries a Company parameter, validated against
+the signed-in session before reading the packet; sign-in preserves that context.
+The [earlier incomplete capture](evidence/r1/com02-browser/prepared-review-predecessor/failed-capture-summary.json)
+preserves the normal inbox's 30-second loading failure after the successful
+request and Grant. It is not a failed or repeated execution.
+
+A separate existing Issue had two fixed recipients. The author selected one
+original recipient using its server-issued identity, saved an immutable fixture
+instruction, rediscovered it in the saved register, and requested independent
+review. The second person reviewed its exact message, subset and issued PDF.
+The requester separately executed that grant to queue one local fixture
+delivery. The runtime owner then observed the actual worker process that same
+operation once, with one independent local sink acknowledgment.
+
+| Step | Actual capture |
+|---|---|
+| Select an exact original recipient subset | [Desktop](evidence/r1/com02-browser/subset-instruction-review/actual-fixture-recipient-subset-desktop.png), [tablet](evidence/r1/com02-browser/subset-instruction-review/actual-fixture-recipient-subset-tablet.png), [phone](evidence/r1/com02-browser/subset-instruction-review/actual-fixture-recipient-subset-phone.png) |
+| Independently review the instruction and fixed issued PDF | [Desktop](evidence/r1/com02-browser/subset-instruction-review/actual-independent-fixture-review-desktop.png), [tablet](evidence/r1/com02-browser/subset-instruction-review/actual-independent-fixture-review-tablet.png), [phone](evidence/r1/com02-browser/subset-instruction-review/actual-independent-fixture-review-phone.png) |
+| Read the same operation's verified fixture acknowledgment | [Desktop](evidence/r1/com02-browser/fixture-readback/actual-fixture-readback-desktop.png), [tablet](evidence/r1/com02-browser/fixture-readback/actual-fixture-readback-tablet.png), [phone](evidence/r1/com02-browser/fixture-readback/actual-fixture-readback-phone.png) |
+
+The [instruction verification](evidence/r1/com02-browser/subset-instruction-review/verification.json)
+records its four journaled commands and actual Queued API state. Its three
+original status screenshots were taken while the UI still loaded, so they remain
+[explicitly unqualified](evidence/r1/com02-browser/failures/queued-loading/qualification-finding.json).
+The final [read-only acknowledgment verification](evidence/r1/com02-browser/fixture-readback/verification.json)
+waited for the rendered recipient count, loaded registers and no loading
+indicators before every image. It made no business writes and matched the
+server's expected logical key, payload hash and original PDF. The separate
+[worker observation](evidence/r1/distribution-ui-automatic-delivery.json)
+records the real queue/process and sink evidence. This is synthetic local
+receipt evidence; no external delivery occurred.
+
+The ordinary Company approval inbox now uses ten-row cursor pages without an
+exact total. Official UI5 pop-ins keep Subject, Action, State and Review
+accessible at smaller widths, including a copyable exact-review link:
+[desktop](evidence/r1/com02-browser/inbox-responsive/actual-inbox-responsive-desktop.png),
+[tablet](evidence/r1/com02-browser/inbox-responsive/actual-inbox-responsive-tablet.png),
+[phone](evidence/r1/com02-browser/inbox-responsive/actual-inbox-responsive-phone.png).
+The [read-only verification](evidence/r1/com02-browser/inbox-responsive/verification.json)
+checks nested workspace width, full first-row content bounds and keyboard focus
+from Review to its exact link. The phone workspace measured 390/390 pixels with
+zero horizontal scroll offset. The [earlier clipped phone capture](evidence/r1/com02-browser/failures/inbox-clipped/qualification-finding.json)
+is retained as a failed visual check.
+
+The [bundle provenance](evidence/r1/com02-browser/provenance.json) distinguishes
+each UI build, its served assets, the later inbox-only amendment and the
+unchanged 350-file backend source window. Raw before-send journals remain
+private; public evidence includes operation UUIDs and payload hashes. Recovery
+in the application remains limited to the mounted view. These automated focus
+checks do not establish full manual accessibility qualification.

@@ -1,0 +1,36 @@
+{
+  "label": "observe-redis-publication-failure-publication_absent",
+  "script": "distribution-observe.py",
+  "helper_sha256": "f6fc92a6fc39fd870d7f1f37901ca82d87f743e57b6eb667853202491c044677",
+  "arguments": [
+    "--context",
+    "/tmp/cipher-r0-runtime/distribution-redis-publication-failure-stage/distribution-http-context.json",
+    "--mode",
+    "publication_absent",
+    "--output",
+    "/tmp/cipher-r0-runtime/distribution-redis-publication-failure-publication_absent.json"
+  ],
+  "started_at": "2026-10-15T20:07:57.998136+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:07:59.398292+00:00",
+  "result": {
+    "schema": "cipher.r1.distribution-queue-observation.v1",
+    "status": "passed",
+    "mode": "publication_absent",
+    "observed_at": "2026-10-15T20:07:59.116870+00:00",
+    "operation_id": "ucn4babims",
+    "dispatch_id": "1363c26e-e189-4479-9130-1112d695917a",
+    "logical_key": "647d1fd518c359f5499fec8bc4125cce5792633bb5c624350c09bf55a00dfb67",
+    "canonical_state": "Queued",
+    "worker_attempt_count": 0,
+    "fencing_token": 0,
+    "rq_job_id": "cipher.localhost||cipher-outbox-ucn4babims",
+    "rq_state": null,
+    "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+    "queue_contains_job": false,
+    "sink_receipt_count": 0,
+    "original_healthy_common_redis_used": true,
+    "manual_deliver_or_publish_invoked": false,
+    "live_external_provider_qualified": false
+  }
+}

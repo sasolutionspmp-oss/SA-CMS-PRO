@@ -100,6 +100,78 @@ class TestCompanyGovernance(IntegrationTestCase):
         self.assertEqual(error.exception.code,"operation_conflict")
         self.assertEqual(frappe.db.count("Cipher Command Receipt",{"person":self.person,"operation_id":operation}),1)
 
+    def test_company_logical_lifetime_covers_guard_effect_and_receipt_only(self):
+        from cipher_aec.documents.provenance import has_prelocked, logical_operation_stats
+        from cipher_aec.governance import commands
+        operation=str(uuid.uuid4());seen=[]
+        def observe(stage):
+            self.assertIsNotNone(logical_operation_stats())
+            self.assertFalse(has_prelocked(), "A command lifetime must not mint source admission")
+            seen.append(stage)
+        def guard(actor,record):observe("guard")
+        def effect(actor,record):observe("effect");return {"company":record.name}
+        original_insert=frappe.model.document.Document.insert
+        def insert(document,*args,**kwargs):
+            if document.doctype=="Cipher Command Receipt":observe("receipt")
+            return original_insert(document,*args,**kwargs)
+        with patch.object(frappe.model.document.Document,"insert",insert):
+            result=run_company_command(company=self.company,operation_id=operation,command="company.fixture.v1",payload={},ability="commercial.write",effect=effect,guard=guard)
+        self.assertEqual(seen,["guard","effect","receipt"])
+        self.assertIsNone(logical_operation_stats())
+        original_authorize=commands.authorize_receipt
+        def authorize(*args,**kwargs):observe("authorize");return original_authorize(*args,**kwargs)
+        frappe.set_user(self.alias)
+        with patch.object(commands,"authorize_receipt",side_effect=authorize):
+            replay=run_company_command(company=self.company,operation_id=operation,command="company.fixture.v1",payload={},ability="commercial.write",effect=lambda *args:self.fail("Replay executed the effect"))
+            self.assertIsNone(logical_operation_stats())
+            readback=read_company_operation(self.company,operation)
+        self.assertEqual(seen[-2:],["authorize","authorize"])
+        self.assertEqual(replay["company"],result["company"])
+        self.assertEqual(readback,replay)
+        self.assertIsNone(logical_operation_stats())
+
+    def test_company_memo_exits_before_effect_rollback_and_receipt_denial(self):
+        from cipher_aec.documents.provenance import logical_operation_stats
+        operation=str(uuid.uuid4());rollbacks=[];original_rollback=frappe.db.rollback
+        def rollback(*args,**kwargs):
+            self.assertIsNone(logical_operation_stats())
+            rollbacks.append(kwargs.get("save_point"))
+            return original_rollback(*args,**kwargs)
+        def broken(actor,record):
+            self.assertIsNotNone(logical_operation_stats())
+            append_company_event(actor=actor,company=self.company,event="company.failed",subject_type="Company",subject_id=self.company,operation_id=operation,details={})
+            raise RuntimeError("Injected after history insertion")
+        with patch.object(frappe.db,"rollback",side_effect=rollback):
+            with self.assertRaisesRegex(RuntimeError,"Injected"):self.command(operation,effect=broken)
+        self.assertEqual(len(rollbacks),1)
+        self.assertTrue(rollbacks[0].startswith("cipher_company_"))
+        self.assertEqual(frappe.db.count("Cipher History Event",{"operation_id":operation}),0)
+        self.assertEqual(frappe.db.count("Cipher Command Receipt",{"operation_id":operation}),0)
+        self.command(operation)
+        def deny(*args,**kwargs):
+            self.assertIsNotNone(logical_operation_stats())
+            raise DomainError("fixture_denied","Synthetic current-source refusal",403)
+        with patch("cipher_aec.governance.commands.authorize_receipt",side_effect=deny):
+            for call in (lambda:self.command(operation),lambda:read_company_operation(self.company,operation)):
+                with self.assertRaises(DomainError):call()
+                self.assertIsNone(logical_operation_stats())
+
+    def test_recursive_company_commands_refuse_before_locks_and_roll_back_outer_effect(self):
+        from cipher_aec.documents.provenance import logical_operation_stats
+        for same_id in (False,True):
+            with self.subTest(same_operation_id=same_id):
+                operation=str(uuid.uuid4());inner=operation if same_id else str(uuid.uuid4())
+                def effect(actor,record):
+                    append_company_event(actor=actor,company=self.company,event="company.nested.failed",subject_type="Company",subject_id=self.company,operation_id=operation,details={})
+                    with patch("cipher_aec.governance.commands.current_actor",side_effect=AssertionError("Nested command reached authority/locks")):
+                        self.command(inner)
+                with self.assertRaises(DomainError) as error:self.command(operation,effect=effect)
+                self.assertEqual(error.exception.code,"nested_company_command")
+                for identifier in {operation,inner}:
+                    self.assertEqual(frappe.db.count("Cipher History Event",{"operation_id":identifier}),0)
+                    self.assertEqual(frappe.db.count("Cipher Command Receipt",{"operation_id":identifier}),0)
+                self.assertIsNone(logical_operation_stats())
+
     def test_person_uuid_namespace_conflicts_across_company_and_project_scopes(self):
         self.grant_project_to_primary()
         operation,result=self.command()
@@ -115,6 +187,8 @@ class TestCompanyGovernance(IntegrationTestCase):
         self.grant_project_to_primary()
         operation=str(uuid.uuid4());payload={"text":"Preserved project shape"}
         def effect(actor,record):
+            from cipher_aec.documents.provenance import logical_operation_stats
+            self.assertIsNone(logical_operation_stats(), "Project commands retain their original lifetime")
             identifier=append_event(actor=actor,company=self.company,project=self.project,event="project.fixture.saved",subject_type="Project",subject_id=self.project,operation_id=operation,details=payload)
             return {"history_id":identifier}
         result=run_command(company=self.company,project=self.project,operation_id=operation,command="project.fixture.v1",payload=payload,ability="task.create",effect=effect)

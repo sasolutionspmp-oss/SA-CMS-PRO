@@ -8,6 +8,44 @@ Run `python verify_r0.py --help` for available phases. Supply an ignored, privat
 
 `journey` verifies the connected project/document/task/Ricky boundary, scoped reads, CSRF, receipts, concurrency, byte hashes and pagination. Follow-up phases verify persistence after restart and explicit permission/lifecycle changes. Run these against a controlled synthetic fixture, coordinating permission changes with other test workers.
 
+## Fresh-site checkpoint gate
+
+Once the implementation sources are stable, run from the repository root:
+
+```bash
+python apps/cipher/platform/operations/validate_new_stack.py \
+  --extended-fixtures \
+  --output apps/cipher/docs/framework/evidence/r1/next-checkpoint-validation.json
+```
+
+Use a new report filename for each checkpoint or failed attempt. The runner
+creates and retains a unique isolated `cipher-ci-*.localhost` site, leaving the
+default development site unchanged. It first checks the distribution supervisor
+using actual disposable Linux processes, including separate-group work-horse
+cleanup and preservation of an unrelated process. These checks are reported
+separately from application/database tests. It installs and migrates the current app,
+checks the locked runtime versions, verifies actual test collection, runs native
+and ordinary tests and canonical extended procedures, then checks generated
+clients, typecheck, production build and browser contracts from a clean frontend
+installation. Supply the installed browser through `CIPHER_CHROME` when needed;
+`--install-browser` is available for an environment that permits that download.
+
+Canonical `run_acceptance` procedures must need no external fixture arguments.
+Procedures requiring an existing private site fixture use a distinct entry point
+and are listed separately as unexecuted by this gate. Their connected evidence
+is captured independently. Missing, skipped, flaky or failed tests and source
+changes during the run fail the checkpoint. Raw logs stay in the private work
+directory identified by the report; do not publish those logs without review.
+
+After reviewing the checkpoint and connected evidence, update the hash inventory:
+
+```bash
+python apps/cipher/platform/operations/record-evidence.py
+```
+
+The inventory reports current sources, artifact hashes and sources changed since
+earlier captures. It does not turn old evidence into acceptance of new code.
+
 ## Backup and isolated restore
 
 `backup-synthetic.sh` runs the supported Frappe database/file backup after confirming synthetic mode. `restore-synthetic.sh` takes a backup prefix and restores into the isolated `cipher-restore.localhost` site, refusing an existing target. For another rehearsal set `CIPHER_RESTORE_SITE=cipher-restore-YYYYMMDDHHMMSS.localhost`; only that restricted target pattern is accepted. It pauses its scheduler and enables execution quarantine. It carries the encryption key from that backup's configuration snapshot into the restored site without exposing it or copying the source site's database credentials. It does not substitute the currently running site's potentially newer key.

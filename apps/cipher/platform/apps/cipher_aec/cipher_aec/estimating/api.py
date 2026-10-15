@@ -48,3 +48,13 @@ def list_records(company, project, kind, limit=20, cursor=None, count_mode="none
 @endpoint()
 def list_units(company, project):
     return service.list_units(company, project)
+
+
+@endpoint()
+def list_acceptances(company, project, estimate_id):
+    return service.list_acceptances(company, project, estimate_id)
+
+
+@endpoint()
+def acceptance_subject(company, project, revision_id):
+    return service.acceptance_subject(company, project, revision_id)

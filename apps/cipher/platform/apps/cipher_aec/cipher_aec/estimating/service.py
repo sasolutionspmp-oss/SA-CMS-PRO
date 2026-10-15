@@ -5,20 +5,23 @@ from datetime import datetime, timezone
 from uuid import uuid4
 
 import frappe
+from cipher_aec.estimating.lockplan import receipt_union
 
 from cipher_aec.api.contracts import digest
 from cipher_aec.api.errors import DomainError
-from cipher_aec.governance.commands import run_command
-from cipher_aec.governance.context import current_actor, require_project, trusted_write
-from cipher_aec.governance.history import append_event
+from .scopes import command as run_command
+from cipher_aec.governance.context import current_actor, trusted_write
+from .scopes import require as require_project
+from . import scopes
+from .scopes import event as append_event
 
 from . import repository, sources, units
-from .calculation import SCHEMA, calculate, validate_assembly
+from .calculation import SCHEMA, COMPANY_SCHEMA, calculate, validate_assembly
 from .contracts import POLICY_VERSION, assembly, business_date, closed, fail, identifier, precision, rate_source, visible
 
 
 def _new(company, project, actor, *, status="authored", record_id=None, **values):
-    return {"id": record_id or str(uuid4()), "company": company, "project": project, "author_person": actor.person_id,
+    return {**scopes.current(company, project).fields(), "id": record_id or str(uuid4()), "company": company, "project": project, "author_person": actor.person_id,
             "author_user": actor.user, "created_at": datetime.now(timezone.utc).isoformat(), "status": status, **values}
 
 
@@ -42,8 +45,21 @@ def _event(actor, company, project, operation_id, event, kind, record):
 def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True, verify_links=True):
     require_project(company, project, ability="estimate.read", actor=actor, lock=lock)
     record = repository.read(kind, record_id, lock=lock)
-    if record["company"] != company or record["project"] != project:
+    if not scopes.current(company, project).matches(record):
         raise DomainError("not_found", "This estimating record is not available.", 404)
+    if verify and kind == "acceptance":
+        from .governance import authorize_subject
+        scope_type = scopes.current(company, project).scope_type
+        from cipher_aec.documents.provenance import has_read_graph, original_read_authority
+        if scope_type == "Company" and not lock and has_read_graph(actor, company):
+            _acceptance_original_linkage(record, company, project)
+            # A literal original-source success proof, inside an existing
+            # unchanged read snapshot. No DTO, current facts or bytes are reused.
+            with original_read_authority("Company Estimate Acceptance", record["id"], digest(record), actor, company) as reused:
+                if not reused:
+                    authorize_subject(actor=actor, company=company, project=project, subject_id=record["estimate_revision"], phase="baseline", manifest=record["manifest"], lock=False, scope_type=scope_type)
+        else:
+            authorize_subject(actor=actor, company=company, project=project, subject_id=record["estimate_revision"], phase="baseline", manifest=record["manifest"], lock=lock, scope_type=scope_type)
     if verify and record.get("source_citations"):
         sources.verify(company, project, record["source_citations"], actor, lock=lock)
     if verify and kind == "line":
@@ -51,10 +67,53 @@ def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True
     if verify and kind == "revision" and verify_links:
         _scoped("snapshot", record["calculation_snapshot"], company, project, actor, lock=lock)
     if verify_links:
+        units.verify_manifest_access(record.get("unit_manifest") or record.get("inputs", {}).get("unit_manifest"), record.get("currency") or record.get("rate", {}).get("currency") or record.get("inputs", {}).get("currency"), actor)
+        owner = record if kind == "estimate" else repository.read("estimate", record["estimate"], lock=lock) if kind in {"revision", "line"} or kind == "snapshot" and record.get("estimate") else None
+        if owner and not scopes.current(company, project).matches(owner):
+            raise DomainError("not_found", "This estimate owner is not available.", 404)
+        plan = sources.pursuit_plan(company, project, owner.get("pursuit_id"), actor, lock=lock) if owner else None
         linked_rates = [record["rate"]] if kind == "rate" else list(record["rates"].values()) if kind == "assembly" else list(record["inputs"]["rates"].values()) if kind == "snapshot" else []
-        if linked_rates:
-            sources.verify_native_rates(company, project, linked_rates, actor, lock=lock)
+        if linked_rates or plan:
+            sources.verify_native_rates(company, project, linked_rates, actor, lock=lock, pursuit_plans=[plan])
     return record
+
+
+def _acceptance_original_linkage(value, company, project):
+    """Fresh immutable linkage before each selected original-read proof lookup.
+
+    Current working estimate heads may advance after acceptance. Only the exact
+    original revision/snapshot/result and immutable owning scope are compared.
+    Original-source/native authority is separately checked on the proof miss;
+    requested citation bytes remain checked by _scoped on every call.
+    """
+    from .governance import ACTION, MANIFEST_POLICY
+    try:
+        manifest = value["manifest"]
+        effect, facts = manifest["effect"], manifest["effect"]["facts"]
+        revision = repository.read("revision", value["estimate_revision"])
+        snapshot = repository.read("snapshot", value["calculation_snapshot"])
+        owner = repository.read("estimate", value["estimate"])
+        scope = scopes.current(company, project)
+        valid = (value["status"] == "accepted" and value["manifest_digest"] == digest(manifest)
+            and effect["action"] == ACTION and effect["revision_id"] == value["estimate_revision"]
+            and facts["policy"] == MANIFEST_POLICY and facts["scope"] == scope.manifest_scope()
+            and manifest["subject"]["doctype"] == "Cipher Estimate Revision" and manifest["subject"]["name"] == revision["id"]
+            and all(scope.matches(row) for row in (value, revision, snapshot, owner))
+            and revision["id"] == facts["revision"]["id"] == value["estimate_revision"]
+            and snapshot["id"] == facts["snapshot"]["id"] == value["calculation_snapshot"] == revision["calculation_snapshot"]
+            and revision["estimate"] == snapshot["estimate"] == owner["id"] == value["estimate"]
+            and digest(revision) == facts["revision"]["digest"] and digest(snapshot) == facts["snapshot"]["digest"]
+            and snapshot["input_digest"] == facts["snapshot"]["input_digest"] and snapshot["output_digest"] == facts["snapshot"]["output_digest"]
+            and value["accepted_result"] == snapshot["result"] and value["total"] == revision["total"] == snapshot["result"]["total"]
+            and value["currency"] == revision["currency"] == owner["currency"] == snapshot["inputs"]["currency"]
+            and revision["policy_version"] == facts["rounding_policy"]
+            and value["source_citations"] == revision["source_citations"] == snapshot["source_citations"] == manifest["sources"])
+        pursuit_id = facts["pursuit"]["pursuit_id"] if facts.get("pursuit") is not None else None
+        valid = valid and owner.get("pursuit_id") == pursuit_id
+    except (KeyError, TypeError, ValueError):
+        valid = False
+    if not valid:
+        raise DomainError("approval_integrity", "The accepted baseline must preserve its exact original manifest, scope and calculation linkage.", 409)
 
 
 def _conversion_records(company, project, identifiers, actor, *, lock=True):
@@ -64,7 +123,7 @@ def _conversion_records(company, project, identifiers, actor, *, lock=True):
         identifier(value, "conversion_ids[]")
     if len(set(identifiers)) != len(identifiers):
         fail("Supply distinct conversion revision IDs.", "conversion_ids")
-    return [_scoped("conversion", value, company, project, actor, lock=lock) for value in sorted(identifiers)]
+    return [_scoped("conversion", value, company, project, actor, lock=lock, verify_links=False) for value in sorted(identifiers)]
 
 
 def _unit_ids_from_assembly(value):
@@ -103,8 +162,9 @@ def create_conversion(company, project, operation_id, definition, source_citatio
     def effect(actor, project_doc):
         citations = sources.resolve(company, project, source_citations, actor, lock=True)
         previous = _scoped("conversion", predecessor, company, project, actor, lock=True) if predecessor else None
-        rows = frappe.db.sql("SELECT name FROM `tabCipher Unit Conversion` WHERE company=%s AND project=%s AND from_unit_id=%s AND to_unit_id=%s ORDER BY revision_number DESC LIMIT 1 FOR UPDATE",
-                             (company, project, definition["from_unit_id"], definition["to_unit_id"]))
+        where, arguments = scopes.current(company, project).where()
+        rows = frappe.db.sql("SELECT name FROM `tabCipher Unit Conversion` WHERE " + where + " AND from_unit_id=%s AND to_unit_id=%s ORDER BY revision_number DESC LIMIT 1 FOR UPDATE",
+                             (*arguments, definition["from_unit_id"], definition["to_unit_id"]))
         if (rows and (not previous or rows[0][0] != previous["id"])) or previous and any(previous["definition"][key] != definition[key] for key in ("from_unit_id", "to_unit_id")):
             raise DomainError("stale_conversion", "Revise the current immutable conversion for this exact unit pair.", 412)
         record_id = str(uuid4())
@@ -190,15 +250,22 @@ def create_assembly(company, project, operation_id, title, basis_unit_id, compon
                        payload={"title": title, "basis_unit_id": basis_unit_id, "components": components, "author_basis": author_basis, "conversion_ids": conversion_ids, "predecessor": predecessor}, ability="estimate.write", effect=effect)
 
 
-def create_estimate(company, project, operation_id, title, currency, pricing_date):
+def create_estimate(company, project, operation_id, title, currency, pricing_date, *, pursuit_id=None):
     visible(title, "title")
     business_date(pricing_date, "pricing_date")
+    scope = scopes.current(company, project)
+    if pursuit_id is not None:
+        identifier(pursuit_id, "pursuit_id")
+        if scope.scope_type != "Company":
+            raise DomainError("invalid_scope", "Pursuit linkage requires explicit Company scope.", 422)
     def effect(actor, project_doc):
+        plan = sources.pursuit_plan(company, project, pursuit_id, actor, lock=True)
         units.currency_policy(currency, lock=True)
-        value = _new(company, project, actor, status="draft", title=title, currency=currency, pricing_date=pricing_date, revision_number=0, current_revision=None)
-        repository.insert("estimate", value, title=title, currency=currency, pricing_date=pricing_date, revision_number=0)
+        sources.verify_native_rates(company, project, [], actor, lock=True, pursuit_plans=[plan])
+        value = _new(company, project, actor, status="draft", title=title, currency=currency, pricing_date=pricing_date, revision_number=0, current_revision=None, **({"pursuit_id": pursuit_id} if scope.scope_type == "Company" else {}))
+        repository.insert("estimate", value, title=title, currency=currency, pricing_date=pricing_date, revision_number=0, **({"pursuit": pursuit_id} if scope.scope_type == "Company" else {}))
         return {"estimate": value, "history_id": _event(actor, company, project, operation_id, "estimate.created", "estimate", value)}
-    return run_command(company=company, project=project, operation_id=operation_id, command="estimate.create.v1", payload={"title": title, "currency": currency, "pricing_date": pricing_date}, ability="estimate.write", effect=effect)
+    return run_command(company=company, project=project, operation_id=operation_id, command="estimate.create.v1", payload={"title": title, "currency": currency, "pricing_date": pricing_date, **({"pursuit_id": pursuit_id} if scope.scope_type == "Company" else {})}, ability="estimate.write", effect=effect)
 
 
 def calculate_revision(company, project, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations):
@@ -215,7 +282,8 @@ def calculate_revision(company, project, operation_id, estimate_id, expected_rev
     _no_floats({"lines": lines, "adjustments": adjustments})
     def effect(actor, project_doc):
         require_project(company, project, ability="document.read", actor=actor, lock=True)
-        estimate = _scoped("estimate", estimate_id, company, project, actor, lock=True)
+        estimate = _scoped("estimate", estimate_id, company, project, actor, lock=True, verify_links=False)
+        plan = sources.pursuit_plan(company, project, estimate.get("pursuit_id"), actor, lock=True)
         if estimate["current_revision"] != expected_revision:
             raise DomainError("stale_estimate", "The estimate changed. Calculate against its current revision.", 412)
         assemblies, rate_ids, unit_ids, inherited_conversions = {}, set(), set(), set(conversion_ids)
@@ -243,15 +311,15 @@ def calculate_revision(company, project, operation_id, estimate_id, expected_rev
         revision_id, snapshot_id = str(uuid4()), str(uuid4())
         manifest = units.manifest(company, project, unit_ids, conversions, lock=True, dataset_id=snapshot_id)
         currency = units.currency_policy(estimate["currency"], lock=True)
-        sources.verify_native_rates(company, project, list(rates.values()), actor, lock=True)
+        sources.verify_native_rates(company, project, list(rates.values()), actor, lock=True, pursuit_plans=[plan])
         basis = sources.resolve(company, project, basis_citations, actor, lock=True) if basis_citations else []
-        inputs = {"schema": SCHEMA, "unit_manifest": manifest, "currency": estimate["currency"], "currency_exponent": currency["currency_exponent"],
+        inputs = {"schema": COMPANY_SCHEMA if scopes.current(company, project).scope_type == "Company" else SCHEMA, "unit_manifest": manifest, "currency": estimate["currency"], "currency_exponent": currency["currency_exponent"],
                   "pricing_date": estimate["pricing_date"], "policy_version": POLICY_VERSION, "basis_description": basis_description, "basis_citations": basis,
                   "rates": rates, "assemblies": assemblies, "lines": deepcopy(lines), "adjustments": deepcopy(adjustments)}
         result = calculate(inputs)
         citations = sources.merge(basis, *(row["source_citations"] for row in [*rate_records, *conversions]))
         snapshot = _new(company, project, actor, status="calculated", record_id=snapshot_id, subject_type="Cipher Estimate Revision", subject_id=revision_id,
-                        inputs=inputs, result=result, currency_policy=currency, input_digest=result["input_digest"], output_digest=result["output_digest"], source_citations=citations)
+                        inputs=inputs, result=result, **({"estimate": estimate_id} if scopes.current(company, project).scope_type == "Company" else {}), currency_policy=currency, input_digest=result["input_digest"], output_digest=result["output_digest"], source_citations=citations)
         repository.insert("snapshot", snapshot, subject_type="Cipher Estimate Revision", subject_id=revision_id, policy_version=POLICY_VERSION, input_digest=result["input_digest"], output_digest=result["output_digest"])
         line_ids = [str(uuid4()) for _ in lines]
         revision = _new(company, project, actor, status="draft-calculated", record_id=revision_id, estimate=estimate_id,
@@ -295,25 +363,26 @@ def list_records(company, project, kind, limit=20, cursor=None, count_mode="none
     if kind != "estimate":
         require_project(company, project, ability="document.read", actor=actor)
     scope = {"route": "estimate.catalog", "kind": kind, "user": actor.user, "person": actor.person_id, "company": company,
-             "project": project, "authority": authority_fingerprint(actor, company, project)}
+             "project": project, "authority": scopes.current(company, project).authority(actor), **scopes.current(company, project).fields()}
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None
     # Catalog visibility, count and cursor existence share one authorized set.
     # Returning only an authorized page could expose private off-page native
     # sources through total/has_more. Fail this bounded collection closed before
     # computing either rather than disclosing its hidden inventory.
-    candidates = frappe.db.sql(f"SELECT name FROM `tab{repository.DOCTYPES[kind]}` WHERE company=%s AND project=%s ORDER BY name LIMIT 501", (company, project))
+    base_where, base_arguments = scopes.current(company, project).where()
+    candidates = frappe.db.sql(f"SELECT name FROM `tab{repository.DOCTYPES[kind]}` WHERE " + base_where + " ORDER BY name LIMIT 501", base_arguments)
     if len(candidates) > 500:
         raise DomainError("catalog_scope_limit", "This catalog exceeds the bounded authorization scope.", 503)
     for candidate in candidates:
         _scoped(kind, candidate[0], company, project, actor)
-    where, arguments = "company=%s AND project=%s", [company, project]
+    where, arguments = base_where, list(base_arguments)
     if last:
         where += " AND (creation<%s OR (creation=%s AND name<%s))"
         arguments.extend((last[0], last[0], last[1]))
     rows = frappe.db.sql(f"SELECT name,creation FROM `tab{repository.DOCTYPES[kind]}` WHERE " + where + " ORDER BY creation DESC,name DESC LIMIT %s", (*arguments, limit + 1), as_dict=True)
     page = rows[:limit]
     items = [_scoped(kind, row.name, company, project, actor) for row in page]
-    total = frappe.db.count(repository.DOCTYPES[kind], {"company": company, "project": project}) if count_mode == "exact" else None
+    total = frappe.db.sql(f"SELECT COUNT(*) FROM `tab{repository.DOCTYPES[kind]}` WHERE " + base_where, base_arguments)[0][0] if count_mode == "exact" else None
     return page_result(items, has_more=len(rows) > limit, last=[str(page[-1].creation), page[-1].name] if page else None,
                        scope=scope, limit=limit, count_mode=count_mode, total=total)
 
@@ -321,11 +390,58 @@ def list_records(company, project, kind, limit=20, cursor=None, count_mode="none
 def list_units(company, project):
     require_project(company, project, ability="estimate.read")
     rows = frappe.get_all("UOM", filters={"enabled": 1, "cipher_unit_id": ["is", "set"]}, fields=["cipher_unit_id"], order_by="name asc", limit_page_length=200)
-    return {"items": [units.qualified(row.cipher_unit_id) for row in rows]}
+    result = []
+    for row in rows:
+        try:
+            result.append(units.qualified(row.cipher_unit_id))
+        except DomainError as error:
+            if error.status in {403, 404}:
+                continue
+            raise
+    return {"items": result}
 
 
-def authorize_receipt(actor, company, project, result):
-    require_project(company, project, ability="estimate.read", actor=actor, lock=True)
-    for key, kind in (("conversion", "conversion"), ("rate_source", "rate"), ("assembly_revision", "assembly"), ("estimate", "estimate"), ("revision", "revision"), ("calculation", "snapshot")):
-        if key in result:
-            _scoped(kind, result[key]["id"], company, project, actor, lock=True)
+@receipt_union
+def authorize_receipt(actor, company, project, result, scope_type="Project"):
+    with scopes.activate(scope_type, company, project):
+        require_project(company, project, ability="estimate.read", actor=actor, lock=True)
+        if "unit" in result:
+            units.qualified(result["unit"]["id"], lock=True, allow_disabled=True, actor=actor)
+        for key, kind in (("conversion", "conversion"), ("rate_source", "rate"), ("assembly_revision", "assembly"), ("estimate", "estimate"), ("revision", "revision"), ("calculation", "snapshot"), ("acceptance", "acceptance")):
+            if key in result:
+                _scoped(kind, result[key]["id"], company, project, actor, lock=True)
+
+
+def list_acceptances(company, project, estimate_id):
+    actor = current_actor()
+    _scoped("estimate", estimate_id, company, project, actor)
+    where, args = scopes.current(company, project).where()
+    rows = frappe.db.sql("SELECT name FROM `tabCipher Estimate Acceptance` WHERE " + where + " AND estimate=%s ORDER BY baseline_number LIMIT 201", (*args, estimate_id))
+    if len(rows) > 200:
+        raise DomainError("acceptance_limit", "This estimate exceeds the bounded accepted baseline inventory.", 422)
+    return {"items": [_scoped("acceptance", row[0], company, project, actor) for row in rows]}
+
+
+def accepted_baseline_reference(company, project, acceptance_id, actor=None, *, lock=False):
+    actor = actor or current_actor()
+    value = _scoped("acceptance", acceptance_id, company, project, actor, lock=lock)
+    facts = value["manifest"]["effect"]["facts"]
+    master = repository.read("estimate", value["estimate"], lock=lock)
+    return {"acceptance_id": value["id"], "acceptance_digest": digest(value), "estimate_id": value["estimate"],
+            "revision_id": value["estimate_revision"], "revision_digest": facts["revision"]["digest"],
+            "snapshot_id": value["calculation_snapshot"], "snapshot_digest": facts["snapshot"]["digest"],
+            "manifest_digest": value["manifest_digest"], "pursuit_id": master.get("pursuit_id"),
+            "currency": value["currency"], "total": value["total"]}
+
+
+def acceptance_subject(company, project, revision_id):
+    """Authoritative immutable revision version for the shared approval request."""
+    actor = current_actor()
+    revision = _scoped("revision", revision_id, company, project, actor)
+    master = _scoped("estimate", revision["estimate"], company, project, actor)
+    accepted = repository.acceptance_for_revision(revision_id)
+    if accepted:
+        _scoped("acceptance", accepted["id"], company, project, actor)
+    return {"revision_id": revision_id, "record_digest": digest(revision), "estimate_id": master["id"],
+            "is_current": master["current_revision"] == revision_id, "current_revision": master["current_revision"],
+            "accepted_baseline_id": accepted["id"] if accepted else None}

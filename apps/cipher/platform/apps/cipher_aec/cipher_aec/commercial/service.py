@@ -1,5 +1,6 @@
 """Company-scoped reversible drafts, native master reuse and immutable revision evidence."""
 import json
+from contextlib import nullcontext
 from uuid import uuid4
 import frappe
 from cipher_aec.api.contracts import canonical_json, digest, version_of, text
@@ -8,10 +9,10 @@ from cipher_aec.governance.context import current_actor, require_company, compan
 from cipher_aec.api.paging import page_options, decode_cursor, signing_secret, page_result
 from cipher_aec.governance.commands import run_company_command
 from cipher_aec.governance.history import append_company_event
-from . import contracts, native
+from . import contracts, native, sources
 
 
-TYPES = {"pursuit": "Cipher Pursuit", "proposal": "Cipher Proposal", "revision": "Cipher Proposal Revision"}
+TYPES = {"pursuit": "Cipher Pursuit", "proposal": "Cipher Proposal", "revision": "Cipher Proposal Revision", "issue": "Cipher Proposal Issue"}
 
 
 def _actor(company, actor=None, *, lock=False):
@@ -48,10 +49,36 @@ def _read(kind, name, company, actor, *, lock=False):
     value = json.loads(doc.data_json)
     if value.get("company") != company or value.get("id") != name or digest(value) != doc.record_digest:
         raise DomainError("commercial_integrity", "Commercial evidence cannot be verified.", 409)
-    if kind == "revision":
+    if kind == "issue":
+        from cipher_aec.documents.provenance import has_read_graph, original_read_authority
+        from .outputs import read_output, _output_identity
+        if not lock and has_read_graph(actor, company):
+            # Current ability and fresh immutable identity/linkage always precede
+            # proof lookup. No DTO, mutable head, or requested bytes are cached.
+            _actor(company, actor)
+            original = sources.revision_record(company, value["proposal_revision"], actor)
+            prepared = _output_identity(company, original, actor)
+            if digest(original) != value["proposal_revision_digest"] or prepared != value["prepared_output"]:
+                raise DomainError("commercial_integrity", "Issued source snapshots cannot be verified.", 409)
+            with original_read_authority("Company Proposal Issue", name, digest(value), actor, company) as reused:
+                if not reused:
+                    authorized = _read("revision", value["proposal_revision"], company, actor)[1]
+                    actual = read_output(company, authorized["id"], actor)
+                    if digest(authorized) != value["proposal_revision_digest"] or actual != value["prepared_output"]:
+                        raise DomainError("commercial_integrity", "Issued source snapshots cannot be verified.", 409)
+        else:
+            original = _read("revision", value["proposal_revision"], company, actor, lock=lock)[1]
+            prepared = read_output(company, original["id"], actor, lock=lock)
+            if digest(original) != value["proposal_revision_digest"] or prepared != value["prepared_output"]:
+                raise DomainError("commercial_integrity", "Issued source snapshots cannot be verified.", 409)
+    elif kind == "revision":
         party_ref, refs = _source_plan("proposal", value["proposal"], company, lock=lock)
-        native.sources(value["composition"], company, actor, lock=lock, for_new=False, party_ref=party_ref, native_refs=refs)
-        _read("proposal", value["proposal"], company, actor, lock=lock)
+        source_plan = sources.plan(value["composition"], company, actor, lock=lock)
+        _, _, complete_plan = native.sources(value["composition"], company, actor, lock=lock, for_new=False, party_ref=party_ref, native_refs=refs, extra_plan=source_plan, include_plan=True)
+        proposal = _read("proposal", value["proposal"], company, actor, lock=lock)[1]
+        from cipher_aec.documents.provenance import prelocked
+        with (prelocked(complete_plan, actor, company) if lock else nullcontext()):
+            sources.verify(value["composition"], company, proposal["pursuit"], actor, lock=lock, stored=value)
     else:
         source_type = "Opportunity" if kind == "pursuit" else "Quotation"
         source = native.require_native(source_type, value["opportunity" if kind == "pursuit" else "quotation"], actor, lock=lock)
@@ -64,7 +91,7 @@ def _read(kind, name, company, actor, *, lock=False):
 
 
 def _write(kind, value, doc=None):
-    fields = {key: value[key] for key in ("company", "author_person", "opportunity", "quotation", "pursuit", "revision_number", "current_revision", "party_type", "party_id", "title", "proposal", "predecessor", "native_fingerprint") if key in value}
+    fields = {key: value[key] for key in ("company", "author_person", "opportunity", "quotation", "pursuit", "revision_number", "current_revision", "party_type", "party_id", "title", "proposal", "predecessor", "native_fingerprint", "proposal_revision", "packet_id", "decision_id", "output_revision") if key in value}
     fields.update(data_json=canonical_json(value), record_digest=digest(value))
     if kind == "revision":
         fields["sections"] = [{"stable_id": row["id"], "section_kind": row["kind"], "title": row["title"], "content": row["text"]} for row in value["composition"]["sections"]]
@@ -169,7 +196,11 @@ def _save_revision(actor, company, proposal, quotation, authored, operation_id, 
     party_ref, refs = (proposal["party_type"], proposal["party_id"]), {("Opportunity", quotation.opportunity)}
     if quotation.name and not quotation.is_new():
         refs.add(("Quotation", quotation.name))
-    units, policy = native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs)
+    source_plan = sources.plan(authored, company, actor, lock=True)
+    units, policy, complete_plan = native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs, extra_plan=source_plan, include_plan=True)
+    from cipher_aec.documents.provenance import prelocked
+    with prelocked(complete_plan, actor, company):
+        source_facts = sources.verify(authored, company, proposal["pursuit"], actor, lock=True)
     if authored["currency"] != native_company.default_currency:
         raise DomainError("currency_policy_unavailable", "COM-01 supports company-base-currency drafts; FX policy is not qualified.", 409)
     priced = contracts.pricing(authored, policy["currency_exponent"])
@@ -178,6 +209,8 @@ def _save_revision(actor, company, proposal, quotation, authored, operation_id, 
     predecessor = proposal.get("current_revision")
     number = proposal["revision_number"] + 1
     revision = {"id": revision_id, "company": company, "author_person": actor.person_id, "proposal": proposal["id"], "revision_number": number, "predecessor": predecessor, "status": "draft", "composition": authored, "pricing": priced, "currency_policy": policy, "company_policy": {"base_currency": native_company.default_currency, "native_company_version": version_of(native_company)}, "units": units, "native": actual, "native_fingerprint": fingerprint}
+    if source_facts["source_citations"] or source_facts["accepted_estimate"] is not None:
+        revision.update(source_facts)
     # Parent exists before its first child; circular head is populated afterwards.
     if proposal_doc is None:
         proposal["quotation"] = quotation.name
@@ -203,7 +236,8 @@ def create_proposal(company, pursuit_id, composition, operation_id):
     def effect(actor, native_company):
         native.can_create("Quotation", actor)
         party_ref, refs = _source_plan("pursuit", pursuit_id, company)
-        native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs)
+        source_plan = sources.plan(authored, company, actor, lock=True)
+        native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs, extra_plan=source_plan)
         pursuit = _read("pursuit", pursuit_id, company, actor, lock=True)[1]
         quotation = frappe.get_doc({"doctype": "Quotation", "quotation_to": pursuit["party_type"], "party_name": pursuit["party_id"], "company": company, "opportunity": pursuit["opportunity"], "order_type": "Sales"})
         proposal = {"id": str(uuid4()), "company": company, "author_person": actor.person_id, "pursuit": pursuit_id, "party_type": pursuit["party_type"], "party_id": pursuit["party_id"], "title": pursuit["title"], "revision_number": 0, "current_revision": None, "quotation": None}
@@ -216,7 +250,8 @@ def save_proposal_revision(company, proposal_id, expected_revision, expected_nat
     payload = {"proposal_id": proposal_id, "expected_revision": expected_revision, "expected_native_fingerprint": expected_native_fingerprint, "composition": authored}
     def effect(actor, native_company):
         party_ref, refs = _source_plan("proposal", proposal_id, company)
-        native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs)
+        source_plan = sources.plan(authored, company, actor, lock=True)
+        native.sources(authored, company, actor, lock=True, party_ref=party_ref, native_refs=refs, extra_plan=source_plan)
         doc, proposal = _read("proposal", proposal_id, company, actor, lock=True)
         if type(expected_revision) is not int or proposal["revision_number"] != expected_revision:
             raise DomainError("stale_commercial", "Refresh the proposal head before saving.", 412)
@@ -232,7 +267,52 @@ def save_proposal_revision(company, proposal_id, expected_revision, expected_nat
 
 def authorize_receipt(actor, company, result, *, lock=False):
     _actor(company, actor, lock=lock)
-    for key, kind in (("revision", "revision"), ("proposal", "proposal"), ("pursuit", "pursuit")):
+    if type(result.get("prepared_output")) is dict:
+        from .outputs import read_output
+        value = result["prepared_output"]
+        actual = read_output(company, value["proposal_revision_id"], actor, lock=lock)
+        if actual != value:
+            raise DomainError("receipt_integrity", "Prepared output receipt cannot be verified.", 409)
+    for key, kind in (("issue", "issue"), ("revision", "revision"), ("proposal", "proposal"), ("pursuit", "pursuit")):
         value = result.get(key)
         if type(value) is dict and value.get("id"):
             _read(kind, value["id"], company, actor, lock=lock)
+
+
+def pursuit_source_plan(company, pursuit_id, actor=None, *, lock=False):
+    """Internal lock discovery only; callers must recheck before exposing content."""
+    actor = _actor(company, actor, lock=lock)
+    party_ref, refs = _source_plan("pursuit", pursuit_id, company, lock=lock)
+    doc = frappe.get_doc("Cipher Pursuit", pursuit_id, for_update=lock)
+    return {"company":company,"pursuit_id":pursuit_id,"record_digest":doc.record_digest,
+            "revision_number":doc.revision_number,"party_type":party_ref[0],"party_id":party_ref[1],
+            "native_refs":[{"doctype":doctype,"name":name} for doctype,name in sorted(refs | {party_ref})]}
+
+
+def recheck_pursuit_source(company, pursuit_id, actor=None, *, lock=False):
+    actor = _actor(company, actor, lock=lock)
+    return _read("pursuit", pursuit_id, company, actor, lock=lock)[1]
+
+
+def list_issues(company, proposal_id, limit=30, cursor=None, count_mode="none"):
+    actor = _actor(company)
+    _read("proposal", proposal_id, company, actor)
+    limit, cursor, count_mode = page_options(limit, cursor, count_mode)
+    scope = {"scope_type":"Company", "company":company, "user":actor.user, "person":actor.person_id,
+        "collection":"commercial_issues", "proposal":proposal_id, "authority":company_authority_fingerprint(actor,company)}
+    last = decode_cursor(cursor,secret=signing_secret(),scope=scope) if cursor else None
+    rows = frappe.get_all("Cipher Proposal Issue",filters={"company":company,"proposal":proposal_id},fields=["name","creation"],order_by="creation desc,name desc",limit_page_length=501)
+    if len(rows)>500:
+        raise DomainError("commercial_limit","This proposal exceeds the bounded issue inventory.",409)
+    allowed=[]
+    for row in rows:
+        try:
+            value = _read("issue",row.name,company,actor)[1]
+        except DomainError as error:
+            if error.status in (403,404):continue
+            raise
+        allowed.append((row,value))
+    total=len(allowed) if count_mode=="exact" else None
+    allowed=[(row,value) for row,value in allowed if not last or (str(row.creation),row.name)<tuple(last)]
+    page=allowed[:limit]
+    return page_result([value for row,value in page],has_more=len(allowed)>limit,last=[str(page[-1][0].creation),page[-1][0].name] if page else None,scope=scope,limit=limit,count_mode=count_mode,total=total)

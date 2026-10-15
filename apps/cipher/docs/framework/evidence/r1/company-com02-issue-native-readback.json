@@ -1,0 +1,331 @@
+{
+  "schema": "cipher.r1.company-issue-native-readback.v1",
+  "status": "passed",
+  "qualification": "Read-only bench-native observations after the separate cookie/CSRF HTTP Issue flow. No native posting/provider claim.",
+  "quotation": [
+    {
+      "name": "SAL-QTN-2026-00008",
+      "company": "Company chain A 20b85fd4edd2",
+      "docstatus": 0
+    }
+  ],
+  "issues": [
+    {
+      "name": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+      "company": "Company chain A 20b85fd4edd2",
+      "proposal": "bc4e20d0-6e26-4416-a21f-93a11488faa4",
+      "proposal_revision": "d912ff3c-6b5b-4fea-bcf3-29d8fee6b320",
+      "output_revision": "REV-202e4c0fd59c4acb9024d2037e299728"
+    }
+  ],
+  "fixture_controls": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "project_count": 34,
+    "primary_company_project_count": 0,
+    "project_count_before_company_journey": 32,
+    "actors": {
+      "alias": {
+        "person": "CHAIN-AUTHOR-20b85fd4edd2",
+        "project_duty_count": 0,
+        "company_duties": [
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.request"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "document.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.execute"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "estimate.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "document.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "company.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "commercial.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.decide"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.request"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.execute"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "document.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "commercial.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "estimate.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "company.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "document.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.decide"
+          }
+        ]
+      },
+      "author": {
+        "person": "CHAIN-AUTHOR-20b85fd4edd2",
+        "project_duty_count": 0,
+        "company_duties": [
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.request"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "document.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.execute"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "estimate.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "document.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "company.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "commercial.write"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.decide"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.request"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.execute"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "document.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "commercial.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "estimate.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "company.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "document.write"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.decide"
+          }
+        ]
+      },
+      "outsider": {
+        "person": "CHAIN-OUTSIDER-20b85fd4edd2",
+        "project_duty_count": 0,
+        "company_duties": [
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "approval.execute"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "commercial.write"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "company.read"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "approval.decide"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "estimate.write"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "document.read"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "approval.request"
+          },
+          {
+            "company": "Company chain B 20b85fd4edd2",
+            "ability": "document.write"
+          }
+        ]
+      },
+      "project_only": {
+        "person": "CHAIN-PROJECT_ONLY-20b85fd4edd2",
+        "project_duty_count": 12,
+        "company_duties": []
+      },
+      "reviewer": {
+        "person": "CHAIN-REVIEWER-20b85fd4edd2",
+        "project_duty_count": 0,
+        "company_duties": [
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "approval.decide"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "document.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "company.read"
+          },
+          {
+            "company": "EST generated Company C 8e6c80ffb7b0",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "estimate.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "commercial.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "document.read"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "approval.decide"
+          },
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "ability": "company.read"
+          }
+        ]
+      }
+    },
+    "historical_project_control": {
+      "status": "passed",
+      "project": "PROJ-0001",
+      "unchanged_original_rows": {
+        "Cipher Command Receipt": 16,
+        "Cipher History Event": 16
+      }
+    },
+    "project_only_receipt_control": {
+      "status": "passed",
+      "project": "PROJ-0032",
+      "unchanged_original_rows": {
+        "Cipher Command Receipt": 1,
+        "Cipher History Event": 1
+      }
+    },
+    "scope_types_explicit": true,
+    "native_financial_unchanged": {
+      "Sales Order": 0,
+      "Sales Invoice": 0,
+      "Delivery Note": 0,
+      "Purchase Order": 0,
+      "Purchase Invoice": 0,
+      "Purchase Receipt": 0,
+      "Payment Entry": 0,
+      "Journal Entry": 0,
+      "Stock Entry": 0,
+      "Timesheet": 0,
+      "Material Request": 0,
+      "GL Entry": 0,
+      "Stock Ledger Entry": 0
+    },
+    "global_project_count_is_observational": "Other isolated fixture owners may append unrelated Projects; primary Company must have exactly zero."
+  }
+}

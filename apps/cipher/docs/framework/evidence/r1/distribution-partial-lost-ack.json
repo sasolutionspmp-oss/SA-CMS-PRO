@@ -1,0 +1,28 @@
+{
+  "schema": "cipher.r1.distribution-lost-ack-native.v1",
+  "status": "passed",
+  "operation_id": "o7slh68mnq",
+  "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+  "state": "Unknown",
+  "fencing_token": 1,
+  "acknowledgment": {
+    "accepted_at": "2026-10-15T19:12:59.793121+00:00",
+    "acknowledgment_id": "083e312c-9dd2-4cf4-a89c-c46ea13e9a20",
+    "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+    "byte_length": 12624,
+    "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+    "mode": "fixture",
+    "payload_hash": "d7c2941506b7d70196ce9e985aee5e6139ecd4141785c76a92772c711930fd34"
+  },
+  "lock_probe": {
+    "independent_connection_acquired_operation_company_and_people": true,
+    "native_source_rows_acquired": true,
+    "independent_connection": true,
+    "row_count": 10
+  },
+  "sink_commit_survived_frappe_rollback": true,
+  "transport": "fixture",
+  "live_external_provider_qualified": false,
+  "driver_started_at": "2026-10-15T19:12:56.401765+00:00",
+  "driver_completed_at": "2026-10-15T19:13:00.151893+00:00"
+}

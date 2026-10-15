@@ -1,4 +1,6 @@
 """Company aggregate reads; never interpret an absent Project as a wildcard."""
+from contextlib import nullcontext
+
 import frappe
 
 from cipher_aec.api.contracts import digest
@@ -15,5 +17,9 @@ def history(company, limit=50, cursor=None, count_mode="none"):
         "collection": "company_history", "authority": company_authority_fingerprint(actor, company)}
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None
     from .history_listing import list_visible
-    return list_visible(company=company, project=None, scope_type="Company", actor=actor,
-        scope=scope, limit=limit, last=last, count_mode=count_mode)
+    from cipher_aec.documents.provenance import read_graph, read_graph_eligible
+    # Only this explicit read root may share original-producer proofs. A prior
+    # write or active command retains the existing uncached authorization path.
+    with read_graph(actor, company) if read_graph_eligible(actor, company) else nullcontext():
+        return list_visible(company=company, project=None, scope_type="Company", actor=actor,
+            scope=scope, limit=limit, last=last, count_mode=count_mode)

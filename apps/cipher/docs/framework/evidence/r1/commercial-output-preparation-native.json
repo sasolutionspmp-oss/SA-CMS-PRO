@@ -1,0 +1,276 @@
+{
+  "status": "passed",
+  "company": "Company chain A 20b85fd4edd2",
+  "proposal_id": "200d6722-a617-46f5-bb48-fd6999e932f1",
+  "proposal_revision": "7cfd2243-f2e8-471a-a43d-077d06fdc7f5",
+  "prepared_output": {
+    "company": "Company chain A 20b85fd4edd2",
+    "proposal_id": "200d6722-a617-46f5-bb48-fd6999e932f1",
+    "proposal_revision_id": "7cfd2243-f2e8-471a-a43d-077d06fdc7f5",
+    "proposal_revision_digest": "246c22023c2acc40eb2743dc790c4afe4c6c84e78aa8b1c1c51c46bb8fdf3023",
+    "document_id": "DOC-48a24cc0d3734cc7a10d3c7e4e1c8d72",
+    "revision_id": "REV-3538cda0a27441edaf1b6438319da44e",
+    "source_sha256": "50e86607edf0fb388b1b726f846c2521dd95815dd15363d268a51ceeb1730eb0",
+    "byte_length": 11798,
+    "page_count": 1,
+    "input_digest": "50a0eadfcfa89548924914c8f24a0d6c661e8e586aa773ef0509e314a13f47f1",
+    "binding": {
+      "accepted_estimate": {
+        "acceptance_digest": "babb66326f00a97d44f76047d96abd5e9e66f62753b43924d1552be8423acb47",
+        "acceptance_id": "0a31a296-55b3-4922-a956-3dea0c58405d",
+        "currency": "USD",
+        "estimate_id": "f5119f46-f582-4324-97e1-45ef790b5eac",
+        "manifest_digest": "44872ca147924eb59c3aea56772e54b3ad69c3769d011a2af08ed6d5d2f7249a",
+        "pursuit_id": "4530eddc-b7ea-4669-ab79-c7e43bb7d641",
+        "revision_digest": "375e52b4e04fa567ec772ab5be8ef2a96efece4da99356fb628cd03693be7886",
+        "revision_id": "8e10eee6-2f19-400f-963d-d3bb24486aab",
+        "snapshot_digest": "cdd8c0cd33c101856d7a6d0c1aa4acb968e0810713b0862ed6736656a1ea5fb3",
+        "snapshot_id": "201aab34-8aa4-40a0-b97f-79442110e75c",
+        "total": {
+          "amount": "30.85",
+          "currency": "USD"
+        }
+      },
+      "company": "Company chain A 20b85fd4edd2",
+      "cover": "Review these exact prepared bytes before any independent issue grant.",
+      "native_fingerprint": "adf524df7637fcbaecbce23c47f44c942ff6b15cafb50f7a75204aa3a8e24c7e",
+      "proposal_id": "200d6722-a617-46f5-bb48-fd6999e932f1",
+      "proposal_revision_digest": "246c22023c2acc40eb2743dc790c4afe4c6c84e78aa8b1c1c51c46bb8fdf3023",
+      "proposal_revision_id": "7cfd2243-f2e8-471a-a43d-077d06fdc7f5",
+      "recipients": [
+        {
+          "email": "review@example.test",
+          "name": "Synthetic recipient",
+          "organization": "Explicit local fixture"
+        }
+      ],
+      "renderer": {
+        "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+        "fonts": {
+          "bold": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+          },
+          "regular": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+          }
+        },
+        "parameters": {
+          "font_size_points": "9",
+          "html": "escaped-plain-text",
+          "margin_inches": "0.6",
+          "max_bytes": 10485760,
+          "max_pages": 100,
+          "network": "disabled",
+          "page_size": "US Letter",
+          "policy": "cipher.proposal.pdf.v1"
+        },
+        "renderer": "weasyprint",
+        "versions": {
+          "fonttools": "4.67.0",
+          "pydyf": "0.12.1",
+          "weasyprint": "68.0"
+        }
+      },
+      "schema": "cipher.proposal.output.input.v1",
+      "source_citations": [
+        {
+          "citation": {
+            "company": "Company chain A 20b85fd4edd2",
+            "document_id": "DOC-913b6b19facc4f90bdd8b8ead7f2717f",
+            "document_title": "Company chain source http 20b85fd4edd2",
+            "excerpt": "Explicit synthetic Company chain 20b85fd4edd2 http\nAuthored material rate USD12.34 per fixture quantity.",
+            "excerpt_sha256": "c5c2e8798cc6b9824d4f1fe89c3d4eedbf32ab227f33c713e0266d044ff71cde",
+            "id": "3aab80dd1eb97b0a896598b82f9f9480d5677fddd9dbe92d40be7c885f28d4fe",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-ceabe5116b524795bacaceae7370485b",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b"
+          },
+          "permission_basis": "Explicit authored synthetic fixture content permission",
+          "policy": "pinned-revision-page-v1",
+          "purpose": "Exact synthetic commercial basis"
+        }
+      ]
+    },
+    "rendering": {
+      "baseline": {
+        "acceptance_digest": "babb66326f00a97d44f76047d96abd5e9e66f62753b43924d1552be8423acb47",
+        "acceptance_id": "0a31a296-55b3-4922-a956-3dea0c58405d",
+        "currency": "USD",
+        "estimate_id": "f5119f46-f582-4324-97e1-45ef790b5eac",
+        "manifest_digest": "44872ca147924eb59c3aea56772e54b3ad69c3769d011a2af08ed6d5d2f7249a",
+        "pursuit_id": "4530eddc-b7ea-4669-ab79-c7e43bb7d641",
+        "revision_digest": "375e52b4e04fa567ec772ab5be8ef2a96efece4da99356fb628cd03693be7886",
+        "revision_id": "8e10eee6-2f19-400f-963d-d3bb24486aab",
+        "snapshot_digest": "cdd8c0cd33c101856d7a6d0c1aa4acb968e0810713b0862ed6736656a1ea5fb3",
+        "snapshot_id": "201aab34-8aa4-40a0-b97f-79442110e75c",
+        "total": {
+          "amount": "30.85",
+          "currency": "USD"
+        }
+      },
+      "cover_digest": "aa884d0369fd5067627f090483e4f673f9d23fa4d5d83d2b7ccdbec741f9faf4",
+      "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+      "fonts": {
+        "bold": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+          "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+        },
+        "regular": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+          "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+        }
+      },
+      "input_digest": "50a0eadfcfa89548924914c8f24a0d6c661e8e586aa773ef0509e314a13f47f1",
+      "output_byte_length": 11798,
+      "output_sha256": "50e86607edf0fb388b1b726f846c2521dd95815dd15363d268a51ceeb1730eb0",
+      "parameters": {
+        "font_size_points": "9",
+        "html": "escaped-plain-text",
+        "margin_inches": "0.6",
+        "max_bytes": 10485760,
+        "max_pages": 100,
+        "network": "disabled",
+        "page_size": "US Letter",
+        "policy": "cipher.proposal.pdf.v1"
+      },
+      "proposal_revision_digest": "246c22023c2acc40eb2743dc790c4afe4c6c84e78aa8b1c1c51c46bb8fdf3023",
+      "recipients_digest": "ff2aee9c7ff8202a7cd191187239e753c315cb766a425e0dd85afbf7f04cfbc4",
+      "renderer": "weasyprint",
+      "versions": {
+        "fonttools": "4.67.0",
+        "pydyf": "0.12.1",
+        "weasyprint": "68.0"
+      }
+    },
+    "review_version": "adecc92551e827f33f4c602b9ac979d305a264e2b01a503960eafb6a2b62e638"
+  },
+  "prepare_operation_id": "5cab5285-f1b1-4050-a240-9a3e4b04ae28",
+  "checks": [
+    {
+      "check": "exact_company_pursuit_accepted_baseline_and_canonical_page_bound_to_native_draft",
+      "status": "passed"
+    },
+    {
+      "check": "renderer_failure_before_canonical_artifact_or_issue",
+      "status": "passed",
+      "error_code": "unsupported_output_text"
+    },
+    {
+      "check": "prepare_read_canonical_exact_pdf_bytes_recipients_baseline_rendering_provenance",
+      "status": "passed"
+    },
+    {
+      "check": "canonical_alias_completed_receipt_replay_one_document_one_revision",
+      "status": "passed"
+    },
+    {
+      "check": "public_raw_upload_cannot_append_to_generated_parent",
+      "status": "passed",
+      "error_code": "invalid_artifact"
+    },
+    {
+      "check": "changed_cover_requires_successor_revision",
+      "status": "passed",
+      "error_code": "output_already_prepared"
+    },
+    {
+      "check": "unrelated_trusted_write_cannot_mint_issued_record",
+      "status": "passed",
+      "error_code": "approval_required"
+    },
+    {
+      "check": "no_issue_or_consumption_from_preparation",
+      "status": "passed"
+    },
+    {
+      "check": "exact_published_prepared_output_and_source_revision_response_schemas",
+      "status": "passed"
+    }
+  ],
+  "qualification": "Provisional actual native prepared output bytes/rights/replay and Issue-controller refusal; exact preparation controller context pending after root freeze. Not Issue effect or HTTP qualification.",
+  "private_harness_snapshot": {
+    "sha256": "c336054c0ee3c0bd54fd1ee37fe7495c20153acf70930443bae52cca4f2dcd78",
+    "correction": {
+      "from": "sha256=digest(content2)",
+      "to": "sha256=sha256(content2).hexdigest()"
+    },
+    "shared_source_modified": false
+  },
+  "pending": [
+    "exact generated creation preparation context and negative proof",
+    "registered Issue consume/replay",
+    "actual HTTP/CSRF/generated-source revocation"
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/cipher_proposal.json": "8d979b78bbf0d36474c42106ae5c74a305677f868e875b267ec9f4748154a77e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/cipher_proposal.py": "4ecc777c10f64a1d2dbfb9d08dc28c73351abb957c5ba14e8766bf79bf3abc49",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_issue/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_issue/cipher_proposal_issue.json": "d1dccec8e08ef8d7fac1b9a31938808126b5e7478d829d7dbe1e2f4bb6c35f19",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_issue/cipher_proposal_issue.py": "0c9d6fda74216f6fc9f9cc039174c1e0e37cb91fac16b9106ceda0796b9cf980",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.json": "d1944b44755929738db0a7c7de0b4fd3a1ffc90043764f3796466bea126a0491",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.py": "411e55d2f2eb253b9451ab06b12fe29901ddc8a59ba3cfff8750a2c8e82f37c1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.json": "9ba9e3a4f3ca0c3babfbadbb0ce85b2ff982c6fda8d9b4e452e7578e8caf1124",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.py": "6c6c115e1ece3f696e2fbe037031e046065d52f26822c8706dce4983ba2f5c36",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.json": "b7f4664e22ae97027385a8d57ddf8bbd9be0582fd98424842035183c312ff92d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.py": "90d27c1584ac63932d10966cb3958a41437f245c04602aab8abcb294b553b839",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.json": "728ce64b21433b0a1947f3a94cf84117245caa29a53acd25139f71dad9556bee",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.py": "ccdaa6fdd6af5cc42d3656b92e8def98398bff0b756149b441dc6925dffe3f0e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.json": "53ea163f037da97c3de9462585095f7631086f2925066a4fb3b1c1e63d3f8fcb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.py": "09c0a1ca9d9e77b4ac2d659bcdb47884e58143e60ebf8eb9f7f0ef50fbd37103",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.json": "3efd3b5c76070fc0736ea4b92fcf30e7ed88111e6cc1f9504011e15face86751",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.py": "d8dba976cf9b9248001f8b0e526fda683fbb2fed1a7f6b46a02122a15a83446a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/api.py": "46df7b32098839706aaa09a6bd78b0df42407f51993a265d00b580848430456f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py": "07bed711927816aa45a787180495e1a3f80875b49f78fed51d3b862e329270a9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/outputs.py": "caa4fa6f68edc31018f007d0c56fc037e3b96941850002644e663f95d20f9e46",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/schemas/api-v1.schema.json": "7122864740c96ec89023a4338b4c72b34a08d777439601a7d49bb5af37f39e9d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py": "7403133ec3a7d1d20ad05aa8f8b288dbeb3b2d54047773b664d9ac16115cc24d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/sources.py": "88fe7ec258dfc21911bf3dfd6d9be9403592eddc8d984e770b14f8f307452434",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "a893e0a24c9b3bb0f5749f3be3b9163553fbaf1a1bb3952b88200ef7927240f2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/permissions.py": "c96151506fefb9bf9626cd5534f805dc5c003b3b5efaae930c2fc0eea8096837",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "ab056975151084954e198cd68f7ead2eb5557796ee21fe96999730f1346a8f94",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/schemas/company-api-v1.schema.json": "96dd9104833ff4b734a03fed59b47b0f602c262881b39c59029f72ad3b3c3068",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_output_acceptance.py": "85984f67b526be9f2af1da3e4c43392fa167c6e48ae6d6f060c92328f70b936f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_rendering.py": "868507f4cee0f82ada5ecd992dd7cc91cc0fd0dced7f06390d89ddedac8b442f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py": "f3492f1fb2ee7b9165773dc24e12d0724667410b0b728ba9f44391382612334d",
+    "apps/cipher/platform/apps/cipher_aec/pyproject.toml": "7ec290af7dfe87ac9f5c9c46d8ad0d6e2c2feb9579a616ebbc4efa80f0675d51",
+    "apps/cipher/platform/versions.lock.json": "36fa137300e8494c7303b0f8a04df9241c8b0afcfc0a9d7cf74be695c6d2e492"
+  }
+}

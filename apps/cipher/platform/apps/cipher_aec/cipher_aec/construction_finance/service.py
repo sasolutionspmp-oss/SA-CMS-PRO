@@ -9,6 +9,7 @@ from cipher_aec.governance.commands import run_command
 from cipher_aec.governance.context import current_actor, require_project
 from cipher_aec.governance.history import append_event
 from cipher_aec.estimating import sources as document_sources, units
+from cipher_aec.commercial.native import require_native
 from . import core, repository, sources
 
 
@@ -41,8 +42,8 @@ def lock_sources(contract, actor, *, revision_ids=(), extra_unit_ids=()):
             raise DomainError('contract_integrity', 'A shared-master source belongs to another contract.', 409)
         ids.update(row['id'] for row in revision['units'])
     for unit_id in sorted(ids):
-        units.qualified(unit_id, lock=True, allow_disabled=True)
-    frappe.db.sql('SELECT name FROM `tabCurrency` WHERE name=%s FOR UPDATE', (contract['definition']['currency'],))
+        units.qualified(unit_id, lock=True, allow_disabled=True, actor=actor)
+    require_native('Currency', contract['definition']['currency'], actor, lock=True)
     return sources.party_snapshot(contract['company'], contract['project'], contract['definition'], actor, lock=True, allow_disabled=True)
 
 
@@ -60,13 +61,24 @@ def scoped(kind, record_id, company, project, actor, *, lock=False):
             revisions = [repository.read('sov', value['sov_version'], lock=True)['contract_revision']] if kind == 'line' else []
         lock_sources(contract, actor, revision_ids=revisions)
     else:
+        # Historical visibility checks current native rights while allowing a
+        # disabled original Currency; new-use policy eligibility is separate.
+        require_native('Currency', contract['definition']['currency'], actor)
         sources.party_snapshot(company, project, contract['definition'], actor, allow_disabled=True)
     if kind != 'contract':
         document_sources.verify(company, project, value['source_citations'], actor, lock=lock)
         if 'units' in value:
             for registered in value['units']:
-                if units.qualified(registered['id'], lock=lock, allow_disabled=True) != registered:
+                if units.qualified(registered['id'], lock=lock, allow_disabled=True, actor=actor) != registered:
                     raise DomainError('stale_unit', 'The native SOV unit revision changed.', 412)
+        if kind == 'line':
+            # A line stores its typed quantity, but not a duplicate unit
+            # manifest. Authorize the exact immutable parent, never today's
+            # mutable draft, before returning that historical unit identity.
+            sov = scoped('sov', value['sov_version'], company, project, actor, lock=lock)
+            revision = repository.read('revision', sov['contract_revision'], lock=lock)
+            if sov['contract'] != contract['id'] or revision['contract'] != contract['id'] or revision['sov_version'] != sov['id'] or revision['company'] != company or revision['project'] != project or value['line'] not in sov['lines']:
+                raise DomainError('contract_integrity', 'The historical SOV line lineage cannot be verified.', 409)
     return value
 
 
@@ -74,11 +86,11 @@ def create_contract(company, project, operation_id, definition):
     # Closed validation executes before any effect or receipt is created.
     if type(definition) is not dict:
         core.fail('Supply a closed contract definition.')
-    currency = units.currency_policy(definition.get('currency'))
+    currency = units.currency_policy(definition.get('currency'), actor=current_actor())
     core.definition(definition, currency['currency_exponent'])
     def effect(actor, project_doc):
         require_project(company, project, ability='contract.read', actor=actor, lock=True)
-        currency_policy = units.currency_policy(definition['currency'], lock=True)
+        currency_policy = units.currency_policy(definition['currency'], lock=True, actor=actor)
         party = sources.party_snapshot(company, project, definition, actor, lock=True)
         core.definition(definition, currency_policy['currency_exponent'])
         value = _new(actor, company, project, status='draft', definition=deepcopy(definition), currency_policy=currency_policy,
@@ -113,13 +125,13 @@ def author_revision(company, project, operation_id, contract_id, expected_versio
             raise DomainError('stale_contract', 'The contract changed. Author from its current version.', 412)
         sources.party_snapshot(company, project, contract['definition'], actor, lock=True)
         currency, exponent = contract['definition']['currency'], contract['currency_policy']['currency_exponent']
-        if units.currency_policy(currency, lock=True) != contract['currency_policy']:
+        if units.currency_policy(currency, lock=True, actor=actor) != contract['currency_policy']:
             raise DomainError('stale_currency_policy', 'The native currency policy changed; qualified policy migration is required.', 412)
         core.retainage(retainage_policy, currency, exponent)
         citations = document_sources.resolve(company, project, source_citations, actor, lock=True)
         if type(lines) is not list or not 1 <= len(lines) <= 100:
             core.fail('Supply one through 100 stable SOV lines.', 'lines')
-        qualified = {unit_id: units.qualified(unit_id, lock=True) for unit_id in sorted(set(input_units))}
+        qualified = {unit_id: units.qualified(unit_id, lock=True, actor=actor) for unit_id in sorted(set(input_units))}
         total = core.sov(lines, currency, exponent, contract['definition']['original_value'], qualified, retainage_policy)
         if any(line['source_line_id'] is not None for line in lines):
             raise DomainError('estimate_line_link_unqualified', 'Source-line award mappings require the later qualified award integration. FIN01 authors explicit source citations and stable SOV lines.', 409)
@@ -183,6 +195,11 @@ def list_contracts(company, project, limit=20, cursor=None, count_mode='none'):
         raise DomainError('collection_scope_unqualified', 'This contract collection exceeds the bounded native-party authorization scope.', 409)
     for party in parties:
         sources.party_snapshot(company,project,{'party_type':party.party_type,'party':party.party},actor,allow_disabled=True)
+    currencies = frappe.db.sql('SELECT DISTINCT currency FROM `tabCipher Construction Contract` WHERE company=%s AND project=%s LIMIT 201', (company,project))
+    if len(currencies) > 200:
+        raise DomainError('collection_scope_unqualified', 'This contract collection exceeds the bounded native-currency authorization scope.', 409)
+    for currency in currencies:
+        require_native('Currency', currency[0], actor)
     scope = {'route': 'contract.catalog', 'user': actor.user, 'person': actor.person_id, 'company': company, 'project': project,
              'authority': authority_fingerprint(actor, company, project)}
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None

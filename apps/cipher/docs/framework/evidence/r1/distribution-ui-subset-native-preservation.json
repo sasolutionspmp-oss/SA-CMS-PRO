@@ -1,0 +1,22 @@
+{
+  "schema": "cipher.r1.distribution-ui-subset-native-preservation.v1",
+  "status": "passed",
+  "observed_at": "2026-10-15T20:36:48.478690+00:00",
+  "known_supervisor_start_state": {
+    "pid": 15788,
+    "start_ticks": "11617657",
+    "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+    "started_at": 1792096501.0538127
+  },
+  "known_processes_and_sessions_remaining_active": [],
+  "operation_id": "dum95oga61",
+  "dispatch_id": "c717b093-2892-4bc8-a210-47a617dc5ac2",
+  "exact_operation_count": 1,
+  "selected_recipient_id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+  "original_ui_selected_recipient_unchanged": true,
+  "original_ui_pdf_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+  "canonical_state": "Succeeded",
+  "worker_attempt_count": 1,
+  "fencing_token": 1,
+  "qualification": "Read-only exact UI recipient/native-operation and known supervised-process/session readback; no transport or lifecycle invocation."
+}

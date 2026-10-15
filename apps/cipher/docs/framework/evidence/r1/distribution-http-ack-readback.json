@@ -1,0 +1,114 @@
+{
+  "schema": "cipher.r1.distribution-state-http.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:00:20.903254+00:00",
+  "live_external_provider_qualified": false,
+  "dispatch_id": "7a78e800-0c3f-45ba-afd0-e0a66eb3af15",
+  "detail": {
+    "dispatch": {
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T18:53:57.919605Z",
+      "decision_id": "j3hh78o2kp",
+      "execute_session_reference": "e9eb1b590a39dbe0c386fc759ed71245e4cdd3ca35fe0fc0991f97c4b9464952",
+      "id": "7a78e800-0c3f-45ba-afd0-e0a66eb3af15",
+      "instruction_digest": "09bf06a81005b316d525658e62ea5b2505f71461fb44ab314a8157688addb27e",
+      "instruction_id": "9994f247-d9d4-41a9-a22a-7ba97cf09e81",
+      "issue_id": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+      "mode": "fixture",
+      "packet_id": "j2couuf55s",
+      "packet_manifest_hash": "0bcbe124ceadd7a71e7313c1486972a7014877f84e4c5d909acece8844008145",
+      "policy_revision": "CIPHER-PROPOSAL-DISTRIBUTE-POLICY-V1-COMPANY",
+      "profile": {
+        "attempt_seconds": 30,
+        "enabled": true,
+        "id": "local-fixture-v1",
+        "mandate_seconds": 86400,
+        "max_recipients": 30,
+        "mode": "fixture",
+        "version": 1
+      },
+      "project": null,
+      "request_session_reference": "2d192081eaeb09f541c3892189d498ead1aed6f590b02ad659986f4f28bc61df",
+      "requester_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "requester_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "review_session_reference": "39538b8b70a1e7fe58a20fb8860e6f0c4a8f09b456fbf99e219a9056c66f5c4d",
+      "reviewer_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "reviewer_user": "company.chain.reviewer.20b85fd4edd2@cipher.example",
+      "scope_type": "Company",
+      "valid_until": "2026-10-16T18:52:29.602019Z"
+    },
+    "state": "SucceededFixture",
+    "mode": "fixture",
+    "deliveries": [
+      {
+        "operation_id": "j5r0p9nqvq",
+        "recipient_id": "591c6afddcad3f45edf49876834085f3490adc4cc892208ed90051f9b9a6a923",
+        "state": "Succeeded",
+        "mode": "fixture",
+        "receipt": {
+          "mode": "fixture",
+          "receipt": {
+            "accepted_at": "2026-10-15T18:54:31.557696+00:00",
+            "acknowledgment_id": "d453ca4b-9015-4472-aef5-399625687cd6",
+            "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+            "byte_length": 12377,
+            "logical_key": "5ed59cb74bca5096567d26047ab84c2b137f6510921e06e71399fc302657476a",
+            "mode": "fixture",
+            "payload_hash": "3c0e3485a966ecf03efc99f27c93edf3d5a7f25f4119655ee466cc06572b509b"
+          }
+        },
+        "error_code": null
+      }
+    ],
+    "cancellation": null
+  },
+  "profile": [
+    {
+      "id": "local-fixture-v1",
+      "version": 1,
+      "mode": "fixture",
+      "enabled": true,
+      "max_recipients": 30,
+      "mandate_seconds": 86400,
+      "attempt_seconds": 30
+    }
+  ],
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.profiles",
+      "http_status": 200,
+      "request_id": "15272034-d5fd-4e62-9aa7-8e8821cc2e38",
+      "server_time": "2026-10-15T19:00:21.286542Z",
+      "request_seconds": 0.035115
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "3d968d6e-3675-417a-9e94-6e60695e9e98",
+      "server_time": "2026-10-15T19:00:22.739232Z",
+      "request_seconds": 1.393288
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.get_recipient_delivery",
+      "http_status": 200,
+      "request_id": "96c7dc28-ecc5-4d72-b9c6-f9099be447df",
+      "server_time": "2026-10-15T19:00:24.094433Z",
+      "request_seconds": 1.347355
+    }
+  ],
+  "schema_samples": 3,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.224906,
+      "session_seconds": 0.115839,
+      "status": "passed",
+      "total_seconds": 0.34075
+    }
+  ],
+  "completed_at": "2026-10-15T19:00:24.098219+00:00"
+}

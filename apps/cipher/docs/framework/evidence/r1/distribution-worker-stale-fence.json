@@ -1,0 +1,1 @@
+{"schema": "cipher.r1.distribution-stale-fence-native.v1", "status": "passed", "operation_id": "j5r0p9nqvq", "state": "Succeeded", "current_fence": 2, "refused_fence": 1, "native_result_and_attempt_history_unchanged": true, "transport": "fixture", "live_external_provider_qualified": false}

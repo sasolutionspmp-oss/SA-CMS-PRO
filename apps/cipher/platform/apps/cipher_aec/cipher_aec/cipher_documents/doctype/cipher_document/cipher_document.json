@@ -6,10 +6,15 @@
   "engine": "InnoDB",
   "field_order": [
     "company",
+    "scope_type",
     "project",
     "title",
     "current_revision",
-    "revision_number"
+    "revision_number",
+    "producer_kind",
+    "producer_reference",
+    "producer_input_digest",
+    "producer_binding_json"
   ],
   "fields": [
     {
@@ -21,10 +26,19 @@
       "options": "Company"
     },
     {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "search_index": 1,
       "options": "Project"
     },
@@ -46,6 +60,38 @@
       "label": "Revision Number",
       "fieldtype": "Int",
       "reqd": 0
+    },
+    {
+      "fieldname": "producer_kind",
+      "label": "Producer Kind",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_reference",
+      "label": "Producer Reference",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_input_digest",
+      "label": "Producer Input Digest",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
+    },
+    {
+      "fieldname": "producer_binding_json",
+      "label": "Producer Binding Json",
+      "fieldtype": "Long Text",
+      "read_only": 1,
+      "hidden": 1,
+      "no_copy": 1
     }
   ],
   "permissions": [

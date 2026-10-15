@@ -41,9 +41,15 @@ def after_migrate():
     commercial_migrate()
     from cipher_aec.construction_finance.install import after_migrate as finance_migrate
     finance_migrate()
+    from cipher_aec.integrations.distribution_install import after_migrate as distribution_migrate
+    distribution_migrate()
     from cipher_aec.governance.approvals import install_policy
+    for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
+        frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
+    if frappe.db.has_index("tabCipher Approval Policy Revision", "cipher_approval_policy_version"):
+        frappe.db.sql_ddl("ALTER TABLE `tabCipher Approval Policy Revision` DROP INDEX `cipher_approval_policy_version`")
+    frappe.db.add_unique("Cipher Approval Policy Revision", ["action", "scope_type", "version"], constraint_name="cipher_approval_scoped_policy_version")
     install_policy()
-    frappe.db.add_unique("Cipher Approval Policy Revision", ["action", "version"], constraint_name="cipher_approval_policy_version")
     frappe.db.add_index("Cipher Approval Packet", ["company", "project", "creation"], "cipher_approval_scope")
     frappe.db.add_index("Cipher Approval Decision", ["packet", "creation"], "cipher_approval_decisions")
 

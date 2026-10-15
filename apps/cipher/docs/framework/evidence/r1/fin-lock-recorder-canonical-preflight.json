@@ -1,0 +1,45 @@
+{
+  "schema": "cipher.r1.fin-recorder-canonical-preflight.v1",
+  "status": "passed",
+  "canonical_entries": [
+    {
+      "module": "test_commercial_acceptance",
+      "sha256": "3a542005635b256e0a42680e716b8ba1d685594f2715db8d0ec988980b823c6c",
+      "required_args": []
+    },
+    {
+      "module": "test_construction_finance_acceptance",
+      "sha256": "00434103c7deccff5352cbc79597a2d225ef4a171cc1e4c8ccf3d5aeeec53459",
+      "required_args": []
+    },
+    {
+      "module": "test_estimating_acceptance",
+      "sha256": "6deba4995c1adf493f5d38a76e2e8b7c1e60772f7e2aedf09a7b899e81418039",
+      "required_args": []
+    },
+    {
+      "module": "test_migrations_acceptance",
+      "sha256": "30de59baf8f98549765a25e7a0f4e0da4ba4c330a64a5d86e042fcbdd1ad48fe",
+      "required_args": []
+    },
+    {
+      "module": "test_outbox_acceptance",
+      "sha256": "dd091ed806873447584b53eee84477a109a031d569ba1c629626b74b218efff3",
+      "required_args": []
+    },
+    {
+      "module": "test_ricky_acceptance",
+      "sha256": "bd2b7be1b57e8fd99916c7da0f863a7ca48b02c6725e144ce019c8112cec530a",
+      "required_args": []
+    },
+    {
+      "module": "test_takeoff_acceptance",
+      "sha256": "663393397eac6dbb3e7f0626b3148147b7592a45b497ca106639938b202cb70d",
+      "required_args": []
+    }
+  ],
+  "matching_sql_row_parameter_recorder": "test_construction_finance_acceptance.py only; corrected",
+  "other_lock_observer": "test_estimating_acceptance._observe_lock_order records manifest/currency/native verifier call boundaries; no SQL-table prefix or parameter-alias row-count identity.",
+  "remaining_canonical_procedures": "Commercial, migration, outbox, Ricky and parser-only takeoff do not contain this recorder/row-alias assertion. Read-only source inspection only.",
+  "qualification": "No remaining procedure executed by this source preflight; canonical/native/parser fixtures remain separate from actual HTTP and live model/provider qualification."
+}

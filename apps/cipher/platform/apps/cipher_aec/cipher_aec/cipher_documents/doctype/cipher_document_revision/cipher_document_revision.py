@@ -6,17 +6,28 @@ from frappe.model.document import Document
 from cipher_aec.governance.context import require_trusted_write
 from cipher_aec.documents.extraction import MAX_BYTES, MAX_PAGES, MAX_PAGE_CHARS, MAX_TEXT_CHARS
 from cipher_aec.documents.storage import FrappeFileStorage
+from cipher_aec.documents.scope import scope_of
 
 
 class CipherDocumentRevision(Document):
     def validate(self):
         require_trusted_write()
+        scope_of(self.as_dict())
+        from cipher_aec.documents.provenance import binding
+        binding(self.as_dict())
+        from cipher_aec.documents.preparation import require_preparation
+        require_preparation(self.as_dict(), revision=True)
         if not self.is_new():
             frappe.throw("Document revisions are immutable; upload a new revision.")
-        parent = frappe.db.get_value("Cipher Document", self.document,
-                                     ["company", "project", "revision_number"], as_dict=True)
-        if not parent or parent.company != self.company or parent.project != self.project or self.revision_number != parent.revision_number + 1:
+        parent_fields = ["company", "project", "scope_type", "revision_number"]
+        parent_fields.extend(key for key in ("producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json") if frappe.db.has_column("Cipher Document", key))
+        parent = frappe.db.get_value("Cipher Document", self.document, parent_fields, as_dict=True)
+        if not parent or parent.company != self.company or parent.project != self.project or parent.scope_type != self.scope_type or self.revision_number != parent.revision_number + 1:
             frappe.throw("Document revision must preserve its parent scope and sequence.")
+        if any((parent.get(key) or None) != (self.get(key) or None) for key in ("producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json")):
+            frappe.throw("Revision producer bindings must equal the immutable parent binding.")
+        if parent.producer_kind and (self.revision_number != 1 or self.mime_type != "application/pdf"):
+            frappe.throw("Prepared outputs require one immutable PDF revision.")
         if self.mime_type not in {"text/plain", "application/pdf"} or not re.fullmatch(r"[a-f0-9]{64}", self.sha256 or "") or not 0 < self.byte_length <= MAX_BYTES:
             frappe.throw("Invalid source metadata.")
         file_doc = frappe.db.get_value("File", self.storage_reference,

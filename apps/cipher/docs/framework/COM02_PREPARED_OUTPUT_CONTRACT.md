@@ -1,0 +1,27 @@
+# COM-02 prepared output and issue boundary
+
+The native ERPNext Quotation remains a draft. Cipher Issue preserves an exact independently reviewed native draft snapshot, accepted estimate baseline and canonical PDF revision. It does not submit a Quotation, create an award, post accounting, or distribute external messages.
+
+A proposal composition may pin Company document pages using `source_references`: `revision_id`, `page`, `excerpt_sha256`, `source_sha256`, authored `purpose` and `permission_basis`. An authored permission basis is retained as a declaration; current document access and exact bytes/page are checked independently. An optional `estimate_reference` binds `acceptance_id`, `acceptance_digest`, `revision_id`, and `revision_digest`. The accepted baseline must belong to the exact Company, Pursuit and currency. Existing empty-source draft request normalization stays unchanged.
+
+Output preparation runs the bounded local renderer before any approval grant. It stores actual PDF bytes in the existing Company Document/Document Revision/private File authority. One immutable prepared output belongs to one exact Proposal Revision. Reusing identical input reauthorizes original sources; changing recipients, cover or rendering policy requires a successor Proposal Revision. The input digest binds Company, immutable revision digest, native fingerprint, accepted baseline, exact citation manifests, recipients, cover and renderer/font/parameter policy. Rendering is escaped plain text, has no network access, checks exact dependency/font versions, and rejects unsupported glyphs or limits explicitly.
+
+Generated document metadata, page text, citations, search, downloads and native list/count/File access retain the exact original commercial and baseline source rights. A literal producer registry dispatches source-only authorization; it never follows the output back into itself. Immutable dependency discovery is separate from authorization. Mutations merge the complete source closure with their own UOM, currency and native reference union before locking nested readers. Locking generated-source use without explicit prelock admission fails closed. Active ancestry cycles and bounded-depth/node limits are enforced; shared original documents in separate branches remain valid.
+
+The private preparation context additionally binds the exact renderer output SHA/length and allocated canonical parent. Generated controllers require this context; ordinary `trusted_write` is insufficient. Raw uploads keep their existing path. This context is established only after actual render and current complete source authorization, never by a read or caller-provided metadata.
+
+The approval action is `proposal.issue.v1`, Company only, with exact `Cipher Proposal Revision` UUID subject. `expected_version` is the prepared `review_version` digest over revision digest, canonical PDF revision, SHA and input digest. Approval manifest reads create no artifacts. An independent canonical person grants the exact manifest. Registered consumption creates one immutable `Cipher Proposal Issue`; its controller requires the exact approval-effect context and verifies packet, independent grant, source snapshots, artifact and predecessor. The Issue preserves every stable selected line UUID, authored amount, native item fact, qualified unit and accepted baseline. Native child row names are retained only as storage references.
+
+A later working successor preserves historical prepared outputs and Issues. Original completed preparation receipt replay can recover the original authorized artifact. Fresh issue requests/effects enforce the current proposal/native lifecycle and exact prepared inputs. Current source revocation also denies historical receipts and generated artifacts.
+
+Fixed commercial RPCs use the existing session/CSRF/envelope/idempotency contracts:
+
+- `POST commercial.api.prepare_proposal_output(company, proposal_id, revision_id, expected_revision_digest, recipients, cover, operation_id)` returns `ComPreparedOutputCommand`.
+- `GET commercial.api.prepared_output(company, revision_id)` returns `ComPreparedOutput`.
+- `GET commercial.api.issue(company, issue_id)` returns `ComIssue`.
+- `GET commercial.api.issues(company, proposal_id, limit, cursor, count_mode)` returns `ComIssueList`.
+- Canonical Company document preview/download/citation routes consume the returned PDF `revision_id`; there is no duplicate output download authority.
+
+Exact request/response definitions live in `commercial/schemas/api-v1.schema.json`. Request/decide/execute use the shared Company approval APIs. Action enablement follows targeted native/HTTP qualification. The [separate distribution contract](COM02_DISTRIBUTION_CONTRACT.md) is implemented with an independently approved local fixture command and durable recipient readback. External provider delivery remains unqualified. The immutable Issue's `distribution: not-sent` describes issuance; later dispatch outcomes are read from their separate records.
+
+Future PRJ-02 must consume the immutable Issue and accepted baseline using a supported independent Sales Order creation path. It must not submit a newer working Quotation, spoof submitted prior-document status, or imply native previous-quotation lineage that does not exist. Existing Customer, real sales Item mapping, qualified UOM, exact persisted pricing reconciliation and canonical award admission remain prerequisites.

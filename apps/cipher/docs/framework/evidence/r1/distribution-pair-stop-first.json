@@ -1,0 +1,10 @@
+{
+  "action": "stop",
+  "pid": 13508,
+  "child_sessions": [
+    13509,
+    13510
+  ],
+  "remaining_active_processes": 0,
+  "recorded_at": "2026-10-15T19:46:55.085133+00:00"
+}

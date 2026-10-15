@@ -1,11 +1,13 @@
 export type { Session, Project, Task, HistoryItem, ApprovalPacket, ApprovalList, ApprovalCommandResponse, ApprovalExecutionResponse } from './contracts.generated';
 export interface Collection<T> { items: T[]; total?: number | null; next_cursor?: string | null; limit?: number; count_mode?: string; }
-export interface DocumentRecord {
+import type { CompanyDocument } from './company-documents.generated';
+export interface ProjectDocumentRecord {
   id: string; title: string; company: string; project: string;
   current_revision: string; revision_number: number; filename: string;
   mime_type: string; byte_length: number; sha256: string;
   scan_status: string; extraction_status: string; page_count: number;
 }
+export type DocumentRecord = ProjectDocumentRecord | CompanyDocument;
 export interface DocumentRevision {
   id: string; revision_number: number; filename?: string; mime_type?: string;
   byte_length?: number; sha256?: string; scan_status?: string; extraction_status?: string;

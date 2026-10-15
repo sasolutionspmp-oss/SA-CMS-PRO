@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/estimating/schemas/api-v1.schema.json. Do not edit.
- * Source SHA-256: 8c5296687071ef33395322460562f73c78f03277fe64c0037e1dc41d7e4ea119
+ * Source SHA-256: 5091284c869b34dd686460903d1c420d8e40c7fce79befd370e6f63cedd15a13
  * Regenerate: npm run generate:api
  */
 
@@ -24,10 +24,11 @@ export type EstRecordResponse =
   | EstEstimateRecord
   | EstRevisionRecord
   | EstLineRecord
-  | EstSnapshotRecord;
+  | EstSnapshotRecord
+  | EstAcceptanceRecord;
 
 /**
- * Request fields are closed. POST operation_id may be supplied by the required Idempotency-Key header. Inputs are authored quantities, never calibrated geometry. Sources remain subject to current project/document access. Permission basis is an authored assertion, not a derived license entitlement. No estimate acceptance or external provider action is exposed.
+ * Exact authored estimate drafts and source libraries; immutable independently accepted baselines use the shared static approval engine. Original Project calculation and receipt payloads remain unchanged. No provider action.
  */
 export interface CipherEST01AuthoredExactDraftEstimating {
   [k: string]: unknown;
@@ -1033,6 +1034,209 @@ export interface EstSnapshotRecord {
 }
 /**
  * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstAcceptanceRecord".
+ */
+export interface EstAcceptanceRecord {
+  id: string;
+  company: string;
+  project: string;
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "accepted";
+  estimate: string;
+  estimate_revision: string;
+  calculation_snapshot: string;
+  baseline_number: number;
+  predecessor: string | null;
+  packet_id: string;
+  decision_id: string;
+  accepted_by_person: string;
+  manifest: EstAcceptanceManifest;
+  manifest_digest: string;
+  accepted_result: EstCalculationResult;
+  currency: string;
+  total: EstMoney;
+  /**
+   * @maxItems 64
+   */
+  source_citations: EstCitation[];
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstAcceptanceManifest".
+ */
+export interface EstAcceptanceManifest {
+  subject: {
+    doctype: "Cipher Estimate Revision";
+    name: string;
+    label: string;
+  };
+  /**
+   * @maxItems 64
+   */
+  sources: EstCitation[];
+  effect: {
+    action: "estimate.accept.v1";
+    revision_id: string;
+    facts: EstAcceptanceFacts;
+  };
+  summary: {
+    total: EstMoney;
+    currency: string;
+    rounding_policy: "cipher.estimate.line-half-up.v1";
+    binding_count: number;
+    independent_acceptance_required: true;
+  };
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstAcceptanceFacts".
+ */
+export interface EstAcceptanceFacts {
+  policy: "cipher.estimate.acceptance-facts.v1";
+  scope: EstAcceptanceScope;
+  pricing_sources_policy: "pinned-revision-at-pricing-date";
+  drawing_calibration_policy: "current-working-head-v1";
+  estimate: {
+    id: string;
+    digest: string;
+    current_revision: string;
+  };
+  revision: {
+    id: string;
+    digest: string;
+  };
+  snapshot: {
+    id: string;
+    digest: string;
+    input_digest: string;
+    output_digest: string;
+  };
+  rounding_policy: "cipher.estimate.line-half-up.v1";
+  /**
+   * @maxItems 700
+   */
+  pinned_records: EstPinnedRecord[];
+  /**
+   * @maxItems 200
+   */
+  qualified_units: EstUnitRecord[];
+  currency_policy: {
+    currency: string;
+    currency_exponent: number;
+    fraction_units: number;
+    native_currency_version: string;
+  };
+  /**
+   * @maxItems 700
+   */
+  native_references: EstNativeReference[];
+  pursuit: EstPursuitPlan | null;
+  /**
+   * @maxItems 200
+   */
+  bindings: EstAcceptanceBinding[];
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstAcceptanceScope".
+ */
+export interface EstAcceptanceScope {
+  company: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstPinnedRecord".
+ */
+export interface EstPinnedRecord {
+  kind: "rate" | "assembly" | "conversion";
+  id: string;
+  digest: string;
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstNativeReference".
+ */
+export interface EstNativeReference {
+  doctype: "Item" | "Supplier" | "Customer" | "Lead" | "Opportunity";
+  name: string;
+  version: string;
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstPursuitPlan".
+ */
+export interface EstPursuitPlan {
+  company: string;
+  pursuit_id: string;
+  record_digest: string;
+  revision_number: number;
+  party_type: "Customer" | "Lead";
+  party_id: string;
+  /**
+   * @maxItems 3
+   */
+  native_refs:
+    | []
+    | [
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        }
+      ]
+    | [
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        },
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        }
+      ]
+    | [
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        },
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        },
+        {
+          doctype: "Customer" | "Lead" | "Opportunity";
+          name: string;
+        }
+      ];
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstAcceptanceBinding".
+ */
+export interface EstAcceptanceBinding {
+  id: string;
+  digest: string;
+  measurement_id: string;
+  measurement_digest: string;
+  current_use: {
+    eligible: true;
+    /**
+     * @maxItems 0
+     */
+    reasons: [];
+    current_working_revision: string;
+    head_policy: "current-working-revision-v1";
+    original_record_preserved: true;
+    verification: {
+      id: string;
+      verified_by_person: string;
+    } | null;
+  };
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
  * via the `definition` "EstListResponse".
  */
 export interface EstListResponse {
@@ -1227,7 +1431,7 @@ export interface CalculateRevisionRequest {
 export interface GetEstimateRecordRequest {
   company: string;
   project: string;
-  kind: "conversion" | "rate" | "assembly" | "estimate" | "revision" | "line" | "snapshot";
+  kind: "conversion" | "rate" | "assembly" | "estimate" | "revision" | "line" | "snapshot" | "acceptance";
   record_id: string;
 }
 /**
@@ -1314,4 +1518,44 @@ export interface ListEstimateUnitsResponse {
    * @maxItems 200
    */
   items: EstUnitRecord[];
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "ListEstimateAcceptancesRequest".
+ */
+export interface ListEstimateAcceptancesRequest {
+  company: string;
+  project: string;
+  estimate_id: string;
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "ListEstimateAcceptancesResponse".
+ */
+export interface ListEstimateAcceptancesResponse {
+  /**
+   * @maxItems 200
+   */
+  items: EstAcceptanceRecord[];
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstimateAcceptanceSubjectRequest".
+ */
+export interface EstimateAcceptanceSubjectRequest {
+  company: string;
+  project: string;
+  revision_id: string;
+}
+/**
+ * This interface was referenced by `CipherEST01AuthoredExactDraftEstimating`'s JSON-Schema
+ * via the `definition` "EstimateAcceptanceSubjectResponse".
+ */
+export interface EstimateAcceptanceSubjectResponse {
+  revision_id: string;
+  record_digest: string;
+  estimate_id: string;
+  is_current: boolean;
+  current_revision: string | null;
+  accepted_baseline_id: string | null;
 }

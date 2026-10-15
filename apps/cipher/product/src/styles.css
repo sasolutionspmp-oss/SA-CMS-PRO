@@ -112,3 +112,75 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
   /* The ObjectPage section already labels these actions on narrow screens. */
   .estimate-editor-surface > ui5-toolbar > ui5-title { display: none; }
 }
+
+.takeoff-source-bar { display: flex; align-items: center; gap: .65rem; padding: 1rem; flex-wrap: wrap; }
+.takeoff-source-bar > ui5-select { max-width: 26rem; min-width: 10rem; flex: 1; }
+.takeoff-source-bar > ui5-input { width: 4.5rem; }
+.takeoff-workbench { display: grid; grid-template-columns: minmax(0, 1fr) 22rem; gap: 1rem; margin: 1rem 0; align-items: start; }
+.takeoff-viewer, .pdf-drawing, .takeoff-tools { min-width: 0; }
+.takeoff-tools { display: grid; gap: .75rem; padding: 1rem; }
+.takeoff-tools ui5-select, .takeoff-tools ui5-input, .takeoff-tools ui5-textarea, .takeoff-field ui5-input, .takeoff-field ui5-textarea { width: 100%; }
+.takeoff-field { display: grid; gap: .35rem; }
+.takeoff-tools .failure-state { padding: 0; }
+.takeoff-tools details { border-top: 1px solid var(--sapGroup_ContentBorderColor); padding-top: .75rem; }
+.drawing-scroll { background: var(--sapBackgroundColor); overflow: auto; max-height: 72vh; min-height: 26rem; border-block: 1px solid var(--sapGroup_ContentBorderColor); }
+.drawing-sheet { position: relative; background: white; margin: 1rem; box-shadow: var(--sapContent_Shadow0); }
+.drawing-sheet[hidden] { display: none; }
+.drawing-sheet canvas { display: block; }
+.drawing-overlay { position: absolute; inset: 0; cursor: crosshair; touch-action: manipulation; }
+.drawing-caption { padding: .75rem 1rem; margin: 0; }
+.pdf-points { display: grid; gap: .5rem; }
+.pdf-points > div { display: grid; grid-template-columns: 1rem minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: .4rem; }
+.derived-relation, .calibration-summary, .takeoff-bind { display: grid; gap: .65rem; }
+.takeoff-measurements { margin-bottom: 1rem; }
+.numeric-value { font-variant-numeric: tabular-nums; }
+@media (max-width: 1100px) { .takeoff-workbench { grid-template-columns: minmax(0, 1fr); } .takeoff-tools { grid-template-columns: minmax(0, 1fr); } .drawing-scroll { max-height: 60vh; } }
+@media (max-width: 550px) { .takeoff-source-bar { gap: .5rem; } .takeoff-source-bar > ui5-select { max-width: 100%; } .drawing-scroll { min-height: 18rem; } .takeoff-tools { padding: .8rem; } }
+
+.commercial-tabs { display: flex; gap: .5rem; margin-bottom: 1rem; }
+.commercial-filter { padding: .5rem 1rem 1rem; }
+.commercial-filter ui5-input { width: min(30rem, 100%); }
+.commercial-form-dialog { width: min(54rem, calc(100vw - 2rem)); }
+.commercial-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+.commercial-field { display: grid; gap: .35rem; align-content: start; }
+.commercial-field ui5-input, .commercial-field ui5-textarea { width: 100%; }
+.commercial-header-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(10rem, .7fr); gap: 1rem; margin: 1rem 0 1.5rem; }
+.native-choice { min-width: 0; display: grid; gap: .4rem; }
+.native-choice-search { display: flex; gap: .3rem; }
+.native-choice-search ui5-input { min-width: 0; flex: 1; }
+.native-choice > ui5-select { width: 100%; }
+.native-choice-pages { display: flex; gap: .4rem; align-items: center; flex-wrap: wrap; }
+.native-choice .failure-state { padding: .5rem 0; }
+.commercial-lines-scroll { overflow-x: auto; }
+.commercial-lines-scroll ui5-table { min-width: 66rem; }
+.commercial-lines-scroll ui5-table-cell ui5-input { width: 100%; }
+.commercial-line-description { display: grid; gap: .4rem; width: 100%; }
+.commercial-line-actions { display: flex; gap: .2rem; }
+.proposal-authored-section { margin: .5rem 0 1.5rem; padding-block: .5rem; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); }
+.proposal-section-heading { display: flex; gap: .5rem; align-items: center; margin-bottom: .5rem; }
+.proposal-section-heading > ui5-input { flex: 1; min-width: 0; }
+.proposal-authored-section > ui5-textarea { width: 100%; }
+.commercial-revision-tools { display: flex; flex-wrap: wrap; gap: .5rem; padding: .75rem 1.5rem; align-items: center; background: var(--sapObjectHeader_Background); border-bottom: 1px solid var(--sapGroup_ContentBorderColor); }
+.commercial-comparison { margin: 1.5rem; padding: 1rem; overflow-x: auto; }
+.authored-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (max-width: 1000px) { .commercial-header-fields { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 550px) { .commercial-fields { grid-template-columns: minmax(0, 1fr); } .proposal-section-heading { flex-wrap: wrap; } .proposal-section-heading > ui5-input { flex-basis: 100%; } .commercial-comparison { margin: .75rem; } }
+@media (max-width: 550px) { .commercial-lines-toolbar > ui5-title { display: none; } }
+
+.measurement-summary { display: grid; grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)); gap: 1.5rem; padding: 1rem 0; }.measurement-summary > div { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; min-width: 0; }.measurement-summary ui5-text { max-width: 100%; overflow-wrap: anywhere; }.measurement-quantity { font-size: 1.5rem; font-weight: 600; font-variant-numeric: tabular-nums; }.measurement-status { font-size: .875rem; }.measurement-source-details { margin: .5rem 0 1rem; }.drawing-impact-record { border-top: 1px solid var(--sapList_BorderColor); padding-top: 1rem; margin-top: 1rem; }.drawing-impact-record > ui5-title { margin-bottom: .5rem; }.drawing-impact-line { display: grid; gap: .5rem; margin: .75rem 0; }.drawing-impact-record details { font-size: .75rem; overflow-wrap: anywhere; }.takeoff-bind > ui5-select { width: 100%; max-width: 100%; }
+@media (max-width: 600px) { .measurement-summary { grid-template-columns: 1fr; gap: 1.25rem; } }
+
+.proposal-reference-form, .proposal-output-form { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75rem; margin: 1rem 0; }.proposal-reference-form > *, .proposal-output-form > * { min-width: 0; max-width: 100%; }.proposal-reference-form > ui5-select, .proposal-reference-form > ui5-input, .proposal-reference-form > ui5-textarea, .proposal-output-form > ui5-textarea { width: 100%; }.proposal-sources > details { margin: 1rem 0; }.proposal-source-excerpt { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 18rem; overflow: auto; padding: 1rem; background: var(--sapBackgroundColor); }.proposal-reference-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--sapList_BorderColor); }.proposal-reference-row > div { min-width: 0; }.proposal-reference-row details, .proposal-output details { overflow-wrap: anywhere; font-size: .75rem; margin-top: .75rem; }.proposal-recipient { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) auto; align-items: end; gap: .75rem; }.proposal-recipient > div { display: grid; gap: .35rem; min-width: 0; }.proposal-recipient ui5-input { width: 100%; }.proposal-output-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; padding: 1rem 0; }.proposal-output-summary > span { font-size: .8125rem; }.proposal-output-pdf { margin: 1rem 0; border: 1px solid var(--sapList_BorderColor); border-radius: .5rem; overflow: hidden; }.proposal-output > ui5-title { display: block; margin-top: 1rem; }.proposal-output > .caption { margin-top: .75rem; }
+@media (max-width: 900px) { .proposal-recipient { grid-template-columns: minmax(0, 1fr); }.proposal-reference-row { flex-direction: column; } }
+
+.distribution-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin: 1rem 0; }
+.distribution-detail { margin-top: 1.5rem; padding: 1.25rem; border: 1px solid var(--sapList_BorderColor); border-radius: .5rem; background: var(--sapList_Background); min-width: 0; }
+.distribution-detail > ui5-title, .distribution-instruction-facts > ui5-title { display: block; margin-top: 1rem; }
+.distribution-form { display: grid; gap: .75rem; }.distribution-form > ui5-input, .distribution-form > ui5-textarea { width: 100%; }
+.distribution-instruction-facts, .distribution-instruction-facts li { overflow-wrap: anywhere; min-width: 0; }.distribution-instruction-facts .authored-text { white-space: pre-wrap; }
+.distribution-stop { display: grid; gap: .75rem; margin-top: 1.25rem; }.distribution-stop ui5-textarea { width: 100%; }.distribution-detail details { overflow-wrap: anywhere; font-size: .75rem; margin: .75rem 0; }
+@media (max-width: 599px) { .distribution-detail { padding: .75rem; } }
+
+.company-review-actions { display: flex; flex-wrap: wrap; gap: .375rem; min-width: 0; }
+.company-review-actions > ui5-button { flex-shrink: 0; max-width: 100%; }
+.company-review-actions > ui5-link { max-width: 100%; }

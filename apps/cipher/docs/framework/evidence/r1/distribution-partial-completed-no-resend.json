@@ -1,0 +1,12 @@
+{
+  "schema": "cipher.r1.distribution-completed-no-resend.v1",
+  "status": "passed",
+  "operation_id": "o7slp39odp",
+  "state": "Succeeded",
+  "sink_accept_calls": 0,
+  "original_receipt_unchanged": true,
+  "transport": "fixture",
+  "live_external_provider_qualified": false,
+  "driver_started_at": "2026-10-15T19:13:06.582699+00:00",
+  "driver_completed_at": "2026-10-15T19:13:07.945866+00:00"
+}

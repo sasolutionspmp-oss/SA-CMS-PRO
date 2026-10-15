@@ -54,3 +54,11 @@ def proposal_permission(doc, **kwargs):
 
 def revision_permission(doc, **kwargs):
     return _permission(doc, "revision", **kwargs)
+
+
+def issue_query(user=None):
+    return _query("Cipher Proposal Issue", "issue", user)
+
+
+def issue_permission(doc, **kwargs):
+    return _permission(doc, "issue", **kwargs)

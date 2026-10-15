@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "action",
     "version",
     "enabled",
@@ -13,6 +14,14 @@
     "definition_json"
   ],
   "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
     {
       "fieldname": "action",
       "label": "Action",

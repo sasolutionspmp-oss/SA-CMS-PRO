@@ -1,0 +1,54 @@
+{
+  "schema": "cipher.r1.fin-lock-recorder-correction.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:58:17.309358+00:00",
+  "scope": "Acceptance recorder/assertions only; no production/domain/runner/product changes.",
+  "preserved_failure": {
+    "report": "company-com02-fresh-validation-20261015T204745Z.json",
+    "private_log": "/tmp/cipher-new-stack-1aakw3di/test_construction_finance_acceptance.log",
+    "private_log_sha256": "0e3229b5a792c8887f4dc9a80e7fe535d1688a11f35de68bc0e24c450c6ad113",
+    "cause": "One physical native UOM was counted separately by its qualified UUID and native name. Prefix regex also misidentified Customer/Supplier child tables as parent locks. Original failed site/data/log/report retained unchanged."
+  },
+  "correction": {
+    "canonical_identity": "Exact FROM parent table plus successfully returned physical row.name; no added locking query.",
+    "reacquisitions": "Every successful row lookup retained with raw parameters and first_acquisition marker; only physical first acquisitions determine global order.",
+    "assertions_preserved": [
+      "Full UOM before Currency before native party first-acquisition order",
+      "Exactly two distinct historical/current UOM rows",
+      "Exact expected native old/current UOM names in sorted qualified-ID order",
+      "USD followed by exact Customer parent row"
+    ],
+    "strengthening": "Initial author path also asserts the complete exact native sequence; a genuinely new late UOM still fails rank ordering.",
+    "before_sha256": "1a430415da40df05f19a4ea5a39b311fc29aa22e1c8c918a474c3986249e6c18",
+    "after_sha256": "00434103c7deccff5352cbc79597a2d225ef4a171cc1e4c8ccf3d5aeeec53459"
+  },
+  "focused_proof": "fin-lock-recorder-focused.json",
+  "targeted_native": {
+    "report": "fin-lock-recorder-native-retry.json",
+    "site": "cipher-ci-20261015204745-cb1658.localhost",
+    "new_fixture_project": "PROJ-0004",
+    "duration_seconds": 10.345656831006636,
+    "existing_checks_passed": 11,
+    "historical_raw_parent_queries": 30,
+    "historical_raw_uom_queries": 20,
+    "historical_distinct_uom_first_acquisitions": 2,
+    "main_runtime_mutated": false
+  },
+  "remaining_canonical_preflight": "fin-lock-recorder-canonical-preflight.json",
+  "freeze_comparison": "fin-lock-recorder-freeze-delta.json",
+  "exact_patch": "--- apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_acceptance.py (frozen gate2)\n+++ apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_acceptance.py (recorder correction)\n@@ -132,15 +132,28 @@\n         from unittest.mock import patch\n         import re\n         native_locks=[]\n+        native_lock_queries=[]\n         original_sql=frappe.db.sql\n         def observed_sql(query, values=(), *args, **kwargs):\n+            rows=original_sql(query,values,*args,**kwargs)\n             text=str(query)\n-            if 'FOR UPDATE' in text.upper():\n-                match=re.search(r'`?tab(UOM|Currency|Customer|Supplier)`?',text)\n+            if re.search(r'\\bFOR\\s+UPDATE\\b',text,re.IGNORECASE):\n+                # Match complete parent identifiers, never Customer Credit\n+                # Limit/Supplier Number child tables. A qualified UUID lookup\n+                # and the permission lookup by name lock the same physical row.\n+                match=re.search(r'\\bFROM\\s+(?:`tab(UOM|Currency|Customer|Supplier)`|tab(UOM|Currency|Customer|Supplier)\\b)(?=\\s|$)',text,re.IGNORECASE)\n                 if match:\n-                    key=(match.group(1),tuple(str(value) for value in (values.values() if isinstance(values,dict) else values if isinstance(values,(list,tuple)) else (values,))))\n-                    if key not in native_locks: native_locks.append(key)\n-            return original_sql(query,values,*args,**kwargs)\n+                    kind=next(name for name in ('UOM','Currency','Customer','Supplier') if name.lower()==(match.group(1) or match.group(2)).lower())\n+                    columns=[column[0] for column in frappe.db._cursor.description]\n+                    parameters=tuple(str(value) for value in (values.values() if isinstance(values,dict) else values if isinstance(values,(list,tuple)) else (values,)))\n+                    for row in rows:\n+                        name=row['name'] if isinstance(row,dict) else row[columns.index('name')]\n+                        assert isinstance(name,str) and name, (kind,columns)\n+                        key=(kind,name)\n+                        first_acquisition=key not in native_locks\n+                        native_lock_queries.append({'kind':kind,'name':name,'parameters':parameters,'first_acquisition':first_acquisition})\n+                        if first_acquisition: native_locks.append(key)\n+            return rows\n         with patch.object(frappe.db,'sql',side_effect=observed_sql):\n             first = service.author_revision(**arguments)\n         ranks={'UOM':0,'Currency':1,'Customer':2,'Supplier':2}\n@@ -148,6 +161,8 @@\n         for kind,identity in native_locks:\n             if kind not in first_kind: first_kind.append(kind)\n         assert [ranks[kind] for kind,identity in native_locks] == sorted(ranks[kind] for kind,identity in native_locks), native_locks\n+        assert native_locks == [('UOM',native_unit.name),('Currency','USD'),('Customer',customer.name)],native_locks\n+        author_lock_queries=deepcopy(native_lock_queries)\n         frappe.db.commit()\n         first_sov = deepcopy(first['sov']); first_policy = deepcopy(first['policy'])\n         again = service.author_revision(**arguments)\n@@ -267,16 +282,21 @@\n         replacement_args['lines'][0]['quantity']['unit_id']=replacement['id']\n         service.author_revision(**replacement_args); frappe.db.commit()\n         native_locks.clear()\n+        native_lock_queries.clear()\n         with patch.object(frappe.db,'sql',side_effect=observed_sql):\n             historic=read_operation(company,project.name,old_draft_args['operation_id'])\n         assert historic['revision']['id'] == old_draft['revision']['id']\n         assert [ranks[kind] for kind,identity in native_locks] == sorted(ranks[kind] for kind,identity in native_locks),native_locks\n         assert sum(kind=='UOM' for kind,identity in native_locks)==2,native_locks\n+        expected_units={unit['id']:native_unit.name,replacement['id']:replacement_unit.name}\n+        assert native_locks == [('UOM',expected_units[identifier]) for identifier in sorted(expected_units)] + [('Currency','USD'),('Customer',customer.name)],native_locks\n         checks.append('historical_receipt_prelocks_old_and_current_uom_union_before_party')\n         result = {'schema':'cipher.finance.acceptance.v1','status':'passed','label':'explicit-synthetic-fin01-with-real-native-storage-and-governance',\n                   'company':company,'project':project.name,'contract_id':contract['id'],'accepted_revision':first['revision']['id'],\n                   'current_draft_revision':newest['revision']['id'],'native_customer':customer.name,'native_supplier':supplier.name,\n                   'checks':checks,'shared_native_master_first_lock_order':first_kind,'legal_execution':False,'financial_posting':False,'certification':False,\n+                  'native_parent_lock_queries':{'author_revision':author_lock_queries,'historical_receipt':native_lock_queries},\n+                  'historical_receipt_first_native_acquisitions':native_locks,\n                   'floor_provider_qualified':False,'live_model_qualified':False,'external_provider_qualified':False}\n         frappe.db.commit()\n         return result\n",
+  "artifact_sha256": {
+    "fin-lock-recorder-focused.json": "ca524ca9af8e47b911d24097ac76e04abd85650de22a6567fdd47faa2cd4aa99",
+    "fin-lock-recorder-canonical-preflight.json": "3693cb3c543903a9613db3d7c771b162013ddbff827897543221965e642f10ac",
+    "fin-lock-recorder-freeze-delta.json": "16f9984070c5d479e162a62bd9bb5978cf73ad447e775a4d0a2ed31025cfb5e8",
+    "fin-lock-recorder-native-retry-meta.json": "4c3743a3ae183d10efb4dc6557b826d94f9dbac63d5b5b82540f0eb3f8847340",
+    "fin-lock-recorder-native-retry.json": "38988c651c05b82bc7cbbe49422c4c81c686164c2b82d24fc9b3b1ec8586e4d7"
+  },
+  "full_fresh_gate_rerun_qualified": false,
+  "financial_posting": false,
+  "certification": false,
+  "floor_provider_qualified": false,
+  "live_model_qualified": false,
+  "external_provider_qualified": false,
+  "qualification": "Targeted reviewed recorder correction and a new isolated FIN native fixture only. Seven canonical entry points remain no-argument callable; no other procedures were re-executed by source inspection. Combined fresh gate still requires root release/rerun."
+}

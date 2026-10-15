@@ -1,0 +1,20 @@
+{
+  "label": "redis-recovery-pair-stop",
+  "script": "distribution-pair-control.py",
+  "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+  "arguments": [
+    "stop"
+  ],
+  "started_at": "2026-10-15T20:08:07.111951+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:07.360146+00:00",
+  "result": {
+    "action": "stop",
+    "pid": 14521,
+    "child_sessions": [
+      14522,
+      14523
+    ],
+    "remaining_active_processes": 0
+  }
+}

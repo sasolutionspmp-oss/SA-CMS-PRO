@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "exact_title_and_revision_in_new_outer_manifest",
+    "domain_manifest_unchanged",
+    "legacy_pending_packet_remains_pending_with_original_label",
+    "exact_receipt_replay",
+    "original_packet_bytes_and_hashes_preserved",
+    "all_new_rows_rolled_back"
+  ],
+  "company": "Company chain A 20b85fd4edd2",
+  "original_packet_controls": 14,
+  "persistent_effects": false,
+  "revision_id": "8a367652-4335-418c-b41a-dda538cf0d43",
+  "schema": "cipher.approval.presentation.native-acceptance.v1",
+  "source_hashes": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py": "ef748784293d047f64eccd13e82e0d0351ece1ae96111b3bec90903c43589505",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py": "199d413bc1a0eb49be78d82a25da1c228afb1b7e7433d6dadc87b418714fcdd2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py": "9adc9c181029bd9799a1ebca9f6e568a59b8fc8222112faa27f74181c067a836",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_approval_presentation.py": "e4a85aeede302cdee6169f9adfd01303867fd0ace42a2f90cd1df7493f778fc8"
+  },
+  "status": "passed",
+  "subject_label": "Company manual estimate http 20b85fd4edd2 \u00b7 Revision 3",
+  "unit_checks": {
+    "openapi": 4,
+    "presentation": 3,
+    "status": "passed"
+  }
+}

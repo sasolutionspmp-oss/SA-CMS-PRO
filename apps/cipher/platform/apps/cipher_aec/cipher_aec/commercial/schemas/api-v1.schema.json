@@ -224,7 +224,10 @@
         },
         "source_references": {
           "type": "array",
-          "maxItems": 0
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/ComSourceReference"
+          }
         },
         "estimate_revision": {
           "type": "null"
@@ -233,6 +236,16 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 140
+        },
+        "estimate_reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComEstimateReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -581,6 +594,23 @@
             "native_company_version"
           ],
           "additionalProperties": false
+        },
+        "source_citations": {
+          "type": "array",
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/ComSourceCitation"
+          }
+        },
+        "accepted_estimate": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComAcceptedEstimate"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       },
       "required": [
@@ -969,13 +999,104 @@
                 "changed"
               ],
               "additionalProperties": false
+            },
+            "basis": {
+              "type": "object",
+              "properties": {
+                "before": {
+                  "type": "object",
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "price_list": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 140
+                    },
+                    "source_references": {
+                      "type": "array",
+                      "maxItems": 30,
+                      "items": {
+                        "$ref": "#/$defs/ComSourceReference"
+                      }
+                    },
+                    "estimate_reference": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/$defs/ComEstimateReference"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "currency",
+                    "price_list",
+                    "source_references",
+                    "estimate_reference"
+                  ],
+                  "additionalProperties": false
+                },
+                "after": {
+                  "type": "object",
+                  "properties": {
+                    "currency": {
+                      "type": "string",
+                      "pattern": "^[A-Z]{3}$"
+                    },
+                    "price_list": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 140
+                    },
+                    "source_references": {
+                      "type": "array",
+                      "maxItems": 30,
+                      "items": {
+                        "$ref": "#/$defs/ComSourceReference"
+                      }
+                    },
+                    "estimate_reference": {
+                      "anyOf": [
+                        {
+                          "$ref": "#/$defs/ComEstimateReference"
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  },
+                  "required": [
+                    "currency",
+                    "price_list",
+                    "source_references",
+                    "estimate_reference"
+                  ],
+                  "additionalProperties": false
+                },
+                "changed": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "before",
+                "after",
+                "changed"
+              ],
+              "additionalProperties": false
             }
           },
           "required": [
             "sections",
             "price_lines",
             "terms",
-            "validity"
+            "validity",
+            "basis"
           ],
           "additionalProperties": false
         }
@@ -1246,6 +1367,944 @@
         "expected_revision",
         "expected_native_fingerprint",
         "composition"
+      ],
+      "additionalProperties": false
+    },
+    "ComSourceReference": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "pattern": "^REV-[a-f0-9]{32}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "purpose": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "permission_basis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "revision_id",
+        "page",
+        "excerpt_sha256",
+        "source_sha256",
+        "purpose",
+        "permission_basis"
+      ],
+      "additionalProperties": false
+    },
+    "ComEstimateReference": {
+      "type": "object",
+      "properties": {
+        "acceptance_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "acceptance_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "acceptance_id",
+        "acceptance_digest",
+        "revision_id",
+        "revision_digest"
+      ],
+      "additionalProperties": false
+    },
+    "ComAcceptedEstimate": {
+      "type": "object",
+      "properties": {
+        "acceptance_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "acceptance_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "snapshot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "snapshot_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pursuit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "total": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+            },
+            "currency": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "currency"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "acceptance_id",
+        "acceptance_digest",
+        "estimate_id",
+        "revision_id",
+        "revision_digest",
+        "snapshot_id",
+        "snapshot_digest",
+        "manifest_digest",
+        "pursuit_id",
+        "currency",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ComSourceCitation": {
+      "type": "object",
+      "properties": {
+        "citation": {
+          "$ref": "#/$defs/ComCompanyCitation"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "permission_basis": {
+          "type": "string"
+        },
+        "policy": {
+          "const": "pinned-revision-page-v1"
+        }
+      },
+      "required": [
+        "citation",
+        "purpose",
+        "permission_basis",
+        "policy"
+      ],
+      "additionalProperties": false
+    },
+    "ComCompanyCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string"
+        },
+        "document_title": {
+          "type": "string"
+        },
+        "page_label": {
+          "type": "string"
+        },
+        "excerpt": {
+          "type": "string"
+        },
+        "excerpt_sha256": {
+          "type": "string"
+        },
+        "source_sha256": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "project": {
+          "type": "null"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256",
+        "company",
+        "revision_number",
+        "page",
+        "scope_type",
+        "project"
+      ]
+    },
+    "ComRecipient": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 254
+        },
+        "organization": {
+          "type": "string",
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "name",
+        "email",
+        "organization"
+      ],
+      "additionalProperties": false
+    },
+    "ComRendererPolicy": {
+      "type": "object",
+      "properties": {
+        "renderer": {
+          "const": "weasyprint"
+        },
+        "versions": {
+          "type": "object",
+          "properties": {
+            "weasyprint": {
+              "const": "68.0"
+            },
+            "pydyf": {
+              "const": "0.12.1"
+            },
+            "fonttools": {
+              "const": "4.67.0"
+            }
+          },
+          "required": [
+            "weasyprint",
+            "pydyf",
+            "fonttools"
+          ],
+          "additionalProperties": false
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "renderer",
+        "versions",
+        "fonts",
+        "parameters",
+        "fingerprint"
+      ],
+      "additionalProperties": false
+    },
+    "ComOutputBinding": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.proposal.output.input.v1"
+        },
+        "company": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "accepted_estimate": {
+          "$ref": "#/$defs/ComAcceptedEstimate"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComSourceCitation"
+          }
+        },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/ComRecipient"
+          }
+        },
+        "cover": {
+          "type": "string",
+          "maxLength": 12000
+        },
+        "renderer": {
+          "$ref": "#/$defs/ComRendererPolicy"
+        }
+      },
+      "required": [
+        "schema",
+        "company",
+        "proposal_id",
+        "proposal_revision_id",
+        "proposal_revision_digest",
+        "native_fingerprint",
+        "accepted_estimate",
+        "source_citations",
+        "recipients",
+        "cover",
+        "renderer"
+      ],
+      "additionalProperties": false
+    },
+    "ComRenderingProvenance": {
+      "type": "object",
+      "properties": {
+        "renderer": {
+          "const": "weasyprint"
+        },
+        "versions": {
+          "type": "object",
+          "properties": {
+            "weasyprint": {
+              "const": "68.0"
+            },
+            "pydyf": {
+              "const": "0.12.1"
+            },
+            "fonttools": {
+              "const": "4.67.0"
+            }
+          },
+          "required": [
+            "weasyprint",
+            "pydyf",
+            "fonttools"
+          ],
+          "additionalProperties": false
+        },
+        "fonts": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "parameters": {
+          "type": "object"
+        },
+        "fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "proposal_revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "baseline": {
+          "$ref": "#/$defs/ComAcceptedEstimate"
+        },
+        "cover_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "output_byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "renderer",
+        "versions",
+        "fonts",
+        "parameters",
+        "fingerprint",
+        "proposal_revision_digest",
+        "baseline",
+        "cover_digest",
+        "recipients_digest",
+        "output_sha256",
+        "output_byte_length",
+        "input_digest"
+      ],
+      "additionalProperties": false
+    },
+    "ComPreparedOutput": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "pattern": "^DOC-[a-f0-9]{32}$"
+        },
+        "revision_id": {
+          "type": "string",
+          "pattern": "^REV-[a-f0-9]{32}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10485760
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "input_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "binding": {
+          "$ref": "#/$defs/ComOutputBinding"
+        },
+        "rendering": {
+          "$ref": "#/$defs/ComRenderingProvenance"
+        },
+        "review_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "company",
+        "proposal_id",
+        "proposal_revision_id",
+        "proposal_revision_digest",
+        "document_id",
+        "revision_id",
+        "source_sha256",
+        "byte_length",
+        "page_count",
+        "input_digest",
+        "binding",
+        "rendering",
+        "review_version"
+      ],
+      "additionalProperties": false
+    },
+    "ComPreparedOutputCommand": {
+      "type": "object",
+      "properties": {
+        "prepared_output": {
+          "$ref": "#/$defs/ComPreparedOutput"
+        },
+        "operation": {
+          "$ref": "#/$defs/ComOperation"
+        }
+      },
+      "required": [
+        "prepared_output",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "ComIssue": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string"
+        },
+        "author_person": {
+          "type": "string"
+        },
+        "proposal": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "proposal_revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "packet_id": {
+          "type": "string"
+        },
+        "decision_id": {
+          "type": "string"
+        },
+        "approved_by_person": {
+          "type": "string"
+        },
+        "output_revision": {
+          "type": "string"
+        },
+        "prepared_output": {
+          "$ref": "#/$defs/ComPreparedOutput"
+        },
+        "accepted_estimate": {
+          "$ref": "#/$defs/ComAcceptedEstimate"
+        },
+        "selected_lines": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "properties": {
+              "line": {
+                "$ref": "#/$defs/ComPricedLine"
+              },
+              "unit": {
+                "type": "object"
+              },
+              "native_item": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "line",
+              "unit",
+              "native_item"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "composition": {
+          "$ref": "#/$defs/ComComposition"
+        },
+        "pricing": {
+          "$ref": "#/$defs/ComPricing"
+        },
+        "units": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object"
+          }
+        },
+        "native_snapshot": {
+          "$ref": "#/$defs/ComNativeSnapshot"
+        },
+        "native_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native_lifecycle": {
+          "const": "draft-snapshot"
+        },
+        "status": {
+          "const": "issued"
+        },
+        "distribution": {
+          "const": "not-sent"
+        },
+        "manifest": {
+          "type": "object"
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "author_person",
+        "proposal",
+        "proposal_revision",
+        "proposal_revision_digest",
+        "revision_number",
+        "predecessor",
+        "packet_id",
+        "decision_id",
+        "approved_by_person",
+        "output_revision",
+        "prepared_output",
+        "accepted_estimate",
+        "selected_lines",
+        "composition",
+        "pricing",
+        "units",
+        "native_snapshot",
+        "native_fingerprint",
+        "native_lifecycle",
+        "status",
+        "distribution",
+        "manifest",
+        "manifest_digest"
+      ],
+      "additionalProperties": false
+    },
+    "ComIssueList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComIssue"
+          }
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ComPrepareOutputRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 30,
+          "items": {
+            "$ref": "#/$defs/ComRecipient"
+          }
+        },
+        "cover": {
+          "type": "string",
+          "maxLength": 12000
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "proposal_id",
+        "revision_id",
+        "expected_revision_digest",
+        "recipients",
+        "cover"
+      ],
+      "additionalProperties": false
+    },
+    "ComPreparedOutputRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "revision_id"
+      ],
+      "additionalProperties": false
+    },
+    "ComIssueRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "issue_id"
+      ],
+      "additionalProperties": false
+    },
+    "ComIssuesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 30
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "proposal_id"
+      ],
+      "additionalProperties": false
+    },
+    "ComOutputSubject": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native_fingerprint": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "is_current": {
+          "const": true
+        },
+        "prepared_output": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ComPreparedOutput"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "proposal_id",
+        "revision_id",
+        "revision_digest",
+        "native_fingerprint",
+        "is_current",
+        "prepared_output"
+      ],
+      "additionalProperties": false
+    },
+    "ComOutputSubjectRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "proposal_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "proposal_id"
       ],
       "additionalProperties": false
     }

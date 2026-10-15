@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "operation",
     "fencing_token",
     "outcome",
@@ -13,6 +14,14 @@
     "project"
   ],
   "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
     {
       "fieldname": "operation",
       "label": "Operation",
@@ -31,7 +40,7 @@
       "label": "Outcome",
       "fieldtype": "Select",
       "reqd": 1,
-      "options": "Succeeded\nFailed\nUnknown"
+      "options": "Succeeded\nFailed\nUnknown\nCancelled"
     },
     {
       "fieldname": "safe_details",
@@ -50,8 +59,9 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
-      "options": "Project"
+      "reqd": 0,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
     }
   ],
   "permissions": [

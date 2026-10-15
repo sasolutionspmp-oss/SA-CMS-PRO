@@ -1,0 +1,242 @@
+{
+  "mode": "actual-frappe-distribution-readonly",
+  "attempt": "066453dd-6a05-481e-ba43-77886869d802",
+  "continuation_of_attempt": "70ee36f5-4aea-49cc-9bb0-b38a44009195",
+  "captured_at": "2026-10-15T20:36:35.755Z",
+  "company": "Company chain A 20b85fd4edd2",
+  "ids": {
+    "issue": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+    "instruction": "d70e248c-84e2-40fb-aa23-e3ab373486ad",
+    "packet": "dqsfgreidq",
+    "dispatch": "c717b093-2892-4bc8-a210-47a617dc5ac2"
+  },
+  "selected_recipients": [
+    {
+      "id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+      "email": "qa.first@cipher.example",
+      "name": "Synthetic first recipient",
+      "organization": "Independent local fixture"
+    }
+  ],
+  "issued_recipient_count": 2,
+  "canonical_pdf_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+  "actual_pdf_bytes_verified": true,
+  "dispatch_readback": {
+    "dispatch": {
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T20:34:16.651057Z",
+      "decision_id": "dsqi8brta1",
+      "execute_session_reference": "fd368dd56bde072efab80b81eb553642e25440eaeff3db0aa9311982a5d588d7",
+      "id": "c717b093-2892-4bc8-a210-47a617dc5ac2",
+      "instruction_digest": "052c61a96224e430643f5933cf3f894abeeb5e92d8db28a6da08e0b977ac6688",
+      "instruction_id": "d70e248c-84e2-40fb-aa23-e3ab373486ad",
+      "issue_id": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+      "mode": "fixture",
+      "packet_id": "dqsfgreidq",
+      "packet_manifest_hash": "e3eb64a87c359acb3a48a318a7ea7ddcb555ab0f8afc321070a4cde0893d8758",
+      "policy_revision": "CIPHER-PROPOSAL-DISTRIBUTE-POLICY-V1-COMPANY",
+      "profile": {
+        "attempt_seconds": 30,
+        "enabled": true,
+        "id": "local-fixture-v1",
+        "mandate_seconds": 86400,
+        "max_recipients": 30,
+        "mode": "fixture",
+        "version": 1
+      },
+      "project": null,
+      "request_session_reference": "fd368dd56bde072efab80b81eb553642e25440eaeff3db0aa9311982a5d588d7",
+      "requester_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "requester_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "review_session_reference": "94253e181c85098ac0d9e738c96c6de3a16cf4244016bd5b9d57206575abb464",
+      "reviewer_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "reviewer_user": "company.chain.reviewer.20b85fd4edd2@cipher.example",
+      "scope_type": "Company",
+      "valid_until": "2026-10-16T20:33:59.635234Z"
+    },
+    "state": "SucceededFixture",
+    "mode": "fixture",
+    "deliveries": [
+      {
+        "operation_id": "dum95oga61",
+        "recipient_id": "e37b8dc91197f29ee2202bc5548f9dc7d22a2381900e40ffdaf037a9e914fcc9",
+        "state": "Succeeded",
+        "logical_key": "46c2ecb37ebecb45fafb439a6a18358a1e7426e6b46b6d42adf6775d59aa6330",
+        "payload_hash": "f9befe83c701e9dd7b2a6f4f593ba449796543cfccf10953e1a84acff1d28a89",
+        "mode": "fixture",
+        "receipt": {
+          "mode": "fixture",
+          "receipt": {
+            "accepted_at": "2026-10-15T20:35:04.562682+00:00",
+            "acknowledgment_id": "6e3c4f8d-36de-4ed8-8138-cf19039a6cce",
+            "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+            "byte_length": 12624,
+            "logical_key": "46c2ecb37ebecb45fafb439a6a18358a1e7426e6b46b6d42adf6775d59aa6330",
+            "mode": "fixture",
+            "payload_hash": "f9befe83c701e9dd7b2a6f4f593ba449796543cfccf10953e1a84acff1d28a89"
+          }
+        },
+        "error_code": null
+      }
+    ],
+    "cancellation": null
+  },
+  "mutations": [],
+  "private_journal": "/tmp/cipher-r0-runtime/distribution-ui-066453dd-6a05-481e-ba43-77886869d802.private.jsonl",
+  "independent_review_and_separate_execution": true,
+  "live_transmission": false,
+  "worker_administration_performed": false,
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "project_authority_requests": [],
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "source_hashes": {
+    "../src/App.tsx": "3d509136406f6ecabc41473886958a8ede41d49d3d14113ce5435ced9b544735",
+    "../src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "../src/Commercial.tsx": "162b5d51905594fd145000c236a2f367220b5ff5f9320fe30935816e831e606d",
+    "../src/CommercialObjectTitle.tsx": "910bcf55561d865e3a4bde7e51cc7250eef468e94ac12026bef1ee5012339009",
+    "../src/CompanyApprovals.tsx": "c7810c224c6efc616a6b0400fcccba97a2886cec8e40197407905f38906ba8fc",
+    "../src/CompanyDocuments.tsx": "5490656961cbe588daebb617eca7d22208714c9b2ca6d721321eff24ca6e4490",
+    "../src/CompanyEstimates.tsx": "bc9eb5c0f0049c5774fa763cf2148188a12375a211b501c19b311d1de76b93c2",
+    "../src/DistributionReview.tsx": "d536b7475a14c66cfa8ac631969b8bb03d06740ff801407347bf021bee7d297f",
+    "../src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "../src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "../src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "../src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "../src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "../src/IssuePreparedReview.tsx": "e14d71d4664867bee11004ec8f87ecb5e86c0a3d89dbc8a657dd84831c746608",
+    "../src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "../src/PdfDrawing.tsx": "785ec6aceb12beca5e8de765acaaa9ae147ff35daabfdc5632cb8170bdd71039",
+    "../src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "../src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "../src/ProposalDistribution.tsx": "141b7f470dc922388c6ad76d1af86d4732f3a757a64f6909480c5f741032e94a",
+    "../src/ProposalOutput.tsx": "df3fcc359b416e70c46095bfce52ed1d227aea15282721597313e737067aa00a",
+    "../src/ProposalSources.tsx": "bc2a12e3e4aa7879e251c0f09fe7a4ec1485df58f47b11b960ce018aefa55078",
+    "../src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "../src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "../src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "../src/Takeoff.tsx": "e50dc217e858186ee32c8dbd27b192c0201feaa2ee5d955395eaf546d50e1916",
+    "../src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "../src/api/commercial.generated.ts": "f0f2f06bba0a5d2454365e90f938f3276d94c99830c2db8717ffb20c2e0cc09b",
+    "../src/api/commercial.ts": "556026976235ccae0e5306e7bf31d3063a3254b7f03c2dcca9708daa772f3f60",
+    "../src/api/company-approvals.ts": "e6d9d51df14b56098710e6a50b53e48cd8f0331d1eae3961c1ee7545ea19d687",
+    "../src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "../src/api/company-estimating.generated.ts": "9c723903fbcf403c84ea9aa74f6345602e53d74b5092d666a3894d7b28288585",
+    "../src/api/company-estimating.ts": "ccc19ab23b49dda97fb298a052e1bb23e3be1c1866071616a41f95b0755cd8bb",
+    "../src/api/contracts.generated.ts": "3fa727df578dff466c0d162ca0e52b3ef7bdb47a6e53228743395ba6779b4dc9",
+    "../src/api/distribution.generated.ts": "2d57048085f61580a63ade03c51c5001bf5805b4926a4dc5570a9c1214e2a515",
+    "../src/api/distribution.ts": "ca7cc3c48cbeee264f774900f194b84e8afb37ef200354ffb97424176877a6c0",
+    "../src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "../src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "../src/api/masters.ts": "1d8ad7f5e3add764ad1631734acd2eca900494127f4f39d4be592e3984257a00",
+    "../src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "../src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "../src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "../src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "../src/components.tsx": "f5c23b454489eeee7212e7c0efcbd7ca65624e0581c45ffe7d2fe1d256185126",
+    "../src/distribution-contract.ts": "9d7cbe3c5966d361418036734140603defdda9ccf480289e9cb3d93708b39f02",
+    "../src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "../src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "../src/main.tsx": "1dd45d45d97474eadb18976d33fcee2cfe1628ac3e6e9782fa1c4a7126debaa7",
+    "../src/styles.css": "2ea7d61d399c96b455f18ca62ffece78a87badbd96f3f1d05014531102e8e755",
+    "../src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "../scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "../scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "../scripts/connected-com02-execute.mjs": "f40be9cb31bafa337182427f5e9fc897c684390005369831fe3be13533797d7e",
+    "../scripts/connected-com02.mjs": "0b0ae7fe82898acd8ffda559a4328eca9c7d24f71d8f09ad1e4f039f494a6e83",
+    "../scripts/connected-company.mjs": "676577597644bd7bfdc63cecbfeb1fcd10c7a33308d1ac92087d34753d84df06",
+    "../scripts/connected-distribution.mjs": "a41d46aedd0e210dc3f17255edb5d24da4a980ff9ad016a7dc7ef2c6486136d8",
+    "../scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "../scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "../scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "../scripts/connected-polish-readonly.mjs": "cfdc892b890e1cf98aea16539976cfdcdee36ad2018615c8ca10c6b8cedc3d60",
+    "../scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "../scripts/connected-takeoff.mjs": "45bee60823ea90c81aeec4fb954e9c27fd671834b5c822e89a28c6d4ce3cb8a5",
+    "../scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "../scripts/generate-api.mjs": "f873ad31ec6addb0a2617be2c98e668d6abd7fef58102541d856156ae35af84e",
+    "../package.json": "da049761001530552192eb95a6df4a4cedafda084ac0a22cbd0a4b03292ecb5a",
+    "../package-lock.json": "fd89c56a85d0d5f16fee82d0acb4671b7064385f4a4a87b709d51a86c2f85a64"
+  },
+  "served_assets": [
+    {
+      "path": "/assets/index-DmhOBUhr.js",
+      "sha256": "764bdb1347ccc61934d5149b90bcbe6b8615b687aa3c6775f555fd29eb70ad33"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-BgzUu5VV.js",
+      "sha256": "7a6e5be38ee075cd953c67ca230b10f79216719b630d010ae02a61fb6359a66a"
+    },
+    {
+      "path": "/assets/components-BmRFSRns.js",
+      "sha256": "057721956415aa2b4e4abc4e0a3f95a29aef05fa131241c3850d358d798ed3f3"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964"
+    },
+    {
+      "path": "/assets/useMutation-B7FEum11.js",
+      "sha256": "c42aa31d1b2c0c2d6714a19ffe7b2e0c2944f12e2ac242fc0aa8fc5df3c0ea27"
+    },
+    {
+      "path": "/assets/Approvals-iTGucEzQ.js",
+      "sha256": "b4e904c8680022dba0a23a35ee7f4fd10b0e5711293114cf7c3708b449f5f034"
+    },
+    {
+      "path": "/assets/Input-CHvf0cAl.js",
+      "sha256": "9b877590c1e0e4c153848b27a6bd6417f3ff5381ce659e12c05bc970090ef4e8"
+    },
+    {
+      "path": "/assets/Input-0B3zfOsS.js",
+      "sha256": "a8b2953489cda593b21e08fcb117f1d32e4d826560cdea006f39e2767a596e9b"
+    },
+    {
+      "path": "/assets/Text-DszZlDxA.js",
+      "sha256": "8516463304b771c90346909fcd80744580bf0274acabef3fb8477db446ed7339"
+    },
+    {
+      "path": "/assets/estimating-C90fSZ_i.js",
+      "sha256": "b26f377e3d0b48fc9e8cc164e3a1b2abc7a2248210461b103e06af6eacf49b4b"
+    },
+    {
+      "path": "/assets/index-C4G8nBCn.css",
+      "sha256": "235069e08cad4f2fa40a483e5004084a959bdb211e41f1e505a945a0fe99e56e"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/Commercial-DZAXtlN2.js",
+      "sha256": "36a009c310e4512eb968ab6cf71fa6ca04daa8081f906a0a7fa808b03431d8cb"
+    },
+    {
+      "path": "/assets/CompanyApprovals-D9fybGF0.js",
+      "sha256": "ccff058d6a8c421279e7a75d1376fb86056d42884127c78d2a28b10d026e05bb"
+    },
+    {
+      "path": "/assets/company-estimating-B9sWPhcH.js",
+      "sha256": "2132af4d3988cdd78facd0154626d2a0ea1b02aab792715e97854b5c706d8110"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-D7hXf7Rt.js",
+      "sha256": "99ab0b5aacff925728cffc4be1a9cee63eb249de40dc837a685a78f242acec53"
+    }
+  ],
+  "recovery_limit": "Mounted-only application recovery; private tooling journal does not add restart recovery."
+}

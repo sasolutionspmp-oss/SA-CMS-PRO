@@ -1,0 +1,17 @@
+{
+  "schema": "cipher.r1.distribution-queue-configuration.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T19:39:30.551489+00:00",
+  "duration_seconds": 0.848,
+  "queue": "cipher_distribution",
+  "timeout_seconds": 120,
+  "unrelated_common_configuration_preserved": true,
+  "site_configuration_preserved": true,
+  "common_before_sha256": "855cfeba2319bf07626fafbff1a137cdc37118091c31c31de726ae369ce9baef",
+  "common_after_sha256": "12b8f59aa7a892829f0dfe3c2c31272283fa1e91b55f1cbd8b8fc7f62e981da1",
+  "site_configuration_sha256": "b9179832070499c883ef29c53b136928703607357192b06615593a214241ddd7",
+  "environment_queue_override_present": false,
+  "source_sha256": "d72576cad9f89888329825e33d15740ae485ed4afe7debe9cce213ec661c3da9",
+  "log_sha256": "c50725d8eaea90859114fffef4c8a0b7d45456912414802f18d7f996e75f2b2b",
+  "qualification": "Supported queue registration only. No consumer or publisher started, no business action executed, and no enqueue or delivery readiness inferred."
+}

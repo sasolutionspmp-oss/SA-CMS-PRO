@@ -1,6 +1,7 @@
-import type { EstAdjustment, EstAssemblyDefinition, EstLineInput, EstRateDefinition, EstSnapshotRecord, EstUnitRecord } from './api/estimating.generated';
+import type { EstAdjustment, EstAssemblyDefinition, EstCitation, EstLineInput, EstRateDefinition, EstSnapshotRecord, EstUnitRecord } from './api/estimating.generated';
+import type { CompanyEstSnapshotRecord } from './api/company-estimating.generated';
 
-export interface EstimateDraft { lines: EstLineInput[]; adjustments: EstAdjustment[]; conversion_ids: string[]; basis_description: string; basis_citations: EstSnapshotRecord['inputs']['basis_citations'] }
+export interface EstimateDraft { lines: EstLineInput[]; adjustments: EstAdjustment[]; conversion_ids: string[]; basis_description: string; basis_citations: EstCitation[] }
 export interface SourceChoice { id: string; kind: 'rate' | 'assembly'; label: string; unitId: string; rate?: EstRateDefinition; assembly?: EstAssemblyDefinition }
 export const decimalPattern = /^(0|[1-9][0-9]*)(\.[0-9]{1,12})?$/;
 export function exactDisplay(value: string) {
@@ -57,6 +58,6 @@ export function parsePastedLines(text: string, units: EstUnitRecord[], choices: 
   if (Object.keys(errors).length) throw new Error(Object.values(errors)[0]);
   return lines;
 }
-export function draftFromSnapshot(snapshot?: EstSnapshotRecord): EstimateDraft {
+export function draftFromSnapshot(snapshot?: EstSnapshotRecord | CompanyEstSnapshotRecord): EstimateDraft {
   return snapshot ? structuredClone({ lines: snapshot.inputs.lines, adjustments: snapshot.inputs.adjustments, conversion_ids: snapshot.inputs.unit_manifest.unit_conversions.map(conversion => conversion.id), basis_description: snapshot.inputs.basis_description, basis_citations: snapshot.inputs.basis_citations }) : { lines: [], adjustments: [], conversion_ids: [], basis_description: '', basis_citations: [] };
 }

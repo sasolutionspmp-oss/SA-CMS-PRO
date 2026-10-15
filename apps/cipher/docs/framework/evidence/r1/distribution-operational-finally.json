@@ -1,0 +1,8 @@
+{
+  "recorded_at": "2026-10-15T20:08:44.602101+00:00",
+  "cleanup_errors": [
+    "RuntimeError:quarantine_cleanup"
+  ],
+  "pair_initially_stopped": true,
+  "cleanup_policy": "Stop pair; exact saved config restoration; reload after restoration."
+}

@@ -1,0 +1,168 @@
+{
+  "schema": "cipher.r1.distribution-read-model-http.v1",
+  "status": "passed",
+  "started_at": "2026-10-15T20:06:50.114765+00:00",
+  "business_commands_sent": 0,
+  "company": "Company chain A 20b85fd4edd2",
+  "issue_id": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+  "canonical_recipient_count": 2,
+  "existing_instruction_count": 6,
+  "filtered_instruction_count": 5,
+  "original_instruction_and_version_preserved": true,
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.recipient_choices",
+      "http_status": 200,
+      "request_id": "726be944-0c85-485e-930d-eb9a4ad9251d",
+      "server_time": "2026-10-15T20:06:51.387677Z",
+      "request_seconds": 0.891196
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 200,
+      "request_id": "7acb7c27-8f4c-4f93-a829-7bc3af587c9c",
+      "server_time": "2026-10-15T20:06:52.623506Z",
+      "request_seconds": 1.194474
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 200,
+      "request_id": "e4aa373e-d1ad-499d-b37a-af0746896c55",
+      "server_time": "2026-10-15T20:06:54.200816Z",
+      "request_seconds": 1.575417
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 200,
+      "request_id": "5b7533c2-11f3-45a0-98cf-231b0b363373",
+      "server_time": "2026-10-15T20:06:55.954338Z",
+      "request_seconds": 1.751978
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 200,
+      "request_id": "688be153-5204-4205-998a-c8b200a80c38",
+      "server_time": "2026-10-15T20:06:57.418134Z",
+      "request_seconds": 1.463183
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 422,
+      "request_id": "0ec8ba3a-c90b-4c3c-bc17-cf4226b9fa6e",
+      "server_time": "2026-10-15T20:06:58.146948Z",
+      "request_seconds": 0.72816,
+      "error_code": "invalid_cursor"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.recipient_choices",
+      "http_status": 404,
+      "request_id": "1c402c60-53f7-49fb-9067-70886d9add85",
+      "server_time": "2026-10-15T20:06:58.153128Z",
+      "request_seconds": 0.005551,
+      "error_code": "not_found"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 404,
+      "request_id": "be312e8b-f1e9-4da6-b0dc-d60824fb108d",
+      "server_time": "2026-10-15T20:06:58.157410Z",
+      "request_seconds": 0.004483,
+      "error_code": "not_found"
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.integrations.distribution_api.recipient_choices",
+      "http_status": 404,
+      "request_id": "f71d0cf0-b9f0-4b4c-aac0-31f0d08fedc7",
+      "server_time": "2026-10-15T20:06:58.235430Z",
+      "request_seconds": 0.008137,
+      "error_code": "not_found"
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 404,
+      "request_id": "f27d8879-0fb3-4c95-9c3c-714caf491825",
+      "server_time": "2026-10-15T20:06:58.245709Z",
+      "request_seconds": 0.010381,
+      "error_code": "not_found"
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 200,
+      "request_id": "24f04db6-e3c0-4014-b8d1-6fc4475acb82",
+      "server_time": "2026-10-15T20:06:58.253739Z",
+      "request_seconds": 0.007815
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.integrations.distribution_api.recipient_choices",
+      "http_status": 404,
+      "request_id": "b141033b-4b5b-48b4-b521-a10218e18b4b",
+      "server_time": "2026-10-15T20:06:58.259209Z",
+      "request_seconds": 0.004878,
+      "error_code": "not_found"
+    },
+    {
+      "role": "outsider",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 404,
+      "request_id": "80636905-7991-4aa7-a848-f1d09da30641",
+      "server_time": "2026-10-15T20:06:58.263576Z",
+      "request_seconds": 0.004706,
+      "error_code": "not_found"
+    },
+    {
+      "role": "project_only",
+      "method": "cipher_aec.integrations.distribution_api.recipient_choices",
+      "http_status": 404,
+      "request_id": "df6db5a6-4beb-461f-8dc5-bceda21a53c7",
+      "server_time": "2026-10-15T20:06:58.369694Z",
+      "request_seconds": 0.00556,
+      "error_code": "not_found"
+    },
+    {
+      "role": "project_only",
+      "method": "cipher_aec.integrations.distribution_api.list_instructions",
+      "http_status": 404,
+      "request_id": "c3ef091f-32ce-42ae-8f97-79bd73bd048e",
+      "server_time": "2026-10-15T20:06:58.374190Z",
+      "request_seconds": 0.004311,
+      "error_code": "not_found"
+    }
+  ],
+  "schema_samples": 6,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.348193,
+      "session_seconds": 0.028157,
+      "status": "passed",
+      "total_seconds": 0.376353
+    },
+    {
+      "role": "outsider",
+      "login_seconds": 0.055231,
+      "session_seconds": 0.008494,
+      "status": "passed",
+      "total_seconds": 0.063728
+    },
+    {
+      "role": "project_only",
+      "login_seconds": 0.057304,
+      "session_seconds": 0.035592,
+      "status": "passed",
+      "total_seconds": 0.0929
+    }
+  ],
+  "completed_at": "2026-10-15T20:06:58.374934+00:00"
+}

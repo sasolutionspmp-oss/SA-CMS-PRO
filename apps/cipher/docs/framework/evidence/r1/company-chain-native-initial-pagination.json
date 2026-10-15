@@ -1,0 +1,206 @@
+{
+  "calibrated_company_takeoff_qualified": false,
+  "calls": [
+    {
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "alias",
+      "status": "passed"
+    },
+    {
+      "error_code": "operation_conflict",
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "alias",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.get_citation",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.preview_revision",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.search_documents",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "outsider",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "role": "outsider",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "project_only",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "role": "project_only",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.api.get_document",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.commercial.api.create_pursuit",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.create_estimate",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "role": "alias",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "independent_estimate_required",
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "role": "alias",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "role": "reviewer",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "role": "alias",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "role": "reviewer",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "approval_not_executable",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.list_acceptances",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.api.masters.parties",
+      "role": "author",
+      "status": "passed"
+    }
+  ],
+  "checks": [
+    "actual_company_bytes_pages_citations_search_and_canonical_alias_replay",
+    "company_project_namespaces_and_foreign_company_authority_are_isolated",
+    "pursuit_linked_company_manual_estimate_exact30_85_and_single_calculation_retry",
+    "independent_company_human_review_and_one_accepted_baseline_consumption"
+  ],
+  "commercial_issue_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "completed_at": "2026-10-15T17:09:03.438857+00:00",
+  "external_provider_qualified": false,
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "http_cookie_csrf_qualified": false,
+  "live_model_qualified": false,
+  "schema": "cipher.r1.company-manual-native-acceptance.v1",
+  "stale_successor": {
+    "accepted_baseline_count": 1,
+    "current_revision": "28b88dea-1191-43f9-a9a8-6180206a1121",
+    "original_acceptance": "246f477f-b774-486b-9a1b-41360969ee6b",
+    "original_baseline_sha256": "b0e05e10f673437e13bf1a0d41c6c22a2cc13fc23d137093fd3ac2ef51edc740",
+    "reviewed_revision": "80551a4a-b0b4-4598-9c61-b637ceb96837",
+    "source_policy": "Explicit supported current-estimate successor; pinned rates remain unchanged.",
+    "stale_packet": "lmh6qdap6f",
+    "status": "passed"
+  },
+  "started_at": "2026-10-15T17:09:00.158634+00:00",
+  "status": "failed"
+}

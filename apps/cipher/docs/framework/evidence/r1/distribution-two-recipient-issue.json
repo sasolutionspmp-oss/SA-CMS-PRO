@@ -1,0 +1,232 @@
+{
+  "schema": "cipher.r1.distribution-recipient-issue-http.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:01:42.537328+00:00",
+  "live_external_provider_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "issue_id": "6b3cfbb6-aec2-4bb7-b686-a86d5f589b0f",
+  "predecessor": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+  "proposal_revision_id": "6d84f991-5d28-4856-86c0-3bef57b16672",
+  "prepared_output": {
+    "company": "Company chain A 20b85fd4edd2",
+    "proposal_id": "bc4e20d0-6e26-4416-a21f-93a11488faa4",
+    "proposal_revision_id": "6d84f991-5d28-4856-86c0-3bef57b16672",
+    "proposal_revision_digest": "fd37015e84b04a189381045f274f52f59071f1721132d623afe3bc2a6e72d435",
+    "document_id": "DOC-47050dd4ec22457e86f6f2aac75fdf4d",
+    "revision_id": "REV-b87a6c5c3a9e462c8faa345e2568d7e9",
+    "source_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+    "byte_length": 12624,
+    "page_count": 1,
+    "input_digest": "130170b1f66370a1681ec15b8ca807377226ec1a4ed0dbcb4deabe5070c461a4",
+    "binding": {
+      "accepted_estimate": {
+        "acceptance_digest": "babb66326f00a97d44f76047d96abd5e9e66f62753b43924d1552be8423acb47",
+        "acceptance_id": "0a31a296-55b3-4922-a956-3dea0c58405d",
+        "currency": "USD",
+        "estimate_id": "f5119f46-f582-4324-97e1-45ef790b5eac",
+        "manifest_digest": "44872ca147924eb59c3aea56772e54b3ad69c3769d011a2af08ed6d5d2f7249a",
+        "pursuit_id": "4530eddc-b7ea-4669-ab79-c7e43bb7d641",
+        "revision_digest": "375e52b4e04fa567ec772ab5be8ef2a96efece4da99356fb628cd03693be7886",
+        "revision_id": "8e10eee6-2f19-400f-963d-d3bb24486aab",
+        "snapshot_digest": "cdd8c0cd33c101856d7a6d0c1aa4acb968e0810713b0862ed6736656a1ea5fb3",
+        "snapshot_id": "201aab34-8aa4-40a0-b97f-79442110e75c",
+        "total": {
+          "amount": "30.85",
+          "currency": "USD"
+        }
+      },
+      "company": "Company chain A 20b85fd4edd2",
+      "cover": "Two fixed synthetic recipients for independent partial recovery qualification. No external transmission.",
+      "native_fingerprint": "1959513b529046f38bac12e2269e18f68bd4d30603f27a36c2d285dedde262c5",
+      "proposal_id": "bc4e20d0-6e26-4416-a21f-93a11488faa4",
+      "proposal_revision_digest": "fd37015e84b04a189381045f274f52f59071f1721132d623afe3bc2a6e72d435",
+      "proposal_revision_id": "6d84f991-5d28-4856-86c0-3bef57b16672",
+      "recipients": [
+        {
+          "email": "qa.first@cipher.example",
+          "name": "Synthetic first recipient",
+          "organization": "Independent local fixture"
+        },
+        {
+          "email": "qa.second@cipher.example",
+          "name": "Synthetic second recipient",
+          "organization": "Independent local fixture"
+        }
+      ],
+      "renderer": {
+        "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+        "fonts": {
+          "bold": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+          },
+          "regular": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+          }
+        },
+        "parameters": {
+          "font_size_points": "9",
+          "html": "escaped-plain-text",
+          "margin_inches": "0.6",
+          "max_bytes": 10485760,
+          "max_pages": 100,
+          "network": "disabled",
+          "page_size": "US Letter",
+          "policy": "cipher.proposal.pdf.v1"
+        },
+        "renderer": "weasyprint",
+        "versions": {
+          "fonttools": "4.67.0",
+          "pydyf": "0.12.1",
+          "weasyprint": "68.0"
+        }
+      },
+      "schema": "cipher.proposal.output.input.v1",
+      "source_citations": [
+        {
+          "citation": {
+            "company": "Company chain A 20b85fd4edd2",
+            "document_id": "DOC-913b6b19facc4f90bdd8b8ead7f2717f",
+            "document_title": "Company chain source http 20b85fd4edd2",
+            "excerpt": "Explicit synthetic Company chain 20b85fd4edd2 http\nAuthored material rate USD12.34 per fixture quantity.",
+            "excerpt_sha256": "c5c2e8798cc6b9824d4f1fe89c3d4eedbf32ab227f33c713e0266d044ff71cde",
+            "id": "3aab80dd1eb97b0a896598b82f9f9480d5677fddd9dbe92d40be7c885f28d4fe",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-ceabe5116b524795bacaceae7370485b",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b"
+          },
+          "permission_basis": "Authored synthetic fixture; canonical exact page and accepted baseline independently qualified.",
+          "policy": "pinned-revision-page-v1",
+          "purpose": "Explicit Company proposal source QA-COM02-67ec944bb5de"
+        }
+      ]
+    },
+    "rendering": {
+      "baseline": {
+        "acceptance_digest": "babb66326f00a97d44f76047d96abd5e9e66f62753b43924d1552be8423acb47",
+        "acceptance_id": "0a31a296-55b3-4922-a956-3dea0c58405d",
+        "currency": "USD",
+        "estimate_id": "f5119f46-f582-4324-97e1-45ef790b5eac",
+        "manifest_digest": "44872ca147924eb59c3aea56772e54b3ad69c3769d011a2af08ed6d5d2f7249a",
+        "pursuit_id": "4530eddc-b7ea-4669-ab79-c7e43bb7d641",
+        "revision_digest": "375e52b4e04fa567ec772ab5be8ef2a96efece4da99356fb628cd03693be7886",
+        "revision_id": "8e10eee6-2f19-400f-963d-d3bb24486aab",
+        "snapshot_digest": "cdd8c0cd33c101856d7a6d0c1aa4acb968e0810713b0862ed6736656a1ea5fb3",
+        "snapshot_id": "201aab34-8aa4-40a0-b97f-79442110e75c",
+        "total": {
+          "amount": "30.85",
+          "currency": "USD"
+        }
+      },
+      "cover_digest": "e6fd77aab1d7a6e679cadbfbd4de062907282106a0b6d6377a77b690971f0802",
+      "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+      "fonts": {
+        "bold": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+          "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+        },
+        "regular": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+          "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+        }
+      },
+      "input_digest": "130170b1f66370a1681ec15b8ca807377226ec1a4ed0dbcb4deabe5070c461a4",
+      "output_byte_length": 12624,
+      "output_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "parameters": {
+        "font_size_points": "9",
+        "html": "escaped-plain-text",
+        "margin_inches": "0.6",
+        "max_bytes": 10485760,
+        "max_pages": 100,
+        "network": "disabled",
+        "page_size": "US Letter",
+        "policy": "cipher.proposal.pdf.v1"
+      },
+      "proposal_revision_digest": "fd37015e84b04a189381045f274f52f59071f1721132d623afe3bc2a6e72d435",
+      "recipients_digest": "e0603996580bfd07e3bed0d9d170fd37fcff32550dbd98101c0e42e94a786c48",
+      "renderer": "weasyprint",
+      "versions": {
+        "fonttools": "4.67.0",
+        "pydyf": "0.12.1",
+        "weasyprint": "68.0"
+      }
+    },
+    "review_version": "3822e7a1b219469fce0e303e90a4f3b644deff8751c03e474638be78e5e0da8f"
+  },
+  "recipient_count": 2,
+  "distribution": "not-sent",
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.commercial.api.prepare_proposal_output",
+      "http_status": 200,
+      "request_id": "02b90310-b1c5-4850-a22b-d47d8c2c9717",
+      "server_time": "2026-10-15T19:01:45.611235Z",
+      "request_seconds": 2.835656
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 200,
+      "source_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "http_status": 200,
+      "request_id": "7e9fa815-f798-487a-8702-d8c10e15859b",
+      "server_time": "2026-10-15T19:01:48.853084Z",
+      "request_seconds": 3.053318
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "http_status": 200,
+      "request_id": "b33cb0a4-dcb5-4566-ab2a-95f72b5244bf",
+      "server_time": "2026-10-15T19:01:52.444956Z",
+      "request_seconds": 3.487616
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 200,
+      "request_id": "03261da6-882b-472f-89a1-8a3f400a78c1",
+      "server_time": "2026-10-15T19:01:58.784247Z",
+      "request_seconds": 6.339128
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.commercial.api.issue",
+      "http_status": 200,
+      "request_id": "bf70005f-74b6-4048-bdc6-d4ad2c30bb7a",
+      "server_time": "2026-10-15T19:01:59.540560Z",
+      "request_seconds": 0.753876
+    }
+  ],
+  "schema_samples": 9,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.153466,
+      "session_seconds": 0.02011,
+      "status": "passed",
+      "total_seconds": 0.173579
+    },
+    {
+      "role": "reviewer",
+      "login_seconds": 0.087286,
+      "session_seconds": 0.011652,
+      "status": "passed",
+      "total_seconds": 0.098941
+    }
+  ],
+  "completed_at": "2026-10-15T19:01:59.549332+00:00"
+}

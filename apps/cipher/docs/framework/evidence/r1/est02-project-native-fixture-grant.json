@@ -1,0 +1,81 @@
+{
+  "after": {
+    "mutations": 0,
+    "native_rights": {
+      "jordan@cipher.example": {
+        "currency_read": true,
+        "uom_read": true
+      },
+      "morgan@cipher.example": {
+        "currency_read": true,
+        "uom_read": true
+      }
+    },
+    "project": "PROJ-0031",
+    "records": [
+      {
+        "id": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+        "kind": "calibration",
+        "source_bytes_verified": true,
+        "source_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19"
+      },
+      {
+        "id": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+        "kind": "measurement",
+        "source_bytes_verified": true,
+        "source_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19"
+      }
+    ]
+  },
+  "before": {
+    "mutations": 0,
+    "native_rights": {
+      "jordan@cipher.example": {
+        "currency_read": false,
+        "uom_read": false
+      },
+      "morgan@cipher.example": {
+        "currency_read": false,
+        "uom_read": false
+      }
+    },
+    "project": "PROJ-0031",
+    "records": [
+      {
+        "id": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+        "kind": "calibration",
+        "source_bytes_verified": true,
+        "source_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19"
+      },
+      {
+        "id": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+        "kind": "measurement",
+        "source_bytes_verified": true,
+        "source_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19"
+      }
+    ]
+  },
+  "external_provider_qualified": false,
+  "historical_record_writes": false,
+  "live_model_qualified": false,
+  "password_or_binding_changes": false,
+  "qualification": "Explicit supported native fixture grant after opaque404 UI preflight; not a domain authorization bypass.",
+  "recorded_at": "2026-10-15T17:28:24.460200+00:00",
+  "root_serial_identity_slot_used": true,
+  "schema": "cipher.r1.est02-native-fixture-grant.v1",
+  "source_bytes_and_records_verified_before_grant": true,
+  "status": "passed",
+  "supported_role_assignment": {
+    "native_read_only": [
+      "UOM",
+      "Currency"
+    ],
+    "passwords_and_bindings_unchanged": true,
+    "project": "PROJ-0031",
+    "role": "EST02 native source read PROJ-0031",
+    "users": [
+      "morgan@cipher.example",
+      "jordan@cipher.example"
+    ]
+  }
+}

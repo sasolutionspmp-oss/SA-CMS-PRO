@@ -1,0 +1,57 @@
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 309, in execute
+    ret = frappe.get_attr(method)(*fn_args, **fn_kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 180, in run_generated_union_acceptance
+    conversion_args, result = command(est + "create_conversion", {"definition": {"from_unit_id": q["sy"]["id"], "to_unit_id": q["sf"]["id"], "dimension": "area", "numerator": "9", "denominator": "1", "source": "Explicit rational area fixture, independent of document pricing currency"}, "source_citations": [dag["citations"][1]], "permission_basis": "Explicit synthetic source permission"})
+                              ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 148, in command
+    return values, rpc.invoke(method, values)
+                   ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py", line 393, in invoke
+    result=function(**(values or {}))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/company_api.py", line 16, in create_conversion
+    return service.create_conversion(company, operation_id, definition, source_citations, permission_basis, predecessor)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/company_service.py", line 13, in create_conversion
+    return service.create_conversion(company, None, operation_id, definition, source_citations, permission_basis, predecessor)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/service.py", line 132, in create_conversion
+    return run_command(company=company, project=project, operation_id=operation_id, command="estimate.conversion.create.v1",
+                       payload={"definition": definition, "source_citations": source_citations, "permission_basis": permission_basis, "predecessor": predecessor}, ability="estimate.write", effect=effect)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/scopes.py", line 107, in command
+    return run_company_command(company=company, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 16, in run_company_command
+    return _run_scoped_command(company=company, project=None, scope_type="Company", operation_id=operation_id,
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 89, in _run_scoped_command
+    result = effect(actor, locked_project)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/scopes.py", line 105, in prepared_effect
+    return effect(actor, aggregate)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/service.py", line 121, in effect
+    raise DomainError("stale_conversion", "Revise the current immutable conversion for this exact unit pair.", 412)
+cipher_aec.api.errors.DomainError: Revise the current immutable conversion for this exact unit pair.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+           ~~~~~~~~~~~~~~^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1970, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1353, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 907, in invoke
+    return callback(*args, **kwargs)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/__init__.py", line 28, in _func
+    ret = f(ctx.obj, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 313, in execute
+    ret = eval(code, globals(), locals())  # nosemgrep
+  File "<bench execute>", line 1, in <module>
+NameError: name 'cipher_aec' is not defined
+
+name 'cipher_aec' is not defined

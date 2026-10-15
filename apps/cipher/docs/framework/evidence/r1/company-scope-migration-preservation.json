@@ -1,0 +1,56 @@
+{
+  "status": "passed",
+  "control": "existing business columns, stored payloads and hashes; additive scope metadata intentionally excluded",
+  "before_sha256": "89b5d56bdf3d7d513ac40c335d309de672fdafba0ae8c62ee0af55c7943e3f5c",
+  "counts": {
+    "consumptions": {
+      "original_rows": 10,
+      "unchanged": 10,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "decisions": {
+      "original_rows": 12,
+      "unchanged": 12,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "history": {
+      "original_rows": 235,
+      "unchanged": 235,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "original_project": {
+      "original_rows": 1,
+      "unchanged": 1,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "original_tasks": {
+      "original_rows": 14,
+      "unchanged": 14,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "packets": {
+      "original_rows": 12,
+      "unchanged": 12,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    },
+    "policies": {
+      "original_rows": 3,
+      "unchanged": 3,
+      "new_rows": 3,
+      "changed_or_missing": 0
+    },
+    "receipts": {
+      "original_rows": 292,
+      "unchanged": 292,
+      "new_rows": 0,
+      "changed_or_missing": 0
+    }
+  },
+  "changed_ids": []
+}

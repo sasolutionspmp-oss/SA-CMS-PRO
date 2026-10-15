@@ -22,9 +22,12 @@ class CommercialRecord(Document):
         require_company(self.company, ability="commercial.write", actor=actor, lock=True)
         if self.is_new() and self.author_person != actor.person_id:
             raise DomainError("forged_authority", "Commercial authorship must be the current canonical person.", 403)
+        if self.doctype == "Cipher Proposal Issue":
+            from .issue_records import validate_issue
+            validate_issue(self, value, actor)
         before = self.get_doc_before_save()
         if before:
-            if self.doctype == "Cipher Proposal Revision":
+            if self.doctype in ("Cipher Proposal Revision", "Cipher Proposal Issue"):
                 raise DomainError("immutable_proposal_revision", "Create a successor proposal revision.", 409)
             old = json.loads(before.data_json)
             for key in ("id", "company", "author_person", "party_type", "party_id", "opportunity", "quotation", "pursuit"):
@@ -32,7 +35,7 @@ class CommercialRecord(Document):
                     raise DomainError("immutable_commercial_scope", "Commercial scope and native master links cannot change.", 409)
             if value["revision_number"] != old["revision_number"] + 1:
                 raise DomainError("stale_commercial", "Advance the commercial revision exactly once.", 412)
-        for key in ("opportunity", "quotation", "pursuit", "revision_number", "current_revision", "party_type", "party_id", "title", "proposal", "predecessor", "native_fingerprint"):
+        for key in ("opportunity", "quotation", "pursuit", "revision_number", "current_revision", "party_type", "party_id", "title", "proposal", "predecessor", "native_fingerprint", "proposal_revision", "packet_id", "decision_id", "output_revision"):
             if key in value and self.get(key) != value[key]:
                 raise DomainError("commercial_integrity", "Commercial index fields do not match the exact payload.", 409)
         if self.doctype == "Cipher Proposal Revision":

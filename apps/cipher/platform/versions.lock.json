@@ -20,5 +20,27 @@
   "frontend_lock": "../product/package-lock.json",
   "hrms": {
     "status": "deferred until workforce slice; not installed or qualified"
+  },
+  "proposal_pdf_renderer": {
+    "policy": "cipher.proposal.pdf.v1",
+    "renderer": "WeasyPrint",
+    "weasyprint": "68.0",
+    "pydyf": "0.12.1",
+    "fonttools": "4.67.0",
+    "dependency_authority": {
+      "WeasyPrint": "Frappe 16.52.0 pyproject.toml exact upstream dependency",
+      "pydyf": "Frappe 16.52.0 pyproject.toml exact upstream dependency",
+      "fonttools": "cipher_aec pyproject.toml exact direct dependency"
+    },
+    "system_font_package": {
+      "name": "fonts-dejavu-core",
+      "version": "2.37-8",
+      "authority": "digest-pinned upstream runtime image"
+    },
+    "fonts": {
+      "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e",
+      "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+    },
+    "qualification": "Renderer policy checks exact installed dependency versions and font bytes before rendering; deterministic subprocess and extraction tests qualified in the pinned runtime. Generated output/issue lifecycle requires separate native and HTTP acceptance."
   }
 }

@@ -1,0 +1,48 @@
+{
+  "schema": "cipher.history-onepass-qualification.v1",
+  "captured_at": "2026-10-15T19:41:09.996878+00:00",
+  "status": "targeted_checks_passed_runtime_latency_unresolved",
+  "implementation": "One bounded exact-count scan; unchanged source authorization per event and native SQL keyset predicate",
+  "regression_first": {
+    "tests": 7,
+    "failed_before": 3,
+    "passed_before": 4,
+    "log": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_history_listing, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 7 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_history_listing.HistoryListingTests\n   \u001b[31m \u2716 \u001b[0m test_current_denials_rechecked_between_calls_before_counts_and_cursor\n   \u001b[31m \u2716 \u001b[0m test_exact_cursor_retains_sql_tie_order_and_global_visible_total\n   \u001b[31m \u2716 \u001b[0m test_exact_page_counts_and_authorizes_every_event_once\n   \u001b[32m \u2714 \u001b[0m test_explicit_scope_never_counts_other_company_or_project\n   \u001b[32m \u2714 \u001b[0m test_none_mode_still_seeks_and_stops_at_one_extra_visible_row\n   \u001b[32m \u2714 \u001b[0m test_off_page_integrity_failure_aborts_exact_count_without_partial_result\n   \u001b[32m \u2714 \u001b[0m test_scan_bound_counts_denied_rows_and_exposes_no_partial_page\n----------------------------------------------------------------------\nRan 7 tests in 0.009s\n\n\n\n======================================================================\n FAIL  test_current_denials_rechecked_between_calls_before_counts_and_cursor (cipher_aec.tests.test_history_listing.HistoryListingTests.test_current_denials_rechecked_between_calls_before_counts_and_cursor)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_history_listing.py\", line 91, in test_current_denials_rechecked_between_calls_before_counts_and_cursor\n    self.assertEqual(self.calls,Counter({name:1 for name in \"abc\"}))\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    first = {'items': [{'id': 'c'}, {'id': 'b'}], 'has_more': True, 'last': ['2026-10-15 12:00:00.123456', 'b'], 'scope': {'scope': 'signed-exact-context'}, 'limit': 2, 'count_mode': 'exact', 'total': 3}\n    hidden = {'items': [], 'has_more': False, 'last': None, 'scope': {'scope': 'signed-exact-context'}, 'limit': 2, 'count_mode': 'exact', 'total': 0}\n    name = 'c'\n    self = <cipher_aec.tests.test_history_listing.HistoryListingTests testMethod=test_current_denials_rechecked_between_calls_before_counts_and_cursor>\nAssertionError: Counter({'c': 2, 'b': 2, 'a': 2}) != Counter({'a': 1, 'b': 1, 'c': 1})\n\n======================================================================\n FAIL  test_exact_cursor_retains_sql_tie_order_and_global_visible_total (cipher_aec.tests.test_history_listing.HistoryListingTests.test_exact_cursor_retains_sql_tie_order_and_global_visible_total)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_history_listing.py\", line 60, in test_exact_cursor_retains_sql_tie_order_and_global_visible_total\n    self.assertEqual(self.calls,Counter({name:1 for name in [\"a\",\"b\",\"c\",\"d\",\"e\",\"newer\",\"older\"]}))\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    name = 'e'\n    result = {'items': [{'id': 'c'}, {'id': 'a'}], 'has_more': True, 'last': ['2026-10-15 12:00:00.123456', 'a'], 'scope': {'scope': 'signed-exact-context'}, 'limit': 2, 'count_mode': 'exact', 'total': 6}\n    self = <cipher_aec.tests.test_history_listing.HistoryListingTests testMethod=test_exact_cursor_retains_sql_tie_order_and_global_visible_total>\nAssertionError: Counter({'c': 2, 'b': 2, 'a': 2, 'older': 2, 'newer': 1, 'e': 1, 'd': 1}) != Counter({'a': 1, 'b': 1, 'c': 1, 'd': 1, 'e': 1, 'newer': 1, 'older': 1})\n\n======================================================================\n FAIL  test_exact_page_counts_and_authorizes_every_event_once (cipher_aec.tests.test_history_listing.HistoryListingTests.test_exact_page_counts_and_authorizes_every_event_once)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_history_listing.py\", line 50, in test_exact_page_counts_and_authorizes_every_event_once\n    self.assertEqual(self.calls,Counter({name:1 for name in \"abcde\"}))\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    name = 'e'\n    result = {'items': [{'id': 'e'}, {'id': 'c'}], 'has_more': True, 'last': ['2026-10-15 12:00:00.123456', 'c'], 'scope': {'scope': 'signed-exact-context'}, 'limit': 2, 'count_mode': 'exact', 'total': 4}\n    self = <cipher_aec.tests.test_history_listing.HistoryListingTests testMethod=test_exact_page_counts_and_authorizes_every_event_once>\nAssertionError: Counter({'e': 2, 'd': 2, 'c': 2, 'b': 2, 'a': 1}) != Counter({'a': 1, 'b': 1, 'c': 1, 'd': 1, 'e': 1})\n\nFAILED (failures=3)\n"
+  },
+  "after": {
+    "tests": 7,
+    "passed": 7,
+    "elapsed_seconds": 0.007,
+    "log": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_history_listing, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 7 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_history_listing.HistoryListingTests\n   \u001b[32m \u2714 \u001b[0m test_current_denials_rechecked_between_calls_before_counts_and_cursor\n   \u001b[32m \u2714 \u001b[0m test_exact_cursor_retains_sql_tie_order_and_global_visible_total\n   \u001b[32m \u2714 \u001b[0m test_exact_page_counts_and_authorizes_every_event_once\n   \u001b[32m \u2714 \u001b[0m test_explicit_scope_never_counts_other_company_or_project\n   \u001b[32m \u2714 \u001b[0m test_none_mode_still_seeks_and_stops_at_one_extra_visible_row\n   \u001b[32m \u2714 \u001b[0m test_off_page_integrity_failure_aborts_exact_count_without_partial_result\n   \u001b[32m \u2714 \u001b[0m test_scan_bound_counts_denied_rows_and_exposes_no_partial_page\n----------------------------------------------------------------------\nRan 7 tests in 0.007s\n\n\n\nOK\n"
+  },
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py": "a84d7af78a733118b9808323964f7466ae21bd30a51d634f628796cd30962f2e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_history_listing.py": "15f59f3dc76465d7f5e1a8b9b4d5b7747140dbdd2a5eab733fbc7fb9ac728be1"
+  },
+  "native_baseline": {
+    "artifact": "history-read-baseline-profile.json",
+    "complete": false,
+    "query_total": 10000,
+    "elapsed_seconds": 6.056543491009506,
+    "locking_queries_observed": 0,
+    "diagnosis": "Repeated generated/original-source authorization dominates; no lock wait observed in captured SQL",
+    "event_authorization_calls": 6
+  },
+  "remaining": [
+    "Source-bound actual full-history result/timing after coordinated reload and DOC recursion optimization",
+    "No final whole-history latency readiness claim from this one-pass patch"
+  ],
+  "review": {
+    "reviewer": "Astra orchestration",
+    "status": "approved",
+    "source_hash": "a84d7af78a733118b9808323964f7466ae21bd30a51d634f628796cd30962f2e",
+    "scope": "No-cache one-pass exact count and unchanged SQL keyset ordering; latency qualification separate"
+  },
+  "dataset_caveat": {
+    "initial_timeout_event_bound": 150,
+    "later_inventory_events": 155,
+    "comparison": "Diagnostic call attribution only; no identical-dataset A/B speedup claim",
+    "final_latency_target_seconds": 2,
+    "final_latency_qualified": false
+  }
+}

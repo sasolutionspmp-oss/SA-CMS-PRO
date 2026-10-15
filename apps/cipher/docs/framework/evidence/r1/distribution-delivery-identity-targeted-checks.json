@@ -1,0 +1,37 @@
+{
+  "schema": "cipher.distribution-delivery-identity-targeted.v1",
+  "captured_at": "2026-10-15T20:18:05.518795+00:00",
+  "status": "passed",
+  "runtime_python": "3.14.8",
+  "tests": 16,
+  "elapsed_seconds": 0.077,
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution.py": "9b746918a6ac8104b9c67a8913a6ca0582dd89f51a1c967ed3169c64c2e85626",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/schemas/distribution-v1.schema.json": "694428d6af4a47b7f6cc07bd8dea1f1eba8d162117c54b9690e1dc805f1acc60",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.json": "097a15d6664ac8f09343304ee91037266739edda2868045af3013ced90c63585",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_distribution_reads.py": "084958c82b2a29d37e2c7457b8c6256e203cf73f2411ea6cc875ead4f16cb2ea"
+  },
+  "checks": [
+    "Current reads always expose expected operation logical_key/payload_hash",
+    "Exact immutable payload/index/dispatch/recipient/attachment and complete unique recipient set checked",
+    "Same-PDF swapped acknowledgments fail integrity",
+    "Missing/duplicate/unapproved operation rows cannot imply aggregate success",
+    "Succeeded requires exact verified receipt",
+    "Real persisted attempt_not_after/mode metadata remains readable in Unknown/Claimed/Failed/Cancelled without acknowledgment inference",
+    "Malformed/impossible attempt marker states fail closed",
+    "Historical embedded cancellation delivery schema accepts absent expected-key fields; original records/results not rewritten"
+  ],
+  "regression_first_worker_marker": {
+    "observed_before_fix": "Four legitimate worker-shaped state subcases refused by initial validator",
+    "retained_private_log": "/tmp/cipher-distribution-attempt-before.log"
+  },
+  "log": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_distribution_reads, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 16 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_distribution_reads.DistributionDeliveryIdentityTests\n   \u001b[32m \u2714 \u001b[0m test_current_read_exposes_expected_keys_and_preserves_original_results\n   \u001b[32m \u2714 \u001b[0m test_legacy_embedded_delivery_schema_keeps_optional_identity_compatibility\n   \u001b[32m \u2714 \u001b[0m test_malformed_attempt_metadata_or_impossible_queued_attempt_fails\n   \u001b[32m \u2714 \u001b[0m test_missing_duplicate_and_unapproved_recipient_rows_fail_integrity\n   \u001b[32m \u2714 \u001b[0m test_payload_index_hash_dispatch_and_attachment_mismatches_fail\n   \u001b[32m \u2714 \u001b[0m test_success_requires_ack_but_unknown_without_ack_remains_unknown\n   \u001b[32m \u2714 \u001b[0m test_swapped_same_pdf_acknowledgment_never_verifies_other_recipient\n   \u001b[32m \u2714 \u001b[0m test_worker_attempt_metadata_remains_readable_without_becoming_acknowledgment\n\ncipher_aec.tests.test_distribution_reads.DistributionReadTests\n   \u001b[32m \u2714 \u001b[0m test_choices_are_exact_server_identity_order_and_reusable_subset\n   \u001b[32m \u2714 \u001b[0m test_current_source_denial_is_rechecked_on_next_inventory\n   \u001b[32m \u2714 \u001b[0m test_cursor_binds_filter_count_mode_company_user_person_and_authority\n   \u001b[32m \u2714 \u001b[0m test_exact_issue_filter_and_scope_exclude_other_records_before_read\n   \u001b[32m \u2714 \u001b[0m test_integrity_and_overflow_propagate_without_partial_inventory\n   \u001b[32m \u2714 \u001b[0m test_native_sql_keyset_ties_and_global_count_preserved\n   \u001b[32m \u2714 \u001b[0m test_off_page_denied_instructions_cannot_affect_total_or_cursor\n\n\n   \u001b[32m \u2714 \u001b[0m test_scope_or_filter_denial_precedes_graph_and_query\n----------------------------------------------------------------------\nRan 16 tests in 0.077s\n\nOK\n",
+  "review": {
+    "reviewer": "Astra",
+    "status": "approved",
+    "scope": "Narrow read/schema delta; no worker/transport/operation/result writes"
+  },
+  "remaining": [
+    "Coordinated HUP and actual existing-success/legacy-receipt readback delta"
+  ]
+}

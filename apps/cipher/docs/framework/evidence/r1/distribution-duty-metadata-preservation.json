@@ -1,0 +1,201 @@
+{
+  "schema": "cipher.r1.distribution-duty-metadata-preservation.v1",
+  "status": "passed",
+  "control": "All pre-existing SQL columns and row hashes in the listed canonical tables, plus original Project/Task fields. Additive new columns intentionally excluded; this is not a file-byte backup proof.",
+  "before_sha256": "8da87eeb1d227143491b93c285838ae899a32d95fd729546fa85518f8ebefdc7",
+  "counts": {
+    "Cipher Approval Consumption": {
+      "original_rows": 26,
+      "unchanged": 26,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Decision": {
+      "original_rows": 35,
+      "unchanged": 35,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Packet": {
+      "original_rows": 35,
+      "unchanged": 35,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Policy Revision": {
+      "original_rows": 8,
+      "unchanged": 8,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Assembly Revision": {
+      "original_rows": 12,
+      "unchanged": 12,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calculation Snapshot": {
+      "original_rows": 42,
+      "unchanged": 42,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calibration": {
+      "original_rows": 10,
+      "unchanged": 10,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calibration Verification": {
+      "original_rows": 9,
+      "unchanged": 9,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Command Receipt": {
+      "original_rows": 497,
+      "unchanged": 497,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Delivery Attempt": {
+      "original_rows": 8,
+      "unchanged": 8,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Document": {
+      "original_rows": 60,
+      "unchanged": 60,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Document Revision": {
+      "original_rows": 66,
+      "unchanged": 66,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate": {
+      "original_rows": 28,
+      "unchanged": 28,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Acceptance": {
+      "original_rows": 9,
+      "unchanged": 9,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Line": {
+      "original_rows": 47,
+      "unchanged": 47,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Revision": {
+      "original_rows": 42,
+      "unchanged": 42,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher History Event": {
+      "original_rows": 442,
+      "unchanged": 442,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Integration Operation": {
+      "original_rows": 8,
+      "unchanged": 8,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Project Duty": {
+      "original_rows": 510,
+      "unchanged": 510,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal": {
+      "original_rows": 11,
+      "unchanged": 11,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Issue": {
+      "original_rows": 2,
+      "unchanged": 2,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Price Line": {
+      "original_rows": 34,
+      "unchanged": 34,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Revision": {
+      "original_rows": 19,
+      "unchanged": 19,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Section": {
+      "original_rows": 21,
+      "unchanged": 21,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Pursuit": {
+      "original_rows": 12,
+      "unchanged": 12,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Rate Source": {
+      "original_rows": 53,
+      "unchanged": 53,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Line Binding": {
+      "original_rows": 8,
+      "unchanged": 8,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Measurement": {
+      "original_rows": 15,
+      "unchanged": 15,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Set": {
+      "original_rows": 9,
+      "unchanged": 9,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Unit Conversion": {
+      "original_rows": 14,
+      "unchanged": 14,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "original_project": {
+      "original_rows": 1,
+      "unchanged": 1,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "original_tasks": {
+      "original_rows": 14,
+      "unchanged": 14,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    }
+  },
+  "changed_ids": []
+}

@@ -1,0 +1,40 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T19:52:09.269947+00:00",
+  "qualification": "Owned source/lifetime/compatibility tests only, after exact Astra read-graph review. Actual native latency/current-rights qualification remains separate; public generated estimate inputs remain disabled.",
+  "tests": {
+    "passed": 57,
+    "failures": 0,
+    "errors": 0,
+    "runtime": "Python3.14.8/Frappe16.52.0 cipher-r0-runtime-1",
+    "output": ".........................................................\n----------------------------------------------------------------------\nRan 57 tests in 0.935s\n\nOK\n",
+    "log": "/tmp/cipher-generated-read-graph-tests.log",
+    "sha256": "b13d9f2839e11111a2b3b749b2793c6d9beb37e65c5b6d23c5f622dde31c3ce3"
+  },
+  "approved_root_inventory": [
+    "Company estimating company_service.get_record after current_actor and exact Company estimate.read",
+    "Company history public orchestration around one list_visible scan after current actor/scope/cursor"
+  ],
+  "contract": [
+    "Ordinary single-read transaction-snapshot consistency, not instantaneous mid-response revocation. Each subsequent call starts fresh and must reauthorize.",
+    "Optional original producer success memo keyed exact actor/user/person/Company/read mode/Document/input digest; no failed auth, DTO, current head/facts/policy/inventory/current-use or File byte cache.",
+    "Fresh immutable parent/binding/digest and active ancestry precede each hit; canonical requested scope/status/page/hash and bytes remain checked.",
+    "Direct root entry rejects preexisting transaction writes, active command or prelock; public orchestration may choose existing uncached behavior before creating a graph. Existing invalid/wrong-identity graphs raise and never silently fall back, including empty collections.",
+    "Actual bound DB object and zero transaction-write counter checked before reuse and successful root return; full commit/rollback callbacks plus all-root-exit cleanup invalidate. Approved read roots contain no savepoint/recovery; arbitrary write plus savepoint rollback detection is not claimed.",
+    "Read contexts grant no mutation admission; lock=True and logical command/prelock entry cannot consume read success.",
+    "Optional memo saturation continues uncached authorization; separate actual DAG/depth bounds remain hard."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "9b70da10a92075c101b9cd94e31ce03787398e3f2a9a49e8de66172820933436",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py": "21ce2eec9651c1c96769f46dbec78891f1a1a5eacfd2d7599a78f6ad13840c40",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents.py": "c36cf10281d50c52a12a9d77400d9ef6b8d85dfcc03950943d7980132d5b1236",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_preparation.py": "0ee8837f4a8d504f59c477897ca01d61cfea6fbc4760b67c5eff6665b876ca7c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_lockplan.py": "5de16a915b3cfa4e36825dbc28cf12ede46f1a5c838fcb1db7ab48d1f09cbcac"
+  },
+  "prior_captures": [
+    "generated-acceptance-get-source-profile-before.json",
+    "commercial-logical-command-memo-tests.json"
+  ]
+}

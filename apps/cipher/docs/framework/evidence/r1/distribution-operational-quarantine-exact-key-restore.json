@@ -1,0 +1,18 @@
+{
+  "label": "quarantine-exact-key-restore",
+  "script": "distribution-quarantine-control.py",
+  "helper_sha256": "cca94d71d8c7381d16be6409e5fcdd3b0c52e433d2f7ac7fd5b25d59a99dba81",
+  "arguments": [
+    "restore"
+  ],
+  "started_at": "2026-10-15T20:09:51.106348+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:09:52.173481+00:00",
+  "result": {
+    "status": "passed",
+    "original_key_presence_preserved": true,
+    "original_key_value_preserved": true,
+    "exact_site_configuration_restored": true,
+    "exact_common_configuration_preserved": true
+  }
+}

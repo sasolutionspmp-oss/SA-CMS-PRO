@@ -58,11 +58,11 @@ def pursuit_fields(value):
 
 
 def composition(value):
-    keys(value, ("currency", "price_list", "valid_till", "terms", "sections", "price_lines", "source_references", "estimate_revision"), ("currency", "price_list", "valid_till", "terms", "sections", "price_lines"))
-    if "source_references" in value and type(value["source_references"]) is not list:
-        raise DomainError("invalid_commercial", "Source references must be an array.")
-    if value.get("source_references") or value.get("estimate_revision") is not None:
-        raise DomainError("company_reference_unavailable", "Company-scoped document citations and estimate links are not yet qualified.", 409)
+    keys(value, ("currency", "price_list", "valid_till", "terms", "sections", "price_lines", "source_references", "estimate_revision", "estimate_reference"), ("currency", "price_list", "valid_till", "terms", "sections", "price_lines"))
+    references = source_references(value.get("source_references", []))
+    if value.get("estimate_revision") is not None:
+        raise DomainError("invalid_commercial", "Bind an exact accepted estimate using estimate_reference; a working revision is not an accepted baseline.")
+    baseline = estimate_reference(value["estimate_reference"]) if value.get("estimate_reference") is not None else None
     currency = text(value["currency"], "currency", 3)
     if not re.fullmatch("[A-Z]{3}", currency):
         raise DomainError("invalid_commercial", "Use an uppercase three-letter currency code.")
@@ -97,7 +97,11 @@ def composition(value):
     for rows in (normalized_sections, normalized_lines):
         if len({row["id"] for row in rows}) != len(rows):
             raise DomainError("invalid_commercial", "Section and line UUIDs must be unique in their collection.")
-    return {"currency": currency, "price_list": text(value["price_list"], "Native selling price list"), "valid_till": business_date(value["valid_till"]), "terms": text(value["terms"], "terms", 24000, required=False), "sections": normalized_sections, "price_lines": normalized_lines, "source_references": [], "estimate_revision": None}
+    result = {"currency": currency, "price_list": text(value["price_list"], "Native selling price list"), "valid_till": business_date(value["valid_till"]), "terms": text(value["terms"], "terms", 24000, required=False), "sections": normalized_sections, "price_lines": normalized_lines, "source_references": references, "estimate_revision": None}
+    # Old empty-source commands retain their exact normalized request hashes.
+    if baseline is not None:
+        result["estimate_reference"] = baseline
+    return result
 
 
 def pricing(value, exponent):
@@ -133,4 +137,35 @@ def compare(left, right):
     def changes(key):
         before, after = {r["id"]: r for r in left[key]}, {r["id"]: r for r in right[key]}
         return {"added": [r for r in right[key] if r["id"] not in before], "removed": [r for r in left[key] if r["id"] not in after], "changed": [{"id": i, "before": before[i], "after": after[i]} for i in before if i in after and before[i] != after[i]], "order_changed": [r["id"] for r in left[key]] != [r["id"] for r in right[key]]}
-    return {"sections": changes("sections"), "price_lines": changes("price_lines"), "terms": {"before": left["terms"], "after": right["terms"], "changed": left["terms"] != right["terms"]}, "validity": {"before": left["valid_till"], "after": right["valid_till"], "changed": left["valid_till"] != right["valid_till"]}}
+    basis_keys = ("currency", "price_list", "source_references", "estimate_reference")
+    before = {key: left.get(key) for key in basis_keys}
+    after = {key: right.get(key) for key in basis_keys}
+    return {"basis": {"before": before, "after": after, "changed": before != after}, "sections": changes("sections"), "price_lines": changes("price_lines"), "terms": {"before": left["terms"], "after": right["terms"], "changed": left["terms"] != right["terms"]}, "validity": {"before": left["valid_till"], "after": right["valid_till"], "changed": left["valid_till"] != right["valid_till"]}}
+
+
+def checksum(value):
+    if type(value) is not str or not re.fullmatch("[a-f0-9]{64}", value):
+        raise DomainError("invalid_commercial", "Use an exact lowercase SHA-256 digest.")
+    return value
+
+
+def source_references(value):
+    if type(value) is not list or len(value) > 30:
+        raise DomainError("invalid_commercial", "Use at most thirty exact Company source pages.")
+    result, seen = [], set()
+    for row in value:
+        keys(row, ("revision_id", "page", "excerpt_sha256", "source_sha256", "purpose", "permission_basis"), ("revision_id", "page", "excerpt_sha256", "source_sha256", "purpose", "permission_basis"))
+        revision = text(row["revision_id"], "Document revision")
+        if not re.fullmatch("REV-[a-f0-9]{32}", revision) or type(row["page"]) is not int or not 1 <= row["page"] <= 100:
+            raise DomainError("invalid_commercial", "Bind an exact canonical source revision and page.")
+        identity = (revision, row["page"])
+        if identity in seen:
+            raise DomainError("invalid_commercial", "A source page may be declared once.")
+        seen.add(identity)
+        result.append({"revision_id": revision, "page": row["page"], "excerpt_sha256": checksum(row["excerpt_sha256"]), "source_sha256": checksum(row["source_sha256"]), "purpose": text(row["purpose"], "Source purpose", 1000), "permission_basis": text(row["permission_basis"], "Authored content permission basis", 2000)})
+    return result
+
+
+def estimate_reference(value):
+    keys(value, ("acceptance_id", "acceptance_digest", "revision_id", "revision_digest"), ("acceptance_id", "acceptance_digest", "revision_id", "revision_digest"))
+    return {"acceptance_id": identifier(value["acceptance_id"]), "acceptance_digest": checksum(value["acceptance_digest"]), "revision_id": identifier(value["revision_id"]), "revision_digest": checksum(value["revision_digest"])}

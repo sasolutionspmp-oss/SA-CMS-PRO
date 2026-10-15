@@ -1,0 +1,26 @@
+{
+  "mode": "actual-frappe-read-only-project-preflight",
+  "outcome": "blocked_by_fixture_native_UOM_Currency_read_permissions",
+  "company": "Cipher Synthetic Company",
+  "project": "PROJ-0031",
+  "business_write_count": 0,
+  "created_records": {},
+  "observed_reads": [
+    {
+      "method": "takeoff.get_record",
+      "kind": "calibration",
+      "status": 404
+    },
+    {
+      "method": "takeoff.get_record",
+      "kind": "measurement",
+      "status": 404
+    },
+    {
+      "method": "estimating.list_units",
+      "status": 200,
+      "items": []
+    }
+  ],
+  "resolution": "Backend owner diagnosed and assigned a dedicated native read/select role through supported Frappe User updates; no authorization bypass, payload, history or credential changes."
+}
