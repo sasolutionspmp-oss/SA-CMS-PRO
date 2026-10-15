@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cipher Owner Console</title>
+<style>
+  :root { --navy:#0B2341; --ink:#13202e; --muted:#5b6b7c; --line:#d9dfe6; --bg:#f4f6f8; --card:#ffffff; --ok:#1a7f4b; --warn:#b26a00; --bad:#b3261e; --lime:#9fd93a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 system-ui, Segoe UI, Roboto, sans-serif; color:var(--ink); background:var(--bg); }
+  header { background:var(--navy); color:#fff; padding:14px 20px; display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; letter-spacing:.3px; }
+  header .tag { font-size:12px; padding:3px 8px; border-radius:999px; background:rgba(255,255,255,.14); }
+  header .tag.warn { background:var(--warn); } header .tag.bad { background:var(--bad); } header .tag.ok { background:var(--ok); }
+  main { max-width:1280px; margin:0 auto; padding:16px; display:grid; grid-template-columns:repeat(auto-fit, minmax(380px, 1fr)); gap:16px; }
+  section { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:14px; }
+  section.wide { grid-column:1 / -1; }
+  h2 { font-size:15px; margin:0 0 10px; color:var(--navy); display:flex; justify-content:space-between; align-items:center; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { color:var(--muted); font-weight:600; }
+  td.num, th.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .kv { display:grid; grid-template-columns:1fr auto; gap:4px 12px; font-size:13px; }
+  .kv b { font-variant-numeric:tabular-nums; }
+  .status { font-size:11px; padding:2px 6px; border-radius:4px; background:#eef1f4; color:var(--muted); text-transform:uppercase; }
+  .status.ok { background:#e2f3e8; color:var(--ok); } .status.warn { background:#fff1dc; color:var(--warn); } .status.bad { background:#fde3e1; color:var(--bad); }
+  button { font:inherit; font-size:12px; padding:5px 9px; border:1px solid var(--navy); background:#fff; color:var(--navy); border-radius:6px; cursor:pointer; }
+  button.primary { background:var(--navy); color:#fff; }
+  button.lime { background:var(--lime); border-color:var(--lime); color:var(--navy); }
+  button:disabled { opacity:.5; cursor:default; }
+  form { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin-top:8px; }
+  input, select { font:inherit; font-size:13px; padding:5px 7px; border:1px solid var(--line); border-radius:6px; min-width:90px; }
+  .muted { color:var(--muted); font-size:12px; }
+  .banner { grid-column:1 / -1; padding:10px 14px; border-radius:8px; background:#fff1dc; color:var(--warn); border:1px solid #f1d9ad; }
+  .banner.bad { background:#fde3e1; color:var(--bad); border-color:#f3c2be; }
+  #toast { position:fixed; bottom:16px; right:16px; max-width:520px; padding:10px 14px; border-radius:8px; background:var(--ink); color:#fff; display:none; white-space:pre-wrap; font-size:13px; }
+  details summary { cursor:pointer; color:var(--navy); font-weight:600; }
+  .pill { display:inline-block; font-size:11px; padding:1px 6px; border:1px solid var(--line); border-radius:999px; margin-right:4px; }
+  code { font-size:12px; background:#eef1f4; padding:1px 4px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Cipher · Owner Console</h1>
+  <span class="tag">SHADOW · synthetic prototype</span>
+  <span class="tag" id="authority">workspace: …</span>
+  <span class="tag" id="quarantine" style="display:none">payment release quarantined</span>
+  <span style="flex:1"></span>
+  <button id="refresh">Refresh</button>
+  <a href="/api/audit-export" target="_blank" style="color:#fff;font-size:12px">audit export</a>
+</header>
+<main id="app"><section class="wide"><p class="muted">Loading…</p></section></main>
+<div id="toast"></div>
+<script>
+const $ = (s, el=document) => el.querySelector(s);
+const money = v => v == null ? '' : Number(v).toLocaleString('en-US', {style:'currency', currency:'USD'});
+// Everything the server returns is escaped once, on arrival, so templates can interpolate it into HTML.
+const ESC = {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#96;'};
+const esc = v => String(v ?? '').replace(/[&<>"'`]/g, c => ESC[c]);
+const unesc = v => String(v ?? '').replace(/&(amp|lt|gt|quot|#39|#96);/g, m => Object.keys(ESC).find(k => ESC[k] === m));
+const escDeep = v => typeof v === 'string' ? esc(v) : Array.isArray(v) ? v.map(escDeep)
+  : (v && typeof v === 'object') ? Object.fromEntries(Object.entries(v).map(([k, x]) => [esc(k), escDeep(x)])) : v;
+// An escaped value as a JavaScript string literal inside an event-handler attribute.
+const js = v => esc(JSON.stringify(unesc(v)));
+let STATE = null;
+
+function toast(msg, bad) { const t = $('#toast'); t.textContent = msg; t.style.background = bad ? '#b3261e' : '#13202e'; t.style.display='block'; clearTimeout(t._h); t._h = setTimeout(()=> t.style.display='none', bad ? 7000 : 3500); }
+
+async function api(name, body) {
+  const r = await fetch('/api/action/' + name, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})});
+  const j = await r.json();
+  if (!j.ok) { toast(`${name}: ${j.error}`, true); throw new Error(j.error); }
+  toast(`${name}: ok`);
+  await refresh();
+  return j.result;
+}
+
+async function refresh() {
+  const r = await fetch('/api/state');
+  STATE = escDeep(await r.json());
+  render();
+}
+
+function statusClass(s) { return ({granted:'warn', pending:'warn', approved:'warn', consumed:'ok', posted:'ok', paid:'ok', executed:'ok', settled:'ok', accepted:'ok', invalidated:'bad', expired:'bad', failed:'bad', returned:'bad', outcome_unknown:'warn', draft:'', closed:'ok', open:'ok'})[s] || ''; }
+const st = s => `<span class="status ${statusClass(s)}">${s}</span>`;
+
+function render() {
+  const s = STATE;
+  const app = $('#app');
+  const auth = s.authority || {};
+  $('#authority').textContent = `workspace ${auth.workspace_id ? auth.workspace_id.slice(0,10) : ''} · write authority ${auth.effective_write_authority ? 'held' : 'NOT held'} · epoch ${auth.recovery_epoch}`;
+  $('#authority').className = 'tag ' + (auth.effective_write_authority ? 'ok' : 'bad');
+  $('#quarantine').style.display = auth.release_quarantined ? '' : 'none';
+  if (!s.project) {
+    app.innerHTML = `<section class="wide"><h2>No project yet</h2><p class="muted">Seed the plan's golden fixture (synthetic parties, project, evidence, commitment, bills, payment and prime billing) or create a project manually.</p>
+      <button class="primary" onclick="api('run_demo')">Run golden fixture</button>
+      <form onsubmit="event.preventDefault(); api('create_project', {name:this.name.value, budget:this.budget.value})"><input name="name" placeholder="Project name" required><input name="budget" placeholder="Budget" value="0"><button>Create project</button></form></section>`;
+    return;
+  }
+  const f = s.forecast;
+  const p = s.project;
+  const parts = [];
+  if (auth.release_quarantined) parts.push(`<div class="banner bad">This workspace was restored from a backup. Payment release stays quarantined until recovery reconciliation completes. <button onclick="api('complete_recovery')">Run recovery reconciliation</button></div>`);
+  if (!auth.effective_write_authority) parts.push(`<div class="banner bad">Read-only copy: records cannot change until the owner claims write authority for this copy.
+    <button onclick="showChallenge()">Show claim challenge</button>
+    <form style="display:inline" onsubmit="event.preventDefault(); api('claim_authority', {actor:this.who.value, reason:this.why.value, claim_code:this.code.value || null, approval_ref:this.ref.value || null})">
+      <input name="who" placeholder="approver" required><input name="why" placeholder="reason" required><input name="code" placeholder="claim code (if owner secret is set)"><input name="ref" placeholder="external reference (optional)"><button>Claim</button></form>
+    <span id="challenge" class="muted"></span></div>`);
+
+  parts.push(`<section><h2>${p.name} <span class="muted">${p.entity} · ${p.currency}</span></h2>
+    <div class="kv">
+      <span>Budget</span><b>${money(f.budget)}</b>
+      <span>Executed commitments</span><b>${money(f.executed_commitments)}</b>
+      <span>Pending change exposure</span><b>${money(f.pending_exposure)}</b>
+      <span>Forecast at completion</span><b class="${f.over_budget?'bad':''}">${money(f.forecast_at_completion)}</b>
+      <span>Variance to budget</span><b>${money(f.variance_to_budget)}</b>
+      <span>Billed gross / net to date</span><b>${money(f.billed_gross_to_date)} / ${money(f.billed_net_to_date)}</b>
+      <span>Retainage held</span><b>${money(f.retainage_held)}</b>
+      <span>Paid to date</span><b>${money(f.paid_to_date)}</b>
+      <span>Prime certified to date</span><b>${money(f.prime_certified_to_date)}</b>
+    </div><p class="muted">${f.label}</p>
+    <form onsubmit="event.preventDefault(); api('set_budget', {project_id:${js(p.id)}, budget:this.budget.value})"><input name="budget" value="${f.budget}"><button>Set budget</button></form></section>`);
+
+  // approvals
+  const aps = (s.approvals||[]).slice().reverse();
+  parts.push(`<section><h2>Approvals <span class="muted">${aps.filter(a=>a.status==='pending'||a.status==='granted').length} open</span></h2>
+    <table><tr><th>Operation</th><th>Subject</th><th class="num">Amounts</th><th>Status</th><th></th></tr>
+    ${aps.slice(0,25).map(a => `<tr><td>${a.operation}<br><span class="muted">${a.actor_role}</span></td><td><code>${a.subject_id.slice(0,14)}</code></td><td class="num">${Object.entries(a.manifest.amounts||{}).map(([k,v])=>`${k}: ${money(v)}`).join('<br>')}</td><td>${st(a.status)}${a.invalidated_reason?`<br><span class="muted">${a.invalidated_reason}</span>`:''}</td>
+      <td>${a.status==='pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(a.id)}})">Approve</button> <button onclick="api('reject',{approval_id:${js(a.id)},reason:'rejected in console'})">Reject</button>`:''}
+          ${a.status==='granted' && a.operation!=='bill.approve'?`<button class="lime" onclick="api('execute',{approval_id:${js(a.id)}})">Execute</button>`:''}
+          ${a.status==='granted' && a.operation==='bill.approve'?'<a href="#post-approved-bills">Review posting</a>':''}</td></tr>`).join('')}
+    </table></section>`);
+
+  const approvedBills = s.commitments.flatMap(c => c.bills.filter(b=>b.status==='approved').map(b=>({...b, commitment_title:c.title})));
+  parts.push(`<section class="wide" id="post-approved-bills"><h2>Post approved bills <span class="muted">${approvedBills.length} waiting</span></h2>
+    <p class="muted">Business approval creates no journal or payable. A different person with the accounting posting duty reviews the exact entry and posts it. This console uses synthetic identities only.</p>
+    ${approvedBills.map(b=>`<details id="bill-post-${b.id}"><summary>${b.commitment_title} · bill ${b.sequence} · ${money(b.amount_due)} due${b.stale?' · stale business facts':''}</summary>
+      <p class="muted">Certification period ${b.period_id}. A different posting period requires a reason.</p>
+      <form data-certification-period="${b.period_id}" onsubmit="event.preventDefault(); reviewBillPost(this,${js(b.id)})" oninput="clearBillPostReview(this)" onchange="clearBillPostReview(this)">
+        <label>Posting person <input name="poster" placeholder="accountant" required></label>
+        <label>Posting period <select name="posting_period" required>${s.periods.filter(x=>x.status==='open').map(x=>`<option value="${x.id}"${x.id===b.period_id?' selected':''}>${x.id}</option>`).join('')}</select></label>
+        <label>Reason <input name="posting_reason" placeholder="Required for another period"></label><button class="primary">Review exact entry</button>
+        <div data-post-preview style="flex-basis:100%"></div>
+      </form>
+      <p class="muted">The original business approver can withdraw this approval and void the unposted bill. To seek fresh approval, review its evidence and certify a new bill.</p>
+      <form onsubmit="event.preventDefault(); withdrawApprovedBill(this,${js(b.id)})">
+        <label>Withdrawing person <input name="withdraw_actor" placeholder="Original business approver" required></label>
+        <label>Reason <input name="withdraw_reason" placeholder="Why this approval is being withdrawn" required></label>
+        <button>Withdraw approval and void bill</button>
+      </form></details>`).join('') || '<p class="muted">No approved bills are waiting to post.</p>'}
+    </section>`);
+
+  // ricky brief
+  if (s.ricky_brief) {
+    const b = s.ricky_brief;
+    const lvlClass = l => ({blocker:'bad', decide:'warn', execute:'warn', reconcile:'warn', review:'', info:''})[l] || '';
+    parts.unshift(`<section class="wide" id="ricky-brief"><h2>Ricky brief <span class="muted">what needs attention · role
+      <select onchange="loadBrief(this.value)">${['owner','pm','accountant','treasury','estimator','viewer'].map(r=>`<option ${r===b.role?'selected':''}>${r}</option>`).join('')}</select></span></h2>
+      <div id="brief-body">${renderBrief(b)}</div></section>`);
+  }
+
+  // ricky
+  parts.push(`<section><h2>Ricky <span class="muted">proposes · never executes</span></h2>
+    <form onsubmit="event.preventDefault(); rickyAsk(this)">
+      <select name="workflow"><option>commitment.execute</option><option>change.execute</option><option>bill.approve</option><option>prime_bill.approve</option><option>payment.release</option><option>retainage.release</option><option>estimate.approve</option></select>
+      <input name="id" placeholder="record id" required>
+      <select name="role"><option>owner</option><option>pm</option><option>estimator</option><option>accountant</option><option>treasury</option><option>viewer</option></select>
+      <button class="primary">Ask Ricky</button></form>
+    <div id="ricky-out"></div>
+    <table>${(s.ricky||[]).slice(0,8).map(r=>`<tr><td>${r.workflow}<br><span class="muted">${r.actor_role}</span></td><td>${st(r.decision)}<br><span class="muted">${r.reason}</span></td></tr>`).join('')}</table></section>`);
+
+  // commitments
+  for (const c of s.commitments) {
+    const unpostedBillExists = c.bills.some(b=>b.status==='draft' || b.status==='approved');
+    parts.push(`<section class="wide"><h2>${c.title} <span>${st(c.status)} <span class="muted">v${c.version} · ${c.supplier.name} · retainage ${Number(c.retainage_rate)*100}%</span></span></h2>
+      <div class="kv"><span>Original / executed</span><b>${money(c.original_amount)} / ${money(c.executed_amount)}</b><span>Pending exposure</span><b>${money(c.pending_exposure)}</b>${c.estimate?`<span>Estimate</span><b>${c.estimate.status}${c.estimate.stale?' · <span class="status bad">stale evidence</span>':''}</b>`:''}</div>
+      ${c.status==='draft'?`<p><button class="primary" onclick="api('request_approval',{operation:'commitment.execute',subject_id:${js(c.id)}})">Request execution approval</button></p>`:''}
+      ${c.status==='executed'?`<p><button onclick="api('close_commitment',{commitment_id:${js(c.id)}})">Close (closeout accepted)</button> <button onclick="api('request_approval',{operation:'retainage.release',subject_id:${js(c.id)}})">Request retainage release</button></p>`:''}
+      ${c.status==='closed'?`<p><button onclick="api('request_approval',{operation:'retainage.release',subject_id:${js(c.id)}})">Request retainage release</button> <button onclick="api('request_approval',{operation:'payment.release_retainage',subject_id:${js(c.id)},actor_role:'treasury'})">Request retainage payment</button></p>`:''}
+      <details open><summary>Schedule of values</summary><table><tr><th>#</th><th>Description</th><th class="num">Amount</th><th>id</th></tr>${c.sov.map(l=>`<tr><td>${l.line_no}</td><td>${l.description}</td><td class="num">${money(l.amount)}</td><td><code>${l.id}</code></td></tr>`).join('')}</table></details>
+      <details><summary>Changes (${c.changes.length})</summary><table>${c.changes.map(ch=>`<tr><td>${ch.reason}</td><td class="num">${money(ch.amount)}</td><td>${st(ch.status)}</td><td>${ch.status==='pending'?`<button onclick="api('request_approval',{operation:'change.execute',subject_id:${js(ch.id)}})">Request approval</button> <button onclick="api('reject_change',{change_id:${js(ch.id)}})">Reject</button>`:''}</td></tr>`).join('')}</table>
+        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('propose_change',{commitment_id:${js(c.id)},amount:this.amount.value,reason:this.reason.value,sov_line_id:this.line.value||null})"><input name="amount" placeholder="amount" required><input name="reason" placeholder="reason" required><select name="line"><option value="">new SOV line</option>${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><button>Propose change</button></form>`:''}</details>
+      <details><summary>Stored material lots (${c.stored_lots.length})</summary><table>${c.stored_lots.map(l=>`<tr><td>${l.description}</td><td class="num">${money(l.eligible_amount)}</td><td class="num">remaining ${money(l.remaining_amount)}</td><td><code>${l.id}</code></td></tr>`).join('')}</table>
+        ${c.status==='executed'?`<form onsubmit="event.preventDefault(); api('add_stored_material',{commitment_id:${js(c.id)},sov_line_id:this.line.value,description:this.d.value,eligible_amount:this.a.value,evidence_hash:this.e.value,location:this.loc.value})"><select name="line">${c.sov.map(l=>`<option value="${l.id}">line ${l.line_no}</option>`).join('')}</select><input name="d" placeholder="description" required><input name="a" placeholder="eligible amount" required><input name="e" placeholder="evidence hash" required><input name="loc" placeholder="location"><button>Add lot</button></form>`:''}</details>
+      <details open><summary>Bills (${c.bills.length})</summary><table><tr><th>#</th><th>Period</th><th class="num">Cum. gross</th><th class="num">Retainage</th><th class="num">Due</th><th>Status</th><th></th></tr>
+        ${c.bills.map(b=>`<tr><td>${b.sequence}</td><td>${b.period_id}</td><td class="num">${money(b.cumulative_gross)}</td><td class="num">${money(b.cumulative_retainage)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}${b.stale?' <span class="status bad">stale</span>':''}</td>
+          <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'bill.approve',subject_id:${js(b.id)}})">Request approval</button> <button onclick="voidDraftBill(${js(b.id)})">Void</button>`:''}
+              ${b.status==='approved'?`<a href="#bill-post-${b.id}">Review posting</a>`:''}
+              ${b.status==='posted'?`<button onclick="api('request_approval',{operation:'payment.release',subject_id:${js(b.id)},actor_role:'treasury'})">Request payment</button>`:''}</td></tr>`).join('')}</table>
+        ${c.status==='executed' && !unpostedBillExists ? `<form onsubmit="event.preventDefault(); certify(this,${js(c.id)})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select>
+          ${c.sov.map(l=>`<input name="line:${l.id}" placeholder="cum. installed line ${l.line_no}">`).join('')}
+          ${c.stored_lots.filter(l=>Number(l.remaining_amount)>0).map(l=>`<input name="lot:${l.id}" placeholder="transfer from ${l.description}">`).join('')}
+          <button class="primary">Certify bill</button></form>`:''}</details></section>`);
+  }
+
+  // prime bills
+  parts.push(`<section><h2>Prime billing</h2><table><tr><th>#</th><th class="num">Certified</th><th class="num">Due</th><th>Status</th><th></th></tr>
+    ${s.prime_bills.map(b=>`<tr><td>${b.sequence}</td><td class="num">${money(b.certified_cumulative)}</td><td class="num">${money(b.amount_due)}</td><td>${st(b.status)}</td>
+      <td>${b.status==='draft'?`<button class="primary" onclick="api('request_approval',{operation:'prime_bill.approve',subject_id:${js(b.id)}})">Request approval</button>`:''}
+          ${b.status==='posted'?`<button onclick="api('send_prime_bill',{prime_bill_id:${js(b.id)}})">Request send approval (mail sink)</button>`:''}
+          ${(b.status==='sent')?`<button onclick="api('record_collection',{prime_bill_id:${js(b.id)},period_id:${js(openPeriod())},amount:${js(b.amount_due)},fee:'5',method:'ach',provider_ref:'rcv_'+Date.now()})">Record ACH collection (fee 5)</button>
+            <button onclick="api('record_collection',{prime_bill_id:${js(b.id)},period_id:${js(openPeriod())},amount:${js(b.amount_due)},fee:'0',method:'check',provider_ref:'chk_'+Date.now()})">Record check</button>`:''}
+          ${b.collections.filter(x=>x.status==='received').map(x=>`<button onclick="api('record_return',{collection_id:${js(x.id)},period_id:${js(openPeriod())},reason:'simulated late return'})">Return ${money(x.amount)}</button>`).join('')}</td></tr>`).join('')}</table>
+    <form onsubmit="event.preventDefault(); api('certify_prime_bill',{project_id:${js(p.id)},period_id:this.period.value,certified_cumulative:this.c.value,retainage_rate:this.r.value})"><select name="period">${s.periods.filter(x=>x.status==='open').map(x=>`<option>${x.id}</option>`).join('')}</select><input name="c" placeholder="certified cumulative" required><input name="r" value="0.10"><button>Certify prime bill</button></form>
+    ${p.customer_id ? `<form onsubmit="event.preventDefault(); api('record_mandate',{customer_id:${js(p.customer_id)},mandate_ref:this.ref.value,evidence_hash:this.ev.value})"><input name="ref" placeholder="ACH mandate reference" required><input name="ev" placeholder="evidence revision content hash (signed authorization)" required style="min-width:300px"><button>Record ACH mandate</button></form>` : ''}
+    <p class="muted">AR subledger ${money(s.ar.subledger_total)} vs control ${money(s.ar.control_balance)} · ${s.ar.reconciled?'reconciled':'<span class="status bad">NOT reconciled</span>'}</p></section>`);
+
+  // payments
+  parts.push(`<section><h2>Payments <span class="muted">simulated rail</span></h2>
+    <form onsubmit="event.preventDefault()"><select onchange="api('set_provider_mode',{mode:this.value})"><option value="accept">provider: accept</option><option value="timeout_after_accept">provider: timeout after accept</option><option value="reject">provider: reject</option><option value="unavailable">provider: unavailable</option></select>
+      <button onclick="api('dispatch_payments')">Dispatch outbox (${(s.outbox_pending||[]).length})</button><button onclick="api('reconcile_payments')">Reconcile</button></form>
+    <table><tr><th>Intent</th><th class="num">Amount</th><th>Status</th><th></th></tr>
+    ${s.payments.map(i=>`<tr><td><code>${i.id.slice(0,14)}</code><br><span class="muted">${i.note} ${i.provider_ref||''}</span></td><td class="num">${money(i.amount)}</td><td>${st(i.status)}<br><span class="muted">${i.note && i.status!=='queued' ? '' : ''}</span></td>
+      <td>${i.status==='accepted'?`<button onclick="api('settle_payment',{intent_id:${js(i.id)}})">Settle</button>`:''}${['accepted','settled'].includes(i.status)?` <button onclick="api('return_payment',{intent_id:${js(i.id)}})">Return</button>`:''}${i.events.length?` <button onclick="api('replay_last_event',{intent_id:${js(i.id)}})">Replay last event</button>`:''}</td></tr>`).join('')}</table>
+    <p class="muted">AP subledger ${money(s.ap.subledger_total)} vs control ${money(s.ap.control_balance)} · ${s.ap.reconciled?'reconciled':'<span class="status bad">NOT reconciled</span>'}</p></section>`);
+
+  // ledger
+  const tb = s.trial_balance;
+  parts.push(`<section><h2>Ledger <span class="muted">${tb.journal_count} journals · ${tb.balanced?'balanced':'<span class="status bad">UNBALANCED</span>'}</span></h2>
+    <table><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th><th class="num">Balance</th></tr>${tb.rows.map(r=>`<tr><td>${r.code} ${r.name}</td><td class="num">${money(r.debit)}</td><td class="num">${money(r.credit)}</td><td class="num">${money(r.balance)}</td></tr>`).join('')}
+    <tr><th>Total</th><th class="num">${money(tb.total_debit)}</th><th class="num">${money(tb.total_credit)}</th><th></th></tr></table>
+    <p class="muted">Income (${s.income_statement.label}): revenue ${money(s.income_statement.revenue)} · expense ${money(s.income_statement.expense)} · net ${money(s.income_statement.net)}</p>
+    <h2>Periods</h2><table>${s.periods.map(x=>`<tr><td>${x.id} ${x.name}</td><td>${st(x.status)}</td><td>${x.status==='open'?`<button onclick="api('close_period',{period_id:${js(x.id)}})">Close</button>`:''}</td></tr>`).join('')}</table>
+    <form onsubmit="event.preventDefault(); api('open_period',{period_id:this.id.value,name:this.id.value,start_date:this.s.value,end_date:this.e.value})"><input name="id" placeholder="2026-12" required><input name="s" placeholder="2026-12-01" required><input name="e" placeholder="2026-12-31" required><button>Open period</button></form>
+    <p class="muted">Audit chain: ${s.audit_chain.ok?`ok · ${s.audit_chain.entries} entries`:'<span class="status bad">BROKEN</span>'}</p></section>`);
+
+  // v2 modules: any extra top-level state key is rendered generically
+  const CORE_KEYS = new Set(['project','authority','periods','parties','documents','estimates','commitments','prime_bills','payments','approvals','forecast','ap','ar','trial_balance','income_statement','ricky','ricky_brief','audit_chain','outbox_pending']);
+  for (const key of Object.keys(s).filter(k => !CORE_KEYS.has(k))) {
+    parts.push(`<section class="wide"><h2>Module · ${key}</h2>${renderGeneric(s[key])}
+      <form onsubmit="event.preventDefault(); moduleCall(this, ${js(key)})"><input name="method" placeholder="method, e.g. register_asset" required style="min-width:200px"><input name="kwargs" placeholder='kwargs JSON, e.g. {"project_id":"…","description":"Excavator","cost":"12000","in_service_date":"2026-10-01","useful_life_months":"12"}' style="min-width:420px"><button>Call</button>
+      <input name="op" placeholder="approval operation, e.g. asset.post_depreciation" style="min-width:220px"><input name="subject" placeholder="subject id"><button type="button" onclick="api('request_approval',{operation:this.form.op.value,subject_id:this.form.subject.value})">Request approval</button></form>
+      <p class="muted">Methods: <span id="methods-${key}">loading…</span></p></section>`);
+  }
+  app.innerHTML = parts.join('');
+  fetch('/api/modules').then(r=>r.json()).then(mods => { for (const [k, methods] of Object.entries(mods)) { const el = $('#methods-'+k); if (el) el.textContent = methods.join(', '); } }).catch(()=>{});
+}
+
+async function moduleCall(form, plugin) {
+  let kwargs = {};
+  if (form.kwargs.value.trim()) { try { kwargs = JSON.parse(form.kwargs.value); } catch (e) { toast('kwargs must be valid JSON', true); return; } }
+  const r = await api('module_call', {plugin, method: form.method.value, kwargs});
+  toast(`${plugin}.${form.method.value}: ${JSON.stringify(r).slice(0, 300)}`);
+}
+
+function renderGeneric(v, depth=0) {
+  if (v == null) return '<span class="muted">—</span>';
+  if (Array.isArray(v)) {
+    if (!v.length) return '<span class="muted">none</span>';
+    if (typeof v[0] === 'object' && v[0] !== null) {
+      const cols = Object.keys(v[0]).filter(k => typeof v[0][k] !== 'object' || v[0][k] === null).slice(0, 10);
+      return `<table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${v.map(row=>`<tr>${cols.map(c=>`<td>${row[c] == null ? '' : (typeof row[c]==='boolean' ? (row[c]?'yes':'no') : String(row[c]).slice(0,40))}</td>`).join('')}</tr>`).join('')}</table>`;
+    }
+    return v.map(x=>`<span class="pill">${String(x)}</span>`).join('');
+  }
+  if (typeof v === 'object') {
+    return `<div class="kv">${Object.entries(v).map(([k,x]) => typeof x === 'object' && x !== null
+      ? `<details style="grid-column:1/-1"><summary>${k}</summary>${depth < 3 ? renderGeneric(x, depth+1) : '<pre class="muted">'+JSON.stringify(x).slice(0,400)+'</pre>'}</details>`
+      : `<span>${k}</span><b>${typeof x==='boolean' ? (x?'yes':'no') : (x ?? '')}</b>`).join('')}</div>`;
+  }
+  return String(v);
+}
+
+// ---- human review and posting of approved supplier bills ----
+function clearBillPostReview(form) {
+  form._postingReview = null;
+  form.elements.posting_reason.required = form.elements.posting_period.value !== form.dataset.certificationPeriod;
+  $('[data-post-preview]', form).innerHTML = '';
+}
+
+async function reviewBillPost(form, billId) {
+  clearBillPostReview(form);
+  if (!form.reportValidity()) return;
+  const payload = {bill_id:billId, actor:form.elements.poster.value, period_id:form.elements.posting_period.value,
+    reason:form.elements.posting_reason.value};
+  const r = await fetch('/api/action/bill_journal_preview', {method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({bill_id:payload.bill_id, period_id:payload.period_id})});
+  const j = await r.json();
+  if (!j.ok) { toast('bill_journal_preview: ' + j.error, true); return; }
+  // Any edits made while the preview was loading require another review.
+  if (payload.actor !== form.elements.poster.value || payload.period_id !== form.elements.posting_period.value
+      || payload.reason !== form.elements.posting_reason.value) return;
+  form._postingReview = payload;
+  const plan = escDeep(j.result);
+  $('[data-post-preview]', form).innerHTML = plan.map(entry=>`<p><b>${entry.description}</b> · period ${entry.period_id}</p>
+    <table><tr><th>Account</th><th>Memo</th><th class="num">Debit</th><th class="num">Credit</th></tr>${entry.lines.map(line=>`<tr><td>${line.account}</td><td>${line.memo}</td><td class="num">${money(line.debit)}</td><td class="num">${money(line.credit)}</td></tr>`).join('')}</table>`).join('')
+    + `<p>Posting person ${esc(payload.actor)}${payload.reason?` · reason: ${esc(payload.reason)}`:''}</p><button type="button" class="lime" onclick="postReviewedBill(this.form)">Post approved bill</button>`;
+}
+
+async function postReviewedBill(form) {
+  const payload = form._postingReview;
+  if (!payload) { toast('Review the entry before posting.', true); return; }
+  try { await api('post_bill', payload); } catch (e) { /* api already displays the refusal */ }
+}
+
+async function withdrawApprovedBill(form, billId) {
+  if (!form.reportValidity()) return;
+  try { await api('void_bill', {bill_id:billId, actor:form.elements.withdraw_actor.value,
+    reason:form.elements.withdraw_reason.value}); } catch (e) { /* api already displays the refusal */ }
+}
+
+async function voidDraftBill(billId) {
+  const reason = window.prompt('Reason for voiding this draft bill');
+  if (!reason || !reason.trim()) return;
+  try { await api('void_bill', {bill_id:billId, reason}); } catch (e) { /* api already displays the refusal */ }
+}
+
+// ---- browser self-test (used by tools/browser_check.py with headless Chrome) ----
+async function selfTest() {
+  const out = document.createElement('section'); out.className = 'wide'; out.id = 'selftest';
+  out.innerHTML = '<h2>Browser self-test</h2><p>running…</p>';
+  $('#app').prepend(out);
+  const steps = [];
+  const post = async (name, body) => { const r = await fetch('/api/action/'+name, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})}); const j = await r.json(); if (!j.ok) throw new Error(name+': '+j.error); return j.result; };
+  const check = (label, cond) => { steps.push({label, ok: !!cond}); if (!cond) throw new Error('check failed: '+label); };
+  try {
+    const sup = await post('add_party', {kind:'supplier', name:'Self-test supplier', destination:'ACH-ST-1'});
+    const cust = await post('add_party', {kind:'customer', name:'Self-test customer'});
+    const prj = await post('create_project', {name:'Self-test project', budget:'5000', customer_id: cust.id});
+    // governed payee verification: request, independent evidence by another person, bank_admin approval
+    const dch = await post('request_destination_change', {party_id: sup.id, new_destination:'ACH-ST-1', requested_by:'self-test requester', reason:'first verification of the supplier destination'});
+    let pre = false; try { await post('request_destination_approval', {change_id: dch.id}); } catch (e) { pre = true; }
+    check('payee approval refused before independent verification', pre);
+    const vdoc = await post('register_document', {project_id: prj.id, kind:'destination_verification', title:'Self-test call-back record'});
+    const vrev = await post('add_revision', {document_id: vdoc.id, content:'call-back record ' + Date.now(), note:'call-back notes'});
+    let selfVerify = false; try { await post('record_verification_evidence', {change_id: dch.id, channel:'call-back to number on file', verified_by:'self-test requester', evidence_hash: vrev.content_hash}); } catch (e) { selfVerify = true; }
+    check('requester cannot verify their own payee change', selfVerify);
+    await post('record_verification_evidence', {change_id: dch.id, channel:'call-back to number on file', verified_by:'self-test outside verifier', evidence_hash: vrev.content_hash});
+    let pap = await post('request_destination_approval', {change_id: dch.id});
+    await post('approve', {approval_id: pap.id});
+    const pex = await post('execute', {approval_id: pap.id});
+    check('payee destination verified through approval', pex.status === 'executed' || (pex.result && pex.result.status === 'executed'));
+    const periodId = 'ST-' + Date.now().toString(36);
+    await post('open_period', {period_id: periodId, name: periodId, start_date:'2026-12-01', end_date:'2026-12-31'});
+    const cmt = await post('create_commitment', {project_id: prj.id, supplier_id: sup.id, title:'Self-test subcontract', sov_lines:[{description:'work', amount:'4000'}], retainage_rate:'0.10'});
+    let ap = await post('request_approval', {operation:'commitment.execute', subject_id: cmt.id});
+    let failedEarly = false; try { await post('execute', {approval_id: ap.id}); } catch (e) { failedEarly = true; }
+    check('execute before grant is refused', failedEarly);
+    await post('approve', {approval_id: ap.id});
+    let ex = await post('execute', {approval_id: ap.id});
+    check('commitment executed', ex.result.status === 'executed');
+    const line = (await fetch('/api/state?project='+prj.id).then(r=>r.json())).commitments[0].sov[0].id;
+    const bill = await post('certify_bill', {commitment_id: cmt.id, period_id: periodId, installed:[{sov_line_id: line, cumulative_installed:'2000'}]});
+    check('bill due 1,800 after 10% retainage', bill.amount_due === '1800.00');
+    ap = await post('request_approval', {operation:'bill.approve', subject_id: bill.id});
+    const beforeBillGrant = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    await post('approve', {approval_id: ap.id, actor:'owner'});
+    const approvedState = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    check('business approval creates no journal or payable', approvedState.commitments[0].bills[0].status === 'approved'
+      && approvedState.trial_balance.journal_count === beforeBillGrant.trial_balance.journal_count && approvedState.ap.subledger_total === '0.00');
+    let legacyPost = false; try { await post('execute', {approval_id: ap.id, actor:'accountant'}); } catch (e) { legacyPost = true; }
+    check('combined bill approval execution is refused', legacyPost);
+    let ownPost = false; try { await post('post_bill', {bill_id:bill.id, actor:'owner', period_id:periodId}); } catch (e) { ownPost = true; }
+    check('business approver cannot post the bill', ownPost);
+    ex = await post('post_bill', {bill_id:bill.id, actor:'accountant', period_id:periodId});
+    check('bill posted', ex.result.status === 'posted');
+    const postReplay = await post('post_bill', {bill_id:bill.id, actor:'accountant', period_id:periodId});
+    check('bill posting retry replays its receipt', postReplay.replayed && postReplay.result.posting_receipt_id === ex.result.posting_receipt_id);
+    const ricky = await post('ricky_propose', {workflow:'payment.release', actor_role:'treasury', context:{bill_id: bill.id}});
+    check('ricky proposes payment release', ricky.decision === 'proposed');
+    ap = await post('request_approval', {operation:'payment.release', subject_id: bill.id, actor_role:'treasury'});
+    await post('approve', {approval_id: ap.id}); ex = await post('execute', {approval_id: ap.id});
+    const replay = await post('execute', {approval_id: ap.id});
+    check('replay returns stored result', replay.replayed === true);
+    await post('set_provider_mode', {mode:'timeout_after_accept'});
+    const d = await post('dispatch_payments'); check('timeout leaves outcome unknown', d.some(x=>x.status==='outcome_unknown'));
+    await post('set_provider_mode', {mode:'accept'});
+    const rc = await post('reconcile_payments'); check('reconciliation finds the transfer', rc.some(x=>x.status==='accepted'));
+    await post('settle_payment', {intent_id: ex.result.intent});
+    const dup = await post('replay_last_event', {intent_id: ex.result.intent}); check('duplicate event ignored', dup.applied === false);
+    const st = await fetch('/api/state?project='+prj.id).then(r=>r.json());
+    check('trial balance balanced', st.trial_balance.balanced);
+    check('AP reconciled', st.ap.reconciled);
+    check('audit chain ok', st.audit_chain.ok);
+    check('paid to date 1,800', st.forecast.paid_to_date === '1800.00');
+    out.dataset.selftest = 'pass';
+  } catch (e) {
+    steps.push({label: String(e), ok: false});
+    out.dataset.selftest = 'fail';
+  }
+  out.innerHTML = `<h2>Browser self-test · <span class="status ${out.dataset.selftest==='pass'?'ok':'bad'}">${out.dataset.selftest}</span></h2><table>${steps.map(s=>`<tr><td>${s.ok?'✔':'✘'}</td><td>${esc(s.label)}</td></tr>`).join('')}</table>`;
+  window.__selftest = {result: out.dataset.selftest, steps};
+  const nonce = new URLSearchParams(location.search).get('selftest');
+  try { await post('selftest_report', {result: out.dataset.selftest, nonce, steps, user_agent: navigator.userAgent}); } catch (e) {}
+}
+if (location.search.includes('selftest')) { refresh().then(selfTest); }
+
+function renderBrief(b) {
+  if (!b.items.length) return '<p class="muted">Nothing needs attention for this role.</p>';
+  const cls = l => ({blocker:'bad', decide:'warn', execute:'warn', reconcile:'warn'})[l] || '';
+  return `<p class="muted">${Object.entries(b.counts).filter(([,n])=>n).map(([k,n])=>`${n} ${k}`).join(' · ')}</p>
+    <table>${b.items.map(it=>`<tr><td><span class="status ${cls(it.level)}">${it.level}</span></td><td>${it.text}</td>
+      <td>${it.kind==='approval_pending'?`<button class="primary" onclick="api('approve',{approval_id:${js(it.ref)}})">Approve</button>`:''}
+          ${it.kind==='approval_granted' && it.operation!=='bill.approve'?`<button class="lime" onclick="api('execute',{approval_id:${js(it.ref)}})">Execute</button>`:''}
+          ${it.operation==='bill.post' || (it.kind==='approval_granted' && it.operation==='bill.approve')?'<a href="#post-approved-bills">Review posting</a>':''}
+          ${it.kind==='outbox'?`<button onclick="api('dispatch_payments')">Dispatch</button>`:''}
+          ${it.kind==='payment_unknown'?`<button onclick="api('reconcile_payments')">Reconcile</button>`:''}
+          ${it.kind==='quarantine'?`<button onclick="api('complete_recovery')">Recovery reconciliation</button>`:''}
+          ${['bill_draft','prime_bill_draft','commitment_draft','change_pending'].includes(it.kind) && it.operation ? `<button onclick="api('request_approval',{operation:${js(it.operation)},subject_id:${js(it.ref)}})">Request approval</button>`:''}</td></tr>`).join('')}</table>`;
+}
+
+async function loadBrief(role) {
+  const r = await fetch('/api/action/ricky_brief', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({project_id: unesc(STATE.project.id), actor_role: role})});
+  const j = await r.json();
+  if (!j.ok) { toast('brief: ' + j.error, true); return; }
+  $('#brief-body').innerHTML = renderBrief(escDeep(j.result));
+}
+
+async function showChallenge() {
+  const r = await fetch('/api/action/claim_challenge', {method:'POST', headers:{'Content-Type':'application/json'}, body:'{}'});
+  const j = await r.json();
+  if (!j.ok) { toast('challenge: ' + j.error, true); return; }
+  const c = j.result;
+  $('#challenge').textContent = `workspace ${c.workspace_id} · epoch ${c.authority_epoch} · challenge ${c.challenge}` + (c.code_required ? ' · claim code required' : ' · no owner secret configured: claim is attestation only');
+}
+
+function openPeriod() { const o = (STATE.periods||[]).filter(x=>x.status==='open'); return o.length ? o[o.length-1].id : ''; }
+
+async function certify(form, commitmentId) {
+  const installed = [], transfers = [];
+  for (const el of form.querySelectorAll('input')) {
+    if (!el.value) continue;
+    if (el.name.startsWith('line:')) installed.push({sov_line_id: el.name.slice(5), cumulative_installed: el.value});
+    if (el.name.startsWith('lot:')) transfers.push({lot_id: el.name.slice(4), amount: el.value});
+  }
+  await api('certify_bill', {commitment_id: commitmentId, period_id: form.period.value, installed, transfers});
+}
+
+async function rickyAsk(form) {
+  const [wf, id, role] = [form.workflow.value, form.id.value, form.role.value].map(esc);
+  const key = ({'commitment.execute':'commitment_id','change.execute':'change_id','bill.approve':'bill_id','prime_bill.approve':'prime_bill_id','payment.release':'bill_id','retainage.release':'commitment_id','estimate.approve':'estimate_id'})[unesc(wf)];
+  const r = escDeep(await api('ricky_propose', {workflow: unesc(wf), actor_role: unesc(role), context: {[key]: unesc(id)}}));
+  const out = $('#ricky-out');
+  out.innerHTML = r.decision === 'proposed'
+    ? `<p>${st('proposed')} ${r.reason} <button class="primary" onclick="api('request_approval',{operation:${js(wf)},subject_id:${js(id)},actor_role:${js(role)}})">Request this approval</button></p><pre class="muted" style="white-space:pre-wrap">${JSON.stringify(r.manifest, null, 1)}</pre>`
+    : `<p>${st('abstained')} ${r.reason}</p>`;
+}
+
+$('#refresh').onclick = refresh;
+refresh().catch(e => toast('failed to load state: ' + e, true));
+</script>
+</body>
+</html>

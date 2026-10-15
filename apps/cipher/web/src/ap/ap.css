@@ -1,0 +1,36 @@
+.cipher-ap-session { max-width: 720px; display: flex; flex-direction: column; gap: 20px; }
+.cipher-ap-session p, .cipher-ap-review p { max-width: 720px; }
+.cipher-ap-personas { display: flex; gap: 16px; flex-wrap: wrap; }
+.cipher-ap-persona { flex: 1; min-width: 240px; padding: 16px 0; border-top: 1px solid var(--cipher-divider); }
+.cipher-ap-persona p { margin: 8px 0 12px; }
+.cipher-ap-session-person { color: var(--cipher-rail-text); font-size: 12px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cipher-ap-checks, .cipher-ap-problems { padding: 0; margin: 12px 0 16px; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.cipher-ap-checks li { display: flex; gap: 8px; align-items: start; }
+.cipher-ap-checks svg { flex: 0 0 20px; margin-top: 1px; }
+.cipher-ap-checks p, .cipher-ap-problems p { margin-top: 4px; }
+.cipher-ap-feedback { padding: 12px 16px; color: var(--cipher-neutral); background: var(--cipher-neutral-tint); margin-bottom: 16px; }
+.cipher-ap-feedback-positive { color: var(--cipher-positive); background: var(--cipher-positive-tint); }
+.cipher-ap-feedback-warning { color: var(--cipher-warning); background: var(--cipher-warning-tint); }
+.cipher-ap-review { margin: 20px 0; }
+.cipher-ap-review > h3 { margin-bottom: 8px; }
+.cipher-ap-consequence { margin: 16px 0; max-width: 720px; }
+.cipher-ap-action-footer { position: sticky; z-index: 3; bottom: 0; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 12px 0; border-top: 1px solid var(--cipher-divider); background: var(--cipher-surface); }
+.cipher-ap-action .cipher-details { margin-top: 12px; }
+.cipher-ap-entry { margin-bottom: 16px; }
+.cipher-ap-entry > p { margin-bottom: 8px; }
+.cipher-ap-history { display: flex; flex-direction: column; gap: 16px; padding-left: 20px; }
+.cipher-ap-history p { color: var(--cipher-text-secondary); }
+.cipher-ap-action .cipher-message { margin-bottom: 16px; }
+.cipher-ap-page-link { display: block; margin-top: 8px; }
+.cipher-ap-period-field { max-width: 420px; margin-bottom: 20px; }
+.cipher-ap-money-input { min-width: 170px; max-width: 240px; }
+.cipher-ap-intake-form { max-width: 720px; }
+.cipher-ap-outcome-links { margin-top: 16px; }
+.cipher-ap-effect-facts { margin: 16px 0; }
+.cipher-ap-effect-facts p + p { margin-top: 8px; }
+@media (max-width: 599px) {
+  .cipher-ap-persona { min-width: 0; flex-basis: 100%; }
+  .cipher-ap-action-footer { justify-content: stretch; }
+  .cipher-ap-action-footer > button { flex: 1 1 100%; }
+  .cipher-ap-session-person { display: none; }
+}

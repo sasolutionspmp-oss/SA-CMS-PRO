@@ -1,0 +1,33 @@
+.rfi-form { align-items: stretch; max-width: 720px; }
+.rfi-form > .cipher-field { width: 100%; max-width: 100%; }
+.rfi-form .fui-Input, .rfi-form .fui-Textarea, .rfi-form .fui-Select { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+.rfi-form .fui-Select__select { width: 100%; min-width: 0; }
+.rfi-entry-line { padding: 16px 0; border-bottom: 1px solid var(--cipher-border); }
+.rfi-line-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rfi-line-title h3 { margin: 0; }
+.rfi-scope { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.rfi-scope ul { padding-left: 20px; }
+.rfi-scope li { overflow-wrap: anywhere; }
+.rfi-personas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.rfi-workspace .cipher-link-row > a { display: inline-flex; align-items: center; min-height: 32px; }
+@media (max-width: 767px) {
+  .rfi-workspace .cipher-link-row > a { min-height: 44px; }
+  .rfi-scope, .rfi-personas { grid-template-columns: 1fr; }
+  .rfi-line-title { align-items: flex-start; }
+}
+
+.rfi-source-text { white-space: pre-wrap; overflow-wrap: anywhere; word-break: break-word; min-width: 0; margin: 12px 0; padding: 20px; border: 1px solid var(--cipher-border); background: #f7f9fb; font: 14px/1.65 Consolas, "Courier New", monospace; max-height: 34rem; overflow: auto; tab-size: 4; }
+.rfi-editor { width: 100%; max-width: 100%; }
+.rfi-editor textarea { min-height: 9rem; max-height: 44rem; resize: vertical; font: 14px/1.65 Consolas, "Courier New", monospace; tab-size: 4; }
+.rfi-editor-form { max-width: 1120px; }
+.rfi-editor-form .cipher-field { min-width: 0; }
+.rfi-readback { min-width: 0; }
+.rfi-byte-count { color: var(--cipher-muted); font-size: 12px; }
+
+.rfi-personas { grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (max-width: 679px) { .rfi-personas { grid-template-columns: 1fr; } }
+.rfi-personas { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.rfi-recipient-choices { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
+.rfi-source-facts { min-width: 0; }
+.rfi-recipient-choices label { overflow-wrap: anywhere; word-break: break-word; }
+@media (max-width: 767px) { .rfi-personas { grid-template-columns: 1fr; } }

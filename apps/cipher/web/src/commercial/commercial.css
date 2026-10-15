@@ -1,0 +1,17 @@
+.commercial-form { align-items: stretch; max-width: 720px; }
+.commercial-form > .cipher-field { width: 100%; max-width: 100%; }
+.commercial-form .fui-Input, .commercial-form .fui-Textarea, .commercial-form .fui-Select { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+.commercial-form .fui-Select__select { width: 100%; min-width: 0; }
+.commercial-entry-line { padding: 16px 0; border-bottom: 1px solid var(--cipher-border); }
+.commercial-line-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.commercial-line-title h3 { margin: 0; }
+.commercial-scope { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.commercial-scope ul { padding-left: 20px; }
+.commercial-scope li { overflow-wrap: anywhere; }
+.commercial-personas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.commercial-workspace .cipher-link-row > a { display: inline-flex; align-items: center; min-height: 32px; }
+@media (max-width: 767px) {
+  .commercial-workspace .cipher-link-row > a { min-height: 44px; }
+  .commercial-scope, .commercial-personas { grid-template-columns: 1fr; }
+  .commercial-line-title { align-items: flex-start; }
+}

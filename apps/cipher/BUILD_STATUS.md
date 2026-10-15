@@ -1,0 +1,418 @@
+# Cipher prototype — verification record
+
+Branch `cipher/synthetic-prototype`. Built by Claude from 2026-10-11 to 2026-10-13, continuing the earlier Codex Cloud session "Set up SA-CMS-PRO". The original handoff described that historical session as ending on a usage limit with container work uncommitted; it is not a report of the current account or runtime. The plan (v1.0 package and v1.1 solo-first correction) is the specification. Modules were built in four rounds by parallel agents, each followed by an independent adversarial review and a fix pass; integration, a cross-module critic, gates and docs were reconciled afterwards.
+
+## Verified
+
+| Date | Check | Result |
+|---|---|---|
+|2026-10-15|Main ERP workflow qualification|The main backend passes 2703 unique tests in 1703.859 seconds with zero failures, errors or skips; all 266 Python source/test hashes remain unchanged. The four main Fluent workflows and the separate nine-case recovery-remount check also pass on their captured runtime/UI/configuration/served-JavaScript snapshots. The two test expectation corrections retain exact original-to-current provenance.|
+|2026-10-15|Main Fluentcommercial|72 views /3 journeys at 1440/1024/390;60 exact retries;24 recovery and24 contract checks; zero application/CSP/axe findings;385 captured source/bundle hashes unchanged|
+|2026-10-15|Main Fluentar|78 views /3 journeys at 1440/1024/390;57 exact retries;27 recovery and34 contract checks; zero application/CSP/axe findings;385 captured source/bundle hashes unchanged|
+|2026-10-15|Main Fluentlibrary|75 views /3 journeys at 1440/1024/390;64 exact retries;25 recovery and43 contract checks; zero application/CSP/axe findings;385 captured source/bundle hashes unchanged|
+|2026-10-15|Main Fluentrfi|81 views /3 journeys at 1440/1024/390;79 exact retries;20 recovery and59 contract checks; zero application/CSP/axe findings;385 captured source/bundle hashes unchanged|
+|2026-10-15|Main cross-entry recovery after SPA remount|9 real source-change/dropped-response cases across commercial, AR and library at 1440/1024/390; same original request and receipt recovered, without a duplicate effect; full captured source/bundle snapshot unchanged|
+| 2026-10-14 | Parallel test workspace isolation | A genuine two-process regression reproduced deletion of an active peer root older than 60 seconds. Test imports now clean only their own run at exit. Regression plus 17 AP/upgrade checks pass (18 cases, 21.129 seconds). The interrupted shared-temp full run is retained as failed evidence; final full validation uses a private temporary base |
+| 2026-10-15 | Final settled Fluent commercial records and refusal recovery | 72 views, three fresh journeys at 1440/1024/390, 60 exact retries, 24 recovery cases and 24 strict contract checks; zero unexpected HTTP/application/CSP or axe findings. All 208 runtime/browser/build hashes unchanged. Genuine 412 refusal is explicitly retained before fresh review/new UUID; source-integrity 423, transport loss, 5xx and malformed negative receipts keep the original unresolved request. Independent four-file review found no material adaptation gap |
+| 2026-10-14 | Named commercial schema admission and complete native acceptance walk | 33 distinct checks pass in 16.045 seconds: 16 preserved older migration fixtures, five commercial admission cases including actual schema 65 copy→migration→attested claim, and all 12 native extended acceptance steps. Database application sequence is verified separately from canonical catalog order; exact named checksum/count and original SQL remain required |
+| 2026-10-15 | Final commercial Fluent build after refusal recovery | strict typecheck/build pass; unchanged dependency pins/lock and shared theme/AP/read entries; 578.34 kB minified, 159.71 kB gzip. Existing size advisory and manual screen-reader/owner acceptance remain open |
+| 2026-10-14 | Integrated commercial domain/authority/contract/action/HTTP/history controls | 151 distinct commercial tests pass in 126.274 seconds against the native shared service; no test-only service mixin. Full discovery contains 2169 unique cases, including a separate parallel-test workspace regression, without duplicated test classes |
+| 2026-10-14 | Fluent commercial entry against the integrated backend | 69 views, three fresh journeys at 1440/1024/390, 54 exact retries, 21 recovery cases and 20 strict contract checks; zero unexpected HTTP/application/CSP or axe findings. All three exact source/SOV lines, including zero-valued lines, survive independent acceptance and PM draft handoff; journals/AP/AR/outbox/provider effects remain zero |
+| 2026-10-14 | Commercial schema, startup, historical admission and repeatability | original schemas 1–71 exact; schemas 72–73 append. Four genuine 71 upgrade/copy/rollback cases, eight cross-domain UUID cases and two historical-admission regressions pass within the focused run. Combined old/new migration checks: 15 pass in 46.849 seconds; startup/audit-prefix checks: 29 pass in 3.691 seconds. Clean historical modules remain inert, lost admission with surviving commercial history refuses |
+| 2026-10-14 | Commercial Fluent typecheck/build | pass with unchanged dependency pins/lock, shared theme and AP/read entries. Commercial chunk 575.79 kB minified, 159.06 kB gzip; Vite size advisory, production performance and manual screen-reader/owner acceptance remain open |
+| 2026-10-14 | Full suite after normalized practice accounting, API recovery and source/copy review | 2017 unique tests, OK; 928.845 seconds; 150 new accounting domain/simulator/service/contract/action/HTTP/review/upgrade cases; zero failures/errors. All Python source remained unchanged throughout final discovery |
+| 2026-10-14 | Fluent original-obligation accounting handoff and Unknown recovery | 58 views at 1440/1024/390, three fresh actual-backend journeys, 61 exact retries, 24 contract checks and six recovery cases; zero unexpected HTTP/application/CSP or axe findings. Each width preserves its two original source journals, produces one simulator effect per obligation, and makes zero native payment submissions/transfers. Original cost/AP/retainage and Oct 31/Nov 30 dates remain exact in America/New_York. Pending responses, malformed refreshes, confirmed-missing recovery with an explicit later delivery review, later readback reviews and original Unknown replay after reconciliation/navigation are covered |
+| 2026-10-14 | Existing Fluent AP/intake/exception interfaces after accounting integration | original AP 54 views/3 journeys/12 retries/8 checks; intake 46 views/3 journeys/21 retries/10 holds/5 checks; exceptions 30 views/3 journeys/27 retries/2 checks; zero unexpected HTTP/application/CSP or axe findings. Final accounting-only client hardening leaves their source branches and action labels unchanged |
+| 2026-10-14 | Accounting migration, file-copy review and focused source controls | schemas 1–69 exact; four genuine 69/70 upgrade and rollback cases preserve old receipt bytes/hashes, audited history, journals and accepted/readback records. Current copied-file review preserves bytes and initializes no worker; copy/core 57 tests pass. Accounting domain/simulator/service/startup/actions/HTTP 132 tests pass; separate independent result/provenance regressions and current-duty/contract/preflight checks pass. A historical exact plugin-list assertion was reproduced and updated to require the unchanged original prefix plus accounting at the tail; its four tests pass |
+| 2026-10-14 | Final Fluent AP typecheck/build with accounting screens | both pass with unchanged exact dependency pins/lockfile; AP JavaScript chunk 671.28 kB minified, 179.51 kB gzip. Vite's existing size advisory remains; production load/performance and manual screen-reader/owner acceptance are not established by the browser checks |
+| 2026-10-14 | Full suite after invoice exceptions, governed corrections and source/compatibility review | 1867 unique tests, OK; 697.938 seconds; 100 new exception/correction/source/migration cases; zero failures/errors |
+| 2026-10-14 | Fluent exception/correction and existing interfaces against frozen backend | exceptions 30 views/3 journeys/27 exact retries/2 contract checks; intake 46 views/3 journeys/21 retries/10 holds/5 checks; original AP 54 views/3 journeys/12 retries/8 checks; read app 18 views/7 checks; zero unexpected HTTP/application/CSP or axe findings |
+| 2026-10-14 | Exception receipt upgrades and financial/source preservation | schemas 1–68 exact; genuine schema-67/schema-68 receipts, hashes, audit prefixes and journals preserved under schema 69; five migration/copy tests; console 20/20; gates 9/9, checks 127/127; complete corpus and golden business results unchanged |
+| 2026-10-14 | Full suite after installed-work preparation/intake/match source review | 1767 unique tests, OK; 581.616 seconds; 153 new preparation/intake/source/migration cases; zero failures/errors |
+| 2026-10-14 | Final Fluent intake and existing interfaces against frozen backend | intake 46 views, 3 journeys, 21 exact retries, 10 real holds and 5 contract checks; original AP 54 views/3 journeys/12 retries/8 checks; read app 18 views/7 checks; zero unexpected HTTP/application/CSP or axe findings |
+| 2026-10-14 | Receipt migration and financial/source preservation after intake | schemas 1–67 exact; original schema-67 receipts/audit prefixes/journals preserved under schema 68; failed upgrade rollback and physical copy quarantine pass; console 20/20, gates 9/9, checks 127/127; entire corpus and golden business results unchanged |
+| 2026-10-14 | Full suite after the scoped Fluent AP workflow and independent review fixes | 1614 unique tests, OK; 463.118 seconds; 143 new AP/authorization-history cases; zero failures/errors |
+| 2026-10-14 | Fluent AP browser against fresh genuine backends | 54 views at 1440/1024/390; three accountant→PM→accountant journeys; 12 exact retries including navigation; eight contract/precision checks; zero unexpected HTTP, application, CSP or axe findings |
+| 2026-10-14 | Existing interfaces and accounting after AP delivery | original read app 18 views + seven checks; console 20/20; gates 9/9 and checks 127/127; entire corpus report and golden business figures unchanged; historical schemas 1–66 retain exact SQL/checksums |
+| 2026-10-14 | Full suite after immutable workspace mode, provider/route guards and historical fixture review | 1471 unique tests, OK; 393.561 seconds; 45 new mode/provider/runtime cases included |
+| 2026-10-14 | Workspace opening, claims and historical compatibility | foreign/empty/missing-identity and valid live files refused before initialization; diagnostic/ordinary copies read-only; nested claims refused; audit prefixes and schemas 1–65 preserved; rights-library registered-extension upgrade passes |
+| 2026-10-14 | Current workspace-mode Chromium, core gates and financial replay checks | console 20/20; Fluent actual API 18 views + 7 checks, zero browser/CSP or application axe findings; declared/verified practice with runtime writes disabled; gates 9/9, checks 127/127; entire corpus report and golden business figures unchanged |
+| 2026-10-14 | Full suite after separate bill approval/posting and final source/expiry review fixes | 1426 unique tests, OK; 338.180 seconds; 65 bill lifecycle/duty/service/review cases included |
+| 2026-10-14 | Historical bill upgrade and bill workflow acceptance | genuine schema-64 postings, journals and audit history preserved; all prior schema statement text unchanged; atomic failure, scoped/person duties, tampered source/receipt/history, expiry and exact retry checks pass |
+| 2026-10-14 | Current bill-split Chromium checks | console 20 of 20; Fluent actual API 18 views at 1440/1024/390 plus 7 contract/precision checks; zero browser/CSP errors or application axe findings; manual screen-reader acceptance remains open |
+| 2026-10-14 | Golden fixture, core gates and corpus after the final bill expiry fix | bills 27,000.00/18,000.00 and one provider transfer; 9 of 9 hard gates, 127 of 127 checks; corpus 19 releases for 405,700.00, 1 blocked, 61 approvals and exact timing/report assertions pass |
+| 2026-10-14 | Fluent 2 practice client typecheck and static release build | both pass; exact direct pins and lockfile; authored CSS and nonce-backed Griffel; development dependencies excluded from the engine image context |
+| 2026-10-14 | Chromium Fluent checks against fixture and actual practice API | each covers 6 views at 1440, 1024 and 390 px (36 page/viewport cases total); no browser/CSP errors or application axe findings; narrowly excluded hidden Tabster library sentinels after keyboard verification; manual screen-reader acceptance remains open |
+| 2026-10-14 | Fluent malformed-data, money, filtering and focus regressions | 7 API contract/precision checks pass, including missing/object/null fields, a live envelope, exact maximum cents, intermediate sum precision and controlled final-total overflow; URL filters, Help/Ctrl+K focus and mobile navigation pass; independent review clear |
+| 2026-10-14 | Full Cipher suite after the product goal and practice read backend | 1347 unique tests, OK; 249.003 seconds; no existing schema/domain/governor changes |
+| 2026-10-14 | Practice read contract and isolated HTTP/static surface | 27 tests, OK; domain totals and approval amounts match; reads preserve complete state; file-backed sources, write routes, forged queries/origins and escaping/cyclic static paths refused; independent review clear |
+| 2026-10-14 | Golden fixture, core gates and 20-bill corpus after the practice foundation | fixture/corpus financial results unchanged; 9 of 9 hard gates, 127 of 127 checks; 19 released for 405,700.00, 1 blocked and 61 approvals |
+| 2026-10-14 | Odoo/Cipher/QuickBooks delivery-boundary correction (documentation only) | local links and 15 unique build IDs checked; independent documentation review; unchanged engine suite: 1320 tests, OK, 243.012 seconds; live Odoo checkpoint and integrations not verified |
+| 2026-10-14 | Delivery backlog and bill approval/posting design (documentation only) | local links and 15 unique build IDs checked; unchanged engine suite: 1320 tests, OK, 234.047 seconds; split implementation remains open |
+| 2026-10-14 | `python -m apps.cipher test` after the Codex continuation and review fixes (Linux, Python 3.12) | 1320 unique tests, OK, no expected failures; 243.776 seconds |
+| 2026-10-14 | Rebuilt container image, including the full suite | 1320 tests, OK; 282.092 seconds; application files readable after a restrictive checkout; server UID 10001, healthy |
+| 2026-10-14 | Token sign-in on an existing volume seeded by prior head `4bbe9842`, then container restart | schema 63 upgraded to 64; Chromium self-test 16 of 16 both before and after restart; audit chain and trial balance valid |
+| 2026-10-14 | Headless Chromium console journey after the continuation | 16 of 16 |
+| 2026-10-14 | Golden fixture, accounting-core gates and deterministic 20-bill corpus | fixture unchanged; 9 of 9 hard gates, 127 of 127 checks; exact corpus report unchanged |
+| 2026-10-13 | `python -m apps.cipher test` in a Linux container (Python 3.13), after round 4 and its reviews | 1260 tests, OK, no expected failures |
+| 2026-10-13 | Local console driven by headless Chromium (`tools/browser_check.py`) | 16 of 16 |
+| 2026-10-13 | Golden fixture (`python -m apps.cipher demo`) | bills 27,000 and 18,000; forecast 122,000; prime bill 54,000; one provider transfer; trial balance balanced; AP and AR reconciled |
+| 2026-10-13 | Accounting-core gates (`python -m apps.cipher.tools.core_gates`) | native core passes 9 of 9 hard gates and 127 of 127 checks; one open advisory (G8, below); ERPNext not evaluated |
+| 2026-10-13 | 20-bill corpus (`python -m apps.cipher.tools.corpus`) | the report below, unchanged by the review fixes |
+| 2026-10-13 | Plan section-10 V1 acceptance (`tests/test_vertical_v1.py`) and the extended walk (`tests/test_vertical_extended.py`) | all steps pass end to end |
+| 2026-10-13 | Plan section-10 adversarial variants (`tests/test_adversarial_variants.py`) | every listed variant fails safely or is routed to an owner |
+| 2026-10-12 | Round 3 suite on Windows (Python 3.12) and in WSL Ubuntu (Python 3.14) | 1002 tests, OK |
+| 2026-10-12 | Container image build (`docker build`, suite runs inside on Linux) | 1002 tests, OK; image runs non-root and reports healthy |
+| 2026-10-12 | Container serving with a token and an owner secret, on a workspace volume created by the previous build (schema upgrade in place), driven by headless Chrome through token sign-in | console self-test 16 of 16 |
+| — | Dependencies | Python standard library only |
+
+The older container rows predate round 4. The 2026-10-14 rebuild and restart checks above supersede them.
+
+Tests per module: accounting_domain 32, accounting_service 12, accounting_simulator 53, accounting_startup 8, adversarial_variants 22, ap_accounting_actions 18, ap_accounting_contract 3, ap_accounting_http 9, ap_accounting_preflight 6, ap_accounting_review 5, ap_action_review 1, ap_actions 38, ap_boundary_review 4, ap_contract 27, ap_contract_review 3, ap_exception_actions 30, ap_exception_bills 19, ap_exception_contract 6, ap_exception_domain 19, ap_exception_http 9, ap_exception_preflight 11, ap_exception_review 2, ap_exception_source_review 2, ap_intake 25, ap_intake_actions 50, ap_intake_actions_review 3, ap_intake_contract 27, ap_intake_http 13, ap_intake_preflight 23, ap_intake_review 5, ap_practice_fixture 7, ap_practice_server 23, ap_preflight 19, ap_preparation_domain 29, ap_sessions 17, api_accounting_upgrade 4, api_contract 14, api_receipt_upgrade 5, assets 35, audit_index 4, banking 43, bill_authorization_history 4, bill_posting_authority 25, bill_posting_review 8, bill_posting_split 23, bill_service_split 9, bills_controls 42, close 42, contracts 49, core 31, core_gates 53, corpus 9, dispatch_coverage 15, drawings 25, estimates_controls 49, field 36, forecast_v2 32, grant_preflight 14, handoff 27, http 25, integrity 41, labor 41, ledger 17, payee_changes 20, payment_policy 47, payment_workspace_mode 20, payments_controls 70, payments_scope 27, people 60, plugin_loading 13, practice_server 13, procurement 29, receivables_controls 36, receivables_v3 23, reimbursements 41, ricky_brief 6, ricky_sdk 117, ricky_served 12, ricky_served_handlers 1, rights 46, schedule 25, service_controls 18, vertical_extended 12, vertical_v1 23, words 2, workflow 29, workspace_mode 15, workspace_runtime 10.
+
+## Connected ERP workflow milestone (2026-10-15)
+
+The main backend passes 2703 unique tests in 1703.859 seconds with zero failures, errors or skips; all 266 Python source/test hashes remain unchanged. The four main Fluent workflows and the separate nine-case recovery-remount check also pass on their captured runtime/UI/configuration/served-JavaScript snapshots. The two test expectation corrections retain exact original-to-current provenance.
+
+| Entry | Fixed actions | Practice result | Port |
+|---|---:|---|---:|
+| AP, intake, exceptions and accounting |24| Installed-work/invoice matching, business grant and independent posting, governed correction, separate simulated accounting delivery/readback |8767|
+| Commercial |7| Manual source-priced estimate revisions, independent estimator acceptance and source-preserving PM subcontract draft |8768|
+| Owner billing / AR |7| Claimed/reviewed owner pay app, journal-free grant, independent same-grant posting and separately approved synthetic send |8769|
+| Authored library |6| Exact UTF-8 revisions and independently reviewed project reference copy |8770|
+| RFI |9| Issued drawing/supporting citations, draft response, independent official answer and separate synthetic distribution |8771|
+
+The count reconciliation below derives from the actual collected module IDs: the retained 2017 published baseline plus 177 commercial, 189 owner/AR, 154 library/shared sources, 161 RFI/drawing proofs and 5 bounded-admission/parallel-harness cases equals 2703. Each ID appears once; shared-source suites are assigned to one named group. The full ID mapping is retained with the qualification artifacts. These groups do not add prior overlapping focused runs.
+
+| Disjoint count reconciliation from collected module IDs | Unique tests |
+|---|---:|
+|Published baseline retained|2017|
+|Commercial|177|
+|Owner billing and AR|189|
+|Library and shared owned sources|154|
+|RFI and shared drawing proofs|161|
+|Bounded admission and parallel harness|5|
+| **Total** | **2703** |
+
+The intermediate 2379-case run finished in 1412.084 seconds with four failures, zero errors and 217 unchanged Python hashes. Two failures were current-scope resource-denial regressions; two were original-catalog/additive-tail startup/upgrade expectations. It was not a successful full-suite milestone. The root 49-case service-first correction passed before the corrected sources were included in the final 2703 candidate. The prior 2017 green remains historical evidence; only the complete successful new main result supersedes it.
+
+The first main 2703 attempt finished in 1822.641 seconds with two failures, zero errors/skips and 266 unchanged Python hashes. The owner-billing cold-loading test assumed owner_billing was the final plugin and every current workspace had exactly 75 schemas. The Ricky operation-routing expectation omitted the deliberately restricted human-only library.adopt_reference operation; the production restriction remains correct. The test corrections preserve original 1–73 and 1–75 hashes, the required owner's unique ordered admission, actual later named entries and the human review restriction. The 31-case owner/loading correction passed in 46.361 seconds; the 24-case routing/served/library correction passed in 13.494 seconds. These focused runs overlap and are not added to 2703. No runtime, SQL or UI changed; the other 264 Python files remain exact. The subsequent successful 2703 run qualifies both corrected tests. Each final browser retains its exact 385-file before/after snapshot; current runtime, configuration and served JavaScript match exactly. Only the two named test files have explicitly pinned old/new digests and patches connecting browser and final backend snapshots.
+
+| Supplemental captured run | Cases | Seconds | Scope |
+|---|---:|---:|---|
+| Commercial admission/callback/native compatibility |198|175.773| Named receipt admission and current public gates; source unchanged |
+| Root regression correction |49|146.724| Scoped resource denial and original catalog/additive-tail startup/upgrade checks; four owned hashes unchanged |
+| Library selective integration |294|267.652| Exact text/reference sources, shared UUIDs, genuine histories, AP/AR/accounting/close; 240 Python hashes unchanged |
+| RFI scratch combined compatibility |430|317.502| Actual RFI and preserved native/source/rights/people/accounting controls; complete unique IDs and frozen-source proof |
+
+These supplemental snapshots overlap the final collection and each other. Their counts must not be summed. Scratch browser captures (including the original library 75-view and RFI 81-view runs) likewise describe their original sources; the main results below qualify the later integrated runtime.
+
+| Main entry | Views / journeys | Exact retries | Recovery / contract checks | Seconds | Source files |
+|---|---:|---:|---:|---:|---:|
+| Commercial | 72 / 3 | 60 | 24 / 24 | 181.881 | 385 |
+| Owner billing / AR | 78 / 3 | 57 | 27 / 34 | 455.711 | 385 |
+| Authored library | 75 / 3 | 64 | 25 / 43 | 297.311 | 385 |
+| RFI | 81 / 3 | 79 | 20 / 59 | 203.007 | 385 |
+| Cross-entry SPA recovery remount | 9 cases at 1440/1024/390 | Original request preserved | Commercial / AR / library | 38.990 | 385 |
+
+Each final browser run requires complete/success/exit0, raw three-width records, no unexpected application/CSP/axe findings, and exact before/after snapshots with current runtime/configuration/served-JavaScript equality. The two documented test expectation corrections are the only explicit backend/browser snapshot exceptions. The dedicated remount test separately covers nine real committed effects followed by dropped responses, genuine source changes and SPA form remounts. It retrieves each original UUID/body/If-Match/fingerprint and receipt before any fresh review. Automated checks leave manual screen-reader/owner acceptance and bundle/performance work open.
+
+### Exact named schema additions
+
+| Catalog registration | Named entry | Statements | Exact SQL checksum |
+|---:|---|---:|---|
+|72|`commercial_manual_sources_and_handoffs`|20|`f6cf329361ced5bfc78bb96b57f81bff7d4d74acd14ccb3d2556883163d1d3f7`|
+|73|`commercial_practice_action_receipts`|4|`a7f97fa4c298fa5ef13a632b38c3ab7bcfb9e158fd5c392844a8957256857ca9`|
+|74|`owner_billing_sources_and_posting`|16|`18da4657659b726730f2322de90917c7d9bb55f3bc53fc82721e1ed4741f85e9`|
+|75|`ar_practice_action_receipts`|4|`c83580bfa65d7d1b72e6f8fc40edf8bacfa2dd9541b2cfafdf8c9637e9624199`|
+|76|`library_authored_text_and_reference_adoptions`|20|`98d61e45aaf6b1268601db402102114ed57e330da231e5ef1c8302786cb59a51`|
+|77|`library_practice_action_receipts`|4|`7700ba794d37be58630fcc82931a3061f7e41f75f4a4c82e540a7fbafa086af6`|
+|78|`rfi_sources_and_review_contexts`|16|`020acd75e597729ca10d546ca95cc88445cfecac739e954c88e45fd0dc0fc327`|
+|79|`rfi_practice_action_receipts`|4|`548334226a4e85fc6c86531bed5cecbe3df6542d6f100e9f474927c9d498a18f`|
+
+Original 1–73/75/77 raw catalog hashes remain exact (`f6396239c845928a66c8ba93c6563641fdb75555914906c8aff71a531d64ab69`, `0b65915a8926593f21dbd2881166fb1ddff2684aac6ccdf955750fa5c5dac479`, `19d15d425da704d8df3e9c8a343687ddd1fe52aafecdad6c0446c7dd64a30dda`). Canonical 79 hash is `5dcd137fab97a687f4b4ed937efab3fa5cc405ff93d2c8252b06f3dd9063dc98`. Registration ordinals do not replace actual named physical admission positions. Exact named checksum/count/storage and a bounded contiguous positive prefix preserve real pre-mode copied histories and reject extreme corrupted versions without oversized allocations. Original native source proof stays separate from a later API receipt admission; lost later receipt history holds its API and shared namespace without rewriting an intact earlier original source.
+
+Every write entry owns a separate fresh memory practice workspace and synthetic registered people. Current own project duties precede private source/replay access; independent review and the original grant govern consequential effects. Original receipts stay distinct from current source/rights/lifecycle facts. All 53 fixed commands across the separate entries share a per-canonical-person UUID namespace when composed in one workspace; the AP allowlist itself remains 24.
+
+AR uses a declared synthetic owner contract/SOV and separate claimed/reviewed documents, exact server calculations, a journal-free grant and independent posting under that same grant. It ages current source-proven standing balances rather than reconstructing historical cutoffs; credits/write-offs/deposits/retainage-release and unsupported settlement sources still hold fresh qualification. Library preserves original exact 64 KiB UTF-8 references beside current revisions and rights. RFI preserves original issued citations, current source/rights disclosures, independent response/application and separate local distribution. Potential impacts are informational, with zero financial/change/baseline adoption.
+
+QuickBooks remains the official accounting authority while Cipher owns the proposed commercial, AP/AR and project/CMS workflows. The accounting adapter and worker remain an owned memory-only simulator; live providers, bank connectivity, file/process-restart worker durability and official QuickBooks delivery are unqualified. Manual quantities do not establish calibrated geometry. RFI answers are not engineering stamps, library adoptions are internal references rather than executed contracts, and hash-only drawing/document evidence does not supply PDF/CAD artifact bytes. Library-authored UTF-8 text is actually stored. Licensed ingestion/distribution, external signatures/delivery, operational identity, original copyright and record-retention policies, production performance, manual screen-reader review and enterprise acceptance remain future qualification.
+
+## Codex continuation (2026-10-14)
+
+Continued from the exact PR #27 head, `4bbe9842`, after reproducing the handoff's control gaps. The original 1260-test suite passed in this environment before the changes. Each defect fix began with a failing regression; independent reviews found additional source-binding, nested-transaction and served-response defects, which were fixed and rechecked.
+
+- **Required modules:** configured import, schema, plugin-contract and initialization failures stop startup. The loader publishes only a complete cache, validates operation prefixes, and rolls back constructor writes on initialization failure. No configured governor is silently omitted.
+- **Grant preflight:** people and payment-policy grant checks are read-only. A successful grant and its solo-owner review record commit together through a governor hook. A savepoint prevents partial grants when a caller catches a hook refusal inside an outer transaction; stale and expired attempts retain their terminal outcomes without orphan records.
+- **Served Ricky:** the HTTP catalog and invocation route expose an explicit 28-tool read/draft allowlist. Approval requests, execution, payment reconciliation and generic SDK calls, including aliases, are refused with a typed 403. Every allowed handler is covered by a contract test that traps approval, execution and posting. Served draft instructions direct a person to the workflow; their presentation views carry provenance to unchanged SDK receipts. The standalone SDK remains the synthetic automation harness.
+- **Dispatch coverage:** current insurance and bond coverage is checked under the payment claim lock. A missing, expired, withdrawn, revised or tampered certificate holds the same queued intent and pending outbox without a provider attempt. A valid audited replacement permits retry while the original transfer terms and value date remain valid. Dispatch verifies the original queued source and approval against the audit chain before selecting coverage rules; altering source fields, changing the bill's commitment or rewriting and rehashing the release manifest cannot remove coverage requirements.
+- **Depreciation chronology:** positive charges cannot be scheduled or posted in periods starting before capitalization, including legacy draft runs. Prior open depreciation approvals require renewal because their manifests now bind this rule; previously posted history is not rewritten.
+- **Audit lookups:** new named schema entry `audit_log_lookup_indexes` adds entity/sequence and action/sequence indexes. Upgrades of a workspace created by the prior head preserve all 63 historical schema rows and 94 audit entries through both CLI and service startup; copied workspaces remain read-only.
+- **Container packaging:** the non-root startup check reproduced unreadable application files copied from a private checkout. The Dockerfile now normalizes source read/traverse permissions before its tests; the rebuilt image and an independent runtime check both pass upgrade, token sign-in, health and restart checks.
+
+The bill approval/posting engine split is implemented below. Authenticated session identity, the remaining operation duties and replacement of the old action API remain open. These foundations do not open the production gates or settle the owner's financial policies or final UI acceptance.
+
+### Architecture context correction (2026-10-14)
+
+The owner confirmed that QuickBooks is in use and that prior work has brought Odoo toward being fully caught up. The recovered September architecture assigns customers, opportunities, projects and procurement to Odoo; Cipher supplies construction/engineering extensions, commercial controls and the working interface. QuickBooks remains accounting authority until a separately agreed cutover; preserve the established BILL route while its handoff is mapped and tested. The delivery backlog and handoff now carry that boundary and require recovering/reusing the Odoo checkpoint before building overlapping modules. This is a documentation correction, not an Odoo completion, reconciliation or integration test result. No live tenant or financial records were accessed or changed.
+
+### Expanded product goal and connected practice foundation (2026-10-14)
+
+The owner's subsequent direction expands Cipher to proposals, estimating/takeoffs, all AP/AR business workflows, full project/CMS work, engineering delivery and specification/contract libraries, linked to Fluent 2. QuickBooks may supply accounting through an API; a qualified native ledger remains an option. [PRODUCT_GOAL.md](docs/PRODUCT_GOAL.md) records internal completion gates and the separate enterprise quality path. Prior Odoo work remains reusable data/configuration/integration evidence, not a limit on Cipher's workflow ownership. The latest scope supersedes the narrower interpretation above without asserting new live integration readiness.
+
+The first B04/B08 read subset is implemented: typed, allowlisted project/commitment/bill/approval presenters with exact cents, filtered totals and bounded query-bound paging; a separate loopback-only server owns a fresh golden in-memory fixture, freezes it through the Database's managed read-only guard, and serves the built Fluent client. It has no file database, actor, credentials, provider, action API or old-console option. Static files use explicit MIME types, confined paths and per-response Fluent style nonces. Frontend dependencies are pinned and locked; the existing engine Docker context excludes the new web development tree.
+
+This is a connected local read prototype, not the authenticated operational backend. Production OpenAPI, scoped identity, action contracts, external IDs and accounting/provider routes remain open. At that checkpoint the bill split was unimplemented; the next continuation below implements its engine. The design and practice interface do not close full internal workflow or enterprise gates.
+
+### Separate bill approval and posting (2026-10-14)
+
+B01 is implemented in the synthetic engine. A fixed PM business manifest is prepared by an allowed preparer; a PM/controller/owner business grant records `approved` without a journal, payable or payment intent. A different accountant/controller calls `post_bill` with an explicit actor, selected period and any cross-period reason. This command consumes the original grant once and seals the actual journal plan, period, person and reason in an immutable audited receipt. Combined `execute` and `approve_and_execute` bill routes refuse before effects. The old console exposes the separate human act; Fluent remains read-only.
+
+New schema 65, `bills_business_approval_posting`, appends after audit indexes. Historical schema text and stored codes are unchanged. Genuine schema-64 history upgrades with original journals and audit entries preserved. Legacy posting requires its consumed authorization, exact approved journal plan and audited posting; missing new metadata alone is not historical proof.
+
+The domain and service recheck governed business facts, expiry, coverage, scoped duty and canonical person separation at posting. An approval's mutable deadline cannot extend its original audited deadline. Direct domain calls enforce the same posting boundary; caught failures inside an outer transaction roll back the whole act. Retried commands verify their cached result against the immutable receipt. Completed receipts remain valid after legitimate supplier display/destination changes without reopening the completed business decision.
+
+Financial reads and payment requests verify the approved economics and original posting proof. Focused review reproduced false historical postings, altered posted headers/lines, changed journal source versions, rewritten request actors, missing superseded approval records and extended expiry; regression checks now refuse these paths. Approved-unposted withdrawal is limited to the original business approver with a reason and restores reservations; correction/credit chronology uses the actual posting period. Intake rematching includes approved-unposted bills; cumulative successors cannot post before their predecessors.
+
+Bill-specific B02 duties are implemented. Other operation duties, authenticated session identity, Entra account-alias binding, production APIs and consequential Fluent screens remain open. Synthetic actor/duty arguments do not prove a caller's identity. No live data or external provider was connected; the earlier 1,320-test Docker image is historical evidence and has not been rebuilt for this milestone.
+
+### Immutable practice mode and provider boundary (2026-10-14)
+
+B03 appends schema 66, `workspace_mode`, after all historical entries. A new workspace receives one canonical audit declaration bound to its original identity. Mode, declaration and identity cannot be updated, deleted or replaced. Runtime checks verify the original proof and storage guards, including changes on the same in-memory connection. There is no practice-to-live promotion, mode override or live initializer in this release.
+
+Existing-file inspection precedes WAL, migrations, authority creation, business initialization and provider access. Foreign/empty files, missing original workspace rows and planted catalog checksums with mismatched installed schema refuse. Valid future live-mode files also refuse before writable opening. Historical schema entries 1–65 remain unchanged. Writable recognized legacy files adopt practice once, preserving original history as an exact prefix. Known legacy copies retain structural migration auditing but defer mode declaration until their attested owner claim.
+
+Claims require a standalone transaction; a physical authority sidecar cannot follow an outer SQLite rollback. Failed claims restore their mode proof/authority state. Both ordinary and diagnostic `migrate=False` opens enforce copied-file read-only behavior. Cached mode verification never preserves lost filesystem write authority. Declaring mode does not waive payment recovery quarantine or authenticate a caller.
+
+Only initialized registered simulators may bind, quote, submit, look up or reconcile through this practice release. Caller liveness flags and provider properties supply no authority. Callback secrets must belong to the bound simulator; unknown secrets and raw binding/secret replacement refuse before financial effects. Pending legacy copies may bind for diagnostics and make no provider calls. Service actions, direct console callbacks, each HTTP request and the read-only Fluent surface recheck mode; the schema CLI loads the complete catalog and reports safe refusals.
+
+The 45 new mode/provider/runtime cases pass, including regression-first failures for foreign providers, callback authority, valid live opening, diagnostic copy writes, nested claims and cached physical authority. The full suite passes 1471 tests in 393.561 seconds. Historical fixture updates preserve all original checks and use registered extension schemas; no schema verification was weakened. Current Chromium checks pass the 20-step console journey and 18 Fluent actual-API views plus seven contract/precision checks, with zero browser/CSP or application axe findings. The frozen Fluent source reports verified practice and runtime writes disabled. Core gates pass 9/9 and 127/127 checks; the entire corpus report and golden business figures are unchanged. Production identity, live integrations and full workflow/enterprise acceptance remain open; the older Docker image has not been rebuilt for this milestone.
+
+### Scoped Fluent AP actions (2026-10-14)
+
+The first B04/B05/B09 action slice is implemented in [AP_PRACTICE.md](docs/AP_PRACTICE.md). A separate loopback server owns a genuine in-memory fixture and registered synthetic accountant/PM sessions. Each read and action resolves current audited membership and project duties before records, aggregates, packets, cursors or receipts are disclosed. Request bodies cannot choose actors, roles or providers. Session selection rotates opaque cookie/CSRF secrets; current sessions are checked again after body parsing and before the action.
+
+The Fluent entry follows the existing theme and templates. An accountant requests business approval, a separate PM grants it without a journal or payable, and the requesting accountant reviews the exact entry and independently posts in a chosen open period. Cross-period posting requires a reason. Pure shared checks create no audit, journal, coverage, provider or outbox writes. Opaque versions and fingerprints bind the current person, authority, governed facts, deadline, period, reason and actual entry.
+
+Schema 67, `ap_practice_action_receipts`, appends after the immutable workspace-mode entry. Original schemas 1–66 are unchanged. Successful domain effects and audited immutable API receipts commit atomically; exact currently authorized retries verify original domain proof and replay before current version/expiry checks. Only verified stale/expiry control transitions may commit with a refused receipt. Unexpected action, receipt, schema or commit failures roll back. Receipt metadata/source integrity contributes to close/export checks; pending legacy copy diagnostics stay read-only.
+
+Independent regression-first review fixed authorization resurrection after trigger removal, same-total draft/SOV allocation and unapproved commitment-term changes, unverified schema changes in a typed refusal, session expiry during body reading and response-loss handling. The browser found a persona-switch read race; canceled reads/preflights no longer update the next session. Retry inputs survive navigation within the current person's scope. The full suite passes after these fixes; collection confirms 1614 distinct test IDs.
+
+The final AP browser run covers 54 view/state cases, three complete request/grant/post journeys and 12 exact retries, including navigation, plus eight malformed-contract/precision checks. The original read entry/client/smoke and dependency lock are unchanged; its rebuilt actual-API run passes 18 views and seven checks. Both entries have zero application/CSP errors or application axe findings. Hidden Tabster sentinels remain narrowly excluded after keyboard checks; manual screen-reader and owner design acceptance remain open.
+
+This installed-work practice slice does not authenticate employees or connect accounting/payment providers. Unapproved stored-material drafts require complete source snapshots before this presenter admits them. Intake/preparation, review revisions, rejection/withdrawal, corrections, payments, broader duties, staff identity and integrations remain subsequent work. The existing 1320-test Docker image was not rebuilt for this milestone. The full internal ERP and enterprise qualification gates remain open.
+
+### Installed-work preparation and invoice matching (2026-10-14)
+
+The full suite passes 1767 distinct cases in 581.616 seconds, including 153 new preparation/intake/source/migration tests. Python source remained unchanged throughout the final full discovery. The next practice AP slice connects six additional fixed commands to the Fluent templates: bill preparation, invoice receipt, match computation, match approval request/grant and explicit match application. The original three bill actions remain separate. The fixture adds an executed two-line subcontract, current project-owned evidence revisions and a genuine separate accountant reviewer with audited project grants. Every server read/action derives current scoped duties; request bodies cannot supply identities or providers.
+
+Certification and invoice/match plans are shared zero-write domain preflights; exact cents and cumulative quantities are computed server-side. The installed-work path refuses PO/stored-material preparation. Preparation, receipt and approved matching create zero journals/payables; a later PM business grant and independent accountant post are still required. General match policy separates requester from grantor, while allowing an authorized accountant to apply a granted match; no stronger executor separation is claimed.
+
+Invoice source proof reconciles sequential received/revised/rejected/reopened versions, duplicate-review resets, historical match decisions, latest computations, original consumed authorizations, invoice amounts and matched commitment/bill attribution. Contributor and supplier/evidence inventories include audited history, so raw row edits or deletions cannot erase obligations or free occupied evidence. Terms and evidence revisions are audited. Original receipt bodies bind exact quantities, amounts, dates and sources; valid later revisions/posting preserve retries, while unaudited lifecycle changes fail closed. Domain close/export diagnostics use the strengthened proof.
+
+Independent regression-first review fixed status resurrection, false evidence release, older computation-pointer replay, obsolete duplicate clearance after a genuine revision, unrelated approval effects on success, unapproved lifecycle changes on retries and forged original-body metadata. Strict row and audit deltas bind each successful action to reviewed resources; unexpected accounting, outbox, schema or unrelated database changes roll back. These fixed actions do not call payment providers. Typed stale/expiry refusal handling rolls back partial service effects before preserving only verified terminal control bookkeeping and its receipt. Direct certification/receive/match actions also use savepoints so caught failures cannot leak partial writes from an enclosing transaction.
+
+Schema 68, `ap_practice_preparation_action_receipts`, expands the nine-action receipt allowlist. Schemas 1–67 retain exact SQL/checksums. A genuine schema-67 request/grant/post upgrade preserves original receipt bytes, hashes, bindings, sources, audit prefixes and journals. A failed later migration rolls back the expansion and original guards. Copied workspaces stay physically read-only without write authority or provider calls.
+
+The intake browser covers 46 views, three complete preparation→receipt/matching→reviewer grant→accountant application→PM grant→accountant posting journeys, 21 exact retries including navigation, 10 real duplicate/mismatch/stale-source holds and five malformed-contract/precision cases. The original AP browser retains 54 views, three journeys, 12 retries and eight contract checks. Both have zero unexpected HTTP/application/CSP or axe findings at 1440/1024/390. The stale-source browser check advances one fixture document through the owned Evidence API using a bounded test-only stdin command; no app endpoint or arbitrary SQL is introduced. Existing theme, read entry and dependency pins/lock remain unchanged. Manual screen-reader and owner design acceptance remain open.
+
+Read-only connected metadata confirms QuickBooks Online Advanced; the [adapter plan](docs/QUICKBOOKS_ADAPTER_PLAN.md) records normalized ownership/mappings, durable outcomes and reconciliation. This is product recovery/design evidence, not financial delivery qualification. Document storage/upload, invoice revision/rejection and bill correction screens, PO/stored-material paths, payments, real staff identity and accounting integrations remain open. The prior Docker image has not been rebuilt for this slice. The full internal ERP and enterprise gates remain open.
+
+### Invoice exceptions and governed bill correction (2026-10-14)
+
+The final full suite passes 1867 distinct cases in 697.938 seconds, including 100 new exception/correction/source/migration cases. Python source remained unchanged throughout final discovery.
+
+[AP_EXCEPTIONS.md](docs/AP_EXCEPTIONS.md) records eight additional fixed actions, bringing the practice allowlist to seventeen. Scoped Fluent reviews now expose invoice revision, final rejection, documented possible-duplicate review, draft cancellation and original-PM withdrawal of approved-unposted bills. Material invoice revisions require fresh matching and business review. Ordinary edits to posted/paid bill invoices are refused until a genuine governed correction permits the replacement workflow.
+
+The correction path preserves the original posting receipt and exact journal source, requires a different human reviewer, and reverses the original entry in an eligible open period no earlier than the actual posting period. It refuses paid or credited obligations, active payment intents, cumulative successors and unverified contributor histories. Genuine canceled credits and failed/returned/canceled payment histories retain their existing eligibility. The replacement is separately certified, matched, business-approved and posted; it is never inferred from a sequence number or netted across periods.
+
+Pure reviews create no audit, receipt, journal, outbox or provider effects. Direct domain operations and the complete correction command, including approval consumption and command/idempotency bookkeeping, are protected by savepoints. Exact API retries retain original receipts and validate their original audited source plus the current caller's actual project duties. Independent regression-first review reproduced deleted correction histories, forged payment/credit states, same-subject mutations of reviewed facts and historical invoice due-date corruption; source inventories, full reviewed-plan comparisons and original-term proofs now refuse those paths. A stale canceled correction is rejected before a grant and retains its terminal control outcome.
+
+Schema 69, `ap_practice_exception_action_receipts`, expands the same receipt table without changing its columns or existing rows. Schemas 1–68 retain exact SQL/checksums. Genuine schema-67 and schema-68 action receipts, hashes, audit prefixes and journals survive upgrade; injected migration failures roll back, and physical copies remain read-only. Five migration tests pass.
+
+The final Fluent exception check covers 30 views, three journeys, 27 exact retries and two malformed-correction checks at 1440/1024/390, with zero unexpected HTTP/application/CSP or axe findings. The correction review displays the original certified cost, retainage and net AP separately, and the browser verifies all three exact amounts. The original AP (54 views/3 journeys/12 retries/8 checks) and intake (46 views/3 journeys/21 retries/10 holds/5 checks) browser checks also pass. Typecheck/build pass; the AP JavaScript bundle is 641.64 kB minified and retains Vite's chunk-size warning. Manual screen-reader and final owner design acceptance remain open.
+
+Console 20/20, core gates 9/9 and hard checks 127/127 pass. The complete corpus report and golden business results remain unchanged. The next slice is a normalized, separately governed accounting handoff with a fixed practice simulator, durable outcomes and reconciliation; none of this milestone posts to QuickBooks or changes the established BILL route. Real document storage, PO/stored-material screens, supplier credit/payment screens, authenticated staff identity and live integrations remain open. The older 1320-test Docker image has not been rebuilt for this milestone; internal completion and enterprise qualification remain open.
+
+### Original-obligation practice accounting handoff (2026-10-14)
+
+The final backend suite passes 2017 distinct cases in 928.845 seconds, including
+150 new accounting domain, simulator, service, contract, action, HTTP, review and
+upgrade cases. Python source remained unchanged throughout discovery. The first
+run caught an outdated exact plugin-list expectation; its historical prefix and
+schema checksums passed. The corrected test pins that same original prefix and
+requires accounting only at the tail; the complete rerun passes.
+
+[ACCOUNTING_PRACTICE.md](docs/ACCOUNTING_PRACTICE.md) records the fixed aggregate
+JournalEntry route. It preserves original installed cost, net AP and retainage
+from a modern posting receipt, original journal/business grant and matched invoice
+binding or explicit null. The date rule uses the audited actual posting period's
+end, explicitly labeled synthetic. It does not invent an invoice, cost type, tax
+mapping or official QuickBooks transaction.
+
+Seven fixed actions prepare, request, independently grant and queue the handoff,
+then explicitly deliver, look up or read back its simulator record. Current actual
+project accountant duty and membership govern every step and replay. Queueing
+creates no journal/provider call. A private factory-owned worker claims before
+crossing the simulator boundary outside SQL transactions. Unknown and unfinished
+outcomes recover by the original UUID; confirmed missing permits a later separately
+reviewed delivery, and readback remains distinct from acceptance. The independent
+simulator store retains an acceptance across local observation/receipt failures.
+It is memory-only practice; process restart and file-workspace delivery are not
+qualified. The served Ricky cannot request or execute this handoff.
+
+Schema 70 appends audited mappings/plans/intents/leases/attempts/acceptances/readback;
+schema 71 adds audited API invocation recovery and expands receipts to 24 actions.
+All 24 share the per-person repeatability namespace, including pending invocations.
+Genuine schema-69 receipts and schema-70 accepted/readback history survive upgrade
+unchanged. A current copied-file review preserves its bytes and initializes no
+worker; WAL setup now waits until writable authority is established. Historical
+schemas 1–69 remain exact.
+
+Regression-first review fixed false QuickBooks/journal result claims, altered
+original command payloads, bool/int/float aliases in original result and audit-reference proofs, cross-action pending-key reuse, payment/credit source
+admission and cross-period close omissions. Genuine canceled/failed/returned
+histories remain eligible where unpaid. Original October reconciliation cannot
+hide a November correction or credit: unsupported inverses/credits remain flagged
+in their actual journal period. Historical lookup/readback preserves the original
+obligation without authorizing another submission or netting a correction.
+
+The verification table records actual Fluent journeys and their limits. Console
+20/20, native gates 9/9 and hard checks 127/127 pass; the complete corpus report and
+golden business figures remain unchanged. The prior 1320-test container image has
+not been rebuilt. Real identity, persisted provider recovery, official posting
+policies and live integration remain open. Continue with
+[connected estimating and subcontract handoff](docs/COMMERCIAL_DELIVERY_PLAN.md),
+while the full ERP and enterprise acceptance gates remain open.
+
+### Connected manual estimating and source-preserving draft subcontract (2026-10-14)
+
+[COMMERCIAL_PRACTICE.md](docs/COMMERCIAL_PRACTICE.md) connects current owned drawing
+revisions, explicitly manual quantities, exact priced estimate revisions,
+independent actual estimator acceptance and PM-created subcontract drafts.
+Every accepted source line retains its SOV correspondence, including zero-valued
+lines. A source locator does not establish calibrated geometry. Customer proposal
+issue/award, signatures, budget adoption, partial/mixed packages, positive
+contingency allocation and amended SOV correspondence remain subsequent work.
+
+Schemas 72–73 append after the exact original 1–71 catalog. The required deferred
+module imports without registering SQL; the shared forecast normalizer loads at
+actual input processing. An empty configured module preserves genuine historical
+workspaces. Source admission cannot disappear while tables, receipt admission or
+original source births survive. Current copied files retain their bytes and no
+worker initializes; original receipts, journals and unfinished accounting history
+survive upgrades and later migration failure rolls back completely.
+
+Seven fixed local commands use pure typed reviews, actual own estimator/PM duties,
+independent acceptance, complete intended-effect checks and atomic original
+receipts. The per-person UUID namespace includes AP, pending accounting invocations
+and commercial outcomes. Exact integer/boolean/source/event shapes and original
+request/grant/consume/execution times remain proved. A later genuine estimate or
+commitment transition cannot rewrite a completed original outcome.
+
+A separate regression reproduced the legacy test harness deleting another active
+run's temporary root after 60 seconds. Cleanup now touches only its own process
+root; final full validation uses a private temporary base. This test infrastructure
+fix prevents unrelated file-workspace errors during concurrent suites.
+
+Regression-first review reproduced and fixed source/event type aliases, changed
+commitment amounts/times, lost original approval chronology, deleted source births,
+early forecast registration, installed-empty legacy activation and historical
+source admission. Actual browser checks also reproduced mobile overflow/small
+linked targets, false action effects, late review input races and discarded
+unresolved request identity. Original requests now survive edits/navigation until
+their outcomes are retrieved, and stale old-input reviews are discarded.
+
+Named admission distinguishes fixed catalog registration ordinals from the
+database's actual application sequence. A genuine pre-mode schema 65 copy applies
+the new source schemas before its separately attested practice declaration; its
+original rows and SQL remain exact. Admission verifies the original named
+checksum, statement count and possible physical sequence. It preserves older
+migration fixtures rather than changing their catalogs to evade the check.
+
+The final browser waits for current-document scoped reads and rendered records
+before screenshots or axe. Definitive412 refusals can be explicitly retained in
+history before a fresh review/new UUID; uncertain transport/5xx and 423 source
+integrity holds retain their unresolved original request. All 208 source hashes
+remain unchanged during the 72-view final run.
+
+The verification table records the integrated backend/browser evidence. Shared
+Fluent pins/theme and existing AP/read source branches are unchanged. Full saved
+views, exports, notes and complete approval split panes remain part of the larger
+interface backlog. Continue with [owner billing and AR](docs/OWNER_BILLING_PLAN.md),
+then the remaining AP, project/CMS and engineering/library workflows.
+
+## Round 4 (governor modules)
+
+Three modules govern approvals that other modules own. Each does nothing until it is configured.
+
+- **People** (`people`): identity registry, role grants scoped to the entity or one project, delegations, project memberships and a hash-chained identity policy; nobody grants themselves a role. While its policy enforces, every approver and executor must be an active identity holding the role, a segregated policy keeps requester, approver and executor apart, and a solo owner's self-approvals wait for an outside party's review. Policy versions, removals (revoked grants and delegations, ended memberships) and self-approval records are checked against the audit log, and any mismatch refuses every governed action. An enforcing workspace always keeps an owner whose grant has no end date.
+- **Payment policy** (`payment_policy`): a release above the high-risk amount, or to a destination changed within the cooling-off window, needs a releaser other than its approver, a fresh step-up by that person and, above the co-signature amount, a co-signature by a named outside party. Service identities never count as independent or as a step-up. When the policy names outside parties only they count; while it names none, only outside identities registered before the policy was first adopted do. Loosening any rule, or naming another party, needs an existing party's co-signature, checked against the parties the approval bound. Step-ups, co-signatures and clearances are checked against the audit entries that recorded them. A reimbursement paid in parts is classified on its whole approved claim.
+- **Contracts** (`contracts`): agreement approval and signature are separate authorities (the named signer signs; nobody stands in), commitment execution waits for a signed agreement when agreements are required, and required insurance and bond certificates must be in force, with unbroken coverage at the highest required minimum, at bill approval and at release. The audit log wins over a rewritten or deleted record.
+
+## Round 4 integration
+
+- **Extended acceptance** (`tests/test_vertical_extended.py`, 12 ordered steps): one lift-station job, in one period, under an enforcing segregated identity policy (owner bootstrapped, roles granted through `people.grant_role`, the PM's on the project only), an adopted payment release policy and required agreements. Estimate; procurement (bid tab, a justified non-low award drafting the PO, receiving); both the PO and the subcontract executed only after `contract.approve_agreement` (legal) and `contract.sign` (the named signer, whom not even the owner can stand in for); insurance and bond certificates (bill approval refused until the payment bond is on file); a governed payee destination change verified by the outside accountant; Ricky's SDK carries the PO invoice through `record_supplier_invoice`, `compute_invoice_match` (three-way), `request_approval` and `execute_approved_action`; the PO release is standard, the subcontract's is high risk (amount and new destination): held by the cooling-off window, refused to its approver, refused without the outside accountant's co-signature and without a step-up, then released; asset capitalization and one month of depreciation; a licensed handbook that Ricky's `read_document` may not retrieve; a prime bill; bank reconciliation, the hand-off acknowledged by the outside accountant and the period closed through its checklist (every module's close checks passing). Pass criteria: balanced books, AP 0.00 and AR 63,000.00 reconciled, one transfer per release, every approval consumed with a requester, a different approver and an executor that the registry recognizes.
+- **20-bill corpus** (`python -m apps.cipher.tools.corpus`, `tests/test_corpus.py`): literal data (pay applications with retainage and stored materials, PO invoices, an exact duplicate, a near duplicate, a credit note, a correction, a high-risk payment, a new-destination payment) run through intake, match, approval, posting and release under the same governance, on a simulated clock installed as the governors' `now` and the receivables calendar day and started at the destination change. Report: 19 released (405,700.00) and 1 blocked; 61 approvals, 10 routed to the owner and 51 to staff; held 1 duplicate review, 1 cooling-off, 1 co-signature, 2 step-ups; intake to release 615 to 2,610 simulated minutes (mean 987.42); books balanced, AP, retainage (31,800.00), stored materials and provider clearing reconciled. The test asserts the exact report and that a second run prints the same JSON.
+- **Ricky SDK** (catalog 1.2.0):
+  - **Round-3 tools** (catalog 1.1.0) were already in `ricky_sdk.py` (committed with the American English pass): supplier invoice intake and matching, supplier credit notes and bill corrections, customer terms and deposits, credit memos, write-offs, budget revisions and forecast snapshots. Each draft is gated by the approval it leads to; the effects stay human-granted approvals.
+  - **Round-4 tools** (catalog 1.2.0): `read_identities`, `read_release_rules`, `preview_release` (classification, co-signature, step-up and cooling-off a release would need; records nothing), `read_contracts`, `register_contract_agreement`, `prepare_contract_signature` (the caller can never name itself, or a service identity, as the signer) and `record_insurance_certificate`. A round-4 draft runs in one write transaction and is rolled back and refused when it would void an open approval that still held (agreement, signature, commitment execution, or a bill approval or release that bound coverage). Every `people.*` and `payment_policy.*` operation stays restricted.
+  - **Routing completeness:** the catalog describes every classified operation (`operations`, covered by the catalog hash). The routing check now fails unless every approval-bound operation the service routes is reachable through the SDK (`ROUTABLE_OPERATIONS`, with its drafts, previews, `request_approval` and `execute_approved_action`) or listed by name in `RESTRICTED_OPERATIONS` with its reason.
+  - **SDK identity:** while the people module's identity policy enforces, every call resolves the caller to an active registered identity holding the role by grant or active delegation in scope (revoked or expired grants, lapsed or revoked delegations, ended memberships and deactivated delegators all refuse); any identity record that fails verification refuses every call; a resolved call runs under the registry's login and its receipt records the identity and the grant or delegation it rests on. Unconfigured, nothing changes.
+  Destination-change hashes leave the SDK as keyed fingerprints, and a preview is project-scoped only when every record its context names belongs to the same project.
+
+## Round 4 review
+
+Every finding below was reproduced before it was fixed, and each fix has a regression test that fails without it.
+
+- **Contracts fix pass** (10 fixes): a retainage rate edited after agreement approval, a false ungoverned-release alarm, a coverage-gap warning that missed late or under-limit renewals, rewritten or deleted certificates, agreements, requirement sets and workspace policy that were relied on, the wrong error on replayed approvals, `-0` minimums, login spellings that skipped self-approval review, and an outside party removed and replaced without co-signature.
+- **Cross-module critic** (six lenses, each finding re-checked by two independent skeptics; 26 confirmed, 5 rejected) and its fixes:
+  - an owner could register their own "outside party" and use it to co-sign high-risk releases and loosen the payment rules; service identities counted as independent releasers and step-ups; a reimbursement paid in parts escaped the high-risk rules; forged co-signatures or clearances were trusted;
+  - deleting identity-policy versions switched enforcement off unnoticed; revived grants, delegations and memberships, and forged or rewritten self-approval records, went undetected; a dated owner grant could lapse and leave an enforcing workspace without an owner;
+  - a bill correction's reversal was paid out as released retainage; provider acceptance and settlement posted into the latest open period instead of the value date's;
+  - `journal.reverse` accepted labor timesheet and payroll journals; T&M time and reimbursables could never be billed again after their invoice was reversed; a labor collection could reuse a customer deposit's receipt reference;
+  - WIP percent complete counted labor and reimbursables in the numerator only; depreciation reversals, disposals, reimbursement voids and reimbursement collections could post before the journal they follow;
+  - schedule baselines bound no project, so a project's own PM could neither request nor approve one; previews could be scoped from a different record than the one evaluated; raw destination-change hashes reached SDK callers.
+  - Declined: a receipt rewrite that also forges SQLite's schema cookie passes the incremental check until the next full verification (the attacker already holds everything needed to defeat full verification too); the `verify_receipts` docstring now says so.
+- **Codex review on PR #27:** the console now escapes every server value and encodes handler arguments (an injected `onerror` ran in the old console), and periods accept only exact `YYYY-MM-DD` dates in order.
+- **Upgrade note:** schedule baseline manifests now bind `project_id`, so a baseline approval left open from before the upgrade goes stale and must be requested again.
+
+## Round 3 (closed the first production slice's gaps)
+
+- **Supplier invoice intake** (`ap_intake`): invoice number, invoice and due dates, terms, exact-number duplicate refusal, near-duplicate flags that need a recorded review, and an approval-bound match to a certified bill (subcontract) or to purchase-order lines received in good condition (three-way).
+- **Credits and corrections:** supplier credit notes and posted-bill corrections (`bill.credit_note`, `bill.correct`); customer terms, credit memos, write-offs past 90 days, customer deposits on control 2400 and their application to prime bills. Payment release pays exactly the open payable left after credits and earlier payments.
+- **Dates:** bills and receivables carry invoice, due and settlement dates; aging runs from due dates.
+- **Forecast:** versioned budgets by cost code (`budget.revise` approvals, hash-chained versions), full cost to date across subcontract, labor and reimbursables, estimate to complete, cost-code rollup and immutable snapshots.
+- **Payee changes:** request, independent evidence recorded by a different person against a stored evidence revision, then a `party.verify_destination` approval for `bank_admin`. The one-call HTTP action is gone; the console self-test drives the governed flow.
+- **Payment states:** processing and bank-reconciled states; a payment processing past three days fails the close checklist and appears in Ricky's brief.
+
+## What review found and fixed (highlights)
+
+- Assets could over-depreciate across duplicate period rows; banking could book a fee twice; WIP adjustments could double count. All fixed with month-keyed guards, live-journal checks and span rules.
+- Restored copies could still write records and dispatch queued payments, an older backup could resubmit a transfer, raw SQL could unlock a locked period or extend a posted journal, and `INSERT OR REPLACE` could bypass triggers. All are now refused by SQLite (query-only connections, seal and period triggers) and by recovery that looks up queued intents.
+- Retainage could be released before closeout, the same stored material could be claimed twice, and labor or reimbursement invoices left the AR control unreconciled. All fixed.
+- An expired approval stayed "granted" after a failed execution, and one claim code opened every sibling copy at the same epoch. Expiry is now durable, and claim codes bind to a per-copy challenge.
+- A credited bill was released for its full amount due, and customer deposits were missing from the close reconciliations. Both fixed and covered by gate G9.
+- The container self-test found that a server restarted on an existing workspace reissued simulator reference `sim_000001`, so the new payment's settlement was discarded as a duplicate. The simulator now continues after the workspace's references, an acceptance under a reference another payment holds posts nothing and is held for review, and an event for a reference two payments hold is rejected.
+
+## Not verified / remaining gaps
+
+- **Accounting transport:** the normalized original-obligation route and owned
+  memory-only simulator worker are practice evidence. File-workspace delivery,
+  process-restart provider recovery, approved inverse/credit/AR routes, complete
+  cost-code/type/tax mappings and controller-approved live date/posting policies
+  remain open. Simulated acceptance/readback supplies no QuickBooks delivery.
+- **Claim attestation (G8 advisory):** without `CIPHER_OWNER_SECRET`, claiming a restored copy is attestation only (recorded and flagged by Ricky's brief). The container run above sets the secret; every deployment that opens restored copies must too.
+- **Identity:** the people registry checks roles once its policy enforces, and the Ricky SDK answers to it, but nothing authenticates the caller yet. The HTTP `ricky_tool` action and the console take the actor login from the request, so who is calling is asserted, not proven (part of the production-identity gate).
+- **Approval expiry during a hold:** approvals, payment value dates and the procurement and intake "today" checks keep the wall clock. A 24-hour approval expires while a high-risk release waits out a co-signature or the five-day cooling-off window, so the release then needs a fresh approval, co-signature and step-up; the corpus's simulated days never expire one, so it understates those re-approvals.
+- **High-risk payments:** coverage is now rechecked at dispatch, but payment-policy clearances are still checked at release; releases are classified one obligation at a time, so splitting spend across separate claims or bills is not added up. A held queued payment still fails the existing value-date check if its approved date passes, requiring a fresh release.
+- **Contracts:** the same person may approve and sign an agreement if they hold both roles (separate approvals, not necessarily separate people).
+- **Labor corrections:** posted timesheets and payroll can no longer be reversed through `journal.reverse`; a governed labor correction is not built yet.
+- **Assets:** capitalization posts its synthetic purchase straight to the bank (Dr 1500 / Cr 1000), so an item billed through AP cannot be capitalized from its bill without counting it twice. Depreciation chronology is now guarded; already-posted historical errors are not repaired automatically.
+- **Performance:** entity and action lookups now have audit indexes. Full integrity verification, including the audit-chain check at dispatch, still scans the chain; fine at prototype scale.
+- **Ricky SDK coverage:** every approval-bound operation is reachable through the SDK or excluded by name with a reason. Restricted for every role, even after a person grants them: role grants, revocations and delegations, identity and payment policies, the workspace contract switch, the payment kill switch and payee destination changes, and every `people.*` and `payment_policy.*` operation. Not offered as tools (a person's decision): recording a customer deposit, setting payment terms, clearing a duplicate flag, rejecting or revising an invoice, canceling a draft, setting insurance requirements, withdrawing a certificate, co-signing a release and recording a step-up. Destination redaction is by key name, with a fallback for hashes next to a destination value.
+- **V1 coverage:** the section-10 acceptance test does not walk procurement, hand-off, rights, assets or the SDK; `tests/test_vertical_extended.py` does, and the 20-bill corpus reports approval-time metrics. Neither exercises labor, field, drawings, schedule or reimbursements under the identity policy.
+- **Accounting policy:** posting rules for revenue recognition, stored materials and disposals are SHADOW assumptions awaiting controller approval.
+- **Historical core comparison:** ERPNext has not been run against the same gates; this machine had about 4 GB free on 2026-10-12 against the owner's 250 GB free-space target, so a multi-GB ERP stack should not be pulled here. That evidence limit is not a prerequisite for the established Odoo/QuickBooks workflow. The current prototype also does not verify Odoo's live setup, prior catch-up checkpoint or QuickBooks/BILL integration.
+- **UI:** the separate Fluent read,24-action AP/accounting,7-action commercial,7-action owner AR,6-action authored-library and9-action RFI entries follow the existing templates and connect to isolated synthetic backends. Scoped installed-work preparation, owned evidence receipt/matching, independent match review, invoice exceptions, business approval/posting and governed correction/replacement work in practice. PO/stored-material, supplier credit and payment screens, broader consequential workflows, staff identity/read permissions, generalized claimed/reviewed and mixed-SOV workflows, final owner acceptance and manual screen-reader review remain open. Other A6 financial policies/facts are not automatically adopted by the owner's framework/design direction.
+- **Later plan gates:** live Odoo and QuickBooks/BILL integration, production identity, real payment providers, bank connectivity, licensed-content ingestion, multi-entity and CAD automation. Replacing QuickBooks as the accounting authority is optional and separately gated.
