@@ -1,0 +1,122 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposal",
+  "module": "Cipher Commercial",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "author_person",
+    "record_digest",
+    "data_json",
+    "pursuit",
+    "quotation",
+    "title",
+    "revision_number",
+    "current_revision",
+    "party_type",
+    "party_id",
+    "native_fingerprint"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "pursuit",
+      "label": "Pursuit",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Pursuit"
+    },
+    {
+      "fieldname": "quotation",
+      "label": "Quotation",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Quotation",
+      "unique": 1
+    },
+    {
+      "fieldname": "title",
+      "label": "Title",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "label": "Revision Number",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "current_revision",
+      "label": "Current Revision",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Cipher Proposal Revision"
+    },
+    {
+      "fieldname": "party_type",
+      "label": "Party Type",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "DocType"
+    },
+    {
+      "fieldname": "party_id",
+      "label": "Party Id",
+      "fieldtype": "Dynamic Link",
+      "reqd": 1,
+      "options": "party_type"
+    },
+    {
+      "fieldname": "native_fingerprint",
+      "label": "Native Fingerprint",
+      "fieldtype": "Data",
+      "length": 64
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher User",
+      "read": 1
+    },
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

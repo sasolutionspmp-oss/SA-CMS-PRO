@@ -1,0 +1,1864 @@
+{
+  "schema": "cipher.r1.est02-acceptance.v1",
+  "status": "passed",
+  "label": "explicit-vector-pdf-takeoff-real-frappe-cookie-csrf-approval",
+  "executed_at": "2026-10-15T16:15:27.021559+00:00",
+  "scope": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031"
+  },
+  "checks": [
+    {
+      "check": "create_measurement refused calibration_unverified",
+      "status": "passed"
+    },
+    {
+      "check": "same-person alias cannot independently verify calibration",
+      "status": "passed"
+    },
+    {
+      "check": "read-only independent reviewer can inspect and decide",
+      "status": "passed"
+    },
+    {
+      "check": "independent canonical human grants exact manifest",
+      "status": "passed"
+    },
+    {
+      "check": "verification consumed atomically",
+      "status": "passed"
+    },
+    {
+      "check": "stored known rectangle reproduces200squarefeet",
+      "status": "passed"
+    },
+    {
+      "check": "measurement alias replay returns one original effect",
+      "status": "passed"
+    },
+    {
+      "check": "irrational diagonal stored with unique rounding and bounds",
+      "status": "passed"
+    },
+    {
+      "check": "exact depth conversion and waste give420cubicfeet",
+      "status": "passed"
+    },
+    {
+      "check": "measurement persists its separate conversion source citation",
+      "status": "passed"
+    },
+    {
+      "check": "manual lineage never claims calibration",
+      "status": "passed"
+    },
+    {
+      "check": "create_measurement refused source_mismatch",
+      "status": "passed"
+    },
+    {
+      "check": "create_measurement refused non_simple_geometry",
+      "status": "passed"
+    },
+    {
+      "check": "bind_line refused quantity_basis_mismatch",
+      "status": "passed"
+    },
+    {
+      "check": "binding states subsequent evidence rather than original calculation provenance",
+      "status": "passed"
+    },
+    {
+      "check": "bind_line refused line_basis_exists",
+      "status": "passed"
+    },
+    {
+      "check": "bind_line refused ambiguous_double_waste",
+      "status": "passed"
+    },
+    {
+      "check": "explicit takeoff-waste-only binding avoids duplicate allowance",
+      "status": "passed"
+    },
+    {
+      "check": "changed drawing maps stale measurement to exact dependent line",
+      "status": "passed"
+    },
+    {
+      "check": "historical quantity and stored bounds remain unchanged",
+      "status": "passed"
+    },
+    {
+      "check": "drawing change leaves original estimate result unchanged",
+      "status": "passed"
+    },
+    {
+      "check": "create_measurement refused stale_drawing",
+      "status": "passed"
+    },
+    {
+      "check": "completed receipt survives source supersession",
+      "status": "passed"
+    },
+    {
+      "check": "create_measurement refused stale_drawing",
+      "status": "passed"
+    },
+    {
+      "check": "read-only independent reviewer can inspect and decide",
+      "status": "passed"
+    },
+    {
+      "check": "independent canonical human grants exact manifest",
+      "status": "passed"
+    },
+    {
+      "check": "verification consumed atomically",
+      "status": "passed"
+    },
+    {
+      "check": "explicit successor comparison reports300sf and source/calibration change",
+      "status": "passed"
+    },
+    {
+      "check": "takeoff catalog returns real scoped records",
+      "status": "passed"
+    },
+    {
+      "check": "current source with another calibration is refused",
+      "status": "passed"
+    },
+    {
+      "check": "consumed original verification packet remains historical after drawing change",
+      "status": "passed"
+    },
+    {
+      "check": "generic and trusted bypass guards reject forged immutable/verification writes",
+      "status": "passed"
+    },
+    {
+      "check": "drawing remains readable while only conversion source is unavailable",
+      "status": "passed"
+    },
+    {
+      "check": "missing measurement-only conversion source denies measurement",
+      "status": "passed"
+    },
+    {
+      "check": "missing measurement-only conversion source denies binding",
+      "status": "passed"
+    },
+    {
+      "check": "missing measurement-only conversion source denies completed replay",
+      "status": "passed"
+    },
+    {
+      "check": "restored conversion source reopens identical historical quantity",
+      "status": "passed"
+    },
+    {
+      "check": "authorized history initially includes sourced EST and takeoff subjects",
+      "status": "passed"
+    },
+    {
+      "check": "revoked source denies takeoff.api.get_record",
+      "status": "passed"
+    },
+    {
+      "check": "revoked source denies api.v1.operation",
+      "status": "passed"
+    },
+    {
+      "check": "revoked source denies api.approvals.read_packet",
+      "status": "passed"
+    },
+    {
+      "check": "history hides source-bound EST takeoff and calibration packet identifiers",
+      "status": "passed"
+    },
+    {
+      "check": "history exact total uses same authorized set",
+      "status": "passed"
+    },
+    {
+      "check": "source duty restored only on isolated fixture project",
+      "status": "passed"
+    },
+    {
+      "check": "restored rights restore original authorized history count",
+      "status": "passed"
+    },
+    {
+      "check": "durable known-UUID request/execution replay preserves one packet receipt verification and consumption",
+      "status": "passed"
+    }
+  ],
+  "schema_checks": [
+    {
+      "definition": "TakeoffCreateSetRequest",
+      "status": "passed",
+      "sample_sha256": "b5579a5580ddce3a583b15c6b4c8adb3fa884606b0e8e358b98aba9f1ddc106b"
+    },
+    {
+      "definition": "TakeoffCreateSetResponse",
+      "status": "passed",
+      "sample_sha256": "1179287c41e1b6838404498ba8d18acf0e72173a521073783632825ecdab1887"
+    },
+    {
+      "definition": "CreateConversionResponse",
+      "status": "passed",
+      "sample_sha256": "7e86ea720b87f0422c62f1911c1d96cd90e73a1fbd992af264f0b01343a82325"
+    },
+    {
+      "definition": "TakeoffCreateCalibrationRequest",
+      "status": "passed",
+      "sample_sha256": "ac6836c8624ac0b38d461721b707a5444b9f0a2c5dd0cd6b8fb4063821168ec6"
+    },
+    {
+      "definition": "TakeoffCreateCalibrationResponse",
+      "status": "passed",
+      "sample_sha256": "6cb619388f15887a67650e58bdb98ac3d47d0d38c7fe1459ea48ac176e582733"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "ece0dc03db69334a03ef869d55d3baafd069f70cea881512472ac0c29159e4f7"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "f75becb27d35d370250de572465ac1304e6e4f47ea33fde0b3a86a92bfcdaaa4"
+    },
+    {
+      "definition": "TakeoffVerificationRecord",
+      "status": "passed",
+      "sample_sha256": "8acaa7a5b230c6af6628afd21e7e2b153df245007414c353ee226b74783bb191"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementRequest",
+      "status": "passed",
+      "sample_sha256": "a772faf8704c65842b161c1daea453d4ac80d78dd8835d76ae144b1e095e954e"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "10d151811150dfc5dbb03f200e786b8504f3ba87e917a0c2f9594c8ae079de70"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "e89ae245746d039544ff16b0ce60c5720406d506fa859f1b019b0325152bc5eb"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementRequest",
+      "status": "passed",
+      "sample_sha256": "528a6d26fde7066067a2320a77ddaf04bce52868db1c8c3bdea1d018cb977ca0"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "c1d3d836c4ac8d0d77dc38b3c845f6057c4ea5c320d27e265d2a11ec20a36753"
+    },
+    {
+      "definition": "CreateConversionResponse",
+      "status": "passed",
+      "sample_sha256": "4e988bf181f704bb8f27ee6b72b294c4a16048660609e1268da0b759591e6f9e"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementRequest",
+      "status": "passed",
+      "sample_sha256": "02f7f39d0bd4c2cee54edd21b75db7656df3fe80f3c13ce56433fbf4fb21d0d0"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "0dcf22b3523ff9460759e536105c60a5ccb8eb2347fc605679ad6dd0cfe23402"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementRequest",
+      "status": "passed",
+      "sample_sha256": "80e27445d40a9dd62597f9b3a3876a9b679b2ac0e2587bb10b9a7abb2bd3567d"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "b961fe910948287ab98815f86d4d8a55099def7823cbd5cefd9bf34bf3465dff"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "sample_sha256": "c9e6590a6f2489b93ef7f0b5b8b153d4410c205443bd37d2ba14feb11c7a7f8e"
+    },
+    {
+      "definition": "CreateEstimateResponse",
+      "status": "passed",
+      "sample_sha256": "c871d34af2df7213940da11ad9badeddcb0bcafad257b03382388858a6f7ebba"
+    },
+    {
+      "definition": "CalculateRevisionResponse",
+      "status": "passed",
+      "sample_sha256": "2ffb0e19e0d5191d0ee53c602392f6881c4e6421cf4ce3981ea975e1c5911d83"
+    },
+    {
+      "definition": "TakeoffBindLineRequest",
+      "status": "passed",
+      "sample_sha256": "d930d00d008218920fd3ec25feb9d5fc700080d42be781becf272a821b1d5de0"
+    },
+    {
+      "definition": "TakeoffBindLineResponse",
+      "status": "passed",
+      "sample_sha256": "7cacd5e1e209657ba7e1b5e2502b4aa12877dbb11fc41493ed91537428b524ba"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "sample_sha256": "91c1519c9230966d7081e189aefcab5d26a0892d6d36bfa571178a09b50de41a"
+    },
+    {
+      "definition": "CalculateRevisionResponse",
+      "status": "passed",
+      "sample_sha256": "094542b86861fd2fa1fd4c166907b8dcbe16316abaad2512126bd282b735b3d5"
+    },
+    {
+      "definition": "TakeoffBindLineRequest",
+      "status": "passed",
+      "sample_sha256": "d2434d49de4907f3622ee9ff33ed3b41494152a2a428d3980e79e6473a6c5e9a"
+    },
+    {
+      "definition": "TakeoffBindLineResponse",
+      "status": "passed",
+      "sample_sha256": "a602cfdd38b3b4b368e8af12864c4a38c9094422de5a1bda271d10e92fd0b74a"
+    },
+    {
+      "definition": "TakeoffImpactRequest",
+      "status": "passed",
+      "sample_sha256": "46d7a37d9c53526060a986ce830230815d94341e17329da0627e6bd4f99e8b57"
+    },
+    {
+      "definition": "TakeoffImpactResponse",
+      "status": "passed",
+      "sample_sha256": "978045557d4551cd2d7e58571497884a6a43ba013943cb9c8c47a8f1ba59254c"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "55cbf6e4827fef017c52703349fd6a959c60a8a063e548b99b75abe1f0104d1d"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "f814b8b9b5e976c021d1a1f017016a5c0efeb8fce8f3e194b9b3da7b4b3940dd"
+    },
+    {
+      "definition": "EstSnapshotRecord",
+      "status": "passed",
+      "sample_sha256": "1759f0f8763874abeb2b30a8a07e5ae1245fadecdf27b1b0152dd561a8f7382b"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "e89ae245746d039544ff16b0ce60c5720406d506fa859f1b019b0325152bc5eb"
+    },
+    {
+      "definition": "TakeoffCreateCalibrationRequest",
+      "status": "passed",
+      "sample_sha256": "526a1ec6c15a603a098b856657f42e5541f67496843935d5414ccd27e322989b"
+    },
+    {
+      "definition": "TakeoffCreateCalibrationResponse",
+      "status": "passed",
+      "sample_sha256": "165f501be48869b03c27aa29e60a020aaad7cad614570fa20ac29fb0d204b3b4"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "3a643c8a36519c59b1221e49a1541617c1fb76762018739ebe639a9766f6dea5"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "ea08a94873fe296f7477397ac94a7b23d36470d0a0a2c36124dcc9495ce9b2cc"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "3a643c8a36519c59b1221e49a1541617c1fb76762018739ebe639a9766f6dea5"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "ea08a94873fe296f7477397ac94a7b23d36470d0a0a2c36124dcc9495ce9b2cc"
+    },
+    {
+      "definition": "TakeoffVerificationRecord",
+      "status": "passed",
+      "sample_sha256": "620ca299a68f1cb9ae9c18e3f8248f2f7730a823a99925fa060534b4ce59bbce"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "55cbf6e4827fef017c52703349fd6a959c60a8a063e548b99b75abe1f0104d1d"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "b12241b8f1d83e6ab62ba56ee5007a68d68fb9a8720f1bd5b53a342a6cd81e5b"
+    },
+    {
+      "definition": "TakeoffGetRequest",
+      "status": "passed",
+      "sample_sha256": "ece0dc03db69334a03ef869d55d3baafd069f70cea881512472ac0c29159e4f7"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "1217ccc988f5f68273206b93ccd02e31d1d5b2497c91fae5df34cfb49d7c3fbc"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementRequest",
+      "status": "passed",
+      "sample_sha256": "6d05441e34b39c3a13e0786ee416cecc443e811c922aa9c8fed36dd31ec76111"
+    },
+    {
+      "definition": "TakeoffCreateMeasurementResponse",
+      "status": "passed",
+      "sample_sha256": "ab741459ea0d0ec067abbafee038bdbf00340b28350c2b740857c4a5f39048a4"
+    },
+    {
+      "definition": "TakeoffCompareRequest",
+      "status": "passed",
+      "sample_sha256": "e5b48ec15bd8af04b8cc2df1fe0f028174474c431cb94391b734f72707be8070"
+    },
+    {
+      "definition": "TakeoffCompareResponse",
+      "status": "passed",
+      "sample_sha256": "38d7260452390418788e4ebb0947e549f17b0bdc4b1f5b9cb5eebb13ee6ee147"
+    },
+    {
+      "definition": "TakeoffListRequest",
+      "status": "passed",
+      "sample_sha256": "a4b3d57fa42bfa1ed3ce6028862968495466946a2c5c04d1ae97ec9670672f80"
+    },
+    {
+      "definition": "TakeoffListResponse",
+      "status": "passed",
+      "sample_sha256": "3c600a7b8f9748b07a1d527d3b219ef0de9f74dcb707768da444d3ae26c01d3f"
+    },
+    {
+      "definition": "TakeoffGetResponse",
+      "status": "passed",
+      "sample_sha256": "c5054eefb58eb6ef0ee6d1c2f1862f256e699abcb17d8c338c01a3ebc4681dd5"
+    }
+  ],
+  "live_model_qualified": false,
+  "cad_or_ocr_geometry_claimed": false,
+  "estimate_acceptance_implemented": false,
+  "records": {
+    "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+    "source_document": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+    "source_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+    "calibration": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+    "first_packet": "ma5c4elpom",
+    "verification": "bf0d2793-61c4-481d-ab99-71365155b49f",
+    "measurement": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+    "conversion_measurement": "4f6304a5-ceeb-4de9-ab39-94b5344e7e19",
+    "conversion_operation": "b0463601-3cea-4404-871a-e53c94e7ba7f",
+    "conversion_source_revision": "REV-aa8baddc6bee4cb3ad79d4a68d81db9b",
+    "conversion_payload": {
+      "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+      "source": {
+        "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+        "page": 1
+      },
+      "definition": {
+        "method": "calibrated",
+        "kind": "volume",
+        "locator": "Page1 rectangle from100,100 to300,200 in PDF user space",
+        "reason": "Explicit known rectangle fixture",
+        "result_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+        "result_precision": 6,
+        "tolerance": "0.000001",
+        "waste_fraction": "0.05",
+        "formula_version": "cipher.takeoff.planar.v1",
+        "calibration_id": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+        "geometry": {
+          "type": "rectangle",
+          "points": [
+            [
+              "100",
+              "100"
+            ],
+            [
+              "300",
+              "200"
+            ]
+          ]
+        },
+        "depth": {
+          "amount": "24",
+          "unit_id": "d99c813c-2cbf-482f-ad6d-b8537399e524",
+          "precision": 6
+        }
+      },
+      "conversion_ids": [
+        "178b1180-daf3-44f0-a849-fc8678ad63ef"
+      ]
+    },
+    "estimate": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+    "estimate_revision": "7b98a94e-a174-491c-88a1-1b1aae7c262d",
+    "snapshot": "f70a53be-770c-4145-aec1-936fe97afc5b",
+    "binding": "5515c427-388d-457f-9d25-2223a71b6825",
+    "stable_line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+    "conversion_binding": "e11325f4-ee43-4ce8-acd7-4c36de54927a",
+    "successor_calibration": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+    "successor_measurement": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+    "successor_source_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee"
+  },
+  "http": {
+    "primary": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 63.53
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 8.88,
+        "request_id": "93f20b2b-2e5e-46a2-8bc7-e94aa911bc03",
+        "server_time": "2026-10-15T16:15:27.102211Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 289.13,
+        "request_id": "825b9234-b9da-4ad1-a3b7-ecddba03e6bd",
+        "server_time": "2026-10-15T16:15:27.639300Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 17.21,
+        "request_id": "1f23fca8-d798-4943-b4e8-595ae131a269",
+        "server_time": "2026-10-15T16:15:27.659474Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_set",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 69.6,
+        "request_id": "68ef4833-755b-4a40-8027-3f6d9c73a45e",
+        "server_time": "2026-10-15T16:15:27.727994Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_conversion",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 90.69,
+        "request_id": "2b8cf258-6b52-4f04-9d18-3ce4f5e2377c",
+        "server_time": "2026-10-15T16:15:27.818707Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_calibration",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 509.62,
+        "request_id": "eb4391bc-7ff9-4c84-a4ed-f77197865648",
+        "server_time": "2026-10-15T16:15:28.333543Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 62.38,
+        "request_id": "68379f30-023b-4942-b3fa-c9b71291fe67",
+        "server_time": "2026-10-15T16:15:28.400907Z",
+        "envelope_meta": true,
+        "error_code": "calibration_unverified"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 43.59,
+        "request_id": "802138c6-7ff0-444f-b9a7-a0a93b118fc4",
+        "server_time": "2026-10-15T16:15:28.440866Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 141.91,
+        "request_id": "e0d3b7f9-6b13-426c-8b0c-13ad3f8c22e2",
+        "server_time": "2026-10-15T16:15:28.588915Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 226.31,
+        "request_id": "f89bc590-d598-4dd4-b7e6-f93c3b013625",
+        "server_time": "2026-10-15T16:15:29.068776Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 351.38,
+        "request_id": "d3a2fb12-e6ce-4f32-97db-b22c77af71ae",
+        "server_time": "2026-10-15T16:15:29.421896Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 297.28,
+        "request_id": "c9c2f2c4-4372-44d7-9c04-30b283336883",
+        "server_time": "2026-10-15T16:15:29.787228Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 43.5,
+        "request_id": "b697a9f4-edab-432a-9ec4-2213ebaad48a",
+        "server_time": "2026-10-15T16:15:29.832892Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 13.21,
+        "request_id": "9822875a-0a39-49e4-9f9c-e33f4ca556e9",
+        "server_time": "2026-10-15T16:15:29.849703Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_conversion",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 54.56,
+        "request_id": "83bab2df-385d-4a2f-95db-cea9576bb8b0",
+        "server_time": "2026-10-15T16:15:29.902888Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 337.66,
+        "request_id": "b5b29849-172a-4ee9-8246-eb530e8a290c",
+        "server_time": "2026-10-15T16:15:30.240129Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 65.12,
+        "request_id": "96418e52-2977-4e3c-91c0-6cafe6f3e107",
+        "server_time": "2026-10-15T16:15:30.312998Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 412,
+        "media_type": "application/json",
+        "elapsed_ms": 31.1,
+        "request_id": "79c361a1-673b-402a-b986-f5ba0fce4123",
+        "server_time": "2026-10-15T16:15:30.347867Z",
+        "envelope_meta": true,
+        "error_code": "source_mismatch"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 422,
+        "media_type": "application/json",
+        "elapsed_ms": 200.91,
+        "request_id": "65ed8b7a-ca8f-4756-8ed6-8bcf3ffa7eb9",
+        "server_time": "2026-10-15T16:15:30.549329Z",
+        "envelope_meta": true,
+        "error_code": "non_simple_geometry"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 73.68,
+        "request_id": "987e6c4c-ae60-4c4b-a26d-0419f56e1073",
+        "server_time": "2026-10-15T16:15:30.621750Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_estimate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 41.31,
+        "request_id": "c1fddf29-566b-4282-b08b-fefe295075ed",
+        "server_time": "2026-10-15T16:15:30.665653Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 142.16,
+        "request_id": "26b05129-de25-4893-bd1f-adfd305f7d31",
+        "server_time": "2026-10-15T16:15:30.807049Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.bind_line",
+        "status": 422,
+        "media_type": "application/json",
+        "elapsed_ms": 85.38,
+        "request_id": "334bc0c4-ad71-42ed-a1a9-20250f316313",
+        "server_time": "2026-10-15T16:15:30.899433Z",
+        "envelope_meta": true,
+        "error_code": "quantity_basis_mismatch"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.bind_line",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 192.49,
+        "request_id": "5865b330-62fc-413b-8ef9-9d04227c42af",
+        "server_time": "2026-10-15T16:15:31.089888Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.bind_line",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 90.63,
+        "request_id": "66778496-b4b6-4200-ad17-5764bdcaa50f",
+        "server_time": "2026-10-15T16:15:31.183310Z",
+        "envelope_meta": true,
+        "error_code": "line_basis_exists"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 74.32,
+        "request_id": "4a34919a-c649-44da-a22f-da6b940ea1d3",
+        "server_time": "2026-10-15T16:15:31.255755Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 107.18,
+        "request_id": "26a07bb3-445a-4808-9868-0c112fd12c6b",
+        "server_time": "2026-10-15T16:15:31.364296Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.bind_line",
+        "status": 422,
+        "media_type": "application/json",
+        "elapsed_ms": 87.92,
+        "request_id": "9894eddf-9491-4d0a-9aa7-752b4307eca2",
+        "server_time": "2026-10-15T16:15:31.462876Z",
+        "envelope_meta": true,
+        "error_code": "ambiguous_double_waste"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.bind_line",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 153.77,
+        "request_id": "acf3ab9d-9bd0-42c9-b440-c2ec3667d3de",
+        "server_time": "2026-10-15T16:15:31.615415Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 209.89,
+        "request_id": "06628b8b-1cc4-4dbb-93eb-392704b61a17",
+        "server_time": "2026-10-15T16:15:31.826251Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.drawing_impact",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 315.97,
+        "request_id": "5aa49861-47e8-4c16-8a84-a87bd075ad95",
+        "server_time": "2026-10-15T16:15:32.144274Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 50.13,
+        "request_id": "a67bfcbb-9f18-49cc-8887-04abace6b435",
+        "server_time": "2026-10-15T16:15:32.195624Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 13.6,
+        "request_id": "7fc29736-5dbf-4b7f-b10d-c072d8cc67f6",
+        "server_time": "2026-10-15T16:15:32.215117Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 412,
+        "media_type": "application/json",
+        "elapsed_ms": 23.78,
+        "request_id": "00c10428-4526-4a9a-8ce5-6358e0cbf2ed",
+        "server_time": "2026-10-15T16:15:32.241136Z",
+        "envelope_meta": true,
+        "error_code": "stale_drawing"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 51.95,
+        "request_id": "12f50a47-2280-46f7-bdec-bc1dabfb8be4",
+        "server_time": "2026-10-15T16:15:32.293077Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 412,
+        "media_type": "application/json",
+        "elapsed_ms": 41.97,
+        "request_id": "82aac8c4-faa9-4880-a40b-d8aec1557059",
+        "server_time": "2026-10-15T16:15:32.338402Z",
+        "envelope_meta": true,
+        "error_code": "stale_drawing"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.46,
+        "request_id": "9b661dd0-0c45-4367-a154-c88e9cbc2677",
+        "server_time": "2026-10-15T16:15:32.346654Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_calibration",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 382.38,
+        "request_id": "c5ce798e-304c-498a-a2aa-0aee2808b43c",
+        "server_time": "2026-10-15T16:15:32.728001Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 32.59,
+        "request_id": "8326798d-d11f-477c-865c-c00265e61a41",
+        "server_time": "2026-10-15T16:15:32.765612Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "status": 503,
+        "media_type": "application/json",
+        "elapsed_ms": 132.33,
+        "retry_after": "1"
+      }
+    ],
+    "alias": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 67.23
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 9.74,
+        "request_id": "cf11316f-302e-4a83-a93f-42c4382458af",
+        "server_time": "2026-10-15T16:15:27.188286Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.decide_packet",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 79.02,
+        "request_id": "75e5e818-6758-4551-9811-93d297337eb1",
+        "server_time": "2026-10-15T16:15:28.653278Z",
+        "envelope_meta": true,
+        "error_code": "independent_calibration_required"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 61.27,
+        "request_id": "c6c9b498-e191-4aac-91b6-e20ccd673cee",
+        "server_time": "2026-10-15T16:15:29.488842Z",
+        "envelope_meta": true
+      }
+    ],
+    "reviewer": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 71.9
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 8.52,
+        "request_id": "997bfcbc-adc9-408b-9e4d-1f8895a7c81c",
+        "server_time": "2026-10-15T16:15:27.274710Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 56.76,
+        "request_id": "0ab8c38f-cea2-4181-a6bf-b30419d5a3d3",
+        "server_time": "2026-10-15T16:15:28.727100Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.decide_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 117.36,
+        "request_id": "1f2df0b9-84e8-444b-9f7f-8674a3e22305",
+        "server_time": "2026-10-15T16:15:28.842247Z",
+        "envelope_meta": true
+      }
+    ],
+    "outsider": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 63.21
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 9.1,
+        "request_id": "e3d7a77b-d103-470b-9b68-d272c7b1f660",
+        "server_time": "2026-10-15T16:15:27.352554Z",
+        "envelope_meta": true
+      }
+    ],
+    "primary_continued": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 112.37
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.88,
+        "request_id": "55e651d5-65e5-4879-87e7-01f885c96fcb",
+        "server_time": "2026-10-15T16:17:03.258875Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 67.15,
+        "request_id": "fc3105b0-bb2a-4d26-a8cf-bee3ccd7c02c",
+        "server_time": "2026-10-15T16:17:03.537350Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 192.04,
+        "request_id": "d890e9d9-ddc6-4925-af61-71d9fce8991f",
+        "server_time": "2026-10-15T16:17:03.732411Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 196.71,
+        "request_id": "a8bb51c7-6298-43c6-a41a-e39f0de87323",
+        "server_time": "2026-10-15T16:17:04.124886Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 79.94,
+        "request_id": "14f815e3-5aae-41fd-87ed-3b3ee25c335f",
+        "server_time": "2026-10-15T16:17:04.208186Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 31.14,
+        "request_id": "729bac0a-0288-4ac4-85b0-536e50e66d70",
+        "server_time": "2026-10-15T16:17:04.247335Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 341.57,
+        "request_id": "3b114362-1e91-4b15-966d-308032edca17",
+        "server_time": "2026-10-15T16:17:04.592369Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.compare_measurements",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 66.18,
+        "request_id": "54663ae0-ba2b-4477-a967-0a886f55f43e",
+        "server_time": "2026-10-15T16:17:04.663974Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.list_records",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 217.38,
+        "request_id": "32572982-9147-4a2f-aa5b-51dcc9410485",
+        "server_time": "2026-10-15T16:17:04.892960Z",
+        "envelope_meta": true
+      }
+    ],
+    "alias_continued": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 59.93
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 6.75,
+        "request_id": "e555ae5a-9dc7-409d-821f-8a6113055d84",
+        "server_time": "2026-10-15T16:17:03.331862Z",
+        "envelope_meta": true
+      }
+    ],
+    "reviewer_continued": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 59.25
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.27,
+        "request_id": "f00475f1-3b3f-4042-85e5-6e91bb43bc5c",
+        "server_time": "2026-10-15T16:17:03.404619Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 67.52,
+        "request_id": "bde0cec6-aa7f-42bb-908e-d1ff479e347e",
+        "server_time": "2026-10-15T16:17:03.802038Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.decide_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 128.57,
+        "request_id": "f103310e-3c77-4443-930e-a5313525c85c",
+        "server_time": "2026-10-15T16:17:03.929072Z",
+        "envelope_meta": true
+      }
+    ],
+    "outsider_continued": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 53.42
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 6.35,
+        "request_id": "493b5d78-a86c-4d77-85cc-700656018568",
+        "server_time": "2026-10-15T16:17:03.470424Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 5.63,
+        "request_id": "0c0af715-32aa-4e0b-9c7e-7bc97687add4",
+        "server_time": "2026-10-15T16:17:04.670890Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 5.01,
+        "request_id": "83cebec2-507f-45d5-bdf9-a722d8586757",
+        "server_time": "2026-10-15T16:17:04.676148Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      }
+    ],
+    "source_mismatch_and_revocation_followup": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 75.3
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.22,
+        "request_id": "e37151b0-d0d1-4f5e-bc53-18cb5dd3ba72",
+        "server_time": "2026-10-15T16:18:24.252535Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 29.05,
+        "request_id": "5c5e311d-5381-435c-8ba4-5b3b13b8614a",
+        "server_time": "2026-10-15T16:18:24.281083Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 237.71,
+        "request_id": "afeea2ea-4fb8-4bd3-8fa7-a1b16e8b8f4f",
+        "server_time": "2026-10-15T16:18:24.522972Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 55.4,
+        "request_id": "2293c406-3aec-4973-8f78-2b26a9ea6f9b",
+        "server_time": "2026-10-15T16:18:24.580279Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 412,
+        "media_type": "application/json",
+        "elapsed_ms": 36.19,
+        "request_id": "6cf4296e-41a0-4fdb-9f8b-ab580a335b75",
+        "server_time": "2026-10-15T16:18:24.616201Z",
+        "envelope_meta": true,
+        "error_code": "calibration_source_mismatch"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 23.75,
+        "request_id": "b2d51ede-c193-483c-b041-ad7e88514581",
+        "server_time": "2026-10-15T16:18:24.640694Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 11.08,
+        "request_id": "fcc15e27-5bd0-4a8f-bde1-55b86b1d96ac",
+        "server_time": "2026-10-15T16:18:27.141255Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 22.7,
+        "request_id": "6e99cbc1-e4f6-4738-8602-fc3c3c3b0d82",
+        "server_time": "2026-10-15T16:18:27.164168Z",
+        "envelope_meta": true,
+        "error_code": "artifact_unavailable"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 22.39,
+        "request_id": "0b8ad49b-ae44-4ad5-92aa-3fa602bd2300",
+        "server_time": "2026-10-15T16:18:27.186834Z",
+        "envelope_meta": true,
+        "error_code": "artifact_unavailable"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.takeoff.api.create_measurement",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 44.09,
+        "request_id": "c4d1e48a-a806-4de7-93e0-804123d84170",
+        "server_time": "2026-10-15T16:18:27.230803Z",
+        "envelope_meta": true,
+        "error_code": "artifact_unavailable"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 66.22,
+        "request_id": "af5499de-8da5-41b2-baf5-cc2ab273b25a",
+        "server_time": "2026-10-15T16:18:28.469328Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 1025.99,
+        "request_id": "24d2c7ba-2acd-4712-8b6d-734ac6967a72",
+        "server_time": "2026-10-15T16:18:29.495615Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.takeoff.api.get_record",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 9.68,
+        "request_id": "588fd9e3-aff6-4393-b007-4dc3062530b1",
+        "server_time": "2026-10-15T16:18:30.818419Z",
+        "envelope_meta": true,
+        "error_code": "capability_denied"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 16.64,
+        "request_id": "013e9339-20e2-4ec1-b81e-59bdf584bccb",
+        "server_time": "2026-10-15T16:18:30.835054Z",
+        "envelope_meta": true,
+        "error_code": "capability_denied"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 13.22,
+        "request_id": "905534c8-c4b2-47ed-b873-e53170fb5547",
+        "server_time": "2026-10-15T16:18:30.848349Z",
+        "envelope_meta": true,
+        "error_code": "capability_denied"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 224.46,
+        "request_id": "a4ae2fe5-30c4-435e-bac4-8ae3cf6a43e8",
+        "server_time": "2026-10-15T16:18:31.072939Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 940.58,
+        "request_id": "a2db0dbb-64ca-4000-9c57-f9a27d58d18d",
+        "server_time": "2026-10-15T16:18:33.283083Z",
+        "envelope_meta": true
+      }
+    ],
+    "durable_known_uuid_replay": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 111.01
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 21.35,
+        "request_id": "d2b726cf-14d6-48f7-abc6-ae339b6e0191",
+        "server_time": "2026-10-15T16:21:45.277459Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 35.92,
+        "request_id": "19419062-7060-41bb-9fe6-7a20ace7d202"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 36.58,
+        "request_id": "95c36654-c63f-4327-99f3-d12048e1c914"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 33.44,
+        "request_id": "f0a3f862-5275-4f53-a30c-5e573cb29087"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 37.45,
+        "request_id": "791c07d1-0341-43d6-9442-2250f6b15f22"
+      }
+    ]
+  },
+  "runner_sha256": "5e126dcac90dfa7b71c96d9409d0706d94a96ec10ac074d5d5ca063c104e088b",
+  "known_quantities": {
+    "length": "1.414214",
+    "area": "200.000000",
+    "volume_including_waste": "420.000000",
+    "manual": "12.500000",
+    "successor_area": "300.000000"
+  },
+  "qualification_limits": [
+    "Explicit authored PDF user-space coordinates; no automatic path detection, OCR, CAD or model geometry inference.",
+    "Uniform similarity and supported finite planar geometry only; no arcs, holes, warped sheets, survey accuracy or professional seal.",
+    "Rational bounds certify numerical admission and unique rounding, not physical measurement uncertainty.",
+    "Line bindings are subsequently attached evidence and do not rewrite original authored snapshot provenance.",
+    "Current working revision policy only; no issued drawing-set replacement semantics inferred."
+  ],
+  "continuation_runner_sha256": "3129918017e306f38017bd85bfc4f22fca733ffea499394d806bfb9ce66f689f",
+  "native_controller_guards": {
+    "status": "passed",
+    "project": "PROJ-0031",
+    "label": "real-frappe-takeoff-controller-and-exact-approval-context-guards",
+    "denials": [
+      {
+        "kind": "calibration",
+        "code": "governed_write_required"
+      },
+      {
+        "kind": "calibration",
+        "code": "immutable_takeoff"
+      },
+      {
+        "kind": "measurement",
+        "code": "governed_write_required"
+      },
+      {
+        "kind": "measurement",
+        "code": "immutable_takeoff"
+      },
+      {
+        "kind": "binding",
+        "code": "governed_write_required"
+      },
+      {
+        "kind": "binding",
+        "code": "immutable_takeoff"
+      },
+      {
+        "kind": "verification",
+        "code": "approval_required"
+      }
+    ],
+    "measurement_operation": "0f40ddef-e43f-4c8b-9056-92016d5199f2"
+  },
+  "measurement_only_conversion_source_denials": [
+    "measurement",
+    "binding",
+    "receipt-replay"
+  ],
+  "source_revocation_denials": [
+    "capability_denied",
+    "capability_denied",
+    "capability_denied"
+  ],
+  "history_source_privacy": {
+    "before_total": 27,
+    "revoked_total": 2,
+    "protected_identifiers_hidden": true,
+    "total_matches_visible_items": true,
+    "restored_total": 27
+  },
+  "completed_at": "2026-10-15T16:21:46.687461+00:00",
+  "followup_runner_sha256": "5f6492ee28d3722985a460e49a88440f6c401130bb7d172dc5d3d3c55fcfc159",
+  "known_uuid_receipt_replay": {
+    "status": "passed",
+    "qualification": "Previously successful command UUIDs persisted to a private journal before each actual HTTP send; four 200 receipt replays, not forced-503 recovery.",
+    "request_uuid": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+    "execution_uuid": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+    "packet_id": "n7s4cmqrne",
+    "counts_before": {
+      "project": "PROJ-0031",
+      "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "packet_id": "n7s4cmqrne",
+      "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+      "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+      "request_operation_id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+      "execution_operation_id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+      "packet_count": 1,
+      "request_receipt_count": 1,
+      "verification_count": 1,
+      "consumption_count": 1,
+      "request_hash": "a438a2f65685042f05d7c74d390635e9f368acaf5aaaf1e7190d8901124973c4",
+      "canonical_person": "CIPHER-PERSON-PM"
+    },
+    "counts_after": {
+      "project": "PROJ-0031",
+      "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "packet_id": "n7s4cmqrne",
+      "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+      "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+      "request_operation_id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+      "execution_operation_id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+      "packet_count": 1,
+      "request_receipt_count": 1,
+      "verification_count": 1,
+      "consumption_count": 1,
+      "request_hash": "a438a2f65685042f05d7c74d390635e9f368acaf5aaaf1e7190d8901124973c4",
+      "canonical_person": "CIPHER-PERSON-PM"
+    },
+    "actual_response_envelopes": "est02-known-uuid-journal.json",
+    "same_uuid_successful_receipt_replays": 4,
+    "new_business_effects": 0
+  },
+  "known_uuid_runner_sha256": "fd4c9b6d3991239ad969bdeaca14a4b259159f286efb037a71d5f9bc9fd2a3a8",
+  "recorded_at": "2026-10-15T16:23:10.786713+00:00",
+  "runtime": {
+    "container": "cipher-r0-runtime-1",
+    "site": "cipher.localhost",
+    "http_origin": "http://127.0.0.1:18880",
+    "storage": "real Frappe/MariaDB",
+    "independent_review": "real cookie-backed interactive POST and CSRF; canonical human person"
+  },
+  "source_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/cipher_calibration.json",
+      "sha256": "9341b176fab71037ea097e67a5ee8a78ade1f0bc53a0f046da75abc164da48d3"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/cipher_calibration.py",
+      "sha256": "90c07df8f711ef5b98da7b919d50a78422d6ab2d70d613261ee239366087e435"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.json",
+      "sha256": "9e0b5020c77ab7fdf04482d3ad2aafbbee34e6b71627efc2a19e87f288c8df0a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.py",
+      "sha256": "5c3395197de04241bd1bf20f032aa31b0eff16ee1f5d3fc12015c528ef0f6725"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.json",
+      "sha256": "8f83dbcd0543f16d551c8f67831253654cdd3bc9e3027a74f7325bdb431a86b7"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.py",
+      "sha256": "431d93ceed7a21b236f00b9ef78ae1e4b63f7f6ad70d9cc1bb890d849045cb16"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.json",
+      "sha256": "c9c924e569b89014e2ddb49b4978e98f819758575b3a623c8e1df4cdd6ed55d1"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.py",
+      "sha256": "c433a35805073004731b7861af4996992722a843d6c16a276dfc242cd0635990"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.json",
+      "sha256": "dea4af5bcc014411203d26debea6730085ebd3fc8342e94a95745868ae7e2f65"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.py",
+      "sha256": "0a37e983db6c4393fc7b9fdc09fdbd393604851ac57862f5720e4127725956f9"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/README.md",
+      "sha256": "d9ba2b9ba297f5d3e9388391539a0b93d4c16cbd67df856820cdf00d7cd40137"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/__init__.py",
+      "sha256": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/api.py",
+      "sha256": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/geometry.py",
+      "sha256": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/governance.py",
+      "sha256": "4c8c2baf96d68756c0eb9f1ffb7c663087cf0ae275076bf9ccbda2a4af68ced7"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/install.py",
+      "sha256": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/pdf.py",
+      "sha256": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/records.py",
+      "sha256": "3d4ba646592dd00a384b92e65b60ba8d1bbf2f0b466f9eabd201bf4bd110bb12"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/repository.py",
+      "sha256": "e400bfa13ae5466a4e73dfb2c1195d8644cd52494dd64c07943f300da3f24b0b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/schemas/api-v1.schema.json",
+      "sha256": "b65e8715e391a98b1c6a57339ed70fc2fa8103e256bba71f0b7179be04388d23"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py",
+      "sha256": "d9a5bb834a9e365d4d4cc8cba19172b901c90184d81bbee1e4e56c330ca3743c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_acceptance.py",
+      "sha256": "b42fdda1d0bc883eb29ef04c23c42cb28918bf163b8fd6753c2081ebe258cb76"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_geometry.py",
+      "sha256": "8e7919c3d24620d4cd9f5a2e39744f95632009b3273167bfba5c4967584b729a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_http_recorder.py",
+      "sha256": "22b9f2c7162144bb259a2150144cf1ee61d34ae062d0f2a6a0fad1162d191f27"
+    }
+  ],
+  "shared_dependency_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py",
+      "sha256": "e130b98b280ef41fb5bfa4978f1b6a70a185d0849fc4de147ff36e128561d2e9"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py",
+      "sha256": "bdaa837e06422593773fc81f45b791bfea8f39c36897c1d37d5a8ea450d22164"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py",
+      "sha256": "a36edb5f9fc3ca6248dccdec46e07762d4690a660191e5b0a7e8a2fcd454de80"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/storage.py",
+      "sha256": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/calculation.py",
+      "sha256": "9f803027f8aca8c23406a862bf2c3d205aac24b335212bf38b71579c40676c5b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/contracts.py",
+      "sha256": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/repository.py",
+      "sha256": "e6150079ac6282c0ec9f44249e445e7c5854012322d9f070d9b716191777811a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+      "sha256": "623ba529795a80a97d2077dad467b41cfc24af69eb96125a5e450faa61947362"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py",
+      "sha256": "c39c1c9509e4afd4398c87e49a78812e5949a7478d8bcbb6dd95cea03a592312"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/units.py",
+      "sha256": "5fa5605e3305353514a8ae2c8341f87380257200b22fb70b9114b532dce74521"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py",
+      "sha256": "4254eb62bd1346c0a79e19fd4c53ea498a8cff08111155fb0cdcb4b9eebe5411"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "22c50fc4524cf4e9254f41534d3a3e3e1a8af8699cac2dc44d96516baa718db0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "decb37e43d131975b6bd835dd033e6e586788176430b5b0b9680fc96158f30b5"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py",
+      "sha256": "ffb4c490810478ca394ab01bbfad7d2b8c19bb749f00d19e7f7023860adc6cb4"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history.py",
+      "sha256": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py",
+      "sha256": "4e8ff1684355b4f6c0b620b5fde87949333ee17827916e7f9cca89805124bb1f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/export.py",
+      "sha256": "25f83828d90f1775e716437d76cc76650c05efbcd62ff15e43af7eeb3600559c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py",
+      "sha256": "39ba1841d2530d59041d81e322c8cc352c109ba4e4a70b586407b99d1346a440"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/service.py",
+      "sha256": "0490b3360f911f9ca1f0950a52aae11916bcfba998674261e05fb26e52584064"
+    }
+  ],
+  "unit_tests": [
+    {
+      "suite": "takeoff",
+      "count": 11,
+      "status": "passed",
+      "qualification": "9 geometry tests plus2 explicitly simulated recorder transport tests; no live fake response claim",
+      "output": "...........\n----------------------------------------------------------------------\nRan 11 tests in 0.022s\n\nOK\n"
+    },
+    {
+      "suite": "estimating",
+      "count": 12,
+      "status": "passed",
+      "output": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.018s\n\nOK\n"
+    }
+  ],
+  "pdf_parser_acceptance": {
+    "status": "passed",
+    "label": "actual-vector-pdf-fixture-parser",
+    "frame": {
+      "coordinate_system": "pdf-user-space-v1",
+      "media_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "rotate": 0,
+      "user_unit": "1",
+      "parser": "pypdf-6.15.0:cipher-page-metadata-v1"
+    },
+    "fractional_rotation_rejected_without_truncation": true,
+    "unsupported_UserUnit_rejected": true
+  },
+  "retry_recording_gap": {
+    "artifact": "est02-retryable-attempt.json",
+    "original_operation_uuid_recorded": false,
+    "same_uuid_conflict_recovery_qualified": false,
+    "absence_before_continuation_independently_observed": false,
+    "qualification": "Original503 observation retained separately. New-UUID continuation has one observed committed effect. Separate known successful UUID200 replays prove receipt replay, not503 recovery."
+  },
+  "artifact_hashes": [
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est02-schema-samples.json",
+      "sha256": "19e6363cbae76037e5cd571204d449d1f252ca7b7bc17e5f434891b09fa34014"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est02-known-uuid-journal.json",
+      "sha256": "c5a0bd2ab610ef43deb2f617533d000101accf501bbf95e145d5f5df2e70086f"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est02-retryable-attempt.json",
+      "sha256": "14732c6787473278ef1343840cddfc186e73bba1f14a78d443b04bd26978fedf"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est02-parser-ci-acceptance.json",
+      "sha256": "ae5651c73349c0e6b75dbdd3dd5910fa7d803fa72d7cbf94aaa76ddf2fc79395"
+    }
+  ],
+  "evidence_amendments": [
+    {
+      "reason": "Add canonical no-argument parser-only acceptance entrypoint for fresh CI; no domain or fixture changes.",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_acceptance.py",
+      "previous_sha256": "a0b24690ccefeb4b1a910fc90b5a39e2944e69b678f67d70672e4585bc4ec8fc",
+      "sha256": "b42fdda1d0bc883eb29ef04c23c42cb28918bf163b8fd6753c2081ebe258cb76",
+      "parser_only_runtime_status": "passed",
+      "qualification": "Full HTTP/calibration/guard procedures retain their existing separate qualification."
+    }
+  ],
+  "fresh_ci_parser_entrypoint": {
+    "method": "cipher_aec.tests.test_takeoff_acceptance.run_acceptance",
+    "status": "passed",
+    "qualification": "parser-only",
+    "artifact": "est02-parser-ci-acceptance.json"
+  }
+}

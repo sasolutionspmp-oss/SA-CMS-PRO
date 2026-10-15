@@ -47,7 +47,7 @@ def _signature(identifier):
 
 
 def _parameter(name, default, schemas):
-    strings={"company","project","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id"}
+    strings={"company","project","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id","subject_id"}
     if name=="operation_id":return {"type":"string","format":"uuid","description":"Canonical UUIDv4; exactly equals Idempotency-Key."}
     if name=="manifest":return {"oneOf":[_ref("CanonicalManifest"),{"type":"string","maxLength":MAX_JSON_BYTES}]}
     if name=="references":return {"type":"array","maxItems":MAX_RECORDS,"items":_object({"id":{"type":"string","format":"uuid"},"kind":{"type":"string","enum":sorted(NATIVE_DOCTYPES)},"name":{"type":"string"},"unit_definition":_object({"dimension":{"type":"string","enum":sorted(DIMENSIONS)},"precision":{"type":"integer","minimum":0,"maximum":12}})},["id","kind","name"])}
@@ -58,6 +58,7 @@ def _parameter(name, default, schemas):
     if name=="count_mode":return {"type":"string","enum":["none","exact"],"default":"none"}
     if name in {"page","expected_revision","proposal_version","byte_length"}:return {"type":"integer","minimum":0 if name in {"expected_revision","byte_length"} else 1}
     if name=="status":return {"type":"string","enum":["Open","On hold","Completed","Cancelled"]}
+    if name=="action":return {"type":"string","enum":["calibration.verify.v1","contract.baseline.activate.v1"]}
     if name=="decision":return {"type":"string","enum":["Grant","Reject"]}
     if name=="content_base64":return {"type":"string","contentEncoding":"base64","maxLength":13981016}
     if name in strings:return {"type":"string"}
@@ -97,18 +98,31 @@ def generate():
     estimating=json.loads((ROOT/"estimating/schemas/api-v1.schema.json").read_text())
     schemas.update(_rewrite(estimating["$defs"]))
     est_requests={"register_unit":"RegisterUnitRequest","create_conversion":"CreateConversionRequest","create_rate":"CreateRateRequest","create_assembly":"CreateAssemblyRequest","create_estimate":"CreateEstimateRequest","calculate_revision":"CalculateRevisionRequest","get_record":"GetEstimateRecordRequest","list_records":"ListEstimateRecordsRequest","list_units":"ListEstimateUnitsRequest"}
+    typed_requests = {"cipher_aec.estimating.api": est_requests}
+    for module, filename, requests in (
+        ("cipher_aec.takeoff.api", "takeoff/schemas/api-v1.schema.json", {"create_set":"TakeoffCreateSetRequest", "create_calibration":"TakeoffCreateCalibrationRequest", "create_measurement":"TakeoffCreateMeasurementRequest", "bind_line":"TakeoffBindLineRequest", "get_record":"TakeoffGetRequest", "list_records":"TakeoffListRequest", "drawing_impact":"TakeoffImpactRequest", "compare_measurements":"TakeoffCompareRequest"}),
+        ("cipher_aec.commercial.api", "commercial/schemas/api-v1.schema.json", {"pursuits":"ComPursuitsRequest", "pursuit":"ComPursuitRequest", "proposals":"ComProposalsRequest", "proposal":"ComProposalRequest", "proposal_revision":"ComRevisionRequest", "compare_revisions":"ComCompareRequest", "create_pursuit":"ComCreatePursuitRequest", "update_pursuit":"ComUpdatePursuitRequest", "create_proposal":"ComCreateProposalRequest", "save_proposal_revision":"ComSaveRevisionRequest"}),
+        ("cipher_aec.construction_finance.api", "construction_finance/schemas/api-v1.schema.json", {"create_contract":"CreateContractRequest", "author_revision":"AuthorContractRevisionRequest", "get_record":"GetContractRecordRequest", "list_contracts":"ListContractsRequest"}),
+    ):
+        domain = json.loads((ROOT/filename).read_text())
+        for name, value in _rewrite(domain["$defs"]).items():
+            if name in schemas and schemas[name] != value:
+                raise ValueError("Conflicting shared domain schema: "+name)
+            schemas[name] = value
+        typed_requests[module] = requests
     error_body=_object({"message":_object({"schema":{"const":"cipher.api.v1"},"request_id":{"type":"string","format":"uuid"},"meta":_ref("Meta"),"error":_ref("Error")})})
     paths={}
     for identifier,route in sorted(ROUTES.items()):
         signature=_signature(identifier)
         # expected_version defaults to None to generate a useful 428; the API
         # contract still requires it for fresh optimistic commands.
-        if identifier.startswith("cipher_aec.estimating.api."):
-            request_schema=schemas[est_requests[identifier.rsplit(".",1)[1]]]
+        module, method_name = identifier.rsplit(".", 1)
+        if module in typed_requests:
+            request_schema=schemas[typed_requests[module][method_name]]
             properties=copy.deepcopy(request_schema["properties"])
             required=list(request_schema["required"])
             if set(properties)!={name for name,_,_ in signature}:
-                raise ValueError("Estimating request/signature drift: "+identifier)
+                raise ValueError("Domain request/signature drift: "+identifier)
         else:
             properties={name:_parameter(name,default,schemas) for name,required,default in signature}
             required=[name for name,is_required,default in signature if (is_required or name=="expected_version") and name!="operation_id"]

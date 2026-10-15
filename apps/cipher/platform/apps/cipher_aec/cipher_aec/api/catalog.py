@@ -27,9 +27,11 @@ _module("cipher_aec.api.v1", {
     "history": ("GET", "HistoryList"), "operation": ("GET", "CommandResult"),
     "create_task": ("POST", "CreateTaskResponse", True),
 })
+_module("cipher_aec.api.company", {"history": ("GET", "HistoryList"), "operation": ("GET", "CommandResult")})
 _module("cipher_aec.api.approvals", {
     "list_packets": ("GET", "ApprovalList"), "read_packet": ("GET", "ApprovalPacket"),
     "request_project_status": ("POST", "ApprovalCommandResponse", True),
+    "request_action": ("POST", "ApprovalCommandResponse", True),
     "decide_packet": ("POST", "ApprovalCommandResponse", True),
     "withdraw_packet": ("POST", "ApprovalCommandResponse", True),
     "execute_packet": ("POST", "ApprovalExecutionResponse", True),
@@ -61,6 +63,31 @@ _module("cipher_aec.estimating.api", {
     "get_record": ("GET", "EstRecordResponse"),
     "list_records": ("GET", "EstListResponse"),
     "list_units": ("GET", "ListEstimateUnitsResponse"),
+})
+
+_module("cipher_aec.takeoff.api", {
+    "create_set": ("POST", "TakeoffCreateSetResponse", True),
+    "create_calibration": ("POST", "TakeoffCreateCalibrationResponse", True),
+    "create_measurement": ("POST", "TakeoffCreateMeasurementResponse", True),
+    "bind_line": ("POST", "TakeoffBindLineResponse", True),
+    "get_record": ("GET", "TakeoffGetResponse"),
+    "list_records": ("GET", "TakeoffListResponse"),
+    "drawing_impact": ("GET", "TakeoffImpactResponse"),
+    "compare_measurements": ("GET", "TakeoffCompareResponse"),
+})
+_module("cipher_aec.commercial.api", {
+    "pursuits": ("GET", "ComPursuitList"), "pursuit": ("GET", "ComPursuit"),
+    "proposals": ("GET", "ComProposalList"), "proposal": ("GET", "ComProposalDetail"),
+    "proposal_revision": ("GET", "ComRevision"), "compare_revisions": ("GET", "ComComparison"),
+    "create_pursuit": ("POST", "ComPursuitCommand", True), "update_pursuit": ("POST", "ComPursuitCommand", True),
+    "create_proposal": ("POST", "ComProposalCommand", True), "save_proposal_revision": ("POST", "ComProposalCommand", True),
+})
+
+_module("cipher_aec.construction_finance.api", {
+    "create_contract": ("POST", "CreateContractResponse", True),
+    "author_revision": ("POST", "AuthorContractRevisionResponse", True),
+    "get_record": ("GET", "GetContractRecordResponse"),
+    "list_contracts": ("GET", "ListContractsResponse"),
 })
 
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})

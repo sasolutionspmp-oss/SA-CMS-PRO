@@ -1,0 +1,77 @@
+{
+  "mode": "actual-frappe-create-with-injected-response-loss-and-receipt-denial",
+  "captured_at": "2026-10-15T16:30:01.081Z",
+  "real_backend_effect": true,
+  "response_delivery_fault_injected": true,
+  "receipt_denial_injected": true,
+  "actual_permissions_modified": false,
+  "synthetic_contract_fixture": false,
+  "estimate": "77f42653-631c-42f8-be6b-6670b803e171",
+  "operation_id": "fbcfe960-a8b5-410f-b905-b6e6c0dbfbd2",
+  "request_count": 3,
+  "real_backend_write_requests": 2,
+  "exact_payload_and_uuid_replayed": true,
+  "replay_receipt": {
+    "id": "fbcfe960-a8b5-410f-b905-b6e6c0dbfbd2",
+    "status": "succeeded",
+    "replayed": true
+  },
+  "independent_title_match_count": 1,
+  "inputs_cancel_escape_locked": true,
+  "unknown_retained_after_injected_denial": true,
+  "mounted_recovery_only": true,
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_injected_faults": [
+    {
+      "path": "/api/method/cipher_aec.estimating.api.create_estimate",
+      "error": "net::ERR_FAILED"
+    },
+    {
+      "message": "Failed to load resource: net::ERR_FAILED",
+      "path": "/api/method/cipher_aec.estimating.api.create_estimate"
+    },
+    {
+      "path": "/api/method/cipher_aec.estimating.api.create_estimate",
+      "status": 403
+    },
+    {
+      "message": "Failed to load resource: the server responded with a status of 403 (Forbidden)",
+      "path": "/api/method/cipher_aec.estimating.api.create_estimate"
+    }
+  ],
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "served_html_sha256": "6a485d4ddac56459758f7ac2e354056d1eb0d8c55ab4de354361355fe733f777",
+  "served_assets": [
+    {
+      "path": "/assets/index-mGTvKyIH.js",
+      "sha256": "1b821a0db4cfc40e18047a8ae11f8c60ced6a0011854e8b31b511b7d16505a8f",
+      "bytes": 1946532
+    },
+    {
+      "path": "/assets/index-BPzNS0QE.css",
+      "sha256": "46718a74f248e358f1613bd953d408044648d6e8926413fc4c41f65bfcab3698",
+      "bytes": 22572
+    }
+  ],
+  "source_sha256": {
+    "apps/cipher/product/src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "apps/cipher/product/src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "apps/cipher/product/src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "apps/cipher/product/tests/estimating.spec.ts": "b4610914b85f0ebe44df4d9183d477a1a085ef48f39f5f1d16b711c31d597b46",
+    "apps/cipher/product/tests/estimating-fixture.ts": "11a7bd0fa636b69d05d1f281b534d8d99852fbace9fdfb15039e2597191fb4c1",
+    "apps/cipher/product/README.md": "6b001109cd2655e1368ba334dc9e184e562fbbf556b4a196999d4efa4b9bdf09",
+    "apps/cipher/product/scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282"
+  },
+  "evidence_copy": {
+    "original_verification_sha256": "50e9189450a04c4ee48c2810064938964879c9ffefc34764ae29dd5b641d60f6",
+    "original_path": "/workspace/cipher-live-r1/estimating-create-recovery-final/verification.json",
+    "source_path_normalization": "Original product-relative source paths are expressed relative to the repository; captured hash values and results are unchanged."
+  }
+}

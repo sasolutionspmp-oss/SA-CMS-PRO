@@ -1,0 +1,108 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Calibration Verification",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "calibration",
+    "packet_id",
+    "decision_id",
+    "verified_by_person"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 1,
+      "options": "Project",
+      "search_index": 1
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "calibration",
+      "fieldtype": "Link",
+      "label": "Calibration",
+      "reqd": 1,
+      "options": "Cipher Calibration"
+    },
+    {
+      "fieldname": "packet_id",
+      "fieldtype": "Link",
+      "label": "Packet Id",
+      "reqd": 1,
+      "options": "Cipher Approval Packet"
+    },
+    {
+      "fieldname": "decision_id",
+      "fieldtype": "Link",
+      "label": "Decision Id",
+      "reqd": 1,
+      "options": "Cipher Approval Decision"
+    },
+    {
+      "fieldname": "verified_by_person",
+      "fieldtype": "Link",
+      "label": "Verified By Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "index_web_pages_for_search": 0
+}

@@ -1,0 +1,129 @@
+{
+  "acceptance_entries": [
+    {
+      "canonical_bench_entry": true,
+      "module": "test_commercial_acceptance",
+      "required_args": 0,
+      "separate_entries": []
+    },
+    {
+      "canonical_bench_entry": false,
+      "module": "test_commercial_http_acceptance",
+      "required_args": null,
+      "separate_entries": [
+        {
+          "function": "run_http_acceptance",
+          "required_args": 0
+        }
+      ]
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_construction_finance_acceptance",
+      "required_args": 0,
+      "separate_entries": []
+    },
+    {
+      "canonical_bench_entry": false,
+      "module": "test_construction_finance_http_acceptance",
+      "required_args": null,
+      "separate_entries": [
+        {
+          "function": "run_http_acceptance",
+          "required_args": 0
+        },
+        {
+          "function": "run_history_http_acceptance",
+          "required_args": 0
+        }
+      ]
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_estimating_acceptance",
+      "required_args": 0,
+      "separate_entries": [
+        {
+          "function": "run_catalog_privacy_acceptance",
+          "required_args": 0
+        }
+      ]
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_migrations_acceptance",
+      "required_args": 0,
+      "separate_entries": []
+    },
+    {
+      "canonical_bench_entry": false,
+      "module": "test_migrations_http_acceptance",
+      "required_args": null,
+      "separate_entries": [
+        {
+          "function": "run_http_acceptance",
+          "required_args": 0
+        }
+      ]
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_outbox_acceptance",
+      "required_args": 0,
+      "separate_entries": [
+        {
+          "function": "run_isolated_worker",
+          "required_args": 3
+        }
+      ]
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_ricky_acceptance",
+      "required_args": 0,
+      "separate_entries": []
+    },
+    {
+      "canonical_bench_entry": true,
+      "module": "test_takeoff_acceptance",
+      "required_args": 0,
+      "separate_entries": [
+        {
+          "function": "run_parser_acceptance",
+          "required_args": 0
+        },
+        {
+          "function": "run_guard_acceptance",
+          "required_args": 4
+        }
+      ]
+    }
+  ],
+  "captured_at": "2026-10-15T16:24:14.352936+00:00",
+  "current_declared_test_methods": {
+    "integration": 43,
+    "ordinary_unit": 112,
+    "total": 155
+  },
+  "executed_suites": false,
+  "fixture_mutations": false,
+  "fresh_site_prerequisites": [
+    "Unique cipher-ci site; do not change default site or delete prior sites.",
+    "Synthetic seeded Company/users/identities; supported Transit preset bootstrap.",
+    "Project and Company abilities granted explicitly by scope.",
+    "Synthetic unscanned policy enabled; scheduler paused; no execution quarantine.",
+    "Outbox uses dedicated random test queues/workers; no dependency on web manager readiness.",
+    "Ricky inference is a labeled fixture; no provider/model qualification."
+  ],
+  "frontend_prerequisites": [
+    "Isolated copy includes api/*.json and all domain schemas/*.json.",
+    "generate:api --check validates both generated outputs.",
+    "Pinned lockfile clean npm install, then typecheck/build and all declared browser contracts.",
+    "Chromium available; product source still awaiting final UI retry fix freeze."
+  ],
+  "native_import_signature_preflight": "Seven canonical run_acceptance modules imported in pinned bench; inspect.signature.bind() passed without invoking any fixture.",
+  "runner_sha256": "00a6f2eb9ba7a58e05201204c2f53c079604b7482c66b09f4259301241ac2e38",
+  "schema": "cipher.new-stack.preflight.v1",
+  "separate_takeoff_limit": "Canonical wrapper qualifies actual pypdf parser regression only. Full Takeoff HTTP/guard and EST45 proof remain separately qualified.",
+  "status": "preflight_complete_waiting_root_freeze"
+}

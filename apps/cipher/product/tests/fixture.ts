@@ -12,7 +12,7 @@ export const projects = [
 const citation = { document_id: 'TEST-DOC-001', revision_id: 'TEST-REV-001', document_title: 'Site coordination requirements', revision_number: 1, page: 1, page_label: 'Page 1', excerpt: 'Coordinate the temporary bypass plan before mobilization.' };
 export const sourceText = 'SITE COORDINATION REQUIREMENTS\n\nCoordinate the temporary bypass plan before mobilization.\n\nSubmit a site access plan for review.\n\n<script>window.fixtureInjection=true</script>';
 
-export async function mockWorkspace(page: Page, options: { model?: boolean; loseFirstTaskResponse?: boolean; staleTask?: boolean; login?: boolean; pagination?: boolean; approvals?: boolean; loseFirstApprovalResponse?: boolean; staleApproval?: boolean; documentFailure?: 403 | 404 | 503 } = {}) {
+export async function mockWorkspace(page: Page, options: { model?: boolean; loseFirstTaskResponse?: boolean; staleTask?: boolean; login?: boolean; pagination?: boolean; approvals?: boolean; loseFirstApprovalResponse?: boolean; staleApproval?: boolean; documentFailure?: 403 | 404 | 503; estimating?: boolean; domainApproval?: boolean } = {}) {
   let authenticated = !options.login;
   let version = '1';
   let currentStatus = 'Open';
@@ -21,8 +21,9 @@ export async function mockWorkspace(page: Page, options: { model?: boolean; lose
   let documentsRecovered = false;
   const packets: ApprovalPacket[] = [];
   const actor = () => reviewer ? { id: 'TEST-PERSON-REVIEWER', display_name: 'Casey Reviewer' } : { id: 'TEST-PERSON-001', display_name: 'Alex Morgan' };
-  const approvals = (packet: ApprovalPacket): ApprovalPacket => ({ ...packet, actions: { can_decide: reviewer && packet.state === 'Pending', can_execute: !reviewer && packet.state === 'Granted', can_withdraw: !reviewer && packet.state === 'Pending', disabled_reason: packet.state === 'Pending' && !reviewer ? 'A different person must review this request.' : packet.state === 'Granted' && reviewer ? 'A different person must execute this grant.' : null } });
-  const capabilities = ['project.read', 'task.create', 'document.read', 'document.write', 'ricky.run', ...(options.approvals ? ['approval.request', 'approval.decide', 'approval.execute'] : [])];
+  const approvals = (packet: ApprovalPacket): ApprovalPacket => packet.action !== 'project.status.change.v1' ? packet : ({ ...packet, actions: { can_decide: reviewer && packet.state === 'Pending', can_execute: !reviewer && packet.state === 'Granted', can_withdraw: !reviewer && packet.state === 'Pending', disabled_reason: packet.state === 'Pending' && !reviewer ? 'A different person must review this request.' : packet.state === 'Granted' && reviewer ? 'A different person must execute this grant.' : null } });
+  if (options.domainApproval) packets.push({ id: 'TEST-DOMAIN-001', company, project: projects[0].id, action: 'calibration.verify.v1', subject: { id: 'TEST-CALIBRATION', type: 'Cipher Calibration', label: 'Source page calibration' }, requester: { id: 'TEST-OTHER-PERSON', display_name: 'Other requester' }, created_at: '2026-10-15T12:00:00Z', expires_at: '2030-10-15T12:00:00Z', manifest_hash: 'e'.repeat(64), source_version: 'opaque-domain-version', policy: { id: 'TEST-DOMAIN-POLICY', label: 'Independent scale review', synthetic: true }, state: 'Pending', decisions: [], actions: { can_decide: false, can_execute: false, can_withdraw: false, disabled_reason: 'Independent domain review is required.' }, review_manifest: { subject: { doctype: 'Cipher Calibration', name: 'TEST-CALIBRATION', label: 'Source page calibration' }, effect: { status: 'Verified', source_revision: 'TEST-REV-001' }, summary: { basis: 'Scale verification', exact_length: '200.00' }, sources: [{ revision_id: 'TEST-REV-001', sha256: 'f'.repeat(64) }] } });
+  const capabilities = ['project.read', 'task.create', 'document.read', 'document.write', 'ricky.run', ...(options.approvals ? ['approval.request', 'approval.decide', 'approval.execute'] : []), ...(options.estimating ? ['estimate.read', 'estimate.write'] : [])];
   const tasks = [{ id: 'TEST-TASK-001', subject: 'Review temporary works requirements', description: 'Coordinate site access and temporary bypass requirements.', status: 'Open', project: projects[0].id, version: '1' }];
   const documents = [{ id: 'TEST-DOC-001', title: 'Site coordination requirements', company, project: projects[0].id, current_revision: 'TEST-REV-001', revision_number: 1, filename: 'site-coordination.txt', mime_type: 'text/plain', byte_length: sourceText.length, sha256: 'a'.repeat(64), scan_status: 'not_scanned', extraction_status: 'ready', page_count: 1 }];
   const writes: { method: string; body: Record<string, unknown>; key: string | undefined }[] = [];
@@ -43,7 +44,7 @@ export async function mockWorkspace(page: Page, options: { model?: boolean; lose
       const key = request.headers()['idempotency-key']; writes.push({ method, body, key });
       expect(key).toBe(body.operation_id); expect(request.headers()['x-frappe-csrf-token']).toBe('test-csrf');
     }
-    if (method === 'session') return envelope(route, { authenticated: true, user: 'test.pm@example.invalid', person: actor(), companies: [{ id: company, name: 'Synthetic AEC Company' }], capabilities, csrf_token: 'test-csrf', site_mode: 'synthetic' });
+    if (method === 'session') return envelope(route, { authenticated: true, user: 'test.pm@example.invalid', person: actor(), companies: [{ id: company, name: 'Synthetic AEC Company' }], company_scopes: [], capabilities, csrf_token: 'test-csrf', site_mode: 'synthetic' });
     if (method === 'projects') {
       const cursor = new URL(request.url()).searchParams.get('cursor');
       if (options.pagination) return envelope(route, { items: (cursor ? projects.slice(2) : projects.slice(0, 2)).map(project => ({ ...project, version, ...(project.id === projects[0].id ? { status: currentStatus } : {}) })), total: projects.length, next_cursor: cursor ? null : 'signed-test-cursor', count_mode: 'exact', limit: 2 });
@@ -71,6 +72,7 @@ export async function mockWorkspace(page: Page, options: { model?: boolean; lose
     if (['decide_packet', 'execute_packet', 'withdraw_packet'].includes(method)) {
       const old = receipts.get(String(body.operation_id)); if (old) return envelope(route, old);
       const packet = packets.find(item => item.id === body.packet_id)!;
+      if (packet.action !== 'project.status.change.v1') throw new Error('This contract fixture only executes project status effects.');
       expect(body.manifest_hash).toBe(packet.manifest_hash);
       if (method === 'decide_packet' && options.staleApproval) { packet.state = 'Stale'; return route.fulfill({ status: 412, contentType: 'application/json', body: JSON.stringify({ message: { schema: 'cipher.api.v1', error: { code: 'approval_stale', message: 'The approval source changed. Request a new review.' } } }) }); }
       if (method === 'decide_packet') { expect(reviewer).toBe(true); packet.state = body.decision === 'Grant' ? 'Granted' : 'Rejected'; packet.decisions.push({ id: 'TEST-DECISION', decision: body.decision as 'Grant' | 'Reject', actor: actor(), at: '2026-10-15T12:30:00Z', reason: String(body.reason || '') }); }

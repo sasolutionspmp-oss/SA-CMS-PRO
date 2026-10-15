@@ -1,5 +1,6 @@
 import '@ui5/webcomponents-react/dist/Assets.js';
 import '@ui5/webcomponents-icons/dist/menu2.js';
+import '@ui5/webcomponents-icons/dist/simulate.js';
 import '@ui5/webcomponents-icons/dist/da.js';
 import '@ui5/webcomponents-icons/dist/decline.js';
 import '@ui5/webcomponents-icons/dist/disconnected.js';

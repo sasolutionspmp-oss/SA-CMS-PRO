@@ -75,6 +75,29 @@ class DocumentService:
             row["retrieval_status"] = "quarantined"
         return row
 
+    def source_reference(self, company, project, revision_id, page, *, lock=False):
+        # Resolve only scope/parent metadata first, then lock parent before revision
+        # in the same order as the canonical upload command.
+        locator = self.repo.revision_locator(revision_id)
+        self._scope(locator, company, project)
+        document = self.repo.document(locator["document"], lock=lock)
+        self._scope(document, company, project)
+        revision = self.repo.revision(revision_id, lock=lock)
+        self._scope(revision, company, project)
+        if revision["document"] != document["name"]:
+            raise ArtifactError("Document revision source mapping is invalid.")
+        self._available(revision)
+        if type(page) is not int or not 1 <= page <= revision["page_count"]:
+            raise ArtifactError("Source page is outside this revision.")
+        content = self.storage.read(revision["storage_reference"], revision["sha256"], revision["byte_length"])
+        return {"document_id": document["name"], "revision_id": revision["name"],
+                "revision_number": revision["revision_number"], "current_revision": document["current_revision"],
+                "current_revision_number": document["revision_number"],
+                "is_current": document["current_revision"] == revision["name"],
+                "page": page, "page_count": revision["page_count"], "mime_type": revision["mime_type"],
+                "source_sha256": revision["sha256"], "byte_length": revision["byte_length"],
+                "extraction_status": revision["extraction_status"], "content": content}
+
     def download(self, company, revision_id):
         revision = self.revision(company, revision_id)
         self._available(revision)

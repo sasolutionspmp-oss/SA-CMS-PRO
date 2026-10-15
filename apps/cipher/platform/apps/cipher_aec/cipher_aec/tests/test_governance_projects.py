@@ -234,8 +234,13 @@ class TestGovernanceProjects(IntegrationTestCase):
         self.create()
         self.create()
         projects = service.list_projects(self.company, limit=1, count_mode="exact")
-        self.assertEqual(projects["total"], 1)
-        self.assertEqual(projects["items"][0]["id"], self.project)
+        # Other isolated domain acceptance Projects may grant this same user
+        # access. Compare the API to current native-permission results rather
+        # than assuming the seeded site contains only one accessible Project.
+        native = frappe.get_list("Project", filters={"company": self.company}, fields=["name"], order_by="project_name asc,name asc", limit_page_length=200)
+        self.assertLess(len(native), 200, "Use a larger isolated fixture boundary for this test")
+        self.assertEqual(projects["total"], len(native))
+        self.assertEqual(projects["items"][0]["id"], native[0].name)
         first = service.history(self.company, self.project, limit=1, count_mode="exact")
         self.assertEqual(len(first["items"]), 1)
         self.assertGreaterEqual(first["total"], 2)

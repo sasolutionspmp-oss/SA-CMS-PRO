@@ -1,0 +1,42 @@
+{
+  "schema": "cipher.r1.est02-retryable-attempt.v1",
+  "label": "preserved-original-http-observation-and-reconstructed-request-payload",
+  "status": "recording-gap-after-retryable-503",
+  "http": [
+    {
+      "method": "POST",
+      "route": "/api/method/cipher_aec.api.approvals.request_action",
+      "status": 503,
+      "media_type": "application/json",
+      "elapsed_ms": 132.33,
+      "retry_after": "1"
+    }
+  ],
+  "request_payload": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "action": "calibration.verify.v1",
+    "subject_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+    "expected_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8"
+  },
+  "initial_operation_uuid": null,
+  "recording_limit": "The initial temporary runner generated the UUID in memory and did not retain it before its process exited. Continuation used a new UUID after the503 response; rollback is the server code's specified behavior and was not independently observed for this lost-UUID attempt. No literal original-UUID retry claim. Successful continuation UUIDs and one-effect counts are qualified separately.",
+  "failure_log": "FAIL CheckFailure POST /api/method/cipher_aec.api.approvals.request_action: expected (200,), got 503\nfailed 24 checks 37 schema samples\nTraceback (most recent call last):\n  File \"/tmp/qualify_takeoff_http.py\", line 114, in <module>\n    calibration2=takepost('create_calibration',{'takeoff_set':takeoff_set['id'],'source':src2,'definition':caldef2,'conversion_ids':[],'predecessor':calibration['id']},'TakeoffCreateCalibrationRequest','TakeoffCreateCalibrationResponse')['calibration'];verify(calibration2)\n                                                                                                                                                                                                                                                             ^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/qualify_takeoff_http.py\", line 39, in verify\n    requested=api('api.approvals','request_action',{**scope,'action':'calibration.verify.v1','subject_id':calibration['id'],'expected_version':details['record_digest']},post=True,op=uid())\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/qualify_takeoff_http.py\", line 23, in api\n    value=clients[role].api('cipher_aec.'+module+'.'+name,data,method='POST' if post else 'GET',operation=op,expected=expected)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cipher-framework-draft/apps/cipher/platform/operations/verify_r0.py\", line 98, in api\n    status, payload, _, _ = self.request(method, \"/api/method/\" + qualified,\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/cipher-framework-draft/apps/cipher/platform/operations/verify_r0.py\", line 88, in request\n    require(status in expected, f\"{method} {path.split('?', 1)[0]}: expected {expected}, got {status}\")\n  File \"/workspace/cipher-framework-draft/apps/cipher/platform/operations/verify_r0.py\", line 35, in require\n    raise CheckFailure(message)\nv.CheckFailure: POST /api/method/cipher_aec.api.approvals.request_action: expected (200,), got 503\n",
+  "observed_after_continuation": {
+    "project": "PROJ-0031",
+    "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+    "packet_id": "n7s4cmqrne",
+    "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+    "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+    "request_operation_id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+    "execution_operation_id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+    "packet_count": 1,
+    "request_receipt_count": 1,
+    "verification_count": 1,
+    "consumption_count": 1,
+    "request_hash": "a438a2f65685042f05d7c74d390635e9f368acaf5aaaf1e7190d8901124973c4",
+    "canonical_person": "CIPHER-PERSON-PM"
+  },
+  "absence_before_new_uuid_independently_observed": false,
+  "qualification": "Original UUID was not recorded. The new-UUID continuation produced one observed committed packet/request receipt/verification/consumption; this is not same-UUID conflict recovery and does not reconstruct the original UUID."
+}

@@ -103,7 +103,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### GOV-01 — Canonical person/identity bindings and company/project duties
 
-- Release: R0. Status: active.
+- Release: R0. Status: verified.
 - Required locally verified contracts: PLT-02.
 - Implement: Canonical person/identity bindings and company/project duties.
 - Required acceptance evidence: Alias identities cannot self-approve; cross-company and revoked membership access denied.
@@ -111,7 +111,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### GOV-02 — Command receipt registry, version/manifest checks and exact-value primitives
 
-- Release: R0. Status: active.
+- Release: R0. Status: verified.
 - Required locally verified contracts: GOV-01.
 - Implement: Command receipt registry, version/manifest checks and exact-value primitives.
 - Required acceptance evidence: Duplicate command has one effect; reused key with changed company/payload conflicts; decimals round correctly.
@@ -223,7 +223,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### COM-01 — Extend Opportunity/Quotation with pursuit, proposal sections and immutable revisions
 
-- Release: R1. Status: planned.
+- Release: R1. Status: verified.
 - Required locally verified contracts: PRJ-01, GOV-03, MIG-01.
 - Implement: Extend Opportunity/Quotation with pursuit, proposal sections and immutable revisions.
 - Required acceptance evidence: Scope/alternates/terms survive revision comparison without creating a duplicate customer master.
@@ -239,7 +239,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### EST-02 — Takeoff measurement, calibration, geometric/manual lineage and revision comparison
 
-- Release: R1. Status: planned.
+- Release: R1. Status: verified.
 - Required locally verified contracts: EST-01, DOC-02.
 - Implement: Takeoff measurement, calibration, geometric/manual lineage and revision comparison.
 - Required acceptance evidence: Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies.
@@ -263,7 +263,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### FIN-01 — Construction contract/SOV base schemas, terms and retainage policies before award orchestration
 
-- Release: R1. Status: planned.
+- Release: R1. Status: verified.
 - Required locally verified contracts: PRJ-01, GOV-03.
 - Implement: Construction contract/SOV base schemas, terms and retainage policies before award orchestration.
 - Required acceptance evidence: SOV caps cannot fall below certified amounts without correction; no manufacturing-subcontract shortcut.
@@ -311,7 +311,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### UX-03 — Commercial/estimate/award/procurement pages including dense editing
 
-- Release: R1. Status: planned.
+- Release: R1. Status: active.
 - Required locally verified contracts: COM-02, EST-03, BUY-03, UX-02.
 - Implement: Commercial/estimate/award/procurement pages including dense editing.
 - Required acceptance evidence: Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs.

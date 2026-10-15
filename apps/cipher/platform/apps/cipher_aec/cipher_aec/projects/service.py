@@ -118,10 +118,6 @@ def history(company, project, limit=50, cursor=None, count_mode="none"):
     limit, cursor, count_mode = page_options(limit, cursor, count_mode)
     scope = _page_scope(actor, company, project, "history")
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None
-    filters = {"company": company, "project": project}
-    rows = _query_page("Cipher History Event", filters=filters, order_field="creation", ascending=False, limit=limit, last=last, native_permissions=False)
-    page = rows[:limit]
-    last_key = [str(page[-1].creation), page[-1].name] if page else None
-    return page_result([present_event(frappe.get_doc("Cipher History Event", row.name)) for row in page], has_more=len(rows) > limit,
-        last=last_key, scope=scope, limit=limit, count_mode=count_mode,
-        total=_exact_count("Cipher History Event", filters, native_permissions=False) if count_mode == "exact" else None)
+    from cipher_aec.governance.history_listing import list_visible
+    return list_visible(company=company, project=project, scope_type="Project", actor=actor,
+        scope=scope, limit=limit, last=last, count_mode=count_mode)

@@ -1,6 +1,6 @@
 import frappe
 
-from cipher_aec.governance.context import current_actor, duty_rows
+from cipher_aec.governance.context import current_actor, duty_rows, company_duty_rows, require_company, require_project
 from cipher_aec.governance.commands import read_operation
 from cipher_aec.projects import service
 from .transport import endpoint
@@ -11,10 +11,30 @@ def session():
     from frappe.sessions import get_csrf_token
     actor = current_actor()
     rows = duty_rows(actor)
-    companies = sorted({row.company for row in rows if row.ability == "project.read"})
+    company_rows = company_duty_rows(actor)
+    from .errors import DomainError
+    project_companies, direct_companies = set(), set()
+    for row in rows:
+        if row.ability != "project.read":
+            continue
+        try:
+            require_project(row.company, row.project, actor=actor)
+            project_companies.add(row.company)
+        except DomainError as error:
+            if error.status not in {403,404}:
+                raise
+    for company in sorted({row.company for row in company_rows if row.ability == "company.read"}):
+        try:
+            require_company(company, actor=actor)
+            direct_companies.add(company)
+        except DomainError as error:
+            if error.status not in {403,404}:
+                raise
+    companies = sorted(project_companies | direct_companies)
     return {"authenticated": True, "user": actor.user, "person": {"id": actor.person_id, "display_name": actor.display_name},
         "companies": [{"id": company, "name": company} for company in companies],
-        "capabilities": sorted({row.ability for row in rows}), "site_mode": "synthetic", "csrf_token": get_csrf_token()}
+        "capabilities": sorted({row.ability for row in rows + company_rows}),
+        "company_scopes": [{"company": company, "capabilities": sorted({row.ability for row in company_rows if row.company == company})} for company in sorted(direct_companies)], "site_mode": "synthetic", "csrf_token": get_csrf_token()}
 
 
 @endpoint()

@@ -297,6 +297,15 @@ def list_records(company, project, kind, limit=20, cursor=None, count_mode="none
     scope = {"route": "estimate.catalog", "kind": kind, "user": actor.user, "person": actor.person_id, "company": company,
              "project": project, "authority": authority_fingerprint(actor, company, project)}
     last = decode_cursor(cursor, secret=signing_secret(), scope=scope) if cursor else None
+    # Catalog visibility, count and cursor existence share one authorized set.
+    # Returning only an authorized page could expose private off-page native
+    # sources through total/has_more. Fail this bounded collection closed before
+    # computing either rather than disclosing its hidden inventory.
+    candidates = frappe.db.sql(f"SELECT name FROM `tab{repository.DOCTYPES[kind]}` WHERE company=%s AND project=%s ORDER BY name LIMIT 501", (company, project))
+    if len(candidates) > 500:
+        raise DomainError("catalog_scope_limit", "This catalog exceeds the bounded authorization scope.", 503)
+    for candidate in candidates:
+        _scoped(kind, candidate[0], company, project, actor)
     where, arguments = "company=%s AND project=%s", [company, project]
     if last:
         where += " AND (creation<%s OR (creation=%s AND name<%s))"

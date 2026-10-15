@@ -5,10 +5,8 @@ from __future__ import annotations
 class FrappeDocumentRepository:
     def document(self, name, lock=False):
         import frappe
-        if lock:
-            frappe.db.sql("select name from `tabCipher Document` where name=%s for update", (name,))
         try:
-            return frappe.get_doc("Cipher Document", name).as_dict()
+            return frappe.get_doc("Cipher Document", name, for_update=lock).as_dict()
         except frappe.DoesNotExistError:
             from cipher_aec.api.errors import DomainError
             raise DomainError("not_found", "Document was not found.", 404) from None
@@ -21,9 +19,17 @@ class FrappeDocumentRepository:
             raise DomainError("not_found", "Document revision was not found.", 404)
         return row
 
-    def revision(self, name):
+    def revision_locator(self, name):
         import frappe
-        return frappe.get_doc("Cipher Document Revision", name).as_dict()
+        from cipher_aec.api.errors import DomainError
+        row = frappe.db.get_value("Cipher Document Revision", name, ["name", "document", "company", "project"], as_dict=True)
+        if not row:
+            raise DomainError("not_found", "Document revision was not found.", 404)
+        return row
+
+    def revision(self, name, lock=False):
+        import frappe
+        return frappe.get_doc("Cipher Document Revision", name, for_update=lock).as_dict()
 
     def documents(self, company, project):
         import frappe

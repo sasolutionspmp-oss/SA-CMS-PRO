@@ -17,7 +17,7 @@ def run_acceptance(include_schema_samples=False):
     from cipher_aec.estimating import service
     from cipher_aec.estimating.calculation import calculate
     from cipher_aec.governance.commands import read_operation
-    from cipher_aec.governance.context import ABILITIES, assert_synthetic_site, trusted_write
+    from cipher_aec.governance.context import PROJECT_ABILITIES as ABILITIES, assert_synthetic_site, trusted_write
     from cipher_aec.install import _person, _user, _binding, _grant, set_synthetic_duty
 
     assert_synthetic_site()
@@ -315,14 +315,15 @@ def _native_reference_checks(company, project, user, native, rate_input, rate_id
     thread.start()
     authorize = commands.authorize_receipt
     snapshot_observations = []
-    def boundary(actor, command, actual_company, actual_project, result):
+    def boundary(actor, command, actual_company, actual_project, result, scope_type="Project"):
+        assert scope_type == "Project", "This fixture qualifies the exact Project receipt boundary"
         trigger.set()
         if not finished.wait(25):
             raise RuntimeError("Native source revocation failed to commit")
         if errors:
             raise RuntimeError(errors[0])
         snapshot_observations.append(frappe.db.sql("SELECT company FROM `tabItem Default` WHERE parent=%s", native["item"])[0][0])
-        return authorize(actor, command, actual_company, actual_project, result)
+        return authorize(actor, command, actual_company, actual_project, result, scope_type=scope_type)
     conflict = False
     try:
         with patch.object(commands, "authorize_receipt", side_effect=boundary):
@@ -425,3 +426,64 @@ def _observe_lock_order(callback):
     if "Currency" in events:
         assert events.index("UOM") < events.index("Currency"), events
     return result, events
+
+
+def run_catalog_privacy_acceptance():
+    """Actual two-record/off-page permission regression in an isolated Project."""
+    import hashlib
+    import frappe
+    from cipher_aec.api.errors import DomainError
+    from cipher_aec.documents.service import upload_document, get_citation
+    from cipher_aec.estimating import service
+    from cipher_aec.governance.context import assert_synthetic_site, trusted_write
+    from cipher_aec.install import _grant
+    assert_synthetic_site()
+    if frappe.session.user != "Administrator":
+        raise RuntimeError("Prepare this isolated regression as Administrator")
+    marker = uuid4().hex[:12]
+    company, user = "Cipher Synthetic Company", "morgan@cipher.example"
+    people = [frappe.db.get_value("Cipher Identity Binding", {"user": value, "active": 1}, "person") for value in (user, "Administrator")]
+    with trusted_write():
+        project = frappe.get_doc({"doctype": "Project", "company": company, "project_name": "EST catalog privacy fixture " + marker, "status": "Open"}).insert(ignore_permissions=True)
+        for person in people:
+            for ability in ("project.read", "document.read", "document.write", "estimate.read", "estimate.write"):
+                _grant(person, company, project.name, ability)
+        native = frappe.get_doc({"doctype": "UOM", "uom_name": "EST catalog unit " + marker, "enabled": 1, "must_be_whole_number": 0}).insert(ignore_permissions=True)
+        group = frappe.get_doc({"doctype": "Item Group", "item_group_name": "EST catalog supplies " + marker, "parent_item_group": "All Item Groups", "is_group": 0}).insert(ignore_permissions=True)
+        item = frappe.get_doc({"doctype": "Item", "item_code": "EST-CATALOG-PRIVATE-" + marker, "item_name": "Private native source " + marker,
+                              "item_group": group.name, "stock_uom": native.name, "is_stock_item": 0, "item_defaults": [{"company": company}]}).insert(ignore_permissions=True)
+    frappe.db.commit()
+    unit = service.register_unit(company, project.name, str(uuid4()), native.name, "count", 6)["unit"]
+    content = b"Explicit two-record catalog privacy source;USD2 per authored fixture unit."
+    uploaded = upload_document(company=company, project=project.name, operation_id=str(uuid4()), title="Explicit catalog fixture", filename="catalog.txt", content=content, byte_length=len(content), sha256=hashlib.sha256(content).hexdigest())
+    citation = get_citation(company, uploaded["revision"]["id"], 1)
+    ref = {key: citation[key] for key in ("revision_id", "page", "excerpt_sha256", "source_sha256")}
+    rate = {"title": "Private older rate", "cost_type": "material", "unit_id": unit["id"], "rate_amount": "2", "rate_precision": 6,
+            "currency": "USD", "quote_reference": "EXPLICIT-CATALOG-" + marker, "quote_date": "2026-10-01", "expiry_date": "2026-10-31",
+            "geography": "Synthetic fixture", "inclusions": "Explicit fixture", "exclusions": "", "freight_tax_assumptions": "No freight or tax",
+            "permission_basis": "Authored synthetic verification source", "source_citations": [ref], "item": item.name}
+    older = service.create_rate(company, project.name, str(uuid4()), rate)["rate_source"]
+    newer = service.create_rate(company, project.name, str(uuid4()), {**rate, "title": "Public newest rate", "item": None})["rate_source"]
+    frappe.db.commit()
+    try:
+        frappe.set_user(user)
+        assert not frappe.has_permission("Item", "read", doc=frappe.get_doc("Item", item.name), user=user)
+        assert service.get_record(company, project.name, "rate", newer["id"])["id"] == newer["id"]
+        rows = frappe.db.sql("SELECT name FROM `tabCipher Rate Source` WHERE company=%s AND project=%s ORDER BY creation DESC,name DESC LIMIT 1", (company, project.name))
+        assert rows[0][0] == newer["id"]
+        denials = []
+        for count_mode in ("none", "exact"):
+            try:
+                service.list_records(company, project.name, "rate", limit=1, count_mode=count_mode)
+                raise AssertionError("Private off-page native source leaked through catalog pagination/count")
+            except DomainError as error:
+                assert error.code == "not_found"
+                denials.append({"count_mode": count_mode, "code": error.code, "total_or_cursor_returned": False})
+                frappe.db.rollback()
+        return {"status": "passed", "label": "real-frappe-two-record-off-page-native-permission-regression", "project": project.name,
+                "newer_accessible_rate": newer["id"], "older_private_rate": older["id"], "limit": 1,
+                "first_candidate_is_readable": True, "older_native_source_is_private": True, "denials": denials,
+                "catalog_policy": "bounded-candidate-authorization-before-page-count-and-cursor"}
+    finally:
+        frappe.db.rollback()
+        frappe.set_user("Administrator")

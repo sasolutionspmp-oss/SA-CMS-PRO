@@ -18,7 +18,7 @@ def run_acceptance():
     from werkzeug.wrappers import Request
     from cipher_aec.api.errors import DomainError
     from cipher_aec.documents.service import upload_document
-    from cipher_aec.governance.context import ABILITIES, assert_synthetic_site, trusted_write
+    from cipher_aec.governance.context import PROJECT_ABILITIES as ABILITIES, assert_synthetic_site, trusted_write
     from cipher_aec.install import _binding, _grant, _person, _user
     from cipher_aec.ricky.backend import FrappeBackend
     from cipher_aec.ricky.api import _dispatch

@@ -1,0 +1,44 @@
+{
+  "artifacts": [
+    {
+      "name": "connected-estimate-editor-desktop.png",
+      "sha256": "560bcf14e823be291772ed86c20ede7c66e28b15ce46f1e1dd99c69ceecf199c",
+      "byte_length": 142385
+    },
+    {
+      "name": "connected-estimate-editor-phone.png",
+      "sha256": "4baaff84815105df53e50bc7e696530cbd46df1d473de8e40835b6cd911b25c8",
+      "byte_length": 80016
+    },
+    {
+      "name": "connected-estimate-editor-tablet.png",
+      "sha256": "dd57e047976d84c5b6bed355772cef49148b2ec5a8126de1606ba782edb97f16",
+      "byte_length": 116063
+    },
+    {
+      "name": "connected-estimate-numeric-focus-desktop.png",
+      "sha256": "aa3053fd2d7ee6b59abb682f91a43ba85dc1ca0f6005ad4f50294bcc73be5ae6",
+      "byte_length": 142659
+    },
+    {
+      "name": "connected-estimate-numeric-focus-phone.png",
+      "sha256": "502c9301fbfed580bb7974029dc1e7a71c030a445326592922b72f8380bf2f44",
+      "byte_length": 80447
+    },
+    {
+      "name": "connected-estimate-numeric-focus-tablet.png",
+      "sha256": "008219912b268c400c5a59800422caada44145beac6c61e761d572fc214c231c",
+      "byte_length": 116391
+    },
+    {
+      "name": "served-build-provenance.json",
+      "sha256": "da620612729d5224e930211c1114a1bed8aaf1e440a2a0582c62460c8c8a6648",
+      "byte_length": 151364
+    },
+    {
+      "name": "verification.json",
+      "sha256": "3bf52b82d8666b068d115099676dbf58a30fd9901e34753d3046e45e65a8d655",
+      "byte_length": 1917
+    }
+  ]
+}

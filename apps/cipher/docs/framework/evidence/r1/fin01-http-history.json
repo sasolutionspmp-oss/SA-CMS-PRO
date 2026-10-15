@@ -1,0 +1,297 @@
+{
+  "cleanup": {
+    "cleanup": [
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "morgan@cipher.example"
+      },
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "morgan.alias@cipher.example"
+      },
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "jordan@cipher.example"
+      }
+    ],
+    "native_posting_after": {
+      "Delivery Note": {
+        "installed": true,
+        "rows": 0
+      },
+      "Expense Claim": {
+        "installed": false
+      },
+      "GL Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Journal Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Material Request": {
+        "installed": true,
+        "rows": 0
+      },
+      "Payment Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Invoice": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Order": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Receipt": {
+        "installed": true,
+        "rows": 0
+      },
+      "Sales Invoice": {
+        "installed": true,
+        "rows": 0
+      },
+      "Sales Order": {
+        "installed": true,
+        "rows": 0
+      },
+      "Stock Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Timesheet": {
+        "installed": true,
+        "rows": 0
+      }
+    },
+    "project": "PROJ-0030"
+  },
+  "executed_at": "2026-10-15T16:15:33.410131+00:00",
+  "failure": null,
+  "phases": [
+    {
+      "history_ids": [
+        "j4qonlfts5",
+        "j4s8br637e",
+        "j4uof4n8po",
+        "j54r745bt9",
+        "j590aidu25",
+        "j5g6fhipe5"
+      ],
+      "phase": "authorized",
+      "total": 6
+    },
+    {
+      "phase": "document_read_revoked",
+      "role": "primary",
+      "total": 1,
+      "visible_ids": [
+        "j4qonlfts5"
+      ]
+    },
+    {
+      "phase": "document_read_revoked",
+      "role": "alias",
+      "total": 1,
+      "visible_ids": [
+        "j4qonlfts5"
+      ]
+    },
+    {
+      "phase": "native_party_association_revoked",
+      "role": "primary",
+      "total": 1,
+      "visible_ids": [
+        "j4s8br637e"
+      ]
+    },
+    {
+      "phase": "native_party_association_revoked",
+      "role": "alias",
+      "total": 1,
+      "visible_ids": [
+        "j4s8br637e"
+      ]
+    },
+    {
+      "phase": "restored",
+      "role": "primary",
+      "total": 6
+    },
+    {
+      "phase": "restored",
+      "role": "alias",
+      "total": 6
+    }
+  ],
+  "qualification": "Actual cookie/CSRF history HTTP; existing isolated fixture only. Temporary source duty/native-company association toggles and unique-role cleanup use authenticated bench. No new business effects, Users or financial posting.",
+  "request_count": 15,
+  "requests": {
+    "alias": [
+      {
+        "elapsed_ms": 204.54,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 15.19,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "eacacf28-d035-41e2-b665-9c672070cb2f",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:15:21.170591Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 151.04,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "63fdf966-ba71-488e-9b5c-62ef66294ba1",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:23.791282Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 193.46,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "0f14a1b8-dce7-4fb7-ade3-3c3962e946e2",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:23.984481Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 156.28,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "045e17e5-192e-4c6f-bc0a-e45efdfd6417",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:27.327514Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 138.04,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "f5fd5354-8ec1-49d7-9299-54d993cee69d",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:27.465490Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 456.66,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "414a9208-2109-4a0a-9afc-cfb93e8d6971",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:30.039369Z",
+        "status": 200
+      }
+    ],
+    "primary": [
+      {
+        "elapsed_ms": 294.76,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 16.56,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "cb9082b4-61bf-4002-8e4d-6ede131b9295",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:15:20.940865Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 643.3,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "fc872115-1ae3-4291-a323-8b43d8a94cad",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:21.812835Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 244.49,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "19957e4b-a965-4795-9b97-ac09859f4b5c",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:23.487187Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 152.68,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "41b0e7fb-2698-48e3-87ec-c540fda1c2fb",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:23.639988Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 138.77,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "ac4e93be-7799-42de-b755-b3a0021e55b7",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:27.025342Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 145.44,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "7888c703-7b27-422d-8cb3-0d38f6200df1",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:27.170992Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 417.38,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "19d4d446-2389-4cc4-bdad-f8c30bc3760c",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "server_time": "2026-10-15T16:15:29.582678Z",
+        "status": 200
+      }
+    ]
+  },
+  "schema": "cipher.finance.http-history-acceptance.v1",
+  "scope": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0030"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/service.py": "ab02a8d3e32a43c02f9c9bb3903a13b0b67ee0818939ff191027f37d7b4fc357",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py": "6ee1cef5cd8a962f3e178df199a9fe672da51f8973475755c27e7e3db7f66c57",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py": "c5029f61462ae2919ffccc7451a331ad4c1e6dc8ad0fb3efbc379b6e54eba8f3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_http_acceptance.py": "51a0ae9c678c9f1f5b944ecd8e855553f89f0c5955072927b36e775edb4e6e8e"
+  },
+  "status": "passed"
+}

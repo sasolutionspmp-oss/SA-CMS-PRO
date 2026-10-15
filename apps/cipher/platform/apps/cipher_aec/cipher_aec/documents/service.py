@@ -75,3 +75,17 @@ def search_documents(company, project, query, limit=8, actor=None):
 
 def get_citation(company, revision_id, page, excerpt_sha256=None, actor=None):
     return _call(lambda: _service(actor).citation(company, revision_id, page, excerpt_sha256))
+
+
+
+def source_reference(company, project, revision_id, page, actor=None, *, lock=False):
+    """Internal canonical source bytes/facts, including explicit historical standing.
+
+    Effects call with lock=True after the shared actor/Project command lock. No
+    PDF geometry, OCR fact or current-calibration entitlement is inferred here.
+    This function is deliberately not an HTTP/model tool endpoint.
+    """
+    from cipher_aec.governance.context import current_actor, require_project
+    actor = actor or current_actor()
+    require_project(company, project, ability="document.read", actor=actor, lock=lock)
+    return _call(lambda: _service(actor).source_reference(company, project, revision_id, page, lock=lock))

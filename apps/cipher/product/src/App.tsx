@@ -12,6 +12,7 @@ import { DocumentPage, DocumentsPage } from './Documents';
 import RickyPanel from './RickyPanel';
 import SignIn from './SignIn';
 import Approvals from './Approvals';
+import Estimates from './Estimates';
 
 export default function App() {
   const { path, navigate } = useRoute();
@@ -58,7 +59,7 @@ export default function App() {
   const documentsPath = selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/documents` : '/documents';
   const shellSession = !authRequested && !session.error && session.data?.authenticated ? session.data : undefined;
   const personName = shellSession?.person.display_name ?? 'Workspace session';
-  const navKey = route[0] === 'documents' || route[2] === 'documents' ? 'documents' : route[0] === 'work' ? 'work' : route[0] === 'connections' ? 'connections' : 'projects';
+  const navKey = route[0] === 'estimates' || route[2] === 'estimates' ? 'estimates' : route[0] === 'documents' || route[2] === 'documents' ? 'documents' : route[0] === 'work' ? 'work' : route[0] === 'connections' ? 'connections' : 'projects';
   return <>
     <a className="skip-link" href="#main-content">Skip to content</a>
     <NavigationLayout ref={layoutRef} id="cipher-navigation" mode={mode} className="product-layout"
@@ -71,6 +72,7 @@ export default function App() {
       sideContent={<SideNavigation className="product-navigation" accessibleName="Cipher workspace navigation" onSelectionChange={event => { const next = event.detail.item.dataset.path; if (next) navigate(next); }} fixedItems={<SideNavigationItem text="Connections" icon="connected" selected={navKey === 'connections'} data-path="/connections" />}>
         <SideNavigationItem text="Projects" icon="building" selected={navKey === 'projects'} data-path="/projects" />
         <SideNavigationItem text="Project work" icon="task" selected={navKey === 'work'} data-path="/work" />
+        <SideNavigationItem text="Estimates" icon="simulate" selected={navKey === 'estimates'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/estimates` : '/estimates'} />
         <SideNavigationItem text="Documents" icon="documents" selected={navKey === 'documents'} data-path={documentsPath} />
         <SideNavigationItem text="Ricky" icon="da" design="Action" unselectable onClick={() => setRickyOpen(true)} />
       </SideNavigation>}>
@@ -79,7 +81,8 @@ export default function App() {
           {session.loading ? <Loading label="Connecting to your workspace…" /> : authRequested || session.error?.status === 401 || (!session.error && !session.data?.authenticated) ? <SignIn onSignedIn={() => { setAuthRequested(false); session.refresh(); }} /> : session.error ? <WorkspaceUnavailable error={session.error} retry={session.refresh} /> : !session.data?.companies.length ? <div className="page"><Empty title="No company access" icon="locked">Your workspace administrator can assign company and project access.</Empty></div> : <>
             <div className="workspace-context-bar"><div><Icon name="building" /><span>{companyLabel(session.data, company)}</span>{selectedProject && <><span className="context-separator">/</span><strong>{selectedProject.name}</strong></>}</div><Select accessibleName="Project context" onChange={event => { const id = event.detail.selectedOption.value ?? ''; setProjectId(id); navigate(id ? `/projects/${encodeURIComponent(id)}` : '/projects'); }}><Option value="" selected={!selectedProject}>All projects</Option>{projects.data?.items.map(project => <Option key={project.id} value={project.id} selected={selectedProject?.id === project.id}>{project.name}</Option>)}</Select></div>
             {projects.loading && !projects.data ? <Loading label="Loading permitted projects…" /> : projects.error ? <div className="page"><Failure error={projects.error} onRetry={projects.refresh} /></div> : company && <>
-              {route[0] === 'connections' ? <Connections session={session.data} />
+              {route[0] === 'estimates' || route[2] === 'estimates' ? (contextId && contextProject.loading ? <Loading label="Opening estimating project context…" /> : contextId && contextProject.error ? <div className="page"><Failure error={contextProject.error} onRetry={contextProject.refresh} /></div> : <Estimates key={`${company}/${selectedProject?.id}/${route[3] || ''}`} company={company} project={contextProject.data} estimateId={route[3]} revisionId={new URLSearchParams(path.split('?')[1] || '').get('revision') || undefined} navigate={navigate} askRicky={() => setRickyOpen(true)} />)
+                : route[0] === 'connections' ? <Connections session={session.data} />
                 : route[0] === 'documents' && route[1] ? <DocumentPage key={`${company}/${path}`} company={company} documentId={route[1]} revisionId={route[2] === 'revisions' ? route[3] : undefined} initialPage={Number.isInteger(citedPage) && citedPage > 0 ? citedPage : 1} navigate={navigate} askRicky={id => { setProjectId(id); setRickyOpen(true); }} />
                 : route[0] === 'documents' || route[2] === 'documents' ? <DocumentsPage key={`${company}/${selectedProject?.id ?? ''}`} company={company} projectId={selectedProject?.id} projectName={selectedProject?.name} navigate={navigate} canUpload={contextProject.data?.capabilities?.includes('document.write') ?? false} />
                 : route[0] === 'work' ? <WorkPage key={`${company}/${selectedProject?.id}/${dataRevision}`} company={company} project={selectedProject} navigate={navigate} onEffect={() => { projects.refresh(); contextProject.refresh(); }} />

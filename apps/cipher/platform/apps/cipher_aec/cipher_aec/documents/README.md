@@ -15,3 +15,5 @@ PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.te
 ```
 
 These independent invariant tests use real filesystem bytes and real PDF parser subprocesses, with test-only metadata doubles. They cover scope revocation, wrong company, quarantine/policy revocation, source/excerpt checksum failures, missing bytes, immutable revisions, stale heads, immutable/path-safe storage, PDF page facts and active-PDF rejection. They are not evidence of a running Frappe deployment; actual site HTTP/restart/browser evidence is tracked by the integration gate.
+
+The internal `documents.service.source_reference(company, project, revision_id, page, actor=None, *, lock=False)` supplies exact validated original bytes and server-derived revision, page, checksum, length and current-head facts to takeoff. `lock=True` follows an existing governed command's Person/Project locks and locks the current Document before its immutable Revision. Historical revisions remain readable with `is_current=False`; a consumer creating current calibration must reject that standing explicitly. No geometry, company scope or new public byte endpoint is inferred by this helper.

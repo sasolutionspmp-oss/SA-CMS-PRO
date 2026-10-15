@@ -3,7 +3,7 @@ import { Bar, Button, CheckBox, Dialog, Label, MessageStrip, Option, Select, Tab
 import { api, ApiError } from './api/client';
 import type { ApprovalPacket, Project } from './api/types';
 import { Empty, Fact, Failure, Loading, Pagination, Status } from './components';
-import { useResource } from './hooks';
+import { human, useResource } from './hooks';
 
 const timestamp = (value: string) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 
@@ -18,8 +18,8 @@ export default function Approvals({ project, onEffect }: { project: Project; onE
     <Toolbar design="Transparent"><Title level="H2">Approval inbox</Title><ToolbarSpacer /><Button icon="refresh" onClick={packets.refresh}>Refresh approvals</Button>{project.capabilities?.includes('approval.request') && <Button design="Emphasized" disabled={! ['Open', 'On hold'].includes(project.status)} title={['Open', 'On hold'].includes(project.status) ? 'Create an independently reviewed status request' : 'Closed projects cannot be reopened through this approval policy'} onClick={() => setRequestOpen(true)}>Request status change</Button>}</Toolbar>
     {notice && <MessageStrip design="Positive" onClose={() => setNotice('')}>{notice}</MessageStrip>}
     {packets.loading ? <Loading label="Loading approval packets…" /> : packets.error ? <Failure error={packets.error} onRetry={packets.refresh} /> : packets.data?.items.length ? <Table accessibleName="Project approvals" headerRow={<TableHeaderRow><TableHeaderCell minWidth="14rem">Requested change</TableHeaderCell><TableHeaderCell width="9rem">State</TableHeaderCell><TableHeaderCell minWidth="10rem">Requested by</TableHeaderCell><TableHeaderCell width="10rem">Review</TableHeaderCell></TableHeaderRow>}>
-      {packets.data.items.map(packet => <TableRow key={packet.id} rowKey={packet.id}><TableCell><div className="record-cell"><strong>{packet.changes.status.from} → {packet.changes.status.to}</strong><span>{timestamp(packet.created_at)}</span></div></TableCell><TableCell><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></TableCell><TableCell>{packet.requester.display_name}</TableCell><TableCell><Button onClick={() => setSelected(packet.id)}>Review packet</Button></TableCell></TableRow>)}
-    </Table> : <Empty title="No approval requests" icon="task">Project status changes require an independently reviewed packet before execution.</Empty>}
+      {packets.data.items.map(packet => <TableRow key={packet.id} rowKey={packet.id}><TableCell><div className="record-cell"><strong>{packet.action === 'project.status.change.v1' ? `${packet.changes.status.from} → ${packet.changes.status.to}` : actionLabel(packet.action)}</strong><span>{timestamp(packet.created_at)}</span></div></TableCell><TableCell><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></TableCell><TableCell>{packet.requester.display_name}</TableCell><TableCell><Button onClick={() => setSelected(packet.id)}>Review packet</Button></TableCell></TableRow>)}
+    </Table> : <Empty title="No approval requests" icon="task">Requests preserve their exact sources and effects. Review and execution remain separate.</Empty>}
     <Pagination next={packets.data?.next_cursor} total={packets.data?.total} page={pages.length + 1} previous={Boolean(pages.length)} onNext={() => { if (packets.data?.next_cursor) { setPages([...pages, cursor]); setCursor(packets.data.next_cursor); } }} onPrevious={() => { setCursor(pages[pages.length - 1]); setPages(pages.slice(0, -1)); }} />
     {requestOpen && <RequestStatus project={project} onClose={() => setRequestOpen(false)} onSourceChanged={onEffect} onRequested={packet => { setRequestOpen(false); setSelected(packet.id); setCursor(undefined); setPages([]); packets.refresh(); setNotice('Status change requested. The project has not changed.'); }} />}
     {selected && <ReviewPacket project={project} packetId={selected} onClose={() => setSelected(undefined)} onChanged={effect => { packets.refresh(); if (effect) onEffect(); }} />}
@@ -62,7 +62,7 @@ function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Proj
     try {
       await api.approvalAction(action, { company: project.company, project: project.id, packet_id: packet.id, manifest_hash: packet.manifest_hash, reason: reason.trim(), operation_id: operations.current.get(key)! });
       setReviewed(false); setReason(''); resource.refresh(); onChanged(action === 'execute');
-      setNotice(action === 'execute' ? 'The approved status change was executed.' : action === 'Grant' ? 'Approval granted. Execution is a separate action.' : action === 'Reject' ? 'Approval request rejected.' : 'Approval request withdrawn.');
+      setNotice(action === 'execute' ? packet.action === 'project.status.change.v1' ? 'The approved status change was executed.' : 'The approved action was executed.' : action === 'Grant' ? 'Approval granted. Execution is a separate action.' : action === 'Reject' ? 'Approval request rejected.' : 'Approval request withdrawn.');
     } catch (failure) {
       const problem = failure as ApiError; setError(problem);
       if ([403, 404, 409, 412].includes(problem.status)) { setReviewed(false); resource.refresh(); }
@@ -73,8 +73,8 @@ function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Proj
     {resource.loading ? <Loading label="Loading exact approval packet…" /> : resource.error ? <Failure error={resource.error} onRetry={resource.refresh} /> : packet && <div className="dialog-form">
       <div className="approval-heading"><Title level="H3">{packet.subject.label}</Title><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></div>
       {error && <Failure error={error} />}{notice && <MessageStrip design="Positive" hideCloseButton>{notice}</MessageStrip>}
-      <div className="approval-change"><Fact label="Status at request">{packet.changes.status.from}</Fact><span aria-hidden="true">→</span><Fact label="Requested status">{packet.changes.status.to}</Fact></div>
-      <dl className="approval-metadata"><dt>Requested by</dt><dd>{packet.requester.display_name}</dd><dt>Expires</dt><dd>{timestamp(packet.expires_at)}</dd><dt>Policy</dt><dd>{packet.policy.label}{packet.policy.synthetic ? ' · Synthetic' : ''}</dd><dt>Resulting completion</dt><dd>{packet.native_completion.percent_complete}% · {packet.native_completion.percent_complete_method || 'Task Completion'}</dd><dt>Tasks reviewed</dt><dd>{packet.task_effects.count}</dd><dt>Task changes</dt><dd>{packet.task_effects.changes.length ? `${packet.task_effects.changes.length} reported changes` : 'None — project status only'}</dd></dl>
+      {packet.action === 'project.status.change.v1' ? <div className="approval-change"><Fact label="Status at request">{packet.changes.status.from}</Fact><span aria-hidden="true">→</span><Fact label="Requested status">{packet.changes.status.to}</Fact></div> : <><Fact label="Requested action">{actionLabel(packet.action)}</Fact><section className="domain-approval-manifest"><Title level="H4">Exact effect</Title><ReviewFacts value={packet.review_manifest.effect} /><Title level="H4">Review summary</Title><ReviewFacts value={packet.review_manifest.summary} /><details><summary>Bound source records ({packet.review_manifest.sources.length})</summary><ReviewFacts value={packet.review_manifest.sources} /></details></section></>}
+      <dl className="approval-metadata"><dt>Requested by</dt><dd>{packet.requester.display_name}</dd><dt>Expires</dt><dd>{timestamp(packet.expires_at)}</dd><dt>Policy</dt><dd>{packet.policy.label}{packet.policy.synthetic ? ' · Synthetic' : ''}</dd>{packet.action === 'project.status.change.v1' && <><dt>Resulting completion</dt><dd>{packet.native_completion.percent_complete}% · {packet.native_completion.percent_complete_method || 'Task Completion'}</dd><dt>Tasks reviewed</dt><dd>{packet.task_effects.count}</dd><dt>Task changes</dt><dd>{packet.task_effects.changes.length ? `${packet.task_effects.changes.length} reported changes` : 'None — project status only'}</dd></>}</dl>
       <details><summary>Packet integrity</summary><p className="caption">Packet {packet.id}</p><p className="caption">Source version: {packet.source_version}</p><code className="packet-hash">{packet.manifest_hash}</code></details>
       {packet.decisions.length > 0 && <div><Title level="H4">Decision history</Title><ol className="approval-decisions">{packet.decisions.map(decision => <li key={decision.id}><strong>{decision.decision}</strong> · {decision.actor.display_name}<span className="caption">{timestamp(decision.at)}</span>{decision.reason && <p>{decision.reason}</p>}</li>)}</ol></div>}
       {packet.actions.disabled_reason && <MessageStrip design="Information" hideCloseButton>{packet.actions.disabled_reason}</MessageStrip>}
@@ -85,4 +85,11 @@ function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Proj
       </>}
     </div>}
   </Dialog>;
+}
+
+function actionLabel(action: ApprovalPacket['action']) { return action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
+function ReviewFacts({ value }: { value: unknown }) {
+  if (Array.isArray(value)) return <ol className="domain-review-list">{value.map((item, index) => <li key={index}><ReviewFacts value={item} /></li>)}</ol>;
+  if (value && typeof value === 'object') return <dl className="approval-metadata">{Object.entries(value).map(([key, item]) => <div className="domain-review-field" key={key}><dt>{human(key)}</dt><dd><ReviewFacts value={item} /></dd></div>)}</dl>;
+  return <span className="domain-review-value">{value === null ? 'None' : typeof value === 'boolean' ? value ? 'Yes' : 'No' : String(value ?? '')}</span>;
 }

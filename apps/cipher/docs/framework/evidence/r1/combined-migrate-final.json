@@ -1,0 +1,112 @@
+{
+  "schema": "cipher.migration-attempt.v1",
+  "status": "passed",
+  "site": "cipher.localhost",
+  "recorded_at": "2026-10-15T16:02:55.811401+00:00",
+  "commands": [
+    "bench --site cipher.localhost clear-cache",
+    "bench --site cipher.localhost migrate"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 7.997,
+  "private_log": "/tmp/cipher-r0-runtime/r1-combined-migrate-retry.log",
+  "log_sha256": "3abba3b7a1275efba30278122469ec72bfa6991e6382e9cdeb1d036a619e2e1d",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/cipher_proposal.json": "8d979b78bbf0d36474c42106ae5c74a305677f868e875b267ec9f4748154a77e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.json": "d1944b44755929738db0a7c7de0b4fd3a1ffc90043764f3796466bea126a0491",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.json": "9ba9e3a4f3ca0c3babfbadbb0ce85b2ff982c6fda8d9b4e452e7578e8caf1124",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.json": "b7f4664e22ae97027385a8d57ddf8bbd9be0582fd98424842035183c312ff92d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.json": "728ce64b21433b0a1947f3a94cf84117245caa29a53acd25139f71dad9556bee",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_construction_contract/cipher_construction_contract.json": "429447389b058903540a6c954a05460d59bafebd235aeb99de74571cde9cec7c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_contract_revision/cipher_contract_revision.json": "3ab5e2fccd4e7ec7821fb4b02580a0c857001f84a1d3184b2481d75174cdb5f8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_retainage_policy_revision/cipher_retainage_policy_revision.json": "324a8f68b711e509e21848e6ca7fa531c798c271b0eb516eb732d524a605a610",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_line/cipher_sov_line.json": "3a2e8be565104afbda5ae9b3fe15e7b37bf25d9592fe35989ed45c9d3e83ffbe",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_version/cipher_sov_version.json": "04b3c7c0deb95ddb7fe988560a630fea86293dc9f246e973135bbe16cfd25a55",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration/cipher_calibration.json": "9341b176fab71037ea097e67a5ee8a78ade1f0bc53a0f046da75abc164da48d3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.json": "9e0b5020c77ab7fdf04482d3ad2aafbbee34e6b71627efc2a19e87f288c8df0a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.json": "8f83dbcd0543f16d551c8f67831253654cdd3bc9e3027a74f7325bdb431a86b7",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.json": "c9c924e569b89014e2ddb49b4978e98f819758575b3a623c8e1df4cdd6ed55d1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.json": "dea4af5bcc014411203d26debea6730085ebd3fc8342e94a95745868ae7e2f65",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py": "d3a7ff21451023e8dc4adb02179dfa92e4fc6375cbf56527097c5dd23d452c36",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py": "c5843e1dda0633cfbff073891d1f55186f1353146b2d2f771aabcaa3158fe23a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/modules.txt": "bda42ddd3ef8880111d94288e85853f1d3ae84fb70c1b3f9105304f81f04fe52"
+  },
+  "tables_verified": [
+    {
+      "doctype": "Cipher Proposal",
+      "table_exists": true,
+      "module": "Cipher Commercial"
+    },
+    {
+      "doctype": "Cipher Proposal Price Line",
+      "table_exists": true,
+      "module": "Cipher Commercial"
+    },
+    {
+      "doctype": "Cipher Proposal Revision",
+      "table_exists": true,
+      "module": "Cipher Commercial"
+    },
+    {
+      "doctype": "Cipher Proposal Section",
+      "table_exists": true,
+      "module": "Cipher Commercial"
+    },
+    {
+      "doctype": "Cipher Pursuit",
+      "table_exists": true,
+      "module": "Cipher Commercial"
+    },
+    {
+      "doctype": "Cipher Construction Contract",
+      "table_exists": true,
+      "module": "Cipher Finance"
+    },
+    {
+      "doctype": "Cipher Contract Revision",
+      "table_exists": true,
+      "module": "Cipher Finance"
+    },
+    {
+      "doctype": "Cipher Retainage Policy Revision",
+      "table_exists": true,
+      "module": "Cipher Finance"
+    },
+    {
+      "doctype": "Cipher SOV Line",
+      "table_exists": true,
+      "module": "Cipher Finance"
+    },
+    {
+      "doctype": "Cipher SOV Version",
+      "table_exists": true,
+      "module": "Cipher Finance"
+    },
+    {
+      "doctype": "Cipher Calibration",
+      "table_exists": true,
+      "module": "Cipher Estimating"
+    },
+    {
+      "doctype": "Cipher Calibration Verification",
+      "table_exists": true,
+      "module": "Cipher Estimating"
+    },
+    {
+      "doctype": "Cipher Takeoff Line Binding",
+      "table_exists": true,
+      "module": "Cipher Estimating"
+    },
+    {
+      "doctype": "Cipher Takeoff Measurement",
+      "table_exists": true,
+      "module": "Cipher Estimating"
+    },
+    {
+      "doctype": "Cipher Takeoff Set",
+      "table_exists": true,
+      "module": "Cipher Estimating"
+    }
+  ],
+  "qualification": "Schema installation and metadata readback only; domain business acceptance follows independently. No global reseed or session reset."
+}

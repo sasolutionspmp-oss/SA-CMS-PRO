@@ -5,6 +5,7 @@
   "autoname": "hash",
   "engine": "InnoDB",
   "field_order": [
+    "scope_type",
     "company",
     "project",
     "actor_person",
@@ -29,7 +30,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "options": "Project"
     },
     {
@@ -86,6 +87,15 @@
       "label": "Event Payload",
       "fieldtype": "Long Text",
       "reqd": 1
+    },
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "read_only": 1
     }
   ],
   "permissions": [

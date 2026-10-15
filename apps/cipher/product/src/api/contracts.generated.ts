@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: 709e25884717e4116d59075b82515949e7353da1d82ca9a6647dfe401b73397a
+ * Source SHA-256: efa57ff2851909c5696fd202556bd42caca7c8590691f26801bb056aaae8c2f4
  * Regenerate: npm run generate:api
  */
 
@@ -16,6 +16,16 @@ export type CipherAPIV1 = {
 } & {
   [k: string]: unknown;
 };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "ApprovalPacket".
+ */
+export type ApprovalPacket = ProjectStatusApprovalPacket | DomainApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "ApprovalExecutionResponse".
+ */
+export type ApprovalExecutionResponse = ProjectStatusApprovalExecutionResponse | DomainApprovalExecutionResponse;
 
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -66,6 +76,10 @@ export interface Session {
   capabilities: string[];
   site_mode: "synthetic";
   csrf_token: string;
+  company_scopes: {
+    company: string;
+    capabilities: string[];
+  }[];
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -192,9 +206,9 @@ export interface ApprovalDecision {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
- * via the `definition` "ApprovalPacket".
+ * via the `definition` "ProjectStatusApprovalPacket".
  */
-export interface ApprovalPacket {
+export interface ProjectStatusApprovalPacket {
   id: string;
   company: string;
   project: string;
@@ -242,6 +256,55 @@ export interface ApprovalPacket {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DomainApprovalPacket".
+ */
+export interface DomainApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "calibration.verify.v1" | "contract.baseline.activate.v1";
+  subject: {
+    id: string;
+    type: "Cipher Calibration" | "Cipher Construction Contract";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: string;
+      name: string;
+      label: string;
+    };
+    sources: {
+      [k: string]: unknown;
+    }[];
+    effect: {
+      [k: string]: unknown;
+    };
+    summary: {
+      [k: string]: unknown;
+    };
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalList".
  */
 export interface ApprovalList {
@@ -261,12 +324,23 @@ export interface ApprovalCommandResponse {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
- * via the `definition` "ApprovalExecutionResponse".
+ * via the `definition` "ProjectStatusApprovalExecutionResponse".
  */
-export interface ApprovalExecutionResponse {
-  packet: ApprovalPacket;
+export interface ProjectStatusApprovalExecutionResponse {
+  packet: ProjectStatusApprovalPacket;
   effect: {
     project: Project;
+  };
+  operation: Operation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DomainApprovalExecutionResponse".
+ */
+export interface DomainApprovalExecutionResponse {
+  packet: DomainApprovalPacket;
+  effect: {
+    [k: string]: unknown;
   };
   operation: Operation;
 }

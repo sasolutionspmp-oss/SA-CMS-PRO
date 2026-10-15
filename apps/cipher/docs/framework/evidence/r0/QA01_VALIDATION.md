@@ -61,9 +61,13 @@ the image's UID 1000 can write editable package metadata from a hosted UID 1001
 checkout. It does not change ownership of private environment files.
 
 Local runner validation and an actual hosted workflow execution are separate
-claims. At creation, the workflow has not run in GitHub Actions. Record an actual
-hosted run before claiming hosted CI qualification. This file and the workflow
-are procedures, not substitutes for the generated fresh-run evidence.
+claims. The workflow subsequently passed in GitHub Actions for commit
+`294d06d750c88e65b273b1ea727e8b84d593b3d9`:
+[run 38763239781](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/38763239781).
+[Hosted provenance](hosted-validation-provenance.json) records the successful job
+steps and artifact metadata, including the workspace artifact-download limit.
+Later source changes require relevant new verification. This file and the
+workflow are procedures, not substitutes for execution evidence.
 
 ## Recorded local execution
 

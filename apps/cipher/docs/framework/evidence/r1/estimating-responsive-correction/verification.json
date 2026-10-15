@@ -1,0 +1,82 @@
+{
+  "mode": "actual-frappe-estimating-responsive-read-only",
+  "captured_at": "2026-10-15T16:14:08.661Z",
+  "estimate": "5922f3d2-048b-4f05-821f-97c734e5d6a0",
+  "mocked_requests": false,
+  "business_writes": false,
+  "measured": [
+    {
+      "width": 1440,
+      "numeric_columns": 7,
+      "header_body_tolerance_px": 2,
+      "action_boxes": [
+        {
+          "x": 1234.125,
+          "y": 441.6875,
+          "width": 64.703125,
+          "height": 24
+        },
+        {
+          "x": 1308.828125,
+          "y": 441.6875,
+          "width": 81.171875,
+          "height": 24
+        }
+      ],
+      "keyboard_description_to_quantity": true,
+      "no_page_overflow": true
+    },
+    {
+      "width": 900,
+      "numeric_columns": 7,
+      "header_body_tolerance_px": 2,
+      "action_boxes": [
+        {
+          "x": 694.125,
+          "y": 511.6875,
+          "width": 64.703125,
+          "height": 24
+        },
+        {
+          "x": 768.828125,
+          "y": 511.6875,
+          "width": 81.171875,
+          "height": 24
+        }
+      ],
+      "keyboard_description_to_quantity": true,
+      "no_page_overflow": true
+    },
+    {
+      "width": 390,
+      "numeric_columns": 7,
+      "header_body_tolerance_px": 2,
+      "action_boxes": [
+        {
+          "x": 200.125,
+          "y": 536.875,
+          "width": 64.703125,
+          "height": 24
+        },
+        {
+          "x": 274.828125,
+          "y": 536.875,
+          "width": 81.171875,
+          "height": 24
+        }
+      ],
+      "keyboard_description_to_quantity": true,
+      "no_page_overflow": true
+    }
+  ],
+  "browser_errors": [],
+  "console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "historical_full_journey": "/workspace/cipher-live-r1/estimating-draft-workspace"
+}

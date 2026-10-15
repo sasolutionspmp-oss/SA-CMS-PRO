@@ -247,19 +247,21 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
         target = copy_root / "product"
         shutil.copytree(CIPHER / "product", target,
                         ignore=shutil.ignore_patterns("node_modules", "dist", "test-results", "playwright-report", ".git", ".env", ".env.*"))
-        schema_source = CIPHER / "platform/apps/cipher_aec/cipher_aec/api/schema.json"
-        schema_target = copy_root / "platform/apps/cipher_aec/cipher_aec/api/schema.json"
-        schema_target.parent.mkdir(parents=True)
-        shutil.copy2(schema_source, schema_target)
+        app_source = CIPHER / "platform/apps/cipher_aec/cipher_aec"
+        app_target = copy_root / "platform/apps/cipher_aec/cipher_aec"
+        # Keep owning domain schemas available in the isolated client workspace.
+        # The generator checks every output, including exact estimating types.
+        schema_sources = set(app_source.glob("api/*.json")) | set(app_source.glob("**/schemas/*.json"))
+        for schema_source in sorted(schema_sources):
+            schema_target = app_target / schema_source.relative_to(app_source)
+            schema_target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(schema_source, schema_target)
         env = {**os.environ, "CI": "1"}
         env.pop("CIPHER_BACKEND_URL", None)
         self.runtime_matrix["frontend_node"] = self.stage("frontend-runtime", ["node", "--version"], cwd=target, env=env).strip()
         self.runtime_matrix["frontend_npm"] = self.stage("frontend-npm", ["npm", "--version"], cwd=target, env=env).strip()
         self.stage("frontend-clean-install", ["npm", "ci", "--no-audit", "--no-fund"], cwd=target, env=env)
-        self.stage("generate-api-client", ["npm", "run", "generate:api"], cwd=target, env=env)
-        generated = "src/api/contracts.generated.ts"
-        require(sha(target / generated) == sha(CIPHER / "product" / generated),
-                "Tracked API client differs from a fresh generation of the current schema")
+        self.stage("generate-api-client", ["npm", "run", "generate:api", "--", "--check"], cwd=target, env=env)
         self.stage("frontend-typecheck-build", ["npm", "run", "build"], cwd=target, env=env)
         if self.args.install_browser:
             self.stage("install-browser", ["npx", "playwright", "install", "--with-deps", "chromium"], cwd=target, env=env)

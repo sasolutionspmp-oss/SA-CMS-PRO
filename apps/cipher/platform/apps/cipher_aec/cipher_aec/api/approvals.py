@@ -30,3 +30,8 @@ def execute_packet(company, project, packet_id, manifest_hash, operation_id):
 @endpoint(methods=["POST"])
 def withdraw_packet(company, project, packet_id, manifest_hash, operation_id, reason=""):
     return service.withdraw_packet(company, project, packet_id, manifest_hash, operation_id, reason)
+
+
+@endpoint(methods=["POST"])
+def request_action(company, project, action, subject_id, operation_id, expected_version=None):
+    return service.request_action(company, project, action, subject_id, expected_version, operation_id)

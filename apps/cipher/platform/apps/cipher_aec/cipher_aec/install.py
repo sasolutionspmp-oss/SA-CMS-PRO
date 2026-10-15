@@ -6,7 +6,7 @@ import secrets
 import frappe
 
 from cipher_aec.api.errors import DomainError
-from cipher_aec.governance.context import ABILITIES, assert_synthetic_site, trusted_write
+from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, assert_synthetic_site, trusted_write
 
 
 def after_install():
@@ -22,6 +22,7 @@ def after_install():
 
 def after_migrate():
     ensure_site_keys()
+    migrate_explicit_scopes()
     for table, columns, name in (
         ("Cipher Project Duty", ["person", "company", "project", "ability"], "cipher_duty_scope_unique"),
         ("Cipher Command Receipt", ["person", "operation_id"], "cipher_command_person_uuid_unique"),
@@ -34,6 +35,12 @@ def after_migrate():
     document_migrate()
     from cipher_aec.estimating.install import after_migrate as estimating_migrate
     estimating_migrate()
+    from cipher_aec.takeoff.install import after_migrate as takeoff_migrate
+    takeoff_migrate()
+    from cipher_aec.commercial.install import after_migrate as commercial_migrate
+    commercial_migrate()
+    from cipher_aec.construction_finance.install import after_migrate as finance_migrate
+    finance_migrate()
     from cipher_aec.governance.approvals import install_policy
     install_policy()
     frappe.db.add_unique("Cipher Approval Policy Revision", ["action", "version"], constraint_name="cipher_approval_policy_version")
@@ -136,7 +143,7 @@ def seed_synthetic(passwords=None):
             projects[key] = name
         for ability in ("project.read", "approval.decide"):
             _grant(people["reviewer"], company_name, projects["project"], ability)
-        for ability in sorted(ABILITIES):
+        for ability in sorted(PROJECT_ABILITIES):
             _grant(people["primary"], company_name, projects["project"], ability)
             _grant(people["outsider"], company_name, projects["other_project"], ability)
             for project in projects.values():
@@ -159,3 +166,62 @@ def set_synthetic_duty(user, project, ability, active):
         doc.active = active
         doc.save(ignore_permissions=True)
     return {"project": project, "ability": ability, "active": active}
+
+
+def migrate_explicit_scopes():
+    """Add scope metadata without rewriting any existing request/event digest."""
+    from cipher_aec.api.contracts import digest
+    for table in ("Cipher Project Duty", "Cipher Command Receipt", "Cipher History Event"):
+        frappe.db.sql("UPDATE `tab" + table + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
+    rows = frappe.db.sql("SELECT name,person,company,project,ability,scope_type FROM `tabCipher Project Duty` WHERE scope_key IS NULL OR scope_key=''", as_dict=True)
+    for row in rows:
+        key = digest({"person": row.person, "company": row.company, "scope_type": row.scope_type, "project": row.project or None, "ability": row.ability})
+        frappe.db.sql("UPDATE `tabCipher Project Duty` SET scope_key=%s WHERE name=%s", (key, row.name))
+    frappe.db.add_index("Cipher Project Duty", ["person", "scope_type", "company", "active"], "cipher_company_duty_scope")
+    frappe.db.add_index("Cipher History Event", ["scope_type", "company", "creation"], "cipher_company_history_scope")
+    from frappe.permissions import add_permission, update_permission_property
+    add_permission("Company", "Cipher User", 0)
+    update_permission_property("Company", "Cipher User", 0, "read", 1)
+
+
+def _grant_company(person, company, ability):
+    if ability not in COMPANY_ABILITIES:
+        raise DomainError("invalid_duty", "Select a supported Company ability.", 422)
+    from cipher_aec.api.contracts import digest
+    key = digest({"person": person, "company": company, "scope_type": "Company", "project": None, "ability": ability})
+    existing = frappe.db.get_value("Cipher Project Duty", {"scope_key": key}, "name")
+    if not existing:
+        frappe.get_doc({"doctype": "Cipher Project Duty", "person": person, "company": company, "scope_type": "Company", "project": None, "ability": ability, "active": 1}).insert(ignore_permissions=True)
+    elif not frappe.db.get_value("Cipher Project Duty", existing, "active"):
+        doc = frappe.get_doc("Cipher Project Duty", existing)
+        doc.active = 1
+        doc.save(ignore_permissions=True)
+
+
+def grant_synthetic_company_duties(user, company, abilities=None):
+    """Explicit operator fixture extension; no reseed/password/session changes."""
+    assert_synthetic_site()
+    if frappe.session.user != "Administrator":
+        raise DomainError("administrator_required", "Only the synthetic administrator may grant fixture duties.", 403)
+    abilities = abilities or sorted(COMPANY_ABILITIES)
+    person = frappe.db.get_value("Cipher Identity Binding", {"user": user, "active": 1}, "person")
+    if not person or not frappe.db.exists("Company", company):
+        raise DomainError("not_found", "The explicit fixture identity or Company is unavailable.", 404)
+    if not isinstance(abilities, list) or not set(abilities).issubset(COMPANY_ABILITIES):
+        raise DomainError("invalid_duty", "Select supported Company duties.", 422)
+    with trusted_write():
+        for ability in sorted(set(abilities)):
+            _grant_company(person, company, ability)
+    return {"scope_type": "Company", "company": company, "user": user, "abilities": sorted(set(abilities))}
+
+
+def before_migrate():
+    """Discover newly shipped modules before Frappe's DocType synchronization.
+
+    Frappe registers Module Def rows itself, but its app_modules map may predate
+    this app upgrade in Redis. Use supported map rebuilding, not manual tables
+    or a second app installation. No passwords or sessions are changed.
+    """
+    frappe.cache.delete_value("app_modules")
+    frappe.client_cache.delete_value("installed_app_modules")
+    frappe.setup_module_map(include_all_apps=False)

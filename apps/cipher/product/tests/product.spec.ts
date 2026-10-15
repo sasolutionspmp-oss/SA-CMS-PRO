@@ -266,3 +266,16 @@ for (const status of [403, 404, 503] as const) {
     }
   });
 }
+
+
+test('shared approval inbox renders domain manifests without invented project status effects', async ({ page }) => {
+  await mockWorkspace(page, { domainApproval: true }); await page.goto(`/projects/${projects[0].id}`);
+  await page.getByRole('button', { name: 'Review packet', exact: true }).click();
+  const dialog = page.locator('ui5-dialog[header-text="Review approval packet"]');
+  await expect(dialog).toContainText('Verify calibration');
+  await expect(dialog).toContainText('Scale verification');
+  await expect(dialog).toContainText('200.00');
+  await expect(dialog.getByText('Status at request', { exact: true })).toHaveCount(0);
+  await expect(dialog.getByText('Resulting completion', { exact: true })).toHaveCount(0);
+  await expect(dialog.getByRole('button', { name: 'Execute approved change', exact: true })).toHaveCount(0);
+});

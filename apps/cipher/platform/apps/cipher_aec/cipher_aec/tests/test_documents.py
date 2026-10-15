@@ -25,7 +25,9 @@ class MemoryMetadata:
         return copy.deepcopy(self.docs[name])
     def revision_scope(self, name):
         return {k: self.revs[name][k] for k in ('name', 'company', 'project')}
-    def revision(self, name):
+    def revision_locator(self, name):
+        return {k: self.revs[name][k] for k in ("name", "document", "company", "project")}
+    def revision(self, name, lock=False):
         return copy.deepcopy(self.revs[name])
     def documents(self, company, project):
         return [copy.deepcopy(r) for r in self.docs.values() if r['company'] == company and r['project'] == project]
@@ -208,3 +210,33 @@ class DocumentsTests(unittest.TestCase):
         self.assertEqual(result['revision']['extraction_status'], 'ocr_unavailable')
         with self.assertRaisesRegex(ArtifactError, 'OCR'):
             self.service.preview('Synthetic Company', result['revision']['id'])
+
+
+class SourceReferenceTests(unittest.TestCase):
+    setUp=DocumentsTests.setUp
+    authorize=DocumentsTests.authorize
+    upload=DocumentsTests.upload
+    def test_source_reference_distinguishes_current_and_retained_revision(self):
+        first=self.upload()
+        before=self.service.source_reference('Synthetic Company','PROJECT-A',first['revision']['id'],2,lock=True)
+        self.assertTrue(before['is_current'])
+        self.assertEqual(before['content'],b'Concrete strength is 4000 psi.\fDesign wind speed is 115 mph.')
+        second=self.upload(b'New source facts.',document_id=first['document']['id'],expected_revision=1)
+        retained=self.service.source_reference('Synthetic Company','PROJECT-A',first['revision']['id'],2,lock=True)
+        self.assertFalse(retained['is_current'])
+        self.assertEqual(retained['current_revision'],second['revision']['id'])
+        self.assertEqual(retained['source_sha256'],first['revision']['sha256'])
+        self.assertEqual(retained['page_count'],2)
+
+    def test_source_reference_denies_current_rights_missing_bytes_and_invalid_page(self):
+        source=self.upload()
+        rid=source['revision']['id']
+        with self.assertRaises(ArtifactError):
+            self.service.source_reference('Synthetic Company','PROJECT-A',rid,0,lock=True)
+        self.allowed=False
+        with self.assertRaises(PermissionError):
+            self.service.source_reference('Synthetic Company','PROJECT-A',rid,1,lock=True)
+        self.allowed=True
+        (Path(self.temp.name)/rid).unlink()
+        with self.assertRaises(ArtifactError):
+            self.service.source_reference('Synthetic Company','PROJECT-A',rid,1,lock=True)

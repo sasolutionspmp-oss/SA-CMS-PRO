@@ -1,0 +1,2358 @@
+{
+  "TakeoffCreateSetRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "title": "Explicit takeoff set",
+    "discipline": "Structural",
+    "drawing_package": "Explicit fixture drawing package",
+    "basis": "Authored PDF coordinates and manual fixture quantities"
+  },
+  "TakeoffCreateSetResponse": {
+    "takeoff_set": {
+      "id": "b19d069b-e56c-45c5-8b38-360191ace83e",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:27.689467+00:00",
+      "status": "authored",
+      "title": "Explicit takeoff set",
+      "discipline": "Structural",
+      "drawing_package": "Explicit fixture drawing package",
+      "basis": "Authored PDF coordinates and manual fixture quantities",
+      "supported_method": "authored-manual-and-verified-pdf-planar-v1"
+    },
+    "history_id": "m9tghmh0i4",
+    "operation": {
+      "id": "ed4430fd-ea49-4f69-94c1-55e09cfb10cf",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "CreateConversionResponse": {
+    "conversion": {
+      "id": "178b1180-daf3-44f0-a849-fc8678ad63ef",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:29.880502+00:00",
+      "status": "authored",
+      "definition": {
+        "id": "178b1180-daf3-44f0-a849-fc8678ad63ef",
+        "revision": 2,
+        "from_unit_id": "d99c813c-2cbf-482f-ad6d-b8537399e524",
+        "to_unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+        "dimension": "length",
+        "numerator": "1",
+        "denominator": "12",
+        "source": "Explicit separate authored source:12inches equal1foot"
+      },
+      "predecessor": "d1eea3dd-6ca2-435d-ab69-fab68f72ef57",
+      "source_citations": [
+        {
+          "document_id": "DOC-491d14ef3cdd4fd78dc79f0833fe98d8",
+          "revision_id": "REV-aa8baddc6bee4cb3ad79d4a68d81db9b",
+          "document_title": "Separate measurement conversion fixture",
+          "revision_number": 1,
+          "page": 1,
+          "page_label": "1",
+          "excerpt": "Explicit separate measurement conversion fixture:12 inches equal1 foot. Authored exact rational unit definition.",
+          "excerpt_sha256": "97a0545e676a0bd481679dd4f1b00d5d9dafe5bc265047ecc1a6065ad1d138cc",
+          "source_sha256": "97a0545e676a0bd481679dd4f1b00d5d9dafe5bc265047ecc1a6065ad1d138cc",
+          "id": "e5d78080dc57fbddd05ee02f7bd7edcc0158cc41f75239cf714b13e1680d4ccd"
+        }
+      ],
+      "permission_basis": "Explicit fixture owns this conversion source",
+      "unit_manifest": {
+        "schema": "cipher.canonical.v1",
+        "dataset_id": "178b1180-daf3-44f0-a849-fc8678ad63ef",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "records": [
+          {
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "fields": {
+              "name": "Cipher Synthetic Company",
+              "currency": "USD",
+              "timezone": "Asia/Kolkata"
+            },
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "ftcacbfb9c4fc4",
+              "dimension": "length",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture ft cacbfb9c4fc4"
+            }
+          },
+          {
+            "id": "d99c813c-2cbf-482f-ad6d-b8537399e524",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "incacbfb9c4fc4",
+              "dimension": "length",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture in cacbfb9c4fc4"
+            }
+          }
+        ],
+        "unit_conversions": [
+          {
+            "id": "178b1180-daf3-44f0-a849-fc8678ad63ef",
+            "revision": 2,
+            "from_unit_id": "d99c813c-2cbf-482f-ad6d-b8537399e524",
+            "to_unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+            "dimension": "length",
+            "numerator": "1",
+            "denominator": "12",
+            "source": "Explicit separate authored source:12inches equal1foot"
+          }
+        ]
+      }
+    },
+    "history_id": "maik68tbqe",
+    "operation": {
+      "id": "e66253f8-7f68-4f6c-b134-8dbc35ea13b7",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "TakeoffCreateCalibrationRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+    "source": {
+      "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+      "page": 1
+    },
+    "definition": {
+      "title": "Known10feet per100PDF user units",
+      "coordinate_system": "pdf-user-space-v1",
+      "anchors": [
+        [
+          "100",
+          "100"
+        ],
+        [
+          "200",
+          "100"
+        ]
+      ],
+      "known_distance": {
+        "amount": "10",
+        "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+        "precision": 6
+      },
+      "relative_numeric_tolerance": "0.000000000001",
+      "derived_units": [
+        {
+          "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+          "power": 2,
+          "numerator": "1",
+          "denominator": "1",
+          "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+          "source_citations": [
+            {
+              "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+              "page": 1,
+              "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+              "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+            }
+          ]
+        },
+        {
+          "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+          "power": 3,
+          "numerator": "1",
+          "denominator": "1",
+          "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+          "source_citations": [
+            {
+              "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+              "page": 1,
+              "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+              "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+            }
+          ]
+        }
+      ],
+      "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+      "formula_version": "cipher.takeoff.planar.v1"
+    },
+    "conversion_ids": [],
+    "predecessor": "eefc09e4-eef0-4786-845e-5f5d9462230c"
+  },
+  "TakeoffCreateCalibrationResponse": {
+    "calibration": {
+      "id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:32.549463+00:00",
+      "status": "unverified",
+      "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+      "family_id": "b65945c2-b823-4720-8703-21c78256b29f",
+      "revision_number": 2,
+      "predecessor": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+      "definition": {
+        "title": "Known10feet per100PDF user units",
+        "coordinate_system": "pdf-user-space-v1",
+        "anchors": [
+          [
+            "100",
+            "100"
+          ],
+          [
+            "200",
+            "100"
+          ]
+        ],
+        "known_distance": {
+          "amount": "10",
+          "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+          "precision": 6
+        },
+        "relative_numeric_tolerance": "0.000000000001",
+        "derived_units": [
+          {
+            "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "power": 2,
+            "numerator": "1",
+            "denominator": "1",
+            "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                "document_title": "Explicit stored takeoff drawing1",
+                "revision_number": 2,
+                "page": 1,
+                "page_label": "1",
+                "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+                "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621"
+              }
+            ]
+          },
+          {
+            "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "power": 3,
+            "numerator": "1",
+            "denominator": "1",
+            "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                "document_title": "Explicit stored takeoff drawing1",
+                "revision_number": 2,
+                "page": 1,
+                "page_label": "1",
+                "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+                "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621"
+              }
+            ]
+          }
+        ],
+        "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+        "formula_version": "cipher.takeoff.planar.v1"
+      },
+      "source": {
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "revision_number": 2,
+        "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "current_revision_number": 2,
+        "is_current": true,
+        "page": 1,
+        "page_count": 1,
+        "mime_type": "application/pdf",
+        "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+        "byte_length": 797,
+        "extraction_status": "ready"
+      },
+      "source_head_policy": "current-working-revision-v1",
+      "page_geometry": {
+        "coordinate_system": "pdf-user-space-v1",
+        "media_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "crop_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "rotate": 0,
+        "user_unit": "1",
+        "parser": "pypdf-6.15.0:cipher-page-metadata-v1"
+      },
+      "unit_manifest": {
+        "schema": "cipher.canonical.v1",
+        "dataset_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "records": [
+          {
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "fields": {
+              "name": "Cipher Synthetic Company",
+              "currency": "USD",
+              "timezone": "Asia/Kolkata"
+            },
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "sfcacbfb9c4fc4",
+              "dimension": "area",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture sf cacbfb9c4fc4"
+            }
+          },
+          {
+            "id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "ftcacbfb9c4fc4",
+              "dimension": "length",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture ft cacbfb9c4fc4"
+            }
+          },
+          {
+            "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "cfcacbfb9c4fc4",
+              "dimension": "volume",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture cf cacbfb9c4fc4"
+            }
+          }
+        ],
+        "unit_conversions": []
+      },
+      "conversion_ids": [],
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "document_title": "Explicit stored takeoff drawing1",
+          "revision_number": 2,
+          "page": 1,
+          "page_label": "1",
+          "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+          "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+          "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621"
+        }
+      ]
+    },
+    "history_id": "mbfmp36m28",
+    "operation": {
+      "id": "f5b3bd24-a3c7-4d21-bf1c-d0482f9923bb",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "TakeoffGetRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "kind": "calibration",
+    "record_id": "eefc09e4-eef0-4786-845e-5f5d9462230c"
+  },
+  "TakeoffGetResponse": {
+    "record": {
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "company": "Cipher Synthetic Company",
+      "conversion_ids": [],
+      "created_at": "2026-10-15T16:15:28.102810+00:00",
+      "definition": {
+        "anchors": [
+          [
+            "100",
+            "100"
+          ],
+          [
+            "200",
+            "100"
+          ]
+        ],
+        "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+        "coordinate_system": "pdf-user-space-v1",
+        "derived_units": [
+          {
+            "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+            "denominator": "1",
+            "numerator": "1",
+            "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "power": 2,
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "document_title": "Explicit stored takeoff drawing1",
+                "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+                "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+                "revision_number": 1,
+                "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+              }
+            ]
+          },
+          {
+            "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+            "denominator": "1",
+            "numerator": "1",
+            "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "power": 3,
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "document_title": "Explicit stored takeoff drawing1",
+                "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+                "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+                "revision_number": 1,
+                "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+              }
+            ]
+          }
+        ],
+        "formula_version": "cipher.takeoff.planar.v1",
+        "known_distance": {
+          "amount": "10",
+          "precision": 6,
+          "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa"
+        },
+        "relative_numeric_tolerance": "0.000000000001",
+        "title": "Known10feet per100PDF user units"
+      },
+      "family_id": "b65945c2-b823-4720-8703-21c78256b29f",
+      "id": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+      "page_geometry": {
+        "coordinate_system": "pdf-user-space-v1",
+        "crop_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "media_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+        "rotate": 0,
+        "user_unit": "1"
+      },
+      "predecessor": null,
+      "project": "PROJ-0031",
+      "revision_number": 1,
+      "source": {
+        "byte_length": 797,
+        "current_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "current_revision_number": 1,
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "extraction_status": "ready",
+        "is_current": true,
+        "mime_type": "application/pdf",
+        "page": 1,
+        "page_count": 1,
+        "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "revision_number": 1,
+        "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+      },
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "document_title": "Explicit stored takeoff drawing1",
+          "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+          "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+          "revision_number": 1,
+          "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+        }
+      ],
+      "source_head_policy": "current-working-revision-v1",
+      "status": "unverified",
+      "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+      "unit_manifest": {
+        "dataset_id": "eefc09e4-eef0-4786-845e-5f5d9462230c",
+        "records": [
+          {
+            "fields": {
+              "currency": "USD",
+              "name": "Cipher Synthetic Company",
+              "timezone": "Asia/Kolkata"
+            },
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "area",
+              "precision": 6,
+              "symbol": "sfcacbfb9c4fc4"
+            },
+            "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture sf cacbfb9c4fc4"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "length",
+              "precision": 6,
+              "symbol": "ftcacbfb9c4fc4"
+            },
+            "id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture ft cacbfb9c4fc4"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "volume",
+              "precision": 6,
+              "symbol": "cfcacbfb9c4fc4"
+            },
+            "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture cf cacbfb9c4fc4"
+            }
+          }
+        ],
+        "schema": "cipher.canonical.v1",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "unit_conversions": []
+      }
+    },
+    "record_digest": "66fd9c6364b3bc050b2eb4b24e95076c95bff0d39011e8aa9ee759705a4a19fe",
+    "current_use": {
+      "eligible": false,
+      "reasons": [
+        "drawing_working_revision_changed",
+        "takeoff_revision_superseded",
+        "calibration_revision_superseded"
+      ],
+      "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "head_policy": "current-working-revision-v1",
+      "original_record_preserved": true,
+      "verification": {
+        "id": "bf0d2793-61c4-481d-ab99-71365155b49f",
+        "verified_by_person": "CIPHER-PERSON-REVIEWER"
+      }
+    }
+  },
+  "TakeoffVerificationRecord": {
+    "id": "168cb31e-50a5-4c93-879d-91735d69af1d",
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "author_person": "CIPHER-PERSON-PM",
+    "author_user": "morgan@cipher.example",
+    "created_at": "2026-10-15T16:17:04.044532+00:00",
+    "status": "verified",
+    "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+    "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+    "packet_id": "n7s4cmqrne",
+    "decision_id": "n7uoil7442",
+    "verified_by_person": "CIPHER-PERSON-REVIEWER",
+    "source": {
+      "byte_length": 797,
+      "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "current_revision_number": 2,
+      "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+      "extraction_status": "ready",
+      "is_current": true,
+      "mime_type": "application/pdf",
+      "page": 1,
+      "page_count": 1,
+      "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "revision_number": 2,
+      "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+    },
+    "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120"
+  },
+  "TakeoffCreateMeasurementRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+    "source": {
+      "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+      "page": 1
+    },
+    "definition": {
+      "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "depth": null,
+      "formula_version": "cipher.takeoff.planar.v1",
+      "geometry": {
+        "points": [
+          [
+            "100",
+            "100"
+          ],
+          [
+            "400",
+            "200"
+          ]
+        ],
+        "type": "rectangle"
+      },
+      "kind": "area",
+      "locator": "Page1 rectangle from100,100 to300,200 in PDF user space",
+      "method": "calibrated",
+      "reason": "Explicit known rectangle fixture",
+      "result_precision": 6,
+      "result_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+      "tolerance": "0.000001",
+      "waste_fraction": "0"
+    },
+    "conversion_ids": [],
+    "predecessor": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3"
+  },
+  "TakeoffCreateMeasurementResponse": {
+    "measurement": {
+      "id": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:17:04.512524+00:00",
+      "status": "authored",
+      "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+      "family_id": "309f2389-8647-4d32-8215-b69c70daecc0",
+      "revision_number": 2,
+      "predecessor": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+      "source": {
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "revision_number": 2,
+        "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "current_revision_number": 2,
+        "is_current": true,
+        "page": 1,
+        "page_count": 1,
+        "mime_type": "application/pdf",
+        "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+        "byte_length": 797,
+        "extraction_status": "ready"
+      },
+      "source_head_policy": "current-working-revision-v1",
+      "definition": {
+        "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+        "depth": null,
+        "formula_version": "cipher.takeoff.planar.v1",
+        "geometry": {
+          "points": [
+            [
+              "100",
+              "100"
+            ],
+            [
+              "400",
+              "200"
+            ]
+          ],
+          "type": "rectangle"
+        },
+        "kind": "area",
+        "locator": "Page1 rectangle from100,100 to300,200 in PDF user space",
+        "method": "calibrated",
+        "reason": "Explicit known rectangle fixture",
+        "result_precision": 6,
+        "result_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+        "tolerance": "0.000001",
+        "waste_fraction": "0"
+      },
+      "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+      "verification_id": "168cb31e-50a5-4c93-879d-91735d69af1d",
+      "page_geometry": {
+        "coordinate_system": "pdf-user-space-v1",
+        "media_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "crop_box": [
+          "0",
+          "0",
+          "612",
+          "792"
+        ],
+        "rotate": 0,
+        "user_unit": "1",
+        "parser": "pypdf-6.15.0:cipher-page-metadata-v1"
+      },
+      "unit_manifest": {
+        "schema": "cipher.canonical.v1",
+        "dataset_id": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "records": [
+          {
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "fields": {
+              "name": "Cipher Synthetic Company",
+              "currency": "USD",
+              "timezone": "Asia/Kolkata"
+            },
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "sfcacbfb9c4fc4",
+              "dimension": "area",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture sf cacbfb9c4fc4"
+            }
+          },
+          {
+            "id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "ftcacbfb9c4fc4",
+              "dimension": "length",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture ft cacbfb9c4fc4"
+            }
+          },
+          {
+            "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "cfcacbfb9c4fc4",
+              "dimension": "volume",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture cf cacbfb9c4fc4"
+            }
+          }
+        ],
+        "unit_conversions": []
+      },
+      "conversion_ids": [],
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "document_title": "Explicit stored takeoff drawing1",
+          "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+          "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "revision_number": 2,
+          "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+        }
+      ],
+      "result": {
+        "formula_version": "cipher.takeoff.planar.v1",
+        "method": "calibrated",
+        "geometry_kind": "rectangle",
+        "quantity": {
+          "amount": "300.000000",
+          "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+          "precision": 6
+        },
+        "raw_interval": {
+          "lower": {
+            "numerator": "300",
+            "denominator": "1"
+          },
+          "upper": {
+            "numerator": "300",
+            "denominator": "1"
+          }
+        },
+        "result_interval": {
+          "lower": {
+            "numerator": "300",
+            "denominator": "1"
+          },
+          "upper": {
+            "numerator": "300",
+            "denominator": "1"
+          }
+        },
+        "tolerance": "0.000001",
+        "rounding": "half_up_unique_interval",
+        "waste_fraction": "0",
+        "calibration_claim": "independently-verified-source-bound-planar",
+        "result_digest": "e90e778b1638fac0c454aa464120a2fd5e062fd51f639ead389e5c0bf005f728"
+      }
+    },
+    "history_id": "n857lmm5er",
+    "operation": {
+      "id": "55b8d69c-560d-47c1-854e-d09061d281bf",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "CreateRateResponse": {
+    "rate_source": {
+      "id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:31.222268+00:00",
+      "status": "authored",
+      "rate": {
+        "title": "Explicit volume rate",
+        "cost_type": "material",
+        "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+        "rate_amount": "2",
+        "rate_precision": 6,
+        "currency": "USD",
+        "quote_reference": "EXPLICIT-TAKEOFF",
+        "quote_date": "2026-10-01",
+        "expiry_date": "2026-10-31",
+        "geography": "Synthetic fixture",
+        "inclusions": "Authored fixture",
+        "exclusions": "",
+        "freight_tax_assumptions": "No freight or tax",
+        "permission_basis": "Authored synthetic source",
+        "source_citations": [
+          {
+            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+            "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+            "document_title": "Explicit stored takeoff drawing1",
+            "revision_number": 1,
+            "page": 1,
+            "page_label": "1",
+            "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+            "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+            "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+            "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921"
+          }
+        ],
+        "id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+        "source_id": "20cce875-fc63-48da-807b-96b57a7983ee",
+        "revision": 1,
+        "predecessor": null,
+        "item": null,
+        "party_type": null,
+        "party": null
+      },
+      "unit_manifest": {
+        "schema": "cipher.canonical.v1",
+        "dataset_id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "records": [
+          {
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "fields": {
+              "name": "Cipher Synthetic Company",
+              "currency": "USD",
+              "timezone": "Asia/Kolkata"
+            },
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+            "kind": "uom",
+            "revision": 1,
+            "fields": {
+              "symbol": "cfcacbfb9c4fc4",
+              "dimension": "volume",
+              "precision": 6
+            },
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture cf cacbfb9c4fc4"
+            }
+          }
+        ],
+        "unit_conversions": []
+      },
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+          "document_title": "Explicit stored takeoff drawing1",
+          "revision_number": 1,
+          "page": 1,
+          "page_label": "1",
+          "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+          "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+          "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921"
+        }
+      ]
+    },
+    "history_id": "mb0aaotnsp",
+    "operation": {
+      "id": "cba1a511-05da-4be2-bae3-53f9104bbac0",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "CreateEstimateResponse": {
+    "estimate": {
+      "id": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:30.640979+00:00",
+      "status": "draft",
+      "title": "Explicit takeoff-linked authored estimate",
+      "currency": "USD",
+      "pricing_date": "2026-10-15",
+      "revision_number": 0,
+      "current_revision": null
+    },
+    "history_id": "maqtlnggc5",
+    "operation": {
+      "id": "84311b21-646b-4de5-814a-b68ca5561f2d",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "CalculateRevisionResponse": {
+    "estimate": {
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "company": "Cipher Synthetic Company",
+      "created_at": "2026-10-15T16:15:30.640979+00:00",
+      "currency": "USD",
+      "current_revision": "f3271f29-0cee-471c-9bf9-b8911c5f6485",
+      "id": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+      "pricing_date": "2026-10-15",
+      "project": "PROJ-0031",
+      "revision_number": 2,
+      "status": "draft",
+      "title": "Explicit takeoff-linked authored estimate"
+    },
+    "revision": {
+      "id": "f3271f29-0cee-471c-9bf9-b8911c5f6485",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:31.323638+00:00",
+      "status": "draft-calculated",
+      "estimate": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+      "revision_number": 2,
+      "predecessor": "7b98a94e-a174-491c-88a1-1b1aae7c262d",
+      "calculation_snapshot": "43a91e17-4698-431a-b557-8859da501035",
+      "currency": "USD",
+      "pricing_date": "2026-10-15",
+      "policy_version": "cipher.estimate.line-half-up.v1",
+      "line_record_ids": [
+        "c76686e1-ba34-4c9e-a317-f06f7f318aa1",
+        "c5bd71fd-2685-40fe-b552-07fe421b770c",
+        "454d546c-90e3-4e9c-88ab-320bd511ae5e"
+      ],
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "document_title": "Explicit stored takeoff drawing1",
+          "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+          "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+          "revision_number": 1,
+          "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+        }
+      ],
+      "basis_description": "Explicit authored fixture for duplicate allowance refusal",
+      "direct": {
+        "amount": "2142.00",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "contingency": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "2142.00",
+        "currency": "USD"
+      }
+    },
+    "calculation": {
+      "id": "43a91e17-4698-431a-b557-8859da501035",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:31.312665+00:00",
+      "status": "calculated",
+      "subject_type": "Cipher Estimate Revision",
+      "subject_id": "f3271f29-0cee-471c-9bf9-b8911c5f6485",
+      "inputs": {
+        "schema": "cipher.estimate.inputs.v1",
+        "unit_manifest": {
+          "schema": "cipher.canonical.v1",
+          "dataset_id": "43a91e17-4698-431a-b557-8859da501035",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": "PROJ-0031"
+          },
+          "records": [
+            {
+              "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+              "kind": "company",
+              "revision": 1,
+              "fields": {
+                "name": "Cipher Synthetic Company",
+                "currency": "USD",
+                "timezone": "Asia/Kolkata"
+              },
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "sfcacbfb9c4fc4",
+                "dimension": "area",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST02 fixture sf cacbfb9c4fc4"
+              }
+            },
+            {
+              "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "cfcacbfb9c4fc4",
+                "dimension": "volume",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "EST02 fixture cf cacbfb9c4fc4"
+              }
+            }
+          ],
+          "unit_conversions": []
+        },
+        "currency": "USD",
+        "currency_exponent": 2,
+        "pricing_date": "2026-10-15",
+        "policy_version": "cipher.estimate.line-half-up.v1",
+        "basis_description": "Explicit authored fixture for duplicate allowance refusal",
+        "basis_citations": [
+          {
+            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+            "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+            "document_title": "Explicit stored takeoff drawing1",
+            "revision_number": 1,
+            "page": 1,
+            "page_label": "1",
+            "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+            "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+            "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+            "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921"
+          }
+        ],
+        "rates": {
+          "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05": {
+            "cost_type": "material",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "No freight or tax",
+            "geography": "Synthetic fixture",
+            "id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+            "inclusions": "Authored fixture",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Authored synthetic source",
+            "predecessor": null,
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-TAKEOFF",
+            "rate_amount": "2",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "document_title": "Explicit stored takeoff drawing1",
+                "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+                "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+                "revision_number": 1,
+                "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+              }
+            ],
+            "source_id": "20cce875-fc63-48da-807b-96b57a7983ee",
+            "title": "Explicit volume rate",
+            "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a"
+          },
+          "ef4b05b5-dc91-4a80-aa36-e62c878708b2": {
+            "cost_type": "material",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "No freight or tax",
+            "geography": "Synthetic fixture",
+            "id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+            "inclusions": "Authored fixture",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Authored synthetic source",
+            "predecessor": null,
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-TAKEOFF",
+            "rate_amount": "2",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                "document_title": "Explicit stored takeoff drawing1",
+                "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+                "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+                "page": 1,
+                "page_label": "1",
+                "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+                "revision_number": 1,
+                "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+              }
+            ],
+            "source_id": "40d0bbfc-29b1-45fc-89bc-94ca01736acb",
+            "title": "Explicit200sf rate",
+            "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+          }
+        },
+        "assemblies": {},
+        "lines": [
+          {
+            "line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+            "description": "Authored200squarefeet, subsequently attached takeoff evidence",
+            "quantity": {
+              "amount": "200.000000",
+              "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+              "precision": 6
+            },
+            "cost_code": "EST02",
+            "notes": "Original calculation remains authored",
+            "alternate": "",
+            "included": true,
+            "rate_source_id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+            "material_factor": "1",
+            "waste_fraction": "0.05"
+          },
+          {
+            "line_id": "8bbb0491-edb7-4322-b48a-f3c4c02bc1c2",
+            "description": "After-takeoff-waste quantity with estimate waste must be rejected as a binding",
+            "quantity": {
+              "amount": "420.000000",
+              "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+              "precision": 6
+            },
+            "cost_code": "EST02",
+            "notes": "Original calculation remains authored",
+            "alternate": "",
+            "included": true,
+            "rate_source_id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+            "material_factor": "1",
+            "waste_fraction": "0.05"
+          },
+          {
+            "line_id": "4016c941-f482-4cb6-9da6-a22f96aefbcc",
+            "description": "After-takeoff-waste quantity with estimate waste must be rejected as a binding",
+            "quantity": {
+              "amount": "420.000000",
+              "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+              "precision": 6
+            },
+            "cost_code": "EST02",
+            "notes": "Original calculation remains authored",
+            "alternate": "",
+            "included": true,
+            "rate_source_id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+            "material_factor": "1",
+            "waste_fraction": "0"
+          }
+        ],
+        "adjustments": []
+      },
+      "result": {
+        "schema": "cipher.estimate.result.v1",
+        "policy": {
+          "version": "cipher.estimate.line-half-up.v1",
+          "rounding_mode": "ROUND_HALF_UP",
+          "currency_exponent": 2,
+          "intermediate": "exact-rational",
+          "line_rounding": "sum-exact-components-then-round",
+          "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+          "header_rounding": "sum-rounded-lines"
+        },
+        "lines": [
+          {
+            "line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+            "description": "Authored200squarefeet, subsequently attached takeoff evidence",
+            "quantity": {
+              "amount": "200.000000",
+              "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "EST02",
+            "components": [
+              {
+                "component_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+                "rate_source_id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                "resource_quantity_exact": {
+                  "numerator": "200",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "210",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "1",
+                  "denominator": "20"
+                },
+                "unrounded_cost": {
+                  "numerator": "420",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "420.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "420",
+              "denominator": "1"
+            },
+            "extension": {
+              "amount": "420.00",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "8bbb0491-edb7-4322-b48a-f3c4c02bc1c2",
+            "description": "After-takeoff-waste quantity with estimate waste must be rejected as a binding",
+            "quantity": {
+              "amount": "420.000000",
+              "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "EST02",
+            "components": [
+              {
+                "component_id": "8bbb0491-edb7-4322-b48a-f3c4c02bc1c2",
+                "rate_source_id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                "resource_quantity_exact": {
+                  "numerator": "420",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "441",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "1",
+                  "denominator": "20"
+                },
+                "unrounded_cost": {
+                  "numerator": "882",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "882.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "882",
+              "denominator": "1"
+            },
+            "extension": {
+              "amount": "882.00",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "4016c941-f482-4cb6-9da6-a22f96aefbcc",
+            "description": "After-takeoff-waste quantity with estimate waste must be rejected as a binding",
+            "quantity": {
+              "amount": "420.000000",
+              "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "EST02",
+            "components": [
+              {
+                "component_id": "4016c941-f482-4cb6-9da6-a22f96aefbcc",
+                "rate_source_id": "ac61b4a5-a9fe-4767-aa4f-d0a953f94d05",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                "resource_quantity_exact": {
+                  "numerator": "420",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "420",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "840",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "840.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "840",
+              "denominator": "1"
+            },
+            "extension": {
+              "amount": "840.00",
+              "currency": "USD"
+            }
+          }
+        ],
+        "adjustments": [],
+        "direct": {
+          "amount": "2142.00",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "contingency": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "total": {
+          "amount": "2142.00",
+          "currency": "USD"
+        },
+        "conversion_references": [],
+        "input_digest": "972205db539f0b1683a519e4876144ad577b1dfa7a7d829a1c734b5ff745d23f",
+        "output_digest": "1d7b614daa1a8348f6cfc14019ae1d68c9b69bddcf92cb0c76ce71ec0f821c8d"
+      },
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-15 21:37:34.325238"
+      },
+      "input_digest": "972205db539f0b1683a519e4876144ad577b1dfa7a7d829a1c734b5ff745d23f",
+      "output_digest": "1d7b614daa1a8348f6cfc14019ae1d68c9b69bddcf92cb0c76ce71ec0f821c8d",
+      "source_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "document_title": "Explicit stored takeoff drawing1",
+          "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+          "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+          "revision_number": 1,
+          "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+        }
+      ]
+    },
+    "history_id": "mb1sbo3st1",
+    "operation": {
+      "id": "9d2b38c7-34ae-45cc-85e3-068dec46b32d",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "TakeoffBindLineRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "measurement_id": "4f6304a5-ceeb-4de9-ab39-94b5344e7e19",
+    "estimate_line_record": "454d546c-90e3-4e9c-88ab-320bd511ae5e",
+    "quantity_basis": "after-takeoff-waste-v1",
+    "reason": "After-takeoff allowance bound only to an estimate component with zero waste"
+  },
+  "TakeoffBindLineResponse": {
+    "binding": {
+      "id": "e11325f4-ee43-4ce8-acd7-4c36de54927a",
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "author_person": "CIPHER-PERSON-PM",
+      "author_user": "morgan@cipher.example",
+      "created_at": "2026-10-15T16:15:31.540074+00:00",
+      "status": "authored",
+      "measurement_id": "4f6304a5-ceeb-4de9-ab39-94b5344e7e19",
+      "measurement_digest": "4cfd69d8bde6080d780c36490336f9671e09abee208fc55652b380d898d9cf04",
+      "estimate_line_record": "454d546c-90e3-4e9c-88ab-320bd511ae5e",
+      "estimate": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+      "estimate_revision": "f3271f29-0cee-471c-9bf9-b8911c5f6485",
+      "line_id": "4016c941-f482-4cb6-9da6-a22f96aefbcc",
+      "estimate_line_digest": "1f236e75f9eca3c0a6ee42ebada38802390258ecfb1df63436c83bfccb52447e",
+      "quantity": {
+        "amount": "420.000000",
+        "precision": 6,
+        "unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a"
+      },
+      "reason": "After-takeoff allowance bound only to an estimate component with zero waste",
+      "quantity_basis": "after-takeoff-waste-v1",
+      "waste_policy": "takeoff-waste-only-v1",
+      "provenance": "subsequently-attached-takeoff-evidence-v1",
+      "original_snapshot_claim": "authored-quantity-not-recomputed"
+    },
+    "history_id": "mb41u0qch5",
+    "operation": {
+      "id": "d45bc325-e952-4c0e-97f4-95289c40db31",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "TakeoffImpactRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19"
+  },
+  "TakeoffImpactResponse": {
+    "source": {
+      "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+      "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+      "revision_number": 1,
+      "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+      "current_revision_number": 2,
+      "is_current": false,
+      "page": 1,
+      "page_count": 1,
+      "mime_type": "application/pdf",
+      "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+      "byte_length": 797,
+      "extraction_status": "ready"
+    },
+    "measurements": [
+      {
+        "measurement_id": "08e39e36-2ae6-41dc-b501-991808af79ff",
+        "measurement_digest": "387c4e4b8e5e000c129fd3043056af81bbe77e8a437f951378dd0a8cd9219544",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": {
+            "id": "bf0d2793-61c4-481d-ab99-71365155b49f",
+            "verified_by_person": "CIPHER-PERSON-REVIEWER"
+          }
+        },
+        "bound_lines": []
+      },
+      {
+        "measurement_id": "43e5b88d-7654-42c0-bdf4-cf0a7054e1b4",
+        "measurement_digest": "ea3cc0f2a0919a544512890c8d7864f0e1dd45d08a41332fd01c41e9d6b69ff6",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": null
+        },
+        "bound_lines": []
+      },
+      {
+        "measurement_id": "4f6304a5-ceeb-4de9-ab39-94b5344e7e19",
+        "measurement_digest": "4cfd69d8bde6080d780c36490336f9671e09abee208fc55652b380d898d9cf04",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": {
+            "id": "bf0d2793-61c4-481d-ab99-71365155b49f",
+            "verified_by_person": "CIPHER-PERSON-REVIEWER"
+          }
+        },
+        "bound_lines": [
+          {
+            "id": "e11325f4-ee43-4ce8-acd7-4c36de54927a",
+            "estimate": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+            "estimate_revision": "f3271f29-0cee-471c-9bf9-b8911c5f6485",
+            "line_id": "4016c941-f482-4cb6-9da6-a22f96aefbcc",
+            "estimate_line_record": "454d546c-90e3-4e9c-88ab-320bd511ae5e"
+          }
+        ]
+      },
+      {
+        "measurement_id": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+        "measurement_digest": "23dd60e8ccc923af9378e77a093b8dfd1d8b26633d6174a273b6411e5b0c81eb",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": {
+            "id": "bf0d2793-61c4-481d-ab99-71365155b49f",
+            "verified_by_person": "CIPHER-PERSON-REVIEWER"
+          }
+        },
+        "bound_lines": [
+          {
+            "id": "5515c427-388d-457f-9d25-2223a71b6825",
+            "estimate": "f85f6b27-e717-4c39-ad38-60cf0ea2f24d",
+            "estimate_revision": "7b98a94e-a174-491c-88a1-1b1aae7c262d",
+            "line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+            "estimate_line_record": "c20e26d2-df33-496d-ab19-267f40a8afe2"
+          }
+        ]
+      }
+    ],
+    "new_use_requires_explicit_successor": true,
+    "historical_results_changed": false,
+    "head_policy": "current-working-revision-v1"
+  },
+  "EstSnapshotRecord": {
+    "author_person": "CIPHER-PERSON-PM",
+    "author_user": "morgan@cipher.example",
+    "company": "Cipher Synthetic Company",
+    "created_at": "2026-10-15T16:15:30.707277+00:00",
+    "currency_policy": {
+      "currency": "USD",
+      "currency_exponent": 2,
+      "fraction_units": 100,
+      "native_currency_version": "2026-10-15 21:37:34.325238"
+    },
+    "id": "f70a53be-770c-4145-aec1-936fe97afc5b",
+    "input_digest": "d2c32010c32eecd9385c729bb6d746213b279d3187ac319bae973b9ef5b7c95b",
+    "inputs": {
+      "adjustments": [],
+      "assemblies": {},
+      "basis_citations": [
+        {
+          "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+          "document_title": "Explicit stored takeoff drawing1",
+          "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+          "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+          "page": 1,
+          "page_label": "1",
+          "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+          "revision_number": 1,
+          "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+        }
+      ],
+      "basis_description": "Explicit authored estimate source",
+      "currency": "USD",
+      "currency_exponent": 2,
+      "lines": [
+        {
+          "alternate": "",
+          "cost_code": "EST02",
+          "description": "Authored200squarefeet, subsequently attached takeoff evidence",
+          "included": true,
+          "line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+          "material_factor": "1",
+          "notes": "Original calculation remains authored",
+          "quantity": {
+            "amount": "200.000000",
+            "precision": 6,
+            "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+          },
+          "rate_source_id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+          "waste_fraction": "0.05"
+        }
+      ],
+      "policy_version": "cipher.estimate.line-half-up.v1",
+      "pricing_date": "2026-10-15",
+      "rates": {
+        "ef4b05b5-dc91-4a80-aa36-e62c878708b2": {
+          "cost_type": "material",
+          "currency": "USD",
+          "exclusions": "",
+          "expiry_date": "2026-10-31",
+          "freight_tax_assumptions": "No freight or tax",
+          "geography": "Synthetic fixture",
+          "id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+          "inclusions": "Authored fixture",
+          "item": null,
+          "party": null,
+          "party_type": null,
+          "permission_basis": "Authored synthetic source",
+          "predecessor": null,
+          "quote_date": "2026-10-01",
+          "quote_reference": "EXPLICIT-TAKEOFF",
+          "rate_amount": "2",
+          "rate_precision": 6,
+          "revision": 1,
+          "source_citations": [
+            {
+              "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+              "document_title": "Explicit stored takeoff drawing1",
+              "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+              "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+              "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+              "page": 1,
+              "page_label": "1",
+              "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+              "revision_number": 1,
+              "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+            }
+          ],
+          "source_id": "40d0bbfc-29b1-45fc-89bc-94ca01736acb",
+          "title": "Explicit200sf rate",
+          "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+        }
+      },
+      "schema": "cipher.estimate.inputs.v1",
+      "unit_manifest": {
+        "dataset_id": "f70a53be-770c-4145-aec1-936fe97afc5b",
+        "records": [
+          {
+            "fields": {
+              "currency": "USD",
+              "name": "Cipher Synthetic Company",
+              "timezone": "Asia/Kolkata"
+            },
+            "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+            "kind": "company",
+            "revision": 1,
+            "target": {
+              "doctype": "Company",
+              "name": "Cipher Synthetic Company"
+            }
+          },
+          {
+            "fields": {
+              "dimension": "area",
+              "precision": 6,
+              "symbol": "sfcacbfb9c4fc4"
+            },
+            "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "EST02 fixture sf cacbfb9c4fc4"
+            }
+          }
+        ],
+        "schema": "cipher.canonical.v1",
+        "scope": {
+          "company": "Cipher Synthetic Company",
+          "project": "PROJ-0031"
+        },
+        "unit_conversions": []
+      }
+    },
+    "output_digest": "31c8378343ae8c30a2a56b443531a41627dd165ac01c70e782b2502b9ef9b6d0",
+    "project": "PROJ-0031",
+    "result": {
+      "adjustments": [],
+      "contingency": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "conversion_references": [],
+      "direct": {
+        "amount": "420.00",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "0.00",
+        "currency": "USD"
+      },
+      "input_digest": "d2c32010c32eecd9385c729bb6d746213b279d3187ac319bae973b9ef5b7c95b",
+      "lines": [
+        {
+          "alternate": "",
+          "components": [
+            {
+              "allocated_amount": {
+                "amount": "420.00",
+                "currency": "USD"
+              },
+              "component_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+              "cost_type": "material",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "210"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "ef4b05b5-dc91-4a80-aa36-e62c878708b2",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "200"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "420"
+              },
+              "waste_fraction": {
+                "denominator": "20",
+                "numerator": "1"
+              }
+            }
+          ],
+          "cost_code": "EST02",
+          "description": "Authored200squarefeet, subsequently attached takeoff evidence",
+          "extension": {
+            "amount": "420.00",
+            "currency": "USD"
+          },
+          "included": true,
+          "line_id": "08060ea7-97ca-4990-b5b4-36cabf73bbed",
+          "quantity": {
+            "amount": "200.000000",
+            "precision": 6,
+            "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+          },
+          "quantity_method": "authored",
+          "unrounded_extension": {
+            "denominator": "1",
+            "numerator": "420"
+          }
+        }
+      ],
+      "output_digest": "31c8378343ae8c30a2a56b443531a41627dd165ac01c70e782b2502b9ef9b6d0",
+      "policy": {
+        "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+        "currency_exponent": 2,
+        "header_rounding": "sum-rounded-lines",
+        "intermediate": "exact-rational",
+        "line_rounding": "sum-exact-components-then-round",
+        "rounding_mode": "ROUND_HALF_UP",
+        "version": "cipher.estimate.line-half-up.v1"
+      },
+      "schema": "cipher.estimate.result.v1",
+      "total": {
+        "amount": "420.00",
+        "currency": "USD"
+      }
+    },
+    "source_citations": [
+      {
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "document_title": "Explicit stored takeoff drawing1",
+        "excerpt": "Explicit takeoff drawing revision1\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+        "excerpt_sha256": "b8a24592e4196de084d1305bbd0f0c2131d5671fd83609f3a15f02a3549a7218",
+        "id": "6f36c05125ff708428cc49bfe40cee4e6955e472304030b1779f95d2e2b9d921",
+        "page": 1,
+        "page_label": "1",
+        "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "revision_number": 1,
+        "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+      }
+    ],
+    "status": "calculated",
+    "subject_id": "7b98a94e-a174-491c-88a1-1b1aae7c262d",
+    "subject_type": "Cipher Estimate Revision"
+  },
+  "TakeoffCompareRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "before_id": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+    "after_id": "5f0824de-3227-407b-b5ab-2369a71d75b6"
+  },
+  "TakeoffCompareResponse": {
+    "family_id": "309f2389-8647-4d32-8215-b69c70daecc0",
+    "before": {
+      "id": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+      "digest": "23dd60e8ccc923af9378e77a093b8dfd1d8b26633d6174a273b6411e5b0c81eb",
+      "quantity": {
+        "amount": "200.000000",
+        "precision": 6,
+        "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+      },
+      "source": {
+        "byte_length": 797,
+        "current_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "current_revision_number": 1,
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "extraction_status": "ready",
+        "is_current": true,
+        "mime_type": "application/pdf",
+        "page": 1,
+        "page_count": 1,
+        "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+        "revision_number": 1,
+        "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+      }
+    },
+    "after": {
+      "id": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+      "digest": "c072ed0f73070637268b3eb17f1b1d4c0f174eb158fedecf510323fe3cdb5cab",
+      "quantity": {
+        "amount": "300.000000",
+        "precision": 6,
+        "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+      },
+      "source": {
+        "byte_length": 797,
+        "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "current_revision_number": 2,
+        "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+        "extraction_status": "ready",
+        "is_current": true,
+        "mime_type": "application/pdf",
+        "page": 1,
+        "page_count": 1,
+        "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+        "revision_number": 2,
+        "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+      }
+    },
+    "changed": {
+      "source": true,
+      "quantity": true,
+      "geometry_or_manual_inputs": true,
+      "calibration": true
+    },
+    "original_records_preserved": true
+  },
+  "TakeoffListRequest": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "kind": "measurement",
+    "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+    "limit": 2,
+    "count_mode": "exact"
+  },
+  "TakeoffListResponse": {
+    "items": [
+      {
+        "record": {
+          "author_person": "CIPHER-PERSON-PM",
+          "author_user": "morgan@cipher.example",
+          "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+          "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+          "company": "Cipher Synthetic Company",
+          "conversion_ids": [],
+          "created_at": "2026-10-15T16:17:04.512524+00:00",
+          "definition": {
+            "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+            "depth": null,
+            "formula_version": "cipher.takeoff.planar.v1",
+            "geometry": {
+              "points": [
+                [
+                  "100",
+                  "100"
+                ],
+                [
+                  "400",
+                  "200"
+                ]
+              ],
+              "type": "rectangle"
+            },
+            "kind": "area",
+            "locator": "Page1 rectangle from100,100 to300,200 in PDF user space",
+            "method": "calibrated",
+            "reason": "Explicit known rectangle fixture",
+            "result_precision": 6,
+            "result_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "tolerance": "0.000001",
+            "waste_fraction": "0"
+          },
+          "family_id": "309f2389-8647-4d32-8215-b69c70daecc0",
+          "id": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+          "page_geometry": {
+            "coordinate_system": "pdf-user-space-v1",
+            "crop_box": [
+              "0",
+              "0",
+              "612",
+              "792"
+            ],
+            "media_box": [
+              "0",
+              "0",
+              "612",
+              "792"
+            ],
+            "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+            "rotate": 0,
+            "user_unit": "1"
+          },
+          "predecessor": "ede5bdc3-1b4f-4542-aa3e-a73788f36db3",
+          "project": "PROJ-0031",
+          "result": {
+            "calibration_claim": "independently-verified-source-bound-planar",
+            "formula_version": "cipher.takeoff.planar.v1",
+            "geometry_kind": "rectangle",
+            "method": "calibrated",
+            "quantity": {
+              "amount": "300.000000",
+              "precision": 6,
+              "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+            },
+            "raw_interval": {
+              "lower": {
+                "denominator": "1",
+                "numerator": "300"
+              },
+              "upper": {
+                "denominator": "1",
+                "numerator": "300"
+              }
+            },
+            "result_digest": "e90e778b1638fac0c454aa464120a2fd5e062fd51f639ead389e5c0bf005f728",
+            "result_interval": {
+              "lower": {
+                "denominator": "1",
+                "numerator": "300"
+              },
+              "upper": {
+                "denominator": "1",
+                "numerator": "300"
+              }
+            },
+            "rounding": "half_up_unique_interval",
+            "tolerance": "0.000001",
+            "waste_fraction": "0"
+          },
+          "revision_number": 2,
+          "source": {
+            "byte_length": 797,
+            "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+            "current_revision_number": 2,
+            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+            "extraction_status": "ready",
+            "is_current": true,
+            "mime_type": "application/pdf",
+            "page": 1,
+            "page_count": 1,
+            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+            "revision_number": 2,
+            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+          },
+          "source_citations": [
+            {
+              "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+              "document_title": "Explicit stored takeoff drawing1",
+              "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+              "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+              "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+              "page": 1,
+              "page_label": "1",
+              "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+              "revision_number": 2,
+              "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+            }
+          ],
+          "source_head_policy": "current-working-revision-v1",
+          "status": "authored",
+          "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+          "unit_manifest": {
+            "dataset_id": "5f0824de-3227-407b-b5ab-2369a71d75b6",
+            "records": [
+              {
+                "fields": {
+                  "currency": "USD",
+                  "name": "Cipher Synthetic Company",
+                  "timezone": "Asia/Kolkata"
+                },
+                "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+                "kind": "company",
+                "revision": 1,
+                "target": {
+                  "doctype": "Company",
+                  "name": "Cipher Synthetic Company"
+                }
+              },
+              {
+                "fields": {
+                  "dimension": "area",
+                  "precision": 6,
+                  "symbol": "sfcacbfb9c4fc4"
+                },
+                "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "EST02 fixture sf cacbfb9c4fc4"
+                }
+              },
+              {
+                "fields": {
+                  "dimension": "length",
+                  "precision": 6,
+                  "symbol": "ftcacbfb9c4fc4"
+                },
+                "id": "55d2c132-1301-4723-8e9f-2ca50b6057aa",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "EST02 fixture ft cacbfb9c4fc4"
+                }
+              },
+              {
+                "fields": {
+                  "dimension": "volume",
+                  "precision": 6,
+                  "symbol": "cfcacbfb9c4fc4"
+                },
+                "id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "EST02 fixture cf cacbfb9c4fc4"
+                }
+              }
+            ],
+            "schema": "cipher.canonical.v1",
+            "scope": {
+              "company": "Cipher Synthetic Company",
+              "project": "PROJ-0031"
+            },
+            "unit_conversions": []
+          },
+          "verification_id": "168cb31e-50a5-4c93-879d-91735d69af1d"
+        },
+        "record_digest": "c072ed0f73070637268b3eb17f1b1d4c0f174eb158fedecf510323fe3cdb5cab",
+        "current_use": {
+          "eligible": true,
+          "reasons": [],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": {
+            "id": "168cb31e-50a5-4c93-879d-91735d69af1d",
+            "verified_by_person": "CIPHER-PERSON-REVIEWER"
+          }
+        }
+      },
+      {
+        "record": {
+          "author_person": "CIPHER-PERSON-PM",
+          "author_user": "morgan@cipher.example",
+          "calibration_digest": null,
+          "calibration_id": null,
+          "company": "Cipher Synthetic Company",
+          "conversion_ids": [],
+          "created_at": "2026-10-15T16:15:30.284446+00:00",
+          "definition": {
+            "formula_version": "cipher.takeoff.planar.v1",
+            "kind": "area",
+            "locator": "Page1 rectangle from100,100 to300,200 in PDF user space",
+            "manual_quantity": {
+              "amount": "12.500000",
+              "precision": 6,
+              "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+            },
+            "method": "manual",
+            "reason": "Explicit manual counted allowance from referenced drawing note",
+            "result_precision": 6,
+            "result_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+            "tolerance": "0.000001",
+            "waste_fraction": "0"
+          },
+          "family_id": "c61b2bb3-fc1f-4044-b90e-315fc1bae9ef",
+          "id": "43e5b88d-7654-42c0-bdf4-cf0a7054e1b4",
+          "page_geometry": null,
+          "predecessor": null,
+          "project": "PROJ-0031",
+          "result": {
+            "calibration_claim": "none-manual",
+            "formula_version": "cipher.takeoff.planar.v1",
+            "geometry_kind": "manual",
+            "method": "manual",
+            "quantity": {
+              "amount": "12.500000",
+              "precision": 6,
+              "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+            },
+            "raw_interval": {
+              "lower": {
+                "denominator": "2",
+                "numerator": "25"
+              },
+              "upper": {
+                "denominator": "2",
+                "numerator": "25"
+              }
+            },
+            "result_digest": "69410abe531f47fa01cfb9ba63948dfb62c3ad6b8e238bccb9723eea2c94f762",
+            "result_interval": {
+              "lower": {
+                "denominator": "2",
+                "numerator": "25"
+              },
+              "upper": {
+                "denominator": "2",
+                "numerator": "25"
+              }
+            },
+            "rounding": "half_up_unique_interval",
+            "tolerance": "0.000001",
+            "waste_fraction": "0"
+          },
+          "revision_number": 1,
+          "source": {
+            "byte_length": 797,
+            "current_revision": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+            "current_revision_number": 1,
+            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+            "extraction_status": "ready",
+            "is_current": true,
+            "mime_type": "application/pdf",
+            "page": 1,
+            "page_count": 1,
+            "revision_id": "REV-1c680f9fa37f4c2fbd6882b3e2688f19",
+            "revision_number": 1,
+            "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+          },
+          "source_citations": [],
+          "source_head_policy": "current-working-revision-v1",
+          "status": "authored",
+          "takeoff_set": "b19d069b-e56c-45c5-8b38-360191ace83e",
+          "unit_manifest": {
+            "dataset_id": "43e5b88d-7654-42c0-bdf4-cf0a7054e1b4",
+            "records": [
+              {
+                "fields": {
+                  "currency": "USD",
+                  "name": "Cipher Synthetic Company",
+                  "timezone": "Asia/Kolkata"
+                },
+                "id": "6abed828-98b2-5c5e-bfeb-e8c40b8a95ac",
+                "kind": "company",
+                "revision": 1,
+                "target": {
+                  "doctype": "Company",
+                  "name": "Cipher Synthetic Company"
+                }
+              },
+              {
+                "fields": {
+                  "dimension": "area",
+                  "precision": 6,
+                  "symbol": "sfcacbfb9c4fc4"
+                },
+                "id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "EST02 fixture sf cacbfb9c4fc4"
+                }
+              }
+            ],
+            "schema": "cipher.canonical.v1",
+            "scope": {
+              "company": "Cipher Synthetic Company",
+              "project": "PROJ-0031"
+            },
+            "unit_conversions": []
+          },
+          "verification_id": null
+        },
+        "record_digest": "ea3cc0f2a0919a544512890c8d7864f0e1dd45d08a41332fd01c41e9d6b69ff6",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": null
+        }
+      }
+    ],
+    "next_cursor": "eyJleHBpcmVzIjoxNzkyMDgxOTI0LCJsYXN0IjpbIjIwMjYtMTAtMTUgMjE6NDU6MzAuMjg0NzQyIiwiNDNlNWI4OGQtNzY1NC00MmMwLWJkZjQtY2YwYTcwNTRlMWI0Il0sInNjb3BlIjoiNDQwMjlhMTNkNWYyYmUzOTQ1NzAxZGFkNDExMWUzMzhjODQ4ZWIyMTI4ZmRlNmE1ZjY2MjMwMjJmODcxMmNhNSIsInYiOjF9.YUzTvyA2yyZKTuu-fUGZaiPCuLfkHZhcleCUlE6kFlU",
+    "limit": 2,
+    "count_mode": "exact",
+    "total": 5
+  }
+}

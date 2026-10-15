@@ -6,12 +6,14 @@
   "engine": "InnoDB",
   "field_order": [
     "person",
+    "scope_type",
     "company",
     "project",
     "ability",
     "active",
     "valid_from",
-    "valid_until"
+    "valid_until",
+    "scope_key"
   ],
   "fields": [
     {
@@ -32,7 +34,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "options": "Project"
     },
     {
@@ -40,7 +42,7 @@
       "label": "Ability",
       "fieldtype": "Select",
       "reqd": 1,
-      "options": "approval.decide\napproval.execute\napproval.request\ndocument.read\ndocument.write\nestimate.read\nestimate.write\nproject.read\nproject.write\nricky.run\ntask.create"
+      "options": "approval.decide\napproval.execute\napproval.request\ndocument.read\ndocument.write\nestimate.read\nestimate.write\nproject.read\nproject.write\nricky.run\ntask.create\ncompany.read\ncommercial.read\ncommercial.write\ncontract.read\ncontract.write"
     },
     {
       "fieldname": "active",
@@ -59,6 +61,23 @@
       "label": "Valid Until",
       "fieldtype": "Date",
       "reqd": 0
+    },
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "scope_key",
+      "label": "Exact Duty Scope Key",
+      "fieldtype": "Data",
+      "unique": 1,
+      "read_only": 1,
+      "no_copy": 1
     }
   ],
   "permissions": [

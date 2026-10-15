@@ -1,4 +1,4 @@
-# Running Cipher build: first implemented journey
+# Running Cipher build: implemented journeys
 
 These screenshots were captured from the actual containerized SAP UI5/Horizon
 client connected to the persistent ERPNext/Frappe development site. They show
@@ -27,9 +27,37 @@ served bundle/source provenance. Earlier captures retain their original source
 snapshot when later UI changes occur. Browser tests with explicit API fixtures
 are recorded separately and do not replace these connected captures.
 
-The exact estimating backend is implemented and verified through native records
-and actual HTTP calls. Its functional editing screens are the next UI package.
-Commercial, takeoff, contract/SOV, procurement, AP/AR and later AEC workflows
-remain in the approved implementation sequence; this walkthrough is not a claim
-that the entire ERP is complete. See [current status](IMPLEMENTATION_STATUS.md)
-and the [66-package backlog](EXECUTION_BACKLOG.md).
+## Estimating in the running product
+
+These captures use actual stored estimate records and the same live session/API.
+The created estimate calculated to 279.23; a later revision calculated to 306.23.
+The predecessor remains available for comparison.
+
+| Step | What the running product does | Actual capture |
+|---|---|---|
+| 1. Open the estimate register | Lists accessible project estimates | [Estimate register](evidence/r1/estimating-draft-workspace/connected-estimate-register.png) |
+| 2. Edit and calculate | Edits exact decimal quantities, units, rates and allowances; saves a new immutable calculation revision | [Desktop editor](evidence/r1/estimating-draft-workspace/connected-estimate-editor-desktop.png) |
+| 3. Inspect provenance | Opens the stored rate, assembly and underlying document source | [Rate](evidence/r1/estimating-draft-workspace/connected-estimate-rate-source.png), [assembly](evidence/r1/estimating-draft-workspace/connected-estimate-assembly-source.png), [source page](evidence/r1/estimating-draft-workspace/connected-estimate-source-page.png) |
+| 4. Compare revisions | Shows the saved predecessor beside the current revision | [Revision comparison](evidence/r1/estimating-draft-workspace/connected-estimate-revision-comparison.png) |
+| 5. Inspect the calculation | Displays the saved calculation snapshot | [Snapshot](evidence/r1/estimating-draft-workspace/connected-estimate-snapshot.png) |
+| 6. Work on a phone | Keeps Add/Paste controls usable and numeric editing focused | [Phone editor](evidence/r1/estimating-responsive-correction/connected-estimate-editor-phone.png), [numeric focus](evidence/r1/estimating-responsive-correction/connected-estimate-numeric-focus-phone.png) |
+
+The normal estimating journey and responsive correction each retain their exact
+served-source provenance. Browser fixture scenarios independently exercise
+clipboard validation, stale-version recovery and error contracts.
+
+A separate connected recovery journey deliberately interrupted delivery after
+the real backend had created an estimate. The screen kept the original inputs
+and request ID, retained them through an injected retry denial, and recovered
+the same persisted estimate. Independent readback found exactly one matching
+draft. Captures: [result unknown](evidence/r1/estimating-create-recovery-final/actual-create-result-unknown.png),
+[retry denied while still unknown](evidence/r1/estimating-create-recovery-final/actual-create-still-unknown-after-injected-denial.png),
+and [original operation recovered](evidence/r1/estimating-create-recovery-final/actual-create-original-operation-recovered.png).
+The injected faults are explicitly recorded; actual permissions were unchanged.
+This recovery is qualified while the view remains mounted, not across browser restarts.
+
+Company pursuits/proposals, PDF takeoff calculations and construction contract/SOV
+baselines also have actual backend acceptance. Their complete user journeys,
+accepted estimates, award, procurement, AP/AR and later AEC workflows remain in
+the approved sequence. See [current status](IMPLEMENTATION_STATUS.md) and the
+[66-package backlog](EXECUTION_BACKLOG.md).

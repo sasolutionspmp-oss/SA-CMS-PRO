@@ -1,0 +1,5 @@
+from cipher_aec.construction_finance.records import FinanceRecord
+
+
+class CipherConstructionContract(FinanceRecord):
+    pass

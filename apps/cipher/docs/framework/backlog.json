@@ -55,9 +55,13 @@
       ],
       "scope": "Canonical person/identity bindings and company/project duties",
       "evidence": "Alias identities cannot self-approve; cross-company and revoked membership access denied",
-      "status": "active",
-      "local_contract_status": "implementation_under_verification",
-      "external_qualification_status": "not_evaluated"
+      "status": "verified",
+      "local_contract_status": "verified_project_and_exact_company_scope",
+      "external_qualification_status": "not_required_for_synthetic_identity_policy",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-governance-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ]
     },
     {
       "id": "GOV-02",
@@ -67,9 +71,14 @@
       ],
       "scope": "Command receipt registry, version/manifest checks and exact-value primitives",
       "evidence": "Duplicate command has one effect; reused key with changed company/payload conflicts; decimals round correctly",
-      "status": "active",
-      "local_contract_status": "implementation_under_verification",
-      "external_qualification_status": "not_evaluated"
+      "status": "verified",
+      "local_contract_status": "verified_shared_person_receipt_namespace_project_and_company",
+      "external_qualification_status": "not_required_for_local_commands",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-governance-acceptance.json",
+        "docs/framework/evidence/r1/commercial-http-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ]
     },
     {
       "id": "GOV-03",
@@ -200,15 +209,17 @@
       "evidence": "Reproducible fresh build/type checks/integration checks; evidence binds source version",
       "status": "verified",
       "local_contract_status": "verified",
-      "external_qualification_status": "hosted_workflow_not_run",
+      "external_qualification_status": "hosted_workflow_verified_at_294d06d7",
       "evidence_paths": [
         "docs/framework/evidence/r0/QA01_VALIDATION.md",
         "docs/framework/evidence/r0/fresh-validation-initial.json",
         "docs/framework/evidence/r0/fresh-validation-reporter-initial.json",
         "docs/framework/evidence/r0/fresh-validation-registry-initial.json",
-        "docs/framework/evidence/r0/fresh-validation.json"
+        "docs/framework/evidence/r0/fresh-validation.json",
+        "docs/framework/evidence/r0/hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
       ],
-      "qualification_limit": "Local fresh-site gate passed; hosted workflow execution is separate. Explicit model/worker fixtures do not qualify real model/provider connections."
+      "qualification_limit": "Local and hosted fresh-site gates passed at checkpoint294d06d7. Later source changes require relevant checks. Explicit model/worker fixtures do not qualify real model/provider connections."
     },
     {
       "id": "INT-01",
@@ -306,9 +317,15 @@
       ],
       "scope": "Extend Opportunity/Quotation with pursuit, proposal sections and immutable revisions",
       "evidence": "Scope/alternates/terms survive revision comparison without creating a duplicate customer master",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "verified",
+      "local_contract_status": "verified_native_company_only_pursuit_proposal_drafts",
+      "external_qualification_status": "not_required_for_drafts",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/commercial-native-acceptance.json",
+        "docs/framework/evidence/r1/commercial-http-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Native company-only drafts and immutable revisions are qualified. Company document/estimate references, proposal acceptance/issue and award follow their explicit next contracts; no placeholder Project."
     },
     {
       "id": "EST-01",
@@ -320,14 +337,17 @@
       "scope": "Units/conversions, rate sources, assembly revisions and exact estimate calculation",
       "evidence": "Known quantity/rate/waste examples and invalid-dimension cases produce deterministic results",
       "status": "verified",
-      "local_contract_status": "verified",
+      "local_contract_status": "verified_project_estimates_with_current_source_collection_privacy",
       "external_qualification_status": "not_required_for_authored_sources",
       "evidence_paths": [
         "docs/framework/evidence/r1/est01-acceptance.json",
         "docs/framework/evidence/r1/est01-schema-samples.json",
         "docs/framework/evidence/r1/est01-http-acceptance.json",
-        "docs/framework/evidence/r0/fresh-validation.json"
-      ]
+        "docs/framework/evidence/r0/fresh-validation.json",
+        "docs/framework/evidence/r1/est01-catalog-privacy-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Project scope and off-page current-source privacy are qualified. Company/Pursuit scope is the next additive contract. Exact earlier calculation/HTTP evidence remains bound to its captured source."
     },
     {
       "id": "EST-02",
@@ -338,9 +358,15 @@
       ],
       "scope": "Takeoff measurement, calibration, geometric/manual lineage and revision comparison",
       "evidence": "Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "verified",
+      "local_contract_status": "verified_project_pdf_geometry_manual_lineage_and_change_impact",
+      "external_qualification_status": "not_required_for_authored_drawings",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/est02-acceptance.json",
+        "docs/framework/evidence/r1/est02-parser-ci-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Project-scoped actual vector-PDF calibration, verification, measurements, bindings and impact are qualified. Company scope and connected takeoff viewer remain next work. Original lost-UUID503 attempt is disclosed; known-success UUID replays are not unknown-outcome recovery proof."
     },
     {
       "id": "EST-03",
@@ -378,9 +404,17 @@
       ],
       "scope": "Construction contract/SOV base schemas, terms and retainage policies before award orchestration",
       "evidence": "SOV caps cannot fall below certified amounts without correction; no manufacturing-subcontract shortcut",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "verified",
+      "local_contract_status": "verified_synthetic_contract_sov_baseline_and_conservative_floor_admission",
+      "external_qualification_status": "not_required_for_unposted_synthetic_baseline",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/FIN01_ACCEPTANCE.md",
+        "docs/framework/evidence/r1/fin01-native-acceptance.json",
+        "docs/framework/evidence/r1/fin01-http-acceptance.json",
+        "docs/framework/evidence/r1/fin01-http-history.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Synthetic independently approved baseline only; no legal execution, certification, posting or GL movement. Unsupported activity and reductions/deletions fail closed until qualified FIN03 floor/correction contracts exist."
     },
     {
       "id": "PRJ-02",
@@ -459,9 +493,16 @@
       ],
       "scope": "Commercial/estimate/award/procurement pages including dense editing",
       "evidence": "Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "active",
+      "local_contract_status": "estimating_draft_workspace_verified_other_r1_journeys_pending",
+      "external_qualification_status": "not_required_for_current_estimate_drafts",
+      "qualification_limit": "Connected project-estimate draft/editor/source/comparison screens and mounted-view same-UUID recovery are qualified. Commercial, accepted estimate, award, procurement and takeoff viewer remain pending dependencies; no browser-restart recovery claim.",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/estimating-draft-workspace/verification.json",
+        "docs/framework/evidence/r1/estimating-responsive-correction/verification.json",
+        "docs/framework/evidence/r1/estimating-create-recovery-final/verification.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ]
     },
     {
       "id": "FIN-02",

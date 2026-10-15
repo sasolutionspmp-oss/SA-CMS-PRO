@@ -98,6 +98,28 @@
         },
         "csrf_token": {
           "type": "string"
+        },
+        "company_scopes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": "string"
+              },
+              "capabilities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "company",
+              "capabilities"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "required": [
@@ -107,7 +129,8 @@
         "companies",
         "capabilities",
         "site_mode",
-        "csrf_token"
+        "csrf_token",
+        "company_scopes"
       ],
       "additionalProperties": false
     },
@@ -535,6 +558,86 @@
       "additionalProperties": false
     },
     "ApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProjectStatusApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/DomainApprovalPacket"
+        }
+      ]
+    },
+    "ApprovalList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalPacket"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalCommandResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/ApprovalPacket"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProjectStatusApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/DomainApprovalExecutionResponse"
+        }
+      ]
+    },
+    "ProjectStatusApprovalPacket": {
       "type": "object",
       "properties": {
         "id": {
@@ -737,71 +840,201 @@
       ],
       "additionalProperties": false
     },
-    "ApprovalList": {
+    "DomainApprovalPacket": {
       "type": "object",
       "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ApprovalPacket"
-          }
+        "id": {
+          "type": "string"
         },
-        "total": {
-          "type": [
-            "integer",
-            "null"
-          ],
-          "minimum": 0
+        "company": {
+          "type": "string"
         },
-        "limit": {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 200
+        "project": {
+          "type": "string"
         },
-        "next_cursor": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "count_mode": {
+        "action": {
           "type": "string",
           "enum": [
-            "none",
-            "exact"
+            "calibration.verify.v1",
+            "contract.baseline.activate.v1"
           ]
-        }
-      },
-      "required": [
-        "items",
-        "next_cursor",
-        "limit",
-        "count_mode",
-        "total"
-      ],
-      "additionalProperties": false
-    },
-    "ApprovalCommandResponse": {
-      "type": "object",
-      "properties": {
-        "packet": {
-          "$ref": "#/$defs/ApprovalPacket"
         },
-        "operation": {
-          "$ref": "#/$defs/Operation"
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Cipher Calibration",
+                "Cipher Construction Contract"
+              ]
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "effect": {
+              "type": "object"
+            },
+            "summary": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
         }
       },
       "required": [
-        "packet",
-        "operation"
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest"
       ],
       "additionalProperties": false
     },
-    "ApprovalExecutionResponse": {
+    "ProjectStatusApprovalExecutionResponse": {
       "type": "object",
       "properties": {
         "packet": {
-          "$ref": "#/$defs/ApprovalPacket"
+          "$ref": "#/$defs/ProjectStatusApprovalPacket"
         },
         "effect": {
           "type": "object",
@@ -814,6 +1047,26 @@
             "project"
           ],
           "additionalProperties": false
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "effect",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DomainApprovalExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/DomainApprovalPacket"
+        },
+        "effect": {
+          "type": "object"
         },
         "operation": {
           "$ref": "#/$defs/Operation"
@@ -840,6 +1093,9 @@
     "POST approvals.request_project_status": "ApprovalCommandResponse",
     "POST approvals.decide_packet": "ApprovalCommandResponse",
     "POST approvals.withdraw_packet": "ApprovalCommandResponse",
-    "POST approvals.execute_packet": "ApprovalExecutionResponse"
+    "POST approvals.execute_packet": "ApprovalExecutionResponse",
+    "GET company.history": "HistoryList",
+    "GET company.operation": "CommandResult",
+    "POST approvals.request_action": "ApprovalCommandResponse"
   }
 }

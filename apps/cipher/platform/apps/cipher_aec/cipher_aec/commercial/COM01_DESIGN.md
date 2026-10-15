@@ -1,6 +1,6 @@
 # COM-01 implementation contract proposal
 
-Status: read-only prerequisite design. Domain implementation begins after the frozen R0 checkpoint and verified GOV-03/company-scope interfaces. This file does not declare a commercial workflow implemented.
+Status: authored draft implementation active after checkpoint `294d06d7`. Targeted native ERPNext acceptance is qualified; actual HTTP qualification is recorded separately. COM-02 issue/distribution and company document/estimate references remain explicit prerequisites.
 
 ## Native record reuse verified on ERPNext 16.51.0
 

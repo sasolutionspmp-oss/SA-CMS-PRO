@@ -8,6 +8,7 @@ required_apps = ["erpnext"]
 
 after_install = "cipher_aec.install.after_install"
 after_migrate = "cipher_aec.install.after_migrate"
+before_migrate = "cipher_aec.install.before_migrate"
 before_request = ["cipher_aec.api.boundary.before_request"]
 after_request = ["cipher_aec.api.boundary.after_request"]
 
@@ -53,8 +54,28 @@ scheduler_events = {
 extend_doctype_class = {"File": ["cipher_aec.documents.guards.CipherFileGuard"]}
 override_whitelisted_methods = {"frappe.core.api.file.zip_files": "cipher_aec.documents.guards.zip_files"}
 
-# Submitting/cancelling native financial documents is explicitly unqualified in R0.
-for _financial_doctype in ("Sales Invoice", "Purchase Invoice", "Payment Entry", "Journal Entry", "Purchase Order", "Sales Order", "Purchase Receipt", "Delivery Note", "Stock Entry", "Expense Claim"):
-    doc_events[_financial_doctype] = {event: "cipher_aec.governance.approvals.prevent_unsupported_financial_transition" for event in ("validate", "before_submit", "before_cancel")}
+# Closed writer catalog shares FIN's conservative initial-admission boundary.
+# There is currently no supported writer/bypass, including for reversible drafts.
+# Company bootstrap and COM Opportunity/Quotation composition are excluded.
+UNQUALIFIED_FINANCIAL_WRITERS = (
+    "Sales Order", "Sales Invoice", "Delivery Note", "Purchase Order", "Purchase Invoice",
+    "Purchase Receipt", "Payment Entry", "Journal Entry", "Stock Entry", "Expense Claim",
+    "Timesheet", "Material Request",
+)
+for _financial_doctype in UNQUALIFIED_FINANCIAL_WRITERS:
+    doc_events[_financial_doctype] = {event: "cipher_aec.governance.approvals.prevent_unsupported_financial_transition"
+        for event in ("before_insert", "before_validate", "validate", "before_save", "before_submit", "before_cancel", "before_update_after_submit", "on_trash")}
 
 doc_events["UOM"] = {"validate": "cipher_aec.estimating.guards.validate_uom", "on_trash": "cipher_aec.estimating.guards.prevent_qualified_uom_delete", "before_rename": "cipher_aec.estimating.guards.prevent_qualified_uom_rename"}
+
+permission_query_conditions["Company"] = "cipher_aec.governance.permissions.company_query"
+has_permission["Company"] = "cipher_aec.governance.permissions.company_permission"
+
+for _commercial_native in ("Opportunity", "Quotation"):
+    doc_events[_commercial_native] = {"validate": "cipher_aec.commercial.guards.native_validate", "on_trash": "cipher_aec.commercial.guards.native_trash"}
+for _kind, _doctype in (("pursuit", "Cipher Pursuit"), ("proposal", "Cipher Proposal"), ("revision", "Cipher Proposal Revision")):
+    permission_query_conditions[_doctype] = "cipher_aec.commercial.permissions." + _kind + "_query"
+    has_permission[_doctype] = "cipher_aec.commercial.permissions." + _kind + "_permission"
+for _finance_type in ("Cipher Construction Contract", "Cipher Contract Revision", "Cipher Retainage Policy Revision", "Cipher SOV Version", "Cipher SOV Line"):
+    permission_query_conditions[_finance_type] = "cipher_aec.construction_finance.permissions.finance_query"
+    has_permission[_finance_type] = "cipher_aec.construction_finance.permissions.finance_permission"

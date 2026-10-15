@@ -10,7 +10,9 @@ from cipher_aec.api.contracts import digest, text
 from cipher_aec.api.errors import DomainError
 
 _trusted = ContextVar("cipher_trusted_write", default=False)
-ABILITIES = frozenset({"project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write"})
+PROJECT_ABILITIES = frozenset({"project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write"})
+COMPANY_ABILITIES = frozenset({"company.read", "commercial.read", "commercial.write"})
+ABILITIES = PROJECT_ABILITIES | COMPANY_ABILITIES
 
 
 @dataclass(frozen=True)
@@ -63,7 +65,7 @@ def current_actor(user=None, lock=False):
 
 
 def duty_rows(actor, company=None, project=None, lock=False):
-    conditions, args = ["person=%s", "active=1", "(valid_from IS NULL OR valid_from<=%s)", "(valid_until IS NULL OR valid_until>=%s)"], [actor.person_id, nowdate(), nowdate()]
+    conditions, args = ["scope_type='Project'", "project IS NOT NULL", "project<>''", "person=%s", "active=1", "(valid_from IS NULL OR valid_from<=%s)", "(valid_until IS NULL OR valid_until>=%s)"], [actor.person_id, nowdate(), nowdate()]
     if company is not None:
         conditions.append("company=%s")
         args.append(company)
@@ -83,7 +85,7 @@ def project_ids(actor, company=None, ability="project.read"):
 def require_project(company, project, ability="project.read", actor=None, lock=False):
     company = text(company, "Company")
     project = text(project, "Project")
-    if ability not in ABILITIES:
+    if ability not in PROJECT_ABILITIES:
         raise DomainError("unknown_capability", "This capability is not available.", 403)
     actor = actor or current_actor()
     # Refresh identity on every effect/read boundary; callers cannot keep a revoked Actor alive.
@@ -156,3 +158,49 @@ def require_session_authority(actor, reference, lock=False):
     if data.get("session_end") and get_datetime(data["session_end"]) <= now_datetime():
         raise DomainError("session_revoked", "The session that authorized this run expired.", 403)
     current_actor(actor.user)
+
+
+def company_duty_rows(actor, company=None, lock=False):
+    """Exact Company duties; NULL Project never means all Projects."""
+    conditions = ["scope_type='Company'", "(project IS NULL OR project='')", "person=%s", "active=1",
+        "(valid_from IS NULL OR valid_from<=%s)", "(valid_until IS NULL OR valid_until>=%s)"]
+    values = [actor.person_id, nowdate(), nowdate()]
+    if company is not None:
+        conditions.append("company=%s")
+        values.append(text(company, "Company"))
+    return frappe.db.sql("SELECT name,person,company,project,ability,modified,valid_from,valid_until FROM `tabCipher Project Duty` WHERE " + " AND ".join(conditions) + " ORDER BY name" + (" FOR UPDATE" if lock else ""), values, as_dict=True)
+
+
+def company_ids(actor, ability="company.read"):
+    return sorted({row.company for row in company_duty_rows(actor) if row.ability == ability})
+
+
+def require_company(company, ability="company.read", actor=None, lock=False):
+    company = text(company, "Company")
+    if ability not in COMPANY_ABILITIES:
+        raise DomainError("unknown_capability", "This Company capability is not available.", 403)
+    actor = actor or current_actor()
+    current = current_actor(actor.user, lock=lock)
+    if current.person_id != actor.person_id:
+        raise DomainError("identity_changed", "Your identity changed. Sign in again.", 403)
+    try:
+        record = frappe.get_doc("Company", company, for_update=lock)
+    except frappe.DoesNotExistError:
+        raise DomainError("not_found", "This Company is not available.", 404) from None
+    abilities = {row.ability for row in company_duty_rows(actor, company, lock=lock)}
+    if "company.read" not in abilities:
+        raise DomainError("not_found", "This Company is not available.", 404)
+    if ability not in abilities:
+        raise DomainError("capability_denied", "Your current Company duties do not allow this action.", 403)
+    if not frappe.has_permission("Company", ptype="read", doc=record, user=actor.user):
+        raise DomainError("not_found", "This Company is not available.", 404)
+    return record
+
+
+def company_authority_fingerprint(actor, company, lock=False):
+    current_actor(actor.user, lock=lock)
+    suffix = " FOR UPDATE" if lock else ""
+    bindings = frappe.db.sql("SELECT name,modified,person FROM `tabCipher Identity Binding` WHERE user=%s AND active=1" + suffix, (actor.user,), as_dict=True)
+    people = frappe.db.sql("SELECT name,modified,active FROM `tabCipher Person` WHERE name=%s" + suffix, (actor.person_id,), as_dict=True)
+    normalize = lambda row: {key: str(value) if value is not None else None for key, value in row.items()}
+    return digest({"scope_type": "Company", "company": company, "person": normalize(people[0] if people else {}), "binding": normalize(bindings[0] if bindings else {}), "duties": [normalize(row) for row in company_duty_rows(actor, company, lock=lock)]})

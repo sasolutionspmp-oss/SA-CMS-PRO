@@ -7,6 +7,7 @@
   "field_order": [
     "person",
     "operation_id",
+    "scope_type",
     "company",
     "project",
     "command",
@@ -40,7 +41,7 @@
       "fieldname": "project",
       "label": "Project",
       "fieldtype": "Link",
-      "reqd": 1,
+      "reqd": 0,
       "options": "Project"
     },
     {
@@ -73,6 +74,15 @@
       "fieldtype": "Select",
       "reqd": 1,
       "options": "Succeeded"
+    },
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "read_only": 1
     }
   ],
   "permissions": [

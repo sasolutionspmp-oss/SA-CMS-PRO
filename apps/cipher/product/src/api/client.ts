@@ -6,10 +6,16 @@ const docs = 'cipher_aec.documents.api.';
 let csrfToken = '';
 
 export class ApiError extends Error {
-  constructor(message: string, public code: string, public status: number, public requestId?: string) {
+  constructor(message: string, public code: string, public status: number, public requestId?: string, public details?: Record<string, unknown>) {
     super(message);
     this.name = 'ApiError';
   }
+}
+
+// A delivered HTTP response is not necessarily an authoritative mutation result.
+export function isUnknownResult(error: unknown): boolean {
+  return !(error instanceof ApiError) || error.status === 0 || error.status >= 500 ||
+    (error.status >= 200 && error.status < 300 && ['INVALID_RESPONSE', 'INVALID_CONTRACT'].includes(error.code));
 }
 
 export async function rpc<T>(method: string, parameters: Record<string, unknown> = {}, write = false, signal?: AbortSignal): Promise<T> {
@@ -29,7 +35,7 @@ export async function rpc<T>(method: string, parameters: Record<string, unknown>
   let body: Record<string, unknown>;
   try { body = await response.json(); }
   catch { throw new ApiError('The workspace returned an unexpected response. Try again or contact your administrator.', 'INVALID_RESPONSE', response.status); }
-  const envelope = (body.message ?? body) as { schema?: string; data?: T; request_id?: string; error?: { code?: string; message?: string } };
+  const envelope = (body.message ?? body) as { schema?: string; data?: T; request_id?: string; error?: { code?: string; message?: string; details?: Record<string, unknown> } };
   if (!response.ok || envelope.error) {
     if (response.status === 401) window.dispatchEvent(new Event('cipher:session-expired'));
     const defaults: Record<number, string> = {
@@ -38,7 +44,7 @@ export async function rpc<T>(method: string, parameters: Record<string, unknown>
       412: 'The source changed. Refresh and review the latest version before saving.',
       429: 'The workspace is busy. Wait a moment and try again.', 503: 'This service is unavailable. Your other work is still available.',
     };
-    throw new ApiError(envelope.error?.message || defaults[response.status] || 'The request could not be completed.', envelope.error?.code || `HTTP_${response.status}`, response.status, envelope.request_id);
+    throw new ApiError(envelope.error?.message || defaults[response.status] || 'The request could not be completed.', envelope.error?.code || `HTTP_${response.status}`, response.status, envelope.request_id, envelope.error?.details);
   }
   if (envelope.schema !== 'cipher.api.v1' || !('data' in envelope)) {
     throw new ApiError('This workspace does not provide the expected Cipher API contract.', 'INVALID_CONTRACT', response.status);
