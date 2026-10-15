@@ -279,6 +279,86 @@ class APIActionReceipts:
         behavior; an installed or audited reservation store must verify fully.
         """
         self.verify_integrity()
+        commercial_schema = self.db.one("SELECT version FROM schema_version WHERE name='commercial_practice_action_receipts'")
+        commercial_table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='commercial_action_receipts'")
+        commercial_births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='commercial.practice_action_recorded'")
+        if commercial_schema is None:
+            if commercial_table is not None or commercial_births:
+                raise APIReceiptIntegrityError("Commercial receipt history lost its registered admission schema")
+        else:
+            from ..commercial_receipts import CommercialReceiptError, commercial_receipt_inventory_proof
+            try:
+                commercial_rows = commercial_receipt_inventory_proof(self.db, self.audit)
+            except CommercialReceiptError as exc:
+                raise APIReceiptIntegrityError("Commercial repeatability history cannot be verified") from exc
+            commercial_matches = [row for row in commercial_rows if row["canonical_person_id"] == person_id
+                                  and row["repeatability_uuid"] == repeatability_uuid]
+            if len(commercial_matches) > 1:
+                raise APIReceiptIntegrityError("A reviewed key has multiple commercial receipts")
+            if commercial_matches:
+                original = commercial_matches[0]
+                if original["fixed_action"] != action or original["binding_json"] != canonical_json(binding):
+                    raise APIRepeatabilityConflict("This repeatability key belongs to its original reviewed commercial request")
+        ar_schema = self.db.one("SELECT version FROM schema_version WHERE name='ar_practice_action_receipts'")
+        ar_table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='ar_action_receipts'")
+        ar_births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='ar.practice_action_recorded'")
+        if ar_schema is None:
+            if ar_table is not None or ar_births:
+                raise APIReceiptIntegrityError("AR receipt history lost its registered admission schema")
+        else:
+            from ..ar_receipts import ARReceiptError, ar_receipt_inventory_proof
+            try:
+                ar_rows = ar_receipt_inventory_proof(self.db, self.audit)
+            except ARReceiptError as exc:
+                raise APIReceiptIntegrityError("AR repeatability history cannot be verified") from exc
+            ar_matches = [row for row in ar_rows if row["canonical_person_id"] == person_id
+                          and row["repeatability_uuid"] == repeatability_uuid]
+            if len(ar_matches) > 1:
+                raise APIReceiptIntegrityError("A reviewed key has multiple AR receipts")
+            if ar_matches:
+                original = ar_matches[0]
+                if original["fixed_action"] != action or original["binding_json"] != canonical_json(binding):
+                    raise APIRepeatabilityConflict("This repeatability key belongs to its original reviewed AR request")
+        library_schema = self.db.one("SELECT version FROM schema_version WHERE name='library_practice_action_receipts'")
+        library_table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='library_action_receipts'")
+        library_births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='library.practice_action_recorded'")
+        if library_schema is None:
+            if library_table is not None or library_births:
+                raise APIReceiptIntegrityError("Library receipt history lost its registered admission schema")
+        else:
+            from ..library_receipts import LibraryReceiptError, library_receipt_inventory_proof
+            try:
+                library_rows = library_receipt_inventory_proof(self.db, self.audit)
+            except LibraryReceiptError as exc:
+                raise APIReceiptIntegrityError("Library repeatability history cannot be verified") from exc
+            library_matches = [row for row in library_rows if row["canonical_person_id"] == person_id
+                               and row["repeatability_uuid"] == repeatability_uuid]
+            if len(library_matches) > 1:
+                raise APIReceiptIntegrityError("A reviewed key has multiple library receipts")
+            if library_matches:
+                original = library_matches[0]
+                if original["fixed_action"] != action or original["binding_json"] != canonical_json(binding):
+                    raise APIRepeatabilityConflict("This repeatability key belongs to its original reviewed library request")
+        rfi_schema = self.db.one("SELECT version FROM schema_version WHERE name='rfi_practice_action_receipts'")
+        rfi_table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='rfi_action_receipts'")
+        rfi_births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='rfi.practice_action_recorded'")
+        if rfi_schema is None:
+            if rfi_table is not None or rfi_births:
+                raise APIReceiptIntegrityError("RFI receipt history lost its registered admission schema")
+        else:
+            from ..rfi_receipts import RFIReceiptError, rfi_receipt_inventory_proof
+            try:
+                rfi_rows = rfi_receipt_inventory_proof(self.db, self.audit)
+            except RFIReceiptError as exc:
+                raise APIReceiptIntegrityError("RFI repeatability history cannot be verified") from exc
+            rfi_matches = [row for row in rfi_rows if row["canonical_person_id"] == person_id
+                           and row["repeatability_uuid"] == repeatability_uuid]
+            if len(rfi_matches) > 1:
+                raise APIReceiptIntegrityError("A reviewed key has multiple RFI receipts")
+            if rfi_matches:
+                original = rfi_matches[0]
+                if original["fixed_action"] != action or original["binding_json"] != canonical_json(binding):
+                    raise APIRepeatabilityConflict("This repeatability key belongs to its original reviewed RFI request")
         installed = self.db.one("SELECT version FROM schema_version WHERE name=?", (AP_ACCOUNTING_RECEIPTS_SCHEMA_NAME,))
         table = self.db.one("SELECT name FROM sqlite_master WHERE type='table' AND name='ap_accounting_invocations'")
         births = self.db.scalar("SELECT COUNT(*) FROM audit_log WHERE action='ap.accounting_invocation_reserved'")

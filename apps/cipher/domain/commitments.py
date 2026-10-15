@@ -40,7 +40,7 @@ from ..core.audit import Audit
 from ..core.db import Database, register_schema_version
 from ..core.ids import hash_json, loads, new_id, utcnow_iso
 from ..core.money import ZERO, fmt, money, rate, total
-from .estimates import Estimates
+from .estimates import Estimates, EstimateError
 
 # The approval that accepts a commitment's closeout (owned by the field module).
 CLOSEOUT_OPERATION = "field.accept_closeout"
@@ -228,6 +228,13 @@ class Commitments:
             "retainage_rate": c["retainage_rate"],
         }
         if c["estimate"]:
+            # Retain stale manifests as review diagnostics for existing grants;
+            # a current source must already have genuine acceptance provenance.
+            if not c["estimate"]["stale"]:
+                try:
+                    self.estimates.baseline_proof(c["estimate"]["id"], require_current=True, require_accepted=True)
+                except EstimateError as exc:
+                    raise CommitmentError("the commitment source estimate is not genuinely accepted") from exc
             bindings.update({"estimate_id": c["estimate"]["id"], "estimate_hash": c["estimate"]["content_hash"], "estimate_stale": c["estimate"]["stale"]})
         return build_manifest(
             operation="commitment.execute",
@@ -248,6 +255,11 @@ class Commitments:
                 raise CommitmentError(f"commitment {commitment_id} is {c['status']}")
             if c["estimate"] and c["estimate"]["stale"]:
                 raise CommitmentError("the commitment's estimate is priced from a superseded document; revise the estimate first")
+            if c["estimate"]:
+                try:
+                    self.estimates.baseline_proof(c["estimate"]["id"], require_current=True, require_accepted=True)
+                except EstimateError as exc:
+                    raise CommitmentError("the commitment source estimate is not genuinely accepted") from exc
             approved = self._consumed_approval(approval_id, "commitment.execute", "commitment", commitment_id,
                                                used_sql="SELECT id FROM commitments WHERE approval_id=?")
             self._require_unchanged(approved, self.manifest(commitment_id, actor_role=approved.get("actor_role", "")), f"commitment {commitment_id}")

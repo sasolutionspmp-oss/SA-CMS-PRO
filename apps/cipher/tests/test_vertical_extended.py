@@ -68,6 +68,7 @@ PRIME_INVOICE_DAY = _dt.date(2026, 10, 28)
 # (login, display name, kind, external)
 IDENTITIES = (
     ("est.kim", "Synthetic estimator", "person", False),
+    ("est.jules", "Synthetic independent estimate reviewer", "person", False),
     ("pm.lee", "Synthetic project manager", "person", False),
     ("legal.lou", "Synthetic contracts reviewer", "person", False),
     ("signer.sam", "Synthetic authorized signer", "person", False),
@@ -82,7 +83,8 @@ IDENTITIES = (
 )
 # (login, role, project-scoped)
 GRANTS = (
-    ("est.kim", "estimator", False),
+    ("est.kim", "estimator", True),
+    ("est.jules", "estimator", True),
     ("pm.lee", "pm", True),
     ("legal.lou", "legal", False),
     ("signer.sam", "signer", False),
@@ -243,7 +245,8 @@ class ExtendedJob:
         for login, name, kind, external in IDENTITIES:
             p.register_person(login, name, actor="owner", kind=kind, external=external)
         tc.assertEqual(p.authorities("sub.sue"), [])
-        p.add_membership("pm.lee", self.pid, actor="owner")
+        for login in ("pm.lee", "est.kim", "est.jules"):
+            p.add_membership(login, self.pid, actor="owner")
         with tc.assertRaises(IdentityRefused):  # no self-granting, even before enforcement
             p.request_grant("owner", "controller", reason="EXT self-grant attempt", actor="owner")
         for login, role, scoped in GRANTS:
@@ -274,7 +277,7 @@ class ExtendedJob:
     # ---- step 2: estimate ---------------------------------------------------------- #
 
     def step2(self, tc):
-        """The estimator prices the drawing; the owner approves it; enforcement refuses an unknown
+        """The estimator prices the drawing; another actual project estimator approves it; enforcement refuses an unknown
         requester, a requester approving their own request and a service identity approving."""
         c = self.c
         _, self.drawing_rev = self.evidence("drawing", "Drawing L-1 lift station wet well and bypass", actor="est.kim")
@@ -293,7 +296,9 @@ class ExtendedJob:
             c.approve(ap["id"], approver="ricky", approver_role="owner")
         with tc.assertRaises(IdentityRefused):  # the approver must hold the approving role
             c.approve(ap["id"], approver="acct.ivy", approver_role="estimator")
-        c.approve(ap["id"], approver="owner")
+        with tc.assertRaises(IdentityRefused):  # owner wildcard cannot replace the actual project estimator duty
+            c.approve(ap["id"], approver="owner")
+        c.approve(ap["id"], approver="est.jules", approver_role="estimator")
         tc.assertEqual(c.execute(ap["id"], actor="est.kim").result["status"], "approved")
         self.estimate = c.estimates.get(est["id"])
 

@@ -18,7 +18,15 @@
     "smoke:ap": "node tests/ap-smoke.mjs",
     "smoke:ap-intake": "node tests/ap-intake-smoke.mjs",
     "smoke:ap-exception": "node tests/ap-exception-smoke.mjs",
-    "smoke:ap-accounting": "node tests/ap-accounting-smoke.mjs"
+    "smoke:ap-accounting": "node tests/ap-accounting-smoke.mjs",
+    "build:commercial": "npm run typecheck && vite build --config vite.commercial.config.ts",
+    "smoke:commercial": "node tests/commercial-smoke.mjs",
+    "build:ar": "npm run typecheck && vite build --config vite.ar.config.ts",
+    "smoke:ar": "node tests/ar-smoke.mjs",
+    "build:library": "npm run typecheck && vite build --config vite.library.config.ts",
+    "smoke:library": "node tests/library-smoke.mjs",
+    "build:rfi": "npm run typecheck && vite build --config vite.rfi.config.ts",
+    "smoke:rfi": "node tests/rfi-smoke.mjs"
   },
   "dependencies": {
     "@fluentui/react-components": "9.74.3",

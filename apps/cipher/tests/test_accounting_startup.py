@@ -98,7 +98,8 @@ class AccountingLateLoaderTests(unittest.TestCase):
         actual = tuple((version, name, db.catalog_checksum(statements)) for version, name, statements in db.SCHEMA_CATALOG[:69])
         self.assertEqual(actual, HISTORICAL_69)
         self.assertEqual(db.SCHEMA_CATALOG[69], (70, accounting.SCHEMA_NAME, accounting.SCHEMA_STATEMENTS))
-        self.assertEqual(service.PLUGIN_MODULES[-1], "apps.cipher.domain.accounting")
+        self.assertEqual(service.PLUGIN_MODULES[15], "apps.cipher.domain.accounting")
+        self.assertEqual(service.PLUGIN_MODULES[16:], ["apps.cipher.domain.commercial", "apps.cipher.domain.owner_billing", "apps.cipher.domain.library", "apps.cipher.domain.rfi_controls"])
         self.assertEqual(db.SCHEMA_CATALOG[68][1], "ap_practice_exception_action_receipts")
 
     def test_accounting_import_and_loader_validate_without_registering(self):

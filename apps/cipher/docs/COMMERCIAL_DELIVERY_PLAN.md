@@ -1,7 +1,6 @@
 # Connected estimating and subcontract handoff
 
-Next delivery checkpoint after the [practice accounting handoff](ACCOUNTING_PRACTICE.md).
-This is a build plan; the commercial interface is not yet complete.
+The first connected checkpoint after the [practice accounting handoff](ACCOUNTING_PRACTICE.md) is implemented in the [commercial practice workflow](COMMERCIAL_PRACTICE.md). The remaining full-template controls and larger commercial scope continue below.
 
 The first connected workflow uses owned drawing revisions, explicitly manual
 quantities, exact estimate lines, independent estimator acceptance and a
@@ -13,16 +12,17 @@ budgets and contract signatures need their own later named acts.
 
 The estimate engine already calculates decimal quantities against registered units
 and cent-rounded prices, preserves immutable revisions, binds a drawing revision,
-and records approval-bound acceptance. Commitments can reference an estimate, but
-their independent schedule of values does not yet preserve its priced line source.
+and records approval-bound acceptance. The new handoff preserves its complete priced source in corresponding subcontract
+SOV lines. Existing legacy estimate references retain their original support
+without claiming that exact correspondence.
 Reuse evidence, people, approval, contract, commitment and AP controls. Retain
 accepted Odoo ownership and stable source IDs when its checkpoint is recovered.
 
-Direct commitment execution needs stronger accepted-estimate provenance checks.
-A valid downstream approval must not make an unaccepted source valid. An accepted
-status or row-local hash must not conceal a missing acceptance, altered consumed
-approval, duplicate creation event or deleted audited successor. Fix shared domain
-proof before exposing the new handoff.
+Shared commitment checks require genuine accepted-estimate provenance. A
+downstream approval cannot make an unaccepted source valid; original acceptance,
+consumed authorization, unique creation events and successor inventory must agree.
+Canonical source proofs reject altered content or exact-type aliases. Historical
+accepted outcomes remain provable after genuine later revisions.
 
 ## First usable result
 

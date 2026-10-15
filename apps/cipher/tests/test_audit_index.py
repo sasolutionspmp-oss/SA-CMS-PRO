@@ -30,7 +30,8 @@ class AuditIndexTests(unittest.TestCase):
             "close", "handoff", "rights", "ap_intake", "people", "payment_policy", "contracts",
         )]
         self.assertEqual(PLUGIN_MODULES[:len(historical_modules)], historical_modules)
-        self.assertEqual(PLUGIN_MODULES[len(historical_modules):], ["apps.cipher.domain.accounting"])
+        self.assertEqual(PLUGIN_MODULES[len(historical_modules):], [
+            "apps.cipher.domain.accounting", "apps.cipher.domain.commercial", "apps.cipher.domain.owner_billing", "apps.cipher.domain.library", "apps.cipher.domain.rfi_controls"])
 
     def test_governor_lookup_plans_use_indexes_in_sequence_order(self):
         c = Cipher()

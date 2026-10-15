@@ -1462,6 +1462,15 @@ class Receivables:
 
     def certify(self, *, project_id: str, period_id: str, certified_cumulative: str | Decimal, retainage_rate: str | Decimal | None = None, actor: str,
                 invoice_date: str | _dt.date | None = None) -> dict[str, Any]:
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.project_is_modern(project_id):
+            raise ReceivableError("Owner certification requires its exact owned line-source preparation; use owner_billing.prepare.")
+        return self._certify_legacy(project_id=project_id, period_id=period_id, certified_cumulative=certified_cumulative,
+                                    retainage_rate=retainage_rate, actor=actor, invoice_date=invoice_date)
+
+    def _certify_legacy(self, *, project_id: str, period_id: str, certified_cumulative: str | Decimal,
+                        retainage_rate: str | Decimal | None = None, actor: str,
+                        invoice_date: str | _dt.date | None = None) -> dict[str, Any]:
         """Create a draft prime bill from the cumulative certified value.
 
         The increment is computed against what the standing (posted, unreversed)
@@ -1630,6 +1639,9 @@ class Receivables:
         """Void a draft; posted bills are corrected by reversing their journal
         (``journal.reverse``).  Open approvals on the bill are invalidated in the same
         transaction."""
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.is_modern(prime_bill_id):
+            raise ReceivableError("Owned owner certification cancellation requires its separate governed source workflow.")
         actor = self._require_actor(actor)
         with self.db.transaction() as conn:
             b = self.get(prime_bill_id)
@@ -1680,6 +1692,12 @@ class Receivables:
         return contract
 
     def manifest(self, prime_bill_id: str, *, actor_role: str) -> dict[str, Any]:
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.is_modern(prime_bill_id):
+            return owner.manifest(prime_bill_id, actor_role=actor_role)
+        return self._legacy_manifest(prime_bill_id, actor_role=actor_role)
+
+    def _legacy_manifest(self, prime_bill_id: str, *, actor_role: str) -> dict[str, Any]:
         """Manifest for ``prime_bill.approve``: amounts, the bill hash, the contract version
         and value, the billed chain it continues, entity, currency and the exact journal
         lines the posting will make."""
@@ -1712,6 +1730,12 @@ class Receivables:
         )
 
     def post(self, prime_bill_id: str, *, approval_id: str, actor: str, manifest: dict[str, Any] | None = None) -> dict[str, Any]:
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.is_modern(prime_bill_id):
+            raise ReceivableError("Owner business approval does not post; use separate independent post_prime_bill.")
+        return self._post_legacy(prime_bill_id, approval_id=approval_id, actor=actor, manifest=manifest)
+
+    def _post_legacy(self, prime_bill_id: str, *, approval_id: str, actor: str, manifest: dict[str, Any] | None = None) -> dict[str, Any]:
         """Post an approved draft.  The caller has consumed ``approval_id``.  The bill is
         dated (its requested invoice date, or today) and its due date fixed from the
         payment terms the approval bound (the current terms when no manifest is given)."""
@@ -1811,13 +1835,17 @@ class Receivables:
         return message
 
     def _send_manifest(self, prime_bill_id: str, *, actor_role: str) -> dict[str, Any]:
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.is_modern(prime_bill_id):
+            owner.require_posted_proof(prime_bill_id)
+            owner.send_source_preflight(prime_bill_id)
         b = self.get(prime_bill_id)
         self._sendable(b)
         project = self._project(b["project_id"])
         customer = self._customer(b["customer_id"])
         rec = self.billing_recipients(b["customer_id"])
         message_hash = hash_json(self._send_message(b, rec))
-        return build_manifest(
+        manifest = build_manifest(
             operation=OP_SEND,
             subject_type="prime_bill",
             subject_id=prime_bill_id,
@@ -1836,9 +1864,21 @@ class Receivables:
                 "deposits_applied": b["deposits_applied"], "balance_due": b["open"],
             },
         )
+        if owner is not None and owner.is_modern(prime_bill_id):
+            source = owner.source_proof(prime_bill_id)
+            manifest["bindings"].update({"owner_source_hash": source["sourceHash"],
+                                         "owner_posting_hash": hash_json(owner.require_posted_proof(prime_bill_id))})
+        return manifest
 
     def _apply_send(self, prime_bill_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
         """Deliver to the synthetic mail sink; nothing leaves the prototype."""
+        owner = getattr(self, "owner_billing", None)
+        if owner is not None and owner.is_modern(prime_bill_id):
+            source = owner.source_proof(prime_bill_id)
+            receipt = owner.require_posted_proof(prime_bill_id)
+            if (manifest["bindings"].get("owner_source_hash") != source["sourceHash"]
+                    or manifest["bindings"].get("owner_posting_hash") != hash_json(receipt)):
+                raise ReceivableIneligible("The owner send no longer binds its exact original source and posting receipt")
         bindings = manifest["bindings"]
         with self.db.transaction() as conn:
             b = self.get(prime_bill_id)

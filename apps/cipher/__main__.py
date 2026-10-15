@@ -3,6 +3,10 @@
   serve   [--db PATH] [--port N] [--demo]   run the owner console
   practice-web [--port N]                   run the read-only Fluent practice app
   ap-practice-web [--port N]                run the disposable Fluent AP workflow
+  commercial-practice-web [--port N]        run the disposable manual estimating workflow
+  ar-practice-web [--port N]                run the disposable owner billing workflow
+  library-practice-web [--port N]           run the disposable authored library workflow
+  rfi-practice-web [--port N]               run the disposable RFI workflow
   demo    [--db PATH]                        run the golden fixture and print the summary
   test                                       run the test suite
   export  [--db PATH] [--out FILE]           write the audit export
@@ -39,6 +43,18 @@ def main(argv: list[str] | None = None) -> int:
     apw = sub.add_parser("ap-practice-web", help="run the Fluent AP workflow in a fresh synthetic workspace")
     apw.add_argument("--port", type=int, default=8767)
 
+    cw = sub.add_parser("commercial-practice-web", help="run the Fluent manual estimating workflow in a fresh synthetic workspace")
+    cw.add_argument("--port", type=int, default=8768)
+
+    arw = sub.add_parser("ar-practice-web", help="run the Fluent owner billing workflow in a fresh synthetic workspace")
+    arw.add_argument("--port", type=int, default=8769)
+
+    lw = sub.add_parser("library-practice-web", help="run the Fluent authored library workflow in a fresh synthetic workspace")
+    lw.add_argument("--port", type=int, default=8770)
+
+    rfw = sub.add_parser("rfi-practice-web", help="run the Fluent RFI workflow in a fresh synthetic workspace")
+    rfw.add_argument("--port", type=int, default=8771)
+
     e = sub.add_parser("export", help="write the audit export")
     e.add_argument("--db", default=os.environ.get("CIPHER_DB", "data/cipher.sqlite"))
     e.add_argument("--out", default="-")
@@ -73,6 +89,42 @@ def main(argv: list[str] | None = None) -> int:
         from .ap_practice_server import serve_ap_practice
         try:
             serve_ap_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "commercial-practice-web":
+        from .commercial_practice_server import serve_commercial_practice
+        try:
+            serve_commercial_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "ar-practice-web":
+        from .ar_practice_server import serve_ar_practice
+        try:
+            serve_ar_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "library-practice-web":
+        from .library_practice_server import serve_library_practice
+        try:
+            serve_library_practice(port=args.port)
+        except (OSError, ValueError) as exc:
+            print(f"cipher: {exc}", file=sys.stderr)
+            return 2
+        return 0
+
+    if args.command == "rfi-practice-web":
+        from .rfi_practice_server import serve_rfi_practice
+        try:
+            serve_rfi_practice(port=args.port)
         except (OSError, ValueError) as exc:
             print(f"cipher: {exc}", file=sys.stderr)
             return 2

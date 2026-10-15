@@ -10,6 +10,20 @@ Picking this up? Start with `HANDOFF.md` (where it stands and what to do next) a
 
 The path to the usable Odoo/Cipher/QuickBooks workflow is tracked in [docs/DELIVERY_BACKLOG.md](docs/DELIVERY_BACKLOG.md), with system ownership, milestone acceptance gates and the next work items. The [bill approval/posting split](docs/BILL_POSTING_SPLIT_PLAN.md) works in the synthetic engine; immutable practice mode is implemented. The separate [AP practice workflow](docs/AP_PRACTICE.md) adds scoped synthetic sessions, bill preparation, invoice receipt/matching, independent match review and repeatable bill request/approval/posting actions. Read-only product metadata confirms QuickBooks Online Advanced; [the accounting adapter plan](docs/QUICKBOOKS_ADAPTER_PLAN.md) defines its handoff boundary. Recover and reuse the Odoo checkpoint and preserve the established BILL payment route until its handoff is mapped and tested. Fluent UI can be designed without sign-in; authenticated application identity is required before operational use by staff.
 
+## Current main qualification
+
+The main backend passes 2703 unique tests in 1703.859 seconds with zero failures, errors or skips; all 266 Python source/test hashes remain unchanged. The four main Fluent workflows and the separate nine-case recovery-remount check also pass on their captured runtime/UI/configuration/served-JavaScript snapshots. The two test expectation corrections retain exact original-to-current provenance.
+
+| Entry | Fixed actions | Practice result | Port |
+|---|---:|---|---:|
+| AP, intake, exceptions and accounting |24| Installed-work/invoice matching, business grant and independent posting, governed correction, separate simulated accounting delivery/readback |8767|
+| Commercial |7| Manual source-priced estimate revisions, independent estimator acceptance and source-preserving PM subcontract draft |8768|
+| Owner billing / AR |7| Claimed/reviewed owner pay app, journal-free grant, independent same-grant posting and separately approved synthetic send |8769|
+| Authored library |6| Exact UTF-8 revisions and independently reviewed project reference copy |8770|
+| RFI |9| Issued drawing/supporting citations, draft response, independent official answer and separate synthetic distribution |8771|
+
+Fluent itself requires no Microsoft sign-in. Staff authentication and tenant controls must be qualified before operational use; the owner's existing Fluent direction authorizes continued synthetic design and backend work.
+
 ## Start
 
 ```bash
@@ -22,6 +36,10 @@ python -m apps.cipher export --db data/cipher.sqlite --out audit-export.json
 python -m apps.cipher schema --db data/cipher.sqlite
 python -m apps.cipher practice-web --port 8766              # read-only Fluent practice backend, fresh in-memory fixture
 python -m apps.cipher ap-practice-web --port 8767           # Fluent AP workflow, fresh synthetic people and records
+python -m apps.cipher commercial-practice-web --port 8768   # Fluent manual estimating, review and draft subcontract
+python -m apps.cipher ar-practice-web --port 8769           # Fluent owner billing, independent posting and synthetic send
+python -m apps.cipher library-practice-web --port 8770      # Fluent exact authored text and internal project reference
+python -m apps.cipher rfi-practice-web --port 8771          # Fluent governed answer and synthetic RFI distribution
 python -m apps.cipher.tools.core_gates                      # accounting-core decision gates (scorecard JSON)
 python -m apps.cipher.tools.corpus                          # 20-bill corpus: approval-time metrics (report JSON)
 python -m apps.cipher.tools.browser_check                   # headless Chrome/Edge drives the console journey
@@ -34,6 +52,27 @@ Build the separate AP entry with `npm run build:ap`, then start `ap-practice-web
 The accountant can also prepare installed work on Civil works subcontract, receive an invoice from its project-owned evidence and request a computed match. A separate synthetic reviewer accountant grants the match; an authorized accountant explicitly applies it before PM bill review and independent posting. Duplicate, amount-mismatch and changed-evidence states refuse safely. The [exception workflow](docs/AP_EXCEPTIONS.md) adds invoice revision/rejection/duplicate review, original-PM withdrawal and approved bill reversal followed by separately matched/reviewed/posted replacement. The [practice accounting workflow](docs/ACCOUNTING_PRACTICE.md) prepares the original posted obligation, requires independent accountant review, queues it, and separately runs simulated delivery, lookup and readback reconciliation. All 24 fixed actions preserve original outcomes across authorized retries. Evidence upload, PO/stored-material preparation and payment delivery remain later slices.
 
 New workspaces receive an immutable audited practice declaration. Known historical Cipher files adopt practice while preserving original history; unrelated, empty, missing-identity or invalid-schema files are refused before initialization. This release refuses live files and unqualified payment providers. No flag or route promotes practice to live.
+
+Build the separate commercial entry with `npm run build:commercial`, then run
+`commercial-practice-web`. Its [connected workflow](docs/COMMERCIAL_PRACTICE.md)
+preserves owned drawing/manual quantities, exact prices and source lineage through
+estimate revisions, independent estimator acceptance and PM-created subcontract
+drafts. All seven commands use scoped pure reviews and original repeatable outcomes.
+The draft keeps every accepted source line; supplier execution, customer proposal
+issue/award and project budget adoption remain separate acts. Source locators do
+not claim calibrated geometric takeoff.
+
+Build the separate owner-billing entry with `npm run build:ar`, then run
+`ar-practice-web`. Its [workflow reference](docs/OWNER_BILLING_PRACTICE.md)
+connects a declared owner contract/SOV and distinct claimed/reviewed sources to
+exact server calculations, journal-free business approval and independent posting
+under that original grant. A separate independent review permits one synthetic
+mail-sink send. Original receipts remain separate from current qualified open and
+retained AR balances. Aging uses current standing balances at the selected date;
+unsupported adjustment sources hold the entry. QuickBooks delivery, real customer
+sending and settlement remain separate integration work.
+
+Build the authored-library entry with `npm run build:library`, then run `library-practice-web`. Its [workflow](docs/LIBRARY_PRACTICE.md) stores exact 64 KiB UTF-8 revisions and independently adopts an internal reference copy. Build RFI with `npm run build:rfi`, then run `rfi-practice-web`; its [workflow](docs/RFI_PRACTICE.md) preserves issued drawing/support citations, a separately granted official answer and independently approved local synthetic distribution. Neither adopts a financial or engineering-certification change.
 
 Restored or copied workspaces open read-only until the owner claims them. A known pre-mode copy defers declaration until that claim; diagnostics report its pending state. Claims must run outside any enclosing transaction. Payment recovery quarantine remains until reconciliation:
 
@@ -73,6 +112,9 @@ Modules (each registers its own schema entry and approval-bound operations):
 | | `ap_intake` | supplier invoices with number, dates and terms, duplicate refusal and near-duplicate review, approval-bound match to a certified bill or to received purchase-order lines |
 | | `reimbursements` | staff expenses paid through the outbox, separate customer billing |
 | Controls | `forecast` (core) | hash-chained budget versions by cost code through `budget.revise`, cost to date by source, estimate to complete, snapshots |
+| Commercial | `estimates` (core), `commercial` | exact manual drawing-source revisions, independent actual estimator acceptance and source-preserving PM-created subcontract drafts; geometric takeoff and customer issue/award remain subsequent acts |
+| Library | `library`, `owned_sources` | Actual authored UTF-8 revisions, immutable predecessor/head lineage, current rights and independent reference-only adoption |
+| Project source controls | `owner_billing`, `rfi_controls`, `drawing_sources` | Exact owner calculations and same-grant posting; separately governed RFI answers/distribution and original issued-source proofs |
 | AEC | `labor` | effective-dated rates, phases with fee budgets, timesheets, payroll without double cost, utilization, T&M billing |
 | | `schedule` | CPM with float and critical path, deadlines, resource loading, approved baselines |
 | EPC | `procurement` | equipment, requisitions, bid tabs, justified awards that create draft commitments, long-lead tracking, receiving |
@@ -134,6 +176,14 @@ apps/cipher/
   tests/         unit, integrity, workflow, V1 and extended acceptance, corpus, adversarial variants, HTTP and per-module tests
   Dockerfile
 ```
+
+## Current practice boundaries
+
+Every write entry owns a separate fresh memory practice workspace and synthetic registered people. Current own project duties precede private source/replay access; independent review and the original grant govern consequential effects. Original receipts stay distinct from current source/rights/lifecycle facts. All 53 fixed commands across the separate entries share a per-canonical-person UUID namespace when composed in one workspace; the AP allowlist itself remains 24.
+
+Owner-billing aging shows current proven balances at the selected aging date, not a historical cutoff; native check/wire collections and returns are source-proved, while unsupported credit/write-off/deposit/retainage-release sources hold current qualification.
+
+QuickBooks remains the official accounting authority while Cipher owns the proposed commercial, AP/AR and project/CMS workflows. The accounting adapter and worker remain an owned memory-only simulator; live providers, bank connectivity, file/process-restart worker durability and official QuickBooks delivery are unqualified. Manual quantities do not establish calibrated geometry. RFI answers are not engineering stamps, library adoptions are internal references rather than executed contracts, and hash-only drawing/document evidence does not supply PDF/CAD artifact bytes. Library-authored UTF-8 text is actually stored. Licensed ingestion/distribution, external signatures/delivery, operational identity, original copyright and record-retention policies, production performance, manual screen-reader review and enterprise acceptance remain future qualification.
 
 ## Gates that remain closed
 

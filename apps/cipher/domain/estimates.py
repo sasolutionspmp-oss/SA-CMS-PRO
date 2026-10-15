@@ -74,10 +74,10 @@ import unicodedata
 from decimal import Decimal, InvalidOperation, localcontext
 from typing import Any
 
-from ..core.approvals import Approvals, StaleApprovalError, build_manifest
+from ..core.approvals import Approvals, StaleApprovalError, build_manifest, material_hash
 from ..core.audit import Audit
 from ..core.db import Database, register_schema_version
-from ..core.ids import canonical_json, hash_json, new_id, utcnow_iso
+from ..core.ids import canonical_json, hash_json, loads, new_id, parse_iso, utcnow_iso
 from ..core.money import RATE_PLACES, D, MoneyError, fmt, money, total
 from .evidence import Evidence, EvidenceError
 
@@ -485,57 +485,47 @@ class Estimates:
 
     # ---- creation ---------------------------------------------------------- #
 
-    def create(
-        self,
-        project_id: str,
-        document_revision_id: str,
-        lines: list[dict[str, Any]],
-        actor: str,
-        supersedes: str | None = None,
-        *,
-        price_book_ref: str | None = None,
-        inclusions: list[str] | tuple[str, ...] = (),
-        exclusions: list[str] | tuple[str, ...] = (),
-        contingency_rate: str | Decimal | int = "0",
-        measurement_basis: str | None = None,
-        removed_exclusions: list[str] | tuple[str, ...] = (),
-    ) -> dict[str, Any]:
-        norm = self._normalize_lines(lines)
-        basis = _optional_text("measurement_basis", measurement_basis, empty_is_none=True)
-        measured = [ln for ln in norm if ln["unit"] in MEASURED_UNITS]
-        if measured and basis is None:
-            first = measured[0]
-            raise EstimateError(
-                f"unit/scale: line {first['line_no']} is measured in {first['unit']} but the estimate has no measurement_basis; "
-                "state the source drawing revision and the verified scale"
-            )
-        book = _optional_text("price_book_ref", price_book_ref, empty_is_none=False)
-        incl = _text_list("inclusions", inclusions)
-        excl = _text_list("exclusions", exclusions)
-        removed = _text_list("removed_exclusions", removed_exclusions)
-        excl_keys = {_key(e) for e in excl}
-        both = [x for x in incl if _key(x) in excl_keys]
-        if both:
-            raise EstimateError(f"scope items cannot be both included and excluded: {both}")
-        cont_rate = _parse_rate("0" if contingency_rate is None else contingency_rate)
-        supersedes = supersedes or None
-        if removed and supersedes is None:
-            raise EstimateError("removed_exclusions applies only to an estimate that supersedes another")
+    def creation_preflight(
+        self, project_id, document_revision_id, lines, *, supersedes=None,
+        price_book_ref=None, inclusions=(), exclusions=(), contingency_rate="0",
+        measurement_basis=None, removed_exclusions=(),
+    ):
+        """Zero-write exact normalized content and source plan, without IDs/time."""
+        with self.db._lock:
+            norm = self._normalize_lines(lines)
+            basis = _optional_text("measurement_basis", measurement_basis, empty_is_none=True)
+            measured = [ln for ln in norm if ln["unit"] in MEASURED_UNITS]
+            if measured and basis is None:
+                first = measured[0]
+                raise EstimateError(
+                    f"unit/scale: line {first['line_no']} is measured in {first['unit']} but the estimate has no measurement_basis; "
+                    "state the source drawing revision and the verified scale"
+                )
+            book = _optional_text("price_book_ref", price_book_ref, empty_is_none=False)
+            incl = _text_list("inclusions", inclusions)
+            excl = _text_list("exclusions", exclusions)
+            removed = _text_list("removed_exclusions", removed_exclusions)
+            excl_keys = {_key(e) for e in excl}
+            both = [x for x in incl if _key(x) in excl_keys]
+            if both:
+                raise EstimateError(f"scope items cannot be both included and excluded: {both}")
+            cont_rate = _parse_rate("0" if contingency_rate is None else contingency_rate)
+            supersedes = supersedes or None
+            if removed and supersedes is None:
+                raise EstimateError("removed_exclusions applies only to an estimate that supersedes another")
 
-        try:
-            subtotal = total(ln["amount"] for ln in norm)
-            contingency = money(subtotal * cont_rate)
-            est_total = money(subtotal + contingency)
-        except (MoneyError, InvalidOperation) as exc:
-            raise EstimateError(f"estimate totals are out of range: {exc}") from exc
-        est_id = new_id("est")
-        with self.db.transaction() as conn:
-            self.db.require_write_authority()
+            try:
+                subtotal = total(ln["amount"] for ln in norm)
+                contingency = money(subtotal * cont_rate)
+                est_total = money(subtotal + contingency)
+            except (MoneyError, InvalidOperation) as exc:
+                raise EstimateError(f"estimate totals are out of range: {exc}") from exc
             project = self.db.one("SELECT id FROM projects WHERE id=?", (project_id,))
             if project is None:
                 raise EstimateError(f"unknown project {project_id}")
             try:
-                rev = self.evidence.revision(document_revision_id)
+                source_proof = self.source_revision_proof(document_revision_id)
+                rev = source_proof["revision"]
             except EvidenceError as exc:
                 raise EstimateError(str(exc)) from exc
             doc = self.db.one("SELECT project_id FROM documents WHERE id=?", (rev["document_id"],))
@@ -577,59 +567,106 @@ class Estimates:
             if dup is not None:
                 raise EstimateError(f"duplicate estimate: {dup['id']} already has identical content")
 
+
+            return {"lines": norm, "source": rev, "source_proof": source_proof, "project": project, "revision": revision,
+                    "supersedes": supersedes, "supersession": supersession, "baseline": baseline,
+                    "previous": prev if supersedes else None, "overlaps": overlaps,
+                    "price_book_ref": book, "inclusions": incl, "exclusions": excl,
+                    "removed_exclusions": removed, "measurement_basis": basis,
+                    "contingency_rate": _rate_text(cont_rate), "subtotal": fmt(subtotal),
+                    "contingency": fmt(contingency), "total": fmt(est_total), "content_hash": content_hash}
+
+    def create(
+        self,
+        project_id: str,
+        document_revision_id: str,
+        lines: list[dict[str, Any]],
+        actor: str,
+        supersedes: str | None = None,
+        *,
+        price_book_ref: str | None = None,
+        inclusions: list[str] | tuple[str, ...] = (),
+        exclusions: list[str] | tuple[str, ...] = (),
+        contingency_rate: str | Decimal | int = "0",
+        measurement_basis: str | None = None,
+        removed_exclusions: list[str] | tuple[str, ...] = (),
+    ) -> dict[str, Any]:
+        with self.db.transaction() as conn:
+            savepoint = new_id("estimate_create")
+            conn.execute(f"SAVEPOINT {savepoint}")
             try:
-                # inserting a successor also marks its predecessor superseded (trigger
-                # estimates_successor_supersedes), so the chain never has a live predecessor
-                conn.execute(
-                    """INSERT INTO estimates (id, project_id, document_revision_id, revision, supersedes, status, total, content_hash, created_at,
-                           price_book_ref, inclusions_json, exclusions_json, contingency_rate, subtotal, measurement_basis)
-                       VALUES (?,?,?,?,?,'draft',?,?,?,?,?,?,?,?,?)""",
-                    (est_id, project_id, document_revision_id, revision, supersedes, fmt(est_total), content_hash, utcnow_iso(),
-                     book, canonical_json(incl), canonical_json(excl), _rate_text(cont_rate), fmt(subtotal), basis),
-                )
-                for ln in norm:
+                self.db.require_write_authority()
+                plan = self.creation_preflight(project_id, document_revision_id, lines, supersedes=supersedes,
+                    price_book_ref=price_book_ref, inclusions=inclusions, exclusions=exclusions,
+                    contingency_rate=contingency_rate, measurement_basis=measurement_basis, removed_exclusions=removed_exclusions)
+                est_id = new_id("est")
+                norm, rev, revision = plan["lines"], plan["source"], plan["revision"]
+                supersedes, supersession, baseline, prev = plan["supersedes"], plan["supersession"], plan["baseline"], plan["previous"]
+                book, incl, excl, basis = plan["price_book_ref"], plan["inclusions"], plan["exclusions"], plan["measurement_basis"]
+                cont_rate = D(plan["contingency_rate"])
+                subtotal, contingency, est_total = D(plan["subtotal"]), D(plan["contingency"]), D(plan["total"])
+                content_hash, overlaps = plan["content_hash"], plan["overlaps"]
+                try:
+                    # inserting a successor also marks its predecessor superseded (trigger
+                    # estimates_successor_supersedes), so the chain never has a live predecessor
                     conn.execute(
-                        "INSERT INTO estimate_lines (id, estimate_id, line_no, description, quantity, unit, unit_price, amount) VALUES (?,?,?,?,?,?,?,?)",
-                        (new_id("eln"), est_id, ln["line_no"], ln["description"], ln["quantity"], ln["unit"], ln["unit_price"], ln["amount"]),
+                        """INSERT INTO estimates (id, project_id, document_revision_id, revision, supersedes, status, total, content_hash, created_at,
+                               price_book_ref, inclusions_json, exclusions_json, contingency_rate, subtotal, measurement_basis)
+                           VALUES (?,?,?,?,?,'draft',?,?,?,?,?,?,?,?,?)""",
+                        (est_id, project_id, document_revision_id, revision, supersedes, fmt(est_total), content_hash, utcnow_iso(),
+                         book, canonical_json(incl), canonical_json(excl), _rate_text(cont_rate), fmt(subtotal), basis),
                     )
-                if supersedes is not None:
-                    conn.execute("UPDATE estimates SET status='superseded' WHERE id=?", (supersedes,))  # no-op after the trigger; explicit for clarity
-            except sqlite3.IntegrityError as exc:
-                raise EstimateError(f"the estimate store refused the record: {exc}") from exc
-            payload = {
-                "project_id": project_id, "document_revision_id": document_revision_id, "revision": revision,
-                "subtotal": fmt(subtotal), "contingency_rate": _rate_text(cont_rate), "contingency": fmt(contingency), "total": fmt(est_total),
-                "content_hash": content_hash, "supersedes": supersedes, "price_book_ref": book, "inclusions": incl, "exclusions": excl,
-                "measurement_basis": basis, "units": sorted({ln["unit"] for ln in norm}),
-                "overlapping_estimates": [o["estimate_id"] for o in overlaps],
-            }
-            if supersession is not None:
-                payload.update({
-                    "price_book": {"previous": supersession["price_book_previous"], "current": book, "changed": supersession["price_book_changed"]},
-                    "removed_exclusions": supersession["removed_exclusions"],
-                    "added_exclusions": supersession["added_exclusions"],
-                    "compared_with": baseline["estimate_id"],
-                    "unrecorded_revisions": baseline["unrecorded_revisions"],
-                })
-                self.audit.record(actor, "estimate.superseded", "estimate", supersedes, {
-                    "superseded_by": est_id, "previous_status": prev["status"],
-                    "price_book": payload["price_book"], "removed_exclusions": supersession["removed_exclusions"],
-                    "compared_with": baseline["estimate_id"], "unrecorded_revisions": baseline["unrecorded_revisions"],
-                })
-                approvals = Approvals(self.db, self.audit)
-                approvals.invalidate_for_subject(
-                    "estimate", supersedes, reason=f"estimate {supersedes} was superseded by {est_id}", actor=actor,
-                )
-                # revisions written around the API superseded their predecessors without
-                # an audited supersession; nothing approved against that chain survives it
-                for other in [*baseline["unrecorded_revisions"], baseline["estimate_id"]]:
-                    if other != supersedes:
-                        approvals.invalidate_for_subject(
-                            "estimate", other, reason=f"estimate {other} was superseded outside Cipher; {est_id} now continues the chain",
-                            actor=actor,
+                    for ln in norm:
+                        conn.execute(
+                            "INSERT INTO estimate_lines (id, estimate_id, line_no, description, quantity, unit, unit_price, amount) VALUES (?,?,?,?,?,?,?,?)",
+                            (new_id("eln"), est_id, ln["line_no"], ln["description"], ln["quantity"], ln["unit"], ln["unit_price"], ln["amount"]),
                         )
-            self.audit.record(actor, "estimate.created", "estimate", est_id, payload)
-        return self.get(est_id)
+                    if supersedes is not None:
+                        conn.execute("UPDATE estimates SET status='superseded' WHERE id=?", (supersedes,))  # no-op after the trigger; explicit for clarity
+                except sqlite3.IntegrityError as exc:
+                    raise EstimateError(f"the estimate store refused the record: {exc}") from exc
+                payload = {
+                    "project_id": project_id, "document_revision_id": document_revision_id, "revision": revision,
+                    "subtotal": fmt(subtotal), "contingency_rate": _rate_text(cont_rate), "contingency": fmt(contingency), "total": fmt(est_total),
+                    "content_hash": content_hash, "supersedes": supersedes, "price_book_ref": book, "inclusions": incl, "exclusions": excl,
+                    "measurement_basis": basis, "units": sorted({ln["unit"] for ln in norm}),
+                    "overlapping_estimates": [o["estimate_id"] for o in overlaps],
+                }
+                if supersession is not None:
+                    payload.update({
+                        "price_book": {"previous": supersession["price_book_previous"], "current": book, "changed": supersession["price_book_changed"]},
+                        "removed_exclusions": supersession["removed_exclusions"],
+                        "added_exclusions": supersession["added_exclusions"],
+                        "compared_with": baseline["estimate_id"],
+                        "unrecorded_revisions": baseline["unrecorded_revisions"],
+                    })
+                    self.audit.record(actor, "estimate.superseded", "estimate", supersedes, {
+                        "superseded_by": est_id, "previous_status": prev["status"],
+                        "price_book": payload["price_book"], "removed_exclusions": supersession["removed_exclusions"],
+                        "compared_with": baseline["estimate_id"], "unrecorded_revisions": baseline["unrecorded_revisions"],
+                    })
+                    approvals = Approvals(self.db, self.audit)
+                    approvals.invalidate_for_subject(
+                        "estimate", supersedes, reason=f"estimate {supersedes} was superseded by {est_id}", actor=actor,
+                    )
+                    # revisions written around the API superseded their predecessors without
+                    # an audited supersession; nothing approved against that chain survives it
+                    for other in [*baseline["unrecorded_revisions"], baseline["estimate_id"]]:
+                        if other != supersedes:
+                            approvals.invalidate_for_subject(
+                                "estimate", other, reason=f"estimate {other} was superseded outside Cipher; {est_id} now continues the chain",
+                                actor=actor,
+                            )
+                self.audit.record(actor, "estimate.created", "estimate", est_id, payload)
+                result = self.get(est_id)
+            except BaseException:
+                if conn.in_transaction:
+                    conn.execute(f"ROLLBACK TO {savepoint}")
+                    conn.execute(f"RELEASE {savepoint}")
+                raise
+            else:
+                conn.execute(f"RELEASE {savepoint}")
+                return result
 
     @staticmethod
     def _check_supersession(baseline: dict[str, Any], book: str | None, excl: list[str], removed: list[str]) -> dict[str, Any]:
@@ -695,12 +732,15 @@ class Estimates:
     def _creation_payload(self, estimate_id: str) -> dict[str, Any] | None:
         """The payload of the estimate's first ``estimate.created`` audit entry (the
         hash-chained record of what create() wrote), or None when there is none."""
-        row = self.db.one(
-            "SELECT payload_json FROM audit_log WHERE entity_type='estimate' AND entity_id=? AND action='estimate.created' ORDER BY seq LIMIT 1",
+        rows = self.db.query(
+            "SELECT payload_json FROM audit_log WHERE entity_type='estimate' AND entity_id=? AND action='estimate.created' ORDER BY seq",
             (estimate_id,),
         )
-        if row is None:
+        if len(rows) > 1:
+            raise EstimateError("estimate creation has repeated audited births")
+        if not rows:
             return None
+        row = rows[0]
         try:
             payload = json.loads(row["payload_json"] or "{}")
         except ValueError:
@@ -819,9 +859,10 @@ class Estimates:
         return row
 
     def get(self, estimate_id: str) -> dict[str, Any]:
+        self._audit_inventory()
         row = self._row(estimate_id)
         row["lines"] = self.db.query("SELECT * FROM estimate_lines WHERE estimate_id=? ORDER BY line_no", (estimate_id,))
-        rev = self.evidence.revision(row["document_revision_id"])
+        rev = self.source_revision_proof(row["document_revision_id"])["revision"]
         row["evidence"] = {"document_id": rev["document_id"], "revision": rev["revision"], "content_hash": rev["content_hash"], "is_current": rev["is_current"], "current_revision": rev["current_revision"]}
         row["superseded_by"] = self.db.scalar("SELECT id FROM estimates WHERE supersedes=?", (estimate_id,))
         row["inclusions"] = _json_list(row.get("inclusions_json"))
@@ -851,10 +892,334 @@ class Estimates:
             reasons.append("its stored content no longer matches its content hash")
         if not row["creation_recorded"]:
             reasons.append("not created through Cipher (no matching estimate.created audit entry)")
+        row["acceptance_verified"] = None
+        if row["approval_id"] is not None or row["status"] == "approved":
+            try:
+                self._acceptance_proof(row, row["approval_id"])
+                row["acceptance_verified"] = True
+            except EstimateError:
+                row["acceptance_verified"] = False
+                reasons.append("its original estimate acceptance and consumed authorization cannot be verified")
         row["stale"] = bool(reasons)
         row["stale_reasons"] = reasons
         row["supersession"] = self._supersession_view(row) if row["supersedes"] else None
         return row
+
+    def _audit_inventory(self):
+        """Audited births cannot disappear even if an old status row survives."""
+        stamp = (self.db.conn.total_changes, self.db.scalar("PRAGMA data_version"), self.db.scalar("PRAGMA schema_version"))
+        if stamp == getattr(self, "_source_inventory_stamp", None):
+            return
+        if not self.audit.verify_chain()["ok"]:
+            raise EstimateError("estimate source audit chain is broken")
+        events = self.db.query("SELECT * FROM audit_log WHERE action='estimate.created' AND entity_type='estimate' ORDER BY seq")
+        identifiers = [event["entity_id"] for event in events]
+        rows = {row["id"]: row for row in self.db.query("SELECT * FROM estimates")}
+        if len(identifiers) != len(set(identifiers)) or not set(identifiers) <= rows.keys():
+            raise EstimateError("estimate inventory differs from its original audited births")
+        for event in events:
+            payload = loads(event["payload_json"])
+            row = rows[event["entity_id"]]
+            for key in ("project_id", "document_revision_id", "revision", "supersedes"):
+                if key in payload and payload[key] != row[key]:
+                    raise EstimateError("estimate identity differs from its original audited birth")
+            if row["supersedes"] is not None and row["supersedes"] not in rows:
+                raise EstimateError("an estimate lost its recorded predecessor")
+        for event in self.db.query("SELECT * FROM audit_log WHERE action='estimate.superseded' AND entity_type='estimate'"):
+            payload = loads(event["payload_json"])
+            successor = rows.get(payload.get("superseded_by"))
+            if event["entity_id"] not in rows or successor is None or successor["supersedes"] != event["entity_id"]:
+                raise EstimateError("an audited estimate supersession lost its original source or successor")
+        self._source_inventory_stamp = stamp
+
+    @staticmethod
+    def _event_ref(event):
+        return {"auditSeq": event["seq"], "auditHash": event["entry_hash"], "actor": event["actor"]}
+
+    def source_revision_proof(self, revision_id):
+        """Verify the owned document's complete revision inventory, purely."""
+        self._audit_inventory()
+        try:
+            revision = self.evidence.revision(revision_id)
+            document = self.evidence.document(revision["document_id"])
+        except EvidenceError as exc:
+            raise EstimateError(str(exc)) from exc
+        births = self.db.query("SELECT * FROM audit_log WHERE action='document.registered' AND entity_type='document' AND entity_id=?", (document["id"],))
+        expected_document = {key: document[key] for key in ("project_id", "kind", "title")}
+        if len(births) != 1 or loads(births[0]["payload_json"]) != expected_document:
+            raise EstimateError("estimate source document differs from its original registration")
+        rows = {row["id"]: row for row in self.db.query("SELECT * FROM document_revisions WHERE document_id=?", (document["id"],))}
+        history = self.db.query("SELECT * FROM audit_log WHERE action='document.revised' AND entity_type='document' AND entity_id=? ORDER BY seq", (document["id"],))
+        identifiers = [loads(event["payload_json"]).get("revision_id") for event in history]
+        if len(identifiers) != len(set(identifiers)) or set(identifiers) != rows.keys():
+            raise EstimateError("estimate drawing revision inventory differs from its audited births")
+        source_event = None
+        for number, event in enumerate(history, start=1):
+            payload = loads(event["payload_json"])
+            row = rows[payload["revision_id"]]
+            if (row["revision"] != number or payload != {"revision_id": row["id"], "revision": row["revision"], "content_hash": row["content_hash"], "note": row["note"]}
+                    or event["seq"] <= births[0]["seq"]):
+                raise EstimateError("estimate drawing revision differs from its exact original audited source")
+            if row["id"] == revision_id:
+                source_event = event
+        if source_event is None:
+            raise EstimateError("estimate source revision has no audited birth")
+        return {"document": document, "revision": revision, "registration": self._event_ref(births[0]), "birth": self._event_ref(source_event)}
+
+    def _acceptance_proof(self, est, approval_id, *, require_effect=True):
+        self.estimate_approval_proof(approval_id)
+        if not isinstance(approval_id, str) or not approval_id:
+            raise EstimateError("accepted estimate has no original authorization")
+        row = self.db.one("SELECT * FROM approvals WHERE id=?", (approval_id,))
+        if row is None:
+            raise EstimateError("accepted estimate lost its original authorization")
+        manifest = loads(row["manifest_json"])
+        if (row["operation"] != "estimate.approve" or row["subject_type"] != "estimate" or row["subject_id"] != est["id"]
+                or row["status"] != "consumed" or manifest.get("operation") != "estimate.approve"
+                or manifest.get("subject") != {"type": "estimate", "id": est["id"]}
+                or canonical_json(manifest) != row["manifest_json"] or hash_json(manifest) != row["manifest_hash"]
+                or material_hash(manifest) != row["material_hash"] or manifest.get("actor_role") != row["actor_role"]
+                or manifest.get("nonce") != row["nonce"] or manifest.get("policy_version") != row["policy_version"]):
+            raise EstimateError("estimate authorization differs from its exact original manifest")
+        bindings = manifest.get("bindings") or {}
+        expected = {"estimate_revision": est["revision"], "estimate_hash": est["content_hash"],
+                    "document_revision_id": est["document_revision_id"], "document_hash": est["evidence"]["content_hash"],
+                    "project_id": est["project_id"]}
+        if any(bindings.get(key) != value for key, value in expected.items()) or manifest.get("amounts", {}).get("total") != est["total"]:
+            raise EstimateError("estimate acceptance no longer identifies the original immutable content")
+        events = self.audit.entries(entity_type="approval", entity_id=approval_id)
+        operations = [event for event in events if event["action"] in {"approval.requested", "approval.granted", "approval.consumed", "approval.invalidated", "approval.expired"}]
+        if [event["action"] for event in operations] != ["approval.requested", "approval.granted", "approval.consumed"]:
+            raise EstimateError("estimate acceptance lacks its legitimate original approval lifecycle")
+        request, grant, consume = operations
+        expected_request = {"operation": "estimate.approve", "subject": manifest["subject"], "manifest_hash": row["manifest_hash"]}
+        expected_effect = {"operation": "estimate.approve", "material_hash": row["material_hash"]}
+        if (request["actor"] != row["requested_by"] or grant["actor"] != row["approver"] or consume["actor"] != row["consumed_by"]
+                or loads(request["payload_json"]) != expected_request or loads(grant["payload_json"]) != expected_effect
+                or loads(consume["payload_json"]) != expected_effect or not row["granted_at"] or not row["consumed_at"]):
+            raise EstimateError("estimate acceptance attribution differs from the original decisions")
+        approved = self.db.query("SELECT * FROM audit_log WHERE action='estimate.approved' AND entity_type='estimate' AND entity_id=? ORDER BY seq", (est["id"],))
+        if require_effect:
+            expected_payload = {"approval_id": approval_id, "subtotal": est["subtotal"], "contingency": est["contingency"],
+                                "total": est["total"], "content_hash": est["content_hash"]}
+            if (len(approved) != 1 or approved[0]["actor"] != row["consumed_by"] or approved[0]["seq"] <= consume["seq"]
+                    or loads(approved[0]["payload_json"]) != expected_payload):
+                raise EstimateError("accepted estimate has no exact original audited business effect")
+        elif approved:
+            raise EstimateError("estimate acceptance already took effect")
+        if not require_effect:
+            current = self.manifest(est["id"], actor_role=row["actor_role"])
+            if material_hash(current) != row["material_hash"]:
+                raise EstimateError("consumed estimate authorization differs from the current complete material plan")
+        return {"approvalId": approval_id, "manifestHash": row["manifest_hash"], "materialHash": row["material_hash"],
+                "requestedBy": row["requested_by"], "approver": row["approver"], "consumedBy": row["consumed_by"],
+                "request": self._event_ref(request), "grant": self._event_ref(grant), "consume": self._event_ref(consume),
+                "accepted": self._event_ref(approved[0]) if require_effect else None}
+
+    def baseline_proof(self, estimate_id, *, require_current=False, require_accepted=False):
+        """Pure source proof; original content survives legitimate later revisions."""
+        with self.db._lock:
+            self._source_guards()
+            est = self.get(estimate_id)
+            self.estimate_approval_inventory((est["project_id"],))
+            if not est["creation_recorded"] or not est["content_verified"]:
+                raise EstimateError("estimate content lacks its original audited creation")
+            self._lifecycle_proof(est)
+            birth = self.db.one("SELECT * FROM audit_log WHERE action='estimate.created' AND entity_type='estimate' AND entity_id=?", (estimate_id,))
+            doc = self.evidence.document(est["evidence"]["document_id"])
+            if doc["project_id"] != est["project_id"]:
+                raise EstimateError("estimate source belongs to another project")
+            acceptance = None if est["approval_id"] is None else self._acceptance_proof(est, est["approval_id"])
+            ancestry, seen, previous = [], {estimate_id}, est["supersedes"]
+            declared_unrecorded = set(loads(birth["payload_json"]).get("unrecorded_revisions", []))
+            while previous is not None:
+                if previous in seen:
+                    raise EstimateError("estimate revision ancestry is cyclic")
+                seen.add(previous)
+                ancestor = self.get(previous)
+                if ancestor["project_id"] != est["project_id"]:
+                    raise EstimateError("estimate revision ancestry crosses project scope")
+                if ancestor["creation_recorded"]:
+                    if not ancestor["content_verified"]:
+                        raise EstimateError("an original recorded estimate ancestor no longer matches its content")
+                    self._lifecycle_proof(ancestor)
+                    if ancestor["approval_id"] is not None:
+                        self._acceptance_proof(ancestor, ancestor["approval_id"])
+                    event = self.db.one("SELECT * FROM audit_log WHERE action='estimate.created' AND entity_type='estimate' AND entity_id=?", (previous,))
+                    ancestry.append({"estimateId": previous, "contentHash": ancestor["content_hash"], "creation": self._event_ref(event), "recorded": True})
+                elif previous in declared_unrecorded:
+                    # Preserve the existing explicit recovery semantics. A new
+                    # commercial handoff additionally requires its own complete
+                    # immutable manual-line facts and refuses unproved lineage.
+                    ancestry.append({"estimateId": previous, "recorded": False})
+                else:
+                    raise EstimateError("estimate revision ancestry lost a recorded birth")
+                previous = ancestor["supersedes"]
+            if require_accepted and acceptance is None:
+                raise EstimateError("commitment source must be a genuinely accepted estimate")
+            if require_current and (est["stale"] or require_accepted and est["status"] != "approved"):
+                raise EstimateError("estimate source is no longer current for a new handoff")
+            return {"estimateId": estimate_id, "projectId": est["project_id"], "revision": est["revision"], "contentHash": est["content_hash"],
+                    "source": {"documentId": doc["id"], "revisionId": est["document_revision_id"], "contentHash": est["evidence"]["content_hash"]},
+                    "creation": self._event_ref(birth), "acceptance": acceptance,
+                    "ancestry": ancestry,
+                    "lines": [{key: line[key] for key in ("id", "line_no", "description", "quantity", "unit", "unit_price", "amount")} for line in est["lines"]],
+                    "subtotal": est["subtotal"], "contingency": est["contingency"], "total": est["total"],
+                    "scope": {key: est[key] for key in ("price_book_ref", "inclusions", "exclusions", "measurement_basis")}}
+
+    def _source_guards(self):
+        expected = {}
+        for statements in (STRUCTURE_SCHEMA_STATEMENTS, LIFECYCLE_SCHEMA_STATEMENTS, NO_REPLACE_SCHEMA_STATEMENTS):
+            for sql in statements:
+                create = re.match(r"CREATE TRIGGER (\w+)", sql)
+                drop = re.match(r"DROP TRIGGER(?: IF EXISTS)? (\w+)", sql)
+                if create:
+                    expected[create[1]] = sql
+                elif drop:
+                    expected.pop(drop[1], None)
+        normalize = lambda value: re.sub(r"\s+", " ", value.strip())
+        for name, sql in expected.items():
+            row = self.db.one("SELECT sql FROM sqlite_master WHERE type='trigger' AND name=?", (name,))
+            if row is None or normalize(row["sql"]) != normalize(sql):
+                raise EstimateError("estimate source storage guards are missing or changed")
+
+    def _lifecycle_proof(self, est):
+        """Require one original effect for every current estimate transition."""
+        events = self.audit.entries(entity_type="estimate", entity_id=est["id"])
+        births = [event for event in events if event["action"] == "estimate.created"]
+        accepted = [event for event in events if event["action"] == "estimate.approved"]
+        superseded = [event for event in events if event["action"] == "estimate.superseded"]
+        if len(births) != 1 or len(accepted) > 1 or len(superseded) > 1:
+            raise EstimateError("estimate lifecycle has repeated or missing original effects")
+        if (est["approval_id"] is None) != (not accepted):
+            raise EstimateError("estimate current acceptance pointer differs from its original business effect")
+        if accepted and (accepted[0]["seq"] <= births[0]["seq"] or loads(accepted[0]["payload_json"]).get("approval_id") != est["approval_id"]):
+            raise EstimateError("estimate acceptance chronology differs from its original creation")
+        if (est["status"] == "superseded") != bool(superseded):
+            raise EstimateError("estimate current supersession lacks its original business effect")
+        if superseded:
+            event, payload = superseded[0], loads(superseded[0]["payload_json"])
+            successor = self.db.one("SELECT * FROM estimates WHERE supersedes=?", (est["id"],))
+            next_birth = self.db.one("SELECT seq FROM audit_log WHERE action='estimate.created' AND entity_type='estimate' AND entity_id=?", (payload.get("superseded_by"),))
+            if (successor is None or next_birth is None or successor["id"] != payload.get("superseded_by")
+                    or successor["revision"] != est["revision"]+1 or successor["project_id"] != est["project_id"]
+                    or payload.get("previous_status") != ("approved" if accepted else "draft")
+                    or event["seq"] <= (accepted[0]["seq"] if accepted else births[0]["seq"]) or next_birth["seq"] <= event["seq"]):
+                raise EstimateError("estimate successor differs from its original audited supersession")
+        elif est["superseded_by"] is not None or est["status"] != ("approved" if accepted else "draft"):
+            raise EstimateError("estimate current state contradicts its original lifecycle")
+
+    def estimate_proof(self, estimate_id, *, accepted=False, current=False):
+        return self.baseline_proof(estimate_id, require_current=current, require_accepted=accepted)
+
+    def acceptance_preflight(self, estimate_id):
+        """Pure planned acceptance; actual estimator authority is service-owned."""
+        source = self.baseline_proof(estimate_id, require_current=True)
+        est = self.get(estimate_id)
+        blocker = self._approval_blocker(est)
+        if blocker is not None:
+            raise blocker
+        inventory = self.estimate_approval_inventory((est["project_id"],), estimate_ids=(estimate_id,))
+        return {"source": source, "estimate_id": estimate_id, "content_hash": est["content_hash"], "status": "approved",
+                "subtotal": est["subtotal"], "contingency": est["contingency"], "total": est["total"],
+                "invalidated_approval_ids": sorted(row["id"] for row in inventory if row["status"] in ("pending", "granted"))}
+
+    def estimate_approval_inventory(self, project_ids, estimate_ids=None):
+        """Pure scoped inventory of original fixed acceptance request births."""
+        self._audit_inventory()
+        projects, selected = set(project_ids), None if estimate_ids is None else set(estimate_ids)
+        scope = {row["id"]: row["project_id"] for row in self.db.query("SELECT id,project_id FROM estimates")}
+        births = {}
+        for event in self.db.query("SELECT * FROM audit_log WHERE action='approval.requested' AND entity_type='approval' ORDER BY seq"):
+            payload = loads(event["payload_json"])
+            if payload.get("operation") != "estimate.approve":
+                continue
+            subject = payload.get("subject") or {}
+            if subject.get("type") != "estimate" or subject.get("id") not in scope:
+                raise EstimateError("original estimate authorization lost its subject source")
+            estimate_id = subject["id"]
+            if scope[estimate_id] not in projects or selected is not None and estimate_id not in selected:
+                continue
+            if event["entity_id"] in births:
+                raise EstimateError("estimate authorization has repeated audited request births")
+            births[event["entity_id"]] = estimate_id
+        current = self.db.query("SELECT id,subject_id FROM approvals WHERE operation='estimate.approve' AND subject_type='estimate'")
+        rows = {row["id"]: row["subject_id"] for row in current if scope.get(row["subject_id"]) in projects
+                and (selected is None or row["subject_id"] in selected)}
+        if rows != births:
+            raise EstimateError("estimate authorization inventory differs from its original audited requests")
+        result = []
+        for identifier in births:
+            self.estimate_approval_proof(identifier)
+            result.append(Approvals(self.db, self.audit).get(identifier))
+        return result
+
+    def estimate_approval_proof(self, approval_id):
+        """Static original request proof after validating the full lifecycle."""
+        self._audit_inventory()
+        row = self.db.one("SELECT * FROM approvals WHERE id=?", (approval_id,))
+        if row is None:
+            raise EstimateError("estimate acceptance authorization is unavailable")
+        manifest = loads(row["manifest_json"])
+        if (row["operation"] != "estimate.approve" or row["subject_type"] != "estimate" or manifest.get("operation") != "estimate.approve"
+                or manifest.get("subject") != {"type": "estimate", "id": row["subject_id"]}
+                or canonical_json(manifest) != row["manifest_json"] or hash_json(manifest) != row["manifest_hash"]
+                or material_hash(manifest) != row["material_hash"] or manifest.get("actor_role") != row["actor_role"]
+                or manifest.get("nonce") != row["nonce"] or manifest.get("policy_version") != row["policy_version"]):
+            raise EstimateError("estimate authorization original manifest cannot be verified")
+        try:
+            expiry, original_expiry = parse_iso(row["expires_at"]), parse_iso(manifest["expires_at"])
+            if expiry.utcoffset() is None or original_expiry.utcoffset() is None or expiry > original_expiry:
+                raise ValueError("changed original expiry")
+        except (ValueError, TypeError, KeyError) as exc:
+            raise EstimateError("estimate authorization original expiry cannot be verified") from exc
+        actions = {"approval.requested": "pending", "approval.granted": "granted", "approval.consumed": "consumed", "approval.expired": "expired", "approval.invalidated": "invalidated"}
+        legal = {None: {"pending"}, "pending": {"granted", "expired", "invalidated"}, "granted": {"consumed", "expired", "invalidated"}, "consumed": set(), "expired": {"invalidated"}, "invalidated": {"invalidated"}}
+        current, request, grant, consume, invalidation = None, None, None, None, None
+        for event in self.audit.entries(entity_type="approval", entity_id=approval_id):
+            if event["action"] not in actions:
+                continue
+            state = actions[event["action"]]
+            if state not in legal[current]:
+                raise EstimateError("estimate authorization has an unaudited lifecycle")
+            current = state
+            payload = loads(event["payload_json"])
+            if state == "pending":
+                request = event
+                if event["actor"] != row["requested_by"] or payload != {"operation": "estimate.approve", "subject": manifest["subject"], "manifest_hash": row["manifest_hash"]}:
+                    raise EstimateError("estimate authorization original request changed")
+            elif state in ("granted", "consumed"):
+                actor = row["approver"] if state == "granted" else row["consumed_by"]
+                if event["actor"] != actor or payload != {"operation": "estimate.approve", "material_hash": row["material_hash"]}:
+                    raise EstimateError("estimate authorization original decision changed")
+                if state == "granted":
+                    grant = event
+                else:
+                    consume = event
+            elif state == "invalidated":
+                invalidation = event
+        if request is None or current != row["status"]:
+            raise EstimateError("estimate authorization current state is not its audited state")
+        reason = None if invalidation is None else loads(invalidation["payload_json"]).get("reason")
+        if ((current == "invalidated" and (type(reason) is not str or reason != row["invalidated_reason"]))
+                or current != "invalidated" and row["invalidated_reason"] is not None):
+            raise EstimateError("estimate authorization current reason differs from its latest audited control event")
+        for event, actor_field, time_field in ((grant, "approver", "granted_at"), (consume, "consumed_by", "consumed_at")):
+            if (event is None and (row[actor_field] is not None or row[time_field] is not None)
+                    or event is not None and (not row[actor_field] or not row[time_field])):
+                raise EstimateError("estimate authorization decision attribution changed")
+        for event, field in ((request, "requested_at"), (grant, "granted_at"), (consume, "consumed_at")):
+            if event is None:
+                continue
+            try:
+                recorded, audited = parse_iso(row[field]), parse_iso(event["ts"])
+                elapsed = (audited-recorded).total_seconds()
+                if recorded.utcoffset() is None or not 0 <= elapsed <= 1:
+                    raise ValueError("changed original attribution time")
+            except (ValueError, TypeError) as exc:
+                raise EstimateError("estimate authorization attribution time differs from its original audit") from exc
+        return {"auditSeq": request["seq"], "auditHash": request["entry_hash"], "manifestHash": row["manifest_hash"], "materialHash": row["material_hash"],
+                "requestedBy": row["requested_by"], "requestedAt": row["requested_at"]}
 
     def _supersession_view(self, row: dict[str, Any]) -> dict[str, Any]:
         """What this revision changed, measured against the chain's recorded scope
@@ -1029,6 +1394,9 @@ class Estimates:
             ap = self.db.one("SELECT operation, subject_type, subject_id, status FROM approvals WHERE id=?", (approval_id,))
             if ap is None or (ap["operation"], ap["subject_type"], ap["subject_id"]) != ("estimate.approve", "estimate", estimate_id) or ap["status"] != "consumed":
                 raise EstimateError(f"approval {approval_id} is not a consumed estimate.approve approval for estimate {estimate_id}")
+            proof = self._acceptance_proof(est, approval_id, require_effect=False)
+            if proof["consumedBy"] != actor:
+                raise EstimateError("estimate acceptance actor differs from the original authorization consumer")
             try:  # the schema re-checks the approval reference (trigger estimates_status_transitions)
                 conn.execute("UPDATE estimates SET status='approved', approval_id=? WHERE id=?", (approval_id, estimate_id))
             except sqlite3.IntegrityError as exc:

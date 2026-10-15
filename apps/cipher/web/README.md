@@ -18,6 +18,28 @@ Open `http://127.0.0.1:8766`. The separate Python server creates a fresh synthet
 
 For frontend development, start that practice server and then run `npm run dev --prefix apps/cipher/web`. Vite listens on loopback port 5173 and proxies `/api` to loopback port 8766. For standalone sample layout review, use `npm run dev:fixture --prefix apps/cipher/web` or `npm run build:fixture --prefix apps/cipher/web`. Fixture mode is explicit; a failed API read never substitutes sample data silently.
 
+## Current main qualification
+
+The main backend passes 2703 unique tests in 1703.859 seconds with zero failures, errors or skips; all 266 Python source/test hashes remain unchanged. The four main Fluent workflows and the separate nine-case recovery-remount check also pass on their captured runtime/UI/configuration/served-JavaScript snapshots. The two test expectation corrections retain exact original-to-current provenance.
+
+| Entry | Fixed actions | Practice result | Port |
+|---|---:|---|---:|
+| AP, intake, exceptions and accounting |24| Installed-work/invoice matching, business grant and independent posting, governed correction, separate simulated accounting delivery/readback |8767|
+| Commercial |7| Manual source-priced estimate revisions, independent estimator acceptance and source-preserving PM subcontract draft |8768|
+| Owner billing / AR |7| Claimed/reviewed owner pay app, journal-free grant, independent same-grant posting and separately approved synthetic send |8769|
+| Authored library |6| Exact UTF-8 revisions and independently reviewed project reference copy |8770|
+| RFI |9| Issued drawing/supporting citations, draft response, independent official answer and separate synthetic distribution |8771|
+
+| Main entry | Views / journeys | Exact retries | Recovery / contract checks | Seconds | Source files |
+|---|---:|---:|---:|---:|---:|
+| Commercial | 72 / 3 | 60 | 24 / 24 | 181.881 | 385 |
+| Owner billing / AR | 78 / 3 | 57 | 27 / 34 | 455.711 | 385 |
+| Authored library | 75 / 3 | 64 | 25 / 43 | 297.311 | 385 |
+| RFI | 81 / 3 | 79 | 20 / 59 | 203.007 | 385 |
+| Cross-entry SPA recovery remount | 9 cases at 1440/1024/390 | Original request preserved | Commercial / AR / library | 38.990 | 385 |
+
+Fluent 2 requires no Microsoft sign-in. These synthetic personas are scoped practice sessions, not authenticated operational identities. The owner's direction authorizes continued implementation while financial-policy/tenant facts are recovered.
+
 ## Contract and safety
 
 The client reads fixed same-origin `/api/practice/v1/projects`, `/commitments`, `/bills`, and `/approvals` endpoints. It accepts only `cipher.practice-read.v1` envelopes marked `mode: practice`, `synthetic: true`, and `currency: USD`. Amounts are safe integer cents; retainage rates are integer millionths. Formatting and sums use BigInt arithmetic, and displayed project aggregates are range-checked before records are published to React. Internal record IDs appear only in addresses and the Technical details disclosure. There are no arbitrary server URLs, token inputs, live credentials, write requests, or simulated sign-in.
@@ -112,4 +134,98 @@ Publication dates were verified against the npm registry on Oct 14, 2026. Each s
 
 Fluent, Griffel, React, TypeScript, and Vite use MIT licenses; Playwright uses Apache-2.0 and axe-core uses MPL-2.0. Their package license files remain available in the development install.
 
-The original bounded read contract does not include schedule-of-values grids, documents, governed approval packets, forecasts, history seals, person-specific home queues, saved views, or server-side exports. The separate AP entry adds certified bill lines, business packets and person-scoped workflow queues as described above. No mock checks, approval thresholds, numbering, or business facts are invented for API records. The explicit read-app sample fixture supplies synthetic examples solely for layout review. `node_modules/`, `dist/`, `dist-ap/`, local environment overrides, and test reports are ignored and must not be committed.
+The original bounded read contract does not include schedule-of-values grids, documents, governed approval packets, forecasts, history seals, person-specific home queues, saved views, or server-side exports. The separate AP entry adds certified bill lines, business packets and person-scoped workflow queues as described above. No mock checks, approval thresholds, numbering, or business facts are invented for API records. The explicit read-app sample fixture supplies synthetic examples solely for layout review. `node_modules/`, `dist/`, `dist-ap/`, `dist-commercial/`, `dist-ar/`, `dist-library/`, `dist-rfi/`, local environment overrides, and test reports are ignored and must not be committed.
+
+## Connected manual estimating
+
+```bash
+npm run build:commercial --prefix apps/cipher/web
+python -m apps.cipher commercial-practice-web --port 8768
+npm run smoke:commercial --prefix apps/cipher/web
+```
+
+The separate entry follows T3/T4/T5/T6/T7 with the same pinned Fluent 2 theme.
+It connects owned drawing/manual quantities, exact revision comparison,
+independent estimator acceptance and a PM-created source-preserving subcontract
+draft. Quantities remain decimal strings, prices are integer cents, and the server
+computes amounts. Every line, including zero-valued lines, remains in the draft.
+Current commitment state stays separate from original draft creation status.
+
+The [workflow reference](../docs/COMMERCIAL_PRACTICE.md) describes the seven actions,
+scope, original receipts and remaining geometric/award/signature boundaries.
+Unresolved requests keep their original UUID/body/version through input edits and
+navigation; the original outcome is retrieved before a fresh edited-source review.
+Late old-input reviews are discarded. Current person/access loss and malformed
+refreshed records clear rendered facts.
+
+The integrated actual-API browser passes 72 views, three fresh journeys,
+60 exact retries, 24 recovery cases and 24 strict contract checks at
+1440/1024/390, with zero unexpected HTTP/application/CSP or axe findings.
+It covers source and duty loss, expiry, changed input reviews, dropped responses,
+contingency holds and original outcomes after genuine later commitment execution.
+No action creates journals, AP/AR balances, an outbox item or provider effect.
+`CIPHER_COMMERCIAL_ARTIFACTS` and `CIPHER_COMMERCIAL_PORT` select local test output
+and an unused loopback port.
+
+Strict typecheck/build pass; the commercial chunk is 578.34 kB minified and
+159.71 kB gzip. Vite's existing size advisory remains. Full saved views, exports,
+notes, complete approval split panes and other template controls remain in the
+backlog, alongside manual screen-reader/owner acceptance and production performance.
+
+
+## Connected owner billing and AR
+
+```bash
+npm run build:ar --prefix apps/cipher/web
+python -m apps.cipher ar-practice-web --port 8769
+npm run smoke:ar --prefix apps/cipher/web
+```
+
+This separate Fluent entry follows the same templates and pinned theme. A PM
+prepares exact cumulative claimed/reviewed lines from declared owner-contract/SOV
+and distinct owned sources. A different accountant grants business approval without
+a journal; an actual accountant/controller distinct from that reviewer posts under
+the original grant. A separate independent request/grant/send workflow writes one
+synthetic mail-sink record. Original outcomes and current lifecycle/balances remain
+separate. See [OWNER_BILLING_PRACTICE.md](../docs/OWNER_BILLING_PRACTICE.md).
+
+Current standing AR is aged at the chosen date; the screen does not claim a
+historical cutoff snapshot. Native check/wire collection and return evidence is
+proved before current balances are shown. Unsupported adjustment sources hold the
+entry. Retainage has an aggregate balance without an invented due date.
+`CIPHER_AR_ARTIFACTS` and `CIPHER_AR_PORT` select browser evidence output and an
+unused loopback port. Static build passes with unchanged dependency pins and lock;
+the AR chunk is 576.47 kB minified and 159.98 kB gzip. Existing bundle-size and manual
+screen-reader/owner acceptance work remains.
+
+
+## Authored project library
+
+```bash
+npm run build:library --prefix apps/cipher/web
+python -m apps.cipher library-practice-web --port 8770
+npm run smoke:library --prefix apps/cipher/web
+```
+
+The [six-action workflow](../docs/LIBRARY_PRACTICE.md) stores exact authored UTF-8 text up to 65,536 bytes, immutable predecessors and source locators. A different actual project PM grants an internal reference copy; application consumes that same grant. Original adopted text and the current revision/rights remain separate. License-tag history, including a genuine untag, holds this authored-only entry; no ownership checkbox or hash-only artifact preview substitutes for a qualified ingestion workflow.
+
+## Governed RFI responses and synthetic distribution
+
+```bash
+npm run build:rfi --prefix apps/cipher/web
+python -m apps.cipher rfi-practice-web --port 8771
+npm run smoke:rfi --prefix apps/cipher/web
+```
+
+The [nine-action workflow](../docs/RFI_PRACTICE.md) preserves original issued drawing/supporting citations beside current source/rights disclosures. Registered project staff draft; an actual project PM requests, a different PM reviews, and an eligible PM applies that original grant. A separate independent review permits fixed local synthetic distribution. Grant alone does not answer or distribute. Cost/schedule impacts remain informational; no engineering stamp, change adoption or outside delivery is implied.
+
+## Original-request recovery across form remounts
+
+```bash
+cd apps/cipher/web
+CIPHER_RECOVERY_WIDTHS=1440,1024,390 node tests/recovery-remount-smoke.mjs
+```
+
+This dedicated check uses real commercial, owner-billing and library effects, drops their successful response, advances the selected source and navigates away/back through a SPA remount. All nine app/width cases must expose and retrieve the original unresolved request with the same UUID/body/version/fingerprint and receipt; a changed current source cannot silently discard it or authorize a duplicate effect. Main workflow smokes separately cover source-integrity holds, independent decisions, malformed records and accessibility.
+
+All new entries retain the pinned React/Fluent/Griffel dependencies and shared template/theme. Vite's existing bundle-size advisory remains; production loading, manual screen-reader review and final owner visual acceptance remain unqualified. Source snapshots must include the served JavaScript bundles as well as Python/UI/configuration/test harnesses. Licensed-content distribution, PDF/CAD bytes, operational identity, live providers and durable workers remain separate work.

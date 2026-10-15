@@ -12,6 +12,7 @@ the same shape:
 from __future__ import annotations
 
 import importlib
+import json
 import os
 import tempfile
 from typing import Any
@@ -44,12 +45,24 @@ PLUGIN_MODULES = [
     "apps.cipher.domain.payment_policy",
     "apps.cipher.domain.contracts",
     "apps.cipher.domain.accounting",  # required; schema registers after every historical entry
+    "apps.cipher.domain.commercial",  # required; schema registers after accounting receipts
+    "apps.cipher.domain.owner_billing",  # required; schema registers after commercial receipts
+    "apps.cipher.domain.library",  # required; schema76 registers after unchanged AR75
+    "apps.cipher.domain.rfi_controls",  # required; schema78 follows genuine library77
 ]
 # Optional plugin hook used by the close module's checklist:
 #   close_checks(period_id) -> list[{"check": str, "ok": bool, "detail": str}]
 _LOADED_PLUGIN_MODULES: list[Any] = []
 _LATE_ACCOUNTING_MODULE = "apps.cipher.domain.accounting"
 _LATE_ACCOUNTING_SCHEMA = "accounting_practice_delivery"
+_LATE_COMMERCIAL_MODULE = "apps.cipher.domain.commercial"
+_LATE_COMMERCIAL_SCHEMA = "commercial_manual_sources_and_handoffs"
+_LATE_OWNER_BILLING_MODULE = "apps.cipher.domain.owner_billing"
+_LATE_OWNER_BILLING_SCHEMA = "owner_billing_sources_and_posting"
+_LATE_LIBRARY_MODULE = "apps.cipher.domain.library"
+_LATE_LIBRARY_SCHEMA = "library_authored_text_and_reference_adoptions"
+_LATE_RFI_MODULE = "apps.cipher.domain.rfi_controls"
+_LATE_RFI_SCHEMA = "rfi_sources_and_review_contexts"
 
 
 class PluginLoadError(RuntimeError):
@@ -65,11 +78,18 @@ def _load_plugin_modules() -> list[Any]:
     for name in PLUGIN_MODULES:
         from .core import db as schema_registry
         late_accounting = name == _LATE_ACCOUNTING_MODULE
-        catalog_before = tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) if late_accounting else None
+        late_commercial = name == _LATE_COMMERCIAL_MODULE
+        late_owner_billing = name == _LATE_OWNER_BILLING_MODULE
+        late_library = name == _LATE_LIBRARY_MODULE
+        late_rfi = name == _LATE_RFI_MODULE
+        deferred = late_accounting or late_commercial or late_owner_billing or late_library or late_rfi
+        catalog_before = tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) if deferred else None
         try:
             mod = importlib.import_module(name)
-            if late_accounting and tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) != catalog_before:
-                raise ValueError("accounting import must not register or change schema entries")
+            if deferred and getattr(mod, "__name__", None) != name:
+                raise ValueError("a known deferred module must retain its exact configured namespace")
+            if deferred and tuple((version, schema, tuple(sql)) for version, schema, sql in schema_registry.SCHEMA_CATALOG) != catalog_before:
+                raise ValueError("a deferred domain import must not register or change schema entries")
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} failed to import: {exc}") from exc
         try:
@@ -86,8 +106,36 @@ def _load_plugin_modules() -> list[Any]:
                     raise ValueError("accounting must declare its explicit late registration")
                 if not callable(getattr(mod, "register_accounting_schema", None)):
                     raise ValueError("accounting must supply its named late registrar")
+            elif late_commercial:
+                if schema_name != _LATE_COMMERCIAL_SCHEMA or not statements:
+                    raise ValueError("commercial must supply its full named schema")
+                if getattr(mod, "DEFER_SCHEMA_REGISTRATION", None) is not True:
+                    raise ValueError("commercial must declare its explicit late registration")
+                if not callable(getattr(mod, "register_commercial_schema", None)):
+                    raise ValueError("commercial must supply its named late registrar")
+            elif late_owner_billing:
+                if schema_name != _LATE_OWNER_BILLING_SCHEMA or not statements:
+                    raise ValueError("owner billing must supply its full named schema")
+                if getattr(mod, "DEFER_SCHEMA_REGISTRATION", None) is not True:
+                    raise ValueError("owner billing must declare its explicit late registration")
+                if not callable(getattr(mod, "register_owner_billing_schema", None)):
+                    raise ValueError("owner billing must supply its named late registrar")
+            elif late_library:
+                if schema_name != _LATE_LIBRARY_SCHEMA or not statements:
+                    raise ValueError("library must supply its full named schema")
+                if getattr(mod, "DEFER_SCHEMA_REGISTRATION", None) is not True:
+                    raise ValueError("library must declare its explicit late registration")
+                if not callable(getattr(mod, "register_library_schema", None)):
+                    raise ValueError("library must supply its named late registrar")
+            elif late_rfi:
+                if schema_name != _LATE_RFI_SCHEMA or not statements:
+                    raise ValueError("RFI controls must supply their full named schema")
+                if getattr(mod, "DEFER_SCHEMA_REGISTRATION", None) is not True:
+                    raise ValueError("RFI controls must declare explicit late registration")
+                if not callable(getattr(mod, "register_rfi_controls_schema", None)):
+                    raise ValueError("RFI controls must supply their named late registrar")
             elif getattr(mod, "DEFER_SCHEMA_REGISTRATION", False):
-                raise ValueError("only the configured accounting schema may defer registration")
+                raise ValueError("only the configured accounting, commercial and owner-billing schemas may defer registration")
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
         try:
@@ -98,6 +146,14 @@ def _load_plugin_modules() -> list[Any]:
                 raise ValueError(f"PLUGIN_NAME {plugin_name!r} is already registered or reserved")
             if late_accounting and (plugin_name != "accounting" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
                 raise ValueError("accounting must own its fixed prefix and approval governor")
+            if late_commercial and (plugin_name != "commercial" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
+                raise ValueError("commercial must own its fixed prefix and approval governor")
+            if late_owner_billing and (plugin_name != "owner_billing" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
+                raise ValueError("owner billing must own its fixed prefix and approval governor")
+            if late_library and (plugin_name != "library" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
+                raise ValueError("library must own its fixed prefix and approval governor")
+            if late_rfi and (plugin_name != "rfi_controls" or getattr(mod.Plugin, "GOVERNOR", None) is not True):
+                raise ValueError("RFI controls must own their fixed prefix and approval governor")
             if not isinstance(mod.Plugin, type):
                 raise TypeError("Plugin must be a class")
             for method in ("manifest_for", "apply", "state"):
@@ -106,7 +162,7 @@ def _load_plugin_modules() -> list[Any]:
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} initialization contract rejected: {exc}") from exc
         try:
-            if not late_accounting:
+            if not deferred:
                 register_schema_version(schema_name, list(statements))
         except Exception as exc:
             raise PluginLoadError(f"configured plugin {name} schema rejected: {exc}") from exc
@@ -123,7 +179,7 @@ from .core.audit import Audit, register_audit_schema
 from .core.api_receipts import APIActionReceipts, register_api_receipts_schema, register_api_preparation_receipts_schema, register_api_exception_receipts_schema, register_api_accounting_receipts_schema
 from .core.commands import CommandResult, Commands
 from .core.db import Database, register_workspace_mode_schema
-from .core.ids import new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
+from .core.ids import canonical_json, new_id, parse_iso, sha256_hex, utcnow, utcnow_iso
 from .core.money import fmt, money
 from .domain.bills import Bills, register_bill_posting_schema
 from .domain.commitments import Commitments
@@ -166,6 +222,105 @@ except Exception as exc:
     raise PluginLoadError("configured accounting late schema rejected") from exc
 
 register_api_accounting_receipts_schema()
+
+# Commercial sources follow the complete accounting71 catalog. Importing the
+# configured module above supplies controls but never moves its schema earlier.
+_commercial_module = next((mod for mod in _LOADED_PLUGIN_MODULES
+                           if mod.__name__ == _LATE_COMMERCIAL_MODULE), None)
+if _commercial_module is None:
+    raise PluginLoadError("configured commercial module is missing at late registration")
+try:
+    from .core import db as _commercial_schema_registry
+    _commercial_history_before = tuple((version, schema, tuple(sql)) for version, schema, sql in _commercial_schema_registry.SCHEMA_CATALOG if schema != _LATE_COMMERCIAL_SCHEMA)
+    _commercial_module.register_commercial_schema()
+    _commercial_history_after = tuple((version, schema, tuple(sql)) for version, schema, sql in _commercial_schema_registry.SCHEMA_CATALOG if schema != _LATE_COMMERCIAL_SCHEMA)
+    if _commercial_history_after != _commercial_history_before:
+        raise ValueError("commercial registrar changed historical schema entries")
+    _commercial_entries = [entry for entry in _commercial_schema_registry.SCHEMA_CATALOG
+                           if entry[1] == _LATE_COMMERCIAL_SCHEMA]
+    if (len(_commercial_entries) != 1 or _commercial_entries[0][0] != 72
+            or _commercial_entries[0][2] != _commercial_module.SCHEMA_STATEMENTS):
+        raise ValueError("commercial late schema does not follow the preserved catalog")
+except Exception as exc:
+    raise PluginLoadError("configured commercial late schema rejected") from exc
+
+from .commercial_receipts import register_commercial_receipts_schema
+register_commercial_receipts_schema()
+
+# The required source module imported without catalog mutation. Its declared
+# tables follow every original commercial entry and receipt at position74.
+_owner_billing_module = next((mod for mod in _LOADED_PLUGIN_MODULES
+                              if mod.__name__ == _LATE_OWNER_BILLING_MODULE), None)
+if _owner_billing_module is None:
+    raise PluginLoadError("configured owner-billing module is missing at late registration")
+try:
+    from .core import db as _owner_schema_registry
+    _owner_history_before = tuple((version, schema, tuple(sql)) for version, schema, sql in _owner_schema_registry.SCHEMA_CATALOG if schema != _LATE_OWNER_BILLING_SCHEMA)
+    _owner_billing_module.register_owner_billing_schema()
+    _owner_history_after = tuple((version, schema, tuple(sql)) for version, schema, sql in _owner_schema_registry.SCHEMA_CATALOG if schema != _LATE_OWNER_BILLING_SCHEMA)
+    if _owner_history_after != _owner_history_before:
+        raise ValueError("owner-billing registrar changed historical schema entries")
+    _owner_entries = [entry for entry in _owner_schema_registry.SCHEMA_CATALOG if entry[1] == _LATE_OWNER_BILLING_SCHEMA]
+    if (len(_owner_entries) != 1 or _owner_entries[0][0] != 74
+            or _owner_entries[0][2] != _owner_billing_module.SCHEMA_STATEMENTS):
+        raise ValueError("owner-billing late schema does not follow the preserved catalog")
+except Exception as exc:
+    raise PluginLoadError("configured owner-billing late schema rejected") from exc
+
+from .ar_receipts import register_ar_receipts_schema
+register_ar_receipts_schema()
+
+_library_module = next((mod for mod in _LOADED_PLUGIN_MODULES if mod.__name__ == _LATE_LIBRARY_MODULE), None)
+if _library_module is None:
+    raise PluginLoadError("configured library module is missing at late registration")
+try:
+    from .core import db as _library_schema_registry
+    _library_history_before = tuple((version, schema, tuple(sql)) for version, schema, sql in _library_schema_registry.SCHEMA_CATALOG if schema != _LATE_LIBRARY_SCHEMA)
+    _library_module.register_library_schema()
+    _library_history_after = tuple((version, schema, tuple(sql)) for version, schema, sql in _library_schema_registry.SCHEMA_CATALOG if schema != _LATE_LIBRARY_SCHEMA)
+    if _library_history_before != _library_history_after:
+        raise ValueError("library registrar changed historical schema entries")
+    _library_entries = [entry for entry in _library_schema_registry.SCHEMA_CATALOG if entry[1] == _LATE_LIBRARY_SCHEMA]
+    if (len(_library_entries) != 1 or _library_entries[0][0] != 76
+            or _library_entries[0][2] != _library_module.SCHEMA_STATEMENTS):
+        raise ValueError("library late schema does not follow the preserved catalog")
+except Exception as exc:
+    raise PluginLoadError("configured library late schema rejected") from exc
+
+from .library_receipts import register_library_receipts_schema
+register_library_receipts_schema()
+
+# Actual RFI source tables append after the complete, unchanged library77 catalog.
+_rfi_module = next((mod for mod in _LOADED_PLUGIN_MODULES if mod.__name__ == _LATE_RFI_MODULE), None)
+if _rfi_module is None:
+    raise PluginLoadError("configured RFI controls are missing at late registration")
+try:
+    from .core import db as _rfi_schema_registry
+    _rfi_before = tuple((v, name, tuple(sql)) for v, name, sql in _rfi_schema_registry.SCHEMA_CATALOG if name != _LATE_RFI_SCHEMA)
+    _rfi_module.register_rfi_controls_schema()
+    _rfi_after = tuple((v, name, tuple(sql)) for v, name, sql in _rfi_schema_registry.SCHEMA_CATALOG if name != _LATE_RFI_SCHEMA)
+    if _rfi_before != _rfi_after:
+        raise ValueError("RFI registrar changed historical schema entries")
+    _rfi_entries = [entry for entry in _rfi_schema_registry.SCHEMA_CATALOG if entry[1] == _LATE_RFI_SCHEMA]
+    if len(_rfi_entries) != 1 or _rfi_entries[0][0] != 78 or _rfi_entries[0][2] != _rfi_module.SCHEMA_STATEMENTS:
+        raise ValueError("RFI source schema does not follow the preserved catalog")
+except Exception as exc:
+    raise PluginLoadError("configured RFI late schema rejected") from exc
+
+from . import rfi_receipts as _rfi_receipts_module
+try:
+    _rfi_receipts_before = tuple((v, name, tuple(sql)) for v, name, sql in _rfi_schema_registry.SCHEMA_CATALOG
+                                if name != _rfi_receipts_module.SCHEMA_NAME)
+    _rfi_receipts_module.register_rfi_receipts_schema()
+    _rfi_receipts_after = tuple((v, name, tuple(sql)) for v, name, sql in _rfi_schema_registry.SCHEMA_CATALOG
+                               if name != _rfi_receipts_module.SCHEMA_NAME)
+    _rfi_receipts_entries = [entry for entry in _rfi_schema_registry.SCHEMA_CATALOG
+                            if entry[1] == _rfi_receipts_module.SCHEMA_NAME]
+    if (_rfi_receipts_before != _rfi_receipts_after or len(_rfi_receipts_entries) != 1
+            or _rfi_receipts_entries[0][0] != 79 or _rfi_receipts_entries[0][2] != _rfi_receipts_module.SCHEMA_STATEMENTS):
+        raise ValueError("RFI receipts must follow the unchanged source78 catalog")
+except Exception as exc:
+    raise PluginLoadError("configured RFI receipt schema rejected") from exc
 
 
 class CipherError(RuntimeError):
@@ -432,6 +587,347 @@ class Cipher:
             return plugin.manifest_for(operation, subject_id, actor_role=actor_role)
         raise CipherError(f"unknown operation {operation}")
 
+    def _rfi_module(self, operation, rfi_id):
+        controls=self._plugins.get('rfi_controls')
+        return (controls if operation in ('field.respond_rfi','field.distribute_rfi')
+                and controls is not None and controls.is_modern(rfi_id) else None)
+
+    def _owner_bill_module(self, bill_id):
+        module = getattr(self.receivables, "owner_billing", None)
+        return module if module is not None and module.is_modern(bill_id) else None
+
+    def check_prime_bill_request(self, bill_id, *, requested_by, actor_role="accountant"):
+        with self.db._lock:
+            module = self._owner_bill_module(bill_id)
+            if module is None:
+                raise ApprovalError("The fixed owner workflow requires its original owned source")
+            checked = module.business_request_preflight(bill_id, actor=requested_by, actor_role=actor_role)
+            # The original requester's actual PM duty is distinct from the
+            # accountant/controller operation role that will decide/post.
+            for name, governor in self._governors():
+                check = getattr(governor, "check_request", None)
+                if check is not None and name != "people":
+                    check("prime_bill.approve", checked["manifest"], actor_role=actor_role, requested_by=checked["person"]["login"])
+            return {**checked, "governors": self._governors()}
+
+    def check_prime_bill_grant(self, approval_id, *, approver, approver_role):
+        with self.db._lock:
+            approval = self.approvals.get(approval_id)
+            module = self._owner_bill_module(approval["subject_id"])
+            if module is None or approval["operation"] != "prime_bill.approve" or approval["subject_type"] != "prime_bill":
+                raise ApprovalError("The owner review requires its original fixed business request")
+            checked = module.business_grant_preflight(approval["subject_id"], approval_id=approval_id, actor=approver)
+            if approver_role not in checked["person"]["roles"] or not Ricky.can(approver_role, "prime_bill.approve"):
+                raise ApprovalError("The actual owner reviewer must hold the stated accounting duty")
+            governors = self._governors()
+            for _name, governor in governors:
+                check = getattr(governor, "check_grant", None)
+                if check is not None:
+                    check(checked["approval"], approver=checked["person"]["login"], approver_role=approver_role)
+            return {**checked, "governors": governors}
+
+    def check_prime_bill_post(self, bill_id, *, actor, period_id=None):
+        with self.db._lock:
+            module = self._owner_bill_module(bill_id)
+            if module is None:
+                raise ApprovalError("The owner posting requires its original owned source")
+            # Current actual authority precedes original grant/command facts.
+            module.require_duty(actor, module.source_scope(bill_id)["projectId"], "accounting")
+            grant = module.grant_proof(bill_id)
+            checked = module.posting_preflight(bill_id, approval_id=grant["record"]["approval_id"], actor=actor, period_id=period_id)
+            governors = self._governors()
+            for name, governor in governors:
+                # The domain proves the poster's own accountant/controller duty
+                # and original reviewer's current duty under the same policy.
+                # Generic execution requires the manifest's one role spelling;
+                # this split posting deliberately admits either actual duty.
+                if name == "people":
+                    continue
+                effect_check = getattr(governor, "check_execute", None)
+                if effect_check is None:
+                    continue
+                check = getattr(governor, "check_execute_preflight", None)
+                if check is None:
+                    raise ApprovalError("A configured governor lacks a pure owner posting check")
+                check(checked["approval"], checked["manifest"], actor=checked["person"]["login"])
+            return {**checked, "governors": governors}
+
+    @staticmethod
+    def _prime_bill_post_result(receipt):
+        return {"primeBillId": receipt["prime_bill_id"], "postingReceiptId": receipt["id"],
+                "journalId": receipt["journal"]["header"]["id"], "periodId": receipt["period"]["id"],
+                "status": "posted", "mode": "practice", "synthetic": True}
+
+    def post_prime_bill(self, bill_id, *, actor, period_id=None, op_id=None):
+        self.db.require_practice_mode()
+        module = self._owner_bill_module(bill_id)
+        if module is None:
+            raise ApprovalError("The owner posting requires its original owned source")
+        person = module.require_duty(actor, module.source_scope(bill_id)["projectId"], "accounting")
+        grant = module.grant_proof(bill_id)
+        approval_id = grant["record"]["approval_id"]
+        selected_period = period_id or grant["source"]["bill"]["period_id"]
+        payload = {"operation": "prime_bill.post", "prime_bill_id": bill_id, "approval_id": approval_id,
+                   "period_id": selected_period, "person_id": person["personId"], "actor": person["login"]}
+        op_id = op_id or f"prime_bill.post:{bill_id}:{approval_id}"
+
+        def handler():
+            checked = self.check_prime_bill_post(bill_id, actor=person["login"], period_id=selected_period)
+            module.post(bill_id, approval_id=approval_id, actor=checked["person"]["login"], period_id=selected_period)
+            return self._prime_bill_post_result(module.posting_receipt(bill_id))
+
+        try:
+            with self.db.transaction() as conn:
+                savepoint = new_id("owner_bill_post_act")
+                conn.execute(f"SAVEPOINT {savepoint}")
+                try:
+                    # A duty can end after the initial source lookup. Resolve
+                    # it again under the same lock that protects cache lookup.
+                    module.require_duty(person["login"], person["projectId"], "accounting")
+                    result = self.commands.run(op_id, payload, handler, actor=person["login"])
+                    receipt = module.posting_receipt(bill_id)
+                    if receipt is None or canonical_json(result.result) != canonical_json(self._prime_bill_post_result(receipt)):
+                        raise ApprovalError("The owner posting command differs from its original immutable receipt")
+                except BaseException:
+                    if conn.in_transaction:
+                        conn.execute(f"ROLLBACK TO {savepoint}")
+                    raise
+                finally:
+                    if conn.in_transaction:
+                        conn.execute(f"RELEASE {savepoint}")
+                return result
+        except StaleApprovalError as exc:
+            if self.approvals.get(approval_id)["status"] == "granted":
+                self.approvals.invalidate(approval_id, reason=str(exc), actor=person["login"])
+            raise
+        except ApprovalExpired:
+            if self.approvals.get(approval_id)["status"] == "granted":
+                self.approvals.mark_expired(approval_id, actor=person["login"])
+            raise
+
+
+    def check_prime_bill_send_request(self, bill_id, *, requested_by, actor_role):
+        with self.db._lock:
+            module = self._owner_bill_module(bill_id)
+            if module is None:
+                raise ApprovalError("The owner send requires its original owned source")
+            person = module.require_duty(requested_by, module.source_scope(bill_id)["projectId"], "send")
+            if actor_role not in person["roles"] or not Ricky.can(actor_role, "prime_bill.send"):
+                raise ApprovalError("The owner send requester needs their own actual PM/accountant duty")
+            source, posting = module.source_proof(bill_id), module.require_posted_proof(bill_id)
+            module.send_proof(bill_id)
+            manifest = self._manifest("prime_bill.send", bill_id, actor_role)
+            governors = self._governors()
+            for _name, governor in governors:
+                check = getattr(governor, "check_request", None)
+                if check is not None:
+                    check("prime_bill.send", manifest, actor_role=actor_role, requested_by=person["login"])
+            return {"person": person, "source": source, "posting": posting, "manifest": manifest, "governors": governors}
+
+    def _owner_bill_send_current(self, approval_id, *, status, actor):
+        minimal = self.db.one("SELECT operation,subject_type,subject_id FROM approvals WHERE id=?", (approval_id,))
+        if minimal is None or minimal["operation"] != "prime_bill.send" or minimal["subject_type"] != "prime_bill":
+            raise ApprovalError("This action requires its original owner-send request")
+        module = self._owner_bill_module(minimal["subject_id"])
+        if module is None:
+            raise ApprovalError("This owner-send request has no original owned source")
+        person = module.require_duty(actor, module.source_scope(minimal["subject_id"])["projectId"], "send")
+        proof = module.approval_proof(approval_id)
+        approval = proof["approval"]
+        if approval["status"] == "expired" or parse_iso(approval["expires_at"]) <= utcnow():
+            raise ApprovalExpired("The original owner-send authorization expired")
+        if approval["status"] != status:
+            raise ApprovalError("The original owner-send authorization is unavailable for this step")
+        source, posting = module.source_proof(approval["subject_id"]), module.require_posted_proof(approval["subject_id"])
+        module.send_proof(approval["subject_id"])
+        manifest = self._manifest("prime_bill.send", approval["subject_id"], approval["actor_role"])
+        if (material_hash(manifest) != approval["material_hash"]
+                or canonical_json(manifest.get("governance")) != canonical_json(approval["manifest"].get("governance"))):
+            raise StaleApprovalError("The reviewed owner message, recipients, balance or governance changed")
+        return {**proof, "person": person, "source": source, "posting": posting, "manifest": manifest, "governors": self._governors()}
+
+    def check_prime_bill_send_grant(self, approval_id, *, approver, approver_role):
+        with self.db._lock:
+            checked = self._owner_bill_send_current(approval_id, status="pending", actor=approver)
+            if approver_role not in checked["person"]["roles"] or not Ricky.can(approver_role, "prime_bill.send"):
+                raise ApprovalError("The owner-send reviewer needs their own actual PM/accountant duty")
+            module = self._owner_bill_module(checked["approval"]["subject_id"])
+            requester = module.require_duty(checked["approval"]["requested_by"], checked["person"]["projectId"], "send")
+            if requester["personId"] == checked["person"]["personId"]:
+                raise ApprovalError("A different actual PM/accountant must review the owner send")
+            for _name, governor in checked["governors"]:
+                check = getattr(governor, "check_grant", None)
+                if check is not None:
+                    check(checked["approval"], approver=checked["person"]["login"], approver_role=approver_role)
+            return {**checked, "requester": requester}
+
+    def check_prime_bill_send_execution(self, approval_id, *, actor):
+        with self.db._lock:
+            checked = self._owner_bill_send_current(approval_id, status="granted", actor=actor)
+            module = self._owner_bill_module(checked["approval"]["subject_id"])
+            try:
+                reviewer = module.require_duty(checked["approval"]["approver"], checked["person"]["projectId"], "send")
+            except ApprovalError as exc:
+                raise StaleApprovalError("The original owner-send reviewer no longer holds their actual project duty") from exc
+            requester = self.plugin("people")._person_row(checked["approval"]["requested_by"])
+            if requester is None or requester["id"] == reviewer["personId"]:
+                raise ApprovalError("The owner send lacks its original independent actual reviewer")
+            for name, governor in checked["governors"]:
+                # Both the sender and reviewer are proved directly by the pure
+                # native own-duty helper; the original request role stays fixed.
+                if name == "people":
+                    continue
+                effect_check = getattr(governor, "check_execute", None)
+                if effect_check is None:
+                    continue
+                check = getattr(governor, "check_execute_preflight", None)
+                if check is None:
+                    raise ApprovalError("A configured governor lacks a pure owner-send check")
+                check(checked["approval"], checked["manifest"], actor=checked["person"]["login"])
+            return {**checked, "reviewer": reviewer}
+
+    @staticmethod
+    def _prime_bill_send_result(proof):
+        record = proof["record"]
+        return {"prime_bill": record["prime_bill_id"], "status": "sent", "send_id": record["id"],
+                "channel": record["channel"], "recipients": record["recipients"]}
+
+
+    def _fixed_estimate_acceptance(self, operation, actor_role):
+        """Keep the original empty-identity script path outside modern duties.
+
+        Original identity or manual-source births keep this boundary active
+        if someone deletes current rows. An installed empty commercial governor
+        does not change a genuine legacy fixture's original acceptance route.
+        """
+        return (operation == "estimate.approve" and actor_role == "estimator"
+                and (self.db.one("SELECT 1 FROM people_persons LIMIT 1") is not None
+                     or self.db.one("SELECT 1 FROM audit_log WHERE action IN ('people.person_registered','commercial.estimate_sources_recorded') LIMIT 1") is not None))
+
+    def _commercial_domain_check(self, name, *args, **kwargs):
+        check = getattr(self.estimates, name, None)
+        if not callable(check):
+            raise ApprovalError("The named shared commercial source preflight is not installed")
+        return check(*args, **kwargs)
+
+    def _actual_estimator(self, actor, project_id):
+        from .domain.commercial import CommercialError, require_commercial_duty
+        from .domain.people import IdentityRefused
+        try:
+            # Engine guards use the shared domain authority helper. The served
+            # session independently requires its segregated practice policy;
+            # importing a UI resolver into the engine would invert that boundary.
+            return require_commercial_duty(self, actor, project_id, "estimator")
+        except CommercialError as exc:
+            raise IdentityRefused("The person's own current audited project estimator grant is required") from exc
+
+    def _estimate_scope(self, estimate_id):
+        minimal = self.db.one("SELECT project_id FROM estimates WHERE id=?", (estimate_id,))
+        if minimal is None:
+            raise ApprovalError("This estimate is unavailable")
+        return minimal["project_id"]
+
+    def check_estimate_request(self, estimate_id, *, requested_by, actor_role="estimator"):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            self.db.require_practice_mode()
+            if actor_role != "estimator":
+                raise IdentityRefused("The served commercial workflow uses the existing estimator duty")
+            person = self._actual_estimator(requested_by, self._estimate_scope(estimate_id))
+            source = self._commercial_domain_check("estimate_proof", estimate_id, accepted=False)
+            plan = self._commercial_domain_check("acceptance_preflight", estimate_id)
+            manifest = self._manifest("estimate.approve", estimate_id, "estimator")
+            for _name, governor in self._governors():
+                check = getattr(governor, "check_request", None)
+                if check is not None:
+                    check("estimate.approve", manifest, actor_role="estimator", requested_by=person["login"])
+            return {"person": person, "project_id": person["projectId"], "source": source,
+                    "plan": plan, "manifest": manifest}
+
+    def _estimate_acceptance_current(self, approval_id, *, status, actor):
+        from .core.ids import parse_iso, utcnow
+        from .domain.estimates import EstimateError
+        self.db.require_practice_mode()
+        approval = self.approvals.get(approval_id)
+        if (approval["operation"] != "estimate.approve" or approval["subject_type"] != "estimate"
+                or approval["actor_role"] != "estimator"):
+            raise ApprovalError("This served action requires its own estimator acceptance authorization")
+        person = self._actual_estimator(actor, self._estimate_scope(approval["subject_id"]))
+        original = self._commercial_domain_check("estimate_approval_proof", approval_id)
+        if approval["status"] == "expired":
+            raise ApprovalExpired("The estimator acceptance authorization expired")
+        if approval["status"] != status:
+            raise ApprovalError("This estimator acceptance authorization is no longer available")
+        if parse_iso(approval["expires_at"]) <= utcnow():
+            raise ApprovalExpired("The estimator acceptance authorization expired")
+        source = self._commercial_domain_check("estimate_proof", approval["subject_id"], accepted=False)
+        try:
+            plan = self._commercial_domain_check("acceptance_preflight", approval["subject_id"])
+            manifest = self._manifest("estimate.approve", approval["subject_id"], "estimator")
+        except EstimateError as exc:
+            raise StaleApprovalError("The estimate's current commercial source no longer permits acceptance") from exc
+        if (material_hash(manifest) != approval["material_hash"]
+                or manifest.get("governance") != approval["manifest"].get("governance")):
+            raise StaleApprovalError("The estimate source, revision chain, scope or policy changed")
+        return {"approval": approval, "original_approval_source": original, "person": person,
+                "project_id": person["projectId"], "source": source, "plan": plan,
+                "manifest": manifest, "governors": self._governors()}
+
+    def check_estimate_grant(self, approval_id, *, approver, approver_role="estimator"):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            if approver_role != "estimator":
+                raise IdentityRefused("Estimate acceptance review requires an actual estimator duty")
+            checked = self._estimate_acceptance_current(approval_id, status="pending", actor=approver)
+            approval = checked["approval"]
+            self._actual_estimator(approval["requested_by"], checked["project_id"])
+            if self.plugin("people").same_person(checked["person"]["login"], approval["requested_by"]):
+                raise IdentityRefused("A different actual estimator must review this acceptance request")
+            for _name, governor in checked["governors"]:
+                check = getattr(governor, "check_grant", None)
+                if check is not None:
+                    check(approval, approver=checked["person"]["login"], approver_role="estimator")
+            return checked
+
+    def check_estimate_application(self, approval_id, *, actor):
+        from .domain.people import IdentityRefused
+        with self.db._lock:
+            checked = self._estimate_acceptance_current(approval_id, status="granted", actor=actor)
+            approval = checked["approval"]
+            try:
+                self._actual_estimator(approval["approver"], checked["project_id"])
+            except IdentityRefused as exc:
+                raise StaleApprovalError("The original independent estimator reviewer no longer holds this project duty") from exc
+            if self.plugin("people").same_person(approval["requested_by"], approval["approver"]):
+                raise ApprovalError("This served acceptance lacks its original independent estimator reviewer")
+            # Current people policy permits any actual project estimator to
+            # explicitly apply an intact independently reviewed grant.
+            for name, governor in checked["governors"]:
+                effect_check = getattr(governor, "check_execute", None)
+                if effect_check is None:
+                    continue
+                pure = effect_check if name == "people" else getattr(governor, "check_execute_preflight", None)
+                if pure is None:
+                    raise ApprovalError("A configured governor lacks a pure estimator acceptance check")
+                pure(approval, checked["manifest"], actor=checked["person"]["login"])
+            return checked
+
+    def _estimate_acceptance_command(self, op_id, payload, handler, *, actor):
+        """Keep a complete estimate acceptance command inside one savepoint."""
+        with self.db.transaction() as conn:
+            savepoint = new_id("estimate_acceptance_act")
+            conn.execute(f"SAVEPOINT {savepoint}")
+            try:
+                return self.commands.run(op_id, payload, handler, actor=actor)
+            except BaseException:
+                if conn.in_transaction:
+                    conn.execute(f"ROLLBACK TO {savepoint}")
+                raise
+            finally:
+                if conn.in_transaction:
+                    conn.execute(f"RELEASE {savepoint}")
+
+
     def _accounting_person(self, actor, project_id):
         """An actual human's own current accountant grant and membership.
 
@@ -526,8 +1022,46 @@ class Cipher:
                 check(checked["approval"], checked["manifest"], actor=actor)
             return checked
 
+    def check_library_reference_request(self, plan_id: str, *, requested_by: str, actor_role: str = "pm") -> dict[str, Any]:
+        with self.db._lock:
+            checked = self.plugin("library").adoption_request_preflight(plan_id, actor=requested_by, actor_role=actor_role)
+            governors = [(name, governor) for name, governor in self._governors() if name != "people"]
+            for _name, governor in governors:
+                check = getattr(governor, "check_request", None)
+                if check is not None:
+                    check("library.adopt_reference", checked["manifest"], actor_role=actor_role, requested_by=checked["person"]["login"])
+            return {**checked, "governors": governors}
+    def check_library_reference_grant(self, approval_id: str, *, approver: str, approver_role: str = "pm") -> dict[str, Any]:
+        with self.db._lock:
+            checked = self.plugin("library").adoption_grant_preflight(approval_id, actor=approver, actor_role=approver_role)
+            governors = [(name, governor) for name, governor in self._governors() if name != "people"]
+            for _name, governor in governors:
+                check = getattr(governor, "check_grant", None)
+                if check is not None:
+                    check(checked["approval"], approver=checked["person"]["login"], approver_role=approver_role)
+            return {**checked, "governors": governors}
+    def check_library_reference_execution(self, approval_id: str, *, actor: str) -> dict[str, Any]:
+        with self.db._lock:
+            checked = self.plugin("library").adoption_execution_preflight(approval_id, actor=actor)
+            for name, governor in self._governors():
+                if name == "people" or getattr(governor, "check_execute", None) is None:
+                    continue
+                check = getattr(governor, "check_execute_preflight", None)
+                if check is None:
+                    raise ApprovalError("A configured governor lacks a pure library reference execution check")
+                check(checked["approval"], checked["manifest"], actor=checked["person"]["login"])
+            return checked
+
     def check_request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
         """Build and check the request without creating an approval or audit entry."""
+        if operation == "library.adopt_reference":
+            return self.check_library_reference_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
+        if operation == "prime_bill.send" and self._owner_bill_module(subject_id) is not None:
+            return self.check_prime_bill_send_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
+        if operation == "prime_bill.approve" and self._owner_bill_module(subject_id) is not None:
+            return self.check_prime_bill_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
+        if self._fixed_estimate_acceptance(operation, actor_role):
+            return self.check_estimate_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
         if operation == "accounting.queue":
             return self.check_accounting_queue_request(subject_id, requested_by=requested_by, actor_role=actor_role)["manifest"]
         manifest = self._manifest(operation, subject_id, actor_role)  # modules may refuse first with their own error
@@ -549,7 +1083,23 @@ class Cipher:
     def request_approval(self, operation: str, subject_id: str, *, actor_role: str = "owner", requested_by: str = "owner") -> dict[str, Any]:
         """The manifest's actor_role is the role that will execute the operation; it
         must hold that authority (ROLE_AUTHORITY), exactly as Ricky enforces."""
-        if operation == "accounting.queue":
+        if operation == "library.adopt_reference":
+            with self.plugin("library").atomic():
+                manifest = self.check_request_approval(operation, subject_id, actor_role=actor_role, requested_by=requested_by)
+                result = self.approvals.request(manifest, requested_by=requested_by)
+                self.plugin("library").approval_proof(result["id"])
+                return result
+
+        rfi_controls=self._rfi_module(operation,subject_id)
+        if rfi_controls is not None:
+            if actor_role!='pm':raise RoleNotAuthorized('RFI requests require the actual project PM role')
+            with rfi_controls._act():
+                checked=rfi_controls.request_preflight(subject_id,operation,actor=requested_by)
+                approval=self.approvals.request(checked['manifest'],requested_by=checked['person']['login'])
+                rfi_controls.record_approval_source(approval['id'],checked)
+                return approval
+        if (operation == "accounting.queue" or self._fixed_estimate_acceptance(operation, actor_role)
+                or operation in ("prime_bill.approve", "prime_bill.send") and self._owner_bill_module(subject_id) is not None):
             with self.db.transaction() as conn:
                 savepoint = new_id("accounting_request")
                 conn.execute(f"SAVEPOINT {savepoint}")
@@ -570,6 +1120,14 @@ class Cipher:
         """Check human decision authority and bill facts without granting anything."""
         self.db.require_practice_mode()
         ap = self.approvals.get(approval_id)
+        if ap["operation"] == "library.adopt_reference":
+            return self.check_library_reference_grant(approval_id, approver=approver, approver_role=approver_role)
+        if ap["operation"] == "prime_bill.send" and self._owner_bill_module(ap["subject_id"]) is not None:
+            return self.check_prime_bill_send_grant(approval_id, approver=approver, approver_role=approver_role)
+        if ap["operation"] == "prime_bill.approve" and self._owner_bill_module(ap["subject_id"]) is not None:
+            return self.check_prime_bill_grant(approval_id, approver=approver, approver_role=approver_role)
+        if self._fixed_estimate_acceptance(ap["operation"], ap["actor_role"]):
+            return self.check_estimate_grant(approval_id, approver=approver, approver_role=approver_role)
         if ap["operation"] == "ap_intake.match_invoice":
             return self.check_invoice_match_grant(approval_id, approver=approver, approver_role=approver_role)
         if ap["operation"] == "bill.correct":
@@ -702,12 +1260,16 @@ class Cipher:
                     checked = self.check_approval_grant(approval_id, approver=approver, approver_role=approver_role)
                     ap, governors = checked["approval"], checked["governors"]
                     granted = self.approvals.grant(approval_id, approver=approver)
+                    if ap["operation"] == "library.adopt_reference":
+                        self.plugin("library").approval_proof(approval_id)
                     for _name, governor in governors:
                         hook = getattr(governor, "on_grant", None)
                         if hook is not None:
                             hook(granted, approver=approver, approver_role=approver_role)
                     if ap["operation"] == "bill.approve":
                         self.bills.record_business_approval(ap["subject_id"], approval_id=approval_id, actor=approver)
+                    if ap["operation"] == "prime_bill.approve" and self._owner_bill_module(ap["subject_id"]) is not None:
+                        self._owner_bill_module(ap["subject_id"]).record_business_approval(ap["subject_id"], approval_id=approval_id, actor=approver)
                 except BaseException:
                     if conn.in_transaction:
                         conn.execute(f"ROLLBACK TO {savepoint}")
@@ -734,8 +1296,39 @@ class Cipher:
 
     def execute(self, approval_id: str, *, actor: str = "owner", op_id: str | None = None, period_id: str | None = None) -> CommandResult:
         self.db.require_practice_mode()
+        minimal=self.db.one('SELECT operation,subject_id FROM approvals WHERE id=?',(approval_id,))
+        rfi_controls=self._rfi_module(minimal['operation'],minimal['subject_id']) if minimal else None
+        if rfi_controls is not None:
+            rfi_controls._person(actor,rfi_controls.source_scope(minimal['subject_id'])['projectId'],'pm')
+            if period_id is not None:raise ApprovalError('RFI response and synthetic distribution have no accounting period')
+            rfi_controls.approval_proof(approval_id)
         ap = self.approvals.get(approval_id)
         operation, subject_id = ap["operation"], ap["subject_id"]
+        if operation == "library.adopt_reference":
+            try:
+                return self.plugin("library").execute_reference(approval_id, actor=actor, op_id=op_id, period_id=period_id)
+            except StaleApprovalError as exc:
+                with self.db.transaction():
+                    if self.approvals.get(approval_id)["status"] == "granted":
+                        self.approvals.invalidate(approval_id, reason=str(exc), actor=actor)
+                raise
+            except ApprovalExpired:
+                with self.db.transaction():
+                    if self.approvals.get(approval_id)["status"] == "granted":
+                        self.approvals.mark_expired(approval_id, actor=actor)
+                raise
+
+        if operation == "prime_bill.approve" and self._owner_bill_module(subject_id) is not None:
+            raise ApprovalError("Owner business approval does not post. A different actual accounting person must use post_prime_bill.")
+        owner_send = operation == "prime_bill.send" and self._owner_bill_module(subject_id) is not None
+        if owner_send:
+            module = self._owner_bill_module(subject_id)
+            module.require_duty(actor, module.source_scope(subject_id)["projectId"], "send")
+            module.approval_proof(approval_id)
+        fixed_estimate = self._fixed_estimate_acceptance(operation, ap["actor_role"])
+        if fixed_estimate:
+            self._actual_estimator(actor, self._estimate_scope(subject_id))
+            self.estimates.estimate_approval_proof(approval_id)
         if operation == "bill.approve":
             raise CipherError("Bill business approval does not post. An independent accounting person must use post_bill.")
         op_id = op_id or f"exec:{approval_id}"
@@ -750,7 +1343,11 @@ class Cipher:
             payload["person_id"] = person["personId"]
 
         def apply_handler():
-            current = (self.check_invoice_match_execution(approval_id, actor=actor)["manifest"]
+            current = (self.check_prime_bill_send_execution(approval_id, actor=actor)["manifest"]
+                       if owner_send else
+                       self.check_estimate_application(approval_id, actor=actor)["manifest"]
+                       if fixed_estimate else
+                       self.check_invoice_match_execution(approval_id, actor=actor)["manifest"]
                        if operation == "ap_intake.match_invoice" else
                        self.check_bill_correction_execution(approval_id, actor=actor, period_id=period_id)["manifest"]
                        if operation == "bill.correct" else
@@ -763,6 +1360,8 @@ class Cipher:
                                  if (approved_policy or {}).get(k) != (current_policy or {}).get(k))
                 raise StaleApprovalError(f"approval {approval_id} no longer matches the policy it was granted under: {', '.join(changed)} changed")
             for _name, governor in self._governors():
+                if owner_send and _name == "people":
+                    continue  # pure fixed owner-send helper proved both own duties
                 check = getattr(governor, "check_execute", None)
                 if check is not None:
                     check(fresh, current, actor=actor)
@@ -772,12 +1371,33 @@ class Cipher:
         def governed_command():
             # Commands joins an outer transaction. Include its bookkeeping in
             # this boundary so a caught late failure cannot leave consumption,
-            # reversals, correction state or an incomplete command behind.
+            # domain effects, source records or an incomplete command behind.
             with self.db.transaction() as conn:
-                savepoint = new_id("accounting_queue_act" if operation == "accounting.queue" else "bill_correction_act")
+                savepoint = new_id("estimate_acceptance_act" if fixed_estimate else
+                                   "accounting_queue_act" if operation == "accounting.queue" else "bill_correction_act")
                 conn.execute(f"SAVEPOINT {savepoint}")
                 try:
+                    if rfi_controls is not None:
+                        rfi_controls._person(actor,rfi_controls.source_scope(subject_id)['projectId'],'pm')
+                    if owner_send:
+                        owner_send_module = self._owner_bill_module(subject_id)
+                        owner_send_module.require_duty(actor, owner_send_module.source_scope(subject_id)["projectId"], "send")
                     result = self.commands.run(op_id, payload, apply_handler, actor=actor)
+                    if rfi_controls is not None:
+                        proof=rfi_controls.effect_proof(approval_id)
+                        if proof is None:raise ApprovalError('The original RFI effect is unavailable')
+                        expected=proof['result'] if operation=='field.respond_rfi' else dict(proof['record'])
+                        if operation=='field.distribute_rfi':expected['recipients']=json.loads(expected.pop('recipients_json'))
+                        if canonical_json(result.result)!=canonical_json(expected):raise ApprovalError('The RFI command differs from its exact original effect')
+                    if owner_send:
+                        proof = self._owner_bill_module(subject_id).send_proof(subject_id)
+                        if proof is None or canonical_json(result.result) != canonical_json(self._prime_bill_send_result(proof)):
+                            raise ApprovalError("The owner-send command differs from its exact original synthetic message")
+                    if fixed_estimate:
+                        original = self.estimates.estimate_proof(subject_id, accepted=True)
+                        if (original["acceptance"]["approvalId"] != approval_id
+                                or result.result != {"estimate": subject_id, "status": "approved"}):
+                            raise ApprovalError("Estimate command differs from its original accepted source")
                     if operation == "accounting.queue":
                         intents = [row for row in module.intent_inventory(project_ids=(scope["projectId"],))
                                    if row["approval_id"] == approval_id]
@@ -798,7 +1418,7 @@ class Cipher:
                         conn.execute(f"RELEASE {savepoint}")
 
         try:
-            return (governed_command() if operation in ("bill.correct", "accounting.queue") else
+            return (governed_command() if rfi_controls is not None or owner_send or fixed_estimate or operation in ("bill.correct", "accounting.queue") else
                     self.commands.run(op_id, payload, apply_handler, actor=actor))
         except StaleApprovalError as exc:
             # the command transaction rolled back; make the invalidation durable

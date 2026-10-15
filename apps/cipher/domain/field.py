@@ -78,6 +78,7 @@ from changing what an approval saw without that showing up as a version change.
 """
 from __future__ import annotations
 
+from contextlib import contextmanager
 import json
 from decimal import Decimal
 from typing import Any
@@ -689,6 +690,28 @@ class Plugin:
         except KeyError:
             return None
 
+    def _rfi_controls(self,rfi_id):
+        controls=self.c._plugins.get('rfi_controls')
+        return controls if controls is not None and controls.is_modern(rfi_id) else None
+
+    @contextmanager
+    def _rfi_transaction(self,rfi_id):
+        """Keep a classified source mutation whole even in a caught outer transaction."""
+        with self.db.transaction() as conn:
+            controls=self._rfi_controls(rfi_id)
+            if controls is None:
+                yield conn,None
+                return
+            savepoint=new_id('rfi_source_act')
+            conn.execute(f'SAVEPOINT {savepoint}')
+            try:
+                yield conn,controls
+            except BaseException:
+                if conn.in_transaction:conn.execute(f'ROLLBACK TO {savepoint}')
+                raise
+            finally:
+                if conn.in_transaction:conn.execute(f'RELEASE {savepoint}')
+
     def _commitment(self, commitment_id: Any) -> dict[str, Any]:
         cid = _text(commitment_id, "commitment_id")
         row = self.db.one("SELECT * FROM commitments WHERE id=?", (cid,))
@@ -800,8 +823,11 @@ class Plugin:
         days = _days(schedule_impact_days)
         actor = _text(actor, "actor")
         draft_hash = _response_hash(text, cost, days)
-        with self.db.transaction() as conn:
+        with self._rfi_transaction(rfi_id) as (conn,controls):
             r = self._rfi_row(rfi_id)
+            if controls is not None:
+                checked=controls.before_native_response(rfi_id,text,fmt(cost) if cost is not None else None,days,actor)
+                actor=checked['person']['login']
             if r["status"] != "open":
                 raise FieldError(f"{r['number']} is {r['status']}; only an open RFI takes a draft response")
             if r["draft_response_hash"] == draft_hash:
@@ -819,6 +845,7 @@ class Plugin:
                 "number": r["number"], "version": version, "draft_response_hash": draft_hash,
                 "cost_impact": fmt(cost) if cost is not None else None, "schedule_impact_days": days, "approvals_invalidated": invalidated,
             })
+            if controls is not None:controls.record_response_revision(rfi_id,actor)
         return self.rfi(r["id"])
 
     def set_distribution_list(self, rfi_id: str, recipients, actor: str) -> dict[str, Any]:
@@ -827,8 +854,11 @@ class Plugin:
         itself is the approval-bound ``field.distribute_rfi`` operation."""
         actor = _text(actor, "actor")
         clean, recipients_hash = _recipients(recipients)
-        with self.db.transaction() as conn:
+        with self._rfi_transaction(rfi_id) as (conn,controls):
             r = self._rfi_row(rfi_id)
+            if controls is not None:
+                checked=controls.before_native_distribution_list(rfi_id,clean,actor)
+                actor=checked['person']['login']
             if r["status"] != "answered":
                 raise FieldError(f"{r['number']} is {r['status']}; its distribution list is set once the response is issued through {OP_RESPOND_RFI}")
             if r["distribution_recipients_hash"] == recipients_hash:
@@ -852,6 +882,7 @@ class Plugin:
                 "number": r["number"], "version": version, "recipients": clean, "recipients_hash": recipients_hash,
                 "previous_recipients_hash": r["distribution_recipients_hash"], "approvals_invalidated": invalidated,
             })
+            if controls is not None:controls.record_distribution_revision(rfi_id,actor)
         return self.rfi(r["id"])
 
     def distribute_rfi(self, rfi_id: str, recipients=None, actor: str | None = None) -> dict[str, Any]:
@@ -898,6 +929,8 @@ class Plugin:
         actor = _text(actor, "actor")
         if sov_line_id is not None:
             sov_line_id = _text(sov_line_id, "sov_line_id")
+        if self._rfi_controls(rfi_id) is not None:
+            raise FieldError('A qualified RFI reports potential impacts; a separate change workflow must authorize any adoption')
         with self.db.transaction() as conn:
             r = self._rfi_row(rfi_id)
             if r["status"] != "answered":
@@ -1565,7 +1598,10 @@ class Plugin:
 
     def _apply_distribute(self, rfi_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
         """Write the mail-sink distribution row; nothing leaves the prototype."""
-        with self.db.transaction() as conn:
+        with self._rfi_transaction(rfi_id) as (conn,controls):
+            if controls is not None:
+                checked=controls.check_native_application(approval_id,actor=actor)
+                actor=checked['person']['login']
             r = self._rfi_row(rfi_id)
             if r["status"] != "answered":
                 raise FieldStateError(f"{r['number']} is {r['status']}; the approval can no longer distribute it")
@@ -1593,7 +1629,10 @@ class Plugin:
         return self._distribution(dist_id)
 
     def _apply_respond(self, rfi_id: str, *, approval_id: str, manifest: dict[str, Any], actor: str) -> dict[str, Any]:
-        with self.db.transaction() as conn:
+        with self._rfi_transaction(rfi_id) as (conn,controls):
+            if controls is not None:
+                checked=controls.check_native_application(approval_id,actor=actor)
+                actor=checked['person']['login']
             r = self._rfi_row(rfi_id)
             if r["status"] != "open":
                 raise FieldStateError(f"{r['number']} is {r['status']}; the approval can no longer answer it")

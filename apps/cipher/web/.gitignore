@@ -1,8 +1,12 @@
 node_modules/
 dist/
 dist-ap/
+dist-commercial/
+dist-ar/
 .env.local
 .env.*.local
 *.tsbuildinfo
 playwright-report/
 test-results/
+dist-library/
+dist-rfi/
