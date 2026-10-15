@@ -20,7 +20,8 @@ python apps/cipher/platform/operations/validate_new_stack.py \
 
 Use a new report filename for each checkpoint or failed attempt. The runner
 creates and retains a unique isolated `cipher-ci-*.localhost` site, leaving the
-default development site unchanged. It first checks the distribution supervisor
+default development site unchanged. A separate `validation-reporter-tests` stage
+first verifies the pure synthetic failure-report parser. It then checks the distribution supervisor
 using actual disposable Linux processes, including separate-group work-horse
 cleanup and preservation of an unrelated process. These checks are reported
 separately from application/database tests. It installs and migrates the current app,
@@ -36,6 +37,19 @@ and are listed separately as unexecuted by this gate. Their connected evidence
 is captured independently. Missing, skipped, flaky or failed tests and source
 changes during the run fail the checkpoint. Raw logs stay in the private work
 directory identified by the report; do not publish those logs without review.
+
+When the browser command fails, the runner reads its existing private Playwright
+JSON report and attaches a bounded `browser_failure` summary to that failed stage.
+It prints up to five cases to the job log and retains up to twenty in the public
+validation JSON: test file/title/location, status, normalized assertion kind and
+simple expected/received states, plus selected counts and duration. Raw assertion
+values, raw expected/received numeric values, snippets, stacks, URLs, absolute paths, attachments and
+stdout/stderr stay private. Missing, malformed or oversized reports are identified
+without replacing the original stage failure. This diagnostic does not retry,
+skip, alter browser assertions, or turn a failed process into a passing gate.
+Report-level launch/setup errors use the same safe assertion categories, and
+truncated traversal or error inventories are explicitly labeled. Timeout duration
+and selected aggregate statistics remain public.
 
 After reviewing the checkpoint and connected evidence, update the hash inventory:
 

@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import hashlib
 import importlib.util
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -70,6 +71,129 @@ def acceptance_contracts(tests):
                     '; canonical fresh fixtures must run without supplied inputs. Rename site-bound procedures explicitly.')
         sources.append((source,set(functions)))
     return sources
+
+
+def browser_failure_summary(path):
+    """Publish bounded fixture-test identity and assertion categories, never raw logs.
+
+    Playwright error messages include source snippets, actual values, URLs and
+    attachment paths. Only normalized matcher/timeout text and simple expected
+    states leave the private report. Preserve the original stage failure even
+    when its JSON report is absent or incomplete.
+    """
+    limit_bytes = 8 * 1024 * 1024
+    summary = {"schema": "cipher.browser.failure.v1", "report_status": "missing", "stats": {}, "failures": []}
+    try:
+        with Path(path).open("rb") as stream:
+            raw = stream.read(limit_bytes + 1)
+    except OSError:
+        return summary
+    if len(raw) > limit_bytes:
+        summary["report_status"] = "oversized"
+        return summary
+    try:
+        report = json.loads(raw)
+    except (ValueError, UnicodeError, RecursionError):
+        summary["report_status"] = "malformed"
+        return summary
+    if not isinstance(report, dict):
+        summary["report_status"] = "malformed"
+        return summary
+    summary["report_status"] = "available"
+    summary["report_sha256"] = hashlib.sha256(raw).hexdigest()
+    stats = report.get("stats", {})
+    if isinstance(stats, dict):
+        for key in ("expected", "unexpected", "flaky", "skipped", "duration"):
+            value = stats.get(key)
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value) and 0 <= value <= 10**12:
+                summary["stats"][key] = value
+
+    def safe_title(value):
+        text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", str(value or ""))[:1000]
+        if re.search(r"(?i)\b(?:password|passwd|pwd|secret|token|authorization|cookie|credential|api[_-]?key)\b[\"']?\s*[=:]|\bBearer\s+", text):
+            return "Redacted test title (sensitive assignment)"
+        text = re.sub(r"(?:[a-z][a-z0-9+.-]*://|www\.|data:)\S+", "[url]", text, flags=re.I)
+        text = re.sub(r"(?<!\w)(?:[A-Za-z]:[\\/]|/)\S+", "[path]", text)
+        return " ".join(text.split())[:240]
+
+    def location(value):
+        if not isinstance(value, dict):
+            return {}
+        name = str(value.get("file", "")).replace("\\", "/").rsplit("/", 1)[-1]
+        result = {"file": name if re.fullmatch(r"[A-Za-z0-9_.-]{1,160}\.(?:[jt]sx?|mjs|cjs)", name) else "unavailable"}
+        for key in ("line", "column"):
+            number = value.get(key)
+            if isinstance(number, int) and not isinstance(number, bool) and 0 <= number <= 10**7:
+                result[key] = number
+        return result
+
+    def assertion(error):
+        message = error.get("message", "") if isinstance(error, dict) else ""
+        message = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", str(message))[:16000]
+        matcher = re.search(r"expect\((locator|received|page|value|response)\)\.([A-Za-z]{1,60})", message)
+        timeout = re.search(r"(?:Test timeout of|Timeout)\s+(\d{1,8})\s*ms\s+exceeded", message, re.I)
+        text = f"expect({matcher[1]}).{matcher[2]} failed" if matcher else f"Test timeout of {timeout[1]}ms exceeded" if timeout else "Browser test failed; details retained privately."
+        for label in ("Expected", "Received"):
+            state = re.search(r"^" + label + r":\s*(visible|hidden|enabled|disabled|focused|checked|unchecked|attached|detached|true|false|null|undefined)\s*$", message, re.M)
+            if state:
+                text += f"; {label.lower()}: {state[1]}"
+        return text
+
+    report_errors = report.get("errors", [])
+    if isinstance(report_errors, list):
+        summary["report_error_count"] = len(report_errors)
+        summary["report_errors"] = [{"assertion": assertion(error), **location(error.get("location"))}
+                                    if isinstance(error, dict) else {"assertion": assertion({})}
+                                    for error in report_errors[:5]]
+        summary["report_errors_omitted"] = max(0, len(report_errors) - 5)
+    pending = [(report.get("suites", []), 0)]
+    visited = 0
+    omitted = 0
+    truncated = False
+
+    def bounded_entries(value, maximum):
+        nonlocal truncated
+        if not isinstance(value, list):
+            return []
+        if len(value) > maximum:
+            truncated = True
+        return value[:maximum]
+
+    while pending and visited < 10000:
+        suites, depth = pending.pop()
+        if depth > 16:
+            truncated = truncated or bool(suites)
+            continue
+        for suite in bounded_entries(suites, 1000):
+            visited += 1
+            if not isinstance(suite, dict):
+                continue
+            pending.append((suite.get("suites", []), depth + 1))
+            specs = suite.get("specs", [])
+            for spec in bounded_entries(specs, 1000):
+                if not isinstance(spec, dict):
+                    continue
+                tests = spec.get("tests", [])
+                for test in bounded_entries(tests, 100):
+                    if not isinstance(test, dict) or test.get("status") not in {"unexpected", "flaky", "skipped"}:
+                        continue
+                    if len(summary["failures"]) >= 20:
+                        omitted += 1
+                        continue
+                    results = test.get("results", [])
+                    failed = [result for result in results if isinstance(result, dict) and result.get("status") in {"failed", "timedOut", "interrupted"}] if isinstance(results, list) else []
+                    result = failed[-1] if failed else {}
+                    errors = result.get("errors", [])
+                    error = result.get("error") or (errors[0] if isinstance(errors, list) and errors else {})
+                    entry = {"title": safe_title(spec.get("title")), **location(spec), "status": test["status"],
+                             "result_status": result.get("status", "skipped" if test["status"] == "skipped" else "unavailable"),
+                             "assertion": assertion(error)}
+                    if isinstance(error, dict) and isinstance(error.get("location"), dict):
+                        entry["assertion_location"] = location(error["location"])
+                    summary["failures"].append(entry)
+    summary["failures_omitted"] = omitted
+    summary["traversal_limited"] = truncated or bool(pending)
+    return summary
 
 
 class Runner:
@@ -288,8 +412,23 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
             env["CIPHER_CHROME"] = executable
         browser_report = self.work / "browser-contracts.json"
         env["PLAYWRIGHT_JSON_OUTPUT_FILE"] = str(browser_report)
-        self.stage("frontend-browser-contracts", ["npm", "run", "test:contract", "--", "--reporter=json"], cwd=target, env=env,
-                   classification="browser-with-explicit-http-fixtures")
+        self.browser_contracts(target, env, browser_report)
+
+    def browser_contracts(self, target, env, browser_report):
+        try:
+            self.stage("frontend-browser-contracts", ["npm", "run", "test:contract", "--", "--reporter=json"], cwd=target, env=env,
+                       classification="browser-with-explicit-http-fixtures")
+        except ValidationFailure:
+            try:
+                diagnostic = browser_failure_summary(browser_report)
+            except Exception:
+                diagnostic = {"schema": "cipher.browser.failure.v1", "report_status": "unreadable", "stats": {}, "failures": []}
+            self.results[-1]["browser_failure"] = diagnostic
+            brief = {key: diagnostic[key] for key in ("report_status", "stats")}
+            brief["failures"] = diagnostic["failures"][:5]
+            brief["report_errors"] = diagnostic.get("report_errors", [])[:3]
+            print("BROWSER_FAILURE " + json.dumps(brief, sort_keys=True), flush=True)
+            raise
         browser = json.loads(browser_report.read_text())["stats"]
         require(browser.get("expected", 0) > 0 and not any(browser.get(key, 0) for key in ("unexpected", "flaky", "skipped")),
                 "Browser contract cases must pass without flaky/skipped cases")
@@ -312,6 +451,8 @@ sys.exit(0 if result.wasSuccessful() and result.testsRun and not result.skipped 
         try:
             if self.args.extended_fixtures:
                 self.acceptance_sources=acceptance_contracts(CIPHER / 'platform/apps/cipher_aec/cipher_aec/tests')
+            self.stage("validation-reporter-tests", [sys.executable, "-m", "unittest", "discover", "-s", "apps/cipher/platform/operations/tests"],
+                       classification="synthetic-reporter-contract")
             self.deployment_checks()
             self.bootstrap()
             self.database_checks()
