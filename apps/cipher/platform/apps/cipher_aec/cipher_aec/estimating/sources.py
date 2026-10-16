@@ -16,6 +16,20 @@ GENERATED_INPUTS_QUALIFIED = False
 
 
 def resolve(company, project, references, actor, *, lock=False):
+    return _resolve(company, project, references, actor, lock=lock, admit_new_inputs=True)
+
+
+def _resolve_original(company, project, references, actor, *, lock=False):
+    """Canonical original reads; locking does not request new-input admission.
+
+    Only private historical verifiers use this path after binding immutable
+    records. Current document/producer authority, resources and bytes remain
+    enforced by the same canonical reader for the exact actor and locator.
+    """
+    return _resolve(company, project, references, actor, lock=lock, admit_new_inputs=False)
+
+
+def _resolve(company, project, references, actor, *, lock, admit_new_inputs):
     require_project(company, project, ability="document.read", actor=actor, lock=lock)
     if type(references) is not list or not 1 <= len(references) <= 8:
         fail("Use one through eight actual document source citations.", "source_citations")
@@ -31,7 +45,7 @@ def resolve(company, project, references, actor, *, lock=False):
         if not record or record.company != company or record.project != project or scope.scope_type == "Company" and record.scope_type != "Company":
             raise DomainError("not_found", "This estimate source is not available in the current project.", 404)
         if scope.scope_type == "Company":
-            if lock:
+            if lock and admit_new_inputs:
                 require_raw_mutation_source(company, row["revision_id"], actor)
             from cipher_aec.documents.service import get_company_citation
             citation = get_company_citation(company, row["revision_id"], row["page"], excerpt_sha256=row["excerpt_sha256"], actor=actor, lock=lock)
@@ -47,10 +61,18 @@ def resolve(company, project, references, actor, *, lock=False):
 
 
 def verify(company, project, citations, actor, *, lock=False):
+    return _verify(company, project, citations, actor, lock=lock, resolver=resolve)
+
+
+def _verify_original(company, project, citations, actor, *, lock=False):
+    return _verify(company, project, citations, actor, lock=lock, resolver=_resolve_original)
+
+
+def _verify(company, project, citations, actor, *, lock, resolver):
     if type(citations) is not list or not 1 <= len(citations) <= 64:
         fail("Use a bounded immutable source manifest.", "source_citations")
     references = [{key: row[key] for key in ("revision_id", "page", "excerpt_sha256", "source_sha256")} for row in citations]
-    actual = [row for start in range(0, len(references), 8) for row in resolve(company, project, references[start:start + 8], actor, lock=lock)]
+    actual = [row for start in range(0, len(references), 8) for row in resolver(company, project, references[start:start + 8], actor, lock=lock)]
     expected = {row["id"]: row for row in actual}
     for row in citations:
         if row.get("id") not in expected or row != expected[row["id"]]:
@@ -95,6 +117,15 @@ def _citation_key(row):
 
 
 def verify_groups(company, project, groups, actor, *, lock=False):
+    return _verify_groups(company, project, groups, actor, lock=lock, resolver=resolve)
+
+
+def _verify_original_groups(company, project, groups, actor, *, lock=False):
+    """Verify bound historical citation copies without admitting a new input."""
+    return _verify_groups(company, project, groups, actor, lock=lock, resolver=_resolve_original)
+
+
+def _verify_groups(company, project, groups, actor, *, lock, resolver):
     """Verify every original citation copy with one canonical read per locator.
 
     Only the calling builder owns these local values. No identity, authority,
@@ -113,7 +144,7 @@ def verify_groups(company, project, groups, actor, *, lock=False):
     if not references:
         return []
     unique = list(references.values())
-    actual = [row for start in range(0, len(unique), 8) for row in resolve(company, project, unique[start:start + 8], actor, lock=lock)]
+    actual = [row for start in range(0, len(unique), 8) for row in resolver(company, project, unique[start:start + 8], actor, lock=lock)]
     canonical = {_citation_key(row): row for row in actual}
     for key, original in occurrences:
         expected = canonical.get(key)

@@ -1,6 +1,6 @@
 # Cipher — The AEC/CMS Pro
 
-**Implementation authorized:** The owner instructed “Execute this plan as written and do not stray” on October 15, 2026. Implementation is now active under this framework. Earlier pending-approval/planning-only markers describe the completed draft stage and no longer block coding. Astra ultra owns orchestration/reviews/escalations; all implementation subagents use GPT-6.1 Sol.
+**Implementation authorized:** The owner instructed “Execute this plan as written and do not stray” on October 15, 2026. Implementation is now active under this framework. Earlier pending-approval/planning-only markers describe the completed draft stage and no longer block coding. The owner updated the execution preference on October 16, 2026: use GPT-6.1 Sol Ultra for all agent work. Keep delegation focused and review changes directly; earlier Astra assignments are historical and superseded.
 
 # Backend framework and autonomous implementation specification
 

@@ -1,0 +1,32 @@
+{
+  "schema": "cipher.checkpoint.hosted-ci.v1",
+  "commit": "2287c5dbcfec2971d12f9b994e9389fd0a336258",
+  "run_id": 38839065986,
+  "job_id": 116774698661,
+  "conclusion": "failure",
+  "stage": "frontend-browser-contracts",
+  "test": "cited Ricky proposal requires review then updates project tasks",
+  "location": "product.spec.ts:113",
+  "backend_passed": true,
+  "browser": {
+    "passed": 150,
+    "failed": 1,
+    "skipped": 0,
+    "flaky": 0
+  },
+  "artifact_id": 12021001143,
+  "artifact_download": "Tool returned a signed file reference; local fetch was refused by network proxy with HTTP 403. No alternate-route fetch attempted.",
+  "local_focused_followup": {
+    "source_commit": "2287c5dbcfec2971d12f9b994e9389fd0a336258",
+    "stats": {
+      "startTime": "2026-10-16T02:24:55.624Z",
+      "duration": 4830.313,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "report_sha256": "3761d68f4a83ee9c6a40d3bbf7f2fd70edb49d6aba8e3daf2507ef5569870bd0",
+    "qualification": "One unchanged local browser fixture case. Hosted failure remains unresolved."
+  }
+}

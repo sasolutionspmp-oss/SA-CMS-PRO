@@ -1,0 +1,201 @@
+{
+  "schema": "cipher.historical-estimate.source-install.v1",
+  "started_at": "2026-10-16T02:43:40.295477+00:00",
+  "status": "passed",
+  "composed_verification_sha256": "bddc5e3c0a627761621e483294e8df71ac68b9d07f3dba48d9075fd23be1f04c",
+  "snapshot_sha256": "a9318847e754e8689991324916f941393dd6c3ed1cfbfd230030635092fee037",
+  "before": {
+    "processes": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_ticks": 9678327,
+        "cmdline_sha256": "26598a6a9829cc4b19bb9cfd1f2c121905448501d2f375e6b7c466831b442358",
+        "role": "nonweb"
+      },
+      {
+        "pid": 6,
+        "ppid": 1,
+        "start_ticks": 9678339,
+        "cmdline_sha256": "556de3c67ccd245ecd88730ef891462c55ef2a218a0bebed607a70be24cea18c",
+        "role": "nonweb"
+      },
+      {
+        "pid": 17,
+        "ppid": 6,
+        "start_ticks": 9678663,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-master"
+      },
+      {
+        "pid": 18,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "4bfd275411c66100d4a0a53fba27cf2099bbe37144e19b9e517d9c5918fb19a9",
+        "role": "nonweb"
+      },
+      {
+        "pid": 19,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "235eee303f1d9fce145c52834c8bb6fb65cb8a179a30fa102928454c8c230b6c",
+        "role": "nonweb"
+      },
+      {
+        "pid": 20,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "175024136973bf0c3606fc3d41234b17b9357aa4ef97b0ec6d4c7efc0e4b4b30",
+        "role": "nonweb"
+      },
+      {
+        "pid": 21,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "c63dd441ac219da543812251f32f579d9516aa8c8a1e305c6ab50555faf5f1df",
+        "role": "nonweb"
+      },
+      {
+        "pid": 22,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "dcde4a94c6f41f8e038695f3113aed87f7a081a707173e37eb60d54e6bec23e9",
+        "role": "nonweb"
+      },
+      {
+        "pid": 7806,
+        "ppid": 22,
+        "start_ticks": 10497207,
+        "cmdline_sha256": "221538fc7d72a0132c5ebe47412e1549b35bef24008cf3f72808fc064d993438",
+        "role": "nonweb"
+      },
+      {
+        "pid": 27187,
+        "ppid": 17,
+        "start_ticks": 13443390,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-worker"
+      },
+      {
+        "pid": 27188,
+        "ppid": 17,
+        "start_ticks": 13443390,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-worker"
+      }
+    ],
+    "config_sha256": {
+      "common_site_config.json": "cc75933ff749301d5e7e1ce0c456cc86ae685c9cee883e21109b6af02357944d",
+      "cipher.localhost/site_config.json": "a938b380adb4b0bf245edb4b007a8b4713b9c8790a1378b29d80732eb9135713"
+    },
+    "distribution_pair_active": false
+  },
+  "changes": [
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_original_read.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_historical_sources.py"
+  ],
+  "migration": false,
+  "ui_changed": false,
+  "full_restart": false,
+  "after": {
+    "processes": [
+      {
+        "pid": 1,
+        "ppid": 0,
+        "start_ticks": 9678327,
+        "cmdline_sha256": "26598a6a9829cc4b19bb9cfd1f2c121905448501d2f375e6b7c466831b442358",
+        "role": "nonweb"
+      },
+      {
+        "pid": 6,
+        "ppid": 1,
+        "start_ticks": 9678339,
+        "cmdline_sha256": "556de3c67ccd245ecd88730ef891462c55ef2a218a0bebed607a70be24cea18c",
+        "role": "nonweb"
+      },
+      {
+        "pid": 17,
+        "ppid": 6,
+        "start_ticks": 9678663,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-master"
+      },
+      {
+        "pid": 18,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "4bfd275411c66100d4a0a53fba27cf2099bbe37144e19b9e517d9c5918fb19a9",
+        "role": "nonweb"
+      },
+      {
+        "pid": 19,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "235eee303f1d9fce145c52834c8bb6fb65cb8a179a30fa102928454c8c230b6c",
+        "role": "nonweb"
+      },
+      {
+        "pid": 20,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "175024136973bf0c3606fc3d41234b17b9357aa4ef97b0ec6d4c7efc0e4b4b30",
+        "role": "nonweb"
+      },
+      {
+        "pid": 21,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "c63dd441ac219da543812251f32f579d9516aa8c8a1e305c6ab50555faf5f1df",
+        "role": "nonweb"
+      },
+      {
+        "pid": 22,
+        "ppid": 6,
+        "start_ticks": 9678664,
+        "cmdline_sha256": "dcde4a94c6f41f8e038695f3113aed87f7a081a707173e37eb60d54e6bec23e9",
+        "role": "nonweb"
+      },
+      {
+        "pid": 7806,
+        "ppid": 22,
+        "start_ticks": 10497207,
+        "cmdline_sha256": "221538fc7d72a0132c5ebe47412e1549b35bef24008cf3f72808fc064d993438",
+        "role": "nonweb"
+      },
+      {
+        "pid": 29005,
+        "ppid": 17,
+        "start_ticks": 13834129,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-worker"
+      },
+      {
+        "pid": 29006,
+        "ppid": 17,
+        "start_ticks": 13834129,
+        "cmdline_sha256": "8bbce3720be5532820bfd0d2267e2f37d66989a6199d64062abe27332fb8b084",
+        "role": "web-worker"
+      }
+    ],
+    "config_sha256": {
+      "common_site_config.json": "cc75933ff749301d5e7e1ce0c456cc86ae685c9cee883e21109b6af02357944d",
+      "cipher.localhost/site_config.json": "a938b380adb4b0bf245edb4b007a8b4713b9c8790a1378b29d80732eb9135713"
+    },
+    "distribution_pair_active": false
+  },
+  "web_workers_replaced": 2,
+  "hup_sent": true,
+  "signals_sent": 1,
+  "nonweb_processes_preserved": true,
+  "nonweb_process_count": 9,
+  "config_preserved": true,
+  "nonweb_loaded_code_qualification": false,
+  "original_unfinished_install_sha256": "a99dbb5e03c3e21ac87fb04d936a12426398f5649fffc19e5cdc511de995bb61",
+  "failed_shell_tool_record_sha256": "fd21a5f081b4d4cdc205f498286e6a6215de5c088a53a8f1baf7fdf2df96d2f8",
+  "immediate_observer_failure": "The first post-HUP stable-process assertion failed; that intermediate snapshot was not persisted. Fresh settled readback verified all original nonweb identities/config and two replacement web workers. No continuous-process-state claim.",
+  "settled_post_hup_observation_sha256": "6c66867ac32ca9686979341e21382bda236417c9ee3c7cc3e4a1f4f11f54162b"
+}

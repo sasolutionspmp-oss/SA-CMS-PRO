@@ -2,6 +2,7 @@
 from datetime import datetime, timezone
 from uuid import uuid4
 from copy import deepcopy
+from functools import partial
 import re
 
 import frappe
@@ -28,14 +29,25 @@ def _new(company, project, actor, *, record_id=None, status="authored", **values
 
 
 def _source(company, project, source, actor, *, lock=False, new_use=False, calibrated=False):
+    return _read_source(company, project, source, actor, lock=lock, new_use=new_use, calibrated=calibrated,
+                        mutation_admission=sources.require_raw_mutation_source)
+
+
+def _source_original(company, project, source, actor, *, lock=False, calibrated=False):
+    """Exact original drawing read; canonical rights/resources/bytes still apply."""
+    return _read_source(company, project, source, actor, lock=lock, new_use=False, calibrated=calibrated,
+                        mutation_admission=None)
+
+
+def _read_source(company, project, source, actor, *, lock, new_use, calibrated, mutation_admission):
     closed(source, {"revision_id", "source_sha256", "page"}, path="source")
     visible(source["revision_id"], "source.revision_id", 140)
     if type(source["source_sha256"]) is not str or not re.fullmatch("[a-f0-9]{64}", source["source_sha256"]) or type(source["page"]) is not int or not 1 <= source["page"] <= 200:
         geometry.fail("Use the exact drawing SHA-256 and a supported integer page.", "source")
     if scopes.current(company, project).scope_type == "Company":
         from cipher_aec.documents.service import company_source_reference
-        if lock:
-            sources.require_raw_mutation_source(company, source["revision_id"], actor)
+        if lock and mutation_admission is not None:
+            mutation_admission(company, source["revision_id"], actor)
         value = company_source_reference(company, source["revision_id"], source["page"], actor=actor, lock=lock)
     else:
         value = source_reference(company, project, source["revision_id"], source["page"], actor=actor, lock=lock)
@@ -54,19 +66,48 @@ def source_input(record):
 
 
 def _verify_measurement_sources(value, actor, *, lock=False):
+    return _measurement_sources(value, actor, lock=lock, conversion_reader=estimates._conversion_records, citation_verifier=sources.verify)
+
+
+def _verify_original_measurement_sources(value, actor, *, lock=False):
+    return _measurement_sources(value, actor, lock=lock, conversion_reader=estimates._conversion_original_records, citation_verifier=sources._verify_original)
+
+
+def _measurement_sources(value, actor, *, lock, conversion_reader, citation_verifier):
     citations = value.get("source_citations")
     if citations is None:
         # Early synthetic draft records retain their immutable bodies. Resolve
         # their exact pinned conversion IDs under current source authority;
         # missing stored provenance never grants a source-permission bypass.
-        conversions = estimates._conversion_records(value["company"], value["project"], value["conversion_ids"], actor, lock=lock)
+        conversions = conversion_reader(value["company"], value["project"], value["conversion_ids"], actor, lock=lock)
         citations = sources.merge(*(row["source_citations"] for row in conversions))
     if citations:
-        sources.verify(value["company"], value["project"], citations, actor, lock=lock)
+        citation_verifier(value["company"], value["project"], citations, actor, lock=lock)
     return citations
 
 
 def _read(kind, record_id, company, project, actor, *, lock=False, new_use=False, _observations=None):
+    return _read_record(kind, record_id, company, project, actor, lock=lock, new_use=new_use, observations=_observations,
+                        drawing_reader=partial(_source, new_use=new_use), related_reader=partial(_read, new_use=new_use),
+                        estimate_reader=estimates._scoped, citation_verifier=sources.verify, measurement_verifier=_verify_measurement_sources)
+
+
+def _read_original(kind, record_id, company, project, actor, *, lock=False, _observations=None):
+    """Private recursion for the exact bindings in an original acceptance fact.
+
+    This contract never requests current-head eligibility or new-input admission.
+    All ordinary record, source, calibration, unit and native authority checks
+    run through the same implementations for the original actor and lock mode.
+    """
+    if scopes.current(company, project).scope_type != "Company" or kind not in {"binding", "measurement", "calibration", "verification"}:
+        raise DomainError("approval_integrity", "This record is not an original acceptance takeoff dependency.", 409)
+    return _read_record(kind, record_id, company, project, actor, lock=lock, new_use=False, observations=_observations,
+                        drawing_reader=_source_original, related_reader=_read_original,
+                        estimate_reader=estimates._scoped_original, citation_verifier=sources._verify_original, measurement_verifier=_verify_original_measurement_sources)
+
+
+def _read_record(kind, record_id, company, project, actor, *, lock, new_use, observations,
+                 drawing_reader, related_reader, estimate_reader, citation_verifier, measurement_verifier):
     require_project(company, project, ability="estimate.read", actor=actor, lock=lock)
     value = repository.read(kind, record_id, lock=lock)
     if not scopes.current(company, project).matches(value):
@@ -76,31 +117,31 @@ def _read(kind, record_id, company, project, actor, *, lock=False, new_use=False
         verify_manifest_access(value["unit_manifest"], None, actor)
     current, verified = None, None
     if kind in {"calibration", "measurement"}:
-        current, _ = _source(company, project, source_input(value), actor, lock=lock, new_use=new_use, calibrated=kind == "calibration" or value["definition"]["method"] == "calibrated")
+        current, _ = drawing_reader(company, project, source_input(value), actor, lock=lock, calibrated=kind == "calibration" or value["definition"]["method"] == "calibrated")
         if current["document_id"] != value["source"]["document_id"]:
             raise DomainError("source_mismatch", "The immutable drawing identity changed.", 409)
         if new_use and repository.latest(kind, value["family_id"], lock=lock) != value["id"]:
             raise DomainError("superseded_takeoff", "Use the current explicit takeoff revision.", 412)
         if kind == "calibration":
-            sources.verify(company, project, value["source_citations"], actor, lock=lock) if value["source_citations"] else None
+            citation_verifier(company, project, value["source_citations"], actor, lock=lock) if value["source_citations"] else None
         elif kind == "measurement":
-            _verify_measurement_sources(value, actor, lock=lock)
+            measurement_verifier(value, actor, lock=lock)
         if kind == "measurement" and value["definition"]["method"] == "calibrated":
-            calibrated = _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
+            calibrated = related_reader("calibration", value["calibration_id"], company, project, actor, lock=lock, _observations=observations)
             verified = repository.verification(calibrated["id"], lock=lock)
             if not verified or verified["id"] != value["verification_id"] or verified["calibration_digest"] != digest(calibrated):
                 raise DomainError("calibration_unverified", "This measurement requires its exact independent calibration verification.", 409)
     elif kind == "verification":
-        _read("calibration", value["calibration_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
+        related_reader("calibration", value["calibration_id"], company, project, actor, lock=lock, _observations=observations)
     elif kind == "binding":
-        _read("measurement", value["measurement_id"], company, project, actor, lock=lock, new_use=new_use, _observations=_observations)
-        line = estimates._scoped("line", value["estimate_line_record"], company, project, actor, lock=lock)
-        if _observations is not None:
-            _observations[("line", line["id"])] = {"record": line}
+        related_reader("measurement", value["measurement_id"], company, project, actor, lock=lock, _observations=observations)
+        line = estimate_reader("line", value["estimate_line_record"], company, project, actor, lock=lock)
+        if observations is not None:
+            observations[("line", line["id"])] = {"record": line}
     # Observations only collect completed checks in this one recursive call.
     # They never short-circuit a read or escape the calling fact builder.
-    if _observations is not None:
-        _observations[(kind, value["id"])] = {"record": value, "source": current, "verification": verified}
+    if observations is not None:
+        observations[(kind, value["id"])] = {"record": value, "source": current, "verification": verified}
     return value
 
 

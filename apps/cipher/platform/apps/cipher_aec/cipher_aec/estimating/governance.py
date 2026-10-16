@@ -150,7 +150,8 @@ def _historical(*, actor, company, project, subject_id, manifest, lock=False, pr
         value = _citation_record(ref["kind"], ref["id"], company, project, actor, citation_groups, lock=lock)
         if digest(value) != ref["digest"]:
             raise DomainError("approval_integrity", "An original priced source cannot be verified.", 409)
-    sources.verify_groups(company, project, citation_groups, actor, lock=lock)
+    verify_original = sources._verify_original_groups if scopes.current(company, project).scope_type == "Company" else sources.verify_groups
+    verify_original(company, project, citation_groups, actor, lock=lock)
     units.verify_manifest_access({"records": facts["qualified_units"]}, revision["currency"], actor)
     # Hold original and current Pursuit native refs together before nested reads.
     master = service._scoped("estimate", revision["estimate"], company, project, actor, lock=lock, verify_links=False)
@@ -185,9 +186,10 @@ def _historical(*, actor, company, project, subject_id, manifest, lock=False, pr
         frappe.db.sql("SELECT name FROM `tabCurrency` WHERE name=%s FOR UPDATE", (revision["currency"],))
     sources.verify_native_rates(company, project, list(snapshot["inputs"]["rates"].values()), actor, lock=lock,
                                pursuit_plans=[plan], extra_references=facts["native_references"])
+    read_original = takeoff._read_original if scopes.current(company, project).scope_type == "Company" else takeoff._read
     for ref in facts["bindings"]:
-        binding = takeoff._read("binding", ref["id"], company, project, actor, lock=lock)
-        measured = takeoff._read("measurement", ref["measurement_id"], company, project, actor, lock=lock)
+        binding = read_original("binding", ref["id"], company, project, actor, lock=lock)
+        measured = read_original("measurement", ref["measurement_id"], company, project, actor, lock=lock)
         if digest(binding) != ref["digest"] or digest(measured) != ref["measurement_digest"]:
             raise DomainError("approval_integrity", "An original takeoff binding cannot be verified.", 409)
     if scopes.current(company, project).scope_type == "Company":

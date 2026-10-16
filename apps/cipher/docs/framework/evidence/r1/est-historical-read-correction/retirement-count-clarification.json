@@ -1,0 +1,17 @@
+{
+  "schema": "cipher.retirement-count-clarification.v1",
+  "original_retirement_record_sha256": "05821d986632c92d5d2b5af1e8d15c78c1709645564ccd3e6b7ebcf8f75fe400",
+  "correction": "Original workflow_procedures_passed=14 mistakenly counted the declaration list of unexecuted opt-in modules. Eight workflow acceptance stages actually passed; none of those fourteen separately declared modules was qualified by this runner.",
+  "executed_workflow_stages": [
+    "test_commercial_acceptance",
+    "test_construction_finance_acceptance",
+    "test_estimating_acceptance",
+    "test_migrations_acceptance",
+    "test_outbox_acceptance",
+    "test_project_controls_acceptance",
+    "test_ricky_acceptance",
+    "test_takeoff_acceptance"
+  ],
+  "executed_workflow_stage_count": 8,
+  "unexecuted_opt_in_modules": 14
+}

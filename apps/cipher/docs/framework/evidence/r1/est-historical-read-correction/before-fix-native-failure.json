@@ -1,0 +1,53 @@
+{
+  "schema": "cipher.est.failed-replay-reconciliation.v1",
+  "original_operation_id": "184271b9-d705-4951-8a4e-9d54d23db886",
+  "baseline_id": "cf2065ff-37e6-4bac-be56-02ed7d047c8a",
+  "acceptance_exact_original": true,
+  "receipt_effect_exact_original": true,
+  "acceptance_count": 1,
+  "receipt_count": 1,
+  "consumption_count": 1,
+  "company_project_count": 0,
+  "binding_count": 1,
+  "row_inventory_sha256": {
+    "acceptance": "9f45934a6c34976d6066da39b8e1bfbf3301c9d6669242c21763ebed1dc9b8ad",
+    "receipt": "098b012e36cf2bc8ce85aba6869e955656beac43a343a6a7aba312fe7c2a8118",
+    "consumption": "950e1bd816d1c73ede417fa8f497f35ab6d2da2ab11224fb6e843be153bbcc4b",
+    "events": "a07b317d03cd0fc3f06130b0122c5e5e2deb5b8a2f69316db247b965af2a3e80"
+  },
+  "timings": [
+    {
+      "method": "actual-Frappe-Company-native-hook-parity.lockFalse",
+      "status": "returned",
+      "sql_calls": 31,
+      "elapsed_seconds": 0.065313
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "status": "source_dependency_unqualified",
+      "sql_calls": 925,
+      "elapsed_seconds": 0.673411
+    }
+  ],
+  "native_hook_parity_observed": {
+    "actual_native_engine_and_installed_hook": true,
+    "fresh_authority_counts": {
+      "guard_authority": 1,
+      "direct_hook_authority": 1,
+      "bridge_success": 1,
+      "bridge_fallback": 1
+    },
+    "direct_native_permission_after_guard_still_rechecks_sql": true,
+    "native_engine_decisions_overridden": false
+  },
+  "limits": [
+    "Read-only current reconciliation against immutable prior result. Full failed-attempt before event inventory was not persisted; no all-row before/after claim.",
+    "Baseline and full-history performance phases were not reached."
+  ],
+  "private_record_sha256": "8a52d3e2771ca9c9fb681617c1d20859d027b70d4461fc5924306424b7fb0cc4",
+  "native_attempt_exit_code": 1,
+  "native_failure_code": "source_dependency_unqualified",
+  "native_failure_log_sha256": "ec3bb6486ef0e8d29c189ddad4507241c3c451d164b1be4a97b686614b9269b8",
+  "recorder_sha256": "2cc1c06643ba393e8dd2cfe3f411751c81d6417723b918e72a0133ec03dc2c55",
+  "new_generated_input_admission": false
+}

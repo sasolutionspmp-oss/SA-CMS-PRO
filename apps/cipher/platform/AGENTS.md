@@ -1,6 +1,6 @@
 # New Cipher platform implementation boundary
 
-**Implementation authorized:** The owner instructed “Execute this plan as written and do not stray” on October 15, 2026. Implementation is now active under this framework. Earlier pending-approval/planning-only markers describe the completed draft stage and no longer block coding. Astra ultra owns orchestration/reviews/escalations; all implementation subagents use GPT-6.1 Sol.
+**Implementation authorized:** The owner instructed “Execute this plan as written and do not stray” on October 15, 2026. Implementation is now active under this framework. Earlier pending-approval/planning-only markers describe the completed draft stage and no longer block coding. The owner updated the execution preference on October 16, 2026: use GPT-6.1 Sol Ultra for all agent work. Keep delegation focused and review changes directly; earlier Astra assignments are historical and superseded.
 
 This subtree describes the new Cipher — The AEC/CMS Pro backend, independently designed from current product requirements and selected ERPNext/Frappe foundations. The old Cipher engine, schemas, workflow implementations and tests are not design inputs. Odoo is an interim system, not an architectural dependency. The owner explicitly requested integrating the existing local Ricky model through the new adapter contracts.
 

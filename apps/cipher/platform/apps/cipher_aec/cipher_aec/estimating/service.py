@@ -43,6 +43,19 @@ def _event(actor, company, project, operation_id, event, kind, record):
 
 
 def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True, verify_links=True):
+    return _read_scoped(kind, record_id, company, project, actor, lock=lock, verify=verify, verify_links=verify_links,
+                        citation_verifier=sources.verify, related_reader=_scoped)
+
+
+def _scoped_original(kind, record_id, company, project, actor, *, lock=False, verify_links=True):
+    """Read only original binding-linked pricing records under current rights."""
+    if scopes.current(company, project).scope_type != "Company" or kind not in {"conversion", "line", "revision", "snapshot"}:
+        raise DomainError("approval_integrity", "This record is not an original binding pricing dependency.", 409)
+    return _read_scoped(kind, record_id, company, project, actor, lock=lock, verify=True, verify_links=verify_links,
+                        citation_verifier=sources._verify_original, related_reader=_scoped_original)
+
+
+def _read_scoped(kind, record_id, company, project, actor, *, lock, verify, verify_links, citation_verifier, related_reader):
     require_project(company, project, ability="estimate.read", actor=actor, lock=lock)
     record = repository.read(kind, record_id, lock=lock)
     if not scopes.current(company, project).matches(record):
@@ -51,8 +64,9 @@ def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True
         from .governance import authorize_subject
         scope_type = scopes.current(company, project).scope_type
         from cipher_aec.documents.provenance import has_read_graph, original_read_authority
+        if scope_type == "Company":
+            _acceptance_original_linkage(record, company, project, lock=lock)
         if scope_type == "Company" and not lock and has_read_graph(actor, company):
-            _acceptance_original_linkage(record, company, project)
             # A literal original-source success proof, inside an existing
             # unchanged read snapshot. No DTO, current facts or bytes are reused.
             with original_read_authority("Company Estimate Acceptance", record["id"], digest(record), actor, company) as reused:
@@ -61,11 +75,12 @@ def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True
         else:
             authorize_subject(actor=actor, company=company, project=project, subject_id=record["estimate_revision"], phase="baseline", manifest=record["manifest"], lock=lock, scope_type=scope_type)
     if verify and record.get("source_citations"):
-        sources.verify(company, project, record["source_citations"], actor, lock=lock)
+        verify_sources = sources._verify_original if kind == "acceptance" and scopes.current(company, project).scope_type == "Company" else citation_verifier
+        verify_sources(company, project, record["source_citations"], actor, lock=lock)
     if verify and kind == "line":
-        _scoped("revision", record["estimate_revision"], company, project, actor, lock=lock, verify_links=verify_links)
+        related_reader("revision", record["estimate_revision"], company, project, actor, lock=lock, verify_links=verify_links)
     if verify and kind == "revision" and verify_links:
-        _scoped("snapshot", record["calculation_snapshot"], company, project, actor, lock=lock)
+        related_reader("snapshot", record["calculation_snapshot"], company, project, actor, lock=lock)
     if verify_links:
         units.verify_manifest_access(record.get("unit_manifest") or record.get("inputs", {}).get("unit_manifest"), record.get("currency") or record.get("rate", {}).get("currency") or record.get("inputs", {}).get("currency"), actor)
         owner = record if kind == "estimate" else repository.read("estimate", record["estimate"], lock=lock) if kind in {"revision", "line"} or kind == "snapshot" and record.get("estimate") else None
@@ -78,7 +93,7 @@ def _scoped(kind, record_id, company, project, actor, *, lock=False, verify=True
     return record
 
 
-def _acceptance_original_linkage(value, company, project):
+def _acceptance_original_linkage(value, company, project, *, lock=False):
     """Fresh immutable linkage before each selected original-read proof lookup.
 
     Current working estimate heads may advance after acceptance. Only the exact
@@ -90,9 +105,9 @@ def _acceptance_original_linkage(value, company, project):
     try:
         manifest = value["manifest"]
         effect, facts = manifest["effect"], manifest["effect"]["facts"]
-        revision = repository.read("revision", value["estimate_revision"])
-        snapshot = repository.read("snapshot", value["calculation_snapshot"])
-        owner = repository.read("estimate", value["estimate"])
+        revision = repository.read("revision", value["estimate_revision"], lock=lock)
+        snapshot = repository.read("snapshot", value["calculation_snapshot"], lock=lock)
+        owner = repository.read("estimate", value["estimate"], lock=lock)
         scope = scopes.current(company, project)
         valid = (value["status"] == "accepted" and value["manifest_digest"] == digest(manifest)
             and effect["action"] == ACTION and effect["revision_id"] == value["estimate_revision"]
@@ -117,13 +132,21 @@ def _acceptance_original_linkage(value, company, project):
 
 
 def _conversion_records(company, project, identifiers, actor, *, lock=True):
+    return _read_conversion_records(company, project, identifiers, actor, lock=lock, record_reader=_scoped)
+
+
+def _conversion_original_records(company, project, identifiers, actor, *, lock=True):
+    return _read_conversion_records(company, project, identifiers, actor, lock=lock, record_reader=_scoped_original)
+
+
+def _read_conversion_records(company, project, identifiers, actor, *, lock, record_reader):
     if type(identifiers) is not list or len(identifiers) > 64:
         fail("Supply up to 64 distinct immutable conversion revision IDs.", "conversion_ids")
     for value in identifiers:
         identifier(value, "conversion_ids[]")
     if len(set(identifiers)) != len(identifiers):
         fail("Supply distinct conversion revision IDs.", "conversion_ids")
-    return [_scoped("conversion", value, company, project, actor, lock=lock, verify_links=False) for value in sorted(identifiers)]
+    return [record_reader("conversion", value, company, project, actor, lock=lock, verify_links=False) for value in sorted(identifiers)]
 
 
 def _unit_ids_from_assembly(value):

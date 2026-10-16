@@ -33,7 +33,7 @@ class AcceptanceOriginalReadTests(unittest.TestCase):
         self.require = self.stack.enter_context(patch.object(service, "require_project"))
         self.read = self.stack.enter_context(patch.object(service.repository, "read", side_effect=lambda kind, *a, **kw: deepcopy(self.records[kind])))
         self.original = self.stack.enter_context(patch.object(governance, "authorize_subject"))
-        self.bytes = self.stack.enter_context(patch.object(service.sources, "verify"))
+        self.bytes = self.stack.enter_context(patch.object(service.sources, "_verify_original"))
         self.stack.enter_context(patch.object(service.units, "verify_manifest_access"))
 
     def get(self, **kwargs):
@@ -69,11 +69,13 @@ class AcceptanceOriginalReadTests(unittest.TestCase):
             self.assertEqual(caught.exception.code, "approval_integrity")
         self.original.assert_not_called()
 
-    def test_no_graph_and_locking_paths_retain_uncached_original_authorization(self):
-        with patch.object(service, "_acceptance_original_linkage", side_effect=AssertionError("Unexpected read-proof metadata")):
+    def test_no_graph_and_locking_paths_bind_originals_and_retain_uncached_authorization(self):
+        with patch.object(service, "_acceptance_original_linkage", wraps=service._acceptance_original_linkage) as linkage:
             self.get(); self.get(lock=True)
+        self.assertEqual(linkage.call_count, 2)
+        self.assertEqual([call.kwargs["lock"] for call in linkage.call_args_list], [False, True])
         self.assertEqual(self.original.call_count, 2)
-        self.assertEqual(self.read.call_count, 2)
+        self.assertEqual(self.read.call_count, 8)
 
     def test_new_read_root_rechecks_revoked_original_rights(self):
         with provenance.read_graph(self.actor, self.company):

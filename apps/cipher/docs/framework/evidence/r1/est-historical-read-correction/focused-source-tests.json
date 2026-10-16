@@ -1,0 +1,76 @@
+{
+  "schema": "cipher.est-historical-read-fix.v2",
+  "base_head": "2287c5dbcfec2971d12f9b994e9389fd0a336258",
+  "draft_workspace": "/tmp/cipher-est-history-read-fix/workspace",
+  "patch": "/tmp/cipher-est-history-read-fix/change-bound.patch",
+  "changes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py",
+      "base_sha256": "8d663f88616dbf58ac75ad90b4ba5e05b86c1ee2074365a83af9e5a9d88fc3ae",
+      "draft_sha256": "f7d4663ad93268b0c837b1d56111fa312f8bb0d2008d2045b85b228d30d01014"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py",
+      "base_sha256": "9f6974292309776ea7ffab8a49bc42b44686a317912e8f718b13756cd407bf22",
+      "draft_sha256": "29b4d2f6e419ba72f45e8f798d3311fabcbbeebafdb36ca5460e236fffcc5ef5"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+      "base_sha256": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+      "draft_sha256": "63e1fd431eb53700dc877b1df2fa8b2e9a571d2a30b8f87adf94dd6241b5ba0b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py",
+      "base_sha256": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+      "draft_sha256": "37a376e07c78f5db4168f6e0347dfba64f5165b977311d5b45fb3ef829d1de6e"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_original_read.py",
+      "base_sha256": "ce83be2cd649a80ec6e1d855b74ea7a5c15a5484671ac68802692a36b84382ce",
+      "draft_sha256": "2ba38cfd0b68fc969edb5bbc6b0f4f0f607d87050acd6c2fc63f3eac5a69c9a9"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_historical_sources.py",
+      "base_sha256": null,
+      "draft_sha256": "417de0ba6fa867f2435bc5b78f96fa3b76e1396b96f664e28d51e3d7c0f54ef0"
+    }
+  ],
+  "failing_first": {
+    "initial_estimate": {
+      "tests": 8,
+      "failures": 7,
+      "errors": 3,
+      "log": "/tmp/cipher-est-history-read-fix/failing-first.log"
+    },
+    "final_bound": {
+      "tests": 7,
+      "failures": 4,
+      "errors": 2,
+      "log": "/tmp/cipher-est-history-read-fix/bound-failing-first-final.log",
+      "against": "Preserved v1 estimate-only patch; actual original takeoff._read/_source recursion."
+    }
+  },
+  "passing": {
+    "tests": 52,
+    "failures": 0,
+    "errors": 0,
+    "log": "/tmp/cipher-est-history-read-fix/pass.log",
+    "command": "python /tmp/cipher-est-history-read-fix/run_fixture_tests.py cipher_aec.tests.test_estimating_historical_sources cipher_aec.tests.test_estimating_original_read cipher_aec.tests.test_estimating_citation_groups cipher_aec.tests.test_takeoff_bundle"
+  },
+  "behavior": [
+    "Private original source contracts preserve exact actor, immutable accepted facts, canonical source identity/bytes, calibration verification, fallback conversion citations, nested estimate-line/snapshot rights and generated closure.",
+    "Historical bound recursion permits original noncurrent drawing/calibration/estimate heads for both lock modes.",
+    "Default source/takeoff readers and fresh acceptance manifests still deny generated inputs under product gate False.",
+    "No new public/caller-controlled source admission flag or context was added; acquisition order remains in the shared verification implementations."
+  ],
+  "limits": [
+    "Pure host fixtures with Frappe import stub; canonical I/O permission/native/bytes readers are fixture doubles, not site proof.",
+    "No native/site/HTTP/queue, recorder, business operation, live model/provider or main-source mutation executed.",
+    "General authored estimate creation receipts retain existing source admission; scope is exact original acceptance packet/baseline reads."
+  ],
+  "private_log_sha256": {
+    "failing-first.log": "475d6f0bd6431f7eb819fe311a9cc49120dda75bfccbcfd39d070d676cfbffa9",
+    "bound-failing-first-final.log": "e3fce17b094190385bb22e7e80c82a2f5394c267f40587ea609b8e14a7183cf0",
+    "pass.log": "119e3a29042f459eab7e21d17640ad94e95df42554b8083969256f0e801f81a4"
+  }
+}
