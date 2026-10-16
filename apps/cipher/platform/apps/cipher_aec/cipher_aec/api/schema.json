@@ -1098,7 +1098,8 @@
             "calibration.verify.v1",
             "estimate.accept.v1",
             "proposal.issue.v1",
-            "proposal.distribute.v1"
+            "proposal.distribute.v1",
+            "award.project.create.v1"
           ]
         },
         "subject": {
@@ -1113,7 +1114,8 @@
                 "Cipher Calibration",
                 "Cipher Estimate Revision",
                 "Cipher Proposal Revision",
-                "Cipher Distribution Instruction"
+                "Cipher Distribution Instruction",
+                "Cipher Award Handoff Revision"
               ]
             },
             "label": {
@@ -1374,7 +1376,9 @@
             "Price List",
             "UOM",
             "Currency",
-            "Item"
+            "Item",
+            "Cost Center",
+            "Account"
           ]
         },
         "version": {
@@ -1405,6 +1409,9 @@
           "type": "string"
         },
         "stock_uom": {
+          "type": "string"
+        },
+        "company": {
           "type": "string"
         }
       },
@@ -1639,6 +1646,124 @@
       "additionalProperties": false
     },
     "NativeItemsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "unit_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCostCentersRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAccountsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAwardItemsRequest": {
       "type": "object",
       "properties": {
         "company": {

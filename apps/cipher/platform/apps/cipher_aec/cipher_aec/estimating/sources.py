@@ -58,6 +58,73 @@ def verify(company, project, citations, actor, *, lock=False):
     return actual
 
 
+def citation_groups(kind, record):
+    """Literal citation collections for one acceptance fact builder.
+
+    No arbitrary JSON traversal or general source deferral. Each group retains
+    its original occurrences and its existing domain bound, including copies
+    embedded in typed rates and calculation inputs.
+    """
+    if kind not in {"revision", "snapshot", "rate", "assembly", "conversion"}:
+        raise DomainError("source_integrity", "This record cannot defer source verification.", 409)
+    try:
+        groups = [(record["source_citations"], 64)]
+        if kind == "rate":
+            groups.append((record["rate"]["source_citations"], 8))
+        if kind in {"assembly", "snapshot"}:
+            rates = record["rates"] if kind == "assembly" else record["inputs"]["rates"]
+            if type(rates) is not dict or len(rates) > (50 if kind == "assembly" else 500):
+                raise ValueError
+            groups.extend((rate["source_citations"], 8) for rate in rates.values())
+        if kind == "snapshot":
+            groups.append((record["inputs"]["basis_citations"], 8))
+        return groups
+    except (KeyError, TypeError, ValueError):
+        raise DomainError("source_integrity", "The typed source collections cannot be verified.", 409) from None
+
+
+def _citation_key(row):
+    if type(row) is not dict:
+        raise DomainError("source_integrity", "An original citation requires its complete canonical fields.", 409)
+    keys = ("revision_id", "page", "excerpt_sha256", "source_sha256")
+    if (any(key not in row for key in keys) or type(row["revision_id"]) is not str or not row["revision_id"] or len(row["revision_id"]) > 140
+            or type(row["page"]) is not int or row["page"] < 1
+            or any(type(row[key]) is not str or not re.fullmatch("[a-f0-9]{64}", row[key]) for key in keys[2:])):
+        raise DomainError("source_integrity", "An original citation requires its exact page and source checksums.", 409)
+    return tuple(row[key] for key in keys)
+
+
+def verify_groups(company, project, groups, actor, *, lock=False):
+    """Verify every original citation copy with one canonical read per locator.
+
+    Only the calling builder owns these local values. No identity, authority,
+    current head, DTO or source bytes are cached across builders. Existing
+    per-group bounds remain; independent valid groups gain no union-wide64 cap.
+    """
+    occurrences, references = [], {}
+    for citations, limit in groups:
+        if type(limit) is not int or limit not in (8, 64) or type(citations) is not list or len(citations) > limit:
+            fail("Use the existing bounded typed source collection.", "source_citations")
+        for row in citations:
+            key = _citation_key(row)
+            occurrences.append((key, row))
+            if key not in references:
+                references[key] = {name: row[name] for name in ("revision_id", "page", "excerpt_sha256", "source_sha256")}
+    if not references:
+        return []
+    unique = list(references.values())
+    actual = [row for start in range(0, len(unique), 8) for row in resolve(company, project, unique[start:start + 8], actor, lock=lock)]
+    canonical = {_citation_key(row): row for row in actual}
+    for key, original in occurrences:
+        expected = canonical.get(key)
+        # Citation DTO fields are typed scalar metadata/text. Python otherwise
+        # considers True == 1 == 1.0; none is the same canonical stored value.
+        if (expected is None or original.keys() != expected.keys()
+                or any(type(original[field]) is not type(expected[field]) or original[field] != expected[field] for field in expected)):
+            raise DomainError("source_integrity", "Every original source citation must match its complete canonical source.", 409)
+    return actual
+
+
 def merge(*groups):
     result = list({row["id"]: row for group in groups for row in group}.values())
     if len(result) > 64:
@@ -129,13 +196,15 @@ def verify_native_rates(company, project, rates, actor, *, lock=False, pursuit_p
 
 
 def require_raw_mutation_source(company, revision_id, actor):
-    """Require exact actor-scoped whole-union admission before generated use.
+    """Require exact actor-scoped node admission before canonical source use.
 
-    Discovery grants no source content. Final citation/byte readers still check
-    every original source and producer permission after the complete locks.
+    This metadata preflight grants no resource or source authority. Every caller
+    immediately enters its canonical citation/drawing reader, which still checks
+    the complete resource subset, original rights and exact requested bytes.
     """
-    from cipher_aec.documents.provenance import source_plan
-    plan = source_plan(company, revision_id, actor, lock=True)
+    from cipher_aec.documents.provenance import mutation_source_identity
+    source = mutation_source_identity(company, revision_id, actor)
     from .lockplan import admitted
-    if plan["generated_sources"] and (not GENERATED_INPUTS_QUALIFIED or not admitted(plan, actor, company)):
+    node = {"generated_sources": [{"document_id": source["document_id"], "input_digest": source["input_digest"]}]} if source["generated"] else {}
+    if source["generated"] and (not GENERATED_INPUTS_QUALIFIED or not admitted(node, actor, company)):
         raise DomainError("source_dependency_unqualified", "Generated proposal outputs are not yet qualified as new estimate/takeoff inputs. Use an authorized raw canonical source.", 409)

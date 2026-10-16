@@ -1,0 +1,18 @@
+{
+  "schema": "cipher.controls.native-invocation.v1",
+  "state": "exited",
+  "started_at": "2026-10-15T22:02:34.972609+00:00",
+  "container": "cipher-controls-native-20261015",
+  "site": "cipher-ci-20261015213708-508077.localhost",
+  "method": "cipher_aec.tests.test_project_controls_acceptance.run_acceptance",
+  "source_sha256": "1ac7dffb4661b61d1787e10dce06d24cc229395486a20fd2a8cee3565b46953b",
+  "snapshot": "/tmp/cipher-controls-native-20261015/workspace",
+  "attempt": 1,
+  "deadline_seconds": 180,
+  "signal": "INT; kill after30seconds",
+  "main_runtime_mutated": false,
+  "award_calls_authorized": false,
+  "exit_code": 0,
+  "finished_at": "2026-10-15T22:02:50.441442+00:00",
+  "log_sha256": "a1ffc38ca8b3c539479299ba02d147cb14d2487287b2b68ba777c20451001383"
+}

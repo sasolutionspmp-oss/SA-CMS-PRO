@@ -1,0 +1,76 @@
+{
+  "activation": {
+    "central_catalog_or_metadata_changed": false,
+    "default_registry_changed": false,
+    "drafts_are_nonpersistent_review_values": true,
+    "durable_company_runs_implemented": false,
+    "generated_input_admission": false,
+    "new_endpoints": false,
+    "persisted_proposals_or_commit_authority": false
+  },
+  "command": "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_ricky_aec_tools cipher_aec.tests.test_estimating_core cipher_aec.tests.test_takeoff_geometry",
+  "covered_boundaries": [
+    "distinct CompanyReadContext is not Authority and grants no access",
+    "current actor, Company and same-Pursuit scope checks",
+    "actual pure calculation matches pinned original result/input/output digests",
+    "fresh original-source/native/actor revocation checks on each call",
+    "canonical quantity references only; model amount fields rejected",
+    "manual/calibrated provenance and independent verification remain explicit",
+    "stale heads, disabled units and unverified calibration cannot support new draft quantity selection",
+    "generated dependencies refused including retained measurement conversion fallback and proposal accepted-baseline closure",
+    "source citation IDs/hash/scope checked; source instructions stay unverified text",
+    "takeoff allowance basis explicit and ambiguous double waste refused",
+    "draft values have canonical digests and no invented persistent proposal IDs/status",
+    "closed tool schemas reject actor/company/project/code/endpoint overrides",
+    "existing ToolRegistry result-size limit enforced",
+    "concrete reader uses current actor, canonical scoped reader and no mutation calculate command"
+  ],
+  "elapsed_seconds": 0.111,
+  "external_provider_qualified": false,
+  "focused_test_count": 26,
+  "generated_public_gate_enabled": false,
+  "integration_still_required": [
+    "explicit durable Company run/authority/storage schema without placeholder Project",
+    "reviewed backend Company capability and API registration",
+    "run-bound proposal insertion and human draft-save command guard under canonical locks",
+    "live existing-model contract separately supplied and qualified"
+  ],
+  "live_model_qualified": false,
+  "qualification": "Host Python unittest with explicit in-process reader/permission fixtures and real canonical pure EST/takeoff calculators. Frappe adapter routing tested with explicit canonical-service stubs. No site database, native persisted business workflow, HTTP, worker activation, provider or live-model qualification.",
+  "schema": "cipher.ai04.isolated-contract-tests.v1",
+  "source_capture": "Post-test hashes of explicit sources; no runtime before/after source epoch claim.",
+  "source_dependencies": {
+    "commercial/service.py": "8af5d66c4a5c62b83b0788dd2bdf7be60a9bd1aa26d0d8b8b94492ae111e44fb",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/service.py": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+    "migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "ricky/contracts.py": "97d9cd3fe82578f3de38a48c99f87cec8920161343b806cc36991e349d7e7eba",
+    "ricky/tools.py": "74fcf6eb7632a8e66c6149964f71334cf04f8f54a41e34c966a2a06ff5012d88",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8"
+  },
+  "source_owned": {
+    "ricky/aec_backend.py": "95dc995c41692642f0a38aca249302f17e781a739cbe22f6038edcf2cbc1b179",
+    "ricky/aec_contracts.py": "a577553d3b7ca3f3dca50e0be78dff17961c1525b885eccfbd3bcf6280749fee",
+    "ricky/aec_tools.py": "f0626cc702ef5891ba90b8a8aa6147bd5389fcf86c6b7bd286dd74026fd96387",
+    "tests/test_ricky_aec_tools.py": "fb5c4befcaefc3c2c8749f8bab852d3c722afc9e56e5842b3fd1447e65e940c2"
+  },
+  "status": "passed-inactive-contract-fixtures",
+  "tools": [
+    "aec.pursuit.lookup",
+    "aec.estimate.recompute",
+    "aec.estimate.compare",
+    "aec.quantity.convert",
+    "aec.scope.draft",
+    "aec.estimate.draft"
+  ],
+  "total_test_count": 47,
+  "verified_examples": {
+    "known_geometry_conversion": "200/1 square feet from explicit calibrated rectangle fixture",
+    "original_snapshot_total": "1025.41 USD",
+    "rational_area_conversion": "100/9 square yards from100 authored square feet",
+    "same_estimate_successor_total_delta": "1015.41 USD"
+  }
+}

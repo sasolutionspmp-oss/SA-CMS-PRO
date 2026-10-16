@@ -21,8 +21,12 @@ class FinanceRecord(Document):
             if self.get(field) != value.get(field):
                 raise DomainError('contract_integrity', 'The contract record scope does not match its payload.', 409)
         actor = current_actor()
-        require_project(self.company, self.project, ability='contract.write', actor=actor, lock=True)
-        require_project(self.company, self.project, ability='contract.read', actor=actor, lock=True)
+        if self.doctype=='Cipher Construction Contract' and self.is_new() and value.get('origin')=='governed_award_v1':
+            from .award_factory import validate_new_contract
+            validate_new_contract(value)
+        else:
+            require_project(self.company, self.project, ability='contract.write', actor=actor, lock=True)
+            require_project(self.company, self.project, ability='contract.read', actor=actor, lock=True)
         if self.is_new() and value['author_person'] != actor.person_id:
             raise DomainError('forged_authority', 'The current canonical person must author this record.', 403)
         kind = next(key for key, name in repository.DOCTYPES.items() if name == self.doctype)
@@ -70,7 +74,7 @@ class FinanceRecord(Document):
     def _contract(self, value):
         core.definition(value['definition'], value['currency_policy']['currency_exponent'])
         if self.is_new():
-            if value['origin'] != 'server_created_fin01' or value['draft_revision'] or value['accepted_revision'] or value['revision_number'] != 0 or value['status'] != 'draft':
+            if value['origin'] not in {'server_created_fin01','governed_award_v1'} or value['draft_revision'] or value['accepted_revision'] or value['revision_number'] != 0 or value['status'] != 'draft':
                 raise DomainError('invalid_contract_origin', 'New contracts begin with an unaccepted authored draft.', 409)
             return
         before = json.loads(self.get_doc_before_save().data_json)

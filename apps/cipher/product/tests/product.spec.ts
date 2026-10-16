@@ -290,3 +290,20 @@ test('desktop-to-phone resize closes the navigation overlay and phone selections
   await page.locator('ui5-side-navigation').getByText('Documents', { exact: true }).click(); await expect(page.getByRole('heading', { name: 'Documents', exact: true })).toBeVisible(); await expect(layout).toHaveAttribute('side-collapsed', '');
   await page.getByRole('button', { name: 'Open projects', exact: true }).focus(); await expect(page.getByRole('button', { name: 'Open projects', exact: true })).toBeFocused();
 });
+
+// Authored public assets must survive the source snapshot AND actual Vite build.
+// A same-origin200 SPA fallback is not an image or a dependency notice.
+import { readFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+const builtProduct = process.env.CIPHER_BUILT_PRODUCT_DIST || fileURLToPath(new URL('../dist/', import.meta.url));
+test('packaged static assets preserve exact SVG and dependency notice bytes', async ({ page, request }) => {
+  for (const [name,mime] of [['cipher-mark.svg',/^image\/svg\+xml(?:;|$)/i],['THIRD_PARTY_NOTICES.txt',/^text\/plain(?:;|$)/i]] as const) {
+    const expected = await readFile(new URL(`../public/${name}`,import.meta.url));
+    expect(await readFile(path.join(builtProduct,name))).toEqual(expected);
+    const response = await request.get(`/${name}`);expect(response.status()).toBe(200);expect(response.headers()['content-type']).toMatch(mime);
+    const bytes = await response.body();expect(bytes).toEqual(expected);expect(bytes.toString().trimStart()).not.toMatch(/^(?:<!doctype\s+html|<html)/i);
+  }
+  await mockWorkspace(page,{login:true});await page.goto('/projects');const signInLogo=page.locator('.sign-in-brand img');await expect(signInLogo).toBeVisible();await expect.poll(()=>signInLogo.evaluate(async image=>{await (image as HTMLImageElement).decode();return (image as HTMLImageElement).naturalWidth;})).toBeGreaterThan(0);
+  await page.getByLabel('Email or username',{exact:true}).fill('test.pm@example.invalid');await page.getByLabel('Password',{exact:true}).fill('fixture-password-only');await page.getByRole('button',{name:'Sign in',exact:true}).click();await expect(page.getByRole('heading',{name:'Projects',exact:true})).toBeVisible();const shellLogo=page.locator('ui5-shellbar-branding img');await expect(shellLogo).toBeVisible();await expect.poll(()=>shellLogo.evaluate(async image=>{await (image as HTMLImageElement).decode();return (image as HTMLImageElement).complete && (image as HTMLImageElement).naturalWidth>0;})).toBe(true);
+});

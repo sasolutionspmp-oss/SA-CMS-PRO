@@ -1,0 +1,19 @@
+{
+  "schema": "cipher.award.ui-epoch.v1",
+  "variant": "prj02-cost-presentation-v2",
+  "backend_runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+  "backend_release": {
+    "path": "/tmp/cipher-award-native-20261015/epochs/enabled/http-release.json",
+    "sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "released_stage": "read_only_cost_same_record",
+  "source_inventory": {
+    "path": "/tmp/cipher-completion/prj02-ui/cost-polish-variant/source-final-after.json",
+    "sha256": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8"
+  },
+  "build_root": "/tmp/cipher-completion/prj02-ui/cost-polish-variant/build-local-fonts",
+  "build_inventory": {
+    "path": "/tmp/cipher-completion/prj02-ui/cost-polish-variant/build-final-inventory.json",
+    "sha256": "4650804545336d450aeb36c30d0e0c1f7820ab62fdb2fc36a9b37593565ee71a"
+  }
+}

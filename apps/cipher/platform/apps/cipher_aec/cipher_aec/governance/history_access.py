@@ -73,6 +73,22 @@ def readable(event, actor, company, project):
                     return False
             scoped(kind, identifier, company, project, actor)
             return True
+        if subject in {"Cipher Cost Code Revision", "Cipher Cost Type Revision"}:
+            if project is not None:return False
+            from cipher_aec.project_controls.service import get_revision
+            value = get_revision(company, "code" if subject == "Cipher Cost Code Revision" else "type", identifier, str(event.creation)[:10])
+            return True
+        if subject in {"Cipher WBS Node", "Cipher Budget Version", "Cipher Budget Line"}:
+            if project is None:return False
+            from cipher_aec.project_controls.service import get_record
+            kind = {"Cipher WBS Node":"wbs", "Cipher Budget Version":"budget", "Cipher Budget Line":"budget_line"}[subject]
+            get_record(company, project, kind, identifier)
+            return True
+        if subject in {"Cipher Award Handoff", "Cipher Award Handoff Revision", "Cipher Award Adoption", "Cipher Award Line Adoption"}:
+            if project is not None:return False
+            from cipher_aec.awards.service import authorize_history
+            authorize_history(company, subject, identifier, actor, event_name=event.event, details=json.loads(event.details_json))
+            return True
         if subject in COM_SUBJECTS:
             if project is not None:
                 return False

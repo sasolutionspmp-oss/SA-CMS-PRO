@@ -1,0 +1,99 @@
+{
+  "schema": "cipher.prj02.ui-fixture-qualification.v1",
+  "qualification": "Local source/browser contracts with explicit synthetic HTTP fixtures. No actual ERP award execution or connected visual qualification.",
+  "source_files": 116,
+  "source_before_after_current_equal": true,
+  "source_inventory_sha256": "dcb5fee79076134a891b62a3e4ffc61e24fa9c1b6b1f29f3c3806b5ebe5411f9",
+  "browser_report_sha256": "7e8e91c79d45595b31c842907d0ed33ba8d3d681169e5e8ee40c6f222cd586df",
+  "tests": {
+    "startTime": "2026-10-15T22:51:50.293Z",
+    "duration": 165262.186,
+    "expected": 82,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "unique_cases": 82,
+    "one_passed_result_per_case": true,
+    "retries": 0
+  },
+  "clients": [
+    {
+      "schema": "cipher_aec/api/schema.json",
+      "schema_sha256": "93f8e8c5248299873fd95cfb865f8461b8efcc293624da4d26ed82746f0bcd33",
+      "generated": "src/api/contracts.generated.ts",
+      "generated_sha256": "cefa60dc477d78be98b9fa8ccf99259a5d13ba3ab19bfc6dde6e0e2bbf5e4f93"
+    },
+    {
+      "schema": "cipher_aec/estimating/schemas/api-v1.schema.json",
+      "schema_sha256": "5091284c869b34dd686460903d1c420d8e40c7fce79befd370e6f63cedd15a13",
+      "generated": "src/api/estimating.generated.ts",
+      "generated_sha256": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e"
+    },
+    {
+      "schema": "cipher_aec/commercial/schemas/api-v1.schema.json",
+      "schema_sha256": "789422807b503709968618e1675a1c404473c49187862e7e228093799ea67fa8",
+      "generated": "src/api/commercial.generated.ts",
+      "generated_sha256": "f0f2f06bba0a5d2454365e90f938f3276d94c99830c2db8717ffb20c2e0cc09b"
+    },
+    {
+      "schema": "cipher_aec/takeoff/schemas/api-v1.schema.json",
+      "schema_sha256": "a1a3dd44be6dde4ede9919d1a30c94c1956e20b717a82a1eab6d303c3ed7fa57",
+      "generated": "src/api/takeoff.generated.ts",
+      "generated_sha256": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6"
+    },
+    {
+      "schema": "cipher_aec/documents/schemas/company-api-v1.schema.json",
+      "schema_sha256": "96dd9104833ff4b734a03fed59b47b0f602c262881b39c59029f72ad3b3c3068",
+      "generated": "src/api/company-documents.generated.ts",
+      "generated_sha256": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf"
+    },
+    {
+      "schema": "cipher_aec/estimating/schemas/api-company-v2.schema.json",
+      "schema_sha256": "458a246db2480b33db9ad21f58c2d6ea2eb44e5d6cab87f27f5347fd66c9933c",
+      "generated": "src/api/company-estimating.generated.ts",
+      "generated_sha256": "9c723903fbcf403c84ea9aa74f6345602e53d74b5092d666a3894d7b28288585"
+    },
+    {
+      "schema": "cipher_aec/integrations/schemas/distribution-v1.schema.json",
+      "schema_sha256": "694428d6af4a47b7f6cc07bd8dea1f1eba8d162117c54b9690e1dc805f1acc60",
+      "generated": "src/api/distribution.generated.ts",
+      "generated_sha256": "2d57048085f61580a63ade03c51c5001bf5805b4926a4dc5570a9c1214e2a515"
+    },
+    {
+      "schema": "cipher_aec/project_controls/schemas/api-v1.schema.json",
+      "schema_sha256": "5a40062cb083e03956abb173a8e7d6baa53bdb17012d38319a390a6ec26fa146",
+      "generated": "src/api/project-controls.generated.ts",
+      "generated_sha256": "9a6b4d929a86478292b2d5d0ec86dc131ee3fc42261670cc6be938353be07250"
+    },
+    {
+      "schema": "cipher_aec/awards/schemas/api-v1.schema.json",
+      "schema_sha256": "b8c01de5e57edcb5f6375ccf1e803a2c0bcb43e2e639d5d62e30ab142dd2120b",
+      "generated": "src/api/awards.generated.ts",
+      "generated_sha256": "ccb0360035b11d10e29308c8f8b9f08da1aa271970180368a1001a6af1159999"
+    }
+  ],
+  "build": {
+    "directory": "/tmp/cipher-completion/prj02-ui/build-award-cost-final",
+    "files": 882,
+    "inventory_sha256": "a4346bd10f04f4bc482f07685beb43486acf313277fae896eb46f819f57eef04",
+    "build_log_sha256": "52cb08f2cb459da9cf465db0302869f2a0d74fa91da19a919807cf85bfd2e604",
+    "generated_check_log_sha256": "4a5a8f597e6c60bb7764c7ec1897c7c7c506ef8a8319eefcf9308af4468a6360",
+    "typecheck_and_build": "passed",
+    "application_source_unchanged_since_build": true,
+    "subsequent_change": "Only the reviewed test-only Company-context response assertion; production app/script source unchanged."
+  },
+  "prior_attempts": {
+    "broad_run": "reports/first-frozen-81-pass-1-fail.json",
+    "finding": "One aborted StrictMode detail mount was incorrectly counted as a completed read. Exact source/Company checks remain; corrected test requires exact successful response identities and permits only the explicitly classified aborted detail mount.",
+    "red_reports": "reports/",
+    "red_report_limits": "Earlier source revisions, not the current116-file qualification. Initial cost-review run also contains two test-harness setup failures; clean targeted red cases and their four closures are separate.",
+    "unique_coverage": "Repeats are executions, not additional unique coverage.",
+    "layout_limits": "Pre-toolbar and pre-footer phone images are failed fixture layout checks. Later fixture images remain synthetic; they do not qualify actual native ERP presentation."
+  },
+  "runtime": {
+    "actual_http_performed": false,
+    "main_dist_changed": false,
+    "award_action_availability": "server-owned and disabled until separate backend/runtime qualification",
+    "recovery": "mounted view only; no reload/browser restart recovery"
+  }
+}

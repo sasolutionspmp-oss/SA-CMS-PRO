@@ -16,3 +16,4 @@ if not assets.exists():
 PY
 bench --site "$CIPHER_SITE" install-app cipher_aec
 bench --site "$CIPHER_SITE" migrate
+bench --site "$CIPHER_SITE" execute cipher_aec.awards.runtime_install.configure_native_profile

@@ -1,0 +1,183 @@
+{
+  "accepted_cost": "15.00",
+  "award_executed": false,
+  "award_requested": false,
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "request_id": "ce889de3-2a26-47ea-86d9-a16f3c9e4166",
+      "request_seconds": 0.085089,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:08.382383Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.commercial.api.create_proposal",
+      "request_id": "3ca2c443-a89e-46e6-8d16-da6297a7c5e2",
+      "request_seconds": 0.84334,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:09.261373Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.commercial.api.prepare_proposal_output",
+      "request_id": "421e8939-ce07-4f6e-b9b8-68fdcd1faa88",
+      "request_seconds": 3.01949,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:12.284626Z"
+    },
+    {
+      "byte_length": 11751,
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "role": "author",
+      "source_sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "request_id": "b3d6773c-5c38-47ee-b669-cea2010f43b4",
+      "request_seconds": 1.468238,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:13.824841Z"
+    },
+    {
+      "error_code": "independent_proposal_required",
+      "http_status": 403,
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "request_id": "92339776-6576-40b9-bb33-66144d7a89c1",
+      "request_seconds": 0.435527,
+      "role": "alias",
+      "server_time": "2026-10-15T23:11:14.335377Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "request_id": "ac08d63f-3e8a-48e9-8359-81c68c8c7de2",
+      "request_seconds": 1.259873,
+      "role": "reviewer",
+      "server_time": "2026-10-15T23:11:15.677512Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "request_id": "7623cbdb-d704-45c8-9002-c0e6eed619b5",
+      "request_seconds": 2.481647,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.160518Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.commercial.api.issue",
+      "request_id": "d48fbeff-0923-4b66-a6ef-c530511d9f5a",
+      "request_seconds": 0.245228,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.409665Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "50cfb18b-ee51-4eee-8eaa-7b0c30602e46",
+      "request_seconds": 0.085782,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.497225Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "6b000107-cf95-48df-968f-da6f1f0af7d7",
+      "request_seconds": 0.07102,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.571280Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "20a456e4-a493-4628-aa2e-f22ee251750d",
+      "request_seconds": 0.040611,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.613610Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "ca0da273-f0cd-4aa1-9d78-aa84a3b49298",
+      "request_seconds": 0.044343,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.661067Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "df5abd4e-c6f4-4fdb-9c68-9768cbc9ec06",
+      "request_seconds": 0.040989,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.704793Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.project_controls.company_api.create_master",
+      "request_id": "db1257af-1fc6-4b48-9c2d-a34f42b021a0",
+      "request_seconds": 0.038041,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.745178Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.awards.api.delegation_policy",
+      "request_id": "14814836-f541-497b-ada7-7b861032099e",
+      "request_seconds": 0.014356,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:18.763404Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.awards.api.create_handoff",
+      "request_id": "a90ef132-b25b-4b68-ac00-d37faa766d8d",
+      "request_seconds": 0.431871,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:19.195243Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.awards.api.plan_handoff",
+      "request_id": "d6e6aa7e-33a0-4387-a7b1-eeb45983191c",
+      "request_seconds": 0.961744,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:20.160410Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.awards.api.get_plan",
+      "request_id": "54573fd9-9ab0-4aec-94f8-66743ef74270",
+      "request_seconds": 0.488891,
+      "role": "author",
+      "server_time": "2026-10-15T23:11:20.662436Z"
+    }
+  ],
+  "completed_at": "2026-10-15T23:11:20.711978+00:00",
+  "initial_team_login_role": "project_only",
+  "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+  "pdf_sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b",
+  "plan_id": "19db2303-dd07-4a62-9437-52a73f862370",
+  "requester_in_team": false,
+  "reused_steps": [],
+  "schema": "cipher.award.issue-plan-prerequisite.v1",
+  "schema_samples": 30,
+  "selling_value": "30.85",
+  "source_after": {
+    "qualification": "Operator-declared served epoch plus exact on-disk equality.",
+    "runtime_epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "source_files": 496,
+    "source_manifest_sha256": "e30d370b1da9df2734e577cbb839e1c8bb0df306f285b78a4d0d590ba9ac2057"
+  },
+  "source_before": {
+    "qualification": "Operator-declared served epoch plus exact on-disk equality.",
+    "runtime_epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "source_files": 496,
+    "source_manifest_sha256": "e30d370b1da9df2734e577cbb839e1c8bb0df306f285b78a4d0d590ba9ac2057"
+  },
+  "started_at": "2026-10-15T23:11:08.225501+00:00",
+  "status": "passed"
+}

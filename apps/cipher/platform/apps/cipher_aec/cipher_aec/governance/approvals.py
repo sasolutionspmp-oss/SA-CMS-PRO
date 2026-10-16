@@ -353,12 +353,23 @@ def _decision(actor, packet, decision, reason):
     return doc
 
 
+def _award_packet_people(company,project,packet_id,scope_type):
+    if scope_type != "Company" or project is not None:return ()
+    rows=frappe.db.sql("SELECT action,subject_id FROM `tabCipher Approval Packet` WHERE name=%s AND company=%s AND scope_type='Company' AND (project IS NULL OR project='')",(packet_id,company))
+    if not rows or rows[0][0]!="award.project.create.v1":return ()
+    _scope(company,None,"Company")
+    packet=_load(company,None,packet_id,scope_type="Company")
+    return domain_approvals.participant_people(packet.action,company,packet.subject_id,scope_type="Company")
+
+
 def decide_packet(company, project, packet_id, manifest_hash, decision, operation_id, reason="", *, scope_type="Project"):
     if decision not in {"Grant", "Reject"}:
         raise DomainError("invalid_decision", "Choose Grant or Reject.", 422)
     reason = text(reason, "Review reason", 2000, required=False)
+    participants=_award_packet_people(company,project,packet_id,scope_type)
     def effect(actor, record):
         packet = _load(company, project, packet_id, True, scope_type=scope_type)
+        domain_approvals.require_participants(packet.action,company,packet.subject_id,participants,scope_type=scope_type)
         _check_hash(packet, manifest_hash)
         _human_review(actor)
         if packet.action != ACTION:
@@ -371,13 +382,15 @@ def decide_packet(company, project, packet_id, manifest_hash, decision, operatio
         _decision(actor, packet, decision, reason)
         _event(actor, packet, operation_id, "approval.decided", {"decision": decision, "manifest_hash": manifest_hash, "reason": reason})
         return {"packet": present(packet, record, actor, True)}
-    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.decide", payload={"packet_id": packet_id,"manifest_hash": manifest_hash,"decision": decision,"reason": reason}, ability="approval.decide", effect=effect)
+    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.decide", payload={"packet_id": packet_id,"manifest_hash": manifest_hash,"decision": decision,"reason": reason}, ability="approval.decide", effect=effect, participant_people=participants)
 
 
 def withdraw_packet(company, project, packet_id, manifest_hash, operation_id, reason="", *, scope_type="Project"):
     reason = text(reason, "Withdrawal reason", 2000, required=False)
+    participants=_award_packet_people(company,project,packet_id,scope_type)
     def effect(actor, record):
         packet = _load(company, project, packet_id, True, scope_type=scope_type)
+        domain_approvals.require_participants(packet.action,company,packet.subject_id,participants,scope_type=scope_type)
         _check_hash(packet, manifest_hash)
         if packet.action != ACTION:
             domain_approvals.authorize(packet, actor, lock=True)
@@ -389,7 +402,7 @@ def withdraw_packet(company, project, packet_id, manifest_hash, operation_id, re
         _decision(actor, packet, "Withdraw", reason)
         _event(actor, packet, operation_id, "approval.withdrawn", {"reason": reason})
         return {"packet": present(packet, record, actor, True)}
-    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.withdraw", payload={"packet_id": packet_id,"manifest_hash": manifest_hash,"reason": reason}, ability="approval.request", effect=effect)
+    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.withdraw", payload={"packet_id": packet_id,"manifest_hash": manifest_hash,"reason": reason}, ability="approval.request", effect=effect, participant_people=participants)
 
 
 @contextmanager
@@ -411,65 +424,86 @@ def execute_packet(company, project, packet_id, manifest_hash, operation_id, *, 
     _scope(company, project, scope_type)
     snapshot = _load(company, project, packet_id, scope_type=scope_type)
     decisions_before_lock = _decisions(snapshot)
-    participants = tuple(sorted({snapshot.requester_person} | {d.actor_person for d in decisions_before_lock if d.decision == "Grant"}))
+    award_people=domain_approvals.participant_people(snapshot.action,company,snapshot.subject_id,scope_type=scope_type)
+    if snapshot.action == "award.project.create.v1":
+        reviewers = {decisions_before_lock[-1].actor_person} if decisions_before_lock and decisions_before_lock[-1].decision == "Grant" else set()
+    else:
+        reviewers = {d.actor_person for d in decisions_before_lock if d.decision == "Grant"}
+    participants = tuple(sorted(set(award_people) | {snapshot.requester_person} | reviewers))
     def effect(actor, record):
         packet = _load(company, project, packet_id, True, scope_type=scope_type)
-        write_ability = "project.write" if packet.action == ACTION else domain_approvals.ACTIONS[packet.action].write_ability
-        _scope(company, project, scope_type, ability=write_ability, actor=actor, lock=True)
-        if packet.action != ACTION:
-            domain_approvals.authorize(packet, actor, phase="execute", lock=True)
-            if scope_type == "Project" and record.status in {"Completed", "Cancelled"}:
-                raise DomainError("project_closed", "This Project is closed for new effects.", 409)
-        _check_hash(packet, manifest_hash)
-        state, decisions = _state(packet, record, True, actor=actor)
-        if state != "Granted":
-            raise DomainError("approval_not_executable", "This exact packet has no current unconsumed grant.", 409, {"state": state})
-        if actor.person_id != packet.requester_person or decisions[-1].actor_person == actor.person_id:
-            raise DomainError("requester_required", "The requester must execute a different person's grant.", 403)
-        if decisions[-1].actor_person not in participants:
-            raise DomainError("concurrent_change", "The review changed concurrently. Retry this original operation.", 503)
-        # All participant identity/person/User locks were acquired before Project.
-        # The reviewer must still have live scoped review authority at consumption.
-        reviewer_users = frappe.db.sql("SELECT user FROM `tabCipher Identity Binding` WHERE person=%s AND active=1 ORDER BY name FOR UPDATE", (decisions[-1].actor_person,), as_dict=True)
-        reviewer = None
-        for candidate in reviewer_users:
-            try:
-                reviewer = current_actor(candidate.user, lock=True)
-                _scope(company, project, scope_type, ability="approval.decide", actor=reviewer, lock=True)
-                if packet.action != ACTION:
-                    domain_approvals.authorize(packet, reviewer, phase="review", lock=True)
-                break
-            except DomainError:
-                reviewer = None
-        kinds = frappe.db.sql("SELECT identity_kind FROM `tabCipher Person` WHERE name=%s FOR UPDATE", (decisions[-1].actor_person,))
-        if reviewer is None or not kinds or kinds[0][0] != "Human":
-            raise DomainError("reviewer_authority_revoked", "The reviewer's authority changed. Obtain a fresh review.", 403)
-        manifest = json.loads(packet.manifest_json)
-        if packet.action == ACTION:
-            # Reconstruct transition eligibility with current locked masters.
-            _manifest(record, manifest["requested_status"], _policy(True), actor, _tasks(project, True))
-            with _exact_effect(packet, manifest):
-                record.status = manifest["requested_status"]
-                record.save(ignore_permissions=True)
-            if record.status != manifest["requested_status"] or record.percent_complete_method != manifest["native_completion"]["percent_complete_method"] or float(record.percent_complete or 0) != float(manifest["native_completion"]["percent_complete"]) or _tasks(project, True) != manifest["tasks"]:
-                raise DomainError("unexpected_native_effect", "Native Project validation changed the approved outcome. No change was saved.", 409)
-            result = {"project": present_project(record, actor)}
+        if packet.action == "award.project.create.v1":
+            domain_approvals.spec_for(packet.action, scope_type)
+            domain_approvals.require_participants(packet.action,company,packet.subject_id,award_people,scope_type=scope_type)
+            _check_hash(packet,manifest_hash)
+            from cipher_aec.awards.preallocation import stage
+            allocation = stage(packet,actor,operation_id,participants)
         else:
-            _, _, apply_effect = domain_approvals.callbacks(packet.action, scope_type)
-            with _exact_effect(packet, manifest):
-                result = apply_effect(actor=actor, company=company, project=project, manifest=manifest["domain"],
-                    packet_id=packet.name, decision_id=decisions[-1].name, operation_id=operation_id, **domain_approvals.scope_kwargs(packet.action, scope_type))
-            if not isinstance(result, dict):
-                raise RuntimeError("Registered approval effect must return an object")
-        frappe.get_doc({"doctype": "Cipher Approval Consumption", "company": company, "project": project,
-            "scope_type": scope_type, "packet": packet.name, "decision": decisions[-1].name, "actor_person": actor.person_id,
-            "operation_id": operation_id, "result_hash": digest(result), "consumed_at": utc_timestamp()}).insert(ignore_permissions=True)
-        _event(actor, packet, operation_id, "approval.executed", {"manifest_hash": packet.manifest_hash, "action": packet.action, "result_hash": digest(result), "status": record.status if scope_type == "Project" else None, "task_changes": []})
-        return {"packet": present(packet, record, actor, True), "effect": result}
+            allocation = nullcontext()
+        with allocation:
+            write_ability = "project.write" if packet.action == ACTION else domain_approvals.ACTIONS[packet.action].write_ability
+            _scope(company, project, scope_type, ability=write_ability, actor=actor, lock=True)
+            if packet.action != ACTION:
+                domain_approvals.authorize(packet, actor, phase="execute", lock=True)
+                if scope_type == "Project" and record.status in {"Completed", "Cancelled"}:
+                    raise DomainError("project_closed", "This Project is closed for new effects.", 409)
+            _check_hash(packet, manifest_hash)
+            state, decisions = _state(packet, record, True, actor=actor)
+            if state != "Granted":
+                raise DomainError("approval_not_executable", "This exact packet has no current unconsumed grant.", 409, {"state": state})
+            if actor.person_id != packet.requester_person or decisions[-1].actor_person == actor.person_id:
+                raise DomainError("requester_required", "The requester must execute a different person's grant.", 403)
+            if decisions[-1].actor_person not in participants:
+                raise DomainError("concurrent_change", "The review changed concurrently. Retry this original operation.", 503)
+            # All participant identity/person/User locks were acquired before Project.
+            # The reviewer must still have live scoped review authority at consumption.
+            reviewer_users = frappe.db.sql("SELECT user FROM `tabCipher Identity Binding` WHERE person=%s AND active=1 ORDER BY name FOR UPDATE", (decisions[-1].actor_person,), as_dict=True)
+            reviewer = None
+            for candidate in reviewer_users:
+                try:
+                    reviewer = current_actor(candidate.user, lock=True)
+                    _scope(company, project, scope_type, ability="approval.decide", actor=reviewer, lock=True)
+                    if packet.action != ACTION:
+                        domain_approvals.authorize(packet, reviewer, phase="review", lock=True)
+                    break
+                except DomainError:
+                    reviewer = None
+            kinds = frappe.db.sql("SELECT identity_kind FROM `tabCipher Person` WHERE name=%s FOR UPDATE", (decisions[-1].actor_person,))
+            if reviewer is None or not kinds or kinds[0][0] != "Human":
+                raise DomainError("reviewer_authority_revoked", "The reviewer's authority changed. Obtain a fresh review.", 403)
+            manifest = json.loads(packet.manifest_json)
+            if packet.action == ACTION:
+                # Reconstruct transition eligibility with current locked masters.
+                _manifest(record, manifest["requested_status"], _policy(True), actor, _tasks(project, True))
+                with _exact_effect(packet, manifest):
+                    record.status = manifest["requested_status"]
+                    record.save(ignore_permissions=True)
+                if record.status != manifest["requested_status"] or record.percent_complete_method != manifest["native_completion"]["percent_complete_method"] or float(record.percent_complete or 0) != float(manifest["native_completion"]["percent_complete"]) or _tasks(project, True) != manifest["tasks"]:
+                    raise DomainError("unexpected_native_effect", "Native Project validation changed the approved outcome. No change was saved.", 409)
+                result = {"project": present_project(record, actor)}
+            else:
+                _, _, apply_effect = domain_approvals.callbacks(packet.action, scope_type)
+                with _exact_effect(packet, manifest):
+                    result = apply_effect(actor=actor, company=company, project=project, manifest=manifest["domain"],
+                        packet_id=packet.name, decision_id=decisions[-1].name, operation_id=operation_id, **domain_approvals.scope_kwargs(packet.action, scope_type))
+                if not isinstance(result, dict):
+                    raise RuntimeError("Registered approval effect must return an object")
+            consumed = frappe.get_doc({"doctype": "Cipher Approval Consumption", "company": company, "project": project,
+                "scope_type": scope_type, "packet": packet.name, "decision": decisions[-1].name, "actor_person": actor.person_id,
+                "operation_id": operation_id, "result_hash": digest(result), "consumed_at": utc_timestamp()})
+            from cipher_aec.awards.runtime import quiet_award_write
+            quiet_award_write(consumed)
+            consumed.insert(ignore_permissions=True)
+            _event(actor, packet, operation_id, "approval.executed", {"manifest_hash": packet.manifest_hash, "action": packet.action, "result_hash": digest(result), "status": record.status if scope_type == "Project" else None, "task_changes": []})
+            return {"packet": present(packet, record, actor, True), "effect": result}
     return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.execute", payload={"packet_id": packet_id,"manifest_hash": manifest_hash}, ability="approval.execute", effect=effect, participant_people=participants)
 
 
 def prevent_unsupported_financial_transition(doc, method=None):
+    if doc.doctype == "Sales Order":
+        from cipher_aec.awards.effect import native_order_active, validate_native_order
+        if native_order_active():
+            return validate_native_order(doc, method)
     """No financial/admission writer is qualified in the current release.
 
     This includes drafts and deletion, closing the initial-admission scan race.
@@ -496,7 +530,9 @@ def request_action(company, project, action, subject_id, expected_version, opera
     subject_id = text(subject_id, "Approval subject", 140)
     source_version = parse_expected_version(expected_version)
     spec = domain_approvals.ACTIONS[action]
+    participants = domain_approvals.participant_people(action, company, subject_id, scope_type=scope_type)
     def effect(actor, record):
+        domain_approvals.require_participants(action, company, subject_id, participants, scope_type=scope_type)
         if scope_type == "Project" and record.status in {"Completed", "Cancelled"}:
             raise DomainError("project_closed", "This Project is closed for new approval requests.", 409)
         builder, authorize_subject, _ = domain_approvals.callbacks(action, scope_type)
@@ -522,7 +558,7 @@ def request_action(company, project, action, subject_id, expected_version, opera
         packet.insert(ignore_permissions=True)
         _event(actor, packet, operation_id, "approval.requested", {"action": action, "manifest_hash": packet.manifest_hash, "subject_id": subject_id})
         return {"packet": present(packet, record, actor, True)}
-    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.request_action", payload={"action": action, "subject_id": subject_id, "expected_version": source_version}, ability="approval.request", effect=effect)
+    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.request_action", payload={"action": action, "subject_id": subject_id, "expected_version": source_version}, ability="approval.request", effect=effect, participant_people=participants)
 
 
 def authorize_receipt(actor, company, project, result, *, scope_type="Project"):

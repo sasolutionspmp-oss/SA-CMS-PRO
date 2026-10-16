@@ -1,0 +1,60 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Project Delegation Policy Revision",
+  "module": "Cipher Governance",
+  "custom": 0,
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "version",
+    "enabled",
+    "definition_json",
+    "definition_digest"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "read_only": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "version",
+      "label": "Version",
+      "fieldtype": "Int",
+      "reqd": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "enabled",
+      "label": "Enabled",
+      "fieldtype": "Check",
+      "reqd": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "definition_json",
+      "label": "Definition Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "read_only": 1
+    },
+    {
+      "fieldname": "definition_digest",
+      "label": "Definition Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "read_only": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "allow_rename": 0
+}

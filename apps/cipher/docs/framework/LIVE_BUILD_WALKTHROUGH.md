@@ -6,6 +6,10 @@ synthetic business records. They are not generated images or design mockups.
 The private development service listens at `http://127.0.0.1:18880` in the
 execution environment; this address does not make it publicly reachable.
 
+The latest [main-site capture](evidence/r1/cost-planning-main-ui-v4/README.md) shows the corrected deployed build at desktop, tablet and phone widths: Project register, original Project/Tasks and Ricky's current connection state. These nine screenshots passed normal keyboard sign-in, settled layout and exact served-asset checks on October 16, 2026.
+
+The latest isolated checkpoint adds [cost-code/type setup](evidence/r1/prj02-ui-connected/cost-setup-v2/README.md) and [saved award-plan review](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md), with desktop, tablet and phone captures from the real backend. Its isolated site is retained; its disposable web container is stopped after full verification and the separate main UI deployment completed. Award execution is still disabled in the main product. The earlier journeys below retain their original capture dates and source versions.
+
 | Step | What the running product does | Actual capture |
 |---|---|---|
 | 1. Sign in | Uses the site's real session and CSRF protection | [Sign-in screen](evidence/r0/browser/connected-sign-in.png) |
@@ -208,3 +212,23 @@ unchanged 350-file backend source window. Raw before-send journals remain
 private; public evidence includes operation UUIDs and payload hashes. Recovery
 in the application remains limited to the mounted view. These automated focus
 checks do not establish full manual accessibility qualification.
+
+## PRJ02 interface checkpoint — local fixture qualification only
+
+The [award and normal Company cost setup package](evidence/r1/prj02-ui-contracts/README.md)
+records82 unique passing browser cases,116 unchanged source hashes, nine generated
+clients and the isolated build inventory. It preserves the first81+1 run, red
+receipt/recovery cases and failed phone layouts with their exact limits. These
+are synthetic contract/visual checks; actual isolated ERP award execution and
+connected presentation remain a separate runtime gate. Main served `dist` was
+preserved. No new actual award result is claimed by this checkpoint.
+
+
+### Qualified Company cost setup on the isolated award epoch
+
+[Cost setup variant 2](evidence/r1/prj02-ui-connected/cost-setup-v2/README.md) now contains actual desktop/tablet/phone code/type registers, one exact remaining successor save, and independent readback of all four original cost revisions. The three earlier successful commands were preserved. The new118-source/907-file UI variant bundles the official settings icon and licensed SAP72 fonts locally;19 focused fixture cases and actual settled keyboard/hit-test capture checks pass. Original incomplete attempts remain linked separately. This cost checkpoint does not claim award or accounting execution.
+
+
+### Exact saved award plan successor, before approval
+
+[Saved plan variant 2](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md) records one normal UI save on the original handoff and independent exact readback. Only the Project name changed; frozen selling USD30.85, accepted cost USD15.00, original Issue/PDF/team/WBS/allocations and explicit dates remain unchanged. Three actual images show scrolled saved-plan/keyboard interaction; original PDF byte parity is separately qualified, and no full-visible-PDF-page image claim is made. The initial zero-command overflow attempt remains separate. No award request, Grant, Execute, Project creation or financial effect ran.

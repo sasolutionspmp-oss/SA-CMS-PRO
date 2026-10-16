@@ -16,6 +16,7 @@
     "generate:api": "node scripts/generate-api.mjs"
   },
   "dependencies": {
+    "@sap-theming/theming-base-content": "11.36.4",
     "@ui5/webcomponents": "2.27.2",
     "@ui5/webcomponents-base": "2.27.2",
     "@ui5/webcomponents-fiori": "2.27.2",

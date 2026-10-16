@@ -47,3 +47,26 @@ FIN owner refinement: its Sales Order admission scan covers Company+Customer acr
 Lock current canonical participants/identities before the exact source Company and real awarded Project aggregates, then established UOM→Currency→sorted native Item/party sources; the domain must declare deterministic issue/award-record ordering and atomic origin adoption. Every supported native SO writer affecting FIN admission must take the same declared admission lock before its write. FIN-01 currently treats native Sales Order activity conservatively as unqualified. PRJ-02 must add an exact recognized award-order admission rule and define its baseline/floor semantics with FIN; simply enabling SO creation while leaving the zero-activity scan unchanged would block later baseline admission or invalidate the concurrency claim. Raw SQL/host administration remains outside the application guarantee.
 
 Required future actual tests: immutable Issue adopted despite newer Quotation draft without changing/submitting that draft; explicit Customer/Item absence refuses before writes; current Company/source/native revocation; same-person alias replay; concurrent independent consumption; native Item/UOM/tax/default reconciliation failure rolls all local effects back; matching Project customer and exact provenance retained; generic native mapper/write/submit/cancel/delete remains denied; accepted Company originals and historical sources stay readable only with current rights. This audit does not qualify any of those runtime outcomes.
+
+
+## Native lifecycle and selected runtime profile
+
+The [Project preallocation audit](PRJ02_PROJECT_PREALLOCATION_AUDIT.md) records the exact pinned controller, callback and global-index behavior. The selected supported award profile requires `disable_global_search=True` plus callback-free Project/Sales Order configuration and official per-document `flags.notify_update=False` through insertion and the supported second save. Backend must assert this profile before the first native write and isolate only the failed stage callback tails at its savepoint. No Project mixin, temporary configuration toggle, core patch, install flag or controller bypass is approved. This is a prerequisite, not a completed native writer qualification.
+
+The indexing flag stops the ordinary new document hint, doctype rebuild and web-page wrapper paths; it does not disable native authenticated/guest reads, purge existing index rows or remove earlier Redis queue entries. Earlier hints can still drain through lower-level sync functions. No purge was performed or implied. Project templates/users/preexisting Sales Order links and unsupported configured notifications/webhooks/assignments/workflows/automations/scripts remain outside the first callback-free slice. The audit specifies supported cleanup functions only for separately authorized maintenance.
+
+Audited installed source SHA-256 values (relative to the bench `apps/` directory):
+
+```json
+{
+  "frappe/frappe/model/document.py": "38fc658498a23a42cc8a14ae424591e527c6354d4eada06f12a19644e85b8d00",
+  "frappe/frappe/model/base_document.py": "61f6242de337314a1ec36dc435d18d853686b9f25deec807d128913bb44cbacd",
+  "frappe/frappe/utils/global_search.py": "daf87ba9dd0f9750bbb1f5b188f2c2fa7dad27c10540b482e6606db631d709fd",
+  "frappe/frappe/utils/__init__.py": "5eeffea7bccdc94ce5f7c0ad46678c1152fbe641e30789150a2de097fb7f2277",
+  "frappe/frappe/database/database.py": "dc9fe0620ab7ceb300bee2b5da5c247d8979727139c785bb591e0a54e3bebf15",
+  "frappe/frappe/integrations/doctype/webhook/__init__.py": "645a562a68282ae57b25dde88022da28b701c4a9c5bbc265854031896a027a7b",
+  "frappe/frappe/permissions.py": "ae3c1285b87094fef39c27c4a5f73c258da11f955ce45169ca6b4996558f6bd8",
+  "erpnext/erpnext/projects/doctype/project/project.py": "ababfe01b53da52eaeb999bb77acc7dfa146b714ca1a9a6947cb9fe7e825056d",
+  "erpnext/erpnext/selling/doctype/sales_order/sales_order.py": "062bbcd1bcb9c4c860e972e8a12b605ebc295f5c9a1acbc7af3c5581a9598f9c"
+}
+```

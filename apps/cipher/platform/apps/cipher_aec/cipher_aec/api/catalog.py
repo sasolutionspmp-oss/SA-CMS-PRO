@@ -152,5 +152,19 @@ _module("cipher_aec.integrations.distribution_api", {
     "list_instructions": ("GET", "DistInstructionList"),
 })
 
+_module("cipher_aec.api.masters", {name:("GET", "NativeMasterList") for name in ("cost_centers", "accounts", "award_items")})
+_module("cipher_aec.project_controls.company_api", {
+    "create_master": ("POST", "PcMasterCommand", True), "revise_master": ("POST", "PcMasterCommand", True),
+    "get_revision": ("GET", "PcResolvedRevision"), "list_masters": ("GET", "PcMasterPage"),
+})
+_module("cipher_aec.project_controls.api", {"get_record": ("GET", "PcProjectRecord"), "list_records": ("GET", "PcProjectPage")})
+_module("cipher_aec.awards.api", {
+    "list_handoffs": ("GET", "AwHandoffList"), "get_handoff": ("GET", "AwHandoffResponse"),
+    "get_plan": ("GET", "AwPlanResponse"), "approval_subject": ("GET", "AwApprovalSubject"),
+    "delegation_policy": ("GET", "AwDelegationPolicyResponse"), "team_choices": ("GET", "AwTeamChoices"),
+    "source_preview": ("GET", "AwSourcePreview"), "preview_plan": ("POST", "AwPlanPreview"),
+    "create_handoff": ("POST", "AwHandoffCommand", True), "plan_handoff": ("POST", "AwPlanCommand", True),
+})
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

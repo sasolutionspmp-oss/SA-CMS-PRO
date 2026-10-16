@@ -1,0 +1,50 @@
+{
+  "scope": "Explicit synthetic local browser fixture only; no actual credentials or private business payloads.",
+  "original_trace_private_path": "/tmp/cipher-completion/prj02-ui/award-cost-final-results/company-context-copied-sec-16da4-nd-revision-through-sign-in/trace.zip",
+  "original_trace_sha256": "1de58b4758eebbe6722cbe4e0f233d46b6e06354fd97b26108781c59adb411fd",
+  "source_reads": [
+    {
+      "path": "/api/method/cipher_aec.documents.company_api.get_document",
+      "query": {
+        "company": [
+          "TEST-SECOND-COMPANY"
+        ],
+        "document_id": [
+          "TEST-SECOND-DOC"
+        ]
+      },
+      "status": -1,
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/api/method/cipher_aec.documents.company_api.get_document",
+      "query": {
+        "company": [
+          "TEST-SECOND-COMPANY"
+        ],
+        "document_id": [
+          "TEST-SECOND-DOC"
+        ]
+      },
+      "status": 200,
+      "failure": null
+    },
+    {
+      "path": "/api/method/cipher_aec.documents.company_api.preview_revision",
+      "query": {
+        "company": [
+          "TEST-SECOND-COMPANY"
+        ],
+        "revision_id": [
+          "TEST-SECOND-REV"
+        ],
+        "page": [
+          "1"
+        ]
+      },
+      "status": 200,
+      "failure": null
+    }
+  ],
+  "finding": "One initial StrictMode detail request aborted; exact detail and revision-page requests completed200. Original trace retained privately."
+}

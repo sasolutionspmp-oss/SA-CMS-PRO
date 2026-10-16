@@ -12,6 +12,9 @@ def validate_project(doc, method=None):
     if _installing():
         return
     require_trusted_write()
+    from cipher_aec.awards.preallocation import validate_native_project
+    if validate_native_project(doc):
+        return
     if not doc.company:
         raise DomainError("company_required", "A Cipher project requires a company.")
     old = doc.get_doc_before_save()

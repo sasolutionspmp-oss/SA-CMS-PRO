@@ -459,7 +459,11 @@
       "type": "object",
       "properties": {
         "provider": {
-          "const": "cipher.contract.new-native-admission.v1"
+          "enum": [
+            "cipher.contract.new-native-admission.v1",
+            "cipher.contract.award-native-admission.v1",
+            "cipher.award.initial-draft-obligation.v1"
+          ]
         },
         "provider_version": {
           "const": 1
@@ -471,7 +475,10 @@
         "status": {
           "enum": [
             "new_contract_without_supported_obligations",
-            "activity_unqualified"
+            "activity_unqualified",
+            "qualified_award_observations",
+            "qualified_award_obligations",
+            "qualified_award_draft_obligation"
           ]
         },
         "channel_count": {
@@ -650,7 +657,10 @@
           "$ref": "#/$defs/FinCurrencyPolicy"
         },
         "origin": {
-          "const": "server_created_fin01"
+          "enum": [
+            "server_created_fin01",
+            "governed_award_v1"
+          ]
         },
         "party_at_creation": {
           "$ref": "#/$defs/FinPartySnapshot"
@@ -690,6 +700,9 @@
         },
         "activation": {
           "$ref": "#/$defs/FinActivation"
+        },
+        "award_origin": {
+          "$ref": "#/$defs/FinAwardOrigin"
         }
       },
       "required": [
@@ -710,7 +723,23 @@
         "accepted_revision",
         "creation_admission"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "governed_award_v1"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "award_origin"
+            ]
+          }
+        }
+      ]
     },
     "FinRevisionRecord": {
       "type": "object",
@@ -1441,6 +1470,179 @@
         "next_cursor",
         "limit",
         "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "FinAwardOrigin": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.contract.award-origin.v1"
+        },
+        "handoff": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "award_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "adoption_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "accepted_estimate": {
+          "$ref": "#/$defs/ComAcceptedEstimate"
+        },
+        "sales_order": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "native_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "definition_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "schema",
+        "handoff",
+        "award_revision",
+        "plan_digest",
+        "adoption_id",
+        "source_company",
+        "project",
+        "issue",
+        "issue_digest",
+        "accepted_estimate",
+        "sales_order",
+        "native_digest",
+        "native_version",
+        "definition_digest",
+        "packet_id",
+        "decision_id",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "ComAcceptedEstimate": {
+      "type": "object",
+      "properties": {
+        "acceptance_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "acceptance_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "snapshot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "snapshot_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pursuit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "total": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+            },
+            "currency": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "currency"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "acceptance_id",
+        "acceptance_digest",
+        "estimate_id",
+        "revision_id",
+        "revision_digest",
+        "snapshot_id",
+        "snapshot_digest",
+        "manifest_digest",
+        "pursuit_id",
+        "currency",
         "total"
       ],
       "additionalProperties": false

@@ -12,6 +12,8 @@ for (const [sourcePath, destination, title] of [
   ['documents/schemas/company-api-v1.schema.json', 'company-documents.generated.ts', 'CipherCompanyDocumentContract'],
   ['estimating/schemas/api-company-v2.schema.json', 'company-estimating.generated.ts', 'CipherCompanyEstimatingContract'],
   ['integrations/schemas/distribution-v1.schema.json', 'distribution.generated.ts', 'CipherDistributionContract'],
+  ['project_controls/schemas/api-v1.schema.json', 'project-controls.generated.ts', 'CipherProjectControlsContract'],
+  ['awards/schemas/api-v1.schema.json', 'awards.generated.ts', 'CipherAwardContract'],
 ]) {
   const source = await readFile(new URL(`../../platform/apps/cipher_aec/cipher_aec/${sourcePath}`, import.meta.url), 'utf8');
   const schema = JSON.parse(source.replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));

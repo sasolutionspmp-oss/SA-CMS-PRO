@@ -85,3 +85,11 @@ for _distribution_type in ("Cipher Distribution Instruction", "Cipher Distributi
 for _integration_type in ("Cipher Integration Operation", "Cipher Delivery Attempt"):
     permission_query_conditions[_integration_type] = "cipher_aec.integrations.distribution_install.legacy_query"
     has_permission[_integration_type] = "cipher_aec.integrations.distribution_install.legacy_permission"
+
+# Exact scoped APIs authorize every source; raw native JSON projections remain closed.
+for _control_type in ("Cipher Cost Code", "Cipher Cost Type", "Cipher Cost Code Revision", "Cipher Cost Type Revision", "Cipher WBS Node", "Cipher Budget Version", "Cipher Budget Line"):
+    permission_query_conditions[_control_type] = "cipher_aec.project_controls.permissions.query_conditions"
+    has_permission[_control_type] = "cipher_aec.project_controls.permissions.has_permission"
+for _award_type in ("Cipher Award Handoff", "Cipher Award Handoff Revision", "Cipher Award Adoption", "Cipher Award Line Adoption", "Cipher Project Profile", "Cipher Project Delegation Policy Revision"):
+    permission_query_conditions[_award_type] = "cipher_aec.awards.install.query_denied"
+    has_permission[_award_type] = "cipher_aec.awards.install.permission_denied"

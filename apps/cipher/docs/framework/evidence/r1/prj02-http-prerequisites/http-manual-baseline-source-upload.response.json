@@ -1,0 +1,44 @@
+{
+  "document": {
+    "byte_length": 450,
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "REV-d1027337ca144fffb2faa2798625e69d",
+    "extraction_status": "ready",
+    "extraction_warning": null,
+    "extractor_version": "cipher-safe-text-v1",
+    "filename": "award-manual-source.txt",
+    "id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+    "mime_type": "text/plain",
+    "page_count": 1,
+    "project": null,
+    "retrieval_status": "available",
+    "revision_number": 1,
+    "scan_status": "not_scanned",
+    "scope_type": "Company",
+    "sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+    "title": "Award explicit manual source company-chain-c3c3b742a8fd"
+  },
+  "history_id": "9kl0ebhgt7",
+  "operation": {
+    "id": "5cac1011-e55f-42c3-9966-ee9ad9c8e44a",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "byte_length": 450,
+    "company": "Company chain A c3c3b742a8fd",
+    "extraction_status": "ready",
+    "extraction_warning": null,
+    "extractor_version": "cipher-safe-text-v1",
+    "filename": "award-manual-source.txt",
+    "id": "REV-d1027337ca144fffb2faa2798625e69d",
+    "mime_type": "text/plain",
+    "page_count": 1,
+    "project": null,
+    "retrieval_status": "available",
+    "revision_number": 1,
+    "scan_status": "not_scanned",
+    "scope_type": "Company",
+    "sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+  }
+}

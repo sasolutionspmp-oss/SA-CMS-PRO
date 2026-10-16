@@ -1,0 +1,84 @@
+{
+  "schema": "cipher.cost-origin-correction-evidence.v1",
+  "status": "passed",
+  "captured_at": "2026-10-16T00:55:06.738326+00:00",
+  "scope": "One test-only correction derives the exact allowed origin from configured Playwright baseURL; icon, loaded SAP72regular and zero-external assertions unchanged.",
+  "original_test_sha256": "2895736d9d510eaecf0ce6d49ec050f1cc4c7688b66b2ce80474d965d42481ea",
+  "corrected_test_sha256": "90744582cd8449dd8a4f6c47433c9a485d4f7f56ed82443edc377c8f3b005920",
+  "corrected_test_path": "/tmp/cipher-completion/cost-presentation-origin-fix/cost-presentation.spec.ts",
+  "diff_path": "/tmp/cipher-completion/cost-presentation-origin-fix/change.diff",
+  "diff_sha256": "fd2f6fb69a4041bb0b0a4089d970ee126e1053cfb2a34c690c7d3c30a25ef6f5",
+  "main_ui118_unchanged": true,
+  "unique_test_scenarios": 4,
+  "successful_scenario_executions": 8,
+  "reports": [
+    {
+      "port": 5180,
+      "base_url": "http://127.0.0.1:5180",
+      "report_path": "/tmp/cipher-completion/cost-presentation-origin-fix/port5180-self-contained.json",
+      "sha256": "3366c2ceaa43c681e596991cf62f7b2332751a599e92f9a98005a95775cdd5f7",
+      "stats": {
+        "startTime": "2026-10-16T00:53:50.978Z",
+        "duration": 9989.103,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "retries": 0,
+      "fresh_server": true,
+      "reuse_existing_server": false
+    },
+    {
+      "port": 5192,
+      "base_url": "http://127.0.0.1:5192",
+      "report_path": "/tmp/cipher-completion/cost-presentation-origin-fix/port5192-self-contained.json",
+      "sha256": "ee843da6dc9d3d5f3ac7f795184923d3f9414137fddd1d019e5a8ae8ab062fd9",
+      "stats": {
+        "startTime": "2026-10-16T00:54:28.425Z",
+        "duration": 10122.404,
+        "expected": 4,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "retries": 0,
+      "fresh_server": true,
+      "reuse_existing_server": false
+    }
+  ],
+  "dependency_setup": {
+    "command": "npm ci --offline",
+    "exit_code": 0,
+    "installed_packages": 70,
+    "ordinary_self_contained_root": "/tmp/cipher-completion/cost-presentation-origin-fix/workspace",
+    "package_lock_sha256": "23b2155625f221b195f880f7e450c1e1f9260c62d79b2c6cc66066f3e48baf6c",
+    "vite_fs_strict": true,
+    "filesystem_allowance_broadened": false,
+    "network_allowance_broadened": false,
+    "fresh_private_cache_per_port": true
+  },
+  "prior_attempt": {
+    "report_path": "/tmp/cipher-completion/cost-presentation-origin-fix/port5180.json",
+    "sha256": "574c0fd69cb1d5732503002115b8c24d08d558d9f6a394f6cbf7becc9551640f",
+    "stats": {
+      "startTime": "2026-10-16T00:50:39.472Z",
+      "duration": 11382.628,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "classification": "Private symlink-dependency harness failure: eight same-origin local SAP72 font URLs returned Vite403 outside private filesystem root. Not a product font/timing defect; no assertion or filesystem allowance weakened.",
+    "artifacts_path": "/tmp/cipher-completion/cost-presentation-origin-fix/artifacts-5180",
+    "preserved": true
+  },
+  "configs": {
+    "playwright.origin.config.ts": "0232fee635e0e3d544f275d140f11d42f1026074f4ff1910c9f943a4fa52fcff",
+    "vite.origin.config.ts": "e4a18e995ef2bf19f4eef74135504a833b862d785cc147b3a8b9d6f8a06de211"
+  },
+  "limits": [
+    "Explicit synthetic browser fixtures with system Chromium; no actual ERP runtime, deployment or authentication.",
+    "Four unique scenarios executed successfully once on each port; executions are not eight unique coverage cases."
+  ]
+}

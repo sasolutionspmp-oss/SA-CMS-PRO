@@ -1,0 +1,35 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.estimating.company_api.create_rate",
+  "prepared_at": "2026-10-15T23:10:45.826930+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "operation_id": "0acc4c7f-278c-49d5-928c-6312e17774e6",
+    "rate": {
+      "cost_type": "labor",
+      "currency": "USD",
+      "exclusions": "No taxes or freight",
+      "expiry_date": null,
+      "freight_tax_assumptions": "None",
+      "geography": "Synthetic",
+      "inclusions": "Explicit authored fixture",
+      "item": null,
+      "permission_basis": "Owned synthetic fixture source",
+      "quote_date": "2026-10-15",
+      "quote_reference": "Authored isolated manual fixture",
+      "rate_amount": "2.00",
+      "rate_precision": 6,
+      "source_citations": [
+        {
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "page": 1,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "title": "Award labor company-chain-c3c3b742a8fd",
+      "unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095"
+    }
+  }
+}

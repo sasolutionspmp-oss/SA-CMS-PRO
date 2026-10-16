@@ -1,0 +1,14 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.api.company_approvals.decide_packet",
+  "prepared_at": "2026-10-15T23:10:46.892350+00:00",
+  "role": "reviewer",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "decision": "Grant",
+    "manifest_hash": "8792d13ae46455cac8429833cc84fef790bad59c9d88a5cf1f9f5e1760cf082f",
+    "operation_id": "44d3f2b0-9197-471a-b19a-bb8ce64d2a19",
+    "packet_id": "9l0hbkcbe8",
+    "reason": "Independent exact isolated prerequisite review."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "schema": "cipher.ui.visual-finding.v1",
+  "qualification": "Technical read-only/asset/journal checks passed; actual phone composition remains visually unqualified.",
+  "finding": "Phone viewport visibly clips left edge of Company context, Cost types heading and actions although workspace scrollWidth and target/status bounds passed.",
+  "original_verification_unchanged": true,
+  "business_posts": 0,
+  "next_proof": "Require actual Company/header/action first and last bounds, supported UI5 responsive correction, same-record read-only recapture; no command replay."
+}

@@ -19,6 +19,10 @@ CHUNK = 200
 def _choose(company, selector, *, query="", limit=50, cursor=None, count_mode="none", party_type=None, currency=None, dimension=None, unit_id=None):
     actor = current_actor()
     company_doc = require_company(company, actor=actor)
+    if selector in {"cost_centers", "accounts"}:
+        require_company(company, ability="project.cost.read", actor=actor)
+    if selector == "award_items":
+        require_company(company, ability="commercial.award", actor=actor)
     query = text(query, "Search", 80, required=False).strip()
     limit, cursor, count_mode = page_options(limit, cursor, count_mode)
     company_currency = company_doc.default_currency
@@ -29,7 +33,7 @@ def _choose(company, selector, *, query="", limit=50, cursor=None, count_mode="n
             raise DomainError("invalid_party_type", "Select Customer or Lead.", 422)
         doctype = party_type
     else:
-        doctype = {"price_lists":"Price List", "units":"UOM", "currencies":"Currency", "items":"Item"}[selector]
+        doctype = {"price_lists":"Price List", "units":"UOM", "currencies":"Currency", "items":"Item", "award_items":"Item", "cost_centers":"Cost Center", "accounts":"Account"}[selector]
     if selector == "price_lists" and currency not in {None, "", company_currency}:
         raise DomainError("currency_unsupported", "Commercial drafts currently use the Company's native base currency.", 422)
     if selector == "price_lists":
@@ -57,7 +61,10 @@ def _choose(company, selector, *, query="", limit=50, cursor=None, count_mode="n
         if query:
             conditions.append("name LIKE %s")
             args.append("%"+query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")+"%")
-        rows = frappe.db.sql("SELECT name FROM `tab"+doctype+"` WHERE "+" AND ".join(conditions)+" ORDER BY name LIMIT %s",(*args,CHUNK),as_dict=True)
+        fields,selection="name",[]
+        if last:
+            fields+=", (name>%s) AS after_cursor";selection.append(last[1])
+        rows = frappe.db.sql("SELECT "+fields+" FROM `tab"+doctype+"` WHERE "+" AND ".join(conditions)+" ORDER BY name LIMIT %s",(*selection,*args,CHUNK),as_dict=True)
         scanned += len(rows)
         if scanned > MAX_SCAN:
             raise DomainError("authorization_scan_limit", "Narrow the native master search before listing more choices.", 409)
@@ -86,15 +93,29 @@ def _choose(company, selector, *, query="", limit=50, cursor=None, count_mode="n
                     require_native("Currency",doc.currency,actor)
                     currency_policy(doc.currency)
                     value["currency"] = doc.currency
-                elif selector == "items":
+                elif selector in {"cost_centers", "accounts"}:
+                    if doc.name != row.name or doc.company != company or doc.is_group or doc.get("disabled"):
+                        continue
+                    if selector == "accounts":
+                        if doc.root_type != "Expense" or doc.get("account_type") in {"Stock", "Work In Progress", "Fixed Asset", "Accumulated Depreciation"}:
+                            continue
+                        chosen_currency=doc.account_currency or company_currency
+                        require_native("Currency",chosen_currency,actor)
+                        currency_policy(chosen_currency)
+                        value["currency"]=chosen_currency
+                    value.update(company=company,label=doc.get("cost_center_name") or doc.get("account_name") or doc.name)
+                elif selector in {"items", "award_items"}:
                     if doc.disabled or company not in {r.company for r in doc.item_defaults} or unit_name and doc.stock_uom != unit_name:
+                        continue
+                    if selector == "award_items" and (not doc.is_sales_item or doc.is_stock_item or doc.has_variants or doc.is_fixed_asset or doc.is_sub_contracted_item
+                            or frappe.db.exists("Product Bundle", {"new_item_code":doc.name,"disabled":0})):
                         continue
                     uom = require_native("UOM",doc.stock_uom,actor)
                     if not uom.get("cipher_unit_id"):
                         continue
                     unit = qualified(uom.cipher_unit_id)
                     value.update(label=doc.item_name or doc.name,stock_uom=doc.stock_uom,unit_id=unit["id"],revision=unit["revision"])
-                visible.append(value)
+                visible.append((value,not last or bool(row.after_cursor)))
             except DomainError as error:
                 if error.status in {403,404} or selector == "currencies" and error.code == "currency_setup_required":
                     continue
@@ -102,7 +123,7 @@ def _choose(company, selector, *, query="", limit=50, cursor=None, count_mode="n
         if len(rows) < CHUNK:
             break
         seek = rows[-1].name
-    selected = [value for value in visible if not last or value["id"] > last[1]]
+    selected = [value for value,after_cursor in visible if after_cursor]
     page = selected[:limit]
     return {**page_result(page,has_more=len(selected)>limit,last=[page[-1]["id"],page[-1]["id"]] if page else None,
         scope=scope,limit=limit,count_mode=count_mode,total=len(visible) if count_mode=="exact" else None),"company_currency":company_currency}
@@ -126,3 +147,16 @@ def currencies(company, query="", limit=50, cursor=None, count_mode="none"):
 @endpoint()
 def items(company, query="", unit_id=None, limit=50, cursor=None, count_mode="none"):
     return _choose(company,"items",unit_id=unit_id,query=query,limit=limit,cursor=cursor,count_mode=count_mode)
+
+
+@endpoint()
+def cost_centers(company, query="", limit=50, cursor=None, count_mode="none"):
+    return _choose(company,"cost_centers",query=query,limit=limit,cursor=cursor,count_mode=count_mode)
+
+@endpoint()
+def accounts(company, query="", limit=50, cursor=None, count_mode="none"):
+    return _choose(company,"accounts",query=query,limit=limit,cursor=cursor,count_mode=count_mode)
+
+@endpoint()
+def award_items(company, query="", unit_id=None, limit=50, cursor=None, count_mode="none"):
+    return _choose(company,"award_items",unit_id=unit_id,query=query,limit=limit,cursor=cursor,count_mode=count_mode)

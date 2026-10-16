@@ -1,0 +1,14 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.estimating.company_api.create_estimate",
+  "prepared_at": "2026-10-15T23:10:46.016866+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "currency": "USD",
+    "operation_id": "f672022e-751b-4e68-ad66-43f181ff54ee",
+    "pricing_date": "2026-10-15",
+    "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "title": "Award manual accepted cost company-chain-c3c3b742a8fd"
+  }
+}

@@ -266,6 +266,7 @@ bench --site "$CIPHER_VALIDATION_SITE" set-config allow_tests True --parse
 bench --site "$CIPHER_VALIDATION_SITE" set-config pause_scheduler True --parse
 bench --site "$CIPHER_VALIDATION_SITE" install-app cipher_aec
 bench --site "$CIPHER_VALIDATION_SITE" migrate
+bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.awards.runtime_install.configure_native_profile
 bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
 '''
         self.container("fresh-site-install", script, env={"CIPHER_VALIDATION_SITE": self.args.site})

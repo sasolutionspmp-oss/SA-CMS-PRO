@@ -1,0 +1,1252 @@
+{
+  "artifact_sha256": {
+    "est-recorded-performance-native.log": "6f943dbfc5134108062e010d83d826fa850360e9b44f4aa649e5f1c4d22d248d",
+    "est-recorded-performance-native.private.json": "f92493fb61f993166f658fabf461c4b3e01ae1f39ef1b4cba823a1bcefd00a9a"
+  },
+  "baseline_digest": "2dc75ff22944dafafb5ec7a0b8c161393f9717f80fc4128f1e276e40b773e363",
+  "baseline_id": "cf2065ff-37e6-4bac-be56-02ed7d047c8a",
+  "business_inventory": {
+    "acceptance_count": 1,
+    "acceptance_digest": "2dc75ff22944dafafb5ec7a0b8c161393f9717f80fc4128f1e276e40b773e363",
+    "company_project_count": 0,
+    "consumption_count": 1,
+    "exact_private_event_inventory_sha256": "f63f056467a34eb52489b493a1e9cc6e38521204a3ef193267ff5725a6ee3871",
+    "native_company_history_candidate_count": 105,
+    "receipt_count": 1
+  },
+  "changes_since_previous_citation_batch_capture": {
+    "governance/context.py": {
+      "current": "5cd5feb5c7a40b0f17542aa4f814307f1520ffd095e08e686310dd3aa020b76c",
+      "previous": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b"
+    },
+    "governance/permissions.py": {
+      "current": "9c1ceff163cc27ce7eab1cbbaa7ce28d211bbcb27f604614126a7e9a4edb858f",
+      "previous": "a8a0a5711471c03aeb1dfb810820adfb40741e630e0cfce00232668f89dc3316"
+    },
+    "tests/test_estimating_generated_acceptance.py": {
+      "current": "9cee0a2dd16f5522aecf187c88094179d5266b45a3129882dd373bbab4a193ad",
+      "previous": "f5f62cd5ef659fa3ebdd9792fb3ed7d5175730006babd51c74da941e255e851a"
+    }
+  },
+  "company": "EST generated Company C 8e6c80ffb7b0",
+  "current_residual_attribution": {
+    "baseline_read_company_guards": {
+      "calls": 183,
+      "exclusive_sql": 549
+    },
+    "interpretation": "Company scope guards remain the largest measured exclusive SQL category even after fresh SQL consolidation. Full history repeatedly evaluates distinct exact historical records and requested citations/bytes; only3 original producer authorizations occurred, so another broad producer-authority cache is not supported by this capture. Further changes require narrow source attribution/review; fresh consume remains the earlier4.296266s sample and was not remeasured.",
+    "partial_history_company_guards": {
+      "calls": 1466,
+      "exclusive_sql": 4398
+    },
+    "partial_history_native_master": {
+      "calls": 468,
+      "exclusive_sql": 1425
+    },
+    "partial_history_remaining_sources": {
+      "actual_byte_reads_and_checks": 296,
+      "builder_batch_calls": 17,
+      "builder_batch_exclusive_sql": 205,
+      "ordinary_citation_calls": 98,
+      "ordinary_citation_exclusive_sql": 820,
+      "producer_plan_calls": 58,
+      "producer_plan_exclusive_sql": 928
+    },
+    "replay_company_guards": {
+      "locked_calls": 245,
+      "locked_exclusive_sql": 1470,
+      "read_calls": 274,
+      "read_exclusive_sql": 249
+    }
+  },
+  "durable_stage_journal_count": 4,
+  "exact_business_inventory_unchanged": true,
+  "external_provider_qualified": false,
+  "generated_public_gate_enabled": false,
+  "graph_counters": [
+    {
+      "original_proof_authorized": 2,
+      "original_proof_hits": 2,
+      "original_proof_misses": 2,
+      "prelocked_scopes": 0,
+      "producer_authorized": 3,
+      "producer_hits": 59,
+      "producer_misses": 3
+    },
+    {
+      "original_proof_authorized": 5,
+      "original_proof_hits": 2,
+      "original_proof_misses": 5,
+      "prelocked_scopes": 0,
+      "producer_authorized": 3,
+      "producer_hits": 585,
+      "producer_misses": 3
+    }
+  ],
+  "live_model_qualified": false,
+  "new_acceptance_intent_or_effect_created": false,
+  "observations": [
+    {
+      "exact_operation_id": "184271b9-d705-4951-8a4e-9d54d23db886",
+      "metrics": {
+        "actual_artifact_disk_reads": 33,
+        "elapsed_seconds": 1.385546,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 53,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "profiling_overhead_in_elapsed": true,
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 3196,
+        "sql_phase_attribution": {
+          "authority.company:author:locked": {
+            "calls": 245,
+            "exclusive_seconds": 0.5587747450044844,
+            "exclusive_sql": 1470,
+            "inclusive_seconds": 0.5587747450044844,
+            "inclusive_sql": 1470
+          },
+          "authority.company:author:read": {
+            "calls": 274,
+            "exclusive_seconds": 0.36935053186607547,
+            "exclusive_sql": 249,
+            "inclusive_seconds": 0.36935053186607547,
+            "inclusive_sql": 249
+          },
+          "authority.company:request-context:read": {
+            "calls": 1,
+            "exclusive_seconds": 0.02774595499795396,
+            "exclusive_sql": 5,
+            "inclusive_seconds": 0.02774595499795396,
+            "inclusive_sql": 5
+          },
+          "authority.native-master:author:locked": {
+            "calls": 86,
+            "exclusive_seconds": 0.2808059940143721,
+            "exclusive_sql": 458,
+            "inclusive_seconds": 0.2808059940143721,
+            "inclusive_sql": 458
+          },
+          "authority.native-master:author:read": {
+            "calls": 30,
+            "exclusive_seconds": 0.00790036296530161,
+            "exclusive_sql": 30,
+            "inclusive_seconds": 0.00790036296530161,
+            "inclusive_sql": 30
+          },
+          "authority.qualified-unit:author:locked": {
+            "calls": 10,
+            "exclusive_seconds": 0.002166827965993434,
+            "exclusive_sql": 10,
+            "inclusive_seconds": 0.006477597984485328,
+            "inclusive_sql": 21
+          },
+          "document.current-scope:request-context:locked": {
+            "calls": 76,
+            "exclusive_seconds": 0.0020429769647307694,
+            "exclusive_sql": 0,
+            "inclusive_seconds": 0.9921102209191304,
+            "inclusive_sql": 1724
+          },
+          "document.exact-node-facts:author:locked": {
+            "calls": 1,
+            "exclusive_seconds": 0.007192169010522775,
+            "exclusive_sql": 15,
+            "inclusive_seconds": 0.03339955500268843,
+            "inclusive_sql": 63
+          },
+          "document.plan-discovery:author:locked": {
+            "calls": 67,
+            "exclusive_seconds": 0.06006305203482043,
+            "exclusive_sql": 135,
+            "inclusive_seconds": 0.754080897080712,
+            "inclusive_sql": 1161
+          },
+          "document.producer-authority:author:locked": {
+            "calls": 76,
+            "exclusive_seconds": 0.019763036994845606,
+            "exclusive_sql": 40,
+            "inclusive_seconds": 0.884005507978145,
+            "inclusive_sql": 1556
+          },
+          "estimate.accepted-baseline:author:locked": {
+            "calls": 3,
+            "exclusive_seconds": 0.000921037993975915,
+            "exclusive_sql": 3,
+            "inclusive_seconds": 0.20361011099885218,
+            "inclusive_sql": 573
+          },
+          "estimate.builder-citation-batch:author:locked": {
+            "calls": 4,
+            "exclusive_seconds": 0.021825857023941353,
+            "exclusive_sql": 57,
+            "inclusive_seconds": 0.6254786680074176,
+            "inclusive_sql": 1617
+          },
+          "estimate.citations:author:locked": {
+            "calls": 9,
+            "exclusive_seconds": 0.048723806015914306,
+            "exclusive_sql": 120,
+            "inclusive_seconds": 0.14511256600962952,
+            "inclusive_sql": 369
+          },
+          "estimate.native-sources:author:locked": {
+            "calls": 7,
+            "exclusive_seconds": 0.020182985113933682,
+            "exclusive_sql": 68,
+            "inclusive_seconds": 0.09094716400431935,
+            "inclusive_sql": 322
+          },
+          "estimate.original-facts:author:locked": {
+            "calls": 4,
+            "exclusive_seconds": 0.004504246011492796,
+            "exclusive_sql": 12,
+            "inclusive_seconds": 1.156077780004125,
+            "inclusive_sql": 2724
+          },
+          "estimate.plan-discovery:author:locked": {
+            "calls": 5,
+            "exclusive_seconds": 0.016462587984278798,
+            "exclusive_sql": 48,
+            "inclusive_seconds": 0.29877536998537835,
+            "inclusive_sql": 751
+          },
+          "estimate.scoped-record:author:locked": {
+            "calls": 23,
+            "exclusive_seconds": 0.010497700000996701,
+            "exclusive_sql": 32,
+            "inclusive_seconds": 0.5148544359981315,
+            "inclusive_sql": 943
+          },
+          "producer.original-authority:author:locked": {
+            "calls": 3,
+            "exclusive_seconds": 0.03331534993776586,
+            "exclusive_sql": 74,
+            "inclusive_seconds": 0.7315561349969357,
+            "inclusive_sql": 1330
+          },
+          "producer.plan:author:locked": {
+            "calls": 23,
+            "exclusive_seconds": 0.11472042594687082,
+            "exclusive_sql": 303,
+            "inclusive_seconds": 0.6685090619866969,
+            "inclusive_sql": 1109
+          },
+          "takeoff.scoped-record:author:locked": {
+            "calls": 5,
+            "exclusive_seconds": 0.0034890670067397878,
+            "exclusive_sql": 9,
+            "inclusive_seconds": 0.31984900099632796,
+            "inclusive_sql": 613
+          },
+          "takeoff.source:author:locked": {
+            "calls": 4,
+            "exclusive_seconds": 0.01153619603428524,
+            "exclusive_sql": 28,
+            "inclusive_seconds": 0.04912796200369485,
+            "inclusive_sql": 120
+          }
+        },
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 33
+      },
+      "not_fresh_consume": true,
+      "phase": "locked-original-only-successful-receipt-replay",
+      "status": "returned"
+    },
+    {
+      "metrics": {
+        "actual_artifact_disk_reads": 35,
+        "elapsed_seconds": 0.591403,
+        "logical_operation_counters": [],
+        "method": "public-Company-baseline-GET.lockFalse",
+        "profiling_overhead_in_elapsed": true,
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 1559,
+        "sql_phase_attribution": {
+          "authority.company:author:read": {
+            "calls": 183,
+            "exclusive_seconds": 0.24865241495717783,
+            "exclusive_sql": 549,
+            "inclusive_seconds": 0.24865241495717783,
+            "inclusive_sql": 549
+          },
+          "authority.native-master:author:read": {
+            "calls": 84,
+            "exclusive_seconds": 0.08463536805356853,
+            "exclusive_sql": 361,
+            "inclusive_seconds": 0.08463536805356853,
+            "inclusive_sql": 361
+          },
+          "document.current-scope:request-context:read": {
+            "calls": 80,
+            "exclusive_seconds": 0.0018210590787930414,
+            "exclusive_sql": 0,
+            "inclusive_seconds": 0.514763491039048,
+            "inclusive_sql": 915
+          },
+          "document.exact-node-facts:author:read": {
+            "calls": 1,
+            "exclusive_seconds": 0.005615879985271022,
+            "exclusive_sql": 15,
+            "inclusive_seconds": 0.026963940006680787,
+            "inclusive_sql": 60
+          },
+          "document.plan-discovery:author:read": {
+            "calls": 33,
+            "exclusive_seconds": 0.028358564944937825,
+            "exclusive_sql": 66,
+            "inclusive_seconds": 0.2443195999658201,
+            "inclusive_sql": 385
+          },
+          "document.producer-authority:author:read": {
+            "calls": 80,
+            "exclusive_seconds": 0.019580543928896077,
+            "exclusive_sql": 42,
+            "inclusive_seconds": 0.40385571793012787,
+            "inclusive_sql": 723
+          },
+          "estimate.accepted-baseline:author:read": {
+            "calls": 3,
+            "exclusive_seconds": 0.0010626430012052879,
+            "exclusive_sql": 3,
+            "inclusive_seconds": 0.06954951300576795,
+            "inclusive_sql": 182
+          },
+          "estimate.builder-citation-batch:author:read": {
+            "calls": 2,
+            "exclusive_seconds": 0.010347929011913948,
+            "exclusive_sql": 25,
+            "inclusive_seconds": 0.27035105299728457,
+            "inclusive_sql": 740
+          },
+          "estimate.citations:author:read": {
+            "calls": 10,
+            "exclusive_seconds": 0.04162503298721276,
+            "exclusive_sql": 95,
+            "inclusive_seconds": 0.11821114398480859,
+            "inclusive_sql": 258
+          },
+          "estimate.native-sources:author:read": {
+            "calls": 5,
+            "exclusive_seconds": 0.015959398020640947,
+            "exclusive_sql": 43,
+            "inclusive_seconds": 0.05198170400399249,
+            "inclusive_sql": 184
+          },
+          "estimate.original-facts:author:read": {
+            "calls": 2,
+            "exclusive_seconds": 0.004152291003265418,
+            "exclusive_sql": 10,
+            "inclusive_seconds": 0.5959127870009979,
+            "inclusive_sql": 1492
+          },
+          "estimate.plan-discovery:author:read": {
+            "calls": 2,
+            "exclusive_seconds": 0.008838474997901358,
+            "exclusive_sql": 26,
+            "inclusive_seconds": 0.09258122999744955,
+            "inclusive_sql": 248
+          },
+          "estimate.scoped-record:author:read": {
+            "calls": 16,
+            "exclusive_seconds": 0.01858092706243042,
+            "exclusive_sql": 46,
+            "inclusive_seconds": 0.8638742790208198,
+            "inclusive_sql": 1554
+          },
+          "producer.original-authority:author:read": {
+            "calls": 3,
+            "exclusive_seconds": 0.03636318394273985,
+            "exclusive_sql": 91,
+            "inclusive_seconds": 0.3842751740012318,
+            "inclusive_sql": 689
+          },
+          "producer.plan:author:read": {
+            "calls": 10,
+            "exclusive_seconds": 0.05460478406166658,
+            "exclusive_sql": 160,
+            "inclusive_seconds": 0.17080984101630747,
+            "inclusive_sql": 325
+          },
+          "takeoff.scoped-record:author:read": {
+            "calls": 5,
+            "exclusive_seconds": 0.0032832629804033786,
+            "exclusive_sql": 9,
+            "inclusive_seconds": 0.23926505098643247,
+            "inclusive_sql": 397
+          },
+          "takeoff.source:author:read": {
+            "calls": 4,
+            "exclusive_seconds": 0.00682845497794915,
+            "exclusive_sql": 16,
+            "inclusive_seconds": 0.032063032005680725,
+            "inclusive_sql": 72
+          }
+        },
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 35
+      },
+      "not_fresh_consume": true,
+      "phase": "public-Company-baseline-GET.lockFalse",
+      "status": "returned"
+    },
+    {
+      "metrics": {
+        "actual_artifact_disk_reads": 296,
+        "elapsed_seconds": 4.000484,
+        "logical_operation_counters": [],
+        "method": "full-Company-history.lockFalse.exact-visible-count",
+        "profiling_overhead_in_elapsed": true,
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 10000,
+        "sql_phase_attribution": {
+          "authority.company:author:read": {
+            "calls": 1466,
+            "exclusive_seconds": 1.9709654098551255,
+            "exclusive_sql": 4398,
+            "inclusive_seconds": 1.9709654098551255,
+            "inclusive_sql": 4398
+          },
+          "authority.native-master:author:read": {
+            "calls": 468,
+            "exclusive_seconds": 0.3309165809332626,
+            "exclusive_sql": 1425,
+            "inclusive_seconds": 0.3309165809332626,
+            "inclusive_sql": 1425
+          },
+          "document.current-scope:request-context:read": {
+            "calls": 712,
+            "exclusive_seconds": 0.014815230941167101,
+            "exclusive_sql": 0,
+            "inclusive_seconds": 1.5958162098540924,
+            "inclusive_sql": 3152
+          },
+          "document.exact-node-facts:author:read": {
+            "calls": 11,
+            "exclusive_seconds": 0.07020078696950804,
+            "exclusive_sql": 165,
+            "inclusive_seconds": 0.2969058220041916,
+            "inclusive_sql": 660
+          },
+          "document.plan-discovery:author:read": {
+            "calls": 175,
+            "exclusive_seconds": 0.15349359228275716,
+            "exclusive_sql": 350,
+            "inclusive_seconds": 1.5711710290634073,
+            "inclusive_sql": 2151
+          },
+          "document.producer-authority:author:read": {
+            "calls": 712,
+            "exclusive_seconds": 0.1843574880331289,
+            "exclusive_sql": 383,
+            "inclusive_seconds": 0.6246098710253136,
+            "inclusive_sql": 1064
+          },
+          "estimate.accepted-baseline:author:read": {
+            "calls": 3,
+            "exclusive_seconds": 0.0011805790127255023,
+            "exclusive_sql": 3,
+            "inclusive_seconds": 0.07964633901428897,
+            "inclusive_sql": 182
+          },
+          "estimate.builder-citation-batch:author:read": {
+            "calls": 17,
+            "exclusive_seconds": 0.08526803289714735,
+            "exclusive_sql": 205,
+            "inclusive_seconds": 0.5056266769970534,
+            "inclusive_sql": 1217
+          },
+          "estimate.citations:author:read": {
+            "calls": 98,
+            "exclusive_seconds": 0.3276095443870872,
+            "exclusive_sql": 820,
+            "inclusive_seconds": 0.9875220740505029,
+            "inclusive_sql": 2262
+          },
+          "estimate.native-sources:author:read": {
+            "calls": 56,
+            "exclusive_seconds": 0.08956067400868051,
+            "exclusive_sql": 213,
+            "inclusive_seconds": 0.36474290798651055,
+            "inclusive_sql": 1356
+          },
+          "estimate.original-facts:author:read": {
+            "calls": 17,
+            "exclusive_seconds": 0.02361932692292612,
+            "exclusive_sql": 45,
+            "inclusive_seconds": 3.537894101027632,
+            "inclusive_sql": 8759
+          },
+          "estimate.plan-discovery:author:read": {
+            "calls": 17,
+            "exclusive_seconds": 0.06548281603318173,
+            "exclusive_sql": 193,
+            "inclusive_seconds": 0.8920430460129865,
+            "inclusive_sql": 2181
+          },
+          "estimate.scoped-record:author:read": {
+            "calls": 137,
+            "exclusive_seconds": 0.13027038003201596,
+            "exclusive_sql": 359,
+            "inclusive_seconds": 3.2190262621152215,
+            "inclusive_sql": 4907
+          },
+          "producer.original-authority:author:read": {
+            "calls": 3,
+            "exclusive_seconds": 0.043417114968178794,
+            "exclusive_sql": 91,
+            "inclusive_seconds": 0.4402523829921847,
+            "inclusive_sql": 689
+          },
+          "producer.plan:author:read": {
+            "calls": 58,
+            "exclusive_seconds": 0.3364929188392125,
+            "exclusive_sql": 928,
+            "inclusive_seconds": 1.1755390579928644,
+            "inclusive_sql": 1911
+          },
+          "takeoff.scoped-record:author:read": {
+            "calls": 69,
+            "exclusive_seconds": 0.04145524377236143,
+            "exclusive_sql": 123,
+            "inclusive_seconds": 2.7787716870225267,
+            "inclusive_sql": 4629
+          },
+          "takeoff.source:author:read": {
+            "calls": 54,
+            "exclusive_seconds": 0.09131173012428917,
+            "exclusive_sql": 216,
+            "inclusive_seconds": 0.433234214069671,
+            "inclusive_sql": 972
+          }
+        },
+        "status": "fixture_profile_budget",
+        "successful_exact_byte_integrity_checks": 296
+      },
+      "not_fresh_consume": true,
+      "phase": "full-Company-history.lockFalse.exact-visible-count",
+      "status": "fixed-budget-exceeded-no-complete-result"
+    }
+  ],
+  "original_execute": {
+    "method": "cipher_aec.api.company_approvals.execute_packet",
+    "payload": {
+      "company": "EST generated Company C 8e6c80ffb7b0",
+      "manifest_hash": "70608c0068d2bd15faf17e0adea773334b8bd3bc634a4d5810116f1ef86ad177",
+      "operation_id": "184271b9-d705-4951-8a4e-9d54d23db886",
+      "packet_id": "a808au28v7"
+    },
+    "role": "author"
+  },
+  "performance_assessment": {
+    "fresh_consume_not_measured": true,
+    "history_below_starting_read_target_qualified": false,
+    "history_budget_failure_preserved": true,
+    "history_safety_budget_sql": 10000,
+    "p95_or_workload_qualified": false,
+    "prior_fresh_consume_seconds": 4.296266,
+    "representative_baseline_read_seconds": 0.591403,
+    "representative_receipt_replay_seconds": 1.385546
+  },
+  "permissions_or_native_masters_changed": false,
+  "phase_attribution_limits": "Exclusive SQL belongs to the innermost instrumented frame. Inclusive SQL/time overlaps across parent frames and must not be summed. No phase measures a fresh consume. Full history has no complete returned result or qualified authorized total.",
+  "profiles": [
+    {
+      "actual_artifact_disk_reads": 33,
+      "elapsed_seconds": 1.385546,
+      "logical_operation_counters": [
+        {
+          "prelocked_scopes": 4,
+          "producer_authorized": 3,
+          "producer_hits": 53,
+          "producer_misses": 3
+        }
+      ],
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "profiling_overhead_in_elapsed": true,
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 3196,
+      "sql_phase_attribution": {
+        "authority.company:author:locked": {
+          "calls": 245,
+          "exclusive_seconds": 0.5587747450044844,
+          "exclusive_sql": 1470,
+          "inclusive_seconds": 0.5587747450044844,
+          "inclusive_sql": 1470
+        },
+        "authority.company:author:read": {
+          "calls": 274,
+          "exclusive_seconds": 0.36935053186607547,
+          "exclusive_sql": 249,
+          "inclusive_seconds": 0.36935053186607547,
+          "inclusive_sql": 249
+        },
+        "authority.company:request-context:read": {
+          "calls": 1,
+          "exclusive_seconds": 0.02774595499795396,
+          "exclusive_sql": 5,
+          "inclusive_seconds": 0.02774595499795396,
+          "inclusive_sql": 5
+        },
+        "authority.native-master:author:locked": {
+          "calls": 86,
+          "exclusive_seconds": 0.2808059940143721,
+          "exclusive_sql": 458,
+          "inclusive_seconds": 0.2808059940143721,
+          "inclusive_sql": 458
+        },
+        "authority.native-master:author:read": {
+          "calls": 30,
+          "exclusive_seconds": 0.00790036296530161,
+          "exclusive_sql": 30,
+          "inclusive_seconds": 0.00790036296530161,
+          "inclusive_sql": 30
+        },
+        "authority.qualified-unit:author:locked": {
+          "calls": 10,
+          "exclusive_seconds": 0.002166827965993434,
+          "exclusive_sql": 10,
+          "inclusive_seconds": 0.006477597984485328,
+          "inclusive_sql": 21
+        },
+        "document.current-scope:request-context:locked": {
+          "calls": 76,
+          "exclusive_seconds": 0.0020429769647307694,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 0.9921102209191304,
+          "inclusive_sql": 1724
+        },
+        "document.exact-node-facts:author:locked": {
+          "calls": 1,
+          "exclusive_seconds": 0.007192169010522775,
+          "exclusive_sql": 15,
+          "inclusive_seconds": 0.03339955500268843,
+          "inclusive_sql": 63
+        },
+        "document.plan-discovery:author:locked": {
+          "calls": 67,
+          "exclusive_seconds": 0.06006305203482043,
+          "exclusive_sql": 135,
+          "inclusive_seconds": 0.754080897080712,
+          "inclusive_sql": 1161
+        },
+        "document.producer-authority:author:locked": {
+          "calls": 76,
+          "exclusive_seconds": 0.019763036994845606,
+          "exclusive_sql": 40,
+          "inclusive_seconds": 0.884005507978145,
+          "inclusive_sql": 1556
+        },
+        "estimate.accepted-baseline:author:locked": {
+          "calls": 3,
+          "exclusive_seconds": 0.000921037993975915,
+          "exclusive_sql": 3,
+          "inclusive_seconds": 0.20361011099885218,
+          "inclusive_sql": 573
+        },
+        "estimate.builder-citation-batch:author:locked": {
+          "calls": 4,
+          "exclusive_seconds": 0.021825857023941353,
+          "exclusive_sql": 57,
+          "inclusive_seconds": 0.6254786680074176,
+          "inclusive_sql": 1617
+        },
+        "estimate.citations:author:locked": {
+          "calls": 9,
+          "exclusive_seconds": 0.048723806015914306,
+          "exclusive_sql": 120,
+          "inclusive_seconds": 0.14511256600962952,
+          "inclusive_sql": 369
+        },
+        "estimate.native-sources:author:locked": {
+          "calls": 7,
+          "exclusive_seconds": 0.020182985113933682,
+          "exclusive_sql": 68,
+          "inclusive_seconds": 0.09094716400431935,
+          "inclusive_sql": 322
+        },
+        "estimate.original-facts:author:locked": {
+          "calls": 4,
+          "exclusive_seconds": 0.004504246011492796,
+          "exclusive_sql": 12,
+          "inclusive_seconds": 1.156077780004125,
+          "inclusive_sql": 2724
+        },
+        "estimate.plan-discovery:author:locked": {
+          "calls": 5,
+          "exclusive_seconds": 0.016462587984278798,
+          "exclusive_sql": 48,
+          "inclusive_seconds": 0.29877536998537835,
+          "inclusive_sql": 751
+        },
+        "estimate.scoped-record:author:locked": {
+          "calls": 23,
+          "exclusive_seconds": 0.010497700000996701,
+          "exclusive_sql": 32,
+          "inclusive_seconds": 0.5148544359981315,
+          "inclusive_sql": 943
+        },
+        "producer.original-authority:author:locked": {
+          "calls": 3,
+          "exclusive_seconds": 0.03331534993776586,
+          "exclusive_sql": 74,
+          "inclusive_seconds": 0.7315561349969357,
+          "inclusive_sql": 1330
+        },
+        "producer.plan:author:locked": {
+          "calls": 23,
+          "exclusive_seconds": 0.11472042594687082,
+          "exclusive_sql": 303,
+          "inclusive_seconds": 0.6685090619866969,
+          "inclusive_sql": 1109
+        },
+        "takeoff.scoped-record:author:locked": {
+          "calls": 5,
+          "exclusive_seconds": 0.0034890670067397878,
+          "exclusive_sql": 9,
+          "inclusive_seconds": 0.31984900099632796,
+          "inclusive_sql": 613
+        },
+        "takeoff.source:author:locked": {
+          "calls": 4,
+          "exclusive_seconds": 0.01153619603428524,
+          "exclusive_sql": 28,
+          "inclusive_seconds": 0.04912796200369485,
+          "inclusive_sql": 120
+        }
+      },
+      "status": "returned",
+      "successful_exact_byte_integrity_checks": 33
+    },
+    {
+      "actual_artifact_disk_reads": 35,
+      "elapsed_seconds": 0.591403,
+      "logical_operation_counters": [],
+      "method": "public-Company-baseline-GET.lockFalse",
+      "profiling_overhead_in_elapsed": true,
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 1559,
+      "sql_phase_attribution": {
+        "authority.company:author:read": {
+          "calls": 183,
+          "exclusive_seconds": 0.24865241495717783,
+          "exclusive_sql": 549,
+          "inclusive_seconds": 0.24865241495717783,
+          "inclusive_sql": 549
+        },
+        "authority.native-master:author:read": {
+          "calls": 84,
+          "exclusive_seconds": 0.08463536805356853,
+          "exclusive_sql": 361,
+          "inclusive_seconds": 0.08463536805356853,
+          "inclusive_sql": 361
+        },
+        "document.current-scope:request-context:read": {
+          "calls": 80,
+          "exclusive_seconds": 0.0018210590787930414,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 0.514763491039048,
+          "inclusive_sql": 915
+        },
+        "document.exact-node-facts:author:read": {
+          "calls": 1,
+          "exclusive_seconds": 0.005615879985271022,
+          "exclusive_sql": 15,
+          "inclusive_seconds": 0.026963940006680787,
+          "inclusive_sql": 60
+        },
+        "document.plan-discovery:author:read": {
+          "calls": 33,
+          "exclusive_seconds": 0.028358564944937825,
+          "exclusive_sql": 66,
+          "inclusive_seconds": 0.2443195999658201,
+          "inclusive_sql": 385
+        },
+        "document.producer-authority:author:read": {
+          "calls": 80,
+          "exclusive_seconds": 0.019580543928896077,
+          "exclusive_sql": 42,
+          "inclusive_seconds": 0.40385571793012787,
+          "inclusive_sql": 723
+        },
+        "estimate.accepted-baseline:author:read": {
+          "calls": 3,
+          "exclusive_seconds": 0.0010626430012052879,
+          "exclusive_sql": 3,
+          "inclusive_seconds": 0.06954951300576795,
+          "inclusive_sql": 182
+        },
+        "estimate.builder-citation-batch:author:read": {
+          "calls": 2,
+          "exclusive_seconds": 0.010347929011913948,
+          "exclusive_sql": 25,
+          "inclusive_seconds": 0.27035105299728457,
+          "inclusive_sql": 740
+        },
+        "estimate.citations:author:read": {
+          "calls": 10,
+          "exclusive_seconds": 0.04162503298721276,
+          "exclusive_sql": 95,
+          "inclusive_seconds": 0.11821114398480859,
+          "inclusive_sql": 258
+        },
+        "estimate.native-sources:author:read": {
+          "calls": 5,
+          "exclusive_seconds": 0.015959398020640947,
+          "exclusive_sql": 43,
+          "inclusive_seconds": 0.05198170400399249,
+          "inclusive_sql": 184
+        },
+        "estimate.original-facts:author:read": {
+          "calls": 2,
+          "exclusive_seconds": 0.004152291003265418,
+          "exclusive_sql": 10,
+          "inclusive_seconds": 0.5959127870009979,
+          "inclusive_sql": 1492
+        },
+        "estimate.plan-discovery:author:read": {
+          "calls": 2,
+          "exclusive_seconds": 0.008838474997901358,
+          "exclusive_sql": 26,
+          "inclusive_seconds": 0.09258122999744955,
+          "inclusive_sql": 248
+        },
+        "estimate.scoped-record:author:read": {
+          "calls": 16,
+          "exclusive_seconds": 0.01858092706243042,
+          "exclusive_sql": 46,
+          "inclusive_seconds": 0.8638742790208198,
+          "inclusive_sql": 1554
+        },
+        "producer.original-authority:author:read": {
+          "calls": 3,
+          "exclusive_seconds": 0.03636318394273985,
+          "exclusive_sql": 91,
+          "inclusive_seconds": 0.3842751740012318,
+          "inclusive_sql": 689
+        },
+        "producer.plan:author:read": {
+          "calls": 10,
+          "exclusive_seconds": 0.05460478406166658,
+          "exclusive_sql": 160,
+          "inclusive_seconds": 0.17080984101630747,
+          "inclusive_sql": 325
+        },
+        "takeoff.scoped-record:author:read": {
+          "calls": 5,
+          "exclusive_seconds": 0.0032832629804033786,
+          "exclusive_sql": 9,
+          "inclusive_seconds": 0.23926505098643247,
+          "inclusive_sql": 397
+        },
+        "takeoff.source:author:read": {
+          "calls": 4,
+          "exclusive_seconds": 0.00682845497794915,
+          "exclusive_sql": 16,
+          "inclusive_seconds": 0.032063032005680725,
+          "inclusive_sql": 72
+        }
+      },
+      "status": "returned",
+      "successful_exact_byte_integrity_checks": 35
+    },
+    {
+      "actual_artifact_disk_reads": 296,
+      "elapsed_seconds": 4.000484,
+      "logical_operation_counters": [],
+      "method": "full-Company-history.lockFalse.exact-visible-count",
+      "profiling_overhead_in_elapsed": true,
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 10000,
+      "sql_phase_attribution": {
+        "authority.company:author:read": {
+          "calls": 1466,
+          "exclusive_seconds": 1.9709654098551255,
+          "exclusive_sql": 4398,
+          "inclusive_seconds": 1.9709654098551255,
+          "inclusive_sql": 4398
+        },
+        "authority.native-master:author:read": {
+          "calls": 468,
+          "exclusive_seconds": 0.3309165809332626,
+          "exclusive_sql": 1425,
+          "inclusive_seconds": 0.3309165809332626,
+          "inclusive_sql": 1425
+        },
+        "document.current-scope:request-context:read": {
+          "calls": 712,
+          "exclusive_seconds": 0.014815230941167101,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 1.5958162098540924,
+          "inclusive_sql": 3152
+        },
+        "document.exact-node-facts:author:read": {
+          "calls": 11,
+          "exclusive_seconds": 0.07020078696950804,
+          "exclusive_sql": 165,
+          "inclusive_seconds": 0.2969058220041916,
+          "inclusive_sql": 660
+        },
+        "document.plan-discovery:author:read": {
+          "calls": 175,
+          "exclusive_seconds": 0.15349359228275716,
+          "exclusive_sql": 350,
+          "inclusive_seconds": 1.5711710290634073,
+          "inclusive_sql": 2151
+        },
+        "document.producer-authority:author:read": {
+          "calls": 712,
+          "exclusive_seconds": 0.1843574880331289,
+          "exclusive_sql": 383,
+          "inclusive_seconds": 0.6246098710253136,
+          "inclusive_sql": 1064
+        },
+        "estimate.accepted-baseline:author:read": {
+          "calls": 3,
+          "exclusive_seconds": 0.0011805790127255023,
+          "exclusive_sql": 3,
+          "inclusive_seconds": 0.07964633901428897,
+          "inclusive_sql": 182
+        },
+        "estimate.builder-citation-batch:author:read": {
+          "calls": 17,
+          "exclusive_seconds": 0.08526803289714735,
+          "exclusive_sql": 205,
+          "inclusive_seconds": 0.5056266769970534,
+          "inclusive_sql": 1217
+        },
+        "estimate.citations:author:read": {
+          "calls": 98,
+          "exclusive_seconds": 0.3276095443870872,
+          "exclusive_sql": 820,
+          "inclusive_seconds": 0.9875220740505029,
+          "inclusive_sql": 2262
+        },
+        "estimate.native-sources:author:read": {
+          "calls": 56,
+          "exclusive_seconds": 0.08956067400868051,
+          "exclusive_sql": 213,
+          "inclusive_seconds": 0.36474290798651055,
+          "inclusive_sql": 1356
+        },
+        "estimate.original-facts:author:read": {
+          "calls": 17,
+          "exclusive_seconds": 0.02361932692292612,
+          "exclusive_sql": 45,
+          "inclusive_seconds": 3.537894101027632,
+          "inclusive_sql": 8759
+        },
+        "estimate.plan-discovery:author:read": {
+          "calls": 17,
+          "exclusive_seconds": 0.06548281603318173,
+          "exclusive_sql": 193,
+          "inclusive_seconds": 0.8920430460129865,
+          "inclusive_sql": 2181
+        },
+        "estimate.scoped-record:author:read": {
+          "calls": 137,
+          "exclusive_seconds": 0.13027038003201596,
+          "exclusive_sql": 359,
+          "inclusive_seconds": 3.2190262621152215,
+          "inclusive_sql": 4907
+        },
+        "producer.original-authority:author:read": {
+          "calls": 3,
+          "exclusive_seconds": 0.043417114968178794,
+          "exclusive_sql": 91,
+          "inclusive_seconds": 0.4402523829921847,
+          "inclusive_sql": 689
+        },
+        "producer.plan:author:read": {
+          "calls": 58,
+          "exclusive_seconds": 0.3364929188392125,
+          "exclusive_sql": 928,
+          "inclusive_seconds": 1.1755390579928644,
+          "inclusive_sql": 1911
+        },
+        "takeoff.scoped-record:author:read": {
+          "calls": 69,
+          "exclusive_seconds": 0.04145524377236143,
+          "exclusive_sql": 123,
+          "inclusive_seconds": 2.7787716870225267,
+          "inclusive_sql": 4629
+        },
+        "takeoff.source:author:read": {
+          "calls": 54,
+          "exclusive_seconds": 0.09131173012428917,
+          "exclusive_sql": 216,
+          "inclusive_seconds": 0.433234214069671,
+          "inclusive_sql": 972
+        }
+      },
+      "status": "fixture_profile_budget",
+      "successful_exact_byte_integrity_checks": 296
+    }
+  ],
+  "qualification": "Native synthetic Sessions; existing exact-UUID locked receipt replay and separate nonlocking public business reads. No fresh consume, HTTP, workload or p95 qualification.",
+  "recorder_sha256": "d62c1aa67e1bb0da3408d2bffc3801d17d2cddcf36aeb53e735e19ca7b3fed26",
+  "runtime_environment_note": "Root disclosed a separate isolated synthetic CI container may install against the same database host during this window; overlap/load attribution was not measured. Timings include fixture attribution overhead and do not qualify p95 or concurrent-workload capacity.",
+  "runtime_reload_utc": "2026-10-15T21:37:19.426925Z",
+  "schema": "cipher.est.recorded-performance.native-public.v1",
+  "source_capture_scope": "121 relevant Company/DOC/EST/governance/API/migrations/custom-controller and fixture sources plus standalone recorder hash. Inactive award files and unrelated QA modules excluded; no global freeze claim.",
+  "source_snapshot_end": {
+    "api/boundary.py": "f97daba0644c70a2cf8cba5405266e15192bf94e6ffafad2173014dd91797d3a",
+    "api/company.py": "01e9bd3db3abdaa7d119346ea0e078450ded6d676eca4f19a2d6b7c2da00b6d1",
+    "api/company_approvals.py": "a514710ccfeac64f27a814c9c8936584f1e9aa771548c8d0b4a8b3f6efeec4fa",
+    "api/contracts.py": "f91fd0fdf834433817f427c66309bcce209210c9266e3eaa876408989f4a2e90",
+    "api/errors.py": "dc396a94f5fb3fcffafdb579f7c6df21d2352ae2709e31c9b342f18e704edf9e",
+    "api/paging.py": "4d8c4699e3089726d2387a8700d7f9c17746ef9f89291ce2ffa716aed5252082",
+    "api/transport.py": "f1aba8866dc1c4bbf7210990224c37662a23f6b7a84e8f197fc419482391793a",
+    "cipher_estimating/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_assembly_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.py": "57f860cbc32634ce3e4e68bf9d20671e9ceecc9f2356e02cb3fa3756bd571efa",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.py": "6eb83daee9317f23938d752ca2d4a3543db3b49c874ca6071ce22e593282af15",
+    "cipher_estimating/doctype/cipher_calibration/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calibration/cipher_calibration.py": "90c07df8f711ef5b98da7b919d50a78422d6ab2d70d613261ee239366087e435",
+    "cipher_estimating/doctype/cipher_calibration_verification/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.py": "5c3395197de04241bd1bf20f032aa31b0eff16ee1f5d3fc12015c528ef0f6725",
+    "cipher_estimating/doctype/cipher_estimate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate/cipher_estimate.py": "f285405714db10f5be367b922256628c1048729d75be9372f52aa7d02a54b308",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.py": "1dbf9413663f8055548cc5723bdb84f1509c721ee7dd65d93a0daddee2c42c0c",
+    "cipher_estimating/doctype/cipher_estimate_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.py": "7870fcbf63b36b6e2a50ad6c9569c5a736fd5984c0fef54d471c5e64ec4e8447",
+    "cipher_estimating/doctype/cipher_estimate_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.py": "2a0a6c1d1249079d68eeda900999be4214be4048c7d3885196364f21d271856c",
+    "cipher_estimating/doctype/cipher_rate_source/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.py": "50d6ae00629c67d5a783a355c81ed1092865991ed0f2f74c6ace94db82bb194f",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.py": "431d93ceed7a21b236f00b9ef78ae1e4b63f7f6ad70d9cc1bb890d849045cb16",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.py": "c433a35805073004731b7861af4996992722a843d6c16a276dfc242cd0635990",
+    "cipher_estimating/doctype/cipher_takeoff_set/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.py": "0a37e983db6c4393fc7b9fdc09fdbd393604851ac57862f5720e4127725956f9",
+    "cipher_estimating/doctype/cipher_unit_conversion/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.py": "55b22a601b4e6d69b5a963003ee91c11aa1b939d8081293a065677771e767ecb",
+    "cipher_governance/doctype/cipher_approval_consumption/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_consumption/cipher_approval_consumption.py": "2104d350e30ed60d77031baf12572b4b645ebbefb7dd14fcd8aacc446f7fa8fe",
+    "cipher_governance/doctype/cipher_approval_decision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_decision/cipher_approval_decision.py": "e1f58fa458004d1e22419f1b085663395164b6ef828974be24a44e2524c3229d",
+    "cipher_governance/doctype/cipher_approval_packet/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_packet/cipher_approval_packet.py": "0c25416dce1d5a35d845c1ab4ab510b30f27c615206918261768c6d50c028754",
+    "cipher_governance/doctype/cipher_approval_policy_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_policy_revision/cipher_approval_policy_revision.py": "3ac7b200a59b5c5d0e75a977532012c8650eba0f5f23312b2df47697025bfb10",
+    "cipher_governance/doctype/cipher_command_receipt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.py": "38aefebda1af450c325e1e3ac167d2694fe9201b59df44e0a13dd0d4bfb1020e",
+    "cipher_governance/doctype/cipher_history_event/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_history_event/cipher_history_event.py": "2647f8c7c4e53db2dc29800dccc86d267b64bd97fba52163cbe0653eb720589a",
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/outputs.py": "a8d99f4236e26dcb77c473f5262bd00b51719e38468b37f6a72d3add28cc13ec",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/service.py": "8af5d66c4a5c62b83b0788dd2bdf7be60a9bd1aa26d0d8b8b94492ae111e44fb",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/provenance.py": "38102145f667cc81b300b595bd00cab7b71bd22f71253d6338482c79fdc89b87",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/governance.py": "9f6974292309776ea7ffab8a49bc42b44686a317912e8f718b13756cd407bf22",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/service.py": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+    "estimating/sources.py": "8d663f88616dbf58ac75ad90b4ba5e05b86c1ee2074365a83af9e5a9d88fc3ae",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "governance/approval_listing.py": "a0d0005d870a9511b6ca38c15afa166bfbb921f8320c898977720679e7442318",
+    "governance/approvals.py": "e41b9927dec2e40dc72cad54d1c1c1a711e0acecf0c468e70dba3690ec2d4996",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/company.py": "a416580fec29b9c3b7520c8aacebfcee762bb3533761a867241f82026d9ca385",
+    "governance/context.py": "5cd5feb5c7a40b0f17542aa4f814307f1520ffd095e08e686310dd3aa020b76c",
+    "governance/controllers.py": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "governance/history_access.py": "1acdcc1da0cd31fb0238e0e393e62cb6cec829478636a8840fe3c9147b81e5d1",
+    "governance/history_listing.py": "a84d7af78a733118b9808323964f7466ae21bd30a51d634f628796cd30962f2e",
+    "governance/permissions.py": "9c1ceff163cc27ce7eab1cbbaa7ce28d211bbcb27f604614126a7e9a4edb858f",
+    "hooks.py": "4a8383884291bf0c9bb1aaeccc779d1764994bb4829a79dbf06006b824e677be",
+    "migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "migrations/export.py": "d2ba4960b23037c439625db4b0146b5967d96ab9d6d094a200363fb1f5a36cea",
+    "migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_company_chain_acceptance.py": "ba726b569c5fc9c24e5cb12ade5846204a02af1b28c56b36908626ae26b7d5c1",
+    "tests/test_estimating_generated_acceptance.py": "9cee0a2dd16f5522aecf187c88094179d5266b45a3129882dd373bbab4a193ad"
+  },
+  "source_snapshot_start": {
+    "api/boundary.py": "f97daba0644c70a2cf8cba5405266e15192bf94e6ffafad2173014dd91797d3a",
+    "api/company.py": "01e9bd3db3abdaa7d119346ea0e078450ded6d676eca4f19a2d6b7c2da00b6d1",
+    "api/company_approvals.py": "a514710ccfeac64f27a814c9c8936584f1e9aa771548c8d0b4a8b3f6efeec4fa",
+    "api/contracts.py": "f91fd0fdf834433817f427c66309bcce209210c9266e3eaa876408989f4a2e90",
+    "api/errors.py": "dc396a94f5fb3fcffafdb579f7c6df21d2352ae2709e31c9b342f18e704edf9e",
+    "api/paging.py": "4d8c4699e3089726d2387a8700d7f9c17746ef9f89291ce2ffa716aed5252082",
+    "api/transport.py": "f1aba8866dc1c4bbf7210990224c37662a23f6b7a84e8f197fc419482391793a",
+    "cipher_estimating/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_assembly_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.py": "57f860cbc32634ce3e4e68bf9d20671e9ceecc9f2356e02cb3fa3756bd571efa",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.py": "6eb83daee9317f23938d752ca2d4a3543db3b49c874ca6071ce22e593282af15",
+    "cipher_estimating/doctype/cipher_calibration/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calibration/cipher_calibration.py": "90c07df8f711ef5b98da7b919d50a78422d6ab2d70d613261ee239366087e435",
+    "cipher_estimating/doctype/cipher_calibration_verification/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.py": "5c3395197de04241bd1bf20f032aa31b0eff16ee1f5d3fc12015c528ef0f6725",
+    "cipher_estimating/doctype/cipher_estimate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate/cipher_estimate.py": "f285405714db10f5be367b922256628c1048729d75be9372f52aa7d02a54b308",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.py": "1dbf9413663f8055548cc5723bdb84f1509c721ee7dd65d93a0daddee2c42c0c",
+    "cipher_estimating/doctype/cipher_estimate_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.py": "7870fcbf63b36b6e2a50ad6c9569c5a736fd5984c0fef54d471c5e64ec4e8447",
+    "cipher_estimating/doctype/cipher_estimate_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.py": "2a0a6c1d1249079d68eeda900999be4214be4048c7d3885196364f21d271856c",
+    "cipher_estimating/doctype/cipher_rate_source/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.py": "50d6ae00629c67d5a783a355c81ed1092865991ed0f2f74c6ace94db82bb194f",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.py": "431d93ceed7a21b236f00b9ef78ae1e4b63f7f6ad70d9cc1bb890d849045cb16",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.py": "c433a35805073004731b7861af4996992722a843d6c16a276dfc242cd0635990",
+    "cipher_estimating/doctype/cipher_takeoff_set/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.py": "0a37e983db6c4393fc7b9fdc09fdbd393604851ac57862f5720e4127725956f9",
+    "cipher_estimating/doctype/cipher_unit_conversion/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.py": "55b22a601b4e6d69b5a963003ee91c11aa1b939d8081293a065677771e767ecb",
+    "cipher_governance/doctype/cipher_approval_consumption/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_consumption/cipher_approval_consumption.py": "2104d350e30ed60d77031baf12572b4b645ebbefb7dd14fcd8aacc446f7fa8fe",
+    "cipher_governance/doctype/cipher_approval_decision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_decision/cipher_approval_decision.py": "e1f58fa458004d1e22419f1b085663395164b6ef828974be24a44e2524c3229d",
+    "cipher_governance/doctype/cipher_approval_packet/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_packet/cipher_approval_packet.py": "0c25416dce1d5a35d845c1ab4ab510b30f27c615206918261768c6d50c028754",
+    "cipher_governance/doctype/cipher_approval_policy_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_policy_revision/cipher_approval_policy_revision.py": "3ac7b200a59b5c5d0e75a977532012c8650eba0f5f23312b2df47697025bfb10",
+    "cipher_governance/doctype/cipher_command_receipt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.py": "38aefebda1af450c325e1e3ac167d2694fe9201b59df44e0a13dd0d4bfb1020e",
+    "cipher_governance/doctype/cipher_history_event/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_history_event/cipher_history_event.py": "2647f8c7c4e53db2dc29800dccc86d267b64bd97fba52163cbe0653eb720589a",
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/outputs.py": "a8d99f4236e26dcb77c473f5262bd00b51719e38468b37f6a72d3add28cc13ec",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/service.py": "8af5d66c4a5c62b83b0788dd2bdf7be60a9bd1aa26d0d8b8b94492ae111e44fb",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/provenance.py": "38102145f667cc81b300b595bd00cab7b71bd22f71253d6338482c79fdc89b87",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/governance.py": "9f6974292309776ea7ffab8a49bc42b44686a317912e8f718b13756cd407bf22",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/service.py": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+    "estimating/sources.py": "8d663f88616dbf58ac75ad90b4ba5e05b86c1ee2074365a83af9e5a9d88fc3ae",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "governance/approval_listing.py": "a0d0005d870a9511b6ca38c15afa166bfbb921f8320c898977720679e7442318",
+    "governance/approvals.py": "e41b9927dec2e40dc72cad54d1c1c1a711e0acecf0c468e70dba3690ec2d4996",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/company.py": "a416580fec29b9c3b7520c8aacebfcee762bb3533761a867241f82026d9ca385",
+    "governance/context.py": "5cd5feb5c7a40b0f17542aa4f814307f1520ffd095e08e686310dd3aa020b76c",
+    "governance/controllers.py": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "governance/history_access.py": "1acdcc1da0cd31fb0238e0e393e62cb6cec829478636a8840fe3c9147b81e5d1",
+    "governance/history_listing.py": "a84d7af78a733118b9808323964f7466ae21bd30a51d634f628796cd30962f2e",
+    "governance/permissions.py": "9c1ceff163cc27ce7eab1cbbaa7ce28d211bbcb27f604614126a7e9a4edb858f",
+    "hooks.py": "4a8383884291bf0c9bb1aaeccc779d1764994bb4829a79dbf06006b824e677be",
+    "migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "migrations/export.py": "d2ba4960b23037c439625db4b0146b5967d96ab9d6d094a200363fb1f5a36cea",
+    "migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_company_chain_acceptance.py": "ba726b569c5fc9c24e5cb12ade5846204a02af1b28c56b36908626ae26b7d5c1",
+    "tests/test_estimating_generated_acceptance.py": "9cee0a2dd16f5522aecf187c88094179d5266b45a3129882dd373bbab4a193ad"
+  },
+  "status": "replay-and-baseline-read-passed-full-history-budget-exceeded",
+  "synthetic_session_setup": "Explicit isolated-person fixture Session rows are inserted/committed by NativeCompanyRPC.login; no new business effect is authored."
+}

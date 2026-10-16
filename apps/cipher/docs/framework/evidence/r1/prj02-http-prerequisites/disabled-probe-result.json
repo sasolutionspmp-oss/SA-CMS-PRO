@@ -1,0 +1,53 @@
+{
+  "adoption_qualified": false,
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.awards.api.approval_subject",
+      "request_id": "ffc1b62b-ca81-445c-aad5-80c27896ad93",
+      "request_seconds": 0.530693,
+      "role": "author",
+      "server_time": "2026-10-15T23:12:01.296328Z"
+    },
+    {
+      "error_code": "approval_action_unqualified",
+      "http_status": 403,
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "request_id": "5648bcbb-3b89-4cfd-8dfa-4d1a1d1527a4",
+      "request_seconds": 0.00573,
+      "role": "author",
+      "server_time": "2026-10-15T23:12:01.337254Z"
+    }
+  ],
+  "completed_at": "2026-10-15T23:12:01.373488+00:00",
+  "denial": {
+    "error_code": "approval_action_unqualified"
+  },
+  "qualification": "Actual disabled request only; no-allocation inventory is a separate native observation.",
+  "schema": "cipher.award.disabled-http.v1",
+  "schema_samples": 1,
+  "session_timings": [
+    {
+      "login_seconds": 0.056577,
+      "role": "author",
+      "session_seconds": 0.011966,
+      "status": "passed",
+      "total_seconds": 0.068547
+    }
+  ],
+  "source_after": {
+    "qualification": "Operator-declared served epoch plus exact on-disk equality.",
+    "runtime_epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "source_files": 496,
+    "source_manifest_sha256": "e30d370b1da9df2734e577cbb839e1c8bb0df306f285b78a4d0d590ba9ac2057"
+  },
+  "source_before": {
+    "qualification": "Operator-declared served epoch plus exact on-disk equality.",
+    "runtime_epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "source_files": 496,
+    "source_manifest_sha256": "e30d370b1da9df2734e577cbb839e1c8bb0df306f285b78a4d0d590ba9ac2057"
+  },
+  "started_at": "2026-10-15T23:12:00.690527+00:00",
+  "status": "passed",
+  "subject_id": "19db2303-dd07-4a62-9437-52a73f862370"
+}

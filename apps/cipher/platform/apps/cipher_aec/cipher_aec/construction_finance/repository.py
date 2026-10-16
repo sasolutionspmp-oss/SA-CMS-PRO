@@ -25,6 +25,8 @@ def insert(record_kind, value, **fields):
     with trusted_write():
         doc = frappe.get_doc({'doctype': DOCTYPES[record_kind], 'name': value['id'], 'company': value['company'], 'project': value['project'],
             'author_person': value['author_person'], 'status': value['status'], 'record_digest': digest(value), 'data_json': canonical_json(value), **fields})
+        from cipher_aec.awards.runtime import quiet_award_write
+        quiet_award_write(doc)
         doc.insert(ignore_permissions=True, set_name=value['id'])
     return doc
 

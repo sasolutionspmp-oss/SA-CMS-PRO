@@ -1,3 +1,4 @@
+import './local-ui5-fonts';
 import '@ui5/webcomponents-react/dist/Assets.js';
 import '@ui5/webcomponents-icons/dist/menu2.js';
 import '@ui5/webcomponents-icons/dist/simulate.js';
@@ -23,6 +24,7 @@ import '@ui5/webcomponents-icons/dist/navigation-right-arrow.js';
 import '@ui5/webcomponents-icons/dist/paper-plane.js';
 import '@ui5/webcomponents-icons/dist/database.js';
 import '@ui5/webcomponents-icons/dist/search.js';
+import '@ui5/webcomponents-icons/dist/settings.js';
 import '@ui5/webcomponents-icons/dist/chain-link.js';
 import '@ui5/webcomponents-icons/dist/measure.js';
 import '@ui5/webcomponents-icons/dist/sales-document.js';

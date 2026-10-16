@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-10-15T23:12:21.727388+00:00",
+  "command": [
+    "/workspace/cipher-framework-draft/apps/cipher/platform/deployment/docker-local.sh",
+    "exec",
+    "--workdir",
+    "/home/frappe/frappe-bench",
+    "--env",
+    "PYTHONPATH=/opt/cipher-award-epochs/disabled/workspace/apps/cipher/platform/apps/cipher_aec",
+    "cipher-award-epochs-20261015",
+    "timeout",
+    "--signal=INT",
+    "--kill-after=30s",
+    "90s",
+    "bench",
+    "--site",
+    "cipher-ci-20261015213708-508077.localhost",
+    "execute",
+    "cipher_aec.tests.test_award_composed_acceptance.capture_award_inventory",
+    "--kwargs",
+    "{'company': 'Company chain A c3c3b742a8fd'}"
+  ],
+  "fresh_native_connection": true
+}

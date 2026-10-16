@@ -1,0 +1,27 @@
+[
+  {
+    "attempts": [
+      {
+        "error_code": "approval_action_unqualified",
+        "http_status": 403,
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "request_id": "5648bcbb-3b89-4cfd-8dfa-4d1a1d1527a4",
+        "request_seconds": 0.00573,
+        "role": "author",
+        "server_time": "2026-10-15T23:12:01.337254Z"
+      }
+    ],
+    "method": "cipher_aec.api.company_approvals.request_action",
+    "operation_id": "dfa08a32-3e11-40ae-b840-b9c4da67f26e",
+    "payload": {
+      "action": "award.project.create.v1",
+      "company": "Company chain A c3c3b742a8fd",
+      "expected_version": "75b1be2bc699006de77175c84312b8491e11b0b9439ed1c8473a5cae323f4f04",
+      "operation_id": "dfa08a32-3e11-40ae-b840-b9c4da67f26e",
+      "subject_id": "19db2303-dd07-4a62-9437-52a73f862370"
+    },
+    "payload_sha256": "5c21e2b00f04d64462ad3fd832845aec429ca6afab37be0b457e49ecb0f61783",
+    "role": "author",
+    "state": "response_recorded"
+  }
+]

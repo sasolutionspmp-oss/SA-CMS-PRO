@@ -79,12 +79,46 @@ class DocumentService:
         document.update(current_revision=revision_id, revision_number=revision["revision_number"])
         return {"document": present_document(document, revision), "revision": present_revision(revision)}
 
-    def _scope(self, row, company, project=None, *, lock=False):
+    def _check_scope(self, row, company, project=None):
         if scope_of(row) != self.scope_type or row["company"] != company or project is not None and row["project"] != project:
             raise ArtifactError("Document is outside the requested scope.")
+
+    def _scope(self, row, company, project=None, *, lock=False):
+        self._check_scope(row, company, project)
         self._authorize(row["company"], row["project"], "document.read")
         if self.source_authorize:
             self.source_authorize(row, lock=lock)
+
+    def _company_revision_source(self, company, revision_id, *, lock=False):
+        """One canonical read's Company duty; every source row stays checked.
+
+        No authority survives this call. The parent producer is authorized
+        before loading revision Long Text; the loaded revision must still
+        match that exact parent/binding before any source bytes are read.
+        """
+        if self.scope_type != "Company":
+            raise ArtifactError("Document is outside the requested scope.")
+        locator = self.repo.revision_locator(revision_id)
+        self._check_scope(locator, company)
+        if locator["name"] != revision_id:
+            raise ArtifactError("Document revision source mapping is invalid.")
+        self._authorize(company, None, "document.read")
+        document = self.repo.document(locator["document"], lock=lock)
+        self._check_scope(document, company)
+        if document["name"] != locator["document"]:
+            raise ArtifactError("Document revision source mapping is invalid.")
+        if self.source_authorize:
+            self.source_authorize(document, lock=lock)
+        revision = self.repo.revision(revision_id, lock=lock)
+        self._check_scope(revision, company)
+        if revision["name"] != revision_id or revision["document"] != document["name"]:
+            raise ArtifactError("Document revision source mapping is invalid.")
+        if any((revision.get(key) or None) != (document.get(key) or None) for key in
+               ("producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json")):
+            raise ArtifactError("Document revision producer integrity cannot be verified.")
+        if self.source_authorize:
+            self.source_authorize(revision, lock=lock)
+        return document, revision
 
     def revision(self, company, revision_id, *, lock=False):
         # Read only scope metadata before current authorization; never bytes or page text.
@@ -108,12 +142,17 @@ class DocumentService:
     def source_reference(self, company, project, revision_id, page, *, lock=False):
         # Resolve only scope/parent metadata first, then lock parent before revision
         # in the same order as the canonical upload command.
-        locator = self.repo.revision_locator(revision_id)
-        self._scope(locator, company, project, lock=lock)
-        document = self.repo.document(locator["document"], lock=lock)
-        self._scope(document, company, project, lock=lock)
-        revision = self.repo.revision(revision_id, lock=lock)
-        self._scope(revision, company, project, lock=lock)
+        if self.scope_type == "Company":
+            if project is not None:
+                raise ArtifactError("Document is outside the requested scope.")
+            document, revision = self._company_revision_source(company, revision_id, lock=lock)
+        else:
+            locator = self.repo.revision_locator(revision_id)
+            self._scope(locator, company, project, lock=lock)
+            document = self.repo.document(locator["document"], lock=lock)
+            self._scope(document, company, project, lock=lock)
+            revision = self.repo.revision(revision_id, lock=lock)
+            self._scope(revision, company, project, lock=lock)
         if revision["document"] != document["name"]:
             raise ArtifactError("Document revision source mapping is invalid.")
         self._available(revision)
@@ -134,7 +173,10 @@ class DocumentService:
         return revision, self.storage.read(revision["storage_reference"], revision["sha256"], revision["byte_length"])
 
     def citation(self, company, revision_id, page, excerpt_sha256=None, *, lock=False):
-        revision = self.revision(company, revision_id, lock=lock)
+        if self.scope_type == "Company":
+            document, revision = self._company_revision_source(company, revision_id, lock=lock)
+        else:
+            revision = self.revision(company, revision_id, lock=lock)
         self._available(revision)
         # Extraction is not evidence if original bytes have disappeared or changed.
         self.storage.read(revision["storage_reference"], revision["sha256"], revision["byte_length"])
@@ -146,8 +188,9 @@ class DocumentService:
         checksum = digest(text.encode("utf-8"))
         if excerpt_sha256 is not None and excerpt_sha256 != checksum:
             raise ArtifactError("Citation excerpt checksum does not match this page.")
-        document = self.repo.document(revision["document"], lock=lock)
-        self._scope(document, company, lock=lock)
+        if self.scope_type != "Company":
+            document = self.repo.document(revision["document"], lock=lock)
+            self._scope(document, company, lock=lock)
         citation = {"document_id": revision["document"], "revision_id": revision["name"],
                     "document_title": document["title"], "revision_number": revision["revision_number"],
                     "page": page, "page_label": str(page), "excerpt": text,

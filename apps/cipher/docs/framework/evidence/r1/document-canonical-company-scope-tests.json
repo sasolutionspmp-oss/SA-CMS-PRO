@@ -1,0 +1,32 @@
+{
+  "contract": "Company citation/source_reference check exact duty once per canonical call; locator/parent/revision scope and mapping remain fresh, parent producer authorization before revision Long Text, both producer checks and exact revision-parent producer equality retained; Project and direct revision paths unchanged.",
+  "external_provider_qualified": false,
+  "generated_public_gate_enabled": false,
+  "live_model_qualified": false,
+  "modules": [
+    "test_documents_source_scope",
+    "test_documents",
+    "test_documents_company",
+    "test_documents_provenance",
+    "test_documents_mutation_preflight",
+    "test_estimating_citation_groups",
+    "test_takeoff_bundle"
+  ],
+  "new_focused_case_count": 12,
+  "qualification": "Explicit in-process metadata/producer fixtures and real temporary source bytes; Python unittest in actual Frappe runtime image without a site/DB connection. No native business-call, HTTP, history timing or provider qualification.",
+  "runtime_seconds": 0.723,
+  "runtime_test_count": 89,
+  "schema": "cipher.document.canonical-company-scope.tests.v1",
+  "source_hash_capture": "Post-run source hashes; no before/after epoch equality claim for this unit-test artifact.",
+  "source_sha256": {
+    "documents/core.py": "9c583eacd30930b6ac1e6b40b99d0cdb0e5c45fd19b5c22641b0be0fc5bf9b6a",
+    "tests/test_documents.py": "c36cf10281d50c52a12a9d77400d9ef6b8d85dfcc03950943d7980132d5b1236",
+    "tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "tests/test_documents_mutation_preflight.py": "73a601711b1a39b306c33b59fe0961bd68007f1dd6ef03302fb252f2cef2d5a3",
+    "tests/test_documents_provenance.py": "31cb2ad04bd56b98224c89818aede727ae353dbae9d54e57bd6826ec6ef04abb",
+    "tests/test_documents_source_scope.py": "70f27de5a68d6f14bb39baf233e35a63dcf7879b0c447d6dc5fbecca4bb44c58",
+    "tests/test_estimating_citation_groups.py": "5e5d5e5f45a81debb1dd16479b09b7f7287e48ac570a857d206551952560a450",
+    "tests/test_takeoff_bundle.py": "8c2293ffef7e0fc6535dd5d43cd374a0f55384adcad04259e54c27d142c7b4f0"
+  },
+  "status": "passed"
+}

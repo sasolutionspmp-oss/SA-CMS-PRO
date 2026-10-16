@@ -1,0 +1,52 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-WORK",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+    "id": "068ae549-fc41-4469-ada6-88f33f722ee7",
+    "kind": "code",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "2675ff2a-3106-435e-87e7-a03b9e5d8512",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": null,
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": null,
+      "disabled": false,
+      "doctype": "Cost Center",
+      "is_group": false,
+      "name": "Main - Q0c3c3b7",
+      "root_type": null,
+      "version": "2026-10-16 04:33:06.731889"
+    },
+    "code": "AWARD-WORK",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Cost Center",
+        "name": "Main - Q0c3c3b7"
+      },
+      "title": "Explicit existing leaf Cost Center"
+    },
+    "id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+    "kind": "code",
+    "master_id": "068ae549-fc41-4469-ada6-88f33f722ee7",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "553e055dbc5fd551a88403695ac32ede3ae63fba7dd50a95684534d0a6ac0085"
+}

@@ -1,0 +1,1104 @@
+{
+  "handoff": {
+    "adoption": null,
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+    "company": "Company chain A c3c3b742a8fd",
+    "created_at": "2026-10-15T23:11:19.170546+00:00",
+    "current_revision": "19db2303-dd07-4a62-9437-52a73f862370",
+    "id": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+    "issue": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "opportunity": "CRM-OPP-2026-00002",
+    "original_issue": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "project": null,
+    "pursuit": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "revision_number": 1,
+    "schema": "cipher.award.handoff.v1",
+    "scope_type": "Company",
+    "status": "draft"
+  },
+  "handoff_version": "26b6d206130cdc61086b65fc7b4e0655afa006ed2bdd0d34d9a7ba743d66d4a5",
+  "operation": {
+    "id": "ff715f3c-c532-4864-b4c2-751b42f2f377",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "plan": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+    "company": "Company chain A c3c3b742a8fd",
+    "controls_plan": {
+      "acceptance": {
+        "digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+        "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+        "id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+        "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+        "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+        "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141"
+      },
+      "allocations": [
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "542704b2-62f3-54cb-9991-ee39e55ea095",
+          "source": {
+            "adjustment_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "8c93c691-aa4c-56d2-ac25-907c38135233",
+          "source": {
+            "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "kind": "component",
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "a0808c3f-a76d-54a2-8bfe-cce9ffd99949",
+          "source": {
+            "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "b7a65998-09be-5405-abb1-c312ac938d18",
+          "source": {
+            "adjustment_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "cd8c4348-2d28-5c9b-9b62-8e6abed593b9",
+          "source": {
+            "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4a216706-4de5-4737-b57e-2748380eb594",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "d2193653-20b4-5cc7-afe9-2d66b7da92bc",
+          "source": {
+            "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        }
+      ],
+      "basis_date": "2026-10-15",
+      "budget_lines": [
+        {
+          "allocation_class": "contingency",
+          "amount": {
+            "amount": "0.42",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": null,
+          "id": "542704b2-62f3-54cb-9991-ee39e55ea095",
+          "source": {
+            "adjustment_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "adjustment"
+          },
+          "source_quantity": null,
+          "type_revision_id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "allocation_class": "component",
+          "amount": {
+            "amount": "1.25",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": "material",
+          "id": "8c93c691-aa4c-56d2-ac25-907c38135233",
+          "source": {
+            "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "kind": "component",
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67"
+          },
+          "source_quantity": {
+            "priced_quantity_exact": {
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "resource_quantity_exact": {
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "allocation_class": "component",
+          "amount": {
+            "amount": "5.00",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": "material",
+          "id": "a0808c3f-a76d-54a2-8bfe-cce9ffd99949",
+          "source": {
+            "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "source_quantity": {
+            "priced_quantity_exact": {
+              "denominator": "1",
+              "numerator": "4"
+            },
+            "resource_quantity_exact": {
+              "denominator": "1",
+              "numerator": "4"
+            },
+            "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "allocation_class": "indirect",
+          "amount": {
+            "amount": "1.33",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": null,
+          "id": "b7a65998-09be-5405-abb1-c312ac938d18",
+          "source": {
+            "adjustment_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "adjustment"
+          },
+          "source_quantity": null,
+          "type_revision_id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "allocation_class": "component",
+          "amount": {
+            "amount": "3.00",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": "equipment",
+          "id": "cd8c4348-2d28-5c9b-9b62-8e6abed593b9",
+          "source": {
+            "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "source_quantity": {
+            "priced_quantity_exact": {
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "resource_quantity_exact": {
+              "denominator": "1",
+              "numerator": "1"
+            },
+            "source_unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+          },
+          "type_revision_id": "4a216706-4de5-4737-b57e-2748380eb594",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "allocation_class": "component",
+          "amount": {
+            "amount": "4.00",
+            "currency": "USD"
+          },
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "cost_category": "labor",
+          "id": "d2193653-20b4-5cc7-afe9-2d66b7da92bc",
+          "source": {
+            "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "source_quantity": {
+            "priced_quantity_exact": {
+              "denominator": "1",
+              "numerator": "2"
+            },
+            "resource_quantity_exact": {
+              "denominator": "1",
+              "numerator": "2"
+            },
+            "source_unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095"
+          },
+          "type_revision_id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        }
+      ],
+      "company": "Company chain A c3c3b742a8fd",
+      "currency": "USD",
+      "currency_exponent": 2,
+      "excluded_source_lines": [
+        {
+          "digest": "a080e8df5ea36b0c60ad54e752582c7d8bed574eed037a367a66fc607e5fed06",
+          "line_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4"
+        }
+      ],
+      "resolved_codes": [
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "code",
+          "native": {
+            "account_currency": null,
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": null,
+            "disabled": false,
+            "doctype": "Cost Center",
+            "is_group": false,
+            "name": "Main - Q0c3c3b7",
+            "root_type": null,
+            "version": "2026-10-16 04:33:06.731889"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": null,
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": null,
+              "disabled": false,
+              "doctype": "Cost Center",
+              "is_group": false,
+              "name": "Main - Q0c3c3b7",
+              "root_type": null,
+              "version": "2026-10-16 04:33:06.731889"
+            },
+            "code": "AWARD-WORK",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Cost Center",
+                "name": "Main - Q0c3c3b7"
+              },
+              "title": "Explicit existing leaf Cost Center"
+            },
+            "id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+            "kind": "code",
+            "master_id": "068ae549-fc41-4469-ada6-88f33f722ee7",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "397f2989ecac7c43cb8e651dd9c2a887c9d52a60760265b1cbac97b2b1a8c3ae"
+        }
+      ],
+      "resolved_types": [
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "type",
+          "native": {
+            "account_currency": "USD",
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-16 04:33:08.505734"
+            },
+            "disabled": false,
+            "doctype": "Account",
+            "is_group": false,
+            "name": "Administrative Expenses - Q0c3c3b7",
+            "root_type": "Expense",
+            "version": "2026-10-16 04:33:06.151800"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": "USD",
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": {
+                "currency": "USD",
+                "currency_exponent": 2,
+                "fraction_units": 100,
+                "native_currency_version": "2026-10-16 04:33:08.505734"
+              },
+              "disabled": false,
+              "doctype": "Account",
+              "is_group": false,
+              "name": "Administrative Expenses - Q0c3c3b7",
+              "root_type": "Expense",
+              "version": "2026-10-16 04:33:06.151800"
+            },
+            "code": "AWARD-EQUIPMENT",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "allocation_class": "component",
+              "cost_category": "equipment",
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Account",
+                "name": "Administrative Expenses - Q0c3c3b7"
+              },
+              "title": "Explicit equipment accounting target"
+            },
+            "id": "4a216706-4de5-4737-b57e-2748380eb594",
+            "kind": "type",
+            "master_id": "cf68ec58-4738-41c4-8948-d194e297bd8d",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "533c7dcd130daf72ef683f84230bbdc42d71b6cc92d3c1f2a6c4a4b7b00b9df2"
+        },
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "type",
+          "native": {
+            "account_currency": "USD",
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-16 04:33:08.505734"
+            },
+            "disabled": false,
+            "doctype": "Account",
+            "is_group": false,
+            "name": "Administrative Expenses - Q0c3c3b7",
+            "root_type": "Expense",
+            "version": "2026-10-16 04:33:06.151800"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": "USD",
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": {
+                "currency": "USD",
+                "currency_exponent": 2,
+                "fraction_units": 100,
+                "native_currency_version": "2026-10-16 04:33:08.505734"
+              },
+              "disabled": false,
+              "doctype": "Account",
+              "is_group": false,
+              "name": "Administrative Expenses - Q0c3c3b7",
+              "root_type": "Expense",
+              "version": "2026-10-16 04:33:06.151800"
+            },
+            "code": "AWARD-MATERIAL",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "allocation_class": "component",
+              "cost_category": "material",
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Account",
+                "name": "Administrative Expenses - Q0c3c3b7"
+              },
+              "title": "Explicit material accounting target"
+            },
+            "id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+            "kind": "type",
+            "master_id": "9d21627b-cffa-4e78-aaf5-01013bf5c406",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "af210b3d9b8f2f6818256836c64861dd487ec8cd752dcc5549d8f944f8ac7af6"
+        },
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "type",
+          "native": {
+            "account_currency": "USD",
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-16 04:33:08.505734"
+            },
+            "disabled": false,
+            "doctype": "Account",
+            "is_group": false,
+            "name": "Administrative Expenses - Q0c3c3b7",
+            "root_type": "Expense",
+            "version": "2026-10-16 04:33:06.151800"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": "USD",
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": {
+                "currency": "USD",
+                "currency_exponent": 2,
+                "fraction_units": 100,
+                "native_currency_version": "2026-10-16 04:33:08.505734"
+              },
+              "disabled": false,
+              "doctype": "Account",
+              "is_group": false,
+              "name": "Administrative Expenses - Q0c3c3b7",
+              "root_type": "Expense",
+              "version": "2026-10-16 04:33:06.151800"
+            },
+            "code": "AWARD-INDIRECT",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "allocation_class": "indirect",
+              "cost_category": null,
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Account",
+                "name": "Administrative Expenses - Q0c3c3b7"
+              },
+              "title": "Explicit indirect accounting target"
+            },
+            "id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+            "kind": "type",
+            "master_id": "a610293f-ea62-499f-bb60-86e704af2265",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "59dd10a16c1b6868b3606ce77bc9b0b043ba161ec2869f3d0f921d5a98d58c0a"
+        },
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "type",
+          "native": {
+            "account_currency": "USD",
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-16 04:33:08.505734"
+            },
+            "disabled": false,
+            "doctype": "Account",
+            "is_group": false,
+            "name": "Administrative Expenses - Q0c3c3b7",
+            "root_type": "Expense",
+            "version": "2026-10-16 04:33:06.151800"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": "USD",
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": {
+                "currency": "USD",
+                "currency_exponent": 2,
+                "fraction_units": 100,
+                "native_currency_version": "2026-10-16 04:33:08.505734"
+              },
+              "disabled": false,
+              "doctype": "Account",
+              "is_group": false,
+              "name": "Administrative Expenses - Q0c3c3b7",
+              "root_type": "Expense",
+              "version": "2026-10-16 04:33:06.151800"
+            },
+            "code": "AWARD-LABOR",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "allocation_class": "component",
+              "cost_category": "labor",
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Account",
+                "name": "Administrative Expenses - Q0c3c3b7"
+              },
+              "title": "Explicit labor accounting target"
+            },
+            "id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+            "kind": "type",
+            "master_id": "fcbebb28-674e-42d0-83ed-5daca00986e0",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "866fe4bdc9c9d15c787b2f673d8da6afb01449d975ee03f7e6dc1e42898b7302"
+        },
+        {
+          "basis_date": "2026-10-15",
+          "company": "Company chain A c3c3b742a8fd",
+          "kind": "type",
+          "native": {
+            "account_currency": "USD",
+            "company": "Company chain A c3c3b742a8fd",
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-16 04:33:08.505734"
+            },
+            "disabled": false,
+            "doctype": "Account",
+            "is_group": false,
+            "name": "Administrative Expenses - Q0c3c3b7",
+            "root_type": "Expense",
+            "version": "2026-10-16 04:33:06.151800"
+          },
+          "purpose": "award.initial-budget.v1",
+          "revision": {
+            "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+            "authored_native": {
+              "account_currency": "USD",
+              "company": "Company chain A c3c3b742a8fd",
+              "currency_policy": {
+                "currency": "USD",
+                "currency_exponent": 2,
+                "fraction_units": 100,
+                "native_currency_version": "2026-10-16 04:33:08.505734"
+              },
+              "disabled": false,
+              "doctype": "Account",
+              "is_group": false,
+              "name": "Administrative Expenses - Q0c3c3b7",
+              "root_type": "Expense",
+              "version": "2026-10-16 04:33:06.151800"
+            },
+            "code": "AWARD-CONTINGENCY",
+            "company": "Company chain A c3c3b742a8fd",
+            "definition": {
+              "allocation_class": "contingency",
+              "cost_category": null,
+              "effective_from": "2026-10-15",
+              "effective_until": null,
+              "enabled": true,
+              "native_target": {
+                "doctype": "Account",
+                "name": "Administrative Expenses - Q0c3c3b7"
+              },
+              "title": "Explicit contingency accounting target"
+            },
+            "id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+            "kind": "type",
+            "master_id": "57529a36-b631-4965-ad82-e648ed40201b",
+            "predecessor": null,
+            "project": null,
+            "revision_number": 1,
+            "schema": "cipher.cost-revision.v1"
+          },
+          "revision_digest": "37a2d6455e03d86cb5a7597468afc0f13e5ff21b15832b6ea8ecc364da8a4dc8"
+        }
+      ],
+      "schema": "cipher.project-controls.initial-plan.v1",
+      "source_units": [
+        {
+          "fields": {
+            "dimension": "equipment_time",
+            "precision": 6,
+            "symbol": "equipment_time-company-chain-c3c3b742a8fd"
+          },
+          "id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Award equipment_time company-chain-c3c3b742a8fd"
+          }
+        },
+        {
+          "fields": {
+            "dimension": "labor_time",
+            "precision": 6,
+            "symbol": "labor_time-company-chain-c3c3b742a8fd"
+          },
+          "id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Award labor_time company-chain-c3c3b742a8fd"
+          }
+        },
+        {
+          "fields": {
+            "dimension": "count",
+            "precision": 6,
+            "symbol": "chainc3c3b742a8fd"
+          },
+          "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Company chain quantity c3c3b742a8fd"
+          }
+        }
+      ],
+      "totals": {
+        "contingency": {
+          "amount": "0.42",
+          "currency": "USD"
+        },
+        "direct": {
+          "amount": "13.25",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "1.33",
+          "currency": "USD"
+        },
+        "total": {
+          "amount": "15.00",
+          "currency": "USD"
+        }
+      },
+      "wbs_nodes": [
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK",
+          "id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "is_leaf": false,
+          "parent_id": null,
+          "phase": "Initial",
+          "title": "Reviewed initial work"
+        },
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK.01",
+          "id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de",
+          "is_leaf": true,
+          "parent_id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "phase": "Initial",
+          "title": "Exact accepted cost"
+        }
+      ]
+    },
+    "created_at": "2026-10-15T23:11:19.754601+00:00",
+    "definition": {
+      "award_evidence": [
+        {
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "page": 1,
+          "permission_basis": "Owned synthetic fixture source, no generated provenance",
+          "purpose": "Explicit original manual award evidence",
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "budget_allocations": [
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "a0808c3f-a76d-54a2-8bfe-cce9ffd99949",
+          "source": {
+            "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "d2193653-20b4-5cc7-afe9-2d66b7da92bc",
+          "source": {
+            "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "cd8c4348-2d28-5c9b-9b62-8e6abed593b9",
+          "source": {
+            "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4a216706-4de5-4737-b57e-2748380eb594",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "8c93c691-aa4c-56d2-ac25-907c38135233",
+          "source": {
+            "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "kind": "component",
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "b7a65998-09be-5405-abb1-c312ac938d18",
+          "source": {
+            "adjustment_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "542704b2-62f3-54cb-9991-ee39e55ea095",
+          "source": {
+            "adjustment_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        }
+      ],
+      "contract_definition": {
+        "currency": "USD",
+        "direction": "receivable",
+        "kind": "prime",
+        "number": "AWARD-company-chain-c3c3b742a8fd",
+        "original_value": {
+          "amount": "30.85",
+          "currency": "USD"
+        },
+        "party": "Company chain customer a c3c3b742a8fd",
+        "party_type": "Customer"
+      },
+      "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+      "line_mappings": [
+        {
+          "delivery_date": "2026-12-31",
+          "item_code": "CHAIN-a-c3c3b742a8fd",
+          "proposal_line_id": "11134420-fde0-46b8-b06e-502ae8b1662e"
+        }
+      ],
+      "native_order_definition": {
+        "customer": "Company chain customer a c3c3b742a8fd",
+        "delivery_date": "2026-12-31",
+        "selling_price_list": "Company chain selling a c3c3b742a8fd",
+        "transaction_date": "2026-10-15"
+      },
+      "party_correspondence": null,
+      "project_definition": {
+        "expected_end_date": "2026-12-31",
+        "expected_start_date": "2026-10-15",
+        "project_name": "Award exact new Project company-chain-c3c3b742a8fd"
+      },
+      "team": {
+        "delegator_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+        "members": [
+          {
+            "abilities": [
+              "budget.read",
+              "contract.read",
+              "project.read",
+              "wbs.read"
+            ],
+            "person_id": "CHAIN-PROJECT_ONLY-c3c3b742a8fd"
+          }
+        ],
+        "policy_digest": "c08554099e9ac42c2f159a01ab0921a0e9a0ac4f8a71a171eee4afe9a474de12",
+        "policy_id": "CIPHER-TEAM-16e24df1cff467e6e34c6648e1b7fb3d"
+      },
+      "wbs_nodes": [
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK",
+          "id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "is_leaf": false,
+          "parent_id": null,
+          "phase": "Initial",
+          "title": "Reviewed initial work"
+        },
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK.01",
+          "id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de",
+          "is_leaf": true,
+          "parent_id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "phase": "Initial",
+          "title": "Exact accepted cost"
+        }
+      ]
+    },
+    "delegation_policy": {
+      "company": "Company chain A c3c3b742a8fd",
+      "definition": {
+        "allowed_project_abilities": [
+          "project.read",
+          "project.write",
+          "task.create",
+          "document.read",
+          "document.write",
+          "ricky.run",
+          "approval.request",
+          "approval.decide",
+          "approval.execute",
+          "estimate.read",
+          "estimate.write",
+          "contract.read",
+          "contract.write",
+          "wbs.read",
+          "budget.read"
+        ],
+        "delegator_must_be_requester": true,
+        "eligibility_ability": "company.read",
+        "implicit_creator_access": false,
+        "max_members": 25,
+        "role_copy": false,
+        "schema": "cipher.project-team.delegation-policy.v1",
+        "team_identity_kind": "Human",
+        "version": 1
+      },
+      "digest": "c08554099e9ac42c2f159a01ab0921a0e9a0ac4f8a71a171eee4afe9a474de12",
+      "id": "CIPHER-TEAM-16e24df1cff467e6e34c6648e1b7fb3d",
+      "version": 1
+    },
+    "handoff": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+    "id": "19db2303-dd07-4a62-9437-52a73f862370",
+    "ids": {
+      "adoption_id": "b3746c5c-7c7a-44b6-8895-88f4bd1e085a",
+      "contract_id": "63093b79-54d6-4b92-8ec6-4d35d6f8638b",
+      "id": "19db2303-dd07-4a62-9437-52a73f862370",
+      "line_ids": {
+        "11134420-fde0-46b8-b06e-502ae8b1662e": "53e14685-ccd4-4611-864a-74b3c9d4b076"
+      },
+      "profile_id": "78519866-5df1-4f77-88d5-c563f3b983bc"
+    },
+    "issue": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "issue_digest": "169c1df24c083d8935acdcb41f0469a2c68dce93e3a95969d959a50e907576c8",
+    "lines": [
+      {
+        "amount": "30.85",
+        "award_line_id": "53e14685-ccd4-4611-864a-74b3c9d4b076",
+        "conversion_factor": {
+          "denominator": "1",
+          "numerator": "1"
+        },
+        "currency": "USD",
+        "delivery_date": "2026-12-31",
+        "description": "Explicit nonstock sales item company-chain-c3c3b742a8fd",
+        "item_code": "CHAIN-a-c3c3b742a8fd",
+        "proposal_line_id": "11134420-fde0-46b8-b06e-502ae8b1662e",
+        "quantity": "2.500000",
+        "rate": "12.34",
+        "unit": {
+          "fields": {
+            "dimension": "count",
+            "precision": 6,
+            "symbol": "chainc3c3b742a8fd"
+          },
+          "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Company chain quantity c3c3b742a8fd"
+          }
+        }
+      }
+    ],
+    "participants": [
+      "CHAIN-AUTHOR-c3c3b742a8fd",
+      "CHAIN-PROJECT_ONLY-c3c3b742a8fd"
+    ],
+    "predecessor": null,
+    "project": null,
+    "resource_plan": {
+      "currencies": [
+        "USD"
+      ],
+      "generated_sources": [
+        {
+          "document_id": "DOC-c886f1f0e6c64297972dc95690d87478",
+          "input_digest": "9ab43df084208a53a7071185844b2e226a6dbd5c019ea7492ecf6d455ae2e9c6"
+        }
+      ],
+      "native_refs": [
+        {
+          "doctype": "Account",
+          "name": "Administrative Expenses - Q0c3c3b7"
+        },
+        {
+          "doctype": "Cost Center",
+          "name": "Main - Q0c3c3b7"
+        },
+        {
+          "doctype": "Customer",
+          "name": "Company chain customer a c3c3b742a8fd"
+        },
+        {
+          "doctype": "Item",
+          "name": "CHAIN-a-c3c3b742a8fd"
+        },
+        {
+          "doctype": "Opportunity",
+          "name": "CRM-OPP-2026-00002"
+        },
+        {
+          "doctype": "Price List",
+          "name": "Company chain selling a c3c3b742a8fd"
+        },
+        {
+          "doctype": "Quotation",
+          "name": "SAL-QTN-2026-00002"
+        }
+      ],
+      "unit_ids": [
+        "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+        "b746d363-9219-4d6b-9b83-ab57ab560095",
+        "f7ba5751-7675-497c-9a16-563fb29a7e24"
+      ]
+    },
+    "revision_number": 1,
+    "schema": "cipher.award.plan.v1",
+    "scope_type": "Company",
+    "source_facts": {
+      "accepted_estimate": {
+        "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+        "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+        "currency": "USD",
+        "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+        "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+        "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+        "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+        "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+        "snapshot_digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+        "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+        "total": {
+          "amount": "15.00",
+          "currency": "USD"
+        }
+      },
+      "award_evidence": [
+        {
+          "citation": {
+            "company": "Company chain A c3c3b742a8fd",
+            "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+            "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+            "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+            "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+            "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+          },
+          "permission_basis": "Owned synthetic fixture source, no generated provenance",
+          "purpose": "Explicit original manual award evidence"
+        }
+      ],
+      "issue_digest": "169c1df24c083d8935acdcb41f0469a2c68dce93e3a95969d959a50e907576c8",
+      "issued_output": {
+        "byte_length": 11751,
+        "document_id": "DOC-c886f1f0e6c64297972dc95690d87478",
+        "input_digest": "9ab43df084208a53a7071185844b2e226a6dbd5c019ea7492ecf6d455ae2e9c6",
+        "revision_id": "REV-adfbcdaea2ee45909ca5733859735d74",
+        "source_sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b"
+      },
+      "native_sources": {
+        "base_currency": "USD",
+        "company_version": "2026-10-16 04:33:07.074922",
+        "currency_policy": {
+          "currency": "USD",
+          "currency_exponent": 2,
+          "fraction_units": 100,
+          "native_currency_version": "2026-10-16 04:33:08.505734"
+        },
+        "native_create_policy": [
+          "Project",
+          "Sales Order"
+        ],
+        "native_references": [
+          {
+            "doctype": "Customer",
+            "name": "Company chain customer a c3c3b742a8fd",
+            "version": "2026-10-16 04:33:18.562029"
+          },
+          {
+            "doctype": "Item",
+            "name": "CHAIN-a-c3c3b742a8fd",
+            "version": "2026-10-16 04:33:18.847100"
+          },
+          {
+            "doctype": "Price List",
+            "name": "Company chain selling a c3c3b742a8fd",
+            "version": "2026-10-16 04:33:18.649809"
+          }
+        ],
+        "payment_schedule_policy": "native-default-100-percent-transaction-date-v1",
+        "qualified_units": [
+          {
+            "fields": {
+              "dimension": "count",
+              "precision": 6,
+              "symbol": "chainc3c3b742a8fd"
+            },
+            "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+            "kind": "uom",
+            "revision": 1,
+            "target": {
+              "doctype": "UOM",
+              "name": "Company chain quantity c3c3b742a8fd"
+            }
+          }
+        ]
+      },
+      "opportunity": "CRM-OPP-2026-00002",
+      "pursuit": "49566662-499a-47db-be4b-b3bc80dc5cd7"
+    },
+    "status": "planned"
+  },
+  "version": "75b1be2bc699006de77175c84312b8491e11b0b9439ed1c8473a5cae323f4f04"
+}

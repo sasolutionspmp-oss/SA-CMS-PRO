@@ -1,0 +1,105 @@
+{
+  "adjudication": {
+    "basis": "typed backup/current old-new row hashes plus pinned native source attribution",
+    "exact_keys": [
+      "Installed Applications.modified",
+      "Navbar Settings.modified",
+      "Portal Settings.modified",
+      "System Settings.modified"
+    ],
+    "no_blanket_metadata_claim": true,
+    "portal_limit": "conditional Portal sync save path identified; exact child dirty cause not reconstructed"
+  },
+  "award_enabled": false,
+  "evidence_sha256": {
+    "main-backend-readiness.private.json": "d86970e1a3041ef6a7cf2bce20bec594b3d03e1c4ae86e52c30843f5bc290db6",
+    "main-deployment-r2/after-backup.private.json": "7aa70c4825043cde578b380baec7bde49ec25e589f3d12fd818ec42a0b9cfef0",
+    "main-deployment-r2/after.failure.json": "1bb2ec5969c5a32d717062d34a1f51787766754cc2f4103de5a7a6d749db6905",
+    "main-deployment-r2/after.private.json": "7ca469cd6c8aedcd15f8a7d954fbf594c8d06f06d1fcc86f3d2d8dd32b54e3ab",
+    "main-deployment-r2/backup-files.private.json": "d432bc706cb4ac247606fc4fdf3cf701cc4a175e1c86304100c2d0cd7231293e",
+    "main-deployment-r2/before.private.json": "73d7c8b2d5d88628d6199556367fec51211236c634ba96a32306b085343659d9",
+    "main-deployment-r2/migrate.result.json": "9c4b189c8c38d79ba5806918d66deb6c730c62f7a474603c1392ae4940886f06",
+    "main-deployment-r2/services-after.json": "3e97c8925cb3acd0422f441566da623a1d63e21d0d70e7973dae297a266d9aa2",
+    "main-deployment-r2/services-before.json": "bfb6bf0fa6cb70881c53c1c2e0475c13484365327b40fa3c350f052345a97d2f",
+    "main-deployment-r2/services-comparison.json": "ef5f9e48809a8fa0075e72b316c47aee1178753c7108ecc3550a21f2d63215d6",
+    "main-ui-readonly/incomplete.json": "9dbbdadbe7dd47e80678c38782aad03fafa87ba2d833927703051e902d94cc03",
+    "migration-adjudication/continuation-three-stages.independent-review.json": "2bf813561a8e02eadfbdfee47e11877825a167d314173a9872529e4930751907",
+    "migration-adjudication/native-source-attribution.json": "ec168ea5e8602093b0320d9170d0274c4bc464b5349d10f42ce8f73945d3fee1",
+    "migration-adjudication/reload.independent-review.json": "f57cfbd07286badd4dcc4938e3e310a2637dac0f75d86057f44e7de30bdb92b4",
+    "migration-adjudication/reviewed-adjudication.json": "82cc40f6b4aef9f166ee70e705011e07bb0eedf1ec60fb917d759fe7eef0641a",
+    "migration-adjudication/typed-timestamp-comparison.private.json": "cd4b2329d4861259ee623fbc6e3ec776c530d94847c1a25c15c4c7beb4f51fb7",
+    "snapshot.json": "56064c38e29340dbddf9156f042eb81475ff66ca44d62de3bd9331f93b08b3ee",
+    "ui-publication/result.json": "6a69bb551423f8d85a109353e142ff03b7de2d0e9136338b4d54ce6f442fa515"
+  },
+  "failures_preserved": [
+    {
+      "attempt": "original before inventory",
+      "reason": "strict exact-dict assertion rejected native common-config dict subclass",
+      "successor": "r2 reads exact raw common/site JSON; failed source/attempt retained"
+    },
+    {
+      "attempt": "strict post-migration preservation",
+      "reason": "four existing Singles modified timestamp rows changed",
+      "standing": "original failed after remains failed; exact supplemental four-key adjudication accepted; no replacement baseline or rerun migration"
+    },
+    {
+      "attempt": "actual UI capture",
+      "standing": "failed; no successful capture or route qualification implied"
+    }
+  ],
+  "hup": {
+    "distribution_pair_off_finite_command_coverage": true,
+    "matched_raw_configuration_unchanged": true,
+    "native_scheduler_disabled_fresh_observations": 2,
+    "nonweb_process_identities_unchanged": 8,
+    "same_container_and_master": true,
+    "web_children_replaced": 2
+  },
+  "limits": [
+    "Backup generation is not restoration qualification.",
+    "Finite native business inventory is not all native metadata.",
+    "Observed process identity and source hashes do not prove loaded old Python equals disk or generic worker served-code parity.",
+    "Fresh scheduler selection may populate normal derived cache and does not prove long-lived scheduler local state or queue health.",
+    "No uninterrupted-service, successful UI capture, positive Company cost route, award effect, or generated-input admission qualification.",
+    "No raw config, private row values, credentials, auth material or private file contents are included."
+  ],
+  "preservation": {
+    "all_other_original_row_values_preserved": true,
+    "approved_typed_site_profile_keys": 2,
+    "common_and_unrelated_site_configuration_preserved": true,
+    "exact_adjudicated_existing_timestamp_rows": 4,
+    "new_backup_bytes": 2533074,
+    "new_backup_files": 4,
+    "new_empty_cipher_tables": 13,
+    "original_backups_retained": 8,
+    "original_nonbackup_files": 102,
+    "original_rows": 6899,
+    "original_tables": 122,
+    "typed_original_columns_and_row_keys_preserved": true
+  },
+  "reviewer_runtime_calls": 0,
+  "schema": "cipher.main.deployment-public-summary.v1",
+  "snapshot": {
+    "explicit_host_only_paths": 14,
+    "mounted_source_paths": 604,
+    "selected_paths": 618,
+    "sha256": "56064c38e29340dbddf9156f042eb81475ff66ca44d62de3bd9331f93b08b3ee"
+  },
+  "standing": "draft: backend deployment preservation reviewed; actual UI capture failed and publication qualification held",
+  "ui_publication": {
+    "actual_capture": "failed",
+    "asset_observer_error": "cipher-mark.svg outside selected905 build inventory",
+    "asset_observer_errors": 4,
+    "atomic_exchange": true,
+    "business_post_attempts": 0,
+    "exact_new_build_files": 905,
+    "failure_stage": "Project Tasks at 1440 viewport",
+    "geometry_expectation_timeout_ms": 5000,
+    "old_files_retained_and_rechecked": 890,
+    "old_qualified_subset": 868,
+    "old_unreferenced_files_retained": 22,
+    "operator_result": "passed",
+    "publication_qualification": "held; failed capture retained; source owner investigating",
+    "sign_in_and_project_gets": "root reported succeeded"
+  }
+}

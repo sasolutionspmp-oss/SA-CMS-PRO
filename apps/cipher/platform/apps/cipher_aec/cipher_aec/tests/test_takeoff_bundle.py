@@ -127,10 +127,10 @@ class AcceptanceBindingOrderTests(unittest.TestCase):
                 company = "Fixture Company"; trace = []
                 stack.enter_context(scopes.activate(scope_type, company, project))
                 scope = scopes.current(company, project).fields()
-                revision = {"id": "revision", "estimate": "estimate", "calculation_snapshot": "snapshot", "currency": "EUR", "policy_version": "fixed-policy"}
+                revision = {"id": "revision", "estimate": "estimate", "calculation_snapshot": "snapshot", "currency": "EUR", "policy_version": "fixed-policy", "source_citations": []}
                 master = {"id": "estimate", "current_revision": "revision"}
                 units = {key: {"id": key, "kind": "uom", "revision": 1, "fields": {"dimension": "area", "precision": 6}} for key in ("unit-a", "unit-z")}
-                snapshot = {"inputs": {"unit_manifest": {"records": [units["unit-z"]]}, "currency_exponent": 2, "rates": {}}, "id": "snapshot", "input_digest": "a", "output_digest": "b"}
+                snapshot = {"inputs": {"unit_manifest": {"records": [units["unit-z"]]}, "currency_exponent": 2, "rates": {}, "basis_citations": []}, "id": "snapshot", "input_digest": "a", "output_digest": "b", "source_citations": []}
                 measurement = {**scope, "company": company, "project": project, "id": "measurement", "calibration_id": "calibration", "unit_manifest": {"records": [units["unit-z"]]}}
                 calibration = {**scope, "company": company, "project": project, "id": "calibration", "unit_manifest": {"records": [units["unit-a"]]}}
                 binding = {**scope, "company": company, "project": project, "id": "binding", "measurement_id": "measurement"}

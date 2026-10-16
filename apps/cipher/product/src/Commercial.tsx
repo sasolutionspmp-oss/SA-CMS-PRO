@@ -12,6 +12,7 @@ import ProposalSources from './ProposalSources';
 import ProposalOutput from './ProposalOutput';
 import CommercialObjectTitle from './CommercialObjectTitle';
 import ProposalDistribution from './ProposalDistribution';
+import AwardWorkspace from './AwardWorkspace';
 
 const exactDecimal = /^(0|[1-9][0-9]{0,11})(\.[0-9]{1,9})?$/;
 type ProposalDraft = Omit<ComComposition, 'price_lines'> & { price_lines: ComPriceLine[] };
@@ -23,6 +24,7 @@ type Navigate = (path: string) => void;
 export default function Commercial({ company, capabilities, route, navigate, personId }: { company: string; personId: string; capabilities: string[]; route: string[]; navigate: Navigate }) {
   const canWrite = capabilities.includes('commercial.write');
   if (!capabilities.includes('commercial.read')) return <div className="page"><PageHeading eyebrow="COMPANY COMMERCIAL" title="Commercial" description="Pursuits and authored proposal drafts for the selected company." /><Failure error={new ApiError('Commercial access is unavailable.', 'capability_denied', 403)} /></div>;
+  if (route[1] === 'issues' && route[2] && route[3] === 'award') return <AwardWorkspace key={`${company}/${route[2]}`} company={company} issueId={route[2]} capabilities={capabilities} navigate={navigate} />;
   if (route[1] === 'issues' && route[2] && route[3] === 'distribution') return <ProposalDistribution company={company} issueId={route[2]} instructionId={route[4] === 'instructions' ? route[5] : undefined} dispatchId={route[4] === 'dispatches' ? route[5] : undefined} personId={personId} capabilities={capabilities} navigate={navigate} />;
   if (route[1] === 'proposals' && route[2]) return <ProposalPage key={`${company}/${route[2]}`} company={company} proposalId={route[2]} canWrite={canWrite} capabilities={capabilities} navigate={navigate} />;
   if (route[1] === 'pursuits' && route[2]) return <PursuitPage key={`${company}/${route[2]}/${route[3] || ''}`} company={company} pursuitId={route[2]} newProposal={route[3] === 'proposal'} canWrite={canWrite} capabilities={capabilities} navigate={navigate} />;

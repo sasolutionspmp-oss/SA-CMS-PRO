@@ -1,0 +1,11 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.awards.api.create_handoff",
+  "prepared_at": "2026-10-15T23:11:18.765600+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "operation_id": "6b09894a-3c18-4d07-b369-44dd5a048faf"
+  }
+}

@@ -41,7 +41,15 @@ def _source_snapshot():
     paths = []
     for domain in ("estimating", "takeoff", "documents", "commercial"):
         paths.extend((base / domain).glob("*.py"))
-    paths.extend(base / "governance" / name for name in ("commands.py", "approvals.py", "domain_approvals.py", "context.py", "history.py"))
+    paths.extend(base / "governance" / name for name in (
+        "commands.py", "approvals.py", "domain_approvals.py", "context.py", "history.py", "company.py", "permissions.py",
+        "controllers.py", "history_access.py", "history_listing.py", "approval_listing.py"))
+    paths.extend(base / "api" / name for name in ("contracts.py", "errors.py", "transport.py", "boundary.py", "company.py", "company_approvals.py", "paging.py"))
+    paths.extend(base / "migrations" / name for name in ("contracts.py", "validation.py", "export.py"))
+    paths.extend((base / "cipher_estimating").rglob("*.py"))
+    for doctype in ("cipher_command_receipt", "cipher_history_event", "cipher_approval_packet", "cipher_approval_decision", "cipher_approval_consumption", "cipher_approval_policy_revision"):
+        paths.extend((base / "cipher_governance" / "doctype" / doctype).glob("*.py"))
+    paths.extend((base / "hooks.py", base / "tests" / "test_company_chain_acceptance.py"))
     paths.append(Path(__file__))
     return {str(path.relative_to(base)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sorted(set(paths))}
 
@@ -172,6 +180,7 @@ def _timed_rpc(fixture, *, phase_profile=False):
                             (provenance, "authorize", "document.producer-authority", 1),
                             (DocumentService, "_scope", "document.current-scope", None),
                             (est_sources, "verify", "estimate.citations", 3),
+                            (est_sources, "verify_groups", "estimate.builder-citation-batch", 3),
                             (est_sources, "verify_native_rates", "estimate.native-sources", 3),
                             (authority, "require_company", "authority.company", None),
                             (native, "require_native", "authority.native-master", 2),

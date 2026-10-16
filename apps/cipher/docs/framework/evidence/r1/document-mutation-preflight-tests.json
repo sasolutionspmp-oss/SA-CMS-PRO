@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T21:13:01.339896+00:00",
+  "qualification": "Six focused metadata preflight and44 neighboring source/Project/Company compatibility cases on pinned runtime; no native effect/latency/renderer or HTTP qualification claimed. Public generated-input gate remains false. Joint EST canonical-reader integration/native qualification is separate.",
+  "tests": {
+    "passed": 50,
+    "failed": 0,
+    "includes_neighbor_slice": true,
+    "output": "..................................................\n----------------------------------------------------------------------\nRan 50 tests in 0.956s\n\nOK\n"
+  },
+  "contract": [
+    "Current exact Company document.read precedes metadata.",
+    "Immutable locator scope then current locking parent-before-revision reads, exact mapping and all producer-binding fields.",
+    "Explicit raw/generated identity only; generated requires existing exact actor/person/Company node+input digest token, no new admission.",
+    "No dependency source_plan traversal, UOM/Currency/native acquisition, content/byte/current-use authority.",
+    "Node-only preflight success cannot replace complete canonical resource-subset authorization before bytes.",
+    "Complete token still requires original source authority and actual byte SHA/length verification.",
+    "Existing Project source behavior unchanged."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "38102145f667cc81b300b595bd00cab7b71bd22f71253d6338482c79fdc89b87",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_mutation_preflight.py": "73a601711b1a39b306c33b59fe0961bd68007f1dd6ef03302fb252f2cef2d5a3"
+  },
+  "review": "Astra targeted source review clear for joint integration; no standalone renderer rerun required."
+}

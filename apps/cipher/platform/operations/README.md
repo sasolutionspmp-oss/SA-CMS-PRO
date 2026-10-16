@@ -25,6 +25,10 @@ first verifies the pure synthetic failure-report parser. It then checks the dist
 using actual disposable Linux processes, including separate-group work-horse
 cleanup and preservation of an unrelated process. These checks are reported
 separately from application/database tests. It installs and migrates the current app,
+then explicitly selects the persistent synthetic native award profile with
+`cipher_aec.awards.runtime_install.configure_native_profile`. This setup preserves
+unrelated configuration and does not activate award actions or qualify callbacks;
+see the deployment README for its search-index and worker-reload boundaries. The gate
 checks the locked runtime versions, verifies actual test collection, runs native
 and ordinary tests and canonical extended procedures, then checks generated
 clients, typecheck, production build and browser contracts from a clean frontend

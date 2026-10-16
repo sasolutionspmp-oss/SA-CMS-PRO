@@ -1,0 +1,214 @@
+{
+  "operation": {
+    "id": "9dbae546-76cd-4156-bee3-36007928ef55",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "proposal": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "7bc84267-d002-44cb-b9fd-70789c04e4da",
+    "id": "21be2d11-ccd6-43a7-a237-1be60811030d",
+    "native_fingerprint": "53d17e052cfc20c7c4324634e736821d8602bddbd3ba4f849a7676e10d25027d",
+    "native_version": "2026-10-16 04:41:08.902451",
+    "party_id": "Company chain customer a c3c3b742a8fd",
+    "party_type": "Customer",
+    "pursuit": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "quotation": "SAL-QTN-2026-00002",
+    "revision_number": 1,
+    "title": "Award manual pursuit company-chain-c3c3b742a8fd"
+  },
+  "revision": {
+    "accepted_estimate": {
+      "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+      "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+      "currency": "USD",
+      "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+      "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+      "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+      "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+      "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+      "snapshot_digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+      "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+      "total": {
+        "amount": "15.00",
+        "currency": "USD"
+      }
+    },
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "company": "Company chain A c3c3b742a8fd",
+    "company_policy": {
+      "base_currency": "USD",
+      "native_company_version": "2026-10-16 04:33:07.074922"
+    },
+    "composition": {
+      "currency": "USD",
+      "estimate_reference": {
+        "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+        "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+        "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+        "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084"
+      },
+      "estimate_revision": null,
+      "price_lines": [
+        {
+          "alternate_group": null,
+          "description": "Explicit nonstock sales item company-chain-c3c3b742a8fd",
+          "id": "11134420-fde0-46b8-b06e-502ae8b1662e",
+          "item_code": "CHAIN-a-c3c3b742a8fd",
+          "quantity": "2.500000",
+          "rate": "12.34",
+          "selected": true,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+          "unit_revision": 1
+        }
+      ],
+      "price_list": "Company chain selling a c3c3b742a8fd",
+      "sections": [
+        {
+          "id": "7e56bd6f-011e-483c-8b73-284b4c8187e3",
+          "kind": "scope",
+          "text": "Known cost15.00; separately authored selling30.85.",
+          "title": "Explicit manual scope"
+        }
+      ],
+      "source_references": [
+        {
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "page": 1,
+          "permission_basis": "Owned synthetic fixture source, no generated provenance",
+          "purpose": "Explicit original manual award evidence",
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "terms": "Synthetic draft terms; no legal execution or transmission.",
+      "valid_till": "2026-12-31"
+    },
+    "currency_policy": {
+      "currency": "USD",
+      "currency_exponent": 2,
+      "fraction_units": 100,
+      "native_currency_version": "2026-10-16 04:33:08.505734",
+      "price_list": {
+        "currency": "USD",
+        "name": "Company chain selling a c3c3b742a8fd",
+        "version": "2026-10-16 04:33:18.649809"
+      }
+    },
+    "id": "7bc84267-d002-44cb-b9fd-70789c04e4da",
+    "native": {
+      "company": "Company chain A c3c3b742a8fd",
+      "currency": "USD",
+      "docstatus": 0,
+      "id": "SAL-QTN-2026-00002",
+      "items": [
+        {
+          "amount": "30.850000000",
+          "base_amount": "30.850000000",
+          "base_rate": "12.340000000",
+          "cipher_alternate_group": null,
+          "cipher_line_id": "11134420-fde0-46b8-b06e-502ae8b1662e",
+          "conversion_factor": "1.000000000",
+          "description": "Explicit nonstock sales item company-chain-c3c3b742a8fd",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 0,
+          "idx": 1,
+          "is_alternative": 0,
+          "item_code": "CHAIN-a-c3c3b742a8fd",
+          "item_name": "Explicit nonstock sales item company-chain-c3c3b742a8fd",
+          "name": "9s1lpdle6j",
+          "qty": "2.500000000",
+          "rate": "12.340000000",
+          "stock_uom": "Company chain quantity c3c3b742a8fd",
+          "uom": "Company chain quantity c3c3b742a8fd"
+        }
+      ],
+      "opportunity": "CRM-OPP-2026-00002",
+      "party_name": "Company chain customer a c3c3b742a8fd",
+      "price_list_currency": "USD",
+      "quotation_to": "Customer",
+      "selling_price_list": "Company chain selling a c3c3b742a8fd",
+      "taxes": [],
+      "terms": "Synthetic draft terms; no legal execution or transmission.",
+      "totals": {
+        "additional_discount_percentage": "0.000000000",
+        "base_grand_total": "30.850000000",
+        "base_net_total": "30.850000000",
+        "base_total": "30.850000000",
+        "conversion_rate": "1.000000000",
+        "discount_amount": "0.000000000",
+        "grand_total": "30.850000000",
+        "net_total": "30.850000000",
+        "plc_conversion_rate": "1.000000000",
+        "total": "30.850000000",
+        "total_taxes_and_charges": "0.000000000"
+      },
+      "valid_till": "2026-12-31",
+      "version": "2026-10-16 04:41:08.902451"
+    },
+    "native_fingerprint": "53d17e052cfc20c7c4324634e736821d8602bddbd3ba4f849a7676e10d25027d",
+    "predecessor": null,
+    "pricing": {
+      "currency_exponent": 2,
+      "lines": [
+        {
+          "alternate_group": null,
+          "amount": "30.85",
+          "description": "Explicit nonstock sales item company-chain-c3c3b742a8fd",
+          "id": "11134420-fde0-46b8-b06e-502ae8b1662e",
+          "item_code": "CHAIN-a-c3c3b742a8fd",
+          "quantity": "2.500000",
+          "rate": "12.34",
+          "selected": true,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+          "unit_revision": 1
+        }
+      ],
+      "policy": "native-no-tax-no-discount-half-up-v1",
+      "total": "30.85"
+    },
+    "proposal": "21be2d11-ccd6-43a7-a237-1be60811030d",
+    "revision_number": 1,
+    "source_citations": [
+      {
+        "citation": {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        },
+        "permission_basis": "Owned synthetic fixture source, no generated provenance",
+        "policy": "pinned-revision-page-v1",
+        "purpose": "Explicit original manual award evidence"
+      }
+    ],
+    "status": "draft",
+    "units": {
+      "f7ba5751-7675-497c-9a16-563fb29a7e24": {
+        "fields": {
+          "dimension": "count",
+          "precision": 6,
+          "symbol": "chainc3c3b742a8fd"
+        },
+        "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+        "kind": "uom",
+        "revision": 1,
+        "target": {
+          "doctype": "UOM",
+          "name": "Company chain quantity c3c3b742a8fd"
+        }
+      }
+    }
+  }
+}

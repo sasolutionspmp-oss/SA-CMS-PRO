@@ -1,0 +1,33 @@
+{
+  "schema": "cipher.public-asset-snapshot-correction.v1",
+  "recorded_at": "2026-10-16T01:56:14.553479+00:00",
+  "cause": "The v3 frozen UI selection omitted the authored public directory. The source recorder also omitted SVG by suffix, while already including the original notices in a complete main-tree scan.",
+  "source_changes": [
+    "Inventory every authored public file, excluding generated PDF.js output; refuse absent required originals, symlinks and nonregular assets.",
+    "Freeze from the complete fresh source catalog with exact set equality, plus three explicit instruction/ignore files.",
+    "Check exact authored-to-built bytes, served MIME and decoded logos in the ordinary browser suite."
+  ],
+  "main_business_backend_changed": false,
+  "preserved_failure": {
+    "report_sha256": "9dbbdadbe7dd47e80678c38782aad03fafa87ba2d833927703051e902d94cc03",
+    "business_commands": 0,
+    "stage": "exact original project and Tasks 1440",
+    "errors": [
+      "Missing cipher-mark.svg from selected build",
+      "Transparent official SAP title click surface misclassified as heading occlusion"
+    ]
+  },
+  "regression": {
+    "old_inventory_tests": "4 tests, five failing assertions/subtests",
+    "corrected_operations_tests": "15 tests passed",
+    "isolated_geometry_tests": 4,
+    "packaged_asset_test": "Passed within the complete151-case successor browser suite."
+  },
+  "successor_snapshot_sha256": "c15fe17d8b32816ae9ee4744a7a30c5657c775c11b792ab240df58478875e88f",
+  "source_count": 621,
+  "runner_source_count": 618,
+  "ui_source_count": 120,
+  "complete_current_and_frozen_catalog_equality": true,
+  "main_migration_repeated": false,
+  "qualification": "Complete successor gate passed544.643s; actual main capture passed at1440/900/390. Original failures retained."
+}

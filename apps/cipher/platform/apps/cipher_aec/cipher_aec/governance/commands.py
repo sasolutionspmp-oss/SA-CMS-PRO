@@ -63,6 +63,10 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
     if scope_type == "Company" and command.startswith("distribution."):
         require_company(company, ability="commercial.read", actor=actor, lock=True)
         require_company(company, ability="document.read", actor=actor, lock=True)
+    if scope_type == "Company" and command.startswith("project.cost."):
+        require_company(company, ability="project.cost.read", actor=actor, lock=True)
+    if scope_type == "Company" and command.startswith("award."):
+        require_company(company, ability="commercial.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("contract."):
         require_project(company, project, ability="contract.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("takeoff."):
@@ -98,23 +102,40 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         # The memo grants no source admission. Domain guards/controllers still
         # acquire their complete current source union. Exit before either
         # rollback branch so no success memo survives a failed local effect.
-        with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
-            if guard is not None:
-                guard(actor, locked_project)
-            result = effect(actor, locked_project)
-            if not isinstance(result, dict) or "operation" in result:
-                raise RuntimeError("Domain commands must return a result object without operation metadata")
-            record = frappe.get_doc({"doctype": "Cipher Command Receipt", "name": receipt_name,
-                "person": actor.person_id, "operation_id": operation_id, "company": company,
-                "project": project, "scope_type": scope_type, "command": command, "request_hash": request_hash,
-                "result_json": canonical_json(result), "result_hash": digest(result), "state": "Succeeded"})
-            record.insert(ignore_permissions=True, set_name=receipt_name)
+        # Only NEW Company approval execution can lazily start the award
+        # callback stage. Keep this owner outside logical finally and receipt
+        # insertion, so a late controller/receipt error cannot leak new intents.
+        if scope_type == "Company" and command == "approval.execute":
+            from cipher_aec.awards.runtime import command_boundary
+            award_boundary = command_boundary(company=company, operation_id=operation_id)
+        else:
+            award_boundary = nullcontext()
+        with award_boundary:
+            with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
+                if guard is not None:
+                    guard(actor, locked_project)
+                result = effect(actor, locked_project)
+                if not isinstance(result, dict) or "operation" in result:
+                    raise RuntimeError("Domain commands must return a result object without operation metadata")
+                record = frappe.get_doc({"doctype": "Cipher Command Receipt", "name": receipt_name,
+                    "person": actor.person_id, "operation_id": operation_id, "company": company,
+                    "project": project, "scope_type": scope_type, "command": command, "request_hash": request_hash,
+                    "result_json": canonical_json(result), "result_hash": digest(result), "state": "Succeeded"})
+                from cipher_aec.awards.runtime import quiet_award_write
+                quiet_award_write(record)
+                record.insert(ignore_permissions=True, set_name=receipt_name)
     except (frappe.QueryDeadlockError, frappe.QueryTimeoutError):
         # The database can have discarded the entire transaction on a deadlock;
         # rolling back to a now-missing savepoint would mask the real conflict.
         frappe.db.rollback()
         raise
-    except Exception:
+    except Exception as error:
+        if scope_type == "Company" and command == "approval.execute":
+            from cipher_aec.awards.runtime import AwardCallbackBoundaryError
+            if isinstance(error, AwardCallbackBoundaryError):
+                # The exact award fatal boundary has already aborted the whole
+                # transaction. Its old savepoint must never be used again.
+                raise
         frappe.db.rollback(save_point=savepoint)
         raise
     return {**result, "operation": {"id": operation_id, "status": "succeeded", "replayed": False}}
@@ -155,6 +176,12 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
         elif command.startswith("approval."):
             from cipher_aec.governance.approvals import authorize_receipt as authorize_approval
             authorize_approval(actor, company, None, result, scope_type="Company")
+        elif command.startswith("project.cost."):
+            from cipher_aec.project_controls.service import authorize_receipt as authorize_controls
+            authorize_controls(actor, company, result)
+        elif command.startswith("award."):
+            from cipher_aec.awards.service import authorize_receipt as authorize_award
+            authorize_award(actor, company, result, lock=True)
         elif command.startswith("distribution."):
             from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
             authorize_distribution(actor, company, result, lock=True)

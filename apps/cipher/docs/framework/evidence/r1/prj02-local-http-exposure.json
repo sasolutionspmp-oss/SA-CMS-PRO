@@ -1,0 +1,122 @@
+{
+  "fresh_source_selection": [
+    {
+      "business_or_profile_calls": 0,
+      "container": "cipher-award-epochs-20261015",
+      "container_id": "db32594a7e22535a5154a0bbda93bca6a716445562cabbd53ca74c3057c1f4b0",
+      "epoch": "disabled",
+      "image_id": "sha256:c72e96cac528f411b81a5462afd7d047d061240549057b008dec5965d7bf0cf5",
+      "import_proof": {
+        "db_initialized": false,
+        "init_sha256": "aa06f7682da17c65cec391e23e3cbb6e01bb5867fa1f1edff04646779fa7c8f7",
+        "module_path": "/opt/cipher-award-epochs/disabled/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec"
+      },
+      "main_unchanged": true,
+      "snapshot_sha256": "6aef3950a7f2f2d80c79f341d1a43d926203c9064273759a94ba9811df64de6a",
+      "source_count": 496,
+      "sources_unchanged": true,
+      "started_at": "2026-10-15T23:09:11.063392+00:00",
+      "state": "selected_sources_verified_no_site_call",
+      "steps": [
+        {
+          "exit_code": 0,
+          "log_sha256": "cf57744f161a2cd3a2b04ae18d16e39f0118a5d05b4bf358c19328295e525dcb",
+          "name": "select-bench-app",
+          "private_log": "/tmp/cipher-award-native-20261015/epochs/disabled/selection-20261015T230911-select-bench-app.log",
+          "seconds": 0.107,
+          "state": "passed"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "e54c57fc97d8bfe5ac44924e61a5a1d40377b45093e7e6655093fb40545e935f",
+          "name": "editable-install",
+          "private_log": "/tmp/cipher-award-native-20261015/epochs/disabled/selection-20261015T230911-editable-install.log",
+          "seconds": 7.354,
+          "state": "passed"
+        },
+        {
+          "exit_code": 0,
+          "log_sha256": "bfc187026bfa75d937a357a75c3e4934fb84d1a9c0799e17289643ab1da596bb",
+          "name": "fresh-import-proof",
+          "private_log": "/tmp/cipher-award-native-20261015/epochs/disabled/selection-20261015T230911-fresh-import-proof.log",
+          "seconds": 0.546,
+          "state": "passed"
+        }
+      ]
+    }
+  ],
+  "http_release_sha256": "a62193d7cbea34468751c685f04258499749b1d0e732266e2865b53756f9e72b",
+  "job_workers": false,
+  "lifecycle": {
+    "container": "cipher-award-epochs-20261015",
+    "container_id": "db32594a7e22535a5154a0bbda93bca6a716445562cabbd53ca74c3057c1f4b0",
+    "created_at": "2026-10-15T23:08:28.071308+00:00",
+    "main_unchanged": true,
+    "ports": [
+      "127.0.0.1:18883:8000"
+    ],
+    "prior_container": "cipher-award-epochs-20261015",
+    "prior_container_id": "e7652e12209258919570b3b9e37ec9ddc192d0b4c420854b92a6c7409b10096f",
+    "scheduler": false,
+    "site_volumes_retained": true,
+    "source_epoch_selected": null,
+    "state": "idle_no_epoch_selected",
+    "steps": [
+      {
+        "exit_code": 0,
+        "name": "private-ip-container-stop",
+        "private_log": "/tmp/cipher-award-native-20261015/private-ip-container-stop.log",
+        "seconds": 0.106,
+        "state": "passed"
+      },
+      {
+        "exit_code": 0,
+        "name": "private-ip-container-remove",
+        "private_log": "/tmp/cipher-award-native-20261015/private-ip-container-remove.log",
+        "seconds": 2.552,
+        "state": "passed"
+      },
+      {
+        "exit_code": 0,
+        "name": "loopback-container-create",
+        "private_log": "/tmp/cipher-award-native-20261015/loopback-container-create.log",
+        "seconds": 37.156,
+        "state": "passed"
+      }
+    ],
+    "web": false,
+    "workers": false
+  },
+  "local_port": "127.0.0.1:18883:8000",
+  "main_mutation": false,
+  "network_proxy_environment_changed": false,
+  "readiness": {
+    "business_calls": false,
+    "main_mutation": false,
+    "origin": "http://127.0.0.1:18883",
+    "pid": 40,
+    "processes": "PID                 COMMAND\n838573              docker-init\n838613              tail\n839062              gunicorn\n839127              gunicorn\n839128              gunicorn\n",
+    "response_sha256": "535e0f7e4562372c2262737b55d250b8a0fc4d3ed4237fc0b23a73b062ad645c",
+    "site_host": "cipher-ci-20261015213708-508077.localhost",
+    "status": 200
+  },
+  "readiness_only": "Anonymous Frappe ping with the exact named-site Host; no login/business action. HTTP prerequisite acceptance recorded separately.",
+  "recorded_at": "2026-10-15T23:11:02.321891+00:00",
+  "retained_private_ip_denial": {
+    "body": "Domain forbidden",
+    "headers": {
+      "connection": "close",
+      "content-length": "16",
+      "content-type": "text/plain",
+      "date": "Thu, 15 Oct 2026 23:07:02 GMT",
+      "server": "envoy"
+    },
+    "status": 403
+  },
+  "same_site_volumes_retained": true,
+  "scheduler": false,
+  "schema": "cipher.award.local-http-exposure.v1",
+  "source_files": 496,
+  "source_snapshot_sha256": "6aef3950a7f2f2d80c79f341d1a43d926203c9064273759a94ba9811df64de6a",
+  "status": "passed"
+}

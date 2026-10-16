@@ -1,0 +1,125 @@
+{
+  "mode": "isolated-preview-anonymous-readiness-only",
+  "url": "http://127.0.0.1:18882",
+  "api_target": "http://127.0.0.1:18883",
+  "site_host": "cipher-ci-20261015213708-508077.localhost",
+  "index_sha256": "2e6f686f918f146807c29e0ed44edbe91b559b12b226deace60b0a59b646f5aa",
+  "assets": [
+    {
+      "path": "/assets/index-BgQ_XiCm.js",
+      "sha256": "1e3349c45cf73c9e9d6eee72868b80f625077e44272ee028b83c77e57e55e391",
+      "byte_length": 1173602,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53",
+      "byte_length": 371075,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-BgzUu5VV.js",
+      "sha256": "7a6e5be38ee075cd953c67ca230b10f79216719b630d010ae02a61fb6359a66a",
+      "byte_length": 121322,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/components-yhkYYb8p.js",
+      "sha256": "06473f27a4fb17995b3ffae89b3c4488b53726f8b576cdbfb78ad72a3a6b2415",
+      "byte_length": 126645,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/CheckBox-Cnf8eeJK.js",
+      "sha256": "eb008ffe739ee526b64cc4aa42de1f2d91801bf62c82fb4b69960c95cc6e443f",
+      "byte_length": 372,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Input-BCo6HTte.js",
+      "sha256": "662fef9edb505a0b227fa42afbd7d0a7ba9ba220d14f9a3d33bef3b7d1066256",
+      "byte_length": 55670,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Input-BaMHSbE7.js",
+      "sha256": "12e81e1005e448d54b56530da005353f9b950931d8a2c18b4d11ba10e63abc12",
+      "byte_length": 511,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/useMutation-C2P3QDKf.js",
+      "sha256": "13854374c6e97d72b7f8bafd580d866b3d8e1266efd7dc4ad7925190dfa2cec1",
+      "byte_length": 54410,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Text-DszZlDxA.js",
+      "sha256": "8516463304b771c90346909fcd80744580bf0274acabef3fb8477db446ed7339",
+      "byte_length": 2247,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/ToolbarSpacer-CE6gynJS.js",
+      "sha256": "191a05b69dad9dae65a74b8059be115241a4a90e8a2bb794ce1ddc24c6ebb930",
+      "byte_length": 20040,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964",
+      "byte_length": 7184,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Link-B410qs24.js",
+      "sha256": "c0926b242f6ac63c28ed7ac3ae1f28bf99e496b64a8f1edf742660bdb8707e21",
+      "byte_length": 387,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/Approvals-Bo2b0pG1.js",
+      "sha256": "a33b5953fe11dc5ff87f7ae942dceb1e449317ef16a5bd04a6d84f2e77976954",
+      "byte_length": 38081,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/estimating-Dc4LEPp-.js",
+      "sha256": "5328dff0e7e68acf871f082891ed6f3219b1cac5a03d73380420564a6fef639d",
+      "byte_length": 1468,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/index-CIAgpyqg.css",
+      "sha256": "2c428d19c5c2bb4d7d8a51acbe45cd277590a06df5fa1c35425357f1cfdcf82a",
+      "byte_length": 30110,
+      "content_type": "text/css"
+    },
+    {
+      "path": "/assets/CompanyApprovals-E3g8178l.js",
+      "sha256": "733f25875cf54ee11d4ea27f854c545a8e61413951766d44601b05903612c4a0",
+      "byte_length": 40190,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/CostMasters-D3tEnbMR.js",
+      "sha256": "b1622ecd4dbd819bbdc1d5fc8f1d883d0ee75d28a254f31fbb0a0d198d2329ff",
+      "byte_length": 15808,
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/pdf.worker.min-CjEcRF4W.mjs",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18",
+      "byte_length": 1264342,
+      "content_type": "text/javascript"
+    }
+  ],
+  "api_ping_status": 200,
+  "api_ping_result": "pong",
+  "source_files": 116,
+  "source_current_matches_reviewed": true,
+  "authenticated_requests": false,
+  "session_or_business_requests": false,
+  "main_dist_modified": false,
+  "checked_at": "2026-10-15T23:10:59.157Z"
+}

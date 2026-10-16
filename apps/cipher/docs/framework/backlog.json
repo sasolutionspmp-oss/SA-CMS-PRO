@@ -217,8 +217,8 @@
       "scope": "CI/test runners, real Frappe database fixtures and release evidence manifest",
       "evidence": "Reproducible fresh build/type checks/integration checks; evidence binds source version",
       "status": "verified",
-      "local_contract_status": "current_company_com02_fresh_gate_passed_hosted_current_checkpoint_pending",
-      "external_qualification_status": "hosted_workflow_verified_at_e21ed89f",
+      "local_contract_status": "company_com02_gate_passed_diagnostics_only_505fb754_full_gate_passed",
+      "external_qualification_status": "hosted_e21ed89f_and_505fb754_passed_f709a336_failure_retained_cause_unknown",
       "evidence_paths": [
         "docs/framework/evidence/r0/QA01_VALIDATION.md",
         "docs/framework/evidence/r0/fresh-validation-initial.json",
@@ -233,9 +233,13 @@
         "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2043.json",
         "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T204745Z.json",
         "docs/framework/evidence/r1/standalone-unit-fixture-correction.json",
-        "docs/framework/evidence/r1/fin-lock-recorder-correction.json"
+        "docs/framework/evidence/r1/fin-lock-recorder-correction.json",
+        "docs/framework/evidence/r1/company-com02-hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/CI_BROWSER_DIAGNOSTICS.md",
+        "docs/framework/evidence/r1/ci-browser-diagnostics-fresh-validation-20261015T2140Z.json",
+        "docs/framework/evidence/r1/ci-browser-diagnostics-hosted-validation-provenance.json"
       ],
-      "qualification_limit": "Local and hosted fresh-site gates passed at checkpoint e21ed89f (and earlier foundation 294d06d7). Current Company/COM02 frozen fresh-site gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases; hosted verification of this new checkpoint remains pending; failed attempts and reviewed test-only corrections are preserved. Explicit model/worker fixtures do not qualify real model/provider connections."
+      "qualification_limit": "Published 505fb754 passed isolated local and hosted fresh-site gates with 315 backend cases, seven workflow procedures, four process checks and 100 browser scenarios; eleven added reporting checks also passed. Hosted provenance records stage passes and artifact identity, not independent parsing of its raw JUnit/browser artifacts. Original f709a336 browser-stage failure remains preserved with cause unknown. These checkpoints do not qualify subsequent domain edits or real provider/model connections."
     },
     {
       "id": "INT-01",
@@ -405,9 +409,15 @@
         "docs/framework/evidence/r1/est-original-read-authority-native.json",
         "docs/framework/evidence/r1/history-literal-authority-partial-profile.json",
         "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
-        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/document-mutation-preflight-tests.json",
+        "docs/framework/evidence/r1/est-citation-batching-native.json",
+        "docs/framework/evidence/r1/est-citation-batching-runtime-reload.json",
+        "docs/framework/evidence/r1/company-authority-sql-native.json",
+        "docs/framework/evidence/r1/company-authority-sql-runtime-reload.json",
+        "docs/framework/evidence/r1/est-recorded-performance-native.json"
       ],
-      "qualification_limit": "Raw/manual/geometry accepted-baseline lineage has connected native, HTTP and actual UI evidence. Original-only historical authority, revocation/restoration and unchanged accepted bytes passed. Latest generated-input consume took 9.949 seconds with 34,211 SQL calls, above the 3-second target; full history latency remains unqualified. Public generated-document input admission remains disabled. A normally generated proposal PDF output with original-producer provenance is a separate supported path."
+      "qualification_limit": "Raw/manual/geometry accepted-baseline lineage has connected native, HTTP and actual UI evidence. Original-only historical authority, revocation/restoration and unchanged accepted bytes passed. Latest source-bound generated-input consume after reviewed citation grouping took 4.296 seconds with 15,156 SQL calls and 169 actual byte checks, above the 3-second target; full history latency remains unqualified. Public generated-document input admission remains disabled. A normally generated proposal PDF output with original-producer provenance is a separate supported path."
     },
     {
       "id": "COM-02",
@@ -485,15 +495,33 @@
       ],
       "scope": "Atomic award to project, WBS, budget, contract and Sales Order links",
       "evidence": "Repeated award yields one project/baseline; line lineage and totals reconcile",
-      "status": "planned",
-      "local_contract_status": "native_award_and_fin_admission_contracts_reviewed_writer_not_enabled",
+      "status": "active",
+      "local_contract_status": "canonical_controls_connected_cost_admin_and_plan_authoring_and_full_gate_passed_main_deployment_active_composed_award_blocked_main_disabled",
       "external_qualification_status": "not_evaluated",
       "evidence_paths": [
         "docs/framework/PRJ02_NATIVE_AWARD_CONTRACT.md",
         "docs/framework/PRJ02_FIN_ADMISSION_CONTRACT.md",
-        "docs/framework/PRJ02_HANDOFF_SCHEMA.md"
+        "docs/framework/PRJ02_HANDOFF_SCHEMA.md",
+        "docs/framework/PRJ02_COMPOSED_ACCEPTANCE_PLAN.md",
+        "docs/framework/evidence/r1/controls-inactive-migration.json",
+        "docs/framework/evidence/r1/project-controls-native-qualification.json",
+        "docs/framework/evidence/r1/project-controls-account-attribution.json",
+        "docs/framework/evidence/r1/PROJECT_CONTROLS_ACCEPTANCE_STATUS.md",
+        "docs/framework/evidence/r1/award-runtime-install-native.json",
+        "docs/framework/evidence/r1/prj02-disabled-native-preflight.json",
+        "docs/framework/evidence/r1/prj02-native-prerequisite-setup.json",
+        "docs/framework/evidence/r1/prj02-disabled-http-prerequisites.json",
+        "docs/framework/evidence/r1/prj02-enabled-policy-native.json",
+        "docs/framework/evidence/r1/prj02-ui-contracts/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/cost-setup-v2/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/saved-plan-v2/qualification.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v3-passed.json",
+        "docs/framework/evidence/r1/cost-planning-browser-origin-correction.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v4-passed.json",
+        "docs/framework/evidence/r1/cost-planning-main-deployment-v4.json",
+        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json"
       ],
-      "qualification_limit": "Implementation follows the current source checkpoint using qualified raw/manual/geometry accepted-baseline dependency lineage and mandatory native/WBS/cost/team/FIN admission. Ordinary issued PDF output provenance does not constitute disabled generated-document input. Award activation still requires actual atomicity, rollback, concurrency, revocation and recovery evidence; no award writer is currently enabled."
+      "qualification_limit": "Canonical cost controls passed ten isolated native groups. Actual independent HTTP preparation accepted a 15.00 mixed cost baseline, issued a 30.85 proposal PDF and saved the original award plan; the disabled award request returned 403 with all 51 compared tables unchanged. Four normal UI cost-code/type create/revise operations now have exact receipts and independent readback, with corrected real desktop/tablet/phone captures. One final same-handoff plan successor saved and independently read back with only the Project name changed; original source/PDF/dates/team/WBS/cost preserved. The isolated enabled source/policy passed passive preservation checks, but platform content review blocked preparation of its recovery-test driver; no native award probe or positive effect is qualified. Main award writer remains disabled. After the preserved fixture cleanup and test-only configured-origin correction, the third full 618-file checkpoint gate passed 553 unique backend cases, eight workflows and all150 browser cases with no source changes. Main backup passed; schema/preservation and web deployment remain active. Generated-document input admission remains disabled."
     },
     {
       "id": "BUY-01",
@@ -504,11 +532,13 @@
       "scope": "Requests/RFQs/quote comparisons and project procurement packages",
       "evidence": "Supplier quote normalization preserves original; unauthorized award blocked",
       "status": "planned",
-      "local_contract_status": "native_procurement_controller_contract_reviewed_implementation_pending_award",
+      "local_contract_status": "unregistered_nonpersistent_draft_slice_source_reviewed_27_pure_checks_native_adapter_pending_award",
       "external_qualification_status": "not_evaluated",
       "evidence_paths": [
-        "docs/framework/BUY_NATIVE_PROCUREMENT_CONTRACT.md"
-      ]
+        "docs/framework/BUY_NATIVE_PROCUREMENT_CONTRACT.md",
+        "docs/framework/evidence/r1/buy01-unregistered-draft-tests-v2.json"
+      ],
+      "qualification_limit": "Unpublished working follow-on; executable sources are excluded from the cost/planning checkpoint and its gate. Seven isolated unregistered files preserve original supplier values, exact unit/rate comparisons, predecessor source rights and quantity mismatch blockers. No native procurement records, public endpoint, awarded-Project adapter, purchase order or financial effect is qualified."
     },
     {
       "id": "BUY-02",
@@ -547,8 +577,12 @@
       "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
       "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
       "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "local_contract_status": "unregistered_aec_read_calculation_draft_tools_source_reviewed_47_checks_company_durable_integration_pending",
+      "external_qualification_status": "not_evaluated",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/ai04-isolated-tools-tests.json"
+      ],
+      "qualification_limit": "Unpublished working follow-on; executable sources are excluded from the cost/planning checkpoint and its gate. Four unregistered source files provide cited reads, deterministic calculations and nonpersistent reviewable drafts. Focused/neighboring tests passed without a site or model. Durable Company integration, provider/model connection and human-approved draft saves remain separate work; no domain-write or approval tool is enabled."
     },
     {
       "id": "UX-03",
@@ -562,9 +596,9 @@
       "scope": "Commercial/estimate/award/procurement pages including dense editing",
       "evidence": "Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs",
       "status": "active",
-      "local_contract_status": "company_project_estimate_preparation_issue_distribution_connected_responsive_passed_fresh_gate_passed_award_procurement_pending",
+      "local_contract_status": "cost_admin_and_final_plan_connected_passed_complete_v4_gate_and_main_readonly_ui_passed_procurement_pending",
       "external_qualification_status": "not_required_for_current_estimate_drafts",
-      "qualification_limit": "Connected Company pursuit/proposal/document/estimate acceptance and Project PDF measurement/binding/change-impact passed for captured sources. Actual prepared-PDF review, original Issue execution, separately approved recipient subset and exact fixture receipt readback passed. Final desktop/tablet/phone inbox captures verify nested workspace bounds and keyboard navigation; failed/clipped/loading captures remain explicitly unqualified. Current frozen fresh-site gate passed. Award/procurement UI await their domain dependencies. Recovery is mounted-view only; no browser-restart recovery claim.",
+      "qualification_limit": "Connected Company cost administration and final plan revision passed in the retained isolated site. Complete621-source checkpoint passed553backend/8workflow/151browser checks; corrected907-file main UI passed9 actual responsive read-only captures. Main Company cost-positive route is unexercised. Atomic award acceptance and dependent procurement remain pending. Existing mutation recovery remains mounted-view only.",
       "evidence_paths": [
         "docs/framework/evidence/r1/estimating-draft-workspace/verification.json",
         "docs/framework/evidence/r1/estimating-responsive-correction/verification.json",
@@ -580,7 +614,12 @@
         "docs/framework/evidence/r1/com02-browser/fixture-readback/verification.json",
         "docs/framework/evidence/r1/com02-browser/inbox-responsive/verification.json",
         "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
-        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/prj02-ui-connected/cost-setup-v2/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/saved-plan-v2/qualification.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v4-passed.json",
+        "docs/framework/evidence/r1/cost-planning-main-deployment-v4.json",
+        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json"
       ]
     },
     {

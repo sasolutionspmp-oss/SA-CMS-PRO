@@ -1,0 +1,273 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/playwright-award.config.mjs",
+      "--grep",
+      "cost read access|wrong root handoff",
+      "--workers=2",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/playwright-award.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "awards.spec.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "awards.spec.ts",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "awards.spec.ts",
+      "file": "awards.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "selecting reviewed cost revisions requires cost read access without cost-master write authority",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 12499,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('textbox', { name: 'Project name', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('textbox', { name: 'Project name', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Project name', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('textbox', { name: 'Project name', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('textbox', { name: 'Project name', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Project name', exact: true })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:20:168",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                      "column": 168,
+                      "line": 20
+                    },
+                    "snippet": "  18 | });\n  19 | test('selecting reviewed cost revisions requires cost read access without cost-master write authority', async ({ page }) => {\n> 20 |   const fixture = await mockAward(page, { costReadOnly: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toBeEnabled(); await expect(page.getByRole('button', { name: 'Save award plan', exact: true })).toBeEnabled(); expect(fixture.writes).toEqual([]);\n     |                                                                                                                                                                        ^\n  21 | });\n  22 | test('unqualified original estimate input blocks new award authoring without treating its ordinary Issue PDF as a cause', async ({ page }) => {\n  23 |   const fixture = await mockAward(page, { unqualified: true }); await page.goto(path);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                        "column": 168,
+                        "line": 20
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('textbox', { name: 'Project name', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" getByRole('textbox', { name: 'Project name', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('textbox', { name: 'Project name', exact: true })\u001b[22m\n\n\n  18 | });\n  19 | test('selecting reviewed cost revisions requires cost read access without cost-master write authority', async ({ page }) => {\n> 20 |   const fixture = await mockAward(page, { costReadOnly: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toBeEnabled(); await expect(page.getByRole('button', { name: 'Save award plan', exact: true })).toBeEnabled(); expect(fixture.writes).toEqual([]);\n     |                                                                                                                                                                        ^\n  21 | });\n  22 | test('unqualified original estimate input blocks new award authoring without treating its ordinary Issue PDF as a cause', async ({ page }) => {\n  23 |   const fixture = await mockAward(page, { unqualified: true }); await page.goto(path);\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:20:168"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:08:30.695Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-selecting-reviewed--2593f-cost-master-write-authority/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-selecting-reviewed--2593f-cost-master-write-authority/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-selecting-reviewed--2593f-cost-master-write-authority/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                    "column": 168,
+                    "line": 20
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "75f671c56a8f18d605d5-709824221feac865f2d3",
+          "file": "awards.spec.ts",
+          "line": 19,
+          "column": 1
+        },
+        {
+          "title": "rebase rejects a wrong root handoff even when its returned plan consistently matches that wrong root",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 14426,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /current handoff does not match this award workspace/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /current handoff does not match this award workspace/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /current handoff does not match this award workspace/ })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /current handoff does not match this award workspace/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /current handoff does not match this award workspace/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /current handoff does not match this award workspace/ })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:67:105",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                      "column": 105,
+                      "line": 67
+                    },
+                    "snippet": "  65 | test('rebase rejects a wrong root handoff even when its returned plan consistently matches that wrong root', async ({ page }) => {\n  66 |   const fixture = await mockAward(page, { stale: true, wrongRoot: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Save award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click();\n> 67 |   await expect(page.getByRole('note', { name: /current handoff does not match this award workspace/ })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed handoff version', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                         ^\n  68 | });\n  69 | test('a prior preview412 cannot rebase the local version during an in-flight save', async ({ page }) => {\n  70 |   const fixture = await mockAward(page, { previewStale: true, holdSave: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Check award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true }).check();"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                        "column": 105,
+                        "line": 67
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /current handoff does not match this award workspace/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /current handoff does not match this award workspace/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /current handoff does not match this award workspace/ })\u001b[22m\n\n\n  65 | test('rebase rejects a wrong root handoff even when its returned plan consistently matches that wrong root', async ({ page }) => {\n  66 |   const fixture = await mockAward(page, { stale: true, wrongRoot: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Save award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click();\n> 67 |   await expect(page.getByRole('note', { name: /current handoff does not match this award workspace/ })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed handoff version', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                         ^\n  68 | });\n  69 | test('a prior preview412 cannot rebase the local version during an in-flight save', async ({ page }) => {\n  70 |   const fixture = await mockAward(page, { previewStale: true, holdSave: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Check award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true }).check();\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:67:105"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:08:30.737Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-rebase-rejects-a-wr-2d83b-tly-matches-that-wrong-root/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-rebase-rejects-a-wr-2d83b-tly-matches-that-wrong-root/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-rebase-rejects-a-wr-2d83b-tly-matches-that-wrong-root/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                    "column": 105,
+                    "line": 67
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "75f671c56a8f18d605d5-b0e2606163f55b41e948",
+          "file": "awards.spec.ts",
+          "line": 65,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:08:29.230Z",
+    "duration": 16440.738999999998,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

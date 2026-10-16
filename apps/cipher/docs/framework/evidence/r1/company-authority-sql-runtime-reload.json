@@ -1,0 +1,16 @@
+{
+  "schema": "cipher.company-authority-sql-runtime-reload.v1",
+  "recorded_at": "2026-10-15T21:37:19.426925+00:00",
+  "review": "Astra source and native parity evidence clear",
+  "runtime_sources_sha256": {
+    "context.py": "5cd5feb5c7a40b0f17542aa4f814307f1520ffd095e08e686310dd3aa020b76c",
+    "permissions.py": "9c1ceff163cc27ce7eab1cbbaa7ce28d211bbcb27f604614126a7e9a4edb858f"
+  },
+  "action": {
+    "action": "graceful_gunicorn_reload",
+    "master_pid": 17,
+    "previous_worker_count": 2
+  },
+  "scope": "Graceful web reload only; no configuration/migration/provider change. Award implementation remains unregistered.",
+  "native_evidence_sha256": "2ad1a58c03e3f9189d05fcc3b53c92b7f60c07174b06c63e4e8d4fe087cba7bb"
+}

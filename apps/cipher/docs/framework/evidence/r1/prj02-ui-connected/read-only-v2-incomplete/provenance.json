@@ -1,0 +1,26 @@
+{
+  "schema": "cipher.award.connected-ui-visual-failure.v1",
+  "recorded_at": "2026-10-15T23:58:21.306746+00:00",
+  "qualification": "Actual read-only ERP browser capture. Technical checks passed, visual phone inspection failed; not a completed UI qualification.",
+  "business_posts_forwarded": 0,
+  "original_three_command_journal_unchanged": true,
+  "backend_source_count": 496,
+  "ui_source_count": 118,
+  "served_asset_count": 25,
+  "ui_epoch_sha256": "34eae1f207ddbdcf9fe80868b90fa92db486a30c8d8758373cc1d40e1ba6aa88",
+  "helper_sha256": "23f6762c3d4778d4b5396403405c6a9bbc6f1cf28b2922f229339e3c3571ee8f",
+  "visual_finding": "Phone capture shows left-edge content covered by a white navigation strip after resize. Whether this is the native collapse transition or a persistent defect requires separate settled-geometry capture.",
+  "technical_results": "Normal initial401 then200; zero unexpected console/page/external-asset errors; exact original journal and canonical target preserved; source and served asset hashes matched.",
+  "credential_scan_matches": 0,
+  "private_raw_console_and_session_bodies_omitted": true,
+  "artifacts_sha256": {
+    "verification.json": "fc5fc1647c608116c6ef017a0e6342186ea4195c1a692845872a7f2f3400bb9b",
+    "visual-finding-sidecar.json": "6824e8addc59184893b044fa9a9d965801a72bb1b95cd3d51dbb18e1b4cc5380",
+    "actual-read-only-cost-register-desktop.png": "0cb671f7b1d1380755427c1821a5941322a73f685ae3e8fd66fac365f7029e68",
+    "actual-read-only-cost-register-tablet.png": "1c967ce1d36535972f6ae59b08fe5c7b295b51cb913052d80216ed978ba6c528",
+    "actual-read-only-cost-register-phone.png": "6f19b53fb29b2e3815618a1121e894afaa32d711d0836d5777135f3990b60b29",
+    "actual-read-only-cost-select-phone.png": "2dc2a50680a6cf9140c99b88c64e72df251790b2ff636ccb7bd22b400f28bd63",
+    "ui-epoch.json": "34eae1f207ddbdcf9fe80868b90fa92db486a30c8d8758373cc1d40e1ba6aa88",
+    "ui-source-hashes.json": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8"
+  }
+}

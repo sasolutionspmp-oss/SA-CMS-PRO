@@ -1,0 +1,30 @@
+{
+  "schema": "cipher.ui.actual-artifact-manifest.v1",
+  "captured_at": "2026-10-16T02:05:10.919Z",
+  "gate_report_sha256": "7b76f058eb23721a669af566db3839691fcf72a516c21e86f75706a97c15e308",
+  "actual_frappe": true,
+  "mocked_responses": false,
+  "business_commands": 0,
+  "screenshots": 9,
+  "served_assets_byte_verified": 26,
+  "files": {
+    "README.md": "19a69a34b3cdddfc1e6382b71cfaeb07183dc59de61670edb7425e0a64dc8373",
+    "actual-original-project-tasks-1440.png": "8cceef7c8c8bb53fa995bece0bc7d6ca523de1a906e0ecc5a2ea4c000ab13214",
+    "actual-original-project-tasks-390.png": "1a7f102a7a58edb0b7428a8d34bb490d7a638cfbb2bb752bf9644269531eed9c",
+    "actual-original-project-tasks-900.png": "f522b941d711e7c4792225efb87064b7d9161fdf01e913985e2a02bc8dff234d",
+    "actual-project-register-1440.png": "d0a5c4f1b34283ba1c4298d61c087e0d00db74793a93c1b474500b21a9f92346",
+    "actual-project-register-390.png": "9e2de162f946e61342dbbf1067a4543615e25340425a106d3b16cbe7ec3def7e",
+    "actual-project-register-900.png": "dc2bd1f8c3f1a3a5c1d724ef790ae8de112116fa6dccd2afa052f3df2811fab9",
+    "actual-unavailable-ricky-1440.png": "a2cea2f81d5aeb5fdee24fff7d203004a7734b3476b0785b14c02a2620a08098",
+    "actual-unavailable-ricky-390.png": "f140011643a0c1323fcf39aba7a47858da36d8ee57251842ed5768d96acd6ea2",
+    "actual-unavailable-ricky-900.png": "ddeb0d523775180f2b4c2c93d9e605e42f3d5a5c99372351e83ecd2be1b44464",
+    "backend_source_inventory.json": "3a213e2eb5b22335371dfcffa79df3a1127b9600851526cc1453f4bdbf36371a",
+    "build_inventory.json": "fd477f0292f0f8ce573ae6ee8c3817baa678317bab6090def1b4d32442537e80",
+    "capture-helper.mjs": "9e9b7416aa0a09884b7d66b003d3a3b5eca8793d8753583521fe74bc5b1a3c2c",
+    "checkpoint_sources.json": "6a46e205f9ca546b86a1426e532651e7e739e5344f7c2a5fc47983c2d0ce57cb",
+    "full_snapshot_sources.json": "399f77f617166d857beaec9e03bffbe3b607511981cf47c71d526f3a39c01c58",
+    "prior-attempts.json": "f7f5bca32c3dc28d008898bb81afc326f5275c0751cecf84b57bc444cead81b8",
+    "ui_source_inventory.json": "e5151ab2c4400b587a48ea85c86d13651eb903e55904f7fe84b222a40341c3d8",
+    "verification.json": "9bda0da5d6dd57070ca3692b33ef4c8c31fe0e6224c19e286fd9357463b04326"
+  }
+}

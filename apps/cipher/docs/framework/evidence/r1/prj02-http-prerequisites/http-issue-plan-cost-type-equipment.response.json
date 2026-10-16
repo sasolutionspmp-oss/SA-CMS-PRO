@@ -1,0 +1,59 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-EQUIPMENT",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "4a216706-4de5-4737-b57e-2748380eb594",
+    "id": "cf68ec58-4738-41c4-8948-d194e297bd8d",
+    "kind": "type",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "87a41225-5d55-426c-aa9b-1f13d97bde32",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": "USD",
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "disabled": false,
+      "doctype": "Account",
+      "is_group": false,
+      "name": "Administrative Expenses - Q0c3c3b7",
+      "root_type": "Expense",
+      "version": "2026-10-16 04:33:06.151800"
+    },
+    "code": "AWARD-EQUIPMENT",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "component",
+      "cost_category": "equipment",
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit equipment accounting target"
+    },
+    "id": "4a216706-4de5-4737-b57e-2748380eb594",
+    "kind": "type",
+    "master_id": "cf68ec58-4738-41c4-8948-d194e297bd8d",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "d94711ae6b265cc5eaad22aa5de4fea5624ebd7cd329c9c8fce4b132c75b5d05"
+}

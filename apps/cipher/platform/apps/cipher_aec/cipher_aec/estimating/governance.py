@@ -28,16 +28,30 @@ def explicit_scope(function):
     return wrapped
 
 
-def _pinned(company, project, snapshot, actor, *, lock):
+def _citation_record(kind, record_id, company, project, actor, groups, *, lock):
+    """Defer only this builder's explicit immutable citation-bearing records."""
+    if kind not in {"revision", "snapshot", "rate", "assembly", "conversion"}:
+        raise DomainError("approval_integrity", "This record is not an immutable priced source.", 409)
+    value = service._scoped(kind, record_id, company, project, actor, lock=lock, verify=False, verify_links=False)
+    groups.extend(sources.citation_groups(kind, value))
+    return value
+
+
+def _pinned(company, project, snapshot, actor, *, lock, citation_groups):
     records = []
     for kind, group in (("rate", snapshot["inputs"]["rates"]), ("assembly", snapshot["inputs"]["assemblies"])):
+        if type(group) is not dict or len(group) > (500 if kind == "rate" else 100):
+            raise DomainError("acceptance_limit", "Use the existing bounded priced source library.", 422)
         for name, expected in sorted(group.items()):
-            value = service._scoped(kind, name, company, project, actor, lock=lock, verify_links=False)
+            value = _citation_record(kind, name, company, project, actor, citation_groups, lock=lock)
             if value["rate" if kind == "rate" else "assembly"] != expected:
                 raise DomainError("estimate_integrity", "A priced source differs from its pinned immutable revision.", 409)
             records.append({"kind": kind, "id": name, "digest": digest(value)})
-    for expected in sorted(snapshot["inputs"]["unit_manifest"]["unit_conversions"], key=lambda row: row["id"]):
-        value = service._scoped("conversion", expected["id"], company, project, actor, lock=lock, verify_links=False)
+    conversions = snapshot["inputs"]["unit_manifest"]["unit_conversions"]
+    if type(conversions) is not list or len(conversions) > 64:
+        raise DomainError("acceptance_limit", "Use the existing bounded conversion library.", 422)
+    for expected in sorted(conversions, key=lambda row: row["id"]):
+        value = _citation_record("conversion", expected["id"], company, project, actor, citation_groups, lock=lock)
         if value["definition"] != expected:
             raise DomainError("estimate_integrity", "A selected conversion differs from its priced immutable revision.", 409)
         records.append({"kind": "conversion", "id": value["id"], "digest": digest(value)})
@@ -55,13 +69,15 @@ def _binding_rows(company, project, revision_id, *, lock):
 
 def _facts(*, actor, company, project, subject_id, lock=False):
     from cipher_aec.takeoff import service as takeoff
-    revision = service._scoped("revision", subject_id, company, project, actor, lock=lock, verify_links=False)
+    citation_groups = []
+    revision = _citation_record("revision", subject_id, company, project, actor, citation_groups, lock=lock)
     master = service._scoped("estimate", revision["estimate"], company, project, actor, lock=lock, verify_links=False)
-    snapshot = service._scoped("snapshot", revision["calculation_snapshot"], company, project, actor, lock=lock, verify_links=False)
+    snapshot = _citation_record("snapshot", revision["calculation_snapshot"], company, project, actor, citation_groups, lock=lock)
+    pinned = _pinned(company, project, snapshot, actor, lock=lock, citation_groups=citation_groups)
+    sources.verify_groups(company, project, citation_groups, actor, lock=lock)
     if master["current_revision"] != subject_id:
         raise DomainError("stale_estimate", "Accept the current explicitly calculated estimate revision.", 412)
     plan = sources.pursuit_plan(company, project, master.get("pursuit_id"), actor, lock=lock)
-    pinned = _pinned(company, project, snapshot, actor, lock=lock)
     bindings = _binding_rows(company, project, subject_id, lock=lock)
     # Discover immutable unit metadata without source/native authorization.
     # Project callbacks have no outer Company union, so eager binding/line
@@ -121,14 +137,20 @@ def _historical(*, actor, company, project, subject_id, manifest, lock=False, pr
     facts = manifest.get("effect", {}).get("facts")
     if type(facts) is not dict or facts.get("policy") != MANIFEST_POLICY or facts.get("scope") != scopes.current(company, project).manifest_scope() or facts.get("revision", {}).get("id") != subject_id:
         raise DomainError("approval_integrity", "This estimate packet has a different exact scope or subject.", 409)
-    revision = service._scoped("revision", subject_id, company, project, actor, lock=lock, verify_links=False)
-    snapshot = service._scoped("snapshot", revision["calculation_snapshot"], company, project, actor, lock=lock, verify_links=False)
+    citation_groups = []
+    revision = _citation_record("revision", subject_id, company, project, actor, citation_groups, lock=lock)
+    snapshot = _citation_record("snapshot", revision["calculation_snapshot"], company, project, actor, citation_groups, lock=lock)
     if digest(revision) != facts["revision"]["digest"] or digest(snapshot) != facts["snapshot"]["digest"]:
         raise DomainError("approval_integrity", "The original accepted estimate facts cannot be verified.", 409)
+    if type(facts["pinned_records"]) is not list or len(facts["pinned_records"]) > 664:
+        raise DomainError("acceptance_limit", "Use the existing bounded original priced source library.", 422)
     for ref in facts["pinned_records"]:
-        value = service._scoped(ref["kind"], ref["id"], company, project, actor, lock=lock, verify_links=False)
+        if ref["kind"] not in {"rate", "assembly", "conversion"}:
+            raise DomainError("approval_integrity", "Original pricing references must name an immutable priced library source.", 409)
+        value = _citation_record(ref["kind"], ref["id"], company, project, actor, citation_groups, lock=lock)
         if digest(value) != ref["digest"]:
             raise DomainError("approval_integrity", "An original priced source cannot be verified.", 409)
+    sources.verify_groups(company, project, citation_groups, actor, lock=lock)
     units.verify_manifest_access({"records": facts["qualified_units"]}, revision["currency"], actor)
     # Hold original and current Pursuit native refs together before nested reads.
     master = service._scoped("estimate", revision["estimate"], company, project, actor, lock=lock, verify_links=False)

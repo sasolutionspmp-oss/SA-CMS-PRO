@@ -1,0 +1,373 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/effect.config.mjs",
+      "--workers=2",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/effect.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/effect-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "award-effect.spec.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/effect-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "award-effect.spec.ts",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "award-effect.spec.ts",
+      "file": "award-effect.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "award review opens the exact fixture PDF before independent Grant and preserves the frozen team and cost plan",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 7647,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:32:32.172Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "80102da207b91c8dc273-afcc9a79342070a8643e",
+          "file": "award-effect.spec.ts",
+          "line": 9,
+          "column": 1
+        },
+        {
+          "title": "award execution refuses an old independent Grant receipt then recovers the exact original operation through later denial",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 13929,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts:21:127",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                      "column": 127,
+                      "line": 21
+                    },
+                    "snippet": "  19 |   const fixture = await mockAwardEffect(page, { wrongGrant: true, denyRecovery: true }); fixture.grant(); await page.goto(reviewPath(fixture.packetId)); const dialog = page.locator('ui5-dialog[header-text=\"Review company approval packet\"]');\n  20 |   await dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true }).check(); await dialog.getByRole('button', { name: 'Execute approved company action', exact: true }).click();\n> 21 |   const recover = dialog.getByRole('button', { name: 'Recover company approval action', exact: true }); await expect(recover).toBeEnabled(); await expect(dialog.getByRole('button', { name: 'Close company review', exact: true })).toBeDisabled(); await recover.click(); await expect(recover).toBeEnabled(); await recover.click();\n     |                                                                                                                               ^\n  22 |   await expect(dialog.getByRole('note', { name: /independently approved action was executed/ })).toBeVisible(); expect(fixture.effects()).toBe(1); expect(fixture.writes).toHaveLength(3); expect(new Set(fixture.writes.map(row => row.raw)).size).toBe(1); expect(new Set(fixture.writes.map(row => row.key)).size).toBe(1);\n  23 | });\n  24 | test('same-key refreshed adoption props are revalidated against the original immutable Company review', async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                        "column": 127,
+                        "line": 21
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeEnabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\nExpected: enabled\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeEnabled\" locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for locator('ui5-dialog[header-text=\"Review company approval packet\"]').getByRole('button', { name: 'Recover company approval action', exact: true })\u001b[22m\n\n\n  19 |   const fixture = await mockAwardEffect(page, { wrongGrant: true, denyRecovery: true }); fixture.grant(); await page.goto(reviewPath(fixture.packetId)); const dialog = page.locator('ui5-dialog[header-text=\"Review company approval packet\"]');\n  20 |   await dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true }).check(); await dialog.getByRole('button', { name: 'Execute approved company action', exact: true }).click();\n> 21 |   const recover = dialog.getByRole('button', { name: 'Recover company approval action', exact: true }); await expect(recover).toBeEnabled(); await expect(dialog.getByRole('button', { name: 'Close company review', exact: true })).toBeDisabled(); await recover.click(); await expect(recover).toBeEnabled(); await recover.click();\n     |                                                                                                                               ^\n  22 |   await expect(dialog.getByRole('note', { name: /independently approved action was executed/ })).toBeVisible(); expect(fixture.effects()).toBe(1); expect(fixture.writes).toHaveLength(3); expect(new Set(fixture.writes.map(row => row.raw)).size).toBe(1); expect(new Set(fixture.writes.map(row => row.key)).size).toBe(1);\n  23 | });\n  24 | test('same-key refreshed adoption props are revalidated against the original immutable Company review', async ({ page }) => {\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts:21:127"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:32:32.219Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-award-executi-8a26d-ration-through-later-denial/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-award-executi-8a26d-ration-through-later-denial/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-award-executi-8a26d-ration-through-later-denial/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                    "column": 127,
+                    "line": 21
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "80102da207b91c8dc273-7118ebca91fbb2041ea7",
+          "file": "award-effect.spec.ts",
+          "line": 18,
+          "column": 1
+        },
+        {
+          "title": "same-key refreshed adoption props are revalidated against the original immutable Company review",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 12961,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /recorded award does not match its original reviewed plan/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /recorded award does not match its original reviewed plan/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts:26:110",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                      "column": 110,
+                      "line": 26
+                    },
+                    "snippet": "  24 | test('same-key refreshed adoption props are revalidated against the original immutable Company review', async ({ page }) => {\n  25 |   const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toBeVisible(); fixture.corruptReadback(); await page.getByRole('button', { name: 'Refresh award sources', exact: true }).click();\n> 26 |   await expect(page.getByRole('note', { name: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);\n     |                                                                                                              ^\n  27 | });\n  28 | test('adopted author sees Company completion without new draft actions or inferred Project access', async ({ page }) => {\n  29 |   const projectReads: string[] = []; page.on('request', request => { if (/cipher_aec\\.api\\.v1\\.projects?\\b/.test(request.url())) projectReads.push(request.url()); }); const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                        "column": 110,
+                        "line": 26
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /recorded award does not match its original reviewed plan/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /recorded award does not match its original reviewed plan/ })\u001b[22m\n\n\n  24 | test('same-key refreshed adoption props are revalidated against the original immutable Company review', async ({ page }) => {\n  25 |   const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toBeVisible(); fixture.corruptReadback(); await page.getByRole('button', { name: 'Refresh award sources', exact: true }).click();\n> 26 |   await expect(page.getByRole('note', { name: /recorded award does not match its original reviewed plan/ })).toBeVisible(); await expect(page.getByRole('region', { name: 'Recorded Company award' })).toHaveCount(0);\n     |                                                                                                              ^\n  27 | });\n  28 | test('adopted author sees Company completion without new draft actions or inferred Project access', async ({ page }) => {\n  29 |   const projectReads: string[] = []; page.on('request', request => { if (/cipher_aec\\.api\\.v1\\.projects?\\b/.test(request.url())) projectReads.push(request.url()); }); const fixture = await mockAwardEffect(page, { adopted: true }); await page.goto(path);\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts:26:110"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:32:40.096Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-same-key-refr-49e20-al-immutable-Company-review/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-same-key-refr-49e20-al-immutable-Company-review/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/effect-red-results/award-effect-same-key-refr-49e20-al-immutable-Company-review/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/award-effect.spec.ts",
+                    "column": 110,
+                    "line": 26
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "80102da207b91c8dc273-14647a6d32b76259a3ff",
+          "file": "award-effect.spec.ts",
+          "line": 24,
+          "column": 1
+        },
+        {
+          "title": "adopted author sees Company completion without new draft actions or inferred Project access",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3097,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:32:46.992Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "80102da207b91c8dc273-824113aa3598b73b2935",
+          "file": "award-effect.spec.ts",
+          "line": 28,
+          "column": 1
+        },
+        {
+          "title": "lost award review request keeps the original saved-plan snapshot and same UUID after current access denial",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3862,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:32:50.315Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "80102da207b91c8dc273-6c5999874ab6a7ebdae3",
+          "file": "award-effect.spec.ts",
+          "line": 33,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:32:30.683Z",
+    "duration": 23583.020999999997,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

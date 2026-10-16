@@ -1,0 +1,21 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.commercial.api.prepare_proposal_output",
+  "prepared_at": "2026-10-15T23:11:09.267678+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "cover": "Synthetic reviewed award origin only. No external transmission.",
+    "expected_revision_digest": "a174e918a23e04884f7380b0daf0ac834ce5d70ffadbb78f834d35720d274e62",
+    "operation_id": "c3268bea-42a8-422f-ad2a-f255fbc83da4",
+    "proposal_id": "21be2d11-ccd6-43a7-a237-1be60811030d",
+    "recipients": [
+      {
+        "email": "award.fixture@cipher.example",
+        "name": "Synthetic award recipient",
+        "organization": "Isolated fixture"
+      }
+    ],
+    "revision_id": "7bc84267-d002-44cb-b9fd-70789c04e4da"
+  }
+}

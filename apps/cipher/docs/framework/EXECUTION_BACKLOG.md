@@ -247,7 +247,7 @@ A dependency is satisfied when its required local schema/service/API contract is
 
 ### EST-03 — Estimate acceptance and frozen baseline
 
-Current qualification: raw/manual/geometry baseline lineage and original-authority revocation/restoration have connected evidence. Generated-document inputs remain disabled while command and full-history performance are qualified; the latest consume is 9.949 seconds against the 3-second target. The current frozen combined gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases.
+Current qualification: raw/manual/geometry baseline lineage and original-authority revocation/restoration have connected evidence. Generated-document inputs remain disabled while command and full-history performance are qualified; the latest source-bound consume is 4.296 seconds against the 3-second target after reviewed citation grouping. The current frozen combined gate passed with 315 backend cases, seven acceptance procedures, four process checks and 100 browser cases.
 
 - Release: R1. Status: active.
 - Required locally verified contracts: EST-02, GOV-03.
@@ -277,13 +277,19 @@ Current qualification: preparation, independent Issue, separately approved fixtu
 
 Admission boundary: follow the current source checkpoint with qualified raw/manual/geometry accepted-baseline dependencies plus the native/WBS/cost/team/FIN prerequisites in the reviewed contracts. An issued PDF generated as output retains its producer provenance and is distinct from an estimate consuming a generated document as input. Award activation requires its own atomicity, rollback, concurrency, revocation and recovery evidence.
 
-- Release: R1. Status: planned.
+Canonical cost-control foundation: [ten isolated native groups passed](evidence/r1/project-controls-native-qualification.json), with independently verified rights restoration and disclosed native Account tree-position changes from test-Company creation. This qualifies master storage/resolution and access boundaries. [Normal master administration](evidence/r1/prj02-ui-connected/cost-setup-v2/README.md) now has four actual saved operations, independent readbacks and responsive captures. Composed WBS/budget adoption and atomic award remain active. [The composed acceptance plan](PRJ02_COMPOSED_ACCEPTANCE_PLAN.md) records the required independent cases; planned cases are not completed evidence.
+
+Connected prerequisites now include an independently accepted 15.00 mixed cost baseline, an actual 30.85 issued proposal PDF and the original draft plan. The disabled award request returned `403` with unchanged compared tables. The [isolated enabled policy stage](evidence/r1/prj02-enabled-policy-native.json) preserves prior policy/business state and releases only the reviewed acceptance sequence. Positive award execution remains pending; the main action stays disabled. [One final plan successor](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md) was saved through the UI and independently read back, changing only its Project name. Browser contract fixtures and actual connected UI observations are recorded separately.
+
+- Release: R1. Status: active.
 - Required locally verified contracts: COM-02, EST-03, FIN-01.
 - Implement: Atomic award to project, WBS, budget, contract and Sales Order links.
 - Required acceptance evidence: Repeated award yields one project/baseline; line lineage and totals reconcile.
 - Record schema/API/service and unified UI or worker changes, relevant positive/denied/failure/recovery checks, source revision and artifact paths. Keep local contract verification separate from external qualification; never count a fake result as a connected provider/model.
 
 ### BUY-01 — Requests/RFQs/quote comparisons and project procurement packages
+
+Unpublished working preparation, excluded from the cost/planning checkpoint: the [unregistered draft slice](evidence/r1/buy01-unregistered-draft-tests-v2.json) passed 27 pure checks and source review. It preserves supplier originals and exact rate/quantity facts with current-source authorization. Persistence, public routes and the awarded-Project adapter await the declared dependency.
 
 - Release: R1. Status: planned.
 - Required locally verified contracts: PRJ-02.
@@ -309,6 +315,8 @@ Admission boundary: follow the current source checkpoint with qualified raw/manu
 
 ### AI-04 — Ricky scope/estimate assistance and deterministic calculation tools
 
+Unpublished working preparation, excluded from the cost/planning checkpoint: the [unregistered AEC tool slice](evidence/r1/ai04-isolated-tools-tests.json) passed 47 focused/neighboring checks and source review. Cited reads, exact deterministic calculations and nonpersistent drafts are implemented; durable Company-run integration and the actual Ricky model connection remain separate work. No domain writer or approval tool is activated.
+
 - Release: R1. Status: planned.
 - Required locally verified contracts: COM-01, EST-03, AI-03.
 - Implement: Ricky scope/estimate assistance and deterministic calculation tools.
@@ -316,6 +324,8 @@ Admission boundary: follow the current source checkpoint with qualified raw/manu
 - Record schema/API/service and unified UI or worker changes, relevant positive/denied/failure/recovery checks, source revision and artifact paths. Keep local contract verification separate from external qualification; never count a fake result as a connected provider/model.
 
 ### UX-03 — Commercial/estimate/award/procurement pages including dense editing
+
+The [complete cost/planning checkpoint](evidence/r1/cost-planning-fresh-gate-v4-passed.json) passed 553backend tests, eight workflow procedures and 151 browser cases. The [main UI capture](evidence/r1/cost-planning-main-ui-v4/README.md) passed nine actual responsive read-only screens after correcting public-asset packaging and capture readiness. Cost-authoring and final-plan evidence remain the separate connected isolated-site journeys above; positive main award and dependent procurement remain pending.
 
 - Release: R1. Status: active.
 - Required locally verified contracts: COM-02, EST-03, BUY-03, UX-02.

@@ -1,0 +1,59 @@
+{
+  "qualification": "Actual isolated ERP UI attempt; incomplete until all assertions pass.",
+  "phase": "plan",
+  "widths": [
+    1440,
+    900,
+    390
+  ],
+  "mutations": [],
+  "page_errors": [],
+  "console_errors": [],
+  "unexpected_http": [],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "source_reads": [
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.awards.api.source_preview",
+    "/api/method/cipher_aec.awards.api.delegation_policy",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.documents.company_api.download_revision",
+    "/api/method/cipher_aec.api.masters.parties",
+    "/api/method/cipher_aec.api.masters.price_lists",
+    "/api/method/cipher_aec.api.masters.award_items",
+    "/api/method/cipher_aec.awards.api.team_choices",
+    "/api/method/cipher_aec.documents.company_api.list_documents",
+    "/api/method/cipher_aec.awards.api.approval_subject"
+  ],
+  "served_assets": [],
+  "keyboard_checks": [],
+  "root_released_backend_epoch": {
+    "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+    "manifest_sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "cost_records": [],
+  "original_handoff_version": "26b6d206130cdc61086b65fc7b4e0655afa006ed2bdd0d34d9a7ba743d66d4a5",
+  "original_pdf": {
+    "revision_id": "REV-adfbcdaea2ee45909ca5733859735d74",
+    "sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b",
+    "byte_length": 11751
+  },
+  "source": {
+    "company": "Company chain A c3c3b742a8fd",
+    "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "handoff_id": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+    "plan_id": "19db2303-dd07-4a62-9437-52a73f862370",
+    "plan_digest": "75b1be2bc699006de77175c84312b8491e11b0b9439ed1c8473a5cae323f4f04"
+  },
+  "failure_category": "helper_wait_timeout",
+  "stage": "authorized read awards.api.get_handoff",
+  "failure": "Walkthrough stopped; reconcile private original command journal before any new mutation."
+}

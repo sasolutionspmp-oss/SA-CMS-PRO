@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: 845e557872cb2a74fbce8be75dd3709e64a7fa2060cc0f3bb44f8ecc6c6ec1ed
+ * Source SHA-256: 93f8e8c5248299873fd95cfb865f8461b8efcc293624da4d26ed82746f0bcd33
  * Regenerate: npm run generate:api
  */
 
@@ -352,14 +352,20 @@ export interface CompanyApprovalPacket {
   id: string;
   company: string;
   project: null;
-  action: "calibration.verify.v1" | "estimate.accept.v1" | "proposal.issue.v1" | "proposal.distribute.v1";
+  action:
+    | "calibration.verify.v1"
+    | "estimate.accept.v1"
+    | "proposal.issue.v1"
+    | "proposal.distribute.v1"
+    | "award.project.create.v1";
   subject: {
     id: string;
     type:
       | "Cipher Calibration"
       | "Cipher Estimate Revision"
       | "Cipher Proposal Revision"
-      | "Cipher Distribution Instruction";
+      | "Cipher Distribution Instruction"
+      | "Cipher Award Handoff Revision";
     label: string;
   };
   requester: Person;
@@ -435,7 +441,7 @@ export interface CompanyApprovalExecutionResponse {
 export interface NativeMasterChoice {
   id: string;
   label: string;
-  kind: "Customer" | "Lead" | "Price List" | "UOM" | "Currency" | "Item";
+  kind: "Customer" | "Lead" | "Price List" | "UOM" | "Currency" | "Item" | "Cost Center" | "Account";
   version: string;
   unit_id?: string;
   revision?: number;
@@ -444,6 +450,7 @@ export interface NativeMasterChoice {
   exponent?: number;
   currency?: string;
   stock_uom?: string;
+  company?: string;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -509,6 +516,40 @@ export interface NativeCurrenciesRequest {
  * via the `definition` "NativeItemsRequest".
  */
 export interface NativeItemsRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+  unit_id?: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeCostCentersRequest".
+ */
+export interface NativeCostCentersRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeAccountsRequest".
+ */
+export interface NativeAccountsRequest {
+  company: string;
+  query?: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none" | "exact";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "NativeAwardItemsRequest".
+ */
+export interface NativeAwardItemsRequest {
   company: string;
   query?: string;
   limit?: number;

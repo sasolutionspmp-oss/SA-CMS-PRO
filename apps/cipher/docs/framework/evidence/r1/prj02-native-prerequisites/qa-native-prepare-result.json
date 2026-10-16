@@ -1,0 +1,7 @@
+{
+  "status": "base_setup_created_requires_completion",
+  "private_manifest": "/home/frappe/frappe-bench/sites/cipher-ci-20261015213708-508077.localhost/private/cipher-fixtures/company-chain-c3c3b742a8fd.secret.json",
+  "company": "Company chain A c3c3b742a8fd",
+  "fixture_id": "company-chain-c3c3b742a8fd",
+  "next": "complete_award_prerequisites with the SAME private manifest and original setup directory"
+}

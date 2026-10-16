@@ -1,0 +1,88 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.estimating.company_api.calculate_revision",
+  "prepared_at": "2026-10-15T23:10:46.078994+00:00",
+  "role": "author",
+  "values": {
+    "adjustments": [
+      {
+        "basis_description": "10percent of rounded direct",
+        "kind": "indirect",
+        "label": "Authored indirect",
+        "line_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+        "method": "fraction_of_direct",
+        "value": "0.10"
+      },
+      {
+        "basis_description": "Exact fixed allowance",
+        "kind": "contingency",
+        "label": "Authored contingency",
+        "line_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+        "method": "fixed",
+        "value": "0.42"
+      }
+    ],
+    "basis_citations": [
+      {
+        "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+        "page": 1,
+        "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+        "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+      }
+    ],
+    "basis_description": "Authored raw manual inputs, no generated provenance/calibration",
+    "company": "Company chain A c3c3b742a8fd",
+    "conversion_ids": [],
+    "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+    "expected_revision": null,
+    "lines": [
+      {
+        "alternate": "",
+        "assembly_revision_id": "ceebabaf-eefa-40a0-b3b4-c8ca04e9c99e",
+        "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+        "description": "Mixed assembly",
+        "included": true,
+        "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8",
+        "notes": "Explicit manual fixture",
+        "quantity": {
+          "amount": "2",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        }
+      },
+      {
+        "alternate": "",
+        "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+        "description": "Separate material",
+        "included": true,
+        "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+        "material_factor": "1",
+        "notes": "Explicit manual fixture",
+        "quantity": {
+          "amount": "1",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        },
+        "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+        "waste_fraction": "0"
+      },
+      {
+        "alternate": "Excluded alternative",
+        "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+        "description": "Unfunded alternative",
+        "included": false,
+        "line_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+        "material_factor": "1",
+        "notes": "Explicit manual fixture",
+        "quantity": {
+          "amount": "4",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        },
+        "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+        "waste_fraction": "0"
+      }
+    ],
+    "operation_id": "ec502022-d98f-4164-bc50-a0baf9386e0c"
+  }
+}

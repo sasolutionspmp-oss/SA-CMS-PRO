@@ -184,3 +184,6 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .company-review-actions { display: flex; flex-wrap: wrap; gap: .375rem; min-width: 0; }
 .company-review-actions > ui5-button { flex-shrink: 0; max-width: 100%; }
 .company-review-actions > ui5-link { max-width: 100%; }
+
+.cost-accounting-facts { gap: 0.5rem; align-items: flex-start; }
+.cost-accounting-target { overflow-wrap: anywhere; }

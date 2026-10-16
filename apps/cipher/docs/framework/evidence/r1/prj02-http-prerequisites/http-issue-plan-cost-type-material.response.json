@@ -1,0 +1,59 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-MATERIAL",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+    "id": "9d21627b-cffa-4e78-aaf5-01013bf5c406",
+    "kind": "type",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "afaf5a35-e8a5-4f82-8936-f7a73aaefc43",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": "USD",
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "disabled": false,
+      "doctype": "Account",
+      "is_group": false,
+      "name": "Administrative Expenses - Q0c3c3b7",
+      "root_type": "Expense",
+      "version": "2026-10-16 04:33:06.151800"
+    },
+    "code": "AWARD-MATERIAL",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "component",
+      "cost_category": "material",
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit material accounting target"
+    },
+    "id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+    "kind": "type",
+    "master_id": "9d21627b-cffa-4e78-aaf5-01013bf5c406",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "c082694061636555c826b92763f7686f34735a1cd819a1c7d8195f432c1beb0d"
+}

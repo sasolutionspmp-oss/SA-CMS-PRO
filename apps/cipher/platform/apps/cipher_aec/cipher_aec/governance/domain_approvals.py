@@ -16,6 +16,7 @@ class Action:
     enabled: bool = True
 
 ACTIONS = {
+    "award.project.create.v1": Action("award.project.create.v1", "Cipher Award Handoff Revision", "Independent full pursuit award and initial Project team", "commercial.read", "commercial.award", "CIPHER-AWARD-PROJECT-CREATE-POLICY-V1", ("Company",), True, False),
     "calibration.verify.v1": Action("calibration.verify.v1", "Cipher Calibration", "Synthetic independent calibration verification", "estimate.read", "estimate.write", "CIPHER-CALIBRATION-VERIFY-POLICY-V1", ("Project", "Company"), True),
     "contract.baseline.activate.v1": Action("contract.baseline.activate.v1", "Cipher Construction Contract", "Synthetic independent construction baseline acceptance", "contract.read", "contract.write", "CIPHER-CONTRACT-BASELINE-POLICY-V1"),
     "estimate.accept.v1": Action("estimate.accept.v1", "Cipher Estimate Revision", "Independent estimate baseline acceptance", "estimate.read", "estimate.write", "CIPHER-ESTIMATE-ACCEPT-POLICY-V1", ("Project", "Company"), True),
@@ -41,6 +42,9 @@ def definition(action, scope_type="Project"):
 
 def callbacks(action, scope_type="Project"):
     spec_for(action, scope_type)
+    if action == "award.project.create.v1":
+        from cipher_aec.awards.governance import approval_manifest, authorize_subject, apply_award
+        return approval_manifest, authorize_subject, apply_award
     if action == "calibration.verify.v1":
         from cipher_aec.takeoff.governance import approval_manifest, authorize_subject, apply_verification
         return approval_manifest, authorize_subject, apply_verification
@@ -105,3 +109,16 @@ def subject_label(manifest):
 def request_action(company, project, action, subject_id, expected_version, operation_id, *, scope_type="Project"):
     from .approvals import request_action as request
     return request(company, project, action, subject_id, expected_version, operation_id, scope_type=scope_type)
+
+
+def participant_people(action, company, subject_id, *, scope_type="Project", lock=False):
+    """Literal immutable metadata discovery, never source/delegation authority."""
+    if action != "award.project.create.v1":return ()
+    spec_for(action, scope_type)
+    from cipher_aec.awards.service import participant_people as discover
+    return discover(company,subject_id,lock=lock)
+
+
+def require_participants(action,company,subject_id,known,*,scope_type="Project"):
+    if action == "award.project.create.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):
+        raise DomainError("award_participants_changed", "The exact canonical participant plan changed. Retry after reviewing it.", 409)

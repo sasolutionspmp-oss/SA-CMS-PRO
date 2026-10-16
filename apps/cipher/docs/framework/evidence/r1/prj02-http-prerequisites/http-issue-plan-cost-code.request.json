@@ -1,0 +1,22 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.project_controls.company_api.create_master",
+  "prepared_at": "2026-10-15T23:11:18.413556+00:00",
+  "role": "author",
+  "values": {
+    "code": "AWARD-WORK",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Cost Center",
+        "name": "Main - Q0c3c3b7"
+      },
+      "title": "Explicit existing leaf Cost Center"
+    },
+    "kind": "code",
+    "operation_id": "2675ff2a-3106-435e-87e7-a03b9e5d8512"
+  }
+}

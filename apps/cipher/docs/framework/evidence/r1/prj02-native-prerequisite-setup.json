@@ -1,0 +1,166 @@
+{
+  "artifacts": {
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/independent-account-attribution.json": "b41793dc8c5a14737aa80256374c9c195e0f940587a88578a9f0ec8aa6ab5416",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/independent-currency-attribution.json": "41087aa7f11540efcc998503fc5d520c6e9df67b81ca3c3f90069e0f740e4d82",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-currency-installed-source.json": "4f097659fb6115e21eda4bb499ef18ca8722ca637e638f7bbaa062ff09e9bf0d",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-complete-invocation.json": "75e8b39e25e3571c0d3a36a56dcc7055e566c8690da2da3abaf611229ab27594",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-complete-receipt.json": "4e4b4edaac803ef30218fc66e9e28204af8f7adf2a372c26d09ecab2485ac598",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-complete-result.json": "a6a235d6400ce50a24a01e7c79627f0b5c2871bbcc3a479f9027f67eceb2a9af",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-complete.log": "b0924d317e0fd84516e0a2207d5bd2e600d2eb98f90e6c4d90a7ca23574f94d1",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-prepare-invocation.json": "402e945dd014e1fbbe0ceb61fc57581be42f34530d509f81886fb81801389c05",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-prepare-receipt.json": "6588a04df8226ff37ff9f1b3c46410ec69ea2b6fd3be7448d014c2b7de3e4530",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-prepare-result.json": "25dbd52206d00bd8e83c4bad8222d2ea3406106eac00edd52f3d678f9c27b2d1",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-prepare.log": "ac6e1699cce389cde766b1d13048f7ac4fcde8811901717d5056b53d2704f816",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-preservation-invocation.json": "6cea72fea5dc64da24057d43cdfb69445f179d4bab5b292cb841576a4f20c937",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-preservation-receipt.json": "75fd9c65b367bcc440ba2578c799a1bc45b3f67880c07d7ff0ef262460e7b27c",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-preservation-result.json": "1f454b4326beca4980b3c0cfd5c173ca0a1acbd4772232e76ab706ce606093c4",
+    "apps/cipher/docs/framework/evidence/r1/prj02-native-prerequisites/qa-native-preservation.log": "cd68094ca82bcdcae817ae448e7cd7a239660543dae806c71ff7a12c83151e61"
+  },
+  "award_executed": false,
+  "award_requested": false,
+  "company": "Company chain A c3c3b742a8fd",
+  "fixture_id": "company-chain-c3c3b742a8fd",
+  "http_invoked": false,
+  "invocations": {
+    "complete": {
+      "completed_at": "2026-10-15T23:03:47.588885+00:00",
+      "log_path": "/tmp/cipher-award-native-20261015/qa-native-complete.log",
+      "log_sha256": "b0924d317e0fd84516e0a2207d5bd2e600d2eb98f90e6c4d90a7ca23574f94d1",
+      "returncode": 0,
+      "seconds": 3.474308,
+      "started_at": "2026-10-15T23:03:44.114437+00:00"
+    },
+    "prepare": {
+      "completed_at": "2026-10-15T23:03:22.101654+00:00",
+      "log_path": "/tmp/cipher-award-native-20261015/qa-native-prepare.log",
+      "log_sha256": "ac6e1699cce389cde766b1d13048f7ac4fcde8811901717d5056b53d2704f816",
+      "returncode": 0,
+      "seconds": 17.374647,
+      "started_at": "2026-10-15T23:03:04.726831+00:00"
+    },
+    "preservation": {
+      "completed_at": "2026-10-15T23:04:11.733322+00:00",
+      "log_path": "/tmp/cipher-award-native-20261015/qa-native-preservation.log",
+      "log_sha256": "cd68094ca82bcdcae817ae448e7cd7a239660543dae806c71ff7a12c83151e61",
+      "returncode": 0,
+      "seconds": 1.168258,
+      "started_at": "2026-10-15T23:04:10.564897+00:00"
+    }
+  },
+  "main_runtime_touched": false,
+  "new_setup_rows": {
+    "Account": {
+      "changed": 272,
+      "deleted": 0,
+      "inserted": 194
+    },
+    "Cipher Command Receipt": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 4
+    },
+    "Cipher History Event": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 1
+    },
+    "Cipher Project Duty": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 71
+    },
+    "Cost Center": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 4
+    },
+    "Currency": {
+      "changed": 1,
+      "deleted": 0,
+      "inserted": 0
+    },
+    "DocShare": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 5
+    },
+    "Project": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 1
+    },
+    "Task": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 1
+    },
+    "UOM": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 3
+    },
+    "Version": {
+      "changed": 0,
+      "deleted": 0,
+      "inserted": 7
+    }
+  },
+  "original_intents_repeated": false,
+  "original_preservation": {
+    "artifact": "prj02-native-prerequisites/qa-native-preservation-result.json",
+    "preserved_unchanged": true,
+    "status": "unresolved"
+  },
+  "other_company": "Company chain B c3c3b742a8fd",
+  "private_retained_inputs": [
+    "Original full Account rows before both Company creations",
+    "Original credential manifest and precommit exact native unit/Task UUID/body journal",
+    "Original SQL backup retained by root"
+  ],
+  "qualification": "Native prerequisite setup and separately attributed setup maintenance only. Provisioning Version/DocShare rows are disclosed and do not qualify award callback behavior. No actual baseline/Issue/award HTTP, award effect, composed rollback, FIN floor, legal execution, posting or live provider is qualified.",
+  "recorded_at": "2026-10-15T23:07:13.500877+00:00",
+  "runtime": {
+    "container": "cipher-award-epochs-20261015",
+    "epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "frozen_files": 496,
+    "release_manifest_sha256": "2359f224d315ce73cfc245220e605e99953d438a223382863ae65efdd035449f",
+    "site": "cipher-ci-20261015213708-508077.localhost",
+    "source_changes": []
+  },
+  "runtime_idle": true,
+  "schema": "cipher.award.native-prerequisite-qualification.v1",
+  "separate_attribution": {
+    "accounts": {
+      "all_other_original_columns_unchanged": true,
+      "ancestor_relations_unchanged": true,
+      "changed_fields_only": [
+        "lft",
+        "rgt"
+      ],
+      "full_original_row_preservation": false,
+      "new_rows": 194,
+      "new_rows_only_exact_two_fixture_companies": true,
+      "old_rows_changed": 272,
+      "original_ancestor_pairs": 752,
+      "original_rows": 388
+    },
+    "currencies": {
+      "after": "2026-10-16 04:33:08.505734",
+      "all_other18_usd_fields_unchanged": true,
+      "before": "2026-10-16 03:32:37.454220",
+      "changed_fields_only": [
+        "modified"
+      ],
+      "changed_original_name": "USD",
+      "changed_rows": 1,
+      "full_original_row_preservation": false,
+      "new_rows": 0,
+      "original_rows": 149,
+      "other148_rows_unchanged": true
+    },
+    "installed_path": "Company.on_update406-407 unconditionally sets default Currency enabled=1; Database.set_value934 defaults update_modified=True; _get_update_dict830-839 supplies modified timestamp. Supported native Company/chart insertion rebuilds Account tree. No repair/rebaseline.",
+    "review": "Astra source/exact-backup attribution closed; continuation awaits root separate HTTP slot."
+  },
+  "source_config_changed": false,
+  "status": "native_setup_created_with_separate_attributed_maintenance"
+}

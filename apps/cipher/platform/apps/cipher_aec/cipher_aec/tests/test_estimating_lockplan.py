@@ -136,7 +136,9 @@ class CompleteSourceUnionTests(unittest.TestCase):
 
     def test_generated_gate_stays_closed_and_admission_is_required_when_enabled(self):
         from cipher_aec.estimating import sources
-        with patch.object(provenance, "source_plan", return_value=merge(self.plan)):
+        node = self.plan["generated_sources"][0]
+        source = {"generated": True, "document_id": node["document_id"], "revision_id": "revision", "input_digest": node["input_digest"]}
+        with patch.object(provenance, "mutation_source_identity", return_value=source):
             with patch.object(sources, "GENERATED_INPUTS_QUALIFIED", False):
                 with lockplan.prepared(self.plan, self.actor, self.company):
                     self.denied(lambda: sources.require_raw_mutation_source(self.company, "revision", self.actor), "source_dependency_unqualified")

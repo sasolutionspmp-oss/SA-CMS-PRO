@@ -1,0 +1,24 @@
+{
+  "started_at": "2026-10-15T23:03:44.114437+00:00",
+  "command": [
+    "/workspace/cipher-framework-draft/apps/cipher/platform/deployment/docker-local.sh",
+    "exec",
+    "--workdir",
+    "/home/frappe/frappe-bench",
+    "--env",
+    "PYTHONPATH=/opt/cipher-award-epochs/disabled/workspace/apps/cipher/platform/apps/cipher_aec",
+    "cipher-award-epochs-20261015",
+    "timeout",
+    "--signal=INT",
+    "--kill-after=30s",
+    "120s",
+    "bench",
+    "--site",
+    "cipher-ci-20261015213708-508077.localhost",
+    "execute",
+    "cipher_aec.tests.test_award_prerequisites.complete_award_prerequisites",
+    "--kwargs",
+    "{'private_manifest': '/home/frappe/frappe-bench/sites/cipher-ci-20261015213708-508077.localhost/private/cipher-fixtures/company-chain-c3c3b742a8fd.secret.json', 'setup_directory': '/opt/cipher-award-epochs/disabled/private/setup', 'repository': '/opt/cipher-award-epochs/disabled/workspace', 'release_manifest': '/opt/cipher-award-epochs/disabled/acceptance-release.json'}"
+  ],
+  "original_private_manifest": "/home/frappe/frappe-bench/sites/cipher-ci-20261015213708-508077.localhost/private/cipher-fixtures/company-chain-c3c3b742a8fd.secret.json"
+}

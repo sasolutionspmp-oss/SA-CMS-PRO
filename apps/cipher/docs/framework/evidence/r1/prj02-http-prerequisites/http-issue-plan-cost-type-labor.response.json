@@ -1,0 +1,59 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-LABOR",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+    "id": "fcbebb28-674e-42d0-83ed-5daca00986e0",
+    "kind": "type",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "472ae7bd-d760-46e3-a4bf-bcd96618d921",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": "USD",
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "disabled": false,
+      "doctype": "Account",
+      "is_group": false,
+      "name": "Administrative Expenses - Q0c3c3b7",
+      "root_type": "Expense",
+      "version": "2026-10-16 04:33:06.151800"
+    },
+    "code": "AWARD-LABOR",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "component",
+      "cost_category": "labor",
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit labor accounting target"
+    },
+    "id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+    "kind": "type",
+    "master_id": "fcbebb28-674e-42d0-83ed-5daca00986e0",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "62f78b1bb45eeaf67f4358d6503ee556c65fabf0433b4b45bad6c8746658bd88"
+}

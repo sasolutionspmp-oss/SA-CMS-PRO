@@ -16,6 +16,8 @@ def append_event(*, actor, company, project, event, subject_type, subject_id, op
         "actor_person": actor.person_id, "event": event, "subject_type": subject_type, "subject_id": subject_id,
         "operation_id": operation_id, "details_json": canonical_json(details), "previous_hash": body["previous_hash"],
         "event_hash": digest(body), "event_payload": canonical_json(body)})
+    from cipher_aec.awards.runtime import quiet_award_write
+    quiet_award_write(record)
     record.insert(ignore_permissions=True)
     return record.name
 
@@ -38,5 +40,7 @@ def append_company_event(*, actor, company, event, subject_type, subject_id, ope
         "actor_person": actor.person_id, "event": event, "subject_type": subject_type, "subject_id": subject_id,
         "operation_id": operation_id, "details_json": canonical_json(details), "previous_hash": body["previous_hash"],
         "event_hash": digest(body), "event_payload": canonical_json(body)})
+    from cipher_aec.awards.runtime import quiet_award_write
+    quiet_award_write(record)
     record.insert(ignore_permissions=True)
     return record.name

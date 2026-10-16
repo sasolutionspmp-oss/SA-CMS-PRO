@@ -1,0 +1,274 @@
+{
+  "schema": "cipher.project-controls.native-qualification.v1",
+  "status": "passed_foundation_with_disclosed_native_tree_delta",
+  "recorded_at": "2026-10-15T22:12:28.024501+00:00",
+  "container": "cipher-controls-native-20261015",
+  "site": "cipher-ci-20261015213708-508077.localhost",
+  "company": "COM-01 isolated company 6740305ae8",
+  "native": {
+    "schema": "cipher.project-controls.native-acceptance.v1",
+    "status": "passed",
+    "company": "COM-01 isolated company 6740305ae8",
+    "checks": [
+      "company_canonical_master_person_alias_same_uuid_and_changed_payload_conflict",
+      "casefold_identity_uniqueness_sql_keyset_exact_visible_pages_and_signed_count_filter_binding",
+      "successor_rechecks_prior_authored_currency_and_foreign_company_target_under_complete_union",
+      "metadata_plan_does_not_admit_and_complete_outer_native_union_resolves_exact_targets",
+      "separate_connection_old_rr_native_account_currency_change_fails_closed_without_late_currency_lock",
+      "effective_future_successor_stales_new_use_without_rewriting_exact_historical_revision",
+      "master_disable_blocks_new_adoption_preserves_original_completed_receipt",
+      "disabled_native_original_history_is_readable_but_current_native_revoke_hides_read_receipt_and_counts",
+      "generic_trusted_write_and_unregistered_award_factory_refused_no_native_master_or_posting_effect",
+      "full_budget_requires_wbs_and_budget_before_get_list_count_wbs_only_and_exact_line_reference_stay_separate"
+    ],
+    "checks_passed": 10,
+    "native_first_acquisitions": [
+      [
+        "currency",
+        "USD"
+      ],
+      [
+        "account",
+        "Administrative Expenses - C6740305"
+      ],
+      [
+        "cost center",
+        "Main - C6740305"
+      ]
+    ],
+    "native_lock_acquisition_count": 9,
+    "native_all_acquisitions": [
+      [
+        "currency",
+        "USD"
+      ],
+      [
+        "account",
+        "Administrative Expenses - C6740305"
+      ],
+      [
+        "cost center",
+        "Main - C6740305"
+      ],
+      [
+        "cost center",
+        "Main - C6740305"
+      ],
+      [
+        "currency",
+        "USD"
+      ],
+      [
+        "currency",
+        "USD"
+      ],
+      [
+        "account",
+        "Administrative Expenses - C6740305"
+      ],
+      [
+        "currency",
+        "USD"
+      ],
+      [
+        "currency",
+        "USD"
+      ]
+    ],
+    "account_currency_current_read": {
+      "status": "passed",
+      "qualification": "real MariaDB two-connection fixture scalar drift; no Account migration/posting claim",
+      "isolation": "REPEATABLE-READ",
+      "different_connections": true,
+      "refusal": {
+        "code": "native_snapshot_serialization_conflict",
+        "native_code": 1020
+      },
+      "account_currency_restored": true,
+      "fresh_original_source_resolved": true
+    },
+    "prior_source_authority": {
+      "status": "passed",
+      "checks": [
+        "prior_authored_usd_in_current_alternate_union_and_actual_usd_denial_blocks_successor",
+        "prior_native_foreign_company_refused_even_with_distinct_eligible_new_own_company_target"
+      ],
+      "old_revision_digest_unchanged": "7c74ada03c1b739fddbad0742e341ad41717360a3872ab3a3271465190469f74",
+      "own_native_accounts_and_user_permission_restored": true,
+      "allowed_current_currency": "EUR",
+      "denied_original_currency": "USD",
+      "before_counts": {
+        "Cipher Cost Type Revision": 1,
+        "Cipher Command Receipt": 3,
+        "Cipher History Event": 3
+      },
+      "qualification": "real native Currency permission; Company/currency mutations are isolated fixture-only scalars, not supported Account migration"
+    },
+    "qualification": "canonical master storage/current-native/effective-history only; full composed award/WBS/budget adoption pending",
+    "native_counts_unchanged": {
+      "Cost Center": 9,
+      "Account": 388,
+      "Sales Order": 0,
+      "Budget": 0,
+      "GL Entry": 0
+    },
+    "live_provider_qualified": false,
+    "posting_qualified": false
+  },
+  "invocation": {
+    "schema": "cipher.controls.native-invocation.v1",
+    "state": "exited",
+    "started_at": "2026-10-15T22:02:34.972609+00:00",
+    "container": "cipher-controls-native-20261015",
+    "site": "cipher-ci-20261015213708-508077.localhost",
+    "method": "cipher_aec.tests.test_project_controls_acceptance.run_acceptance",
+    "source_sha256": "1ac7dffb4661b61d1787e10dce06d24cc229395486a20fd2a8cee3565b46953b",
+    "snapshot": "/tmp/cipher-controls-native-20261015/workspace",
+    "attempt": 1,
+    "deadline_seconds": 180,
+    "signal": "INT; kill after30seconds",
+    "main_runtime_mutated": false,
+    "award_calls_authorized": false,
+    "exit_code": 0,
+    "finished_at": "2026-10-15T22:02:50.441442+00:00",
+    "log_sha256": "a1ffc38ca8b3c539479299ba02d147cb14d2487287b2b68ba777c20451001383"
+  },
+  "duration_seconds": 15.469,
+  "source_binding": {
+    "frozen_snapshot": "/tmp/cipher-controls-native-20261015/workspace",
+    "platform_sources_checked": 482,
+    "platform_sources_changed": [],
+    "owned_source_sha256": {
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_line/cipher_budget_line.json": "b3d60fdecf7d0285ab1da20fedeb4cdabc3fc30db34c2d3e72df73f3aacd6239",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_line/cipher_budget_line.py": "61e3a59a3e218f5aad7b7143d3b151db612fb1433d7d9526273b33ea3e670b1b",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_version/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_version/cipher_budget_version.json": "97338b3a44c84c4fd40a14f888efe2add14ee7aa7918d14386f322e1928b5abb",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_budget_version/cipher_budget_version.py": "a3a6ac500f766a99827264b2689c99e539afd0c34c9cf19e5f0bec9f4bc1b2a2",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code/cipher_cost_code.json": "d6c312f6787985e1bf9a4c6cb1bdbe66047aada2dc538cf98dc1b6a5d4ad8da0",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code/cipher_cost_code.py": "52f86170deea923a93b440d864dd3940f6b4cc9ea1b0c953487d082bd2a16b29",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code_revision/cipher_cost_code_revision.json": "72f8c4f9706f6f81c649344d9e3f8d7022d8fd30291ebbe73e400e046d7feaf5",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_code_revision/cipher_cost_code_revision.py": "b04a91dbaed95a9857f0ef339b7725a237e4628741b8e6fa3040a67760396c7d",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type/cipher_cost_type.json": "5b621b8fb0f55e6ffd0838493004d2888f80c1cade806759bb904781b66e42ed",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type/cipher_cost_type.py": "7d5ec09337362b843c0943f331ddd1e4f54e1ebb3d2d47c42ec0c12df0782004",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type_revision/cipher_cost_type_revision.json": "eff3db4cf855901a0425da12d4d6ef7626a45f6664ec8d5151851bd1186f0964",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_cost_type_revision/cipher_cost_type_revision.py": "0b3117b29875262501a14bb1dbdc05f624b081b8e4ecb10c32bf437e5ea9990c",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_wbs_node/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_wbs_node/cipher_wbs_node.json": "acc4ae43ad0e3a0a775d8d26d27bda148fc8b2f99e784a89aa5bedfe86d8d04f",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_project_controls/doctype/cipher_wbs_node/cipher_wbs_node.py": "cf85123a8f6b942d18d81376bc4d56fb0729038d9618e79a6f75675d0b555d85",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/README.md": "c89c649e73b607474d4fe071ca630944c5d12bb27412feb62c4f7e5f71057282",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/__init__.py": "6cea9cc4dc0c0ae1e19d7d9f55407ed3fc1a6b26530cc25324664c820989d61b",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/adoption.py": "cf375d53e89caf4e0948dbed6c22ce50a58cccba5aa46c69ae79e517b7d5ef63",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/api.py": "9ce7d79b8fe83f4759b7fe4e59481448ba0eeac1ff7314c8ead28a5238b7361e",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/company_api.py": "c63923091f966d161447e8ada70657c342c3344ce7e474fef4f5cbe4a43ea500",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/core.py": "bc3937252fb9002af72d25efa32ad3d734e8701de41d325308005a6d2aaca632",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/install.py": "6b8fa04de1277fea122839886b9f9aa5921e0f22388b940bfd7337dcd6902cdc",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/masters.py": "dc6f1bd134db5944858f640155a092055676324f4d0837176eb03181500e06d8",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/permissions.py": "dfcc6792ee2a14be9308683a823fb30aa9c354773e08b9f3c29c7f685f8a683f",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/records.py": "4742a9e4c3f88fca2854b80f7dae7e1830d98d175e1f925fd5f127459d275677",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/repository.py": "b6293e360d0ccfccaefac3fb2d2430ea82d7a6f36ed5d32d70a3443bedd085fb",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/schemas/api-v1.schema.json": "5a40062cb083e03956abb173a8e7d6baa53bdb17012d38319a390a6ec26fa146",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/service.py": "eb7855da547ad5fa38b6b0365b2f834aac633800f57d20ce92dbbecd2768d271",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_project_controls.py": "a52a2c17d0be214c8736da288a6505b0e6be54e1514b617b792ee74d30681477",
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_project_controls_acceptance.py": "1ac7dffb4661b61d1787e10dce06d24cc229395486a20fd2a8cee3565b46953b"
+    },
+    "qualified_original_helper_sha256": "1ac7dffb4661b61d1787e10dce06d24cc229395486a20fd2a8cee3565b46953b",
+    "current_workspace_delta": [
+      "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_project_controls_acceptance.py"
+    ],
+    "pending_helper_sha256": "ee4b7fd5112cc6d6a1dcd1bfe8a5988d5a25dee02db88a4ab5471afbbd84cf3b",
+    "pending_helper_qualification": "Separate optional Currency-prerequisite fixture correction; not copied or executed in this proof."
+  },
+  "preservation": {
+    "metadata_migration_before_fixture": "Root verified56trackedtables all original rows/columns preserved before this fixture.",
+    "post_fixture_old_tables_fully_unchanged": 55,
+    "all_old_account_columns_unchanged": false,
+    "account_original_rows": 291,
+    "account_old_rows_changed": 291,
+    "account_changed_fields": {
+      "lft": 291,
+      "rgt": 291
+    },
+    "account_non_tree_columns_unchanged": 27,
+    "account_non_tree_sha256": "6e1a8b520a66fe624821d5edee641b4ec5672c0610bd9bd06a7e9d4fcaaab618",
+    "new_account_rows": 97,
+    "new_account_company": "COM-01 isolated company 6740305ae8",
+    "qualification": "All291original Account rows retain every non-tree field; lft/rgt changed through supported synthetic Company chart setup. Full Account row hash is changed, not preserved.",
+    "source_path": [
+      "test_commercial_acceptance.setup_fixture -> _ensure_company -> native Company.insert",
+      "erpnext/setup/doctype/company/company.py:378 Company.on_update -> :388 create_default_accounts -> :467 create_charts",
+      "erpnext/accounts/doctype/account/chart_of_accounts/chart_of_accounts.py:69-73 rebuild_tree(\"Account\")"
+    ],
+    "astra_independent_local_artifact_check": {
+      "original_ancestor_relationships": 564,
+      "relationships_unchanged": true,
+      "runtime_queries": 0,
+      "kind": "collaboration review of retained original rows and exact deltas"
+    }
+  },
+  "restoration": {
+    "fresh_connection_readback_status": "passed_with_disclosed_native_tree_delta",
+    "owned_user_permission_rows": 0,
+    "native_read_rights": {
+      "Cost Center": true,
+      "Account": true,
+      "Currency": true
+    },
+    "own_accounts": [
+      {
+        "name": "Administrative Expenses - C6740305",
+        "company": "COM-01 isolated company 6740305ae8",
+        "account_currency": "USD"
+      },
+      {
+        "name": "Bank Charges - C6740305",
+        "company": "COM-01 isolated company 6740305ae8",
+        "account_currency": "USD"
+      }
+    ],
+    "enabled_currency_preflight_matches": true,
+    "pending_mutation": false,
+    "main_runtime_mutated": false
+  },
+  "qualified": {
+    "canonical_master_native_storage": true,
+    "current_native_rights_and_predecessor_authority": true,
+    "effectivity_and_historical_disabled_originals": true,
+    "native_case_alias_refusal": true,
+    "sql_paging_and_current_counts": true,
+    "rr_fail_closed_1020_and_fresh_retry": true,
+    "composed_award_adoption": false,
+    "positive_persisted_wbs_budget_factory": false,
+    "actual_http": false,
+    "live_provider": false,
+    "posting": false,
+    "certified_floor": false
+  },
+  "readback_diagnostics": {
+    "private_directory": "/tmp/cipher-controls-native-20261015",
+    "preserved_errors_sha256": {
+      "controls-independent-readback-attempt1-error.log": "db31649ef567bc54323faf071a29d6fc85da94c219ca6b8137f880f34d57c1e1",
+      "controls-independent-readback-attempt2-error.log": "b5f2a0b187c547dbdbe2a5ffe1dd87c35dbd2b037d591fec6fce184fa2bd9e9c",
+      "controls-account-attribution-attempt1-error.log": "294b323b20ace85546b13d13542211d8360b68e35ad6b1674137466743142dc6",
+      "controls-account-attribution-attempt2-error.log": "c414c3a961882218dd3c931eab443ddd67bf6d28516d69bab76f127d480111eb"
+    },
+    "corrections": [
+      "First readback failed before DBconnect: direct Python required sites cwd for logger.",
+      "Second readback surfaced actual full Account hash delta; preserved.",
+      "Attribution parser corrected pinned Frappe DECIMAL-to-float conversion only after validating reconstructed baseline hash; Counter used changed keys. No DB writes/fixture rerun."
+    ]
+  },
+  "artifacts_sha256": {
+    "apps/cipher/docs/framework/evidence/r1/project-controls-native-acceptance.log": "a1ffc38ca8b3c539479299ba02d147cb14d2487287b2b68ba777c20451001383",
+    "apps/cipher/docs/framework/evidence/r1/project-controls-native-invocation.json": "d619701b9e73bc47ebfd3cf694545c74b4f227b24621158795992c0a5fb1adeb",
+    "apps/cipher/docs/framework/evidence/r1/project-controls-independent-readback.json": "b55b59ca4f31bc74f9c89ba67a575a9d406c435c395a811d78fbe3564557e4f8",
+    "apps/cipher/docs/framework/evidence/r1/project-controls-account-attribution.json": "30a2f8a10f5d749c74540294f72ff7f183cf2575b1d1e8cbe627be49e714f30a"
+  },
+  "runtime_final_state": "original fixture once exited0; all independent read connections rolled back/closed; no pending mutation; no main runtime/config or award invocation"
+}

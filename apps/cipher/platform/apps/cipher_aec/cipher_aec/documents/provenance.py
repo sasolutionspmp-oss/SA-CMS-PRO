@@ -167,6 +167,48 @@ def producer_fields(value):
     return {key: row[key] for key in ("producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json")}
 
 
+def mutation_source_identity(company, revision_id, actor):
+    """Metadata-only preflight immediately before a canonical mutation read.
+
+    This grants neither source authority nor resource admission. Generated
+    sources need their exact node in the caller's existing complete lock token;
+    the following canonical citation/source reader still checks the full
+    resource subset, original permissions, availability and actual bytes.
+    """
+    from cipher_aec.governance.context import require_company
+    from .repository import FrappeDocumentRepository
+    require_company(company, ability="document.read", actor=actor, lock=True)
+    if type(revision_id) is not str or not 1 <= len(revision_id) <= 140:
+        _denied()
+    repo = FrappeDocumentRepository("Company")
+    locator = repo.revision_locator(revision_id)
+    def exact_scope(row):
+        return row.get("scope_type") == "Company" and row.get("company") == company and row.get("project") is None
+    if not exact_scope(locator) or locator.get("name") != revision_id:
+        _denied()
+    # The immutable locator discovers identity only. Current locking reads take
+    # the parent before its revision, as the canonical document command does.
+    parent = repo.document(locator["document"], lock=True)
+    if not exact_scope(parent) or parent.get("name") != locator["document"]:
+        _denied()
+    revision = repo.revision(revision_id, lock=True)
+    if not exact_scope(revision):
+        _denied()
+    fields = ("producer_kind", "producer_reference", "producer_input_digest", "producer_binding_json")
+    if (revision.get("name") != revision_id or revision.get("document") != parent["name"]
+            or any((revision.get(field) or None) != (parent.get(field) or None) for field in fields)):
+        raise DomainError("source_integrity", "The source revision identity cannot be verified.", 409)
+    generated = binding(parent) is not None
+    checksum = parent.get("producer_input_digest") if generated else None
+    if generated:
+        held = _prelocked.get()
+        if (held is None or held[:3] != (actor.user, actor.person_id, company)
+                or (parent["name"], checksum) not in held[3] or not _admission_valid()):
+            raise DomainError("source_prelock_required", "This generated source requires its exact existing dependency lock admission.", 409)
+    return {"generated": generated, "document_id": parent["name"],
+            "revision_id": revision_id, "input_digest": checksum}
+
+
 @contextmanager
 def prelocked(plan, actor, company):
     """Trusted domain boundary AFTER the complete union has been acquired.
@@ -301,8 +343,9 @@ def read_graph(actor, company):
     """One explicit top-level Company read, under ordinary snapshot consistency.
 
     This is not instantaneous mid-response revocation or a general request cache.
-    Approved callers are public Company get_record, Company history, and the
-    bounded integrations.distribution.list_instructions inventory. They contain
+    Approved callers are public Company get_record, Company history, Company
+    governance.approvals.list_packets/read_packet, and the bounded
+    integrations.distribution.list_instructions inventory. They contain
     no writes/savepoint recovery, commands or worker effects. Root
     return and every hit verify the actual DB identity and zero write counter.
     A later call always reauthorizes. Only original producer success is reused;

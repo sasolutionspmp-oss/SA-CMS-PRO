@@ -1,0 +1,87 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Budget Version",
+  "module": "Cipher Project Controls",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "award",
+      "label": "Award",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "acceptance",
+      "label": "Acceptance",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "initial_key",
+      "label": "Initial Key",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 140
+    }
+  ],
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "record_digest",
+    "data_json",
+    "award",
+    "acceptance",
+    "initial_key"
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

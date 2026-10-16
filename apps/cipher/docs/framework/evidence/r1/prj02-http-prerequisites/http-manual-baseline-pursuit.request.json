@@ -1,0 +1,16 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.commercial.api.create_pursuit",
+  "prepared_at": "2026-10-15T23:10:45.368982+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "fields": {
+      "sector": "Synthetic infrastructure",
+      "title": "Award manual pursuit company-chain-c3c3b742a8fd"
+    },
+    "operation_id": "2aead21e-287c-4f20-a802-a1fb7cf3f3f1",
+    "party_id": "Company chain customer a c3c3b742a8fd",
+    "party_type": "Customer"
+  }
+}

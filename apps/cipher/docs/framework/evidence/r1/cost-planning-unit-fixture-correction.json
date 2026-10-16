@@ -1,0 +1,62 @@
+{
+  "schema": "cipher.evidence.cost-planning-unit-isolation.v1",
+  "captured_at": "2026-10-16T00:29:50.826252+00:00",
+  "base_checkpoint_sha256": "a541854c67d7f85b3caca5532c2d3c9e8b984917b3fedcd411132ad5e67b9801",
+  "base_failed_gate": "/tmp/cipher-cost-planning-checkpoint-20261015/full-gate-20261016.json",
+  "base_gate_sha256": "3db674df2ad90ced0e12328be83c6c9305cc957f33cc27e395426b75db1f25fa",
+  "root_cause": "Borrowed AwardNative.setUp starts _canonical_names patch; missing doCleanups leaks it across test classes; alias test restores that leaked mock. Product validation was bypassed by fixture state, not defective.",
+  "correction": "Both borrowed setups/projections now use finally doCleanups, including partial setup failure. New regression checks exact function identity on both borrowers success/failure.",
+  "scope": "private two-test-file correction only; frozen/main and native product unchanged; normal standalone unit runner only, no frappe.init/connect or site/config/business mutation",
+  "sources": {
+    "tests/test_award_admission.py": {
+      "old_sha256": "fd348cf9febaf3432323b5dde1218e0ae9e30862d68ecc8bd2f286b953bea35a",
+      "corrected_sha256": "080d5238b9b8b7de7f815aa587672d7d03311740551f26ce3b56b4c6c0cd099c"
+    },
+    "tests/test_award_factories.py": {
+      "old_sha256": "22972639e77abd2fa5f4c3d0ad6b7d88c5e01081217994931a095a8ca65248da",
+      "corrected_sha256": "44d5590e8e74c21cf2e3b14ac47e4bbe4efb6b4cb0d6d7e26e383752a40475b7"
+    }
+  },
+  "native_validation_sha256": "f4fe2a41565a4fd9ccf28380a5ec7d65b0c58b2184c7a6f07b93a7d9b2284c29",
+  "alias_test_file_sha256": "8100e58d8122025b319559ef278be7aabf6f83b341bd5b925277719f65c92bc7",
+  "targeted_results": {
+    "original_forward": {
+      "methods": 33,
+      "failures": 1,
+      "errors": 1
+    },
+    "corrected_forward": {
+      "methods": 37,
+      "passed": 37,
+      "function_identity_after_every_group": true
+    },
+    "corrected_reverse": {
+      "methods": 37,
+      "passed": 37,
+      "function_identity_after_every_group": true
+    }
+  },
+  "full_result": {
+    "python": "3.14.8",
+    "original_selected_methods": 500,
+    "corrected_unique_methods": 501,
+    "passed": 501,
+    "duration_seconds": 14.679,
+    "same_62_class_selection": true,
+    "original_function_identity_restored": true,
+    "runner_classification_unchanged": true,
+    "skips": 0
+  },
+  "artifacts": {
+    "original-order-reproduction.log": "0007a8aec3c8901c1ff72ab85f3e75cb2319542b120ffb15a2e413dab49a1e54",
+    "corrected-forward.log": "2ce3cfac8ef3a3d80c146b11dd1d3f1c5fc25698c3accfd4ec2dd0f13867d7a0",
+    "corrected-reverse.log": "10a9694195eced937f3cdab57ceff0ae4c21004090cb258b1607071f57d85006",
+    "corrected-full-unit.log": "92ed2ed7ce0031242a4788ad55d919f306c3eddcf834d957b2a08780fad2cfc2",
+    "corrected-full-unit.xml": "7f046d184b5da581f0f67abd899ba5edbb9ac93b5896682f111d756791d46b5c",
+    "source-marker.json": "0494d1930b3c7fc80b4c73c17c9a9d798374ca8aa27dcdc5ea6daec1ec062a8a",
+    "orders.py": "22fbe22f3a7225c543bd25b5b8fd618c146b574350025c5590f4eabbd334ec63",
+    "full.py": "feb06b1ab862d95bd95b55aab3453c146fccd59074d264ab37583c48913855b7",
+    "original-unit-class-selection.json": "1a688a6342b5944492a62ee9e159da83ec7d21b38a79978022509e2f3f0f0824"
+  },
+  "pending": "Root integrates only reviewed two-file delta into successor checkpoint and owns any full gate rerun; no integration/native/award writer qualification inferred."
+}

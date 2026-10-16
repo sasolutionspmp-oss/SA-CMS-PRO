@@ -32,6 +32,10 @@ subprocess.run([str(BENCH / 'env/bin/pip'), 'install', '-e', str(BENCH / 'apps/c
 # Merge only this fixed queue before any worker/web process caches its catalog.
 subprocess.run(['bench', '--site', 'cipher.localhost', 'execute',
                 'cipher_aec.integrations.distribution_install.configure_queue'], cwd=BENCH, check=True)
+# Persist the selected native profile before new workers load site settings.
+# Selection does not activate an award action or qualify native callbacks.
+subprocess.run(['bench', '--site', 'cipher.localhost', 'execute',
+                'cipher_aec.awards.runtime_install.configure_native_profile'], cwd=BENCH, check=True)
 commands = [
     ['bash', '/usr/local/bin/start.sh'],
     ['bench', 'worker', '--queue', 'short,default'],

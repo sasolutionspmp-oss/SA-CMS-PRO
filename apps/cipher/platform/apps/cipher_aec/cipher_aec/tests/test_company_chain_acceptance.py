@@ -87,7 +87,7 @@ def verify_historical_project_controls(control):
     return {'status':'passed','project':control['project'],'unchanged_original_rows':verified}
 
 
-def prepare_fixture(require_historical=True):
+def prepare_fixture(require_historical=True, setup_journal_directory=None):
     """Create native masters and scoped identities, never a preaward fake Project.
 
     A separate Project-only identity/control is created BEFORE measuring the
@@ -98,6 +98,10 @@ def prepare_fixture(require_historical=True):
     from cipher_aec.governance.context import COMPANY_ABILITIES, trusted_write, current_actor, duty_rows
     from cipher_aec.install import _person,_user,_binding,_grant,_grant_company
     _administrator()
+    if setup_journal_directory is not None:
+        journal_path=Path(setup_journal_directory)
+        if not journal_path.is_dir() or not (journal_path/'setup-intent.json').is_file() or (journal_path/'base-native-command-intents.json').exists():
+            raise RuntimeError('Use a new explicit private setup journal; recover existing identities instead of preparing again.')
     missing=REQUIRED_ABILITIES-set(COMPANY_ABILITIES)
     if missing:
         raise RuntimeError('Company integration prerequisites are not ready: '+','.join(sorted(missing)))
@@ -164,9 +168,21 @@ def prepare_fixture(require_historical=True):
     # Persist credentials privately before the first commit. If a later domain
     # prerequisite fails, this unique fixture is recoverable without resetting
     # User/Auth rows or losing the identities already committed by setup.
-    _save_private_fixture({'fixture_id':'company-chain-'+marker,'site':frappe.local.site,'company':company_a,'other_company':company_b,
+    if setup_journal_directory is not None:
+        from cipher_aec.api.contracts import version_of
+        from cipher_aec.tests.test_award_composed_acceptance import _save
+        _save(journal_path/'base-native-command-intents.json',{
+            'fixture_id':'company-chain-'+marker,'site':frappe.local.site,'created_at':datetime.now(timezone.utc).isoformat(),
+            'unit':{'company':company_a,'operation_id':str(uuid4()),'uom':uom.name,'dimension':'count','quantity_precision':6},
+            'task':{'company':company_b,'project':project.name,'operation_id':str(uuid4()),
+                    'expected_version':version_of(frappe.get_doc('Project',project.name)),'subject':'Independent Project control '+marker},
+            'task_actor':users['project_only']['user'],'historical_project_control':historical})
+    private_path=_save_private_fixture({'fixture_id':'company-chain-'+marker,'site':frappe.local.site,'company':company_a,'other_company':company_b,
                            'users':users,'native':native,'native_unit':uom.name,'native_role':role,'reviewer_native_role':reviewer_role,'setup_status':'prerequisites_created'})
     frappe.db.commit()
+    if setup_journal_directory is not None:
+        from cipher_aec.tests.test_award_prerequisites import resume_award_base_fixture
+        return resume_award_base_fixture(str(private_path),setup_directory=setup_journal_directory)
     from cipher_aec.estimating.company_service import register_unit
     qualified_unit=register_unit(company_a,str(uuid4()),uom.name,'count',6)['unit']
     frappe.db.commit()

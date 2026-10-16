@@ -10,8 +10,9 @@ from cipher_aec.api.contracts import digest, text
 from cipher_aec.api.errors import DomainError
 
 _trusted = ContextVar("cipher_trusted_write", default=False)
-PROJECT_ABILITIES = frozenset({"project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write"})
-COMPANY_ABILITIES = frozenset({"company.read", "commercial.read", "commercial.write", "commercial.distribute", "document.read", "document.write", "estimate.read", "estimate.write", "approval.request", "approval.decide", "approval.execute"})
+_company_native_read = ContextVar("cipher_company_native_read_call", default=None)
+PROJECT_ABILITIES = frozenset({"project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write", "wbs.read", "budget.read"})
+COMPANY_ABILITIES = frozenset({"commercial.award", "project.team.delegate", "project.cost.read", "project.cost.write", "company.read", "commercial.read", "commercial.write", "commercial.distribute", "document.read", "document.write", "estimate.read", "estimate.write", "approval.request", "approval.decide", "approval.execute"})
 ABILITIES = PROJECT_ABILITIES | COMPANY_ABILITIES
 
 
@@ -175,24 +176,110 @@ def company_ids(actor, ability="company.read"):
     return sorted({row.company for row in company_duty_rows(actor) if row.ability == ability})
 
 
+def read_company_authority(user, company, ability="company.read"):
+    """Fresh identity and exact Company duties, without caching or row locks.
+
+    One row per binding preserves ambiguous identity refusal. EXISTS avoids
+    multiplying identities for duplicate duties. Locking effects keep their
+    existing Person/identity/Company/duty acquisition order.
+    """
+    user = user or frappe.session.user
+    if not user or user == "Guest":
+        raise DomainError("authentication_required", "Sign in to Cipher to continue.", 401)
+    day = nowdate()
+    duty = ("EXISTS (SELECT 1 FROM `tabCipher Project Duty` d WHERE d.person=b.person "
+        "AND d.company=%s AND d.scope_type='Company' AND (d.project IS NULL OR d.project='') "
+        "AND d.active=1 AND (d.valid_from IS NULL OR d.valid_from<=%s) "
+        "AND (d.valid_until IS NULL OR d.valid_until>=%s) AND d.ability=%s)")
+    rows = frappe.db.sql("SELECT b.name,b.person,p.display_name," + duty + " AS can_read," + duty + " AS can_act "
+        "FROM `tabCipher Identity Binding` b JOIN `tabCipher Person` p ON p.name=b.person "
+        "JOIN `tabUser` u ON u.name=b.user WHERE b.user=%s AND b.active=1 AND p.active=1 AND u.enabled=1 LIMIT 2",
+        (company, day, day, "company.read", company, day, day, ability, user), as_dict=True)
+    if len(rows) != 1:
+        raise DomainError("identity_unavailable", "Your active Cipher identity is not configured.", 403)
+    row = rows[0]
+    return Actor(user=user, person_id=row.person, display_name=row.display_name), bool(row.can_read), bool(row.can_act)
+
+
+def _company_permission_db():
+    # frappe.db is a stable LocalProxy; bind the actual request DB object.
+    local = getattr(frappe, "local", None)
+    return getattr(local, "db", None) if local is not None else getattr(frappe, "db", None)
+
+
+def _consume_company_native_read(doc, user, ptype):
+    """Single-use duplicate check inside one guard's native permission call.
+
+    Independent and nested guards run their own identity/duty SQL. A mismatch
+    spends this lexical bridge and uses the ordinary hook's fresh SQL.
+    """
+    proof = _company_native_read.get()
+    if proof is None or not proof["available"]:
+        return None
+    proof["available"] = False
+    actor = proof["actor"]
+    db = _company_permission_db()
+    if (doc is not proof["document"] or getattr(doc, "doctype", None) != "Company"
+            or doc.name != proof["company"] or user != proof["user"] or ptype != "read"
+            or actor.user != proof["user"] or actor.person_id != proof["person"]
+            or nowdate() != proof["day"] or proof["db"] is not db
+            or type(proof["writes"]) is not int
+            or getattr(db, "transaction_writes", None) != proof["writes"]):
+        return None
+    return True
+
+
 def require_company(company, ability="company.read", actor=None, lock=False):
+    # A nested guard cannot consume the outer bridge while looking up its
+    # identity/Company or checking its own locking native permissions.
+    token = _company_native_read.set(None)
+    try:
+        return _require_company(company, ability, actor, lock)
+    finally:
+        _company_native_read.reset(token)
+
+
+def _require_company(company, ability, actor, lock):
     company = text(company, "Company")
     if ability not in COMPANY_ABILITIES:
         raise DomainError("unknown_capability", "This Company capability is not available.", 403)
-    actor = actor or current_actor()
-    current = current_actor(actor.user, lock=lock)
+    if lock:
+        actor = actor or current_actor()
+        current = current_actor(actor.user, lock=True)
+    else:
+        day = nowdate()
+        read_db = _company_permission_db()
+        read_writes = getattr(read_db, "transaction_writes", None)
+        current, can_read, can_act = read_company_authority(actor.user if actor else None, company, ability)
+        actor = actor or current
     if current.person_id != actor.person_id:
         raise DomainError("identity_changed", "Your identity changed. Sign in again.", 403)
     try:
         record = frappe.get_doc("Company", company, for_update=lock)
     except frappe.DoesNotExistError:
         raise DomainError("not_found", "This Company is not available.", 404) from None
-    abilities = {row.ability for row in company_duty_rows(actor, company, lock=lock)}
-    if "company.read" not in abilities:
+    if lock:
+        abilities = {row.ability for row in company_duty_rows(actor, company, lock=True)}
+        can_read, can_act = "company.read" in abilities, ability in abilities
+    if not can_read:
         raise DomainError("not_found", "This Company is not available.", 404)
-    if ability not in abilities:
+    if not can_act:
         raise DomainError("capability_denied", "Your current Company duties do not allow this action.", 403)
-    if not frappe.has_permission("Company", ptype="read", doc=record, user=actor.user):
+    if lock:
+        native_allowed = frappe.has_permission("Company", ptype="read", doc=record, user=actor.user)
+    else:
+        proof = {"document": record, "company": company, "actor": actor, "user": current.user,
+            "person": current.person_id, "day": day, "db": read_db, "writes": read_writes, "available": True}
+        token = _company_native_read.set(proof)
+        try:
+            # Native roles/UserPermission/meta/share checks still run. Only
+            # their duplicate Cipher SQL hook can use this same call's
+            # successful exact company.read result.
+            native_allowed = frappe.has_permission("Company", ptype="read", doc=record, user=actor.user)
+        finally:
+            proof["available"] = False
+            _company_native_read.reset(token)
+    if not native_allowed:
         raise DomainError("not_found", "This Company is not available.", 404)
     return record
 
