@@ -1,0 +1,88 @@
+{
+  "schema": "cipher.company.fixture-r11.source-review.v1",
+  "base": "/workspace/.cipher-company-integration-20261016/workspace-r9",
+  "patch": "/tmp/cipher-company-race-fixture-r11/r11-fixture.patch",
+  "patch_sha256": "5cadf300bc804682261107a7dd5b81e093c298cd958fcc5987449b1ec1a2eaa8",
+  "files": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/ricky_company_acceptance_support.py",
+      "classification": "fixture/test only",
+      "base_sha256": "8d2733c3c64e6c62a73cfcd788d640ed1bb0e7fb1a90fcd3c109a7af8cee6b4e",
+      "sha256": "aaa538f6c777d0a869b3c74efb1b30b627c6289db5bb3ffd87caf85602191eeb"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_native.py",
+      "classification": "fixture/test only",
+      "base_sha256": "71183c64ab74e7cdde2a571b2fd792263102b4725a983d22a2ba33ad5d10f2dd",
+      "sha256": "8700bc2356aae6a723469b5ebd0827b9fa362e2e2e524f9ce39e2dc2068822a7"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_http.py",
+      "classification": "fixture/test only",
+      "base_sha256": "91fae7949cf2a5c9e451129d68f0e0015fbfa98d07d318f74161cd60a9e035ae",
+      "sha256": "3242e30557ded47c3d1ff1dba9f6c0f661e2fb0b1d067024c1348d6600ea2a39"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_native_source.py",
+      "classification": "fixture/test only",
+      "base_sha256": "02253759bdb45ae695a1e3236ec85d22d171f8dda704016ea43ef7ca78291ace",
+      "sha256": "4f6003d684d7ddc52d871598369db43c184ff89e2195e63b80dd0d40b1a05531"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_acceptance_source.py",
+      "classification": "fixture/test only",
+      "base_sha256": "dbe78e11e64838cd4a75b10757edc9db65ddc0b8b6a1da7ef873fcf06becc0a5",
+      "sha256": "e232f1ba539728a80ec620f46f02d3a56334bd4f6d7df4bb0f9a23cfc0aef84b"
+    }
+  ],
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. python -m unittest cipher_aec.tests.test_ricky_company_native_source cipher_aec.tests.test_ricky_company_acceptance_source",
+    "passed": 73,
+    "failing_first": "failing-first.private.log",
+    "actual_retained_stage_pure_validation": "passed; file data only, no native connection"
+  },
+  "original_evidence": [
+    {
+      "path": "/workspace/.cipher-company-integration-20261016/native/r9-claim-race-diagnostics.private.json",
+      "sha256": "168a0dee3e8430c2dcd097a2e676a2c0bf06342662ab952d527d3eed79d9782a"
+    },
+    {
+      "path": "/workspace/.cipher-company-integration-20261016/native/r9-claim-race-terminal-readback.private.json",
+      "sha256": "1492acc31eb3d31dd07fdbb04037c22f651c2399bb57822118a294d3f1dfceeb"
+    }
+  ],
+  "review": {
+    "retry": "Only literal claim-race-r11 allows one typed Frappe QueryDeadlockError wrapping native integer errno1020. Original-user context must restore cleanly, ordinary transaction control must be enabled, and rollback must return successfully. Pinned Database.rollback issues ROLLBACK then START TRANSACTION and clears value cache. A fresh ordinary CompanyReadService re-enters original User and service.claim reruns current original-authority/locking checks. No second barrier, fabricated loser result, arbitrary retry or production catch.",
+    "diagnostics": "Each original attempt, native refusal, rollback result and second outcome remains in attempts[]. Full race observations and retry count are saved before assertions. Authority-context errors, rollback failures, second1020 and final connection cleanup errors remain failures. Legacy cases never silently gain retry and staged cases remain one-shot.",
+    "predecessor": "R11 declaration explicitly binds cancelled claim-race-r9. Its authentic stage-only diagnostic must match retained manifest stage: one winner token1, one exact known1020 loser, no live threads. Separate terminal wrapper must bind original intent, stage, prior R9 declaration, cancelled Run token2 and zero invocations. Both raw file hashes required. R9 declaration transitively preserves original claim-race and journals; no missing retrieving Run is reconstructed.",
+    "regressions": [
+      "one1020 then ordinary lease-loser outcome with distinct new service and original User on both calls",
+      "revoked original session after rollback refuses retry result",
+      "second1020: two attempts only",
+      "non1020 QueryDeadlockError and wrong exception type: no retry",
+      "legacy case: no retry",
+      "rollback failure and disabled transaction control: no retry",
+      "authority-context cleanup failure: no retry, original error retained",
+      "race frame saves initial refusal and retry outcome before assertions while old stages remain byte-equivalent",
+      "R11 proof chain retains prior intents/declarations/journal; missing proof, unknown refusal, changed winner, live thread and nonzero invocation count refuse",
+      "real host threads prove both canonical queued snapshots precede either claim",
+      "changed pre-claim snapshot refuses before claims",
+      "clean zero-retry contention cannot qualify the native retry branch"
+    ],
+    "production_schema_ui_changes": 0,
+    "native_actions": 0,
+    "main_publication_or_frozen_edits": 0,
+    "native_qualified": false,
+    "pre_claim_snapshot": "R11-only: each independent connection executes ordinary get_run plus a scoped canonical Run read under the original User before the barrier. Both exact queued/token0/payload SHA snapshots are retained. No transaction boundary occurs before ordinary claim; only the recognized retry rolls back into a fresh transaction. Legacy build-before-barrier/single-claim flow remains unchanged.",
+    "retry_qualification": "A clean race with zero serialization retries is saved as contention_passed_retry_unexercised, claim_contention_qualified=true and serialization_retry_qualified=false; it raises an assertion and never marks retry qualification passed. Actual successful R11 retry proof requires at least one retained recognized refusal/rollback/second outcome."
+  },
+  "later_root_execution_sequence": [
+    "Review/qualify and install only the explicit five fixture/test files on a separate candidate; published R10 remains unchanged until root explicitly integrates the qualified result.",
+    "Copy the exact original diagnostic and terminal readback files into the original fixture journal directory as0600 files. Preserve their raw SHA256 values and all original manifests/HTTP journals/evidence.",
+    "Build the unchanged closed corrected-case declaration with case=claim-race-r11, predecessor_case=claim-race-r9, exact original intent/run/operation identities and hashes from terminal readback, predecessor_status=cancelled, and both evidence basenames+raw hashes. Call declare_corrected_case on the current original fixture manifest; no operation is allocated by declaration.",
+    "With isolated consumer held, use the existing current fresh author cookie to start_company_http_case(..., case=claim-race-r11, ...). Its distinct start-claim-race-r11 journal key allocates the separate operation through the ordinary HTTP client. Capture its original queued receipt/binding without changing old cases.",
+    "Run run_company_claim_race(private_manifest, case=claim-race-r11) exactly once. Both independent original-user connections must retain exact queued/token0 snapshots before the barrier, then enter ordinary claims. Inspect persisted attempts, cleanup and retry count. One winner, one ordinary loser, and at least one actually exercised recognized1020 rollback/retry are required for retry qualification. Zero retries is preserved as contention_passed_retry_unexercised and raises; do not reset or rerun this staged request.",
+    "Stop the leased R11 Run through ordinary current-author HTTP using stop_company_http_case(..., case=claim-race-r11, ...). Independently read cancelled token2, zero invocations and unchanged predecessors/old rows. Capture exact original start/Stop receipt replay and operation reads; root alone manages queued hints and remaining restoration.",
+    "Only after actual native proof may root close the published open concurrency item. Host tests and source review alone do not close it."
+  ]
+}

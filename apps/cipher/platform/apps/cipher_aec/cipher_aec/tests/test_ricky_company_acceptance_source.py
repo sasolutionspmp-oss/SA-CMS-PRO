@@ -130,7 +130,11 @@ class CompanyAcceptanceSourceTests(unittest.TestCase):
         return intent
 
     def correction(self, case="convert-r9"):
-        original = "convert" if case == "convert-r9" else "claim-race"
+        if case == "claim-race-r11":
+            prior = self.correction("claim-race-r9")
+            declare_corrected_case(self.path, prior)
+            self.fixture = manifest(self.path)
+        original = "convert" if case == "convert-r9" else "claim-race-r9" if case == "claim-race-r11" else "claim-race"
         intent = self.admission(original)
         run = {"id": intent["run_id"], "operation_id": intent["operation_id"], "company": self.fixture["company"],
             "user": self.fixture["users"]["author"]["user"], "person": self.fixture["users"]["author"]["person"],
@@ -138,7 +142,16 @@ class CompanyAcceptanceSourceTests(unittest.TestCase):
             "request": intent["payload"]["request"], "cancel_requested": original != "convert", "result": None,
             "completed_at": self.fixture["created_at"], "error": {"code": "source_integrity"} if original == "convert" else None}
         proof = self.work / (original + "-terminal.private.json")
-        write_private(proof, {"run": run})
+        terminal_proof = {"run": run}
+        if case == "claim-race-r11":
+            run["lease_token"] = 2
+            message = str((1020, "Record has changed since last read in table 'tabCipher Ricky Run'; try restarting transaction"))
+            stage = {"run_id": intent["run_id"], "status": "observed_before_assertions", "at": self.fixture["created_at"],
+                "thread_alive": [False, False], "claims": [{"thread": 0, "claimed": True, "token": 1},
+                {"thread": 1, "error_type": "QueryDeadlockError", "error_code": message[:80], "error_message": message}]}
+            self.fixture["stages"][original] = stage
+            terminal_proof.update(intent=intent, stage=stage, prior_declaration=prior, invocation_count=0)
+        write_private(proof, terminal_proof)
         declaration = {"schema": "cipher.fixture.ricky.corrected-case.v1", "case": case, "predecessor_case": original,
             "predecessor_run_id": intent["run_id"], "predecessor_operation_id": intent["operation_id"],
             "predecessor_intent_sha256": sha(intent), "predecessor_status": run["status"], "predecessor_run_sha256": sha(run),
@@ -147,6 +160,10 @@ class CompanyAcceptanceSourceTests(unittest.TestCase):
             unresolved = self.work / "claim-race-unqualified.private.json"
             write_private(unresolved, {"run": {**run, "status": "retrieving", "completed_at": None, "cancel_requested": False}})
             declaration["evidence"].append({"file": unresolved.name, "sha256": hashlib.sha256(unresolved.read_bytes()).hexdigest()})
+        if case == "claim-race-r11":
+            diagnostic = self.work / "claim-race-r9-diagnostic.private.json"
+            write_private(diagnostic, stage)
+            declaration["evidence"].append({"file": diagnostic.name, "sha256": hashlib.sha256(diagnostic.read_bytes()).hexdigest()})
         write_private(self.path, self.fixture)
         return declaration
 
@@ -234,6 +251,51 @@ class CompanyAcceptanceSourceTests(unittest.TestCase):
         self.assertEqual(declared_case(value, "claim-race-r9"), "claim-race")
         self.assertNotIn("claim-race-r9", value["intents"])
         self.assertEqual(value["stages"]["corrected_cases"]["claim-race-r9"]["predecessor_status"], "cancelled")
+
+    def test_r11_declaration_retains_both_earlier_cases_and_authentic_stage_only_evidence(self):
+        declaration = self.correction("claim-race-r11")
+        before = manifest(self.path)
+        original_intents, original_stages = deepcopy(before["intents"]), deepcopy(before["stages"])
+        journal = (self.work / "http-journal.secret.json").read_bytes()
+        declare_corrected_case(self.path, declaration)
+        value = manifest(self.path)
+        self.assertEqual(declared_case(value, "claim-race-r11"), "claim-race")
+        self.assertEqual(value["intents"], original_intents)
+        self.assertEqual(value["stages"]["claim-race-r9"], original_stages["claim-race-r9"])
+        self.assertEqual(value["stages"]["corrected_cases"]["claim-race-r9"], original_stages["corrected_cases"]["claim-race-r9"])
+        self.assertEqual((self.work / "http-journal.secret.json").read_bytes(), journal)
+        self.assertNotIn("claim-race-r11", value["intents"])
+
+    def test_r11_needs_both_diagnostic_and_terminal_proofs_and_exact_prior_chain(self):
+        declaration = self.correction("claim-race-r11")
+        for proofs in (declaration["evidence"][:1], declaration["evidence"][1:]):
+            with self.subTest(proofs=proofs), self.assertRaises(ValueError):
+                declare_corrected_case(self.path, {**declaration, "evidence": proofs})
+        wrong = deepcopy(declaration); wrong["predecessor_case"] = "claim-race"
+        with self.assertRaises(ValueError): declare_corrected_case(self.path, wrong)
+        proof = self.work / declaration["evidence"][0]["file"]
+        readback = json.loads(proof.read_text()); readback["invocation_count"] = 1
+        write_private(proof, readback)
+        changed = deepcopy(declaration); changed["evidence"][0]["sha256"] = hashlib.sha256(proof.read_bytes()).hexdigest()
+        with self.assertRaises(ValueError): declare_corrected_case(self.path, changed)
+
+    def test_r11_diagnostic_rejects_unknown_refusals_winner_changes_and_alive_threads(self):
+        declaration = self.correction("claim-race-r11")
+        original = manifest(self.path)
+        terminal_path = self.work / declaration["evidence"][0]["file"]
+        diagnostic_path = self.work / declaration["evidence"][1]["file"]
+        terminal = json.loads(terminal_path.read_text())
+        changes = [lambda stage: stage.update(thread_alive=[False, True]),
+            lambda stage: stage["claims"][0].update(token=2),
+            lambda stage: stage["claims"][1].update(error_type="OtherError"),
+            lambda stage: stage["claims"][1].update(error_message="A different refusal")]
+        for change in changes:
+            value, proof, proposed = deepcopy(original), deepcopy(terminal), deepcopy(declaration)
+            stage = value["stages"]["claim-race-r9"]; change(stage); proof["stage"] = stage
+            write_private(self.path, value); write_private(terminal_path, proof); write_private(diagnostic_path, stage)
+            for item in proposed["evidence"]:
+                item["sha256"] = hashlib.sha256((self.work / item["file"]).read_bytes()).hexdigest()
+            with self.assertRaises(ValueError): declare_corrected_case(self.path, proposed)
 
     def test_original_failed_conversion_observation_retains_queued_receipt_without_claiming_success(self):
         from . import test_ricky_company_http as http

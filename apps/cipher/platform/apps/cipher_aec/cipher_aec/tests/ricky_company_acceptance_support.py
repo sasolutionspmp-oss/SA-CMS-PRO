@@ -8,8 +8,9 @@ from uuid import UUID, uuid4
 
 SCHEMA = "cipher.fixture.ricky.company.v1"
 CASES = ("lookup", "recompute", "compare", "convert", "claim-race", "fenced-stop",
-         "expired-original", "source-revoked-stop", "capability-revoked", "queued-delivery", "convert-r9", "claim-race-r9")
-CORRECTED_CASES = {"convert-r9": ("convert", "failed"), "claim-race-r9": ("claim-race", "cancelled")}
+         "expired-original", "source-revoked-stop", "capability-revoked", "queued-delivery", "convert-r9", "claim-race-r9", "claim-race-r11")
+CORRECTED_CASES = {"convert-r9": ("convert", "failed"), "claim-race-r9": ("claim-race", "cancelled"),
+    "claim-race-r11": ("claim-race-r9", "cancelled")}
 ROLES = ("author", "alias", "outsider")
 RICKY_TYPES = ("Cipher Ricky Run", "Cipher Ricky Step", "Cipher Tool Invocation",
                "Cipher Proposed Change", "Cipher Delegation", "Cipher Run Artifact")
@@ -130,6 +131,25 @@ def manifest(path):
     return value
 
 
+def _r9_claim_diagnostic(proof, run_id):
+    """Literal retained native observation; never manufacture a prior Run."""
+    message = str((1020, "Record has changed since last read in table 'tabCipher Ricky Run'; try restarting transaction"))
+    if (type(proof) is not dict or set(proof) != {"at", "claims", "run_id", "status", "thread_alive"}
+            or proof["run_id"] != run_id or proof["status"] != "observed_before_assertions"
+            or not typed_equal(proof["thread_alive"], [False, False]) or type(proof["at"]) is not str or not proof["at"]
+            or type(proof["claims"]) is not list or len(proof["claims"]) != 2
+            or any(type(row) is not dict or type(row.get("thread")) is not int for row in proof["claims"])
+            or {row["thread"] for row in proof["claims"]} != {0, 1}):
+        raise ValueError("Use the exact two-finished-thread original R9 claim diagnostic.")
+    winners = [row for row in proof["claims"] if row.get("claimed") is True]
+    losers = [row for row in proof["claims"] if row.get("error_type") == "QueryDeadlockError"]
+    if (len(winners) != 1 or set(winners[0]) != {"thread", "claimed", "token"}
+            or type(winners[0]["token"]) is not int or winners[0]["token"] != 1
+            or len(losers) != 1 or set(losers[0]) != {"thread", "error_type", "error_code", "error_message"}
+            or losers[0]["error_code"] != message[:80] or losers[0]["error_message"] != message):
+        raise ValueError("Retain the single original R9 winner and exact observed native1020 loser.")
+
+
 def declared_case(value, case):
     """An explicit separate request retains its terminal predecessor evidence."""
     if case not in CORRECTED_CASES:
@@ -149,6 +169,7 @@ def declared_case(value, case):
             or type(declaration["evidence"]) is not list or not 1 <= len(declaration["evidence"]) <= 3):
         raise ValueError("A corrected case needs its exact original terminal predecessor declaration.")
     terminal, unresolved_race = False, original != "claim-race"
+    diagnostic = case != "claim-race-r11"
     for evidence in declaration["evidence"]:
         if (type(evidence) is not dict or set(evidence) != {"file", "sha256"}
                 or type(evidence["file"]) is not str or not evidence["file"]
@@ -158,6 +179,21 @@ def declared_case(value, case):
         proof = load_private(path)
         if hashlib.sha256(path.read_bytes()).hexdigest() != evidence["sha256"]:
             raise ValueError("Original predecessor evidence bytes changed.")
+        if case == "claim-race-r11":
+            stage = value["stages"].get(original)
+            _r9_claim_diagnostic(stage, intent["run_id"])
+            if type(proof) is dict and set(proof) == {"at", "claims", "run_id", "status", "thread_alive"}:
+                if not typed_equal(proof, stage):
+                    raise ValueError("The original R9 diagnostic bytes differ from its retained stage.")
+                diagnostic = True
+                continue
+            if (type(proof) is not dict or set(proof) != {"run", "intent", "stage", "prior_declaration", "invocation_count"}
+                    or not typed_equal(proof["intent"], intent) or not typed_equal(proof["stage"], stage)
+                    or not typed_equal(proof["prior_declaration"], value["stages"]["corrected_cases"][original])
+                    or type(proof["invocation_count"]) is not int or proof["invocation_count"] != 0
+                    or type(proof["run"]) is not dict
+                    or type(proof["run"].get("lease_token")) is not int or proof["run"]["lease_token"] != 2):
+                raise ValueError("Use the exact original R9 cancelled Run, intent, diagnostic and prior declaration readback.")
         run = proof.get("run") if type(proof) is dict else None
         if (type(run) is not dict or run.get("id") != intent["run_id"] or run.get("operation_id") != intent["operation_id"]
                 or run.get("company") != value["company"] or run.get("user") != value["users"]["author"]["user"]
@@ -170,9 +206,9 @@ def declared_case(value, case):
             and run.get("result") is None and run.get("cancel_requested") is (status == "cancelled")
             and type(run.get("completed_at")) is str and bool(run["completed_at"])
             and (original != "convert" or run.get("error", {}).get("code") == "source_integrity"))
-    if not terminal or not unresolved_race:
+    if not terminal or not unresolved_race or not diagnostic:
         raise ValueError("A corrected case requires its exact immutable terminal predecessor readback.")
-    return original
+    return declared_case(value, original)
 
 
 def declare_corrected_case(private_manifest, declaration):

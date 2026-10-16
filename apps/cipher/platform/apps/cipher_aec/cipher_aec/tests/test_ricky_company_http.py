@@ -378,7 +378,7 @@ def observe_company_http_case(private_manifest, case, base_url, host_header=None
 
 
 def stop_company_http_case(private_manifest, case, base_url, host_header=None):
-    if case not in ("claim-race", "claim-race-r9", "fenced-stop", "source-revoked-stop", "capability-revoked", "expired-original"):
+    if case not in ("claim-race", "claim-race-r9", "claim-race-r11", "fenced-stop", "source-revoked-stop", "capability-revoked", "expired-original"):
         raise ValueError("Use a declared stop case.")
     rpc = _HTTP(private_manifest, base_url, host_header); rpc.login()
     intent = saved_intent(rpc.value, case)

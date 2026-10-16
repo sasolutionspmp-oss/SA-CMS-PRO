@@ -1,5 +1,5 @@
 """Host-only native fixture observation/restoration checks; no site or network."""
-from contextlib import nullcontext
+from contextlib import ExitStack, contextmanager, nullcontext
 from copy import deepcopy
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
@@ -155,6 +155,218 @@ class NativeFixtureSourceTests(unittest.TestCase):
             self.assertEqual(calls.count("destroy"), 2)
             with self.assertRaisesRegex(RuntimeError, "one-shot"):
                 native.run_company_claim_race(str(self.path))
+
+    def r11_host_race(self, *, conflict=True, stale_snapshot=False):
+        class QueryDeadlockError(Exception): pass
+        cause = Exception(1020, "host original native serialization refusal")
+        error = QueryDeadlockError(cause); error.__cause__ = cause
+        run = {"id": "host-new-r11-run", "company": self.value["company"], "status": "queued", "lease_token": 0}
+        results = iter([(run, 1), error, None] if conflict else [(run, 1), None])
+        calls, writes = [], []
+        def snapshot(*args):
+            calls.append("snapshot")
+            return {**run, "lease_token": 1 if stale_snapshot else 0}
+        def claim(run_id):
+            calls.append("claim")
+            self.assertEqual(calls.count("snapshot"), 2)
+            result = next(results)
+            if isinstance(result, BaseException): raise result
+            return result
+        fake = SimpleNamespace(QueryDeadlockError=QueryDeadlockError, local=SimpleNamespace(site="host.only"),
+            init=lambda **kw: None, connect=lambda: None, destroy=lambda: calls.append("destroy"),
+            db=SimpleNamespace(rollback=lambda: calls.append("rollback")))
+        service = SimpleNamespace(backend=SimpleNamespace(original_user=lambda authority: nullcontext()), claim=claim,
+            get_run=lambda *args: {"id": run["id"], "status": "queued"}, store=SimpleNamespace(get=snapshot))
+        value = deepcopy(self.value)
+        value["stages"].update({"claim-race": {"status": "original_unqualified"},
+            "claim-race-r9": {"status": "observed_before_assertions", "claims": [{"original_error": 1020}]}})
+        original = deepcopy(value["stages"])
+        actual_write = native.write_private
+        def capture_write(path, value):
+            writes.append(deepcopy(value)); actual_write(path, value)
+        # Real host threads/barrier verify that both canonical snapshots occur
+        # before either ordinary claim; these connections are pure local doubles.
+        result = failure = None
+        with patch.dict("sys.modules", {"frappe": fake,
+                "cipher_aec.ricky.company_service": SimpleNamespace(build_service=lambda **kw: service),
+                "cipher_aec.ricky.company_contracts": SimpleNamespace(decode_run_authority=lambda run: object())}), \
+                patch.object(native, "_fixture", return_value=value), patch.object(native, "declared_case", return_value="claim-race"), \
+                patch.object(native, "_run", return_value=run), \
+                patch.object(native, "write_private", side_effect=capture_write):
+            try:
+                result = native.run_company_claim_race(str(self.path), "claim-race-r11")
+            except AssertionError as error:
+                failure = error
+        for written in writes:
+            for case, stage in original.items(): self.assertEqual(written["stages"][case], stage)
+        return result, failure, writes, calls
+
+    def test_r11_race_saves_initial1020_and_retry_outcome_before_assertions_without_rewriting_old_stages(self):
+        result, failure, writes, calls = self.r11_host_race()
+        self.assertIsNone(failure)
+        observed = writes[-2]["stages"]["claim-race-r11"]
+        self.assertEqual(observed["status"], "observed_before_assertions")
+        self.assertEqual(observed["serialization_retries"], 1)
+        loser = next(row for row in observed["claims"] if len(row["attempts"]) == 2)
+        self.assertEqual(loser["attempts"][0]["error_type"], "QueryDeadlockError")
+        self.assertIs(loser["attempts"][1]["claimed"], False)
+        self.assertTrue(all(row["pre_claim_snapshot"]["status"] == "queued" and row["pre_claim_snapshot"]["lease_token"] == 0 for row in observed["claims"]))
+        self.assertLess(max(i for i, value in enumerate(calls) if value == "snapshot"), calls.index("claim"))
+        self.assertEqual(result["status"], "passed")
+        self.assertIs(result["serialization_retry_qualified"], True)
+        self.assertEqual(calls.count("rollback"), 2)
+        self.assertEqual(calls.count("destroy"), 2)
+
+    def test_r11_clean_contention_without1020_does_not_qualify_native_retry(self):
+        result, failure, writes, calls = self.r11_host_race(conflict=False)
+        self.assertIsNone(result)
+        self.assertIn("did not exercise", str(failure))
+        observed = writes[-1]["stages"]["claim-race-r11"]
+        self.assertEqual(observed["status"], "contention_passed_retry_unexercised")
+        self.assertIs(observed["claim_contention_qualified"], True)
+        self.assertIs(observed["serialization_retry_qualified"], False)
+        self.assertEqual(observed["serialization_retries"], 0)
+        self.assertEqual(calls.count("claim"), 2)
+
+    def test_r11_changed_preclaim_snapshot_refuses_before_any_claim(self):
+        result, failure, writes, calls = self.r11_host_race(stale_snapshot=True)
+        self.assertIsNone(result)
+        self.assertIsNotNone(failure)
+        self.assertNotIn("claim", calls)
+        observed = writes[-1]["stages"]["claim-race-r11"]
+        self.assertEqual(observed["status"], "observed_before_assertions")
+        self.assertTrue(all(row["pre_claim_snapshot"]["lease_token"] == 1 and row["error_type"] == "AssertionError" for row in observed["claims"]))
+
+
+class ClaimSerializationRetrySourceTests(unittest.TestCase):
+    class QueryDeadlockError(Exception): pass
+    class NativeConflict(Exception): pass
+
+    def conflict(self, number=1020, message="host fixture serialization refusal"):
+        cause = self.NativeConflict(number, message)
+        error = self.QueryDeadlockError(cause)
+        error.__cause__ = cause
+        return error
+
+    def setUp(self):
+        from . import test_ricky_company_service as fixtures
+        from cipher_aec.ricky import company_service
+        self.fixture = fixtures.CompanyStrategyTests(); self.fixture.setUp()
+        self.run = self.fixture.start()
+        self.boundary, self.store = self.fixture.boundary, self.fixture.store
+        self.boundary.user = "Administrator"
+        self.services, self.authority_users, self.failures = [], [], []
+        self.rollback_count = 0
+        self.after_rollback = lambda: None
+        def rollback():
+            self.rollback_count += 1
+            self.after_rollback()
+        self.fake = SimpleNamespace(QueryDeadlockError=self.QueryDeadlockError, db=SimpleNamespace(rollback=rollback))
+        original_get, original_authorize = self.store.get, self.boundary.authorize
+        def get(kind, identifier, lock=False):
+            if kind == "run" and lock and self.failures: raise self.failures.pop(0)
+            return original_get(kind, identifier, lock=lock)
+        def authorize(*args, **kwargs):
+            self.authority_users.append(self.boundary.user)
+            return original_authorize(*args, **kwargs)
+        def build_service(*, worker):
+            self.assertTrue(worker)
+            service = company_service.CompanyReadService(self.store, self.boundary, clock=lambda: self.fixture.now)
+            self.services.append(service)
+            return service
+        self.stack = ExitStack(); self.addCleanup(self.stack.close)
+        self.stack.enter_context(patch.dict("sys.modules", {"frappe": self.fake}))
+        self.stack.enter_context(patch.object(company_service, "build_service", side_effect=build_service))
+        self.stack.enter_context(patch.object(self.store, "get", side_effect=get))
+        self.stack.enter_context(patch.object(self.boundary, "authorize", side_effect=authorize))
+
+    def invoke(self, *, allow_retry=True):
+        result = native._claim_with_serialization_retry(self.run, allow_retry=allow_retry)
+        self.assertEqual(self.boundary.user, "Administrator")
+        self.assertTrue(all(user == self.run["user"] for user in self.authority_users))
+        return result
+
+    def test_one1020_rolls_back_and_reenters_full_ordinary_claim_under_original_user(self):
+        self.failures = [self.conflict()]
+        def other_winner():
+            stored = self.store.rows["run", self.run["id"]]
+            stored.update(status="retrieving", lease_token=1,
+                lease_expires_at=(self.fixture.now + timedelta(seconds=60)).isoformat())
+        self.after_rollback = other_winner
+        result = self.invoke()
+        self.assertIs(result["claimed"], False)
+        self.assertEqual(self.rollback_count, 1)
+        self.assertEqual(len(self.services), 2)
+        self.assertIsNot(self.services[0], self.services[1])
+        self.assertEqual(len(self.authority_users), 2)
+        self.assertEqual(result["attempts"][0]["error_type"], "QueryDeadlockError")
+        self.assertEqual(result["attempts"][0]["serialization_errno"], 1020)
+        self.assertTrue(result["attempts"][0]["rollback_completed"])
+        self.assertIs(result["attempts"][1]["claimed"], False)
+        self.assertNotIn("error_type", result)
+
+    def test_retry_rechecks_current_original_session_authority(self):
+        self.failures = [self.conflict()]
+        self.after_rollback = lambda: setattr(self.boundary, "session", False)
+        result = self.invoke()
+        self.assertEqual(self.rollback_count, 1)
+        self.assertEqual(len(self.services), 2)
+        self.assertEqual(result["error_code"], "session_revoked")
+        self.assertEqual(result["attempts"][0]["error_type"], "QueryDeadlockError")
+        self.assertEqual(result["attempts"][1]["error_code"], "session_revoked")
+
+    def test_second1020_is_retained_without_third_attempt(self):
+        self.failures = [self.conflict(), self.conflict(message="second serialization refusal")]
+        result = self.invoke()
+        self.assertEqual((self.rollback_count, len(self.services), len(result["attempts"])), (1, 2, 2))
+        self.assertEqual(result["error_type"], "QueryDeadlockError")
+        self.assertIn("second serialization refusal", result["attempts"][1]["error_message"])
+
+    def test_non1020_and_wrong_exception_type_do_not_retry(self):
+        self.failures = [self.conflict(1213)]
+        result = self.invoke()
+        self.assertEqual((self.rollback_count, len(result["attempts"])), (0, 1))
+        self.failures = [self.NativeConflict(1020, "unwrapped wrong exception type")]
+        result = self.invoke()
+        self.assertEqual((self.rollback_count, len(result["attempts"])), (0, 1))
+        self.assertEqual(result["error_type"], "NativeConflict")
+
+    def test_original_cases_do_not_silently_gain_retry(self):
+        self.failures = [self.conflict()]
+        result = self.invoke(allow_retry=False)
+        self.assertEqual((self.rollback_count, len(self.services)), (0, 1))
+        self.assertEqual(result["error_type"], "QueryDeadlockError")
+
+    def test_rollback_failure_retains_original_refusal_without_retry(self):
+        self.failures = [self.conflict()]
+        def refuse(): raise RuntimeError("host rollback failure")
+        self.after_rollback = refuse
+        result = self.invoke()
+        self.assertEqual((self.rollback_count, len(self.services)), (1, 1))
+        self.assertEqual(result["attempts"][0]["error_type"], "QueryDeadlockError")
+        self.assertEqual(result["attempts"][0]["rollback_error"]["error_type"], "RuntimeError")
+        self.assertNotIn("rollback_completed", result["attempts"][0])
+
+    def test_disabled_transaction_control_cannot_claim_a_fresh_retry(self):
+        self.failures = [self.conflict()]
+        self.fake.db._disable_transaction_control = True
+        result = self.invoke()
+        self.assertEqual((self.rollback_count, len(self.services)), (0, 1))
+        self.assertIn("ordinary transaction control", result["attempts"][0]["rollback_error"]["error_message"])
+
+    def test_authority_context_cleanup_failure_never_triggers_retry(self):
+        self.failures = [self.conflict(message="initial claim refusal")]
+        original = self.boundary.original_user
+        @contextmanager
+        def broken_cleanup(authority):
+            with original(authority):
+                try: yield
+                finally: raise self.conflict(message="authority context cleanup refusal")
+        with patch.object(self.boundary, "original_user", broken_cleanup):
+            result = self.invoke()
+        self.assertEqual((self.rollback_count, len(self.services)), (0, 1))
+        self.assertIn("initial claim refusal", result["attempts"][0]["error_message"])
+        self.assertIn("authority context cleanup refusal", result["attempts"][0]["authority_context_error"]["error_message"])
 
 
 class PreinventoryContinuationSourceTests(unittest.TestCase):

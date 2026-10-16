@@ -1,0 +1,175 @@
+{
+  "schema": "cipher.company-ricky.r11-native-qualification.v1",
+  "status": "passed",
+  "source_snapshot_sha256": "c583b5464d2cac3a388a27f0664b0e8fa7389f6cfa428c1a97c85212deee9e2a",
+  "backend_tests": 788,
+  "unit_tests": 736,
+  "unchanged_integration_tests": 52,
+  "unchanged_native_workflows": 8,
+  "unchanged_frontend_cases": 190,
+  "unit_qualification_sha256": "536d6e6c66b7ec3af7d5e92a7294570eb85b77dfb57439a8e45f6edd9b86e83d",
+  "previous_composed_qualification_sha256": "b3740e35f1cc6348fcacde6e73b3533a58da05011cf72b9f3c47bc845289df0a",
+  "production_schema_ui_changed": false,
+  "native_race": {
+    "status": "passed",
+    "run_id": "a79b7fa9-110a-435a-9012-d71303d3d0d6",
+    "claims": [
+      {
+        "thread": 1,
+        "pre_claim_snapshot": {
+          "status": "queued",
+          "lease_token": 0,
+          "run_sha256": "93615937961c4dcf9bb35287b26f642eb81c3294c04436dbc284f6f28734ce76"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "claimed": true,
+            "token": 1
+          }
+        ],
+        "claimed": true,
+        "token": 1
+      },
+      {
+        "thread": 0,
+        "pre_claim_snapshot": {
+          "status": "queued",
+          "lease_token": 0,
+          "run_sha256": "93615937961c4dcf9bb35287b26f642eb81c3294c04436dbc284f6f28734ce76"
+        },
+        "attempts": [
+          {
+            "attempt": 1,
+            "error_type": "QueryDeadlockError",
+            "error_code": "(1020, \"Record has changed since last read in table 'tabCipher Ricky Run'; try r",
+            "error_message": "(1020, \"Record has changed since last read in table 'tabCipher Ricky Run'; try restarting transaction\")",
+            "serialization_errno": 1020,
+            "rollback_completed": true
+          },
+          {
+            "attempt": 2,
+            "claimed": false,
+            "token": null
+          }
+        ],
+        "claimed": false,
+        "token": null
+      }
+    ],
+    "thread_alive": [
+      false,
+      false
+    ],
+    "at": "2026-10-16T05:14:30.856076+00:00",
+    "serialization_retries": 1,
+    "claim_contention_qualified": true,
+    "serialization_retry_qualified": true
+  },
+  "final_readback": {
+    "status": "passed",
+    "run_id": "a79b7fa9-110a-435a-9012-d71303d3d0d6",
+    "run_status": "cancelled",
+    "lease_token": 2,
+    "steps": 0,
+    "invocations": 0,
+    "model_generations": 0,
+    "proposals": 0,
+    "prior_run_payloads_and_invocations_unchanged": 11,
+    "prior_rq_target_result_retained": true,
+    "workers": 0,
+    "queue": "cipher-ai04-stage-a-20261016:short",
+    "remaining_hint": {
+      "job_id": "cipher-ci-ai04-20261016.localhost||cipher-ricky-a79b7fa9-110a-435a-9012-d71303d3d0d6",
+      "run_id": "a79b7fa9-110a-435a-9012-d71303d3d0d6",
+      "run_status": "cancelled",
+      "deleted_or_retried": false
+    },
+    "original_session_reference_unchanged": true
+  },
+  "shared_receipts": {
+    "status": "passed",
+    "declared_receipt_case_coverage": [
+      "start-claim-race-r11",
+      "start-claim-race-r9",
+      "start-compare",
+      "start-convert",
+      "start-convert-r9",
+      "start-lookup",
+      "start-recompute",
+      "stop-fenced-stop",
+      "stop-source-revoked-stop"
+    ],
+    "receipts": 9,
+    "runtime_observation_supplied_by_caller": true
+  },
+  "restoration": {
+    "status": "passed",
+    "old_row_inventory_unchanged": true,
+    "company_projects": 3,
+    "introduced_projects": 0,
+    "qualification": "Native readback only; no HTTP/queue/p95 claim."
+  },
+  "phases": [
+    {
+      "phase": "claim-race-claim-race-r11",
+      "record_sha256": "a06beffb4546dd97b6638b635fd09f6fb234aab38cde86f0435fc45f81456ad9",
+      "log_sha256": "2b1c5fc674c1d7e1723177b21493e314cd22462d4dda910804994c2ed43b068b",
+      "status": "passed"
+    },
+    {
+      "phase": "observe-claim-race-r11",
+      "record_sha256": "3ecdcf5a9a486ca58a2c5971a5ec4190c44a829dcb487d98ccd2e659d40c3222",
+      "log_sha256": "8369db6ef062f8dbfed3bdd9c7192435e43d0dfdbbfc1d14acace7d153e3f9d3",
+      "status": "passed"
+    },
+    {
+      "phase": "receipt-start-claim-race-r11",
+      "record_sha256": "68f1854566ed590e5aeaf849de177595ade211cb47cf64192e1274d0704804cd",
+      "log_sha256": "f32f3bc5517f899a1117ae0ec9cced39f40a6a79239570d166748d3722fd422d",
+      "status": "passed"
+    },
+    {
+      "phase": "receipt-stop-claim-race-r11",
+      "record_sha256": "c273c5eaf1519bcde82a02b31e5dc3f6464d44163e71f4945fda13cc769fc75d",
+      "log_sha256": "363d6c9a0f09330fc5cbfa3e297a4f3ba8fa16b79ae5bf25527cca81e87267ed",
+      "status": "passed"
+    },
+    {
+      "phase": "restoration",
+      "record_sha256": "96f4195df2eca15a29425928f73b4d1e5be9a770544236a1a04ad28a99d41430",
+      "log_sha256": "df6390f34c0a2872cad51f34cc19844ff6b39e9165574899587373ae57f5dd86",
+      "status": "passed"
+    },
+    {
+      "phase": "shared-receipts",
+      "record_sha256": "bf8761e31c9e900a156e3e90854d6c32beb29cb3ff7b7555138d153c47306bc4",
+      "log_sha256": "f803173608e51a6ab91aef54d2e850c01ad541b992dd26cbd7527f0d322b2e16",
+      "status": "passed"
+    },
+    {
+      "phase": "start-claim-race-r11",
+      "record_sha256": "2a1bed5ad0d4db852e1287e96d32ece984a78693439e91634ca313b2b1d68005",
+      "log_sha256": "fc7506a70d272fcf421865a84436d7f2304d54ac979cbf4027c807c8e4fd8526",
+      "status": "passed"
+    },
+    {
+      "phase": "stop-claim-race-r11",
+      "record_sha256": "a5e7a46794e1dbc523acf110fd80cab3cc6d19417c7ddd4ffb1ea46e195f5e85",
+      "log_sha256": "e74fbf090307503945123f6f5e4b77ebe19c99579d3f9caf0dc439280a254def",
+      "status": "passed"
+    },
+    {
+      "phase": "stop-replay-claim-race-r11",
+      "record_sha256": "465b77a8e3ba2bb72910cc4c8779f95e09cc93a92c46b1a0ba109816c0cc56ae",
+      "log_sha256": "e74fbf090307503945123f6f5e4b77ebe19c99579d3f9caf0dc439280a254def",
+      "status": "passed"
+    }
+  ],
+  "original_failed_races_retained": true,
+  "old_run_or_operation_reused_for_corrected_case": false,
+  "main_changed": false,
+  "model_invoked": false,
+  "stage_a_complete": false,
+  "remaining": "Company crash/recovery/quarantine qualification, canonical history producer, model connection, persisted suggested proposals/human draft saves and separate main release."
+}

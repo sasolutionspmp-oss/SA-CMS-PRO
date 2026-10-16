@@ -621,6 +621,63 @@ def _claim_failure(error):
     return {"error_type": type(error).__name__[:80], "error_code": str(code)[:80], "error_message": str(error)[:512]}
 
 
+def _claim_serialization_refusal(error):
+    """Only Frappe's typed wrapper around the observed native errno1020."""
+    import frappe
+    wrapper = getattr(frappe, "QueryDeadlockError", None)
+    if not isinstance(wrapper, type) or not isinstance(error, wrapper):
+        return False
+    cause = error.__cause__
+    if cause is None and len(error.args) == 1 and isinstance(error.args[0], BaseException):
+        cause = error.args[0]
+    return isinstance(cause, BaseException) and bool(cause.args) and type(cause.args[0]) is int and cause.args[0] == 1020
+
+
+def _claim_with_serialization_retry(run, *, allow_retry=False):
+    """One fresh transaction, with ordinary original authority on every call."""
+    import frappe
+    from cipher_aec.ricky.company_service import build_service
+    from cipher_aec.ricky.company_contracts import decode_run_authority
+    observation = {"attempts": []}
+    for number in (1, 2):
+        attempt = {"attempt": number}
+        observation["attempts"].append(attempt)
+        refusal = None
+        try:
+            service = build_service(worker=True)
+            with service.backend.original_user(decode_run_authority(run)):
+                try:
+                    claimed = service.claim(run["id"])
+                except BaseException as error:
+                    refusal = error
+                    attempt.update(_claim_failure(error))
+                else:
+                    attempt.update(claimed=claimed is not None, token=claimed[1] if claimed else None)
+        except BaseException as error:
+            # Initialization or original-user entry/cleanup is not a claim
+            # serialization refusal, even if it raises the same native type.
+            attempt["authority_context_error"] = _claim_failure(error)
+            observation.update(_claim_failure(error))
+            return observation
+        if refusal is None:
+            observation.update(claimed=attempt["claimed"], token=attempt["token"])
+            return observation
+        if allow_retry and number == 1 and _claim_serialization_refusal(refusal):
+            attempt["serialization_errno"] = 1020
+            try:
+                if getattr(frappe.db, "_disable_transaction_control", False):
+                    raise RuntimeError("The claim retry requires ordinary transaction control.")
+                frappe.db.rollback()
+            except BaseException as error:
+                attempt["rollback_error"] = _claim_failure(error)
+                observation.update(_claim_failure(error))
+                return observation
+            attempt["rollback_completed"] = True
+            continue
+        observation.update(_claim_failure(refusal))
+        return observation
+
+
 def run_company_claim_race(private_manifest, case="claim-race"):
     """Two ordinary native connections compete for the saved HTTP run lease."""
     import frappe
@@ -643,10 +700,23 @@ def run_company_claim_race(private_manifest, case="claim-race"):
             from cipher_aec.ricky.company_service import build_service
             from cipher_aec.ricky.company_contracts import decode_run_authority
             service = build_service(worker=True)
+            if case == "claim-race-r11":
+                with service.backend.original_user(decode_run_authority(run)):
+                    presented = service.get_run(run["company"], run["id"])
+                    snapshot = service.store.get("run", run["id"])
+                observation["pre_claim_snapshot"] = {"status": snapshot["status"],
+                    "lease_token": snapshot["lease_token"], "run_sha256": sha(snapshot)}
+                if (sha(snapshot) != sha(run) or snapshot["status"] != "queued"
+                        or type(snapshot["lease_token"]) is not int or snapshot["lease_token"] != 0
+                        or presented["id"] != run["id"] or presented["status"] != "queued"):
+                    raise AssertionError("Each R11 connection requires the exact original queued Run snapshot before contention.")
             barrier.wait(10)
-            with service.backend.original_user(decode_run_authority(run)):
-                claimed = service.claim(run["id"])
-            observation.update(claimed=claimed is not None, token=claimed[1] if claimed else None)
+            if case == "claim-race-r11":
+                observation.update(_claim_with_serialization_retry(run, allow_retry=True))
+            else:
+                with service.backend.original_user(decode_run_authority(run)):
+                    claimed = service.claim(run["id"])
+                observation.update(claimed=claimed is not None, token=claimed[1] if claimed else None)
         except BaseException as error:
             observation.update(_claim_failure(error))
         finally:
@@ -662,11 +732,20 @@ def run_company_claim_race(private_manifest, case="claim-race"):
     for thread in threads: thread.join(15)
     value["stages"][case] = {"status": "observed_before_assertions", "run_id": run["id"],
         "claims": deepcopy(observations), "thread_alive": [thread.is_alive() for thread in threads], "at": timestamp()}
+    if case == "claim-race-r11":
+        value["stages"][case]["serialization_retries"] = sum(max(0, len(row.get("attempts", [])) - 1) for row in observations)
     write_private(private_manifest, value)
     if any(value["stages"][case]["thread_alive"]) or len(observations) != 2 or any("error_type" in row or "cleanup_error" in row for row in observations):
         raise AssertionError("The bounded independent claim race did not complete cleanly.")
     if sum(row["claimed"] for row in observations) != 1:
         raise AssertionError("Exactly one claimant must own the original run lease.")
+    if case == "claim-race-r11":
+        exercised = value["stages"][case]["serialization_retries"] > 0
+        value["stages"][case].update(claim_contention_qualified=True, serialization_retry_qualified=exercised)
+        if not exercised:
+            value["stages"][case]["status"] = "contention_passed_retry_unexercised"
+            write_private(private_manifest, value)
+            raise AssertionError("Clean contention did not exercise the required native fresh-transaction retry.")
     value["stages"][case]["status"] = "passed"
     write_private(private_manifest, value)
     return deepcopy(value["stages"][case])
