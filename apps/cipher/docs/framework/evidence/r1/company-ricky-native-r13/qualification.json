@@ -1,0 +1,237 @@
+{
+  "schema": "cipher.company-ricky.r13-command-history-qualification.v1",
+  "status": "passed",
+  "at": "2026-10-16T06:29:39.507189+00:00",
+  "source_snapshot_sha256": "9fe493ca48277487ce4f1cd0bfd474abf3048d3ac132d70d5b4a767222e6c524",
+  "source_qualification_sha256": "0a4b8b041e5b6945099d81cfbd82d525c22ba299e3aa338a815f147857b3a8cb",
+  "backend_tests_composed": 834,
+  "fresh_complete_unit_tests": 782,
+  "unchanged_integration_tests": 52,
+  "unchanged_native_workflows": 8,
+  "unchanged_browser_tests": 190,
+  "unchanged_build_files": 905,
+  "production_changed_paths": [
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/company_api.py"
+  ],
+  "native_run_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+  "command_events": [
+    {
+      "name": "7vbp970ob8",
+      "scope_type": "Company",
+      "company": "Cipher Synthetic Company",
+      "project": null,
+      "actor_person": "7e351e70e0",
+      "event": "ricky.company.read.start.accepted",
+      "subject_type": "Cipher Ricky Run",
+      "subject_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+      "operation_id": "eded7ed2-736b-41fb-abef-a75398fce5ba",
+      "previous_hash": "aa5463d62077cb86cb49711c692e3e1d7487a773d9e6751cb6c4b2d76a08f838",
+      "event_hash": "e04085a6d174611e30021127936c3ddbbfa0127796ef88c04f164b9cb39fc6dd",
+      "details": {
+        "action": "aec.pursuit.lookup",
+        "status": "queued"
+      }
+    },
+    {
+      "name": "8qgt067ov6",
+      "scope_type": "Company",
+      "company": "Cipher Synthetic Company",
+      "project": null,
+      "actor_person": "7e351e70e0",
+      "event": "ricky.company.read.stop.accepted",
+      "subject_type": "Cipher Ricky Run",
+      "subject_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+      "operation_id": "17d1e524-341b-41d0-b24c-c2b60e755a18",
+      "previous_hash": "e04085a6d174611e30021127936c3ddbbfa0127796ef88c04f164b9cb39fc6dd",
+      "event_hash": "d8d59e7966e3031a8e4193497af66f0b2ce48bed8e7a938abd9e98e5f8e78160",
+      "details": {
+        "cancel_requested": false,
+        "status": "succeeded"
+      }
+    }
+  ],
+  "visibility": {
+    "before": {
+      "alias": {
+        "total": 9,
+        "prospective_command_events_visible": 0,
+        "cursor_boundaries_checked": 0
+      },
+      "author": {
+        "total": 9,
+        "prospective_command_events_visible": 0,
+        "cursor_boundaries_checked": 0
+      },
+      "outsider": {
+        "denied": "not_found"
+      }
+    },
+    "source_permission_removed": {
+      "alias": {
+        "total": 3,
+        "prospective_command_events_visible": 0,
+        "cursor_boundaries_checked": 0
+      },
+      "author": {
+        "total": 3,
+        "prospective_command_events_visible": 0,
+        "cursor_boundaries_checked": 0
+      },
+      "outsider": {
+        "denied": "not_found"
+      }
+    },
+    "restored": {
+      "alias": {
+        "total": 9,
+        "prospective_command_events_visible": 0,
+        "cursor_boundaries_checked": 0
+      },
+      "author": {
+        "total": 11,
+        "prospective_command_events_visible": 2,
+        "cursor_boundaries_checked": 0
+      },
+      "outsider": {
+        "denied": "not_found"
+      }
+    }
+  },
+  "owner_cursor_alias_HTTP_refusal": "422 invalid_cursor; published response schema verified",
+  "ordinary_RQ": {
+    "status": "passed",
+    "job_id": "cipher-ci-ai04-20261016.localhost||cipher-ricky-ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+    "run_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+    "job_status": "JobStatus.FINISHED",
+    "run_status": "succeeded",
+    "invocations": 1,
+    "started_at": "2026-10-16 06:25:21.019719+00:00",
+    "ended_at": "2026-10-16 06:25:22.191454+00:00",
+    "worker_name": "9670d8d53ed346f48286759961b7442b",
+    "workers_after": 0,
+    "queued_after": 0,
+    "started_jobs_after": 0
+  },
+  "terminal_Stop": {
+    "status": "succeeded",
+    "cancel_requested": false,
+    "source_permission_at_admission": "removed",
+    "full_run_and_source_bearing_start_replay_during_outage": "refused",
+    "terminal_run_children_and_result_bytes_unchanged": true
+  },
+  "shared_receipt_result": {
+    "receipts": 2,
+    "runtime_observation_supplied_by_caller": true
+  },
+  "original_queued_Start_and_terminal_Stop_receipts_exact_after_replay": true,
+  "replay_added_history_events": 0,
+  "worker_history_events": 0,
+  "fresh_independent_readback": {
+    "status": "passed",
+    "run_status": "succeeded",
+    "tool_calls": 1,
+    "generations": 0,
+    "proposal_count": 0,
+    "original_fixture_files_unchanged": true,
+    "older_rows_unchanged": true,
+    "active_runs": 0,
+    "workers": 0,
+    "queued_jobs": 0,
+    "started_jobs": 0
+  },
+  "exact_original_site_configuration_restored": true,
+  "web_reload": {
+    "status": "web_reloaded",
+    "master": {
+      "pid": 938,
+      "ppid": 1,
+      "start_ticks": "14094720"
+    },
+    "before": [
+      {
+        "pid": 3305,
+        "ppid": 938,
+        "start_ticks": "14562516"
+      },
+      {
+        "pid": 3306,
+        "ppid": 938,
+        "start_ticks": "14562516"
+      }
+    ],
+    "after": [
+      {
+        "pid": 4997,
+        "ppid": 938,
+        "start_ticks": "15153669"
+      },
+      {
+        "pid": 4998,
+        "ppid": 938,
+        "start_ticks": "15153669"
+      }
+    ]
+  },
+  "phases": [
+    {
+      "phase": "prepare",
+      "status": "passed",
+      "record_sha256": "75e9d00abfc1d1298fbcd73a1cc4088b5b9153ac87a3fbd31c60a3dcdd8f6a7f",
+      "output_sha256": "01a89d9f3ca11de0b53bf79d211032087ed1edc5b1d65343a55ed67f29fb3c34",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "start",
+      "status": "passed",
+      "record_sha256": "29dee729f5b4d6ba41b5cdb3222ca9ace04b76c25a825bbc9f3a35a5fa32a03d",
+      "output_sha256": "6ff93f92ba7fcc1818611644781296878dd40895f6bf170991db033388f85d1c",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "queue-before",
+      "status": "passed",
+      "record_sha256": "c334c0aa9db9ed0e189a185bdd63bffd6b6b0b0f2c1ab3afd24fb84bafb13d89",
+      "output_sha256": "774eb292741e30479244b312104e74ac60940b5bb49c2bef72e43c635252fdbe",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "queue-after",
+      "status": "passed",
+      "record_sha256": "f38f215eeea37af4e44cd28c98bfcc92421475670c8e31a211068d6d74e78c28",
+      "output_sha256": "a9739b00b572832640cd4b2f15cefd9aab0d31f2f808214a1ec52b3977b4a69d",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "verify",
+      "status": "passed",
+      "record_sha256": "68f1945da0a5d2de66598ba9f2f7b65c9b0340be6486c6c31d00e99d133ea852",
+      "output_sha256": "f56ec6fdaca43cb7fdcacc0403166241bac7d13fce071112456ee83ebedef8a8",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "finish",
+      "status": "passed",
+      "record_sha256": "47ebe0b3adc532e50f0465ef97bd0d64ef2fddd04298ab25e01c9cf182199ae8",
+      "output_sha256": "4d83c7245f19ab7b8a6b813aed7dd908462d80a2b3137be18ede3dd671841eba",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "private_final_manifest_sha256": "9cba8c29a93361e529d2afc0d0683b372a0be976ee62545ce48372588c46c776",
+  "private_independent_readback_sha256": "4faf1681df5ec78dc3428f275f6774e988ffd57019b1a0f59bd6ba58ead3c691",
+  "main_changed": false,
+  "migration_required": false,
+  "UI_changed": false,
+  "model_invoked": false,
+  "preceding_hosted_CI": {
+    "commit": "66d218e5dc9d11cdb33d5d8d12c426cda36a3708",
+    "run_id": 38859316748,
+    "conclusion": "success"
+  },
+  "new_hosted_CI": "pending",
+  "limits": [
+    "Prospective accepted command facts only; no backfill or worker lifecycle history.",
+    "No live model, QuickBooks connection, domain writer, production or enterprise-readiness claim.",
+    "Company history UI, persisted reviewable suggestions and human draft-save commands remain subsequent work.",
+    "Earlier OS-kill, Redis-loss, restored-site and full-history-performance limits remain."
+  ]
+}
