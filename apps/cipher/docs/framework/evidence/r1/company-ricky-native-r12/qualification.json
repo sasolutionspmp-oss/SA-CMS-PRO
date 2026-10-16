@@ -1,0 +1,431 @@
+{
+  "schema": "cipher.company-ricky.r12-native-qualification.v1",
+  "status": "passed",
+  "at": "2026-10-16T06:04:00.052726+00:00",
+  "source_snapshot_sha256": "3995bc06cedb7996e5f9bba3cb18517102dc2c6abb2a2ec935627cc83f6aec0d",
+  "complete_source_confirmation_sha256": "967170cd55679babb7373ff383d9ad0868605c6f68b52864167419b835d7fb7f",
+  "backend_tests_composed": 812,
+  "fresh_complete_unit_tests": 760,
+  "unchanged_integration_tests": 52,
+  "unchanged_native_workflows": 8,
+  "fresh_complete_browser_tests": 190,
+  "production_schema_UI_changed": false,
+  "native_cases": {
+    "interrupted-read-r12": {
+      "status": "passed",
+      "run_id": "99afe085-b2c4-4ebe-85cb-af6fb82b7e48",
+      "run_status": "succeeded",
+      "lease_token": 2,
+      "tool_calls": 1,
+      "model_generations": 0,
+      "proposals": 0,
+      "error_code": null,
+      "child_counts": {
+        "step": 1,
+        "invocation": 1,
+        "proposal": 0,
+        "delegation": 1,
+        "artifact": 1
+      },
+      "prior_orchestration_bytes_preserved": true,
+      "http_full_read_original_admission_replay_and_owner_denials": "passed",
+      "event_summary": [
+        {
+          "at": "2026-10-16T05:50:45.059861+00:00",
+          "status": "entered_checkpoint"
+        },
+        {
+          "at": "2026-10-16T05:50:46.419188+00:00",
+          "status": "checkpoint_captured",
+          "window": {
+            "deadline": "2026-10-16T05:55:40.975547+00:00",
+            "lease_expires_at": "2026-10-16T05:53:45.374526+00:00",
+            "observed_at": "2026-10-16T05:50:46.115505+00:00",
+            "seconds_until_deadline": 294.860042,
+            "seconds_until_lease": 179.259021
+          }
+        },
+        {
+          "at": "2026-10-16T05:53:48.184068+00:00",
+          "status": "dispatch_ready",
+          "window": {
+            "deadline": "2026-10-16T05:55:40.975547+00:00",
+            "lease_expires_at": "2026-10-16T05:53:45.374526+00:00",
+            "observed_at": "2026-10-16T05:53:48.015745+00:00",
+            "seconds_until_deadline": 112.959802,
+            "seconds_until_lease": 0
+          }
+        },
+        {
+          "at": "2026-10-16T05:53:53.747566+00:00",
+          "status": "dispatch_ready"
+        },
+        {
+          "at": "2026-10-16T05:53:54.301498+00:00",
+          "status": "passed"
+        }
+      ],
+      "ordinary_RQ": {
+        "status": "passed",
+        "queued_entries": 3,
+        "unique_finished_jobs": 2,
+        "workers_after": 0,
+        "started_jobs_after": 0,
+        "older_hints_effects_unchanged": true
+      },
+      "checkpoint_transition_checked": true,
+      "old_worker_token_refusal": "passed"
+    },
+    "recovery-authority-r12": {
+      "status": "passed",
+      "run_id": "96747119-15f1-491f-abb1-c12da0d3300c",
+      "run_status": "failed",
+      "lease_token": 1,
+      "tool_calls": 0,
+      "model_generations": 0,
+      "proposals": 0,
+      "error_code": "stale_authority",
+      "child_counts": {
+        "step": 0,
+        "invocation": 0,
+        "proposal": 0,
+        "delegation": 1,
+        "artifact": 1
+      },
+      "prior_orchestration_bytes_preserved": true,
+      "http_full_read_original_admission_replay_and_owner_denials": "passed",
+      "event_summary": [
+        {
+          "at": "2026-10-16T05:54:53.305723+00:00",
+          "status": "entered_checkpoint"
+        },
+        {
+          "at": "2026-10-16T05:54:53.783971+00:00",
+          "status": "checkpoint_captured",
+          "window": {
+            "deadline": "2026-10-16T05:59:50.482369+00:00",
+            "lease_expires_at": "2026-10-16T05:57:53.491484+00:00",
+            "observed_at": "2026-10-16T05:54:53.558780+00:00",
+            "seconds_until_deadline": 296.923589,
+            "seconds_until_lease": 179.932704
+          }
+        },
+        {
+          "at": "2026-10-16T05:57:56.085581+00:00",
+          "status": "entered_authority_refusal",
+          "window": {
+            "deadline": "2026-10-16T05:59:50.482369+00:00",
+            "lease_expires_at": "2026-10-16T05:57:53.491484+00:00",
+            "observed_at": "2026-10-16T05:57:56.077852+00:00",
+            "seconds_until_deadline": 114.404517,
+            "seconds_until_lease": 0
+          }
+        },
+        {
+          "at": "2026-10-16T05:57:56.180838+00:00",
+          "status": "entered_authority_refusal",
+          "exact_duty_restored": true
+        },
+        {
+          "at": "2026-10-16T05:57:56.205899+00:00",
+          "status": "entered_authority_refusal"
+        },
+        {
+          "at": "2026-10-16T05:57:56.414430+00:00",
+          "status": "passed"
+        }
+      ],
+      "execution": "actual ordinary process_run callthrough; no RQ-delivery claim",
+      "checkpoint_transition_checked": true,
+      "old_worker_token_refusal": "not exercised in this case"
+    },
+    "quarantine-r12": {
+      "status": "passed",
+      "run_id": "c07001f8-087f-4f71-932e-01bf039fdea7",
+      "run_status": "succeeded",
+      "lease_token": 1,
+      "tool_calls": 1,
+      "model_generations": 0,
+      "proposals": 0,
+      "error_code": null,
+      "child_counts": {
+        "step": 1,
+        "invocation": 1,
+        "proposal": 0,
+        "delegation": 1,
+        "artifact": 1
+      },
+      "prior_orchestration_bytes_preserved": true,
+      "http_full_read_original_admission_replay_and_owner_denials": "passed",
+      "event_summary": [
+        {
+          "at": "2026-10-16T06:00:23.962766+00:00",
+          "status": "entered_checkpoint"
+        },
+        {
+          "at": "2026-10-16T06:00:24.195947+00:00",
+          "status": "checkpoint_captured",
+          "window": {
+            "deadline": "2026-10-16T06:05:21.109935+00:00",
+            "lease_expires_at": null,
+            "observed_at": "2026-10-16T06:00:23.987031+00:00",
+            "seconds_until_deadline": 297.122904,
+            "seconds_until_lease": 0
+          }
+        },
+        {
+          "at": "2026-10-16T06:01:28.203268+00:00",
+          "status": "checkpoint_captured"
+        },
+        {
+          "at": "2026-10-16T06:01:28.210593+00:00",
+          "status": "checkpoint_captured"
+        },
+        {
+          "at": "2026-10-16T06:01:29.438239+00:00",
+          "status": "checkpoint_captured"
+        },
+        {
+          "at": "2026-10-16T06:01:29.757393+00:00",
+          "status": "checkpoint_captured"
+        },
+        {
+          "at": "2026-10-16T06:02:34.482512+00:00",
+          "status": "dispatch_ready",
+          "window": {
+            "deadline": "2026-10-16T06:05:21.109935+00:00",
+            "lease_expires_at": null,
+            "observed_at": "2026-10-16T06:02:34.246262+00:00",
+            "seconds_until_deadline": 166.863673,
+            "seconds_until_lease": 0
+          }
+        },
+        {
+          "at": "2026-10-16T06:02:40.384810+00:00",
+          "status": "dispatch_ready"
+        },
+        {
+          "at": "2026-10-16T06:02:41.072172+00:00",
+          "status": "passed"
+        }
+      ],
+      "ordinary_RQ": {
+        "status": "passed",
+        "queued_entries": 3,
+        "unique_finished_jobs": 2,
+        "workers_after": 0,
+        "started_jobs_after": 0,
+        "older_hints_effects_unchanged": true
+      },
+      "checkpoint_transition_checked": true,
+      "old_worker_token_refusal": "not exercised in this case"
+    }
+  },
+  "quarantine": {
+    "native_guards": {
+      "worker": {
+        "status": "skipped",
+        "code": "execution_quarantined"
+      },
+      "recovery": {
+        "status": "skipped",
+        "code": "execution_quarantined"
+      },
+      "direct_service": {
+        "code": "execution_quarantined",
+        "status": 503
+      }
+    },
+    "run_bytes_unchanged": true,
+    "HTTP_new_start": "503 with no Run or command receipt",
+    "HTTP_existing_read_and_original_queued_receipt": "passed",
+    "restored_HTTP_new_stop_and_replay": "passed; new Stop of succeeded Run, full result unchanged",
+    "exact_original_site_configuration_restored": true,
+    "cache_transition": "waited beyond Frappe 60-second request-config cache on both transitions"
+  },
+  "receipts": {
+    "status": "passed",
+    "coverage": [
+      "start-interrupted-read-r12",
+      "start-recovery-authority-r12",
+      "start-quarantine-r12",
+      "stop-quarantine-r12"
+    ],
+    "receipts": 4,
+    "runtime_observation_supplied_by_caller": true
+  },
+  "restoration": {
+    "status": "passed",
+    "old_row_inventory_unchanged": true,
+    "company_projects": 3,
+    "introduced_projects": 0,
+    "qualification": "Native readback only; no HTTP/queue/p95 claim."
+  },
+  "phases": [
+    {
+      "phase": "authority-refusal",
+      "status": "passed",
+      "record_sha256": "31990b8ed22f43e7fbcb759bfe817df7af546c5937b1f2d8f0a593c9d30baf4d",
+      "log_sha256": "c26f431d00949db5467d3193d6c650d2526ceeda5c1cc8a47a94de62901c3e81"
+    },
+    {
+      "phase": "checkpoint-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "023a4d37ef9c8008c5bcacaab0f15d569ee140b992dceb2429e01fa42c45b5b9",
+      "log_sha256": "bcb61b19672d0cb08a754e18b7fe5e2f393b553e89d97e81e300dedffce2d5aa"
+    },
+    {
+      "phase": "checkpoint-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "edba7dc9726dfd85e66928c353fd418378833e56809e2f5f1189b8e3bdc2a62a",
+      "log_sha256": "03340ca9bc131b7033df030c106747e95f559f5a0aacf6934225a056bc1d5178"
+    },
+    {
+      "phase": "checkpoint-recovery-authority-r12",
+      "status": "passed",
+      "record_sha256": "2aa55735ff6914d11379c7147ff0481af64cd49fa6e69b5de31ec0417cb53a1d",
+      "log_sha256": "375088554080cedbd68a452c56885e80b6ca77f1dbd23aca2770207f77059df2"
+    },
+    {
+      "phase": "declare",
+      "status": "passed",
+      "record_sha256": "de6cd361bbd7ca105f49bb1839de03e952df2b1492da3823b6d4735766bfcf44",
+      "log_sha256": "3530c96ff7094494e0197caefa938202da7ef33e204ef4e8519610a51af80050"
+    },
+    {
+      "phase": "dispatch-ready-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "05abfd2dc82800eb41b5987d3720906e64c742b043a9d5f89c13e3d88f9f9f6b",
+      "log_sha256": "f4c9e4eed0fe0738e430e9d33dd1291ddb86aa4f98b74516d73eacf484eec78f"
+    },
+    {
+      "phase": "dispatch-ready-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "0292504cc4185610b8924b2c619918974e1e656d41e7fbd75adc2e4b9600a038",
+      "log_sha256": "41d91a176f78c6354cc73b0870a447c0a36f7f6e85af025327925f29caf8e032"
+    },
+    {
+      "phase": "observe-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "1e814b47193ed699ab570e001f53ca82b8cca254057ca6069b5ee18949585df1",
+      "log_sha256": "c1b42a5f0426c02b2deea1cc47c8ab945e3189f45ce0f627c7ab6330c483e50f"
+    },
+    {
+      "phase": "observe-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "8bcf5e54c91a15318369d46e440a56ef816cd59a80959501f6d3e74839f0c45e",
+      "log_sha256": "9a4da15e598f838cc83b7c4fba5a2d89e6f66982220639bfebd81415333473c4"
+    },
+    {
+      "phase": "observe-recovery-authority-r12",
+      "status": "passed",
+      "record_sha256": "e7572e5fa13c4a427d138c61af449100b25c7b755f76881f9c7543c997434019",
+      "log_sha256": "1a5bda956176d6532179f70331d08caa583c4573577c65b3ca5be857dc704c23"
+    },
+    {
+      "phase": "quarantine-http",
+      "status": "passed",
+      "record_sha256": "fc0febdde50376aebcaf515b295aeccb5907554acdd2c72d67f9a948b5a366b9",
+      "log_sha256": "657e9278a36389060e7b01f9f5798a8d1cef1479912789677b8520cfcc2e3d03"
+    },
+    {
+      "phase": "quarantine-native",
+      "status": "passed",
+      "record_sha256": "a2141b8dc0bb3d8aee4508ab30bf10af9329d218265a0c9a17f680d9a67235fd",
+      "log_sha256": "2a5476ddec2c28bd19a8649f90d74fadf57e8d69003e624fa7f77f6022807a3f"
+    },
+    {
+      "phase": "quarantine-restored-http",
+      "status": "passed",
+      "record_sha256": "555cfe17d31ed3cc78f361e82366a95420ec264ce85ab5693ef7daf8834e6448",
+      "log_sha256": "eb8317d031551f08a7e27eae2a36d0fd17369747ecf8f0e9eeceec108181f67a"
+    },
+    {
+      "phase": "receipt-start-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "08d4e36a3257476c95c612268a7f6154eb9036c9e5560aa5faa3a2dc70496741",
+      "log_sha256": "14c99cc7c4fb98ff53187d5ada44727a8c674a008f8b57d1443e2ffff9c0fc72"
+    },
+    {
+      "phase": "receipt-start-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "db03349b05ba0732b1c5dfbd3f66227dbe9e8e363a97e1140a865b24356df7bd",
+      "log_sha256": "c285a9a741985e545a0a90aea191b567f0c395089c9084c9cf92190d72694f89"
+    },
+    {
+      "phase": "receipt-start-recovery-authority-r12",
+      "status": "passed",
+      "record_sha256": "86c757182ffda202db79c498605503965d37cccfe6f6c0dcbd052690482b5891",
+      "log_sha256": "48643b962f1382d788db57cb572358e3cbcd4f30cac1e78e42cdb459df3b6310"
+    },
+    {
+      "phase": "receipt-stop-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "e117143db329c5aff309c7379a9d95003e71f8d0ed918708b5bf6b4d6c2449c5",
+      "log_sha256": "380bcb2165c99b41b9fa8de44c6a96eecca8b129faca957c747acf228dd8e5eb"
+    },
+    {
+      "phase": "receipts",
+      "status": "passed",
+      "record_sha256": "bc4a8ae9355a1d06e7a17d42dcd93c74863651e343928e186f764fa671c04358",
+      "log_sha256": "7f4d54da08097d6a8bc8ed9f604b9b83bafb9400aa3674eda82ef86a04d63d96"
+    },
+    {
+      "phase": "restoration",
+      "status": "passed",
+      "record_sha256": "cd65e2690965b64155f9920dc41d07de9a8d4bbe5dc7f83aa92d0f972c18e435",
+      "log_sha256": "df6390f34c0a2872cad51f34cc19844ff6b39e9165574899587373ae57f5dd86"
+    },
+    {
+      "phase": "start-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "0d1ee54104d7a5296f3283081d49ce82c44d96b366073b917737fd01510a5b4b",
+      "log_sha256": "1559c04da545adda5b6d8e0cf55f934216fac7c2ee1b9d3d4600810ea2783be0"
+    },
+    {
+      "phase": "start-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "e65b32f3532a879882d64fba2a709185ba40fbae34cd03d02f71d77d1f2e5001",
+      "log_sha256": "b1eb818a95867fd31adfd9c349bb45942734cd925e0dd10c783cb7879869343a"
+    },
+    {
+      "phase": "start-recovery-authority-r12",
+      "status": "passed",
+      "record_sha256": "9a6e352567f80fb6921e72568d7426c072e92db9e74e6549fdb78a09c239e770",
+      "log_sha256": "245603474d124cb6d7e4e9ecd082ddc9878f0a4759b8c5aeff1c388be76f044a"
+    },
+    {
+      "phase": "stop-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "1720da78704d753ffc3a002ff42e9002475241454157fc68f203f944386ea087",
+      "log_sha256": "b1ff3f59c3ec900362d34d6ff20548563ed9eac68ba38b8f77c0174a9328c7c4"
+    },
+    {
+      "phase": "stop-replay-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "a041cacaeaf0e03ad6b5c5e7fa9f4f6a8e47ec83d9977af9142d886aaacbe701",
+      "log_sha256": "b1ff3f59c3ec900362d34d6ff20548563ed9eac68ba38b8f77c0174a9328c7c4"
+    },
+    {
+      "phase": "verify-interrupted-read-r12",
+      "status": "passed",
+      "record_sha256": "ebb9690a92c8d36021f6d2c3aabb779f8643753f7f75c60a3f67e08ca29ae1b8",
+      "log_sha256": "bfdbcdb2c68cacd7b0fcb24d1e274aba8f529613cdd4463eb9cab81252601398"
+    },
+    {
+      "phase": "verify-quarantine-r12",
+      "status": "passed",
+      "record_sha256": "93e1baa2c115d0f9b6cfaed3e9c7b0efe1ad473a84811551890c4d5c0f3d1496",
+      "log_sha256": "f6872e703fb778f64d72109c520ce29b2f4fc1d55a7d77ca6b0743d535a14050"
+    }
+  ],
+  "main_changed": false,
+  "model_invoked": false,
+  "stage_a_complete": false,
+  "limits": [
+    "Checkpoint interruption and actual lease expiry; no OS-kill, Redis-loss or restored-site proof.",
+    "No live model or QuickBooks connection.",
+    "Canonical Company Ricky command history, persisted suggestions and human draft saves remain subsequent work.",
+    "Main site still runs its separately qualified release; award writer and distribution consumers remain disabled."
+  ]
+}

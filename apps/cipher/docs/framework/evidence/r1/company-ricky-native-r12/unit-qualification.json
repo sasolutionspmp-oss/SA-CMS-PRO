@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "test_summary": {
+    "collected": 760,
+    "unique": 760,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "missing_declared_cases": []
+  },
+  "source_changed_during_run": false,
+  "private_original_report_sha256": "250e37717763dc6c88b980826eff0869a5bbc05f36d1054d2db1eb0ce764caba",
+  "stages": [
+    {
+      "name": "frappe-unit-tests",
+      "classification": "actual-frappe",
+      "status": "passed",
+      "duration_seconds": 24.866,
+      "exit_code": 0,
+      "log_sha256": "d00e40955146b0169048ad8362f994dfcc14d9ca5afa6a22fad32afa009fd4ad"
+    },
+    {
+      "name": "collect-unit-junit",
+      "classification": "evidence",
+      "status": "passed",
+      "duration_seconds": 0.074,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

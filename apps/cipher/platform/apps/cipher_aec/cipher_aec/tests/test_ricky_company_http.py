@@ -12,7 +12,7 @@ from urllib.parse import urlencode, urlsplit
 from urllib.request import build_opener, HTTPCookieProcessor, HTTPRedirectHandler, Request
 from uuid import uuid4
 
-from .ricky_company_acceptance_support import CASES, Journal, manifest, saved_intent, sha, timestamp, write_private, verify_read_value, typed_equal, load_private, declared_case, completed_read_cases
+from .ricky_company_acceptance_support import CASES, Journal, manifest, saved_intent, sha, timestamp, write_private, verify_read_value, typed_equal, load_private, declared_case, completed_read_cases, recovery_case, RECOVERY_CASES
 
 RICKY = "cipher_aec.ricky.company_api."
 DOC = "cipher_aec.documents.company_api."
@@ -198,7 +198,7 @@ class _HTTP:
         write_private(self.path, self.value)
         if expected:
             code = envelope.get("error", {}).get("code")
-            if code not in expected or status != {"not_found": 404, "capability_denied": 403, "session_revoked": 403}.get(code):
+            if code not in expected or status != {"not_found": 404, "capability_denied": 403, "session_revoked": 403, "execution_quarantined": 503}.get(code):
                 raise AssertionError("The declared current-rights denial was not observed.")
             return envelope
         if status >= 400:
@@ -313,6 +313,9 @@ def start_company_http_case(private_manifest, case, base_url, host_header=None):
         raise ValueError("Use one fixed declared Company case.")
     rpc = _HTTP(private_manifest, base_url, host_header)
     original_case = declared_case(rpc.value, case)
+    recovery_case(rpc.value, case, admission=True)
+    if case in RECOVERY_CASES and not (rpc.work / "author.cookies.secret").is_file():
+        raise RuntimeError("R12 requires the existing current author cookie; never create a replacement Session.")
     rpc.login()
     inputs = rpc.value["inputs"]
     if not inputs.get("ready"):
@@ -358,10 +361,13 @@ def observe_company_http_case(private_manifest, case, base_url, host_header=None
     if predecessor is not None:
         if result["status"] != predecessor["predecessor_status"] or result["result"] is not None:
             raise AssertionError("The original terminal predecessor cannot become a successful corrected case.")
-    elif declared_case(rpc.value, case) in ("lookup", "recompute", "compare", "convert"):
+    elif declared_case(rpc.value, case) in ("lookup", "recompute", "compare", "convert", "interrupted-read-r12", "quarantine-r12"):
         if result["status"] != "succeeded":
             raise AssertionError("The declared fixed read did not complete.")
         verify_read_value(rpc.value["inputs"], case, result["result"])
+    if case == "recovery-authority-r12" and (result["status"] != "failed" or result["result"] is not None
+            or result["error"]["code"] not in ("not_found", "capability_denied", "stale_authority")):
+        raise AssertionError("The naturally expired authority-refused case must remain terminal without output.")
     rpc.call(RICKY + "run_events", values)
     replay = rpc.call(RICKY + "start_read", {key: item for key, item in intent["payload"].items() if key != "operation_id"}, key="start-" + case)["data"]
     if replay["operation"]["replayed"] is not True or not typed_equal({key: item for key, item in replay.items() if key != "operation"}, intent["start"]):
@@ -378,7 +384,7 @@ def observe_company_http_case(private_manifest, case, base_url, host_header=None
 
 
 def stop_company_http_case(private_manifest, case, base_url, host_header=None):
-    if case not in ("claim-race", "claim-race-r9", "claim-race-r11", "fenced-stop", "source-revoked-stop", "capability-revoked", "expired-original"):
+    if case not in ("claim-race", "claim-race-r9", "claim-race-r11", "fenced-stop", "source-revoked-stop", "capability-revoked", "expired-original", *RECOVERY_CASES):
         raise ValueError("Use a declared stop case.")
     rpc = _HTTP(private_manifest, base_url, host_header); rpc.login()
     intent = saved_intent(rpc.value, case)

@@ -1,0 +1,57 @@
+{
+  "status": "passed",
+  "test_change": "single_click_then_eventually_assert_accessible_checked_state_before_releasing_new_head",
+  "product_changed": false,
+  "prior_hosted_failure": {
+    "commit": "b0299b40a91b2a24d7f1354bd510af57eb15679e",
+    "run_id": 38855102825,
+    "passed": 189,
+    "failed": 1,
+    "test": "cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head",
+    "location": "cost-masters.spec.ts:40:707",
+    "decoded_job_log_sha256": "3048270f7e6c04260993c1d49cd138850edc85a6548f10617f90873b0eb95a55"
+  },
+  "cause": "UI5 checked-state update follows the click asynchronously. Preserve one real click and wait for its accessible checked state before releasing the delayed newer head.",
+  "focused": {
+    "tests": 8,
+    "failures": 0,
+    "retries": 0,
+    "report_sha256": "ac71ae70914a32b95950d1e69486a1d2f37d313afcaaff27dd4ff4f0d7e50fa1"
+  },
+  "original_failure_artifacts": {
+    "trace.zip": "d78967f44813343bbc1d1ca047052eb6e4e6bdd08174873c4cf851a72c40d55d",
+    "error-context.md": "82334af6831006742ec142194f098b3dc03f90be61c1574c6f0c0de479e68458",
+    "test-failed-1.png": "e02963fd6a2754b1031c2e1180318662beefa07149b8e2fdc6a2bfc81c483123"
+  },
+  "retained_runner_failures": [
+    {
+      "tests_executed": 0,
+      "status": "failed_missing_unchanged_source_links_and_package_module_type",
+      "report_sha256": "2d22d09bc7c4a38b308908a4ba37eecdaafc5c977dd91c1357eb01f827c52d51"
+    },
+    {
+      "status": "189 passed; packaged asset case failed because the separate runner lacked its unchanged dist pointer",
+      "report_sha256": "72ae047b41715ea1f9aa102f0b2134c005e8a9b0969cdea4cb2d5da291a4163f"
+    },
+    {
+      "status": "packaged asset case passed after restoring the build pointer",
+      "report_sha256": "37176666f7e3083c2dfa3ca555937703a2bcc91fc4e7ebe6ac175438fd5d3e17"
+    }
+  ],
+  "complete_fresh_confirmation": {
+    "tests": 190,
+    "failures": 0,
+    "skips": 0,
+    "retries": 0,
+    "report_sha256": "887f2bc7b611ed257441818e4767ca8555cd7c0582061bbaf35ea0e811506c96",
+    "duration_ms": 384522.21599999996
+  },
+  "build_reuse": {
+    "status": "unchanged_verified",
+    "build_manifest_sha256": "f31e649c8a1c2b0283beeadac101a6c30809f13841de2788d174537fc668336a",
+    "build_files": 905,
+    "build_sha256": "a41ea113376cfb871b0ccbb1be9db222b72b8c973f0fc4fcf10e1a3c212936f6",
+    "rebuild_performed": false
+  },
+  "hosted_CI_for_new_commit": "pending"
+}

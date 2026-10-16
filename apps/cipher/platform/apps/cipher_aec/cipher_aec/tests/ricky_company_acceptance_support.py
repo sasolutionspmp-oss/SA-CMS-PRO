@@ -7,8 +7,10 @@ from pathlib import Path
 from uuid import UUID, uuid4
 
 SCHEMA = "cipher.fixture.ricky.company.v1"
+RECOVERY_CASES = ("interrupted-read-r12", "recovery-authority-r12", "quarantine-r12")
+RECOVERY_CHECKPOINTS = dict(zip(RECOVERY_CASES, ("successful-invocation", "claimed", "queued")))
 CASES = ("lookup", "recompute", "compare", "convert", "claim-race", "fenced-stop",
-         "expired-original", "source-revoked-stop", "capability-revoked", "queued-delivery", "convert-r9", "claim-race-r9", "claim-race-r11")
+         "expired-original", "source-revoked-stop", "capability-revoked", "queued-delivery", "convert-r9", "claim-race-r9", "claim-race-r11", *RECOVERY_CASES)
 CORRECTED_CASES = {"convert-r9": ("convert", "failed"), "claim-race-r9": ("claim-race", "cancelled"),
     "claim-race-r11": ("claim-race-r9", "cancelled")}
 ROLES = ("author", "alias", "outsider")
@@ -128,7 +130,35 @@ def manifest(path):
         raise ValueError("Use only literal corrected fixture cases.")
     for case in set(declarations) | (set(value["intents"]) & CORRECTED_CASES.keys()):
         declared_case(value, case)
+    if "recovery_r12_declaration" in value["stages"] or set(value["intents"]) & set(RECOVERY_CASES):
+        recovery_case(value, RECOVERY_CASES[0])
     return value
+
+
+def recovery_case(value, case, *, admission=False):
+    """Three new serial requests, never replacements for any retained case."""
+    if case not in RECOVERY_CASES:
+        return
+    declaration = value["stages"].get("recovery_r12_declaration")
+    expected = {"schema": "cipher.fixture.ricky.company.recovery.v1", "fixture_id": value["fixture_id"],
+        "cases": RECOVERY_CHECKPOINTS, "baseline_file": "recovery-r12-baseline.secret.json"}
+    if (type(declaration) is not dict or set(declaration) != {*expected, "baseline_sha256"}
+            or not typed_equal({key: declaration[key] for key in expected}, expected)):
+        raise ValueError("Declare the exact three new recovery cases before their first HTTP effect.")
+    path = Path(value["journal_directory"]) / declaration["baseline_file"]
+    baseline = load_private(path)
+    if (type(baseline) is not dict or set(baseline) != {"fixture_id", "older_cases", "older_terminal", "site_terminal_payloads", "original_config"}
+            or baseline["fixture_id"] != value["fixture_id"]
+            or type(baseline["older_cases"]) is not list or baseline["older_cases"] != sorted(baseline["older_terminal"])
+            or baseline["older_cases"] != sorted(set(value["intents"]) - set(RECOVERY_CASES))
+            or any(not typed_equal(value["intents"][prior], baseline["older_terminal"][prior]["intent"]) for prior in baseline["older_cases"])):
+        raise ValueError("Retain this exact fixture and all older original intents in the recovery baseline.")
+    if hashlib.sha256(path.read_bytes()).hexdigest() != declaration["baseline_sha256"]:
+        raise ValueError("The original recovery baseline bytes changed.")
+    if admission and case not in value["intents"]:
+        previous = RECOVERY_CASES[:RECOVERY_CASES.index(case)]
+        if any(value["stages"].get("recovery_r12", {}).get(prior, {}).get("status") != "passed" for prior in previous):
+            raise ValueError("Finish each declared recovery case before admitting the next.")
 
 
 def _r9_claim_diagnostic(proof, run_id):
@@ -296,6 +326,7 @@ def saved_intent(value, case):
     if case not in CASES or case not in value["intents"]:
         raise ValueError("The authentic HTTP start for this declared case is missing.")
     if case in CORRECTED_CASES: declared_case(value, case)
+    recovery_case(value, case)
     intent = value["intents"][case]
     if (set(intent) != {"case", "operation_id", "payload", "payload_sha256", "start", "run_id", "request_id"}
             or intent["case"] != case or sha(intent["payload"]) != intent["payload_sha256"]
@@ -303,10 +334,10 @@ def saved_intent(value, case):
             or intent["start"].get("id") != intent["run_id"] or intent["start"].get("status") != "queued"
             or not typed_equal(intent["start"].get("selection"), intent["payload"].get("request"))):
         raise ValueError("The original HTTP queued admission identity changed.")
-    if case in CORRECTED_CASES and any(other != case and (
+    if case in (*CORRECTED_CASES, *RECOVERY_CASES) and any(other != case and (
             row.get("operation_id") == intent["operation_id"] or row.get("run_id") == intent["run_id"])
             for other, row in value["intents"].items()):
-        raise ValueError("A corrected case must have a distinct original operation and Run.")
+        raise ValueError("A separately declared case must have a distinct original operation and Run.")
     request = DeterministicReadRequest.from_value(intent["payload"]["request"])
     for key in ("run_id", "operation_id", "request_id"):
         if type(intent[key]) is not str or str(UUID(intent[key])) != intent[key] or UUID(intent[key]).version != 4:
@@ -343,7 +374,7 @@ def verify_read_value(inputs, case, result):
     """Exact authored expectations; no fresh calculation/authority substitute."""
     if type(result) is not dict:
         raise AssertionError("The fixed read returned no typed result.")
-    if case in ("lookup", "queued-delivery"):
+    if case in ("lookup", "queued-delivery", "interrupted-read-r12", "quarantine-r12"):
         valid = result["title"] == inputs["pursuit"]["title"] and result["record_digest"] == sha(inputs["pursuit"])
     elif case == "recompute":
         original = inputs["calculations"][0]

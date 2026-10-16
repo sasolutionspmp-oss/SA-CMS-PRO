@@ -315,9 +315,9 @@ Unpublished working preparation, excluded from the cost/planning checkpoint: the
 
 ### AI-04 — Ricky scope/estimate assistance and deterministic calculation tools
 
-Unpublished working preparation, excluded from the cost/planning checkpoint: the [unregistered AEC tool slice](evidence/r1/ai04-isolated-tools-tests.json) passed 47 focused/neighboring checks and source review. Cited reads, exact deterministic calculations and nonpersistent drafts are implemented; durable Company-run integration and the actual Ricky model connection remain separate work. No domain writer or approval tool is activated.
+The [Company integration contract](AI04_COMPANY_READ_INTEGRATION.md) and [published native checkpoint](evidence/r1/company-ricky-native-r10/README.md) now cover durable Company read runs, four deterministic tools, embedded SAP UI5 selection, actual HTTP/RQ delivery and original-session/source authorization. The [bounded concurrent-claim correction](evidence/r1/company-ricky-native-r11/README.md) also passed. The earlier [47-check tool slice](evidence/r1/ai04-isolated-tools-tests.json) remains historical evidence for its source. The [R12 checkpoint](evidence/r1/company-ricky-native-r12/README.md) qualifies committed-checkpoint recovery, current-authority refusal and execution-quarantine restoration. Canonical Company command history is next; persisted proposals, human draft-save commands and the actual Ricky model connection remain unfinished. OS-kill, Redis-loss and restored-site recovery are not claimed. No domain writer or approval tool is activated.
 
-- Release: R1. Status: planned.
+- Release: R1. Status: active.
 - Required locally verified contracts: COM-01, EST-03, AI-03.
 - Implement: Ricky scope/estimate assistance and deterministic calculation tools.
 - Required acceptance evidence: Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts.
