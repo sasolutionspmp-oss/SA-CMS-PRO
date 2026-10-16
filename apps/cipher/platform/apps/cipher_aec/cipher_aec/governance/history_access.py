@@ -40,6 +40,12 @@ def readable(event, actor, company, project):
                 return False
             require_project(company, project, ability="document.read", actor=actor)
             return bool(frappe.has_permission(subject, "read", doc=row, user=actor.user))
+        if subject == "Cipher Ricky Run":
+            if project is not None:
+                return False
+            from cipher_aec.ricky.company_service import authorize_history as authorize_company_ricky_history
+            authorize_company_ricky_history(actor, company, identifier, lock=False)
+            return True
         if subject == "Cipher Approval Packet":
             from .approvals import authorize_history_packet
             authorize_history_packet(company, project, identifier, actor=actor,

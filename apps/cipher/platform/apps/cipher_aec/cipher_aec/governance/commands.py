@@ -6,8 +6,11 @@ import frappe
 
 from cipher_aec.api.contracts import canonical_json, digest, operation_id as parse_operation_id, text
 from cipher_aec.api.errors import DomainError
-from .context import assert_synthetic_site, current_actor, require_project, require_company, trusted_write, require_effects_enabled
+from .context import assert_synthetic_site, current_actor, require_project, require_company, trusted_write, require_effects_enabled, session_authority_reference, require_session_authority
 
+
+# Company deterministic preparation only; never inherit Project/model commands.
+COMPANY_RICKY_COMMANDS = frozenset({"ricky.company.read.start.v1", "ricky.company.read.cancel.v1"})
 
 def run_command(*, company, project, operation_id, command, payload, ability, effect, guard=None, participant_people=()):
     return _run_scoped_command(company=company, project=project, scope_type="Project", operation_id=operation_id,
@@ -53,11 +56,20 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
     if participant_people:
         frappe.db.sql("SELECT b.name,b.user,u.name FROM `tabCipher Identity Binding` b JOIN `tabUser` u ON u.name=b.user WHERE b.person IN (" + placeholders + ") ORDER BY b.name FOR UPDATE", people)
     actor = current_actor(lock=True)
+    if scope_type == "Company" and command == "ricky.company.read.start.v1":
+        # This actual interactive session precedes the Company/receipt locks.
+        # The NEW effect binds the same server-captured reference below.
+        current_ricky_session_reference = session_authority_reference(actor)
+        require_session_authority(actor, current_ricky_session_reference, lock=True)
     locked_project = authorize(actor, lock=True)
     if scope_type == "Company":
         for prefix, read_ability in (("document.", "document.read"), ("estimate.", "estimate.read"), ("takeoff.", "estimate.read")):
             if command.startswith(prefix):
                 require_company(company, ability=read_ability, actor=actor, lock=True)
+    if scope_type == "Company" and command.startswith("ricky."):
+        if command not in COMPANY_RICKY_COMMANDS:
+            raise DomainError("unsupported_company_ricky_command", "This Company Ricky command is not registered.", 403)
+        require_company(company, ability="ricky.run", actor=actor, lock=True)
     if scope_type == "Company" and command.startswith("commercial."):
         require_company(company, ability="commercial.read", actor=actor, lock=True)
     if scope_type == "Company" and command.startswith("distribution."):
@@ -114,7 +126,12 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
             with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
                 if guard is not None:
                     guard(actor, locked_project)
-                result = effect(actor, locked_project)
+                if scope_type == "Company" and command == "ricky.company.read.start.v1":
+                    from cipher_aec.ricky.company_backend import start_session_binding
+                    with start_session_binding(actor=actor, company=company, reference=current_ricky_session_reference):
+                        result = effect(actor, locked_project)
+                else:
+                    result = effect(actor, locked_project)
                 if not isinstance(result, dict) or "operation" in result:
                     raise RuntimeError("Domain commands must return a result object without operation metadata")
                 record = frappe.get_doc({"doctype": "Cipher Command Receipt", "name": receipt_name,
@@ -160,7 +177,13 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
     """A receipt is not a permanent entitlement to private sources or model output."""
     if scope_type == "Company":
         require_company(company, actor=actor, lock=True)
-        if command.startswith("commercial."):
+        if command.startswith("ricky."):
+            if command not in COMPANY_RICKY_COMMANDS:
+                raise DomainError("unsupported_company_ricky_command", "This Company Ricky command is not registered.", 403)
+            require_company(company, ability="ricky.run", actor=actor, lock=True)
+            from cipher_aec.ricky.company_service import authorize_receipt as authorize_company_ricky
+            authorize_company_ricky(actor, company, result, command=command, lock=True)
+        elif command.startswith("commercial."):
             require_company(company, ability="commercial.read", actor=actor, lock=True)
             from cipher_aec.commercial.service import authorize_receipt as authorize_commercial
             authorize_commercial(actor, company, result, lock=True)

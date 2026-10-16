@@ -1,0 +1,470 @@
+{
+  "schema": "cipher.company-ricky.native-checkpoint.v1",
+  "status": "bounded_reads_verified_concurrency_fixture_open",
+  "base_commit": "7248171c14584deeaa308f850646ef5d7aeec891",
+  "snapshot_sha256": "06caf9d5f3ace95085f74c7014a9d0ca8ab6cfc74efdc39b703cb0379fa320c5",
+  "source_count": 651,
+  "backend": {
+    "status": "passed",
+    "unit_tests": 722,
+    "integration_tests": 52,
+    "summary": {
+      "collected": 774,
+      "unique": 774,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "missing_declared_cases": []
+    },
+    "native_workflows": [
+      "test_commercial_acceptance",
+      "test_construction_finance_acceptance",
+      "test_estimating_acceptance",
+      "test_migrations_acceptance",
+      "test_outbox_acceptance",
+      "test_project_controls_acceptance",
+      "test_ricky_acceptance",
+      "test_takeoff_acceptance"
+    ],
+    "qualification_sha256": "c44c50ce464582ce45555b6c9ff75f7f6cfa19ef57b925d81c815e125212a940"
+  },
+  "isolated_native": {
+    "site": "cipher-ci-ai04-20261016.localhost",
+    "main_changed": false,
+    "migration": {
+      "status": "additive_preservation_passed",
+      "preexisting_project_rows": 40,
+      "tables": 6,
+      "artifact_sha256": "8696df66f4952900306a621730dc53a37dc67cb5d8fd711aa3fe088d0901566a"
+    },
+    "deterministic_reads": [
+      "lookup",
+      "recompute",
+      "compare",
+      "convert-r9"
+    ],
+    "model_invoked": false,
+    "live_model_qualified": false,
+    "ordinary_http_session_csrf": true,
+    "expired_original_session": "refused_with_session_revoked_completed_results_retained",
+    "source_revocation": "read_and_start_replay_refused_source_free_stop_succeeded_exact_duty_restored",
+    "capability_revocation": "read_and_stop_refused_same_stop_uuid_succeeded_after_restoration",
+    "fenced_stop": "cancelled_lease_cannot_persist_late_invocation",
+    "original_receipt_byte_cases": 8,
+    "native_actor_doctype_projection_pairs": 18,
+    "rq_delivery": {
+      "status": "passed",
+      "finished_jobs": 12,
+      "target_invocations": 1,
+      "other_11_run_payloads_and_invocations_unchanged": true,
+      "workers_before": 0,
+      "workers_after": 0,
+      "short_queue_empty_after": true,
+      "other_queues_consumed": false,
+      "scheduler_started": false,
+      "before_sha256": "435c1491ff8578fe0181f76b7dc84a3790d2d92db551629bcdfbd0ccb7b377a4",
+      "worker_log_sha256": "f8355da4f435ab2b99da1f2cc686ff8c5edb7008572d58fb1c901bcc9d7b94bd",
+      "after_sha256": "d4dcaa8f131aa9489779025140aeeaf17d35a496ccb97ff96fdc734b0b9fd2a2"
+    },
+    "final_restoration": "passed_original_rows_duties_identities_and_project_set_preserved"
+  },
+  "open_qualification": {
+    "direct_claim_race": {
+      "status": "failed_retained",
+      "observation": "One claimant acquired token1; the other received native QueryDeadlockError1020; neither thread remained alive. Ordinary HTTP Stop cancelled the run.",
+      "diagnostics_sha256": "168a0dee3e8430c2dcd097a2e676a2c0bf06342662ab952d527d3eed79d9782a",
+      "interpretation": "MariaDB snapshot serialization refusal. Pinned Frappe execute_job handles this native deadlock class with rollback and bounded retry. The direct fixture bypasses that wrapper. No clean two-thread retry qualification is claimed.",
+      "next": "Add bounded fresh-transaction handling to the native fixture and independently qualify a separately declared race; preserve both previous attempts."
+    },
+    "canonical_company_ricky_history_producer": "absent; run_events only",
+    "live_model_and_quickbooks": "not_connected_or_qualified",
+    "stages_b_c": "persisted_proposals_and_human_draft_save_pending",
+    "main_deployment": "not_performed"
+  },
+  "retained_failures": [
+    {
+      "stage": "R7 run admission",
+      "error": "Native Run Link validation failed before transaction committed",
+      "correction": "Run inserted through exact initial admission before its child delegation; original operation UUID retained",
+      "evidence_sha256": "7c739234d63b099720534cd954fc40dda98e26121a43aaccdfd6e28887d0913b"
+    },
+    {
+      "stage": "R8 conversion",
+      "error": "source_integrity: This record cannot defer source verification.",
+      "correction": "Canonical estimate-line closure kept; direct citation collection limited to source-owning revision/snapshot. A separately declared corrected request succeeded; original failed run retained.",
+      "evidence_sha256": "fa6ac4013a28c4edd7dfdb9c2b0cf2ff5ead72f50389cd30c8a24ec96b0cd019"
+    },
+    {
+      "stage": "R8 direct claim race",
+      "error": "Fixture did not preserve the second thread exception",
+      "correction": "Added bounded per-thread diagnostics before assertions; original run stopped, original failed stage retained",
+      "evidence_sha256": "2f17ec5b296067e9b316a515f3a679f124251876fd7580f8718ddaf0fe634e5a"
+    }
+  ],
+  "native_phase_artifacts": [
+    {
+      "name": "company-r8-stage-capability-revocation.private.json",
+      "phase": "capability-revocation",
+      "status": "passed",
+      "record_sha256": "f31ddc0316525d5007a3a0755b39e3c0c8db1dc2c4641ad273d434bb90aee1fc",
+      "log_sha256": "a51deb388d02be52762a7c1fb16ca520cf2bd90e78b34f7800ace6a1846c028a"
+    },
+    {
+      "name": "company-r8-stage-claim-race.private.json",
+      "phase": "claim-race",
+      "status": "failed",
+      "record_sha256": "5ed44d1b3f52362f80786cbc5772aa75f424001d305cec4c90c8a6ef9f2e9681",
+      "log_sha256": "fc16ab78c521b44d1cb1ea562bce2f458ccb64e69579e47bfbdc1d49ef2fb846"
+    },
+    {
+      "name": "company-r8-stage-direct-worker-compare.private.json",
+      "phase": "direct-worker-compare",
+      "status": "passed",
+      "record_sha256": "f1d61ef225abe5cad6393c2412387a8144a8306f7559f7a697cc93ba13862e87",
+      "log_sha256": "1c081acabc36ed634a2be9fca5a2a01217841f3eaa6c21e688d5b61d13e96d84"
+    },
+    {
+      "name": "company-r8-stage-direct-worker-convert.private.json",
+      "phase": "direct-worker-convert",
+      "status": "failed",
+      "record_sha256": "7c7bdcf092db3f031688ba7109a68798c59ca9911b233683f909bc3852d41f2e",
+      "log_sha256": "cf52a329773086b975a92d4bc372999ad5cec1a2373d740fd775a4d7c3d42303"
+    },
+    {
+      "name": "company-r8-stage-direct-worker-lookup.private.json",
+      "phase": "direct-worker-lookup",
+      "status": "passed",
+      "record_sha256": "a05d3820983873e3125f139eefdb917ac15a43666c2b63080a19f7e08cc78330",
+      "log_sha256": "e794d5937d16a0904fea8f70fcc9f05fa110630d55592f588d53d5d6dfe59132"
+    },
+    {
+      "name": "company-r8-stage-direct-worker-recompute.private.json",
+      "phase": "direct-worker-recompute",
+      "status": "passed",
+      "record_sha256": "72d3e7ac63a25dc4f05ff4d05884aa9f8cd62a6f38abd7571e34f071cfdc758d",
+      "log_sha256": "0243cefe60360a0b96bb0778488eb9d19b6606875a6ab136dbe14467e04acd53"
+    },
+    {
+      "name": "company-r8-stage-fenced-claim.private.json",
+      "phase": "fenced-claim",
+      "status": "passed",
+      "record_sha256": "45ccb23442722326ae93166954fff15adde15623ccc092b059336fc0a111f588",
+      "log_sha256": "cf04c5eaa4c1d0d5c71a51b73a89e711356b6c95ee09effea60c76c7dbbb8a1f"
+    },
+    {
+      "name": "company-r8-stage-fenced-verify.private.json",
+      "phase": "fenced-verify",
+      "status": "passed",
+      "record_sha256": "5706ca83801210721d164765029c6ac1cb723ed43fba26be10019f2c0e78c8b0",
+      "log_sha256": "5392e2ccd157a037ceff24d47b5fe7a500df59ff6ab57e0c2f1b22365ea12a42"
+    },
+    {
+      "name": "company-r8-stage-observe-compare.private.json",
+      "phase": "observe-compare",
+      "status": "passed",
+      "record_sha256": "35a994302a830ce3314e20681660d4dbf5d73d010f8aac470f6ea1952b68fe9b",
+      "log_sha256": "4d0771e493bc3355ad918eaa6a538362f4ed5ad284760ebde3d14288e646d483"
+    },
+    {
+      "name": "company-r8-stage-observe-lookup.private.json",
+      "phase": "observe-lookup",
+      "status": "passed",
+      "record_sha256": "8a3a2d181ceff4ef60cdeed52fef87b7930998d4729dd0efb7256ae579e72f5e",
+      "log_sha256": "a6a0ed15c90c1ddc80454c542d8bad2e11f2a02563cd944e92eaabb390827d43"
+    },
+    {
+      "name": "company-r8-stage-observe-recompute.private.json",
+      "phase": "observe-recompute",
+      "status": "passed",
+      "record_sha256": "17d34ecb8a56ac47bfb7a0223dd23fdc9708f8f3f5d955be00f93d8d8d4aa52d",
+      "log_sha256": "10d771dffb7607e54d88fbe788ecd95aa86ca6c33f2d180cec7c41a22cbbbdb4"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-capability-revoked.private.json",
+      "phase": "receipt-start-capability-revoked",
+      "status": "passed",
+      "record_sha256": "d49f1d428db90929cdc798ad9ebe16cce78ee05a38f8041aa497623df5343ac2",
+      "log_sha256": "a7a5dbd76873313e8375361774fda9999c6de6703c95c7d87a003c4aabbbc41f"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-claim-race.private.json",
+      "phase": "receipt-start-claim-race",
+      "status": "passed",
+      "record_sha256": "da3206945ac85ffcb3944bca32d3afd8cec82d182c6a68f7e5cfd821418a39a6",
+      "log_sha256": "7c271ca947cacea7ade1eb659319d38a9d8b9d27d041be43cfef0569cb07f064"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-compare.private.json",
+      "phase": "receipt-start-compare",
+      "status": "passed",
+      "record_sha256": "7eafb684ac49eae0e5f4b8c086ae6695f92c6ee1dd9b50ee310e0c623228a0c5",
+      "log_sha256": "38db6d3635490fab4ff1ff22e5177d63f60c67c6af81f7778bfcaf3448acb8e5"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-convert.private.json",
+      "phase": "receipt-start-convert",
+      "status": "passed",
+      "record_sha256": "ca6d6c9bab3b5b21a70974a0e0366e6d9c29a584f27fc238d78c881d8eead4ab",
+      "log_sha256": "289ac06f91a7cf68e66a311d0a358e55c96fcd9b712721e702cb5155d894f730"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-fenced-stop.private.json",
+      "phase": "receipt-start-fenced-stop",
+      "status": "passed",
+      "record_sha256": "7d28462942005bb775cfd9bf552ebd52e69ae9e22cdb052a8692d85668041e42",
+      "log_sha256": "613ce406be84df2de513c0f9ae3abb377ca7533c9812314646e66ef01cb96cd3"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-lookup.private.json",
+      "phase": "receipt-start-lookup",
+      "status": "passed",
+      "record_sha256": "5cb33558363a5e2fb933634135789f3c4fb55ba3cfc76f8e2a843e91a6bc4943",
+      "log_sha256": "9ed03f55df4ec72bb20a170846b2b41470a71af1c1ce2bc201578def0041a3bb"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-recompute.private.json",
+      "phase": "receipt-start-recompute",
+      "status": "passed",
+      "record_sha256": "84760ea2986077913fb96407dc0abbd4b392b13d98af6631eeb45093061aeb56",
+      "log_sha256": "ef2ca4ebda3011c5f8b436ab101c7a611635d9636e47d523455aeea6a4466e79"
+    },
+    {
+      "name": "company-r8-stage-receipt-start-source-revoked-stop.private.json",
+      "phase": "receipt-start-source-revoked-stop",
+      "status": "passed",
+      "record_sha256": "b6468f195a4bbf0fd0be922f288509fbc1a20b1d0da5cf36ab841bdab9f0897c",
+      "log_sha256": "b943cc71b2ed2ca1e79457be2b41ea703135ef842a1e496325018a4cfddd6e32"
+    },
+    {
+      "name": "company-r8-stage-receipt-stop-fenced-stop.private.json",
+      "phase": "receipt-stop-fenced-stop",
+      "status": "passed",
+      "record_sha256": "cc2f83fdf75bc5e5b0aac477cf5eb4b9cb6c1adfcad9adddf975ad4aedb2c810",
+      "log_sha256": "ab83e862900cebd09ae5b500a821fb5efb14cfde597c15c97bdeca73e10defe3"
+    },
+    {
+      "name": "company-r8-stage-source-revocation.private.json",
+      "phase": "source-revocation",
+      "status": "passed",
+      "record_sha256": "0439911dd9ab9fde5d9f4682d20394620b2bc7b92b9c1e2f535ed42a3dc9522e",
+      "log_sha256": "1482ba2a11173b7faee090ef011a5e5d21ce28b3765c7b727df7e83c7e5b6a2b"
+    },
+    {
+      "name": "company-r8-stage-start-capability-revoked.private.json",
+      "phase": "start-capability-revoked",
+      "status": "passed",
+      "record_sha256": "c4404d9915fd42352b013d1a9aaed3953d765a4b002e70daf45aa0f30181ea05",
+      "log_sha256": "3a83a5b79a7efdf307d539d0e3a2e0165ee73754e8766433fe3226ca1686fece"
+    },
+    {
+      "name": "company-r8-stage-start-claim-race.private.json",
+      "phase": "start-claim-race",
+      "status": "passed",
+      "record_sha256": "ffd90872f8cab7e185cf0ea4e182f60a9a0c36d1c80d3d1fc9e6f95890b624f4",
+      "log_sha256": "3be3140e4e30016f0ea072416344f9f7e5aa78d4e0e3660a1326cefbc0be3eac"
+    },
+    {
+      "name": "company-r8-stage-start-compare.private.json",
+      "phase": "start-compare",
+      "status": "passed",
+      "record_sha256": "c635fcf57b3abb48071330b8897db92da36b966ef5ee0fc68c77c37b5e86a609",
+      "log_sha256": "cfcc5c12420b96723e5fbc01bc1e045b473acc612c23802aba4a2b4b5e6d770c"
+    },
+    {
+      "name": "company-r8-stage-start-convert.private.json",
+      "phase": "start-convert",
+      "status": "passed",
+      "record_sha256": "a0a3ce82c15bf8d9bdc9d98cc64f38c862807252e3194b142c835c548843faaf",
+      "log_sha256": "295e7b438b9f7eb4d0fc5ebcaa46ab55dddda0642e714ab60734c53124e258a6"
+    },
+    {
+      "name": "company-r8-stage-start-fenced-stop.private.json",
+      "phase": "start-fenced-stop",
+      "status": "passed",
+      "record_sha256": "f85a5c5da9567a5de658834b311b772897d46e731e1ebea89236a59743f734d9",
+      "log_sha256": "d11cd1bece7f388456ab2d0cbe0d5e46d277cb4987ed15bfd299f6e8678c47cb"
+    },
+    {
+      "name": "company-r8-stage-start-lookup.private.json",
+      "phase": "start-lookup",
+      "status": "passed",
+      "record_sha256": "54bac74b34791a2ecba7acb0d9076e92c09aca453bc1705ff5f8c43f282b87c1",
+      "log_sha256": "01e4c6ad0f43fd90a2938d5106575738fdc913c95ac437e8aa3e15b3280db7d4"
+    },
+    {
+      "name": "company-r8-stage-start-recompute.private.json",
+      "phase": "start-recompute",
+      "status": "passed",
+      "record_sha256": "88083f3265f3aeb7c5124a58a5027bc4a17fd3173c24854116d8e8c5e58956df",
+      "log_sha256": "defa289b72e6579219e9fed0162d346813686baedd079f95d0c948bbab7f01d5"
+    },
+    {
+      "name": "company-r8-stage-start-source-revoked-stop.private.json",
+      "phase": "start-source-revoked-stop",
+      "status": "passed",
+      "record_sha256": "7e7550945f4a0bf5af71b4b6dac001a529dac8a24b99c9326f959e2649329f5a",
+      "log_sha256": "ca7ae6364b90fb4f0073e49ae39cf27446b246f40109c2a1030fa7720f80fff9"
+    },
+    {
+      "name": "company-r8-stage-stop-claim-race.private.json",
+      "phase": "stop-claim-race",
+      "status": "passed",
+      "record_sha256": "41a2843ddbb1e049c896eb24528a37de934e8c004c02b98ffe7968a106f81dbd",
+      "log_sha256": "b9090fcfee77616e6fe7c8b60f64ece6523d354e505e5896e987102259b1ea8c"
+    },
+    {
+      "name": "company-r8-stage-stop-fenced-stop.private.json",
+      "phase": "stop-fenced-stop",
+      "status": "passed",
+      "record_sha256": "d7ebff573a2945b3553bb1fdfcdc031f20973e71c9ceededc290d71c08ab55a1",
+      "log_sha256": "ce4d37a08745f1101311a1b79c30556911d77ac3bd856d52ffa6c407e6b12c1f"
+    },
+    {
+      "name": "company-r8-stage-stop-replay-fenced-stop.private.json",
+      "phase": "stop-replay-fenced-stop",
+      "status": "passed",
+      "record_sha256": "f348be5cc16e3be48c17853b54a5e5556f7b534ca8c39cb5040668dfa1454d21",
+      "log_sha256": "ce4d37a08745f1101311a1b79c30556911d77ac3bd856d52ffa6c407e6b12c1f"
+    },
+    {
+      "name": "company-r9-stage-claim-race-claim-race-r9.private.json",
+      "phase": "claim-race-claim-race-r9",
+      "status": "failed",
+      "record_sha256": "d08d06d9e7dfb5c8b4a43bdc747455f3828da2c03c2508c759423f24d7db9997",
+      "log_sha256": "2ee9dc5b3e12fc335a36639cec6ddd92c29308b1eea33bd82755a6af93bafc0a"
+    },
+    {
+      "name": "company-r9-stage-direct-worker-convert-r9.private.json",
+      "phase": "direct-worker-convert-r9",
+      "status": "passed",
+      "record_sha256": "be2f7b9c7d155a094c3dc95e102ff0af7cc0b7e5eb8707b6417a74f7e1cd5354",
+      "log_sha256": "b7dba33ac6afdbfc4d879e79437a2d2370d71692810ab0629e40c68dd0c7796c"
+    },
+    {
+      "name": "company-r9-stage-direct-worker-expired-original.private.json",
+      "phase": "direct-worker-expired-original",
+      "status": "passed",
+      "record_sha256": "e05eea228b6b83942d40acdbf77fc73a36663c0016798594d326beeaffde3078",
+      "log_sha256": "2aa8e250c96d966a05ecb10cfc5efc6f815c7ff2de44cb267f751ee274a3307f"
+    },
+    {
+      "name": "company-r9-stage-expire-session.private.json",
+      "phase": "expire-session",
+      "status": "passed",
+      "record_sha256": "bacde0104658a207e87d20c820ad608525346c083a221b5349acbf0cd50a3f2e",
+      "log_sha256": "85dccb1d3224f024e4fbeb0025280e56773529f4a51c2360a3f8ebcc1675e370"
+    },
+    {
+      "name": "company-r9-stage-native-projections.private.json",
+      "phase": "native-projections",
+      "status": "passed",
+      "record_sha256": "982e51921d23432a4181b85a34f7073828595f82bb449c88fc447b8ebcefa515",
+      "log_sha256": "5a80f892feed8a25882731a378cf37d72a0dc5a7d7383c4c2ad8ced67b833a6b"
+    },
+    {
+      "name": "company-r9-stage-observe-claim-race-r9.private.json",
+      "phase": "observe-claim-race-r9",
+      "status": "passed",
+      "record_sha256": "47c781693c4227085f48e32fa64925f469b325bb79e4072545f1b9019f745f69",
+      "log_sha256": "2f46165269dcedb65cc71f5caaabf72be8e6e61853cbc205886d35702bb7fc05"
+    },
+    {
+      "name": "company-r9-stage-observe-convert-r9.private.json",
+      "phase": "observe-convert-r9",
+      "status": "passed",
+      "record_sha256": "c8058b354f3f9b993af4cc895cac0c58db55b7e575a7f69b82a8dd6edc2a46b0",
+      "log_sha256": "f781cf992558055618aac18816b4e35305050674f72d787ac5e83d41e3323b95"
+    },
+    {
+      "name": "company-r9-stage-observe-convert.private.json",
+      "phase": "observe-convert",
+      "status": "passed",
+      "record_sha256": "ad09f787942a9663bfeaf3c57898961f702c7fea89b13c393cbb9747c82f8569",
+      "log_sha256": "07f592daaf67244a59a6ac2b65dadcb97e3234d76ab4130e4fbe840f461a6b6b"
+    },
+    {
+      "name": "company-r9-stage-queued-observation.private.json",
+      "phase": "queued-observation",
+      "status": "passed",
+      "record_sha256": "42b146f2084821a2ffadd632e0f4fd8499f3a8e983fbaae813e5423021dd9d0f",
+      "log_sha256": "20435cd20ed41b9f38782128ea2a92d4c25d218f078c3f2f9a022add449ea65e"
+    },
+    {
+      "name": "company-r9-stage-receipt-start-claim-race-r9.private.json",
+      "phase": "receipt-start-claim-race-r9",
+      "status": "passed",
+      "record_sha256": "dc11226dd30f84b910bcdb98730924bc342397b18e58ff1db6895580be8fd81c",
+      "log_sha256": "48b4e8206681784061c53f6cc7499c7b536cd7445d695413324f060a5c95c8c1"
+    },
+    {
+      "name": "company-r9-stage-receipt-start-convert-r9.private.json",
+      "phase": "receipt-start-convert-r9",
+      "status": "passed",
+      "record_sha256": "6ed6ad10aa50123996472b7817ae43f1a11feb1dc4671f0c54a6ae5270224104",
+      "log_sha256": "7e2a1cd55bbf2b50f21925d6704e92ca219539b1db58002eac15fa228d396546"
+    },
+    {
+      "name": "company-r9-stage-receipt-start-expired-original.private.json",
+      "phase": "receipt-start-expired-original",
+      "status": "passed",
+      "record_sha256": "6312f34560c2d88536ceb2e208af5a0cd4fa552bfc69e314c48cfef8422be4c4",
+      "log_sha256": "97043db17aab89f482e6c072a402e2f52264708e7c73a8268fec8677a0db69fd"
+    },
+    {
+      "name": "company-r9-stage-receipt-start-queued-delivery.private.json",
+      "phase": "receipt-start-queued-delivery",
+      "status": "passed",
+      "record_sha256": "8ef5c8b58e4415461d7433f40b4715382288e181c084b7f45e318e4f8b625d3f",
+      "log_sha256": "26b65efc0118b16dc8c1fb826676a776cdc32ed8a656276c998083ae27a99c3f"
+    },
+    {
+      "name": "company-r9-stage-restoration.private.json",
+      "phase": "restoration",
+      "status": "passed",
+      "record_sha256": "1f0e033ad3fd7d5150858ac9250a22c6f41a861103e88b63ae250ab80e977318",
+      "log_sha256": "df6390f34c0a2872cad51f34cc19844ff6b39e9165574899587373ae57f5dd86"
+    },
+    {
+      "name": "company-r9-stage-shared-receipts.private.json",
+      "phase": "shared-receipts",
+      "status": "passed",
+      "record_sha256": "c791a38b6f0ecc24ecd79ca7f42d137529075cf7f84ae32b65cbc0dd5535f8e6",
+      "log_sha256": "f477e68a109a1c6e857c566523969ac03eaa16f738181920aeb64d508ef88bc3"
+    },
+    {
+      "name": "company-r9-stage-start-claim-race-r9.private.json",
+      "phase": "start-claim-race-r9",
+      "status": "passed",
+      "record_sha256": "46b2c13f4e9d9660249bd92885c72d726137ae85996e5e2ba524e7a20299e96a",
+      "log_sha256": "17b367a82f4338350560ef890d7a55f1d4f421a5e0cf357d7f577cfdbdb1a35d"
+    },
+    {
+      "name": "company-r9-stage-start-convert-r9.private.json",
+      "phase": "start-convert-r9",
+      "status": "passed",
+      "record_sha256": "ad1030357357523003207498ae3138cfd38bbe946ae638f87f3016d51daa7a18",
+      "log_sha256": "303a126ff073871f57db7e7b5ced38dc98b76c71cbe04fddf8eed2bbb6b43f4e"
+    },
+    {
+      "name": "company-r9-stage-start-expired-original.private.json",
+      "phase": "start-expired-original",
+      "status": "passed",
+      "record_sha256": "e5a695345dd15be92ccf8a17e4700ad55f2a4423cbed9de81894388fa1398a48",
+      "log_sha256": "642055ab3296b44a4d177ad4c6470345c07c90b3876a33837a04be0a24af9ae0"
+    },
+    {
+      "name": "company-r9-stage-start-queued-delivery.private.json",
+      "phase": "start-queued-delivery",
+      "status": "passed",
+      "record_sha256": "ca296ef2a371bf6ffd971b3fb052b9ee2930eb12fb7bc534e4916792036aef48",
+      "log_sha256": "169affe1691dd4da58cb3af5466666a8a71fef8511c77d3d8b4e3d7dae3bad43"
+    },
+    {
+      "name": "company-r9-stage-stop-claim-race-r9.private.json",
+      "phase": "stop-claim-race-r9",
+      "status": "passed",
+      "record_sha256": "5a7774c178dcd2af90f1e6311d6c671769483d743811533f6c13b5851300189a",
+      "log_sha256": "475b8363927865b57776c277e1a0988d0da8064048fdc54b98fdeb445da5e7a5"
+    }
+  ]
+}

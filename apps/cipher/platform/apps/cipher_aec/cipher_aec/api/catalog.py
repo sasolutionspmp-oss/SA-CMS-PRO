@@ -48,6 +48,12 @@ _module("cipher_aec.ricky.api", {
     "cancel_run": ("POST", "RickyRun", True), "get_proposal": ("GET", "RickyProposal"),
     "commit_proposal": ("POST", "ProposalCommitResponse", True),
 })
+_module("cipher_aec.ricky.company_api", {
+    "start_read": ("POST", "CompanyRickyStartReadResponse", True),
+    "get_run": ("GET", "CompanyRickyRunResponse"),
+    "run_events": ("GET", "CompanyRickyRunEventsResponse"),
+    "cancel_run": ("POST", "CompanyRickyStopResponse", True),
+})
 _module("cipher_aec.migrations.api", {
     "validate_manifest": ("POST", "CanonicalValidation"),
     "preview_manifest": ("POST", "CanonicalPreview"),

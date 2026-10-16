@@ -6,6 +6,8 @@ synthetic business records. They are not generated images or design mockups.
 The private development service listens at `http://127.0.0.1:18880` in the
 execution environment; this address does not make it publicly reachable.
 
+The latest [Company workspace screenshots](evidence/r1/company-ricky-native-r10/ui/README.md) show actual Pursuits, a saved estimate, stored source text and the embedded deterministic Ricky selector at 1440, 900 and 390 pixels. They come from the separate Company integration site on ports5196/18886, with synthetic records and no mocked API responses. The corrected phone title and action overflow use official SAP UI5 components. These captures do not imply that this source has been deployed to the main site or that a model was invoked.
+
 The latest [main-site capture](evidence/r1/cost-planning-main-ui-v4/README.md) shows the corrected deployed build at desktop, tablet and phone widths: Project register, original Project/Tasks and Ricky's current connection state. These nine screenshots passed normal keyboard sign-in, settled layout and exact served-asset checks on October 16, 2026.
 
 The latest isolated checkpoint adds [cost-code/type setup](evidence/r1/prj02-ui-connected/cost-setup-v2/README.md) and [saved award-plan review](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md), with desktop, tablet and phone captures from the real backend. Its isolated site is retained; its disposable web container is stopped after full verification and the separate main UI deployment completed. Award execution is still disabled in the main product. The earlier journeys below retain their original capture dates and source versions.

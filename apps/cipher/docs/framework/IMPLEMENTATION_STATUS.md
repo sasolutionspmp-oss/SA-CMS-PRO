@@ -4,6 +4,16 @@ Owner authorized execution of the framework. Worktree: /workspace/cipher-framewo
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
+## Current checkpoint: Company Ricky reads and responsive SAP screens
+
+The [Company Ricky checkpoint](evidence/r1/company-ricky-native-r10/README.md) adds an embedded Company assistant for four explicit deterministic reads: selected Pursuit lookup, saved estimate recomputation, revision comparison and exact quantity conversion. Backend verification passed 774 unique tests and eight native workflows. Actual Company cookie/CSRF requests, ordinary RQ delivery, original-session expiry, source/capability revocation, cancellation fencing, eight unchanged receipt cases and 18 native projection pairs passed. Final readback preserved original records, duties, identities and the Company Project set.
+
+The complete unchanged frontend confirmation passed all 190 browser cases, 11 generated-client checks and the production build. The [13 connected screenshots](evidence/r1/company-ricky-native-r10/ui/README.md) show Pursuits, estimates, stored documents and the embedded Ricky panel on desktop, tablet and phone. The phone estimate title defect is corrected using SAP's official toolbar items. The capture used 19 actual API GETs and no business commands; the separate browser qualification records its original intermittent checkbox-action failure and subsequent results.
+
+The direct two-thread claim fixture remains failed: one worker acquired the lease and the other received MariaDB1020 snapshot conflict. The native queue wrapper supplies bounded deadlock retry, but the direct fixture still needs a fresh-transaction proof; Stage A is not declared complete. The model, canonical Company Ricky history producer and persisted proposal/draft-save stages remain unfinished. This checkpoint is published from a separate source worktree; main continues its previously qualified release with award execution and distribution consumers disabled.
+
+Earlier checkpoints below retain their own source epochs and limits.
+
 ## Current work: cost setup and award planning
 
 Checkpoint `2287c5dbcfec2971d12f9b994e9389fd0a336258` is pushed to PR #28. The owner subsequently selected GPT-6.1 Sol Ultra for all agent work; implementation now uses focused delegation and direct integration review. Previous Astra assignments remain historical evidence.
@@ -12,7 +22,7 @@ Hosted [CI run 38839065986](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/act
 
 The [historical estimate correction](evidence/r1/est-historical-read-correction/README.md) is installed and actually verified. The original receipt and accepted baseline now read with generated-input admission disabled, including original bound takeoff/calibration/conversion sources. Verification passed 570 backend tests, eight workflows and all 151 browser cases on the same frozen source; the initial frontend installation ran out of disk space, and a separate continuation completed the unfinished checks without rerunning the backend. The original failed report remains preserved.
 
-Actual native receipt replay returned in 0.900 seconds and the baseline read in 0.363 seconds. Exact original acceptance, receipt, consumption and all 105 Company history rows remained unchanged. Full history still reached the 10,000-query cap and remains unqualified. The targeted web reload replaced two workers; settled readback preserved nine nonweb identities and exact configuration. No migration or UI publication was needed. Company Ricky's isolated draft has a reviewed integration manifest and a fixture response-cleanup fix with 27 focused tests; native/HTTP/queue and combined UI qualification remain pending.
+Actual native receipt replay returned in 0.900 seconds and the baseline read in 0.363 seconds. Exact original acceptance, receipt, consumption and all 105 Company history rows remained unchanged. Full history still reached the 10,000-query cap and remains unqualified. The targeted web reload replaced two workers; settled readback preserved nine nonweb identities and exact configuration. No migration or UI publication was needed. Company Ricky's subsequent native and UI results are recorded in the current checkpoint above.
 
 Company cost-code/type administration saves immutable dated revisions and reads them back. One final award-plan successor preserves the accepted estimate, issued PDF, team, WBS, cost allocations and dates. See the actual [cost screens](evidence/r1/prj02-ui-connected/cost-setup-v2/README.md) and [saved-plan screens](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md). Their isolated site and backups remain retained after the disposable container was removed.
 
@@ -22,7 +32,7 @@ The [main deployment](evidence/r1/cost-planning-main-deployment-v4.json) passed 
 
 The exact 907-file UI build is deployed. [Nine actual main-site screenshots](evidence/r1/cost-planning-main-ui-v4/README.md) passed at 1440, 900 and 390 pixels through ordinary keyboard sign-in: Project register, original Project/Tasks and the accurate unavailable Ricky state. The capture verified served bytes and public-file MIME with zero business commands. Its title check now recognizes SAP UI5's transparent title click surface; keyboard navigation waits for the enabled Sign in control before Tab. Original failed attempts remain linked beside the successful capture.
 
-Project creation remains disabled pending separate composed award acceptance; procurement and downstream finance retain their dependencies. Main Company cost-positive route qualification is separate from the isolated cost-authoring proof. Company Ricky continues in a separate draft; no live model or QuickBooks connection is claimed.
+Project creation remains disabled pending separate composed award acceptance; procurement and downstream finance retain their dependencies. Main Company cost-positive route qualification is separate from the isolated cost-authoring proof. Company Ricky now has the isolated read checkpoint above; no live model or QuickBooks connection is claimed.
 
 ## Implemented and exercised in the real runtime
 

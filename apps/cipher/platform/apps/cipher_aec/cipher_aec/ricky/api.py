@@ -26,6 +26,30 @@ def build_service(*, worker=False):
     return RickyService(FrappeStore(worker=worker), FrappeBackend(), resolve_adapter(profile), profile=profile)
 
 
+def build_run_service(run_id, *, worker=False):
+    # Current native metadata and immutable JSON must agree BEFORE any model
+    # profile/adapter/default registry construction, including malformed rows.
+    run = FrappeStore(worker=worker).get_scoped("run", run_id)
+    if run.get("scope_type", "Project") == "Company":
+        from .company_service import build_service as build_company_service
+        return build_company_service(worker=worker)
+    return build_service(worker=worker)
+
+
+def _project_run_service(run_id):
+    service = build_run_service(run_id)
+    if not isinstance(service, RickyService) or type(service) is not RickyService:
+        raise RickyError("not_found", "Use the explicit Company read endpoint for this record.")
+    return service
+
+
+def _project_proposal_service(proposal_id):
+    proposal = FrappeStore().get_scoped("proposal", proposal_id)
+    if proposal.get("scope_type", "Project") != "Project":
+        raise RickyError("not_found", "Company deterministic reads have no Proposed Changes.")
+    return _project_run_service(proposal["run_id"])
+
+
 def _errors(function):
     @wraps(function)
     def wrapped(*args, **kwargs):
@@ -76,19 +100,19 @@ def start_run(company, project, question, operation_id):
 @endpoint()
 @_errors
 def get_run(run_id):
-    return build_service().get_run(run_id)
+    return _project_run_service(run_id).get_run(run_id)
 
 
 @endpoint()
 @_errors
 def run_events(run_id):
-    return {"items": build_service().events(run_id)}
+    return {"items": _project_run_service(run_id).events(run_id)}
 
 
 @endpoint(methods=["POST"])
 @_errors
 def cancel_run(run_id, operation_id):
-    service = build_service()
+    service = _project_run_service(run_id)
     run = service.store.get("run", run_id)
     service._check(run, revision=False)
     result = run_command(company=run["company"], project=run["project"], operation_id=operation_id,
@@ -107,7 +131,7 @@ def cancel_run(run_id, operation_id):
 @endpoint()
 @_errors
 def get_proposal(proposal_id):
-    return build_service().get_proposal(proposal_id)
+    return _project_proposal_service(proposal_id).get_proposal(proposal_id)
 
 
 @endpoint(methods=["POST"])
@@ -115,4 +139,4 @@ def get_proposal(proposal_id):
 def commit_proposal(proposal_id, proposal_version, operation_id):
     if isinstance(proposal_version, str) and proposal_version.isdecimal():
         proposal_version = int(proposal_version)
-    return build_service().commit_proposal(proposal_id, proposal_version, operation_id)
+    return _project_proposal_service(proposal_id).commit_proposal(proposal_id, proposal_version, operation_id)

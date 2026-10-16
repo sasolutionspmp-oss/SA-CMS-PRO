@@ -576,13 +576,15 @@
       ],
       "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
       "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
-      "status": "planned",
-      "local_contract_status": "unregistered_aec_read_calculation_draft_tools_source_reviewed_47_checks_company_durable_integration_pending",
-      "external_qualification_status": "not_evaluated",
+      "status": "in_progress",
+      "local_contract_status": "company_deterministic_reads_native_http_rq_verified_concurrency_fixture_open",
+      "external_qualification_status": "live_model_not_connected",
       "evidence_paths": [
-        "docs/framework/evidence/r1/ai04-isolated-tools-tests.json"
+        "docs/framework/evidence/r1/ai04-isolated-tools-tests.json",
+        "docs/framework/AI04_COMPANY_READ_INTEGRATION.md",
+        "docs/framework/evidence/r1/company-ricky-native-r10/README.md"
       ],
-      "qualification_limit": "Unpublished working follow-on; executable sources are excluded from the cost/planning checkpoint and its gate. Four unregistered source files provide cited reads, deterministic calculations and nonpersistent reviewable drafts. Focused/neighboring tests passed without a site or model. Durable Company integration, provider/model connection and human-approved draft saves remain separate work; no domain-write or approval tool is enabled."
+      "qualification_limit": "Four deterministic Company reads and embedded SAP UI5 selection implemented. 774 backend cases, eight native workflows, and actual HTTP/RQ/session/receipt/projection/preservation checks passed. Connected synthetic screenshots verified. The direct claim-race fixture remains failed with one native 1020 snapshot refusal; bounded fresh-transaction proof pending. Canonical Company history producer, persisted proposals, human draft saves, live model and main deployment remain separate. No domain-write or approval tool enabled."
     },
     {
       "id": "UX-03",

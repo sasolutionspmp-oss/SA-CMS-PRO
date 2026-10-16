@@ -10,6 +10,7 @@
   "engine": "InnoDB",
   "field_order": [
     "company",
+    "scope_type",
     "project",
     "requested_by",
     "person_id",
@@ -29,13 +30,24 @@
       "search_index": 1
     },
     {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "read_only": 1,
+      "search_index": 1
+    },
+    {
       "fieldname": "project",
       "fieldtype": "Link",
       "options": "Project",
       "label": "Project",
-      "reqd": 1,
+      "reqd": 0,
       "in_list_view": 1,
-      "search_index": 1
+      "search_index": 1,
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
     },
     {
       "fieldname": "requested_by",

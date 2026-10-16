@@ -4,6 +4,26 @@ import { estimateId } from './estimating-fixture';
 const path = `/company/estimates/${estimateId}`;
 test.beforeEach(({ page }) => { page.on('pageerror', error => { throw error; }); });
 
+for (const width of [1440, 900, 390]) test(`Company estimate title and actions remain usable at ${width}px`, async ({ page }) => {
+  await page.setViewportSize({ width, height: 1000 });
+  const fixture = await mockCompany(page); await page.goto(path);
+  const title = page.getByRole('heading', { name: 'Synthetic source-linked estimate', exact: true });
+  await expect(title).toBeInViewport();
+  await expect.poll(async () => (await title.boundingBox())?.width || 0).toBeGreaterThan(120);
+  expect((await title.boundingBox())!.height).toBeLessThan(150);
+  const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true });
+  await expect(quantity).toHaveValue('10.125');
+  await quantity.fill('11.125');
+  const calculate = page.getByRole('button', { name: 'Calculate Company revision', exact: true });
+  if (!await calculate.isVisible()) await page.getByRole('button', { name: 'Company estimate actions', exact: true }).click();
+  await expect(calculate).toBeInViewport();
+  const box = (await calculate.boundingBox())!;
+  expect(box.x).toBeGreaterThanOrEqual(0); expect(box.x + box.width).toBeLessThanOrEqual(width);
+  await calculate.click();
+  await expect(page.getByRole('note', { name: /Company revision 2 saved/ })).toBeVisible();
+  expect(fixture.writes).toHaveLength(1);
+});
+
 test('Company estimate loads and calculates exact lines without Project authority parameters', async ({ page }) => {
   const requests: string[] = []; page.on('request', request => { if (/cipher_aec\.api\.v1\.projects?\b/.test(request.url())) requests.push(request.url()); });
   const fixture = await mockCompany(page); await page.goto(path); const quantity = page.getByRole('textbox', { name: 'Line 1 quantity', exact: true }); await expect(quantity).toHaveValue('10.125'); await quantity.fill('11.125');

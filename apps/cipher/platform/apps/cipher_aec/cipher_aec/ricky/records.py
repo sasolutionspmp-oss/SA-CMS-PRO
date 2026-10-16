@@ -17,10 +17,24 @@ class RickyRecord(Document):
             raise DomainError("invalid_input", "A durable Ricky record requires valid JSON.") from None
         if not isinstance(value, dict) or value.get("id") != self.name:
             raise DomainError("invalid_input", "The Ricky record identifier does not match its payload.")
+        scope = value.get("scope_type", "Project")
+        if scope != (self.get("scope_type") or "Project") or scope not in {"Project", "Company"}:
+            raise DomainError("invalid_scope", "The native Ricky scope differs from its original payload.")
         for field, key in (("company", "company"), ("project", "project"), ("requested_by", "user"), ("person_id", "person"), ("status", "status")):
             if self.get(field) != value.get(key):
                 raise DomainError("invalid_input", "The Ricky record scope does not match its payload.")
         before = self.get_doc_before_save()
+        if scope == "Company":
+            from .storage import DOCTYPES, CompanyStore
+            from .company_records import initial_run_admission, validate_company_record
+            from .company_service import domain_errors
+            kind = next(key for key, doctype in DOCTYPES.items() if doctype == self.doctype)
+            if self.get("run_id") != value.get("run_id") and not (
+                    kind == "run" and before is None and self.get("run_id") in (None, "")
+                    and domain_errors(initial_run_admission)(value)):
+                raise DomainError("source_integrity", "The native Company run Link differs from its original payload.", 409)
+            domain_errors(validate_company_record)(kind, value, CompanyStore(),
+                before=json.loads(before.data_json) if before else None)
         if before:
             old = json.loads(before.data_json)
             if any(old.get(key) != value.get(key) for key in ("id", "company", "project", "user", "person", "run_id", "authority")):

@@ -1,0 +1,132 @@
+{
+  "schema": "cipher.company.ui-r10.qualification.v1",
+  "source_changed_paths": [
+    "src/CompanyEstimates.tsx",
+    "tests/company.spec.ts"
+  ],
+  "source_sha256": "83f5a9b05236a4bfae9dc5e045ac8b49502ccdb4742541fe9f11aad9d95e39c4",
+  "build_sha256": "a41ea113376cfb871b0ccbb1be9db222b72b8c973f0fc4fcf10e1a3c212936f6",
+  "changed_file_sha256": {
+    "src/CompanyEstimates.tsx": "ee0e2005effe211288807fb40e55f67d75ba692d196ecc704e176ff56b012d7f",
+    "tests/company.spec.ts": "461a7f8ded01594529a5abff185fa579679ab3705b2e5c0821f925d74b3658e8"
+  },
+  "build_log_sha256": "028972eea20d36f469dea6e9def4b22bacdc915969dbb78110428a8b276207f9",
+  "generated_check_log_sha256": "51cb812e95b5db1bb67d8d2b9e5af14eaaf3bacd877c13b6a9bd92b84b3b5b62",
+  "full_browser": {
+    "report": "/tmp/cipher-company-ui-correction-r10/full-browser-report.private.json",
+    "sha256": "5f6d2aadd5038f8ff5ba4ddf22aeca13c7c4dd8f230995f68401c42cee70e7a5",
+    "stats": {
+      "startTime": "2026-10-16T04:40:45.558Z",
+      "duration": 382626.111,
+      "expected": 189,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "result": "189 passed; 1 failed; original report preserved"
+  },
+  "targeted_retry": {
+    "report": "/tmp/cipher-company-ui-correction-r10/targeted-cost-retry.private.json",
+    "sha256": "a59db281ec80977d41e0d28dd90c6f7c73943526c27d6d7679fda85ad1b77db7",
+    "stats": {
+      "startTime": "2026-10-16T04:48:34.692Z",
+      "duration": 3931.1279999999997,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "unchanged_source": true,
+    "scope": "single cost rebase acknowledgment case"
+  },
+  "capture": {
+    "path": "/tmp/cipher-company-live-ui-r10-20261016",
+    "verified_status": "passed",
+    "screenshots": 13,
+    "api_requests": 19,
+    "api_methods": [
+      "GET"
+    ],
+    "api_browser_resource_errors": 0,
+    "console_errors": 0,
+    "console_warnings": 0,
+    "font_responses": 21,
+    "font_status_codes": [
+      200
+    ],
+    "font_status": "loaded",
+    "blocked_requests": 0,
+    "business_writes": 0,
+    "ricky_commands": 0,
+    "login_logout_requests": 0,
+    "phone_geometry": {
+      "heading": {
+        "x": 16,
+        "y": 113,
+        "width": 238.84375,
+        "height": 62.375
+      },
+      "header": {
+        "width": 390,
+        "height": 111.375
+      },
+      "computed": {
+        "fontFamily": "\"72Black\", \"72Blackfull\", \"72\", \"72full\", Arial, Helvetica, sans-serif",
+        "fontSize": "24px"
+      }
+    },
+    "phone_toolbar": {
+      "overflow_accessible_name": "Company estimate actions",
+      "calculation_action_accessible_name": "Calculate Company revision",
+      "calculation_action": {
+        "x": 166,
+        "y": 171,
+        "width": 200.515625,
+        "height": 24
+      },
+      "calculation_action_clicked": false,
+      "reachable": true
+    }
+  },
+  "visual_review": {
+    "reviewed": [
+      "01-pursuits-1440",
+      "01-pursuits-900",
+      "01-pursuits-390",
+      "02-estimate-1440",
+      "02-estimate-900",
+      "02-estimate-390",
+      "02-estimate-actions-390",
+      "03-document-1440",
+      "03-document-900",
+      "03-document-390",
+      "04-ricky-selection-1440",
+      "04-ricky-selection-900",
+      "04-ricky-selection-390"
+    ],
+    "finding": "Corrected estimate title and overflow are readable and on-screen; no collapsed title remains. All four actual pages reviewed at all three widths. Document title wraps into four lines at900px; text remains readable. Existing narrow tables show only the currently visible horizontal columns."
+  },
+  "preserved": [
+    "/tmp/cipher-company-live-ui-20261016 original collapse evidence",
+    "full190 original failure report, screenshot and trace",
+    "first-progress-indicator-check: rawDOM progressbar count failed after actual page data loaded; later capture uses accessible visible-role readiness. No original API/browser error was recorded."
+  ],
+  "qualification": "Actual isolated synthetic Company records over authenticated GETs, existing copied session; no API response mocking or model invocation. Unchanged190-case confirmation passed. Original first-run checkbox-action failure and single targeted retry remain preserved. No main/publication/combined snapshot change.",
+  "confirmation": {
+    "status": "passed",
+    "source_and_build_bytes_match": true,
+    "report": "/tmp/cipher-company-ui-correction-r10/confirmation-browser-report.private.json",
+    "report_sha256": "5895bb1247507f7ee6791c1355a74d6c9d7c18cdee247a02b3c031bbbcd4ed22",
+    "stats": {
+      "startTime": "2026-10-16T04:51:40.326Z",
+      "duration": 376420.02400000003,
+      "expected": 190,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "exec_exit_code": 0,
+    "result_count": 190,
+    "retry_attempts": 0
+  }
+}

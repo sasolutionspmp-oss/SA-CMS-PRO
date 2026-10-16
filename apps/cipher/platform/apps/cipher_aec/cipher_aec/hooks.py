@@ -93,3 +93,13 @@ for _control_type in ("Cipher Cost Code", "Cipher Cost Type", "Cipher Cost Code 
 for _award_type in ("Cipher Award Handoff", "Cipher Award Handoff Revision", "Cipher Award Adoption", "Cipher Award Line Adoption", "Cipher Project Profile", "Cipher Project Delegation Policy Revision"):
     permission_query_conditions[_award_type] = "cipher_aec.awards.install.query_denied"
     has_permission[_award_type] = "cipher_aec.awards.install.permission_denied"
+
+# Company orchestration data has no generic native query/count projection.
+# Existing Project rows retain the native role/permission path.
+for _ricky_type, _ricky_query in (
+    ("Cipher Ricky Run", "run_query"), ("Cipher Ricky Step", "step_query"),
+    ("Cipher Tool Invocation", "invocation_query"), ("Cipher Delegation", "delegation_query"),
+    ("Cipher Run Artifact", "artifact_query"), ("Cipher Proposed Change", "proposal_query"),
+):
+    permission_query_conditions[_ricky_type] = "cipher_aec.ricky.permissions." + _ricky_query
+    has_permission[_ricky_type] = "cipher_aec.ricky.permissions.has_permission"

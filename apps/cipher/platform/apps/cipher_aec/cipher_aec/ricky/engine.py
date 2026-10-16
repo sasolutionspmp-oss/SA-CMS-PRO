@@ -135,6 +135,10 @@ class RickyService:
             return None
         self._check(run, worker=True)
         self._delegation(run)
+        return self._claim_checked(run)
+
+    def _claim_checked(self, run):
+        """Lease transition only; caller has ordered locks and current checks."""
         run["lease_token"] += 1
         run["lease_expires_at"] = iso(self.clock() + timedelta(seconds=self.limits.lease_seconds))
         run["status"] = "retrieving"
@@ -142,17 +146,24 @@ class RickyService:
         self.store.checkpoint()
         return run, run["lease_token"]
 
-    def _live(self, identifier: str, token: int) -> tuple[dict, Authority]:
-        run = self.store.get("run", identifier, lock=True)
+    def _validate_live_lease(self, run, token):
         if run["lease_token"] != token or run["cancel_requested"] or run["status"] == "cancelled":
             raise RickyError("cancelled", "This worker no longer owns the request.")
         if run["lease_expires_at"] and self.clock() >= parse_time(run["lease_expires_at"]):
             raise RickyError("lease_lost", "This worker's lease expired before its result was accepted.")
         if self.clock() >= parse_time(run["deadline"]):
             raise RickyError("resource_limit", "The interactive time budget was reached.")
+
+    def _live(self, identifier: str, token: int) -> tuple[dict, Authority]:
+        run = self.store.get("run", identifier, lock=True)
+        self._validate_live_lease(run, token)
         authority = self._check(run, worker=True)
         self._delegation(run)
         return run, authority
+
+    def _accept_tool_result(self, execution, output, *, replay=False):
+        """Scope-specific acceptance boundary; legacy Project behavior unchanged."""
+        return None
 
     def process(self, identifier: str) -> None:
         self.backend.require_effects_enabled()
@@ -296,9 +307,11 @@ class Execution:
         if name not in delegation["allowed_tools"] or tool.effect_class not in delegation["effect_classes"]:
             raise RickyError("forbidden_tool", "The tool is outside this preparation delegation.")
         self.call_key = digest({"run": run["id"], "logical_call": "proposal" if tool.effect_class == "proposal" else logical_call, "tool": name, "arguments": arguments})
+        self.run, self.authority = run, authority
         previous = service.store.find("invocation", {"operation_key": self.call_key}, limit=1)
         if previous:
             if previous[0]["status"] == "succeeded":
+                service._accept_tool_result(self, previous[0]["output"], replay=True)
                 return previous[0]["output"]
             # R0 tools have only reads or transaction-local proposals. No remote effects.
             if tool.effect_class not in ("read", "proposal"):
@@ -320,6 +333,7 @@ class Execution:
             output = service.registry.execute(name, arguments, self)
             if (service.clock() - started).total_seconds() > tool.timeout_seconds:
                 raise RickyError("resource_limit", "The tool exceeded its reviewed execution time limit.")
+            service._accept_tool_result(self, output)
             invocation = service._new(authority, run_id=run["id"], step_id=step["id"], status="succeeded", tool_name=name,
                                       tool_version=tool.version, operation_key=self.call_key, input_digest=digest(arguments),
                                       output_digest=digest(output), output=output, delegation_id=delegation["id"],
