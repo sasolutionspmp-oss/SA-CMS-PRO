@@ -31,6 +31,11 @@ def build_run_service(run_id, *, worker=False):
     # profile/adapter/default registry construction, including malformed rows.
     run = FrappeStore(worker=worker).get_scoped("run", run_id)
     if run.get("scope_type", "Project") == "Company":
+        if run.get("request_kind") == "deterministic-proposal-v1":
+            from .company_proposal_service import build_service as build_proposal_service
+            return build_proposal_service(worker=worker)
+        if run.get("request_kind") != "deterministic-read-v1":
+            raise RickyError("not_found", "This Company Ricky request kind is unavailable.")
         from .company_service import build_service as build_company_service
         return build_company_service(worker=worker)
     return build_service(worker=worker)

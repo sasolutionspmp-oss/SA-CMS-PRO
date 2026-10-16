@@ -577,15 +577,20 @@
       "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
       "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
       "status": "in_progress",
-      "local_contract_status": "company_deterministic_reads_http_rq_and_native_claim_retry_verified",
+      "local_contract_status": "company_reads_recovery_history_and_persisted_suggestions_native_ui_verified",
       "external_qualification_status": "live_model_not_connected",
       "evidence_paths": [
         "docs/framework/evidence/r1/ai04-isolated-tools-tests.json",
         "docs/framework/AI04_COMPANY_READ_INTEGRATION.md",
         "docs/framework/evidence/r1/company-ricky-native-r10/README.md",
-        "docs/framework/evidence/r1/company-ricky-native-r11/README.md"
+        "docs/framework/evidence/r1/company-ricky-native-r11/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r12/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r13/README.md",
+        "docs/framework/AI04_COMPANY_PROPOSALS.md",
+        "docs/framework/evidence/r1/company-ricky-native-r14/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r14/ui/README.md"
       ],
-      "qualification_limit": "Four deterministic Company reads and embedded SAP UI5 selection implemented. 788 composed backend cases (736 fresh unit, 52 unchanged integration), eight unchanged workflows and 190 unchanged browser cases are qualified. Actual HTTP/RQ/session/receipt/projection/preservation and bounded native concurrent-claim retry passed. Original failures remain retained. Company crash/recovery/quarantine qualification, canonical history producer, persisted proposals, human draft saves, live model and main deployment remain separate. No domain-write or approval tool enabled."
+      "qualification_limit": "Four deterministic Company reads and persisted scope/estimate suggestions use embedded SAP UI5. Current qualification covers 907 composed backend cases (851 unit + 56 integration), 220 distinct composed browser cases, 12 generated contracts and a 905-file build. Actual HTTP/RQ, recovery/cancellation, source/privacy/history/receipt and preservation passed; nine connected screenshots used 23 actual GETs and no business commands. Original failures remain retained. Explicit human draft-save, Company history interface, live model/QuickBooks, broader operational recovery and main deployment remain unfinished. No suggestion applies a domain write or approval."
     },
     {
       "id": "UX-03",

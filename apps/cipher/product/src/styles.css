@@ -187,3 +187,9 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 
 .cost-accounting-facts { gap: 0.5rem; align-items: flex-start; }
 .cost-accounting-target { overflow-wrap: anywhere; }
+
+/* Saved suggestion fields retain readable bounds inside the existing assistant. */
+.company-suggestions .dialog-form { min-width: 0; padding-inline: 0; }
+.company-suggestions ui5-select, .company-suggestions ui5-checkbox { width: 100%; min-width: 0; max-width: 100%; }
+.company-suggestions h4, .company-suggestions p, .company-suggestions summary { overflow-wrap: anywhere; }
+.company-suggestions pre { max-width: 100%; overflow: auto; font-size: .6875rem; }

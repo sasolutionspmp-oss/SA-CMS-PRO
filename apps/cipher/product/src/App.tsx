@@ -26,6 +26,7 @@ export default function App() {
   const [companySelection, setCompany] = useState('');
   const [projectId, setProjectId] = useState('');
   const [rickyOpen, setRickyOpen] = useState(false);
+  const [suggestionLocked, setSuggestionLocked] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mode, setMode] = useState<NavigationLayoutMode>(NavigationLayoutMode.Auto);
   const [phoneLayout, setPhoneLayout] = useState(() => window.matchMedia('(max-width: 599px)').matches);
@@ -87,7 +88,7 @@ export default function App() {
         branding={<ShellBarBranding logo={<img src="/cipher-mark.svg" alt="" />} onClick={() => navigate('/projects')}>Cipher <span className="shell-product-subtitle">The AEC/CMS Pro</span></ShellBarBranding>}
         content={<><div className="company-switch">{shellSession?.companies.length ? <Select accessibleName="Company" valueState="None" onChange={event => changeCompany(event.detail.selectedOption.value ?? company)}>{shellSession.companies.map(item => <Option key={item.id} value={item.id} selected={company === item.id}>{item.name}</Option>)}</Select> : null}</div><ShellBarSpacer />{shellSession?.site_mode === 'synthetic' && <Tag design="Set2" colorScheme="7">Synthetic workspace</Tag>}</>}
         searchField={<ShellBarSearch placeholder="Find a project" accessibleName="Search projects" onSearch={event => { setSearch(event.currentTarget!.value); navigate('/projects'); }} />}
-        assistant={<ToggleButton icon="da" pressed={rickyOpen} accessibleName="Toggle Ricky assistant" tooltip="Ricky · AEC intelligence" onClick={() => setRickyOpen(value => !value)} />}
+        assistant={<ToggleButton icon="da" disabled={suggestionLocked} pressed={rickyOpen} accessibleName="Toggle Ricky assistant" tooltip="Ricky · AEC intelligence" onClick={() => setRickyOpen(value => !value)} />}
         profile={<Avatar initials={initials(personName)} accessibleName={personName} size="XS" />} onProfileClick={() => { if (shellSession) setProfileOpen(true); }} />}
       sideContent={<SideNavigation className="product-navigation" accessibleName="Cipher workspace navigation" onSelectionChange={event => { const next = event.detail.item.dataset.path; if (next) { navigate(next); if (window.matchMedia('(max-width: 599px)').matches) { setMode(NavigationLayoutMode.Collapsed); document.getElementById('main-content')?.focus(); } } }} fixedItems={<SideNavigationItem text="Connections" icon="connected" selected={navKey === 'connections'} data-path="/connections" />}>
         <SideNavigationItem text="Projects" icon="building" selected={navKey === 'projects'} data-path="/projects" />
@@ -118,7 +119,7 @@ export default function App() {
             </>}
           </>}
         </div>
-        {rickyOpen && !requestedCompanyDenied && Boolean(company) && !session.loading && !authRequested && session.data?.authenticated && <RickyPanel key={`${session.data.user}/${session.data.person.id}/${companyWorkspace ? "Company" : "Project"}/${company}/${selectedProject?.id ?? ''}`} user={session.data.user} companyScope={companyWorkspace} companyCapabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} company={company} person={session.data.person.id} project={selectedProject} navigate={navigate} onClose={() => setRickyOpen(false)} onSaved={refresh} />}
+        {rickyOpen && !requestedCompanyDenied && Boolean(company) && !session.loading && !authRequested && session.data?.authenticated && <RickyPanel key={`${session.data.user}/${session.data.person.id}/${companyWorkspace ? "Company" : "Project"}/${company}/${selectedProject?.id ?? ''}`} user={session.data.user} companyScope={companyWorkspace} companyCapabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} company={company} person={session.data.person.id} project={selectedProject} navigate={navigate} onClose={() => setRickyOpen(false)} onSuggestionLockedChange={setSuggestionLocked} onSaved={refresh} />}
       </div>
     </NavigationLayout>
     <Dialog open={profileOpen} headerText="Your workspace session" onClose={() => setProfileOpen(false)} footer={<Bar design="Footer" endContent={<><Button disabled={signingOut} onClick={async () => { setSigningOut(true); setProfileError(undefined); try { await api.signOut(); setProfileOpen(false); setAuthRequested(true); setRickyOpen(false); session.refresh(); } catch (error) { setProfileError(error as ApiError); } finally { setSigningOut(false); } }}>{signingOut ? 'Signing out…' : 'Sign out'}</Button><Button onClick={() => setProfileOpen(false)}>Close</Button></>} />}><div className="dialog-form">{profileError && <Failure error={profileError} />}<div className="profile-summary"><Avatar initials={initials(personName)} /><div><Title level="H3">{personName}</Title><p>{session.data?.user ?? 'Not signed in'}</p></div></div><p>Company and project permissions are supplied by your workspace.</p>{session.data?.site_mode === 'synthetic' && <MessageStrip design="Information" hideCloseButton>This workspace contains synthetic data.</MessageStrip>}</div></Dialog>

@@ -56,6 +56,9 @@ def validate_run_state(value):
 
 
 def validate_company_record(kind, value, store, *, before=None):
+    if value.get("request_kind") == "deterministic-proposal-v1":
+        from .company_proposal_records import validate_company_proposal_record
+        return validate_company_proposal_record(kind, value, store, before=before)
     if kind == "proposal":
         raise RickyError("forbidden", "Company deterministic reads cannot create Proposed Changes.")
     authority = decode_run_authority(value) if kind == "run" else decode_authority(value.get("authority"))

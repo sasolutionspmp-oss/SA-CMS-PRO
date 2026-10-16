@@ -422,6 +422,10 @@ def authorize_receipt(actor, company, result, *, command, lock=False):
 @domain_errors
 def authorize_history(actor, company, run_id, *, lock=False):
     service = build_service()
+    preview = service.store.get("run", run_id)
+    if preview.get("request_kind") == "deterministic-proposal-v1":
+        from .company_proposal_service import authorize_history as authorize_proposal_history
+        return authorize_proposal_history(actor, company, run_id, lock=lock)
     run = service._ordered_run(run_id, execution=False) if lock else service._load(company, run_id)
     authority = decode_run_authority(run)
     if (authority.user != actor.user or authority.person != actor.person_id or authority.company != company):

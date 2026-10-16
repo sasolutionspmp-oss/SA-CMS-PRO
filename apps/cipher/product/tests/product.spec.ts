@@ -1,3 +1,4 @@
+import { checkUi5Checkbox } from './ui5-controls';
 import { expect, test, type Locator } from '@playwright/test';
 import { mockWorkspace, projects } from './fixture';
 
@@ -110,7 +111,7 @@ test('cited Ricky proposal requires review then updates project tasks', async ({
   const commit = page.getByRole('button', { name: 'Create proposed task', exact: true });
   await expect(commit).toBeDisabled();
   await expect(page.getByRole('link', { name: 'Site coordination requirements', exact: true }).last()).toBeVisible();
-  await page.getByRole('checkbox', { name: 'I reviewed this task and its sources', exact: true }).check();
+  await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed this task and its sources', exact: true }));
   await expect(commit).toBeEnabled();
   await page.screenshot({ path: testInfo.outputPath('synthetic-contract-ricky-proposal.png'), fullPage: true });
   await commit.click();
@@ -179,7 +180,7 @@ test('project status requires independent review and recovers execution with the
   review = page.locator('ui5-dialog[header-text="Review approval packet"]');
   const grant = review.getByRole('button', { name: 'Grant approval', exact: true });
   await expect(grant).toBeDisabled();
-  await review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }).check();
+  await checkUi5Checkbox(review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }));
   await page.screenshot({ path: testInfo.outputPath('synthetic-contract-approval-independent-review.png'), fullPage: true });
   await grant.click();
   await expect(review.getByRole('note', { name: /A different person must execute this grant/ })).toBeVisible();
@@ -192,7 +193,7 @@ test('project status requires independent review and recovers execution with the
   review = page.locator('ui5-dialog[header-text="Review approval packet"]');
   const execute = review.getByRole('button', { name: 'Execute approved change', exact: true });
   await expect(execute).toBeDisabled();
-  await review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }).check();
+  await checkUi5Checkbox(review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }));
   await execute.click();
   await expect(review.getByRole('note', { name: /The workspace could not be reached/ })).toBeVisible();
   await execute.click();
@@ -236,7 +237,7 @@ test('stale approval sources remove decision actions without reporting a grant',
   await page.reload();
   await page.getByRole('button', { name: 'Review packet', exact: true }).click();
   const review = page.locator('ui5-dialog[header-text="Review approval packet"]');
-  await review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }).check();
+  await checkUi5Checkbox(review.getByRole('checkbox', { name: 'I reviewed this exact change and its source', exact: true }));
   await review.getByRole('button', { name: 'Grant approval', exact: true }).click();
   await expect(review.getByRole('note', { name: /The approval source changed/ })).toBeVisible();
   await expect(review.getByRole('button', { name: 'Grant approval', exact: true })).toHaveCount(0);

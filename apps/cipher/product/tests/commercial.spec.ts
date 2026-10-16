@@ -1,3 +1,4 @@
+import { checkUi5Checkbox } from './ui5-controls';
 import { expect, test } from '@playwright/test';
 import { comLineId, comUnitId, mockCommercial, proposalId } from './commercial-fixture';
 const path = `/commercial/proposals/${proposalId}`;
@@ -43,7 +44,7 @@ test('proposal stale rejection preserves authored input for explicit reviewed re
   const quantity = page.getByRole('textbox', { name: 'Price line 1 quantity', exact: true }); await quantity.fill('11');
   await page.getByRole('button', { name: 'Save proposal revision', exact: true }).click(); await expect(page.getByRole('note', { name: /Your authored inputs are preserved/ })).toBeVisible(); await expect(quantity).toHaveValue('11');
   await page.getByRole('button', { name: 'Load current proposal for review', exact: true }).click();
-  await page.getByRole('checkbox', { name: 'I reviewed the current saved proposal head', exact: true }).check();
+  await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the current saved proposal head', exact: true }));
   await page.getByRole('button', { name: 'Rebase preserved proposal inputs', exact: true }).click(); await expect(quantity).toHaveValue('11');
   await page.getByRole('button', { name: 'Save proposal revision', exact: true }).click(); await expect(page.getByRole('note', { name: /Proposal revision 3 saved/ })).toBeVisible(); expect(fixture.requests[1].body.expected_revision).toBe(2);
 });

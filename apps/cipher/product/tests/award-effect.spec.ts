@@ -1,3 +1,4 @@
+import { checkUi5Checkbox } from './ui5-controls';
 import { expect, test } from '@playwright/test';
 import { mockAwardEffect } from './award-effect-fixture';
 import { awardIssue } from './award-fixture';
@@ -12,12 +13,12 @@ test('award review opens the exact fixture PDF before independent Grant and pres
   fixture.setReviewer(true); await page.goto(reviewPath(fixture.packetId)); const dialog = page.locator('ui5-dialog[header-text="Review company approval packet"]'); await expect(dialog.getByRole('region', { name: 'Independent Project award review' })).toBeVisible(); await expect(dialog.getByText('One native schedule row: 100% of the selling value (USD 125.00) due 2026-10-15.', { exact: true })).toBeVisible();
   await dialog.getByRole('button', { name: 'Review awarded Issue PDF', exact: true }).click(); await expect(dialog.locator('canvas[aria-label="Authorized stored PDF page"]')).toBeVisible();
   await expect(dialog.locator('ui5-table[accessible-name="Reviewed award cost allocations"]')).toContainText('100.123456789');
-  await dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true }).check(); await dialog.getByRole('button', { name: 'Grant company approval', exact: true }).click(); await expect(dialog.getByRole('note', { name: /Approval granted/ })).toBeVisible();
+  await checkUi5Checkbox(dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true })); await dialog.getByRole('button', { name: 'Grant company approval', exact: true }).click(); await expect(dialog.getByRole('note', { name: /Approval granted/ })).toBeVisible();
   expect(fixture.writes.map(row => row.method)).toEqual(['request_action', 'decide_packet']); expect(fixture.effects()).toBe(0);
 });
 test('award execution refuses an old independent Grant receipt then recovers the exact original operation through later denial', async ({ page }) => {
   const fixture = await mockAwardEffect(page, { wrongGrant: true, denyRecovery: true }); fixture.grant(); await page.goto(reviewPath(fixture.packetId)); const dialog = page.locator('ui5-dialog[header-text="Review company approval packet"]');
-  await dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true }).check(); await dialog.getByRole('button', { name: 'Execute approved company action', exact: true }).click();
+  await checkUi5Checkbox(dialog.getByRole('checkbox', { name: 'I reviewed this exact company action and its sources', exact: true })); await dialog.getByRole('button', { name: 'Execute approved company action', exact: true }).click();
   const recover = dialog.getByRole('button', { name: 'Recover company approval action', exact: true }); await expect(recover).toBeEnabled(); await expect(dialog.getByRole('button', { name: 'Close company review', exact: true })).toBeDisabled(); await recover.click(); await expect(recover).toBeEnabled(); await recover.click();
   await expect(dialog.getByRole('note', { name: /independently approved action was executed/ })).toBeVisible(); expect(fixture.effects()).toBe(1); expect(fixture.writes).toHaveLength(3); expect(new Set(fixture.writes.map(row => row.raw)).size).toBe(1); expect(new Set(fixture.writes.map(row => row.key)).size).toBe(1);
 });

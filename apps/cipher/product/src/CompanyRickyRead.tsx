@@ -16,7 +16,7 @@ import { Empty, Failure, Loading, Status } from './components';
 
 const labels: Record<CompanyRickyRunResponse['action'], string> = { 'aec.pursuit.lookup': 'View pursuit', 'aec.estimate.recompute': 'Recheck saved estimate', 'aec.estimate.compare': 'Compare saved estimates', 'aec.quantity.convert': 'Convert saved quantity' };
 const invalid = () => new ApiError('The original Company read could not be verified.', 'INVALID_CONTRACT', 200);
-export default function CompanyRickyRead({ company, user, person, capabilities, navigate, onClose }: { company: string; user: string; person: string; capabilities: string[]; navigate: (path: string) => void; onClose: () => void }) {
+export default function CompanyRickyRead({ company, user, person, capabilities, navigate, onClose, onSuggestions }: { company: string; user: string; person: string; capabilities: string[]; navigate: (path: string) => void; onClose: () => void; onSuggestions?: () => void }) {
   const canRead = Boolean(user && person && company && capabilities.includes('ricky.run'));
   const pointer = companyRunPointerKey(user, person, company);
   const expectedRead = useRef<{ selection: CompanyRickySelectedRead; digest: string; terminal?: CompanyTerminalObservation } | undefined>(undefined);
@@ -89,6 +89,7 @@ export default function CompanyRickyRead({ company, user, person, capabilities, 
   const reset = () => { if (locked) return; expectedRead.current = undefined; sessionStorage.removeItem(pointer); setRunId(''); setStopped(undefined); setRefresh(value => value + 1); };
   return <aside className="ricky-panel" aria-label="Ricky Company assistant"><header className="ricky-header"><div className="ricky-identity"><div className="ricky-mark"><Icon name="da" /></div><div><Title level="H2">Ricky</Title><span>AEC intelligence</span></div></div><Button icon="decline" design="Transparent" accessibleName="Close Ricky" disabled={locked} onClick={onClose} /></header>
     <div className="ricky-context"><Icon name="building" /><div><span>COMPANY CONTEXT</span><strong>{company}</strong></div></div><div className="ricky-scroll">
+    {onSuggestions && <Button design="Transparent" disabled={locked} onClick={onSuggestions}>Saved suggestions</Button>}
     <MessageStrip design="Information" hideCloseButton>Uses deterministic tools; no model call. Your business records remain unchanged.</MessageStrip>
     {!canRead && start.unknown && <Button disabled={start.busy} onClick={async () => accept(await start.recover())}>Recover original Company read</Button>}{!canRead && stop.unknown && <Button disabled={stop.busy} onClick={async () => { const result = await stop.recover(); if (result) setStopped(result.status); }}>Recover original Stop</Button>}{!canRead ? <Empty title="Company Ricky access unavailable" icon="locked">Your current Company permissions do not allow these reads.</Empty> : runId ? <>
       {read.loading && <Loading label="Reading saved Company run…" />}{read.error && <Failure error={read.error} onRetry={() => setRefresh(value => value + 1)} />}

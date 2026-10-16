@@ -170,10 +170,14 @@ class ProjectCompatibilityTests(unittest.TestCase):
         self.assertEqual(canonical_sha(ast_value(get(new,'run_command'))),expected['run_command'])
         after=get(new,'_run_scoped_command')
         after.body=[n for n in after.body if not (isinstance(n,ast.If) and 'COMPANY_RICKY_COMMANDS' in ast.unparse(n.test)+' '.join(ast.unparse(x) for x in n.body) and 'command.startswith("ricky.")' in ast.unparse(n.test).replace("'",'"'))]
-        # Strip only the new literal Company START branches; their else is
+        # Strip only the two approved literal Company START branches; their else is
         # the original effect, and no legacy execution path uses the bridge.
         case=self
-        expected_start=ast.parse("scope_type == 'Company' and command == 'ricky.company.read.start.v1'",mode='eval').body
+        expected_start=ast.parse("scope_type == 'Company' and command in {'ricky.company.read.start.v1', 'ricky.company.proposal.start.v1'}",mode='eval').body
+        commands=next(node for node in new.body if isinstance(node,ast.Assign)
+            and any(isinstance(target,ast.Name) and target.id=='COMPANY_RICKY_COMMANDS' for target in node.targets))
+        self.assertEqual(ast.literal_eval(commands.value.args[0]),{'ricky.company.read.start.v1','ricky.company.read.cancel.v1',
+            'ricky.company.proposal.start.v1','ricky.company.proposal.cancel.v1'})
         class LegacyProjectShape(ast.NodeTransformer):
             def visit_If(self,node):
                 if 'ricky.company.read.start.v1' in ast.unparse(node.test):
@@ -306,7 +310,14 @@ class CompanyRickyRegistrationTests(unittest.TestCase):
             route=ROUTES['cipher_aec.ricky.company_api.'+name]
             self.assertEqual(route.method.lower(),method)
             self.assertEqual(route.command,method=='post')
-        old_paths={key:value for key,value in generated['paths'].items() if not key.startswith(prefix)}
+        proposals={
+            '/api/method/cipher_aec.ricky.company_proposal_api.start_proposal',
+            '/api/method/cipher_aec.ricky.company_proposal_api.get_run',
+            '/api/method/cipher_aec.ricky.company_proposal_api.run_events',
+            '/api/method/cipher_aec.ricky.company_proposal_api.get_proposal',
+            '/api/method/cipher_aec.ricky.company_proposal_api.cancel_run'}
+        self.assertEqual({key for key in generated['paths'] if key.startswith('/api/method/cipher_aec.ricky.company_proposal_api.')},proposals)
+        old_paths={key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals}
         self.assertEqual(canonical_sha(old_paths),'8c755c2d712b51177683a8bed770428405d9342db1f879cedd5f7aace895a04c')
         self.assertEqual(json.loads((ROOT/'api/openapi.json').read_text()),generated)
     def test_native_projection_closes_company_rows_and_counts_without_changing_project(self):

@@ -14,6 +14,8 @@ Start with [current implementation status](IMPLEMENTATION_STATUS.md) for actual 
 
 The [live build walkthrough](LIVE_BUILD_WALKTHROUGH.md) links the actual container screenshots in workflow order.
 
+[Company saved suggestions — Stage B](AI04_COMPANY_PROPOSALS.md) records the implemented scope/estimate authoring and immutable review boundary, 907 composed backend checks, 220 distinct composed Playwright cases and the four passed native scenarios. Final native finish/reconciliation passed; [nine connected R14 screens](evidence/r1/company-ricky-native-r14/ui/README.md) passed. The live Ricky model, QuickBooks connection and explicit human draft-save commands are not qualified by this deterministic slice.
+
 The [prepared proposal contract](COM02_PREPARED_OUTPUT_CONTRACT.md) binds exact PDF output and independent issuance. The [controlled distribution contract](COM02_DISTRIBUTION_CONTRACT.md) separates approved recipient delivery, durable outcomes and local fixture qualification from customer delivery. [Current status](IMPLEMENTATION_STATUS.md) identifies which connected proofs have passed and which remain active.
 
 The [PRJ-02 native award contract](PRJ02_NATIVE_AWARD_CONTRACT.md) records the pinned Sales Order source audit, immutable issue provenance, admission requirements and financial-floor dependencies. It does not enable award writers or claim runtime award qualification.

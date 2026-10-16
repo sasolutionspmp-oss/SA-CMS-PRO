@@ -10,7 +10,8 @@ from .context import assert_synthetic_site, current_actor, require_project, requ
 
 
 # Company deterministic preparation only; never inherit Project/model commands.
-COMPANY_RICKY_COMMANDS = frozenset({"ricky.company.read.start.v1", "ricky.company.read.cancel.v1"})
+COMPANY_RICKY_COMMANDS = frozenset({"ricky.company.read.start.v1", "ricky.company.read.cancel.v1",
+    "ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1"})
 
 def run_command(*, company, project, operation_id, command, payload, ability, effect, guard=None, participant_people=()):
     return _run_scoped_command(company=company, project=project, scope_type="Project", operation_id=operation_id,
@@ -56,7 +57,7 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
     if participant_people:
         frappe.db.sql("SELECT b.name,b.user,u.name FROM `tabCipher Identity Binding` b JOIN `tabUser` u ON u.name=b.user WHERE b.person IN (" + placeholders + ") ORDER BY b.name FOR UPDATE", people)
     actor = current_actor(lock=True)
-    if scope_type == "Company" and command == "ricky.company.read.start.v1":
+    if scope_type == "Company" and command in {"ricky.company.read.start.v1", "ricky.company.proposal.start.v1"}:
         # This actual interactive session precedes the Company/receipt locks.
         # The NEW effect binds the same server-captured reference below.
         current_ricky_session_reference = session_authority_reference(actor)
@@ -126,7 +127,7 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
             with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
                 if guard is not None:
                     guard(actor, locked_project)
-                if scope_type == "Company" and command == "ricky.company.read.start.v1":
+                if scope_type == "Company" and command in {"ricky.company.read.start.v1", "ricky.company.proposal.start.v1"}:
                     from cipher_aec.ricky.company_backend import start_session_binding
                     with start_session_binding(actor=actor, company=company, reference=current_ricky_session_reference):
                         result = effect(actor, locked_project)
@@ -181,7 +182,10 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             if command not in COMPANY_RICKY_COMMANDS:
                 raise DomainError("unsupported_company_ricky_command", "This Company Ricky command is not registered.", 403)
             require_company(company, ability="ricky.run", actor=actor, lock=True)
-            from cipher_aec.ricky.company_service import authorize_receipt as authorize_company_ricky
+            if command in {"ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1"}:
+                from cipher_aec.ricky.company_proposal_service import authorize_receipt as authorize_company_ricky
+            else:
+                from cipher_aec.ricky.company_service import authorize_receipt as authorize_company_ricky
             authorize_company_ricky(actor, company, result, command=command, lock=True)
         elif command.startswith("commercial."):
             require_company(company, ability="commercial.read", actor=actor, lock=True)

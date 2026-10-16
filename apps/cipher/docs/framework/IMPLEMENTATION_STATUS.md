@@ -4,7 +4,15 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
-## Current checkpoint: Company Ricky reads and responsive SAP screens
+## Current checkpoint: Company saved suggestions
+
+[Stage B saved suggestions](AI04_COMPANY_PROPOSALS.md) now implements deterministic scope/estimate preparation and immutable review in the existing SAP UI5 Company assistant, using the six orchestration DocTypes and canonical source readers. Ordinary author HTTP/RQ passed for scope, estimate, committed-preparation rollback/recovery and cancellation-before-finalization: three stored suggestions and one cancelled request. Native finish/reconciliation passed source/privacy/history/cursor/receipt checks and exact restoration, with only explicitly attributed native setup effects, supported duty audit timestamps and per-request original User `last_active` changes. Original failed 403 and wrapper-misuse evidence remain preserved.
+
+The frozen R14 candidate has 679 source paths and 44 changed paths against R13. Backend qualification is 907 composed cases (851 unit + 56 integration), including 41 focused native-helper source checks (16 new + 25 existing). Generation, TypeScript and the production build passed. Playwright qualification covers 220 distinct cases: 219 passes in the complete run and the single unchanged-source case passing separately after a Chromium target crash; the failed report remains retained. This is not a fresh single 220/220 run.
+
+The [nine connected R14 screens](evidence/r1/company-ricky-native-r14/ui/README.md) passed: scope selection, saved scope and saved estimate at 1440/900/390, using 23 actual API GETs and no business commands, login or model call. Fifteen font responses returned 200; no browser errors or blocked requests occurred. Persisted suggestions confer no domain-write/apply authority; Stage C human draft-save, the Company history interface, live model connection and QuickBooks remain unfinished. Main deployment remains separate and its award/distribution boundaries stay unchanged.
+
+## Prior checkpoints: Company Ricky reads and responsive SAP screens
 
 The [Company Ricky checkpoint](evidence/r1/company-ricky-native-r10/README.md) adds an embedded Company assistant for four explicit deterministic reads: selected Pursuit lookup, saved estimate recomputation, revision comparison and exact quantity conversion. Backend verification passed 774 unique tests and eight native workflows. Actual Company cookie/CSRF requests, ordinary RQ delivery, original-session expiry, source/capability revocation, cancellation fencing, eight unchanged receipt cases and 18 native projection pairs passed. Final readback preserved original records, duties, identities and the Company Project set.
 
@@ -16,7 +24,7 @@ R12 verification is 760 fresh unit cases plus 52 unchanged integration cases (81
 
 The [prospective Company Ricky history checkpoint](evidence/r1/company-ricky-native-r13/README.md) now also passes. New Start/Stop commands append exactly one canonical event each; replay adds none, original queued receipt bytes stay exact, and source-free terminal Stop does not claim a cancellation. Actual owner/alias/outsider history filtering, exact totals, owner-cursor refusal and source-duty restoration passed. This source has 782 fresh complete unit cases plus 52 unchanged integration cases (834 composed), eight unchanged native workflows and the unchanged 190-case UI qualification. Only one production API file changed; no migration or UI rebuild was needed.
 
-The live model, Company history interface and persisted proposal/draft-save stages remain unfinished. Main continues its previously qualified release with award execution and distribution consumers disabled.
+At the R13 checkpoint, the live model, Company history interface and persisted proposal/draft-save stages remained unfinished; the R14 Stage B result above supersedes only the persisted-suggestion gap. Main continues its previously qualified release with award execution and distribution consumers disabled.
 
 Earlier checkpoints below retain their own source epochs and limits.
 

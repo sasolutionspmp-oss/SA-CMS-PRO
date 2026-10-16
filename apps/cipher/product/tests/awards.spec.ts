@@ -1,3 +1,4 @@
+import { checkUi5Checkbox } from './ui5-controls';
 import { expect, test, type Page } from '@playwright/test';
 import { awardIssue, mockAward } from './award-fixture';
 import { company } from './fixture';
@@ -55,7 +56,7 @@ test('dated cost selection uses the effective revision instead of a future autho
 });
 test('definitive stale award preserves authored fields for an explicit reviewed version', async ({ page }) => {
   const fixture = await mockAward(page, { stale: true }); await page.goto(path); const name = page.getByRole('textbox', { name: 'Project name', exact: true }); await expect(name).toHaveValue('Cedar Valley award'); await name.fill('Preserved concurrent award'); await page.getByRole('button', { name: 'Save award plan', exact: true }).click();
-  await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await expect(page.getByRole('region', { name: 'Frozen award plan review' }).first()).toBeVisible(); await page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true }).check(); await page.getByRole('button', { name: 'Use reviewed handoff version', exact: true }).click(); await expect(name).toHaveValue('Preserved concurrent award');
+  await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await expect(page.getByRole('region', { name: 'Frozen award plan review' }).first()).toBeVisible(); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true })); await page.getByRole('button', { name: 'Use reviewed handoff version', exact: true }).click(); await expect(name).toHaveValue('Preserved concurrent award');
   await page.getByRole('button', { name: 'Save award plan', exact: true }).click(); await expect(page.getByRole('note', { name: /Award plan revision 2 saved/ })).toBeVisible(); expect(fixture.writes[1].body.expected_version).toBe('f'.repeat(64));
 });
 test('rebase refuses a fetched current plan from another handoff while keeping authored input', async ({ page }) => {
@@ -67,7 +68,7 @@ test('rebase rejects a wrong root handoff even when its returned plan consistent
   await expect(page.getByRole('note', { name: /current handoff does not match this award workspace/ })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed handoff version', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);
 });
 test('a prior preview412 cannot rebase the local version during an in-flight save', async ({ page }) => {
-  const fixture = await mockAward(page, { previewStale: true, holdSave: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Check award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true }).check();
+  const fixture = await mockAward(page, { previewStale: true, holdSave: true }); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award'); await page.getByRole('button', { name: 'Check award plan', exact: true }).click(); await page.getByRole('button', { name: 'Load current award handoff', exact: true }).click(); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true }));
   const rebase = page.getByRole('button', { name: 'Use reviewed handoff version', exact: true }); await expect(rebase).toBeEnabled(); await page.getByRole('button', { name: 'Save award plan', exact: true }).click(); await expect(rebase).toBeDisabled(); await expect(page.getByRole('checkbox', { name: 'I reviewed the current saved award handoff', exact: true })).toBeDisabled(); fixture.releaseSave(); await expect(page.getByRole('note', { name: /Award plan revision 2 saved/ })).toBeVisible(); expect(fixture.effects()).toBe(1);
 });
 test('unknown handoff creation recovers its same key instead of reserving a second handoff', async ({ page }) => {

@@ -16,14 +16,24 @@ for (const [sourcePath, destination, title] of [
   ['awards/schemas/api-v1.schema.json', 'awards.generated.ts', 'CipherAwardContract'],
   ['takeoff/schemas/api-company-v2.schema.json', 'company-takeoff.generated.ts', 'CipherCompanyTakeoffContract'],
   ['ricky/schemas/company-api-v1.schema.json', 'company-ricky.generated.ts', 'CipherCompanyRickyContract'],
+  ['ricky/schemas/company-proposal-api-v1.schema.json', 'company-ricky-proposals.generated.ts', 'CipherCompanyRickyProposalContract'],
 ]) {
   const source = await readFile(new URL(`../../platform/apps/cipher_aec/cipher_aec/${sourcePath}`, import.meta.url), 'utf8');
   const schema = JSON.parse(source.replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));
+  if (destination === 'company-ricky-proposals.generated.ts') {
+    // The compiler otherwise drops siblings of this oneOf. Merge equivalent
+    // closed branches for types only; runtime validation uses the original.
+    const { oneOf, ...base } = schema.definitions.CompanyRickyProposalResponse;
+    schema.definitions.CompanyRickyProposalResponse = { oneOf: oneOf.map(branch => ({ ...base, ...branch,
+      properties: { ...base.properties, ...branch.properties }, required: [...new Set([...base.required, ...branch.required])], additionalProperties: false })) };
+  }
   const hash = createHash('sha256').update(source).digest('hex');
-  const generated = await compile(schema, title, {
+  let generated = await compile(schema, title, {
     unreachableDefinitions: true,
+    ...(destination === 'company-ricky-proposals.generated.ts' ? { ignoreMinAndMaxItems: true } : {}),
     bannerComment: `/* Generated from cipher_aec/${sourcePath}. Do not edit.\n * Source SHA-256: ${hash}\n * Regenerate: npm run generate:api\n */`,
   });
+  if (destination === 'company-ricky-proposals.generated.ts') generated += `\n// Published closed runtime shapes, generated from the same source as these types.\nexport const companyRickyProposalSchema = ${source.trim()} as const;\n`;
   const output = new URL(`../src/api/${destination}`, import.meta.url);
   if (check) {
     let existing = '';

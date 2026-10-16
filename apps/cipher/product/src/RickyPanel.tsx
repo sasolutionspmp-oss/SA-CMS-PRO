@@ -1,4 +1,5 @@
 import CompanyRickyRead from './CompanyRickyRead';
+import CompanyRickyProposals from './CompanyRickyProposals';
 import { useEffect, useRef, useState } from 'react';
 import { Button, CheckBox, Icon, Link, MessageStrip, TextArea, Title } from '@ui5/webcomponents-react';
 import type { TextAreaDomRef } from '@ui5/webcomponents-react';
@@ -10,8 +11,13 @@ import { Empty, Failure, Loading, Status } from './components';
 const prefix = 'cipher_aec.ricky.api.';
 const terminal = new Set(['succeeded', 'failed', 'cancelled', 'waiting_for_review', 'waiting-for-review', 'completed']);
 
-export default function RickyPanel(props: { company: string; project?: Project; person: string; user?: string; companyScope?: boolean; companyCapabilities?: string[]; navigate: (path: string) => void; onClose: () => void; onSaved: () => void }) {
-  return props.companyScope ? <CompanyRickyRead key={JSON.stringify([props.user, props.person, props.company])} company={props.company} user={props.user || ''} person={props.person} capabilities={props.companyCapabilities || []} navigate={props.navigate} onClose={props.onClose} /> : <ProjectRickyPanel {...props} />;
+export default function RickyPanel(props: { company: string; project?: Project; person: string; user?: string; companyScope?: boolean; companyCapabilities?: string[]; navigate: (path: string) => void; onClose: () => void; onSaved: () => void; onSuggestionLockedChange?: (locked: boolean) => void }) {
+  return props.companyScope ? <CompanyRickyWorkspace key={JSON.stringify([props.user, props.person, props.company])} company={props.company} user={props.user || ''} person={props.person} capabilities={props.companyCapabilities || []} onLockedChange={props.onSuggestionLockedChange} navigate={props.navigate} onClose={props.onClose} /> : <ProjectRickyPanel {...props} />;
+}
+
+function CompanyRickyWorkspace(props: { company: string; user: string; person: string; capabilities: string[]; onLockedChange?: (locked: boolean) => void; navigate: (path: string) => void; onClose: () => void }) {
+  const [suggestions, setSuggestions] = useState(false);
+  return suggestions ? <CompanyRickyProposals {...props} onReads={() => setSuggestions(false)} /> : <CompanyRickyRead {...props} onSuggestions={() => setSuggestions(true)} />;
 }
 
 function ProjectRickyPanel({ company, project, person, navigate, onClose, onSaved }: { company: string; project?: Project; person: string; navigate: (path: string) => void; onClose: () => void; onSaved: () => void }) {

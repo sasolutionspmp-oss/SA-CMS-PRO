@@ -1,3 +1,4 @@
+import { checkUi5Checkbox } from './ui5-controls';
 import { expect, test, type Page } from '@playwright/test';
 import { estimateId, mockEstimating, rateId, unitId } from './estimating-fixture';
 import { projects } from './fixture';
@@ -40,7 +41,7 @@ test('stale estimate preserves authored edits through explicit review and rebase
   await page.getByRole('button', { name: 'Load latest for comparison', exact: true }).click();
   await expect(page.getByRole('checkbox', { name: 'I reviewed the latest saved revision changes', exact: true })).toBeVisible();
   await expect(quantity).toHaveValue('11.125');
-  await page.getByRole('checkbox', { name: 'I reviewed the latest saved revision changes', exact: true }).check();
+  await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the latest saved revision changes', exact: true }));
   await page.getByRole('button', { name: 'Rebase preserved inputs', exact: true }).click();
   await expect(quantity).toHaveValue('11.125'); await save(page).click();
   await expect(page.getByRole('note', { name: /Revision 3 saved/ })).toBeVisible();

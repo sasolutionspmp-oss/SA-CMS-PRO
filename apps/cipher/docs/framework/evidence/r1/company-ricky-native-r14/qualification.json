@@ -1,0 +1,438 @@
+{
+  "schema": "cipher.company-proposals-r14.qualification.v1",
+  "status": "passed_composed",
+  "source_snapshot_sha256": "cc0331e8f4601e03c72f571b8da0e9706032dc93f4f55ead5357217722021257",
+  "backend": {
+    "unique_cases": 907,
+    "unit": 851,
+    "integration": 56,
+    "composition": "835 complete units + 56 integration, then 16 added continuation cases; 41 focused helper cases rechecked.",
+    "details": "backend-qualification.json"
+  },
+  "browser": {
+    "distinct_cases": 220,
+    "composition": "219 complete-suite passes plus isolated passing replay of one Chromium Target crashed case; original failure retained.",
+    "details": "browser-qualification.json"
+  },
+  "production_build_files": 905,
+  "generated_contracts": 12,
+  "native": {
+    "status": "passed",
+    "actual_http": true,
+    "ordinary_rq": true,
+    "scope_suggestion": "passed",
+    "estimate_suggestion": "passed",
+    "checkpoint_finalize_rollback_and_natural_lease_recovery": "passed",
+    "cancel_after_preparation_and_stale_token_refusal": "passed",
+    "stored_suggestions": 3,
+    "cancelled_without_suggestion": 1,
+    "terminal_source_free_stop": "passed",
+    "source_revocation_and_restoration": "passed",
+    "same_person_alias_and_outsider_privacy": "passed",
+    "owner_cursor_refusal": "passed",
+    "immutable_historical_reads_after_successors": "passed",
+    "receipt_replays_and_history_uniqueness": "passed",
+    "original_failed_evidence_and_cookies": "unchanged",
+    "preservation": "Full older rows except exactly attributed native duty modified/modified_by and per-wire original-User last_active. No timestamp or IP restoration.",
+    "full_financial_and_project_inventory": {
+      "status": "passed",
+      "full_financial_and_project_inventories_unchanged": true,
+      "tables": {
+        "Sales Order": 0,
+        "Sales Invoice": 0,
+        "Delivery Note": 0,
+        "Purchase Order": 0,
+        "Purchase Invoice": 0,
+        "Purchase Receipt": 0,
+        "Payment Entry": 0,
+        "Journal Entry": 0,
+        "Stock Entry": 0,
+        "Expense Claim": 0,
+        "Timesheet": 0,
+        "Material Request": 0,
+        "GL Entry": 0,
+        "Stock Ledger Entry": 0,
+        "Project": 3
+      },
+      "queue_empty": true,
+      "workers_empty": true,
+      "site_config_sha256": "bcbc9ea3c00a41b08fe56df9e7ef8ba7c8e08f469aa3e751193717fdd4807ac0",
+      "main_changed": false
+    },
+    "active_runs_after": 0,
+    "workers_after": 0,
+    "queued_after": 0,
+    "started_jobs_after": 0,
+    "phase_artifacts": [
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-checkpoint.private.json",
+        "sha256": "18cc56efc1cd3b61ed73007e7af16cac9796fea48d8d8b473229dbc715d58c35",
+        "status": "passed",
+        "phase": "checkpoint",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "output_sha256": "6762107c5437aed0956ed9070a15ebf88e7f4bbea6e05183ead213e981e5b8f9",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-queue-after.private.json",
+        "sha256": "0cee3415e1d83994271a2721a851a9ca48fc3608b4e41f699b57ce07b24ffa53",
+        "status": "passed",
+        "phase": "queue-after",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "output_sha256": "7de29f5b63b2be1b63337ba7739ab9aa4915c1bc19018f48f51e4dff96b7580a",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-queue-before.private.json",
+        "sha256": "f787d1ab14b9b8593d65308bca6d00b2251f6fcdfa7862edf8896e37f16f8760",
+        "status": "passed",
+        "phase": "queue-before",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "output_sha256": "3eed226fae6e1a700b2bcc4b50a6fb7a4f2ad48ea3fae1d5efa492501a6ce239",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-start.private.json",
+        "sha256": "6ac8cba619d53dd66a6f12df03d7441455267c7c714a16f6d340a7b1ab159b94",
+        "status": "passed",
+        "phase": "start",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "output_sha256": "37150066e439e9772cd8091ddcf31745239286adb45899d58fcc132dbaa72717",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-stop.private.json",
+        "sha256": "77156979459623dbb25e9e9af6ddbd74577900d6bfffa05f1715602ebf3bbfc2",
+        "status": "passed",
+        "phase": "stop",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "output_sha256": "5e89a33d82c244e1fbe889aa1430b588879b3b2b3a518165c0de8dc56c7ecceb",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-verify.private.json",
+        "sha256": "37ab1f177a5ae1d7dd975c8f9212800e656a2835341a1f96c1f50ac89f33e8ca",
+        "status": "failed",
+        "phase": "verify",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 1,
+        "output_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "log_sha256": "996e4896a0819f621c0a165fd6322023f042523a33e968c104ae6e878fdeccce"
+      },
+      {
+        "artifact": "r14-proposals-continuation-cancel-after-preparation-r14-worker.private.json",
+        "sha256": "2fe4a4c57116ede8bacc33613930d553a1ca522ee5516d24827dff568e919592",
+        "status": "burst_exited",
+        "case": "cancel-after-preparation-r14",
+        "exit_code": 0,
+        "log_sha256": "03f1b9eb7b6e898a226b84f3e2e3edaed35dfe827c9f81e560dc06cc429a615e"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-checkpoint.private.json",
+        "sha256": "028b8a2a084daf08ddb4dd2e10626d04c47bf3c3404c20dbe40ed1fd22397222",
+        "status": "passed",
+        "phase": "checkpoint",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "80f958fa633903b44c3bde9127bd8b75a0babc136933d352088f86b910e4abe7",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-natural-window-0.private.json",
+        "sha256": "e73c3b62005a4e5e1cb3211406bf16c0666f65d58b3dc3ff681d7186ec037c9c",
+        "status": "passed",
+        "phase": "natural-window-0",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "afef81c080adaf58a6404296c1b7b6ab55b0c2f3b47a0498291129f0c4249af7",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-natural-window-1.private.json",
+        "sha256": "f18f40d6b8b3ef292a24ecf6284c34657a0f8d54d47742c06f08a065886e400f",
+        "status": "passed",
+        "phase": "natural-window-1",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "ce3f31ba314c5276be7c3d5733b9b62e79fdbb486b7e5a7377347b05146f8a85",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-natural-window-2.private.json",
+        "sha256": "0b66c5088ff2600a5541340d56ee96b1d291d85db4576183a206630586832271",
+        "status": "passed",
+        "phase": "natural-window-2",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "1e8da087464603d9b15c867da25e57922f7b54f4ed742d43809d7f61f4127f31",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-natural-window-3.private.json",
+        "sha256": "f2dc64d6ac0c46dab51490601e3416a453fc8bc7ffc8d52738b93ad4b3bae452",
+        "status": "passed",
+        "phase": "natural-window-3",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "2b4d8ad7bab946cc23d6df7d92a99a012ffb9184de4b02474a314707113cadc9",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-natural-window-4.private.json",
+        "sha256": "0793a88ace8387b59662031291d5f0b07231b7c70083bc4ae28f22152a1e92ce",
+        "status": "passed",
+        "phase": "natural-window-4",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "d6192327e1acdf37d815decdc47d79f65191a7b9b770bf763cad4d595dcb3b85",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-queue-after.private.json",
+        "sha256": "e133fc399d836a67c4e857a185d6efcd9dad6da4b3988b10c13899a476dcfc6e",
+        "status": "passed",
+        "phase": "queue-after",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "9b9109cf81ac2944774735475b6dffb9738895e7a5d3851e91c00fa98723e942",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-queue-before.private.json",
+        "sha256": "4485c8eb14c976d44a611633eafc4fc168068d73b4cca92123b2fb658bd97c40",
+        "status": "passed",
+        "phase": "queue-before",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "7afb1346ff0d6c7c1157393374df32817782a72022db9b5b7cc25f36d67cfd90",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-start.private.json",
+        "sha256": "942f8ceab3480703adddc6823e56ea40f17c1a57ef27a462e24804ad9392cbb4",
+        "status": "passed",
+        "phase": "start",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "6a19d02511521d0f55bbfdb4d712eea3abca9406dd3b8feaf3434f5a08eacbe0",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-verify.private.json",
+        "sha256": "a6625a303c1150f04eeb4a8dd2b2a191dafad6ce68f787d27164bc88f0d63c20",
+        "status": "passed",
+        "phase": "verify",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "output_sha256": "812445ea9601fe647a389fab6bde85a6aeec26c552f90c207670e4e55a2b39b6",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-checkpoint-rollback-r14-worker.private.json",
+        "sha256": "0370706ca6e7658c81d9afd2066b6d6e3557f6eb67360dad9af547c030028201",
+        "status": "burst_exited",
+        "case": "checkpoint-rollback-r14",
+        "exit_code": 0,
+        "log_sha256": "36e36bf454485f05f20f1aa467e876f626bd031a2ac7621e648524e81d2d4fed"
+      },
+      {
+        "artifact": "r14-proposals-continuation-estimate-r14-queue-after.private.json",
+        "sha256": "ac05e357e4fa07f2b90e19dc1496ee0609a69a17b73222effcb02a7f389e41f9",
+        "status": "passed",
+        "phase": "queue-after",
+        "case": "estimate-r14",
+        "exit_code": 0,
+        "output_sha256": "6deaca33cd629c562da8e5f02e3bf538b41fa6f9b6a9b3c2e0f5d5021da3339e",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-estimate-r14-queue-before.private.json",
+        "sha256": "e81190b7a6cdb4cc086c5fd29b7b60a8d3a4fe46da99d9440d0ae2c773cb5a3b",
+        "status": "passed",
+        "phase": "queue-before",
+        "case": "estimate-r14",
+        "exit_code": 0,
+        "output_sha256": "83ccc661942fb7b59d449c972bfc62d64ec8f37a51c2d015f8cfa99b79b5e4cb",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-estimate-r14-start.private.json",
+        "sha256": "e179f289684e148abd39c857e4927908b372f759af08d8d68d010c0ebc1e7209",
+        "status": "passed",
+        "phase": "start",
+        "case": "estimate-r14",
+        "exit_code": 0,
+        "output_sha256": "8389130089e1a27292658cca65f1f14e25245dfe629abf799aada86593be7d7b",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-estimate-r14-verify.private.json",
+        "sha256": "309e4099e6992f263dd05e069d5a25cf84e2e6a49cfe1f4c0d6659def37d181e",
+        "status": "passed",
+        "phase": "verify",
+        "case": "estimate-r14",
+        "exit_code": 0,
+        "output_sha256": "57f9d971f196821d768d00f87d3cd280c1ca656a7493195ff197490141ad7905",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-estimate-r14-worker.private.json",
+        "sha256": "fba469028a66bbd3a8e8ac6cfe74c7f567367a212f69fa5687132818a57fa697",
+        "status": "burst_exited",
+        "case": "estimate-r14",
+        "exit_code": 0,
+        "log_sha256": "5e31e1ed4b9af82a8472fb4fcf0adf663e3b0f96c6a03931332551fe6708fbb3"
+      },
+      {
+        "artifact": "r14-proposals-continuation-finish.private.json",
+        "sha256": "c85ea8867175fe62d1c34b410d137c76520115b4c9692f0676f1221087942074",
+        "status": "passed",
+        "phase": "finish",
+        "case": null,
+        "exit_code": 0,
+        "output_sha256": "36f4b2142b2a8f94ea026a35e9bf5ce0859aaa44d22ea5c25e7f2ab88e3e2536",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-prepare.private.json",
+        "sha256": "1674bbb2ad37405c6aec04ce6b756e000d6f5694e72ea466a70f9b94ef4455c0",
+        "status": "passed",
+        "phase": "prepare",
+        "case": null,
+        "exit_code": 0,
+        "output_sha256": "799d0bca81230a32186e9ac4b604c3eb7ae8c3426d46c984dc6f06912a2c4d97",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-reconcile.private.json",
+        "sha256": "9ab975c7a56f8ea086ab8b1a302f7ac6139bbe5ddaaa5a82f79aa647974e3829",
+        "status": "passed",
+        "phase": "reconcile",
+        "case": null,
+        "exit_code": 0,
+        "output_sha256": "10b0dc0678d7ec9339310040db24ef0dfa7481cc9afee64d2e0444fa705ae46e",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-scope-r14-queue-after.private.json",
+        "sha256": "d1bb3a20240f7b5696513d93cc3f044dd4e1d44a53527e60908ca7e77390ff09",
+        "status": "passed",
+        "phase": "queue-after",
+        "case": "scope-r14",
+        "exit_code": 0,
+        "output_sha256": "b5bd448bc50dc8479a33cdb4b3b6e04cea6935e012008aa0e2097e958e63698e",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-scope-r14-queue-before.private.json",
+        "sha256": "8bec80fac8fdca9f2d812f4e63c4bce8747247cbc05ed0e1bb5f850fb4f7eed4",
+        "status": "passed",
+        "phase": "queue-before",
+        "case": "scope-r14",
+        "exit_code": 0,
+        "output_sha256": "669dcff252b6c0fac16d563b4e7f62c849bb80bc3372b63be3e2f88b5779c08c",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-scope-r14-start.private.json",
+        "sha256": "d6ed9140771b0ce05846ac80aa60ac13b0e26d96946cfcdfb1911b3584eec96c",
+        "status": "passed",
+        "phase": "start",
+        "case": "scope-r14",
+        "exit_code": 0,
+        "output_sha256": "264df4d62f05969a337d074ca038212f59c9642be46b4aa2092d7d01afbb6317",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-scope-r14-verify.private.json",
+        "sha256": "02241034d5dcfa57fc23ab84a397971ade739e9a6d74c4d178de144c116696a4",
+        "status": "passed",
+        "phase": "verify",
+        "case": "scope-r14",
+        "exit_code": 0,
+        "output_sha256": "4afd778675473704f9f7329d52033937a5ce9352517d324ce2e23e4473deb69f",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-scope-r14-worker.private.json",
+        "sha256": "2963a2df8fafc439728e6429c0eacf768791e7ab36b86d31818da9d38fcd4a44",
+        "status": "burst_exited",
+        "case": "scope-r14",
+        "exit_code": 0,
+        "log_sha256": "66e81c607866ac0015dedb7b0907304996eae273a5a5f4ba390fca128d9e23f1"
+      },
+      {
+        "artifact": "r14-proposals-continuation-successors.private.json",
+        "sha256": "8df2caeb402f530aa2fe91850eee426933b19a3c0a3437db7cb027de8891b766",
+        "status": "passed",
+        "phase": "successors",
+        "case": null,
+        "exit_code": 0,
+        "output_sha256": "726d56c376da862b92c5c77e1051d14ed2e601cf0a25a5e90b04ab0b1ac287db",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "artifact": "r14-proposals-continuation-targets.private.json",
+        "sha256": "4e064dc7bf772947de1011e5aa3f6cd212a016a42bf8b8e788b55d5b475f6445",
+        "status": "passed",
+        "phase": "targets",
+        "case": null,
+        "exit_code": 0,
+        "output_sha256": "654be6f5bc74525d393aaefc8690fa7dd22c454dacea0ba40a16edef1d326ca1",
+        "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "actual_capture": {
+    "status": "passed",
+    "screenshots": 9,
+    "api_gets": 23,
+    "font_responses_200": 15,
+    "browser_or_resource_errors": 0,
+    "business_commands": 0,
+    "before_observation_sha256": "daad4d99afe64f428a67a3fc7a404e4b7f3d2e1f4698a7b685137aa753cdbd3f",
+    "after_preservation_sha256": "0d044961e315a24007f11e2c3b5dc296274af3c2062b86d0446ec6521c6fa54b",
+    "details": "ui/verification.json"
+  },
+  "retained_failures": [
+    {
+      "kind": "native_prerequisites",
+      "detail": "Two exact prerequisite attempts failed, with full rollback independently verified before a separately audited continuation."
+    },
+    {
+      "kind": "native_original_request",
+      "detail": "First commercial target request returned 403 because ERPNext requires Account access. Same original UUID/payload used in a separately declared continuation after a select-only fixture grant; no accounting write permission."
+    },
+    {
+      "kind": "wire_contract",
+      "detail": "Native Frappe auxiliary response messages violated the closed envelope. Four native response regressions qualify the canonical wire correction."
+    },
+    {
+      "kind": "unit_environment",
+      "detail": "Original full unit attempt had 195 errors:192 explicit ENOSPC and three renderer failures. All835 units passed after verified evidence relocation; integration56 retained."
+    },
+    {
+      "kind": "browser_environment",
+      "detail": "Original font-serving configuration failure retained; later complete run219passed/oneTargetcrashed; exact isolated case passed unchanged. No single fresh220/220 claim."
+    },
+    {
+      "kind": "driver_verifier_misuse",
+      "detail": "Root called success-only verify on the already verified cancellation case. ValueError occurred before phase entry or writes; original failure retained. Distinct cancellation verifier, queue no-op, finish and reconciliation passed."
+    }
+  ],
+  "limits": [
+    "Deterministic preparation only; live Ricky model and QuickBooks not connected.",
+    "Explicit human business draft save remains next Stage C work.",
+    "No baseline acceptance, issuance, distribution, award, finance effect or native master creation tool.",
+    "Bounded checkpoint recovery does not establish OS-kill, Redis-loss or restored-site recovery.",
+    "Isolated runtime only; main source, mount and process identity unchanged."
+  ],
+  "main_container_id": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3",
+  "main_started_at": "2026-10-15T15:11:47.70663337Z",
+  "main_changed": false
+}

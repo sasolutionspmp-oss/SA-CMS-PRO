@@ -163,9 +163,15 @@ def decode_run_authority(run):
     authority = decode_authority(run["authority"])
     expected = {"company": authority.company, "user": authority.user, "person": authority.person}
     if type(authority) is CompanyAuthority:
+        if run.get("request_kind") == "deterministic-proposal-v1":
+            from .company_proposal_contracts import DeterministicProposalRequest
+            request = DeterministicProposalRequest.from_value(run.get("request"))
+            kind = "deterministic-proposal-v1"
+        else:
+            request = DeterministicReadRequest.from_value(run.get("request"))
+            kind = READ_KIND
         expected.update(id=authority.run_id, scope_type="Company", project=None,
-            request_kind=READ_KIND, original_session_reference=authority.session_reference)
-        request = DeterministicReadRequest.from_value(run.get("request"))
+            request_kind=kind, original_session_reference=authority.session_reference)
         if request.selection_digest() != authority.selection_digest:
             _fail("The stored original read selection no longer matches its authority binding.")
     else:

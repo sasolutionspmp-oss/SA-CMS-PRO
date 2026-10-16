@@ -1,0 +1,59 @@
+"""Explicit deterministic Company suggestions; no apply/write endpoint."""
+from cipher_aec.api.transport import endpoint
+from cipher_aec.governance.commands import run_company_command
+from cipher_aec.governance.history import append_company_event
+
+from .company_proposal_contracts import START_COMMAND, CANCEL_COMMAND, DeterministicProposalRequest
+from .company_proposal_service import build_service
+from .company_service import domain_errors
+
+
+@endpoint(methods=["POST"])
+@domain_errors
+def start_proposal(company, request, operation_id):
+    request = DeterministicProposalRequest.from_value(request)
+    service = build_service()
+    def effect(actor, record):
+        result = service.start_proposal(company, request.binding(), operation_id)
+        append_company_event(actor=actor, company=company, event="ricky.company.proposal.start.accepted",
+            subject_type="Cipher Ricky Run", subject_id=result["id"], operation_id=operation_id,
+            details={"action": result["action"], "status": result["status"]})
+        return result
+    result = run_company_command(company=company, operation_id=operation_id, command=START_COMMAND,
+        payload={"request": request.binding()}, ability="ricky.run", effect=effect)
+    if not result["operation"]["replayed"]:
+        from .api import _dispatch
+        _dispatch(result["id"])
+    return result
+
+
+@endpoint()
+@domain_errors
+def get_run(company, run_id):
+    return build_service().get_run(company, run_id)
+
+
+@endpoint()
+@domain_errors
+def run_events(company, run_id):
+    return {"items": build_service().events(company, run_id)}
+
+
+@endpoint()
+@domain_errors
+def get_proposal(company, proposal_id):
+    return build_service().get_proposal(company, proposal_id)
+
+
+@endpoint(methods=["POST"])
+@domain_errors
+def cancel_run(company, run_id, operation_id):
+    service = build_service()
+    def effect(actor, record):
+        result = service.cancel(company, run_id)
+        append_company_event(actor=actor, company=company, event="ricky.company.proposal.stop.accepted",
+            subject_type="Cipher Ricky Run", subject_id=result["id"], operation_id=operation_id,
+            details={"status": result["status"], "cancel_requested": result["cancel_requested"]})
+        return result
+    return run_company_command(company=company, operation_id=operation_id, command=CANCEL_COMMAND,
+        payload={"run_id": run_id}, ability="ricky.run", effect=effect)

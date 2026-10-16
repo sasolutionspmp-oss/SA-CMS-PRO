@@ -43,10 +43,18 @@ def before_request():
 def after_request(response, request):
     product_route = request.path.startswith("/api/method/cipher_aec.")
     denied = bool(getattr(frappe.local, "cipher_boundary_denied", False))
-    if response.status_code < 400 or not (product_route or denied):
+    if not (product_route or denied):
         return
     original = response.get_json(silent=True) or {}
-    if isinstance(original.get("message"), dict) and original["message"].get("schema") == "cipher.api.v1":
+    if isinstance(original, dict) and isinstance(original.get("message"), dict) and original["message"].get("schema") == "cipher.api.v1":
+        # Frappe serializes native msgprint/error metadata after our endpoint
+        # returns. Keep the published canonical envelope as the only wire body;
+        # internal native messages must not bypass its disclosure policy.
+        response.set_data(json.dumps({"message": original["message"]}))
+        response.content_type = "application/json"
+        response.headers["Cache-Control"] = "private, no-store"
+        return
+    if response.status_code < 400:
         return
     if denied:
         error = DomainError("route_unavailable", "Use Cipher's authorized application actions for this work.", 403)
