@@ -12,6 +12,8 @@ The original failed request and prerequisite attempts remain retained. A separat
 
 Independent readback confirms all fourteen financial table inventories and the three existing Projects are unchanged, with no active Run, queue job, started job or worker left. Main remains on its separately qualified release. The live Ricky model and QuickBooks are unconnected; explicit human draft-save commands are the next stage. No business application, acceptance, issuance, distribution, award or accounting effect is enabled here.
 
+The [fresh hosted CI](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/38882030414) subsequently passed all 25 stages, including complete backend/browser suites and eight native workflows. This later run is recorded in [hosted-ci.json](hosted-ci.json); earlier local composed results and failures remain unchanged.
+
 - [Qualification, native phase hashes and retained failures](qualification.json)
 - [Backend qualification](backend-qualification.json)
 - [Browser qualification](browser-qualification.json)
