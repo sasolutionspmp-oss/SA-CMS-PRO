@@ -1,4 +1,4 @@
-export type { Session, Project, Task, HistoryItem, ApprovalPacket, ApprovalList, ApprovalCommandResponse, ApprovalExecutionResponse } from './contracts.generated';
+export type { Session, Project, Task, CurrentTask, TaskControlResponse, Person, TaskChoices, CreateTaskRequest, CreateTaskResponse, AssignTaskRequest, UpdateTaskStatusRequest, HistoryItem, ApprovalPacket, ApprovalList, ApprovalCommandResponse, ApprovalExecutionResponse } from './contracts.generated';
 export interface Collection<T> { items: T[]; total?: number | null; next_cursor?: string | null; limit?: number; count_mode?: string; }
 import type { CompanyDocument } from './company-documents.generated';
 export interface ProjectDocumentRecord {

@@ -1,15 +1,16 @@
-import { useState } from 'react';
-import { Table, TableHeaderRow, TableHeaderCell, TableRow, TableCell, Bar, Breadcrumbs, BreadcrumbsItem, Button, Dialog, Input, Label, Link, MessageStrip, ObjectPage, ObjectPageHeader, ObjectPageSection, ObjectPageTitle, TextArea, Title, Toolbar, ToolbarButton, ToolbarSpacer } from '@ui5/webcomponents-react';
-import { api, ApiError } from './api/client';
-import type { Project, Task } from './api/types';
+import { useEffect, useState } from 'react';
+import { Breadcrumbs, BreadcrumbsItem, Button, MessageStrip, ObjectPage, ObjectPageHeader, ObjectPageSection, ObjectPageTitle, Title, Toolbar, ToolbarButton, ToolbarSpacer } from '@ui5/webcomponents-react';
+import { api } from './api/client';
+import type { Project } from './api/types';
 import { date, human, useResource } from './hooks';
 import { Empty, Fact, Failure, Loading, Pagination, Status } from './components';
 import { DocumentRegister } from './Documents';
 import Approvals from './Approvals';
+import { NewTask, TaskDetails, TaskRegister } from './Tasks';
 
-export default function ProjectDetail({ projectId, company, navigate, refreshProjects, onContext, openRicky }: {
+export default function ProjectDetail({ projectId, company, navigate, refreshProjects, onContext, openRicky, onLockedChange }: {
   projectId: string; company: string; navigate: (path: string) => void; refreshProjects: () => void;
-  onContext: (project: Project) => void; openRicky: () => void;
+  onContext: (project: Project) => void; openRicky: () => void; onLockedChange: (locked: boolean) => void;
 }) {
   const project = useResource(`${company}/${projectId}`, signal => api.project(company, projectId, signal));
   const [taskCursor, setTaskCursor] = useState<string>();
@@ -20,13 +21,23 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
   const history = useResource(`${company}/${projectId}/history/${historyCursor ?? ''}`, signal => api.history(company, projectId, signal, historyCursor));
   const documents = useResource(`${company}/${projectId}/documents`, signal => api.documents(company, projectId, signal));
   const [createOpen, setCreateOpen] = useState(false);
+  const [lastProject, setLastProject] = useState<Project>();
   const [notice, setNotice] = useState('');
-  if (project.loading && !project.data) return <Loading label="Opening project workspace…" />;
-  if (project.error) return <div className="page"><Failure error={project.error} onRetry={project.refresh} /></div>;
-  if (!project.data) return null;
-  const current = project.data;
+  const [selectedTask, setSelectedTask] = useState<string>();
+  const [createLocked, setCreateLocked] = useState(false); const [detailLocked, setDetailLocked] = useState(false);
+  useEffect(() => { onLockedChange(createLocked || detailLocked); }, [createLocked, detailLocked, onLockedChange]);
+  useEffect(() => () => onLockedChange(false), [onLockedChange]);
+  useEffect(() => { if (project.data) setLastProject(project.data); }, [project.data]);
+  const transientProjectError = Boolean(project.error && ![401, 403, 404].includes(project.error.status));
+  // A transient refresh cannot discard an authored create draft. Current access
+  // denials still remove the cached project instead of exposing it as current.
+  const current = project.data || (createOpen && (!project.error || transientProjectError) ? lastProject : undefined);
+  if (project.loading && !current) return <Loading label="Opening project workspace…" />;
+  if (project.error && !current) return <div className="page"><Failure error={project.error} onRetry={project.refresh} /></div>;
+  if (!current) return null;
   const refresh = () => { setTaskCursor(undefined); setTaskPages([]); setHistoryCursor(undefined); setHistoryPages([]); project.refresh(); tasks.refresh(); history.refresh(); documents.refresh(); refreshProjects(); };
   return <>
+    {project.error && <div className="page"><Failure error={project.error} onRetry={project.refresh} /></div>}
     <ObjectPage className="project-object-page" titleArea={<ObjectPageTitle
       header={<h1>{current.name}</h1>} subHeader={<span className="caption">{current.id} · {current.company}</span>}
       breadcrumbs={<Breadcrumbs><BreadcrumbsItem onClick={() => navigate('/projects')}>Projects</BreadcrumbsItem><BreadcrumbsItem>{current.name}</BreadcrumbsItem></Breadcrumbs>}
@@ -39,14 +50,7 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
       <ObjectPageSection id="project-tasks" titleText="Tasks">
         <div className="section-body"><Toolbar design="Transparent"><Title level="H2">Project work</Title><ToolbarSpacer />{current.capabilities?.includes('task.create') && <Button icon="add" design="Emphasized" onClick={() => setCreateOpen(true)}>New task</Button>}</Toolbar>
           {notice && <MessageStrip design="Positive" onClose={() => setNotice('')}>{notice}</MessageStrip>}
-          {tasks.loading ? <Loading label="Loading project tasks…" /> : tasks.error ? <Failure error={tasks.error} onRetry={tasks.refresh} /> : tasks.data?.items.length ? <Table accessibleName="Project tasks" overflowMode="Scroll" headerRow={<TableHeaderRow>
-            <TableHeaderCell width="42%" minWidth="16rem">Task</TableHeaderCell><TableHeaderCell width="10rem">Status</TableHeaderCell><TableHeaderCell minWidth="15rem">Description</TableHeaderCell>
-          </TableHeaderRow>}>
-            {tasks.data.items.map(task => <TableRow key={task.id} rowKey={task.id}>
-              <TableCell><div className="record-cell"><strong>{task.subject}</strong><span>{task.id}</span></div></TableCell>
-              <TableCell><Status value={task.status} /></TableCell><TableCell><span>{task.description || 'No description'}</span></TableCell>
-            </TableRow>)}
-          </Table> : <Empty title="No tasks yet" icon="task">Create a task or ask Ricky to propose one from a project source.</Empty>}
+          {tasks.loading ? <Loading label="Loading project tasks…" /> : tasks.error ? <Failure error={tasks.error} onRetry={tasks.refresh} /> : tasks.data?.items.length ? <TaskRegister items={tasks.data.items} onOpen={setSelectedTask} /> : <Empty title="No tasks yet" icon="task">Create a task or ask Ricky to propose one from a project source.</Empty>}
           <Pagination next={tasks.data?.next_cursor} total={tasks.data?.total} page={taskPages.length + 1} previous={Boolean(taskPages.length)} onNext={() => { if (tasks.data?.next_cursor) { setTaskPages([...taskPages, taskCursor]); setTaskCursor(tasks.data.next_cursor); } }} onPrevious={() => { setTaskCursor(taskPages[taskPages.length - 1]); setTaskPages(taskPages.slice(0, -1)); }} />
         </div>
       </ObjectPageSection>
@@ -65,30 +69,7 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
         </div>
       </ObjectPageSection>
     </ObjectPage>
-    <TaskDialog open={createOpen} project={current} onClose={() => setCreateOpen(false)} onSaved={task => { setNotice(`Task “${task.subject}” was created.`); setCreateOpen(false); refresh(); }} />
+    {createOpen && <NewTask project={current} onClose={() => setCreateOpen(false)} onSaved={task => { setNotice(`Task “${task.subject}” was created.`); setCreateOpen(false); refresh(); }} onRefresh={project.refresh} onLockedChange={setCreateLocked} />}
+    {selectedTask && <TaskDetails key={selectedTask} project={current} taskId={selectedTask} onClose={() => setSelectedTask(undefined)} onSaved={refresh} onAccessLost={tasks.refresh} onLockedChange={setDetailLocked} />}
   </>;
-}
-
-function TaskDialog({ open, project, onClose, onSaved }: { open: boolean; project: Project; onClose: () => void; onSaved: (task: Task) => void }) {
-  const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<ApiError>();
-  const [operationId, setOperationId] = useState(() => crypto.randomUUID());
-  const save = async () => {
-    if (!subject.trim() || saving) return;
-    setSaving(true); setError(undefined);
-    try {
-      const result = await api.createTask({ company: project.company, project: project.id, expected_version: project.version, operation_id: operationId, subject: subject.trim(), description: description.trim() });
-      setSubject(''); setDescription(''); setOperationId(crypto.randomUUID()); onSaved(result.task);
-    } catch (failure) { setError(failure as ApiError); }
-    finally { setSaving(false); }
-  };
-  const change = () => { setOperationId(crypto.randomUUID()); setError(undefined); };
-  return <Dialog open={open} headerText="Create project task" onClose={() => { if (!saving) onClose(); }} className="form-dialog" footer={<Bar design="Footer" endContent={<><Button design="Emphasized" disabled={!subject.trim() || saving} onClick={save}>{saving ? 'Saving…' : 'Create task'}</Button><Button disabled={saving} onClick={onClose}>Cancel</Button></>} />}>
-    <div className="dialog-form"><p className="caption">{project.name}</p>{error && <Failure error={error} />}
-      <Label for="task-subject" required>Task name</Label><Input id="task-subject" accessibleName="Task name" value={subject} maxlength={140} onInput={event => { setSubject(event.currentTarget!.value); change(); }} />
-      <Label for="task-description">Description</Label><TextArea id="task-description" accessibleName="Task description" value={description} rows={4} onInput={event => { setDescription(event.currentTarget!.value); change(); }} />
-    </div>
-  </Dialog>;
 }

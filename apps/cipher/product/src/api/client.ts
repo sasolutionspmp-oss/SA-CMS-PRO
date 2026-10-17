@@ -1,4 +1,4 @@
-import type { ApprovalPacket, ApprovalList, ApprovalCommandResponse, ApprovalExecutionResponse, Collection, DocumentCollection, DocumentPreview, DocumentRecord, DocumentRevision, HistoryItem, Project, Session, Task } from './types';
+import type { ApprovalPacket, ApprovalList, ApprovalCommandResponse, ApprovalExecutionResponse, AssignTaskRequest, Collection, CreateTaskRequest, CreateTaskResponse, DocumentCollection, DocumentPreview, DocumentRecord, DocumentRevision, HistoryItem, Project, Session, Task, TaskChoices, TaskControlResponse, UpdateTaskStatusRequest } from './types';
 
 const base = '/api/method/';
 const core = 'cipher_aec.api.v1.';
@@ -73,8 +73,12 @@ export const api = {
   projects: (company: string, signal?: AbortSignal, cursor?: string) => rpc<Collection<Project>>(`${core}projects`, { company, limit: 50, count_mode: 'exact', cursor }, false, signal),
   project: (company: string, project: string, signal?: AbortSignal) => rpc<Project>(`${core}project`, { company, project }, false, signal),
   tasks: (company: string, project: string, signal?: AbortSignal, cursor?: string) => rpc<Collection<Task>>(`${core}tasks`, { company, project, limit: 50, count_mode: 'exact', cursor }, false, signal),
+  task: (company: string, project: string, task: string, signal?: AbortSignal) => rpc<Task>(`${core}task`, { company, project, task }, false, signal),
+  taskChoices: (company: string, project: string, signal?: AbortSignal) => rpc<TaskChoices>(`${core}task_choices`, { company, project }, false, signal),
   history: (company: string, project: string, signal?: AbortSignal, cursor?: string) => rpc<Collection<HistoryItem>>(`${core}history`, { company, project, limit: 50, count_mode: 'exact', cursor }, false, signal),
-  createTask: (input: { company: string; project: string; operation_id: string; expected_version: string; subject: string; description?: string }) => rpc<{ task: Task; operation: { id: string; status: string; replayed: boolean }; project_version: string }>(`${core}create_task`, input, true),
+  createTask: (input: CreateTaskRequest) => rpc<CreateTaskResponse>(`${core}create_task`, { ...input }, true),
+  assignTask: (input: AssignTaskRequest) => rpc<TaskControlResponse>(`${core}assign_task`, { ...input }, true),
+  updateTaskStatus: (input: UpdateTaskStatusRequest) => rpc<TaskControlResponse>(`${core}update_task_status`, { ...input }, true),
   documents: (company: string, project: string, signal?: AbortSignal) => rpc<DocumentCollection>(`${docs}list_documents`, { company, project }, false, signal),
   document: (company: string, document_id: string, signal?: AbortSignal) => rpc<{ document: DocumentRecord; revisions: DocumentRevision[] }>(`${docs}get_document`, { company, document_id }, false, signal),
   preview: (company: string, revision_id: string, page: number, signal?: AbortSignal) => rpc<DocumentPreview>(`${docs}preview_revision`, { company, revision_id, page }, false, signal),

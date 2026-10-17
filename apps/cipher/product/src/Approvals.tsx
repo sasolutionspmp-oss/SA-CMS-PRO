@@ -70,7 +70,8 @@ export function ReviewPacket({ project, packetId, onClose, onChanged, navigate }
     finally { setSaving(false); }
   };
   if (packet?.action.startsWith('document.')) {
-    const target = `/projects/${encodeURIComponent(project.id)}/document-control/approvals/${encodeURIComponent(packet.id)}`;
+    const extended = packet.action === 'document.clause.apply.v1' || packet.action === 'document.lifecycle.v1' || packet.action === 'document.library.adopt.v1' && 'library_scope' in packet.review_manifest.effect;
+    const target = `/projects/${encodeURIComponent(project.id)}/document-control/${extended ? 'review' : 'approvals'}/${encodeURIComponent(packet.id)}`;
     return <Dialog open headerText="Document authorization" onClose={onClose} footer={<Bar endContent={<Button onClick={onClose}>Close review</Button>} />}><div className="dialog-form"><Title level="H3">{actionLabel(packet.action)}</Title><p>{packet.subject.label}</p>{navigate ? <Button design="Emphasized" onClick={() => navigate(target)}>Open document authorization</Button> : <a href={target}>Open document authorization</a>}</div></Dialog>;
   }
   if (packet?.action.startsWith('engineering.')) {
@@ -96,7 +97,7 @@ export function ReviewPacket({ project, packetId, onClose, onChanged, navigate }
   </Dialog>;
 }
 
-function actionLabel(action: ApprovalPacket['action']) { return action === 'document.issue.v1' ? 'Authorize document issue' : action === 'document.library.adopt.v1' ? 'Authorize Project adoption' : action === 'document.transmit.v1' ? 'Authorize internal distribution' : action === 'engineering.basis.check.v1' ? 'Check design basis' : action === 'engineering.calculation.check.v1' ? 'Check calculation' : action === 'engineering.deliverable.check.v1' ? 'Check deliverable' : action === 'engineering.rfi.authorize.v1' ? 'Authorize RFI response' : action === 'engineering.submittal.authorize.v1' ? 'Authorize submittal disposition' : action === 'engineering.distribute.v1' ? 'Authorize internal transmittal' : action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
+function actionLabel(action: ApprovalPacket['action']) { return action === 'document.clause.apply.v1' ? 'Review clause relationship' : action === 'document.lifecycle.v1' ? 'Review issued document change' : action === 'document.issue.v1' ? 'Authorize document issue' : action === 'document.library.adopt.v1' ? 'Authorize Project adoption' : action === 'document.transmit.v1' ? 'Authorize internal distribution' : action === 'engineering.basis.check.v1' ? 'Check design basis' : action === 'engineering.calculation.check.v1' ? 'Check calculation' : action === 'engineering.deliverable.check.v1' ? 'Check deliverable' : action === 'engineering.rfi.authorize.v1' ? 'Authorize RFI response' : action === 'engineering.submittal.authorize.v1' ? 'Authorize submittal disposition' : action === 'engineering.distribute.v1' ? 'Authorize internal transmittal' : action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
 export function ReviewFacts({ value }: { value: unknown }) {
   if (Array.isArray(value)) return <ol className="domain-review-list">{value.map((item, index) => <li key={index}><ReviewFacts value={item} /></li>)}</ol>;
   if (value && typeof value === 'object') return <dl className="approval-metadata">{Object.entries(value).map(([key, item]) => <div className="domain-review-field" key={key}><dt>{human(key)}</dt><dd><ReviewFacts value={item} /></dd></div>)}</dl>;

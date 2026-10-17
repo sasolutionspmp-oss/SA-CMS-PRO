@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: d542d9ec06d54c774fb935ff471c6c5c5ea253a26848e852a88271eb692a43af
+ * Source SHA-256: 3122fc1e7a4fd299cafd34a280b1d56322a1d9e1a58f2c0df47d0558933ca873
  * Regenerate: npm run generate:api
  */
 
@@ -50,7 +50,105 @@ export type EpCanonicaluuid = string;
  * via the `definition` "DocumentApprovalPacket".
  */
 export type DocumentApprovalPacket =
-  DocumentIssueSetApprovalPacket | DocumentAdoptionRequestApprovalPacket | DocumentTransmittalApprovalPacket;
+  | DocumentIssueSetApprovalPacket
+  | DocumentAdoptionRequestApprovalPacket
+  | DocumentTransmittalApprovalPacket
+  | DocumentRedlineApprovalPacket
+  | DocumentSharedAdoptionRequestApprovalPacket
+  | DocumentLifecycleRequestApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTarget".
+ */
+export type DcClauseTarget =
+  | {
+      id: string;
+      kind: "proposal_revision";
+      locator: string;
+      record_digest: string;
+    }
+  | {
+      id: string;
+      kind: "contract_revision";
+      locator: string;
+      record_digest: string;
+    }
+  | {
+      id: string;
+      kind: "document_revision";
+      locator: string;
+      record_digest: string;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetSnapshot".
+ */
+export type DcClauseTargetSnapshot =
+  | {
+      company: string;
+      id: string;
+      kind: "proposal_revision";
+      parent_id: string;
+      project: null;
+      record_digest: string;
+      scope_type: "Company";
+    }
+  | {
+      company: string;
+      id: string;
+      kind: "contract_revision";
+      parent_id: string;
+      project: string;
+      record_digest: string;
+      scope_type: "Project";
+    }
+  | {
+      company: string;
+      id: string;
+      kind: "document_revision";
+      parent_id: string;
+      project: string;
+      record_digest: string;
+      scope_type: "Project";
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibraryScope".
+ */
+export type DcLibraryScope =
+  | {
+      project: null;
+      scope_type: "Company";
+    }
+  | {
+      project: string;
+      scope_type: "Project";
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLifecycleDefinition".
+ */
+export type DcLifecycleDefinition = {
+  action: "withdraw" | "supersede";
+  issue_digest: string;
+  issue_id: string;
+  reason: string;
+  replacement_issue_digest: string | null;
+  replacement_issue_id: string | null;
+} & DcLifecycleDefinition1;
+export type DcLifecycleDefinition1 =
+  | {
+      action?: "withdraw";
+      replacement_issue_digest?: null;
+      replacement_issue_id?: null;
+      [k: string]: unknown;
+    }
+  | {
+      action?: "supersede";
+      replacement_issue_digest?: string;
+      replacement_issue_id?: string;
+      [k: string]: unknown;
+    };
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalExecutionResponse".
@@ -119,25 +217,136 @@ export type EngineeringPackageApprovalExecutionResponse =
  */
 export type DocumentApprovalExecutionResponse =
   | {
-      packet: DocumentIssueSetApprovalPacket;
       effect: {
         issue: DcIssue;
       };
       operation: Operation;
+      packet: DocumentIssueSetApprovalPacket;
     }
   | {
-      packet: DocumentAdoptionRequestApprovalPacket;
       effect: {
         adoption: DcAdoption;
       };
       operation: Operation;
+      packet: DocumentAdoptionRequestApprovalPacket;
     }
   | {
-      packet: DocumentTransmittalApprovalPacket;
       effect: {
         distribution: DcDistribution;
       };
       operation: Operation;
+      packet: DocumentTransmittalApprovalPacket;
+    }
+  | {
+      effect: {
+        clause_application: DcClauseApplication;
+      };
+      operation: Operation;
+      packet: DocumentRedlineApprovalPacket;
+    }
+  | {
+      effect: {
+        adoption: DcAdoption;
+      };
+      operation: Operation;
+      packet: DocumentSharedAdoptionRequestApprovalPacket;
+    }
+  | {
+      effect: {
+        lifecycle: DcLifecycle;
+      };
+      operation: Operation;
+      packet: DocumentLifecycleRequestApprovalPacket;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetKind".
+ */
+export type DcClauseTargetKind = "proposal_revision" | "contract_revision" | "document_revision";
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyRecord".
+ */
+export type DcCompanyRecord = DcCompanyRights | DcCompanyLibrary | DcCompanyLibraryRevision;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecord".
+ */
+export type DcRecord =
+  | DcRights
+  | DcLibrary
+  | DcLibraryRevision
+  | DcAdoptionRequest
+  | DcAdoption
+  | DcIssueSet
+  | DcIssue
+  | DcTransmittal
+  | DcDistribution
+  | DcEvidence
+  | DcClauseUse
+  | DcRedline
+  | DcClauseApplication
+  | DcSharedAdoptionRequest
+  | DcLifecycleRequest
+  | DcLifecycle;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReadClauseTargetRequest".
+ */
+export type DcReadClauseTargetRequest =
+  | {
+      company: string;
+      kind: "proposal_revision";
+      project: string;
+      record_id: string;
+    }
+  | {
+      company: string;
+      kind: "contract_revision";
+      project: string;
+      record_id: string;
+    }
+  | {
+      company: string;
+      kind: "document_revision";
+      project: string;
+      record_id: string;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticScope".
+ */
+export type SemanticScope =
+  | {
+      company: string;
+      scope_type: "Company";
+      project: null;
+    }
+  | {
+      company: string;
+      scope_type: "Project";
+      project: string;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticSource".
+ */
+export type SemanticSource =
+  | {
+      document_id: string;
+      revision_id: string;
+      source_sha256: string;
+      selection: "working" | "issued";
+      adoption_id: null;
+      adoption_digest: null;
+    }
+  | {
+      document_id: string;
+      revision_id: string;
+      source_sha256: string;
+      selection: "adopted";
+      adoption_id: string;
+      adoption_digest: string;
     };
 
 /**
@@ -219,6 +428,14 @@ export interface Task {
   project: string;
   version: string;
   description: string;
+  /**
+   * Current reads and new commands supply canonical active assignees. Historical immutable receipts may omit this additive field.
+   */
+  assignees?: Person[];
+  /**
+   * Current native assignment reconciliation state; historical immutable receipts may omit this additive field.
+   */
+  assignment_conflict?: boolean;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2429,98 +2646,29 @@ export interface EpDeliverableDefinition {
  * via the `definition` "DocumentIssueSetApprovalPacket".
  */
 export interface DocumentIssueSetApprovalPacket {
-  id: string;
-  company: string;
-  project: string;
   action: "document.issue.v1";
-  subject: {
-    id: string;
-    type: "Cipher Document Issue Set";
-    label: string;
-  };
-  requester: Person;
-  created_at: string;
-  expires_at: string;
-  manifest_hash: string;
-  source_version: string;
-  policy: {
-    id: string;
-    label: string;
-    synthetic: true;
-  };
-  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
-  decisions: ApprovalDecision[];
   actions: {
     can_decide: boolean;
     can_execute: boolean;
     can_withdraw: boolean;
     disabled_reason: string | null;
   };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
   review_manifest: {
-    subject: {
-      doctype: "Cipher Document Issue Set";
-      name: string;
-      label: string;
-    };
-    /**
-     * @minItems 1
-     * @maxItems 1
-     */
-    sources: [
-      {
-        /**
-         * @minItems 1
-         * @maxItems 8
-         */
-        artifacts:
-          | [DcArtifact]
-          | [DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
-        /**
-         * @minItems 1
-         * @maxItems 8
-         */
-        rights:
-          | [DcRights]
-          | [DcRights, DcRights]
-          | [DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
-      }
-    ];
     effect: {
-      schema: "cipher.document.authorization.v1";
       action: "document.issue.v1";
-      subject_kind: "issue_set";
-      subject_id: string;
-      subject_digest: string;
-      /**
-       * @minItems 1
-       * @maxItems 8
-       */
-      artifacts:
-        | [DcArtifact]
-        | [DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
-      no_effects: DcNoEffects;
-      electronic_signature: false;
-      professional_seal: false;
-      external_delivery: false;
-      commercial_execution: false;
-      package_digest: string;
       /**
        * @minItems 0
        * @maxItems 8
@@ -2552,18 +2700,130 @@ export interface DocumentIssueSetApprovalPacket {
             DcExactReference,
             DcExactReference
           ];
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      commercial_execution: false;
+      electronic_signature: false;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      package_digest: string;
+      professional_seal: false;
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "issue_set";
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
+      }
+    ];
+    subject: {
+      doctype: "Cipher Document Issue Set";
+      label: string;
+      name: string;
     };
     summary: {
+      commercial_execution: false;
       definition: DcIssueDefinition;
+      external_delivery: false;
+      no_effects: DcNoEffects;
       purpose: null;
       required_response: null;
-      no_effects: DcNoEffects;
       rights_basis: "authored-declaration";
-      external_delivery: false;
-      commercial_execution: false;
     };
   };
   schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Document Issue Set";
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcExactReference".
+ */
+export interface DcExactReference {
+  id: string;
+  record_digest: string;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2577,6 +2837,19 @@ export interface DcArtifact {
   byte_length: number;
   mime_type: string;
   page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcNoEffects".
+ */
+export interface DcNoEffects {
+  commercial_change: false;
+  contract_change: false;
+  budget_change: false;
+  schedule_change: false;
+  quality_acceptance: false;
+  professional_certification: false;
+  external_transmission: false;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2608,24 +2881,31 @@ export interface DcRights {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
- * via the `definition` "DcNoEffects".
+ * via the `definition` "DcCompanyRights".
  */
-export interface DcNoEffects {
-  commercial_change: false;
-  contract_change: false;
-  budget_change: false;
-  schedule_change: false;
-  quality_acceptance: false;
-  professional_certification: false;
-  external_transmission: false;
-}
-/**
- * This interface was referenced by `undefined`'s JSON-Schema
- * via the `definition` "DcExactReference".
- */
-export interface DcExactReference {
+export interface DcCompanyRights {
+  allowed_purpose: string;
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  distribute_allowed: boolean;
+  evidence_artifact: DcArtifact;
   id: string;
-  record_digest: string;
+  ingest_allowed: boolean;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  predecessor: string | null;
+  project: null;
+  read_allowed: boolean;
+  restriction: string;
+  revision_number: number;
+  rights_basis: string;
+  rights_holder: string;
+  scope_type: "Company";
+  status: "authored_rights_basis";
+  valid_from: string | null;
+  valid_until: string | null;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2641,38 +2921,54 @@ export interface DcIssueDefinition {
  * via the `definition` "DocumentAdoptionRequestApprovalPacket".
  */
 export interface DocumentAdoptionRequestApprovalPacket {
-  id: string;
-  company: string;
-  project: string;
   action: "document.library.adopt.v1";
-  subject: {
-    id: string;
-    type: "Cipher Adoption Request";
-    label: string;
-  };
-  requester: Person;
-  created_at: string;
-  expires_at: string;
-  manifest_hash: string;
-  source_version: string;
-  policy: {
-    id: string;
-    label: string;
-    synthetic: true;
-  };
-  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
-  decisions: ApprovalDecision[];
   actions: {
     can_decide: boolean;
     can_execute: boolean;
     can_withdraw: boolean;
     disabled_reason: string | null;
   };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
   review_manifest: {
-    subject: {
-      doctype: "Cipher Adoption Request";
-      name: string;
-      label: string;
+    effect: {
+      action: "document.library.adopt.v1";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      commercial_execution: false;
+      electronic_signature: false;
+      external_delivery: false;
+      library_digest: string;
+      library_revision: string;
+      no_effects: DcNoEffects;
+      professional_seal: false;
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "adoption_request";
+      target_locator: string;
     };
     /**
      * @minItems 1
@@ -2698,55 +2994,74 @@ export interface DocumentAdoptionRequestApprovalPacket {
          * @maxItems 8
          */
         rights:
-          | [DcRights]
-          | [DcRights, DcRights]
-          | [DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
       }
     ];
-    effect: {
-      schema: "cipher.document.authorization.v1";
-      action: "document.library.adopt.v1";
-      subject_kind: "adoption_request";
-      subject_id: string;
-      subject_digest: string;
-      /**
-       * @minItems 1
-       * @maxItems 8
-       */
-      artifacts:
-        | [DcArtifact]
-        | [DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
-        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
-      no_effects: DcNoEffects;
-      electronic_signature: false;
-      professional_seal: false;
-      external_delivery: false;
-      commercial_execution: false;
-      library_revision: string;
-      library_digest: string;
-      target_locator: string;
+    subject: {
+      doctype: "Cipher Adoption Request";
+      label: string;
+      name: string;
     };
     summary: {
+      commercial_execution: false;
       definition: DcAdoptionDefinition;
+      external_delivery: false;
+      no_effects: DcNoEffects;
       purpose: null;
       required_response: null;
-      no_effects: DcNoEffects;
       rights_basis: "authored-declaration";
-      external_delivery: false;
-      commercial_execution: false;
     };
   };
   schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Adoption Request";
+  };
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2762,38 +3077,58 @@ export interface DcAdoptionDefinition {
  * via the `definition` "DocumentTransmittalApprovalPacket".
  */
 export interface DocumentTransmittalApprovalPacket {
-  id: string;
-  company: string;
-  project: string;
   action: "document.transmit.v1";
-  subject: {
-    id: string;
-    type: "Cipher Transmittal";
-    label: string;
-  };
-  requester: Person;
-  created_at: string;
-  expires_at: string;
-  manifest_hash: string;
-  source_version: string;
-  policy: {
-    id: string;
-    label: string;
-    synthetic: true;
-  };
-  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
-  decisions: ApprovalDecision[];
   actions: {
     can_decide: boolean;
     can_execute: boolean;
     can_withdraw: boolean;
     disabled_reason: string | null;
   };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
   review_manifest: {
-    subject: {
-      doctype: "Cipher Transmittal";
-      name: string;
-      label: string;
+    effect: {
+      action: "document.transmit.v1";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      channel: "internal";
+      commercial_execution: false;
+      electronic_signature: false;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      package_digest: string;
+      professional_seal: false;
+      /**
+       * @minItems 1
+       * @maxItems 30
+       */
+      recipients: [DcPerson, ...DcPerson[]];
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "transmittal";
     };
     /**
      * @minItems 1
@@ -2819,22 +3154,111 @@ export interface DocumentTransmittalApprovalPacket {
          * @maxItems 8
          */
         rights:
-          | [DcRights]
-          | [DcRights, DcRights]
-          | [DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
-          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
       }
     ];
+    subject: {
+      doctype: "Cipher Transmittal";
+      label: string;
+      name: string;
+    };
+    summary: {
+      commercial_execution: false;
+      definition: null;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      purpose: string;
+      required_response: string;
+      rights_basis: "authored-declaration";
+    };
+  };
+  schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Transmittal";
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcPerson".
+ */
+export interface DcPerson {
+  user: string;
+  person: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentRedlineApprovalPacket".
+ */
+export interface DocumentRedlineApprovalPacket {
+  action: "document.clause.apply.v1";
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
+  review_manifest: {
     effect: {
-      schema: "cipher.document.authorization.v1";
-      action: "document.transmit.v1";
-      subject_kind: "transmittal";
-      subject_id: string;
-      subject_digest: string;
+      action: "document.clause.apply.v1";
       /**
        * @minItems 1
        * @maxItems 8
@@ -2848,38 +3272,771 @@ export interface DocumentTransmittalApprovalPacket {
         | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
         | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
         | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
-      no_effects: DcNoEffects;
-      electronic_signature: false;
-      professional_seal: false;
-      external_delivery: false;
       commercial_execution: false;
-      package_digest: string;
-      /**
-       * @minItems 1
-       * @maxItems 30
-       */
-      recipients: [DcPerson, ...DcPerson[]];
-      channel: "internal";
+      electronic_signature: false;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      original_text: string;
+      professional_seal: false;
+      proposed_sha256: string;
+      proposed_text: string;
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "redline";
+      target: DcClauseTarget;
+      target_changed: false;
+      target_snapshot: DcClauseTargetSnapshot;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
+      }
+    ];
+    subject: {
+      doctype: "Cipher Redline Revision";
+      label: string;
+      name: string;
     };
     summary: {
-      definition: null;
-      purpose: string;
-      required_response: string;
-      no_effects: DcNoEffects;
-      rights_basis: "authored-declaration";
-      external_delivery: false;
       commercial_execution: false;
+      definition: null;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      purpose: null;
+      required_response: null;
+      rights_basis: "authored-declaration";
     };
   };
   schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Redline Revision";
+  };
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
- * via the `definition` "DcPerson".
+ * via the `definition` "DocumentSharedAdoptionRequestApprovalPacket".
  */
-export interface DcPerson {
-  user: string;
-  person: string;
+export interface DocumentSharedAdoptionRequestApprovalPacket {
+  action: "document.library.adopt.v1";
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
+  review_manifest: {
+    effect: {
+      action: "document.library.adopt.v1";
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      commercial_execution: false;
+      electronic_signature: false;
+      external_delivery: false;
+      library_digest: string;
+      library_revision: string;
+      library_scope: DcLibraryScope;
+      no_effects: DcNoEffects;
+      professional_seal: false;
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "adoption_request";
+      target_locator: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
+      }
+    ];
+    subject: {
+      doctype: "Cipher Adoption Request";
+      label: string;
+      name: string;
+    };
+    summary: {
+      commercial_execution: false;
+      definition: DcAdoptionDefinition;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      purpose: null;
+      required_response: null;
+      rights_basis: "authored-declaration";
+    };
+  };
+  schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Adoption Request";
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentLifecycleRequestApprovalPacket".
+ */
+export interface DocumentLifecycleRequestApprovalPacket {
+  action: "document.lifecycle.v1";
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  company: string;
+  created_at: string;
+  decisions: ApprovalDecision[];
+  expires_at: string;
+  id: string;
+  manifest_hash: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  project: string;
+  requester: Person;
+  review_manifest: {
+    effect: {
+      action: "document.lifecycle.v1";
+      /**
+       * @minItems 1
+       * @maxItems 16
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ]
+        | [
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact,
+            DcArtifact
+          ];
+      before: DcIssuedStandingBody;
+      commercial_execution: false;
+      definition: DcLifecycleDefinition;
+      document_id: string;
+      electronic_signature: false;
+      expected_version: string;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      professional_seal: false;
+      replacement: DcIssueReference | null;
+      schema: "cipher.document.authorization.v1";
+      subject_digest: string;
+      subject_id: string;
+      subject_kind: "lifecycle_request";
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 16
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ]
+          | [
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact,
+              DcArtifact
+            ];
+        /**
+         * @minItems 1
+         * @maxItems 16
+         */
+        rights:
+          | [DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [DcRights | DcCompanyRights, DcRights | DcCompanyRights, DcRights | DcCompanyRights]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ]
+          | [
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights,
+              DcRights | DcCompanyRights
+            ];
+      }
+    ];
+    subject: {
+      doctype: "Cipher Document Lifecycle Request";
+      label: string;
+      name: string;
+    };
+    summary: {
+      commercial_execution: false;
+      definition: DcLifecycleDefinition;
+      external_delivery: false;
+      no_effects: DcNoEffects;
+      purpose: null;
+      required_response: null;
+      rights_basis: "authored-declaration";
+    };
+  };
+  schema: "cipher.document.approval.v1";
+  source_version: string;
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  subject: {
+    id: string;
+    label: string;
+    type: "Cipher Document Lifecycle Request";
+  };
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssuedStandingBody".
+ */
+export interface DcIssuedStandingBody {
+  company: string;
+  current_issued: DcIssueReference | null;
+  document_id: string;
+  last_event: DcLifecycleEventReference | null;
+  original_issued: DcIssueReference | null;
+  project: string;
+  scope_type: "Project";
+  status: "not_issued" | "issued" | "withdrawn";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssueReference".
+ */
+export interface DcIssueReference {
+  issue_digest: string;
+  issue_id: string;
+  revision_id: string;
+  source_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLifecycleEventReference".
+ */
+export interface DcLifecycleEventReference {
+  id: string;
+  record_digest: string;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -3147,6 +4304,195 @@ export interface DcDistribution {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseApplication".
+ */
+export interface DcClauseApplication {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  checked_by_person: string;
+  commercial_execution: false;
+  company: string;
+  created_at: string;
+  decision_id: string;
+  effect_digest: string;
+  electronic_signature: false;
+  external_delivery: false;
+  id: string;
+  no_effects: DcNoEffects;
+  original_text: string;
+  packet_id: string;
+  parent_id: string;
+  professional_seal: false;
+  project: string;
+  proposed_sha256: string;
+  proposed_text: string;
+  scope_type: "Project";
+  status: "approved_relationship";
+  subject_digest: string;
+  subject_id: string;
+  target: DcClauseTarget;
+  target_changed: false;
+  target_snapshot: DcClauseTargetSnapshot;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLifecycle".
+ */
+export interface DcLifecycle {
+  action: "withdraw" | "supersede";
+  /**
+   * @minItems 1
+   * @maxItems 16
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ];
+  author_person: string;
+  author_user: string;
+  before: DcIssuedStandingBody;
+  checked_by_person: string;
+  commercial_execution: false;
+  company: string;
+  created_at: string;
+  decision_id: string;
+  document_id: string;
+  effect_digest: string;
+  electronic_signature: false;
+  external_delivery: false;
+  id: string;
+  no_effects: DcNoEffects;
+  packet_id: string;
+  parent_id: string;
+  predecessor: string | null;
+  professional_seal: false;
+  project: string;
+  reason: string;
+  replacement: DcIssueReference | null;
+  revision_number: number;
+  scope_type: "Project";
+  status: "withdrawn" | "superseded";
+  subject_digest: string;
+  subject_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "CompanyApprovalPacket".
  */
 export interface CompanyApprovalPacket {
@@ -3371,4 +4717,4686 @@ export interface EpCanonicalconversion {
   numerator: string;
   denominator: string;
   source: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "TaskChoices".
+ */
+export interface TaskChoices {
+  people: Person[];
+  statuses: ("Open" | "Working" | "Pending Review" | "Completed")[];
+  capabilities: ("task.assign" | "task.update")[];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "AssignTaskRequest".
+ */
+export interface AssignTaskRequest {
+  company: string;
+  project: string;
+  task: string;
+  expected_version: string;
+  operation_id: string;
+  assignee_person: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "UpdateTaskStatusRequest".
+ */
+export interface UpdateTaskStatusRequest {
+  company: string;
+  project: string;
+  task: string;
+  expected_version: string;
+  operation_id: string;
+  status: "Open" | "Working" | "Pending Review" | "Completed";
+}
+/**
+ * Current Task mutation result. Unlike historical Task receipts, active canonical assignment projection and reconciliation state are always present.
+ *
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "CurrentTask".
+ */
+export interface CurrentTask {
+  id: string;
+  subject: string;
+  status: string;
+  project: string;
+  version: string;
+  description: string;
+  /**
+   * Current reads and new commands supply canonical active assignees. Historical immutable receipts may omit this additive field.
+   */
+  assignees: Person[];
+  /**
+   * Current native assignment reconciliation state; historical immutable receipts may omit this additive field.
+   */
+  assignment_conflict: boolean;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "TaskControlResponse".
+ */
+export interface TaskControlResponse {
+  task: CurrentTask;
+  operation: Operation;
+  project_version: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcAdoptionRequest".
+ */
+export interface DcAdoptionRequest {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  definition: DcAdoptionDefinition;
+  id: string;
+  library_digest: string;
+  library_revision: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  project: string;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcArtifactInput".
+ */
+export interface DcArtifactInput {
+  revision_id: string;
+  source_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseSourceReference".
+ */
+export interface DcClauseSourceReference {
+  end: number;
+  excerpt_sha256: string;
+  page: number;
+  revision_id: string;
+  source_sha256: string;
+  start: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetResponse".
+ */
+export interface DcClauseTargetResponse {
+  target: DcClauseTargetSnapshot;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseUse".
+ */
+export interface DcClauseUse {
+  adoption_digest: string;
+  adoption_id: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  id: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  project: string;
+  purpose: string;
+  scope_type: "Project";
+  source_clause: DcQuotedClause;
+  status: "referenced";
+  target: DcClauseTarget;
+  target_changed: false;
+  target_snapshot: DcClauseTargetSnapshot;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcQuotedClause".
+ */
+export interface DcQuotedClause {
+  reference: DcClauseSourceReference;
+  text: string;
+  text_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyCreateLibraryRequest".
+ */
+export interface DcCompanyCreateLibraryRequest {
+  artifact: DcArtifactInput;
+  company: string;
+  definition: DcLibraryDefinition;
+  operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibraryDefinition".
+ */
+export interface DcLibraryDefinition {
+  category: "specification" | "contract_clause" | "reference";
+  change_reason: string;
+  discipline: string;
+  ownership: string;
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  tags:
+    | []
+    | [string]
+    | [string, string]
+    | [string, string, string]
+    | [string, string, string, string]
+    | [string, string, string, string, string]
+    | [string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string, string, string]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ];
+  title: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyCreateLibraryResponse".
+ */
+export interface DcCompanyCreateLibraryResponse {
+  history_id: string;
+  library: DcCompanyLibrary;
+  library_revision: DcCompanyLibraryRevision;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyLibrary".
+ */
+export interface DcCompanyLibrary {
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  current_revision: string;
+  id: string;
+  no_effects: DcNoEffects;
+  project: null;
+  revision_number: number;
+  scope_type: "Company";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyLibraryRevision".
+ */
+export interface DcCompanyLibraryRevision {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  definition: DcLibraryDefinition;
+  id: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  predecessor: string | null;
+  project: null;
+  revision_number: number;
+  scope_type: "Company";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcOperation".
+ */
+export interface DcOperation {
+  id: string;
+  replayed: boolean;
+  status: "succeeded";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyGetRecordRequest".
+ */
+export interface DcCompanyGetRecordRequest {
+  company: string;
+  kind: "rights" | "library" | "library_revision";
+  record_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyGetResponse".
+ */
+export interface DcCompanyGetResponse {
+  library_current: boolean | null;
+  record: DcCompanyRecord;
+  record_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyListRecordsRequest".
+ */
+export interface DcCompanyListRecordsRequest {
+  company: string;
+  count_mode?: "none";
+  cursor?: string | null;
+  kind: "rights" | "library" | "library_revision";
+  limit?: number;
+  parent_id?: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyListResponse".
+ */
+export interface DcCompanyListResponse {
+  count_mode: "none";
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: DcCompanyGetResponse[];
+  limit: number;
+  next_cursor: string | null;
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyReviseLibraryRequest".
+ */
+export interface DcCompanyReviseLibraryRequest {
+  artifact: DcArtifactInput;
+  company: string;
+  definition: DcLibraryDefinition;
+  expected_version: string;
+  library_id: string;
+  operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanyReviseLibraryResponse".
+ */
+export interface DcCompanyReviseLibraryResponse {
+  history_id: string;
+  library: DcCompanyLibrary;
+  library_revision: DcCompanyLibraryRevision;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanySetRightsRequest".
+ */
+export interface DcCompanySetRightsRequest {
+  company: string;
+  definition: DcRightsDefinition;
+  document_id: string;
+  expected_version: string | null;
+  operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRightsDefinition".
+ */
+export interface DcRightsDefinition {
+  allowed_purpose: string;
+  distribute_allowed: boolean;
+  evidence_artifact: DcArtifactInput;
+  ingest_allowed: boolean;
+  read_allowed: boolean;
+  restriction: string;
+  rights_basis: string;
+  rights_holder: string;
+  valid_from: string | null;
+  valid_until: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCompanySetRightsResponse".
+ */
+export interface DcCompanySetRightsResponse {
+  history_id: string;
+  operation: DcOperation;
+  rights: DcCompanyRights;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateAdoptionRequest".
+ */
+export interface DcCreateAdoptionRequest {
+  company: string;
+  definition: DcAdoptionDefinition;
+  library_digest: string;
+  library_revision: string;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateAdoptionResponse".
+ */
+export interface DcCreateAdoptionResponse {
+  adoption_request: DcAdoptionRequest;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateClauseUseRequest".
+ */
+export interface DcCreateClauseUseRequest {
+  adoption_digest: string;
+  adoption_id: string;
+  company: string;
+  operation_id: string;
+  project: string;
+  purpose: string;
+  source_clause: DcClauseSourceReference;
+  target: DcClauseTarget;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateClauseUseResponse".
+ */
+export interface DcCreateClauseUseResponse {
+  clause_use: DcClauseUse;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateIssueSetRequest".
+ */
+export interface DcCreateIssueSetRequest {
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  adoptions:
+    | []
+    | [DcExactReference]
+    | [DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  artifacts:
+    | []
+    | [DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ];
+  company: string;
+  definition: DcIssueDefinition;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateIssueSetResponse".
+ */
+export interface DcCreateIssueSetResponse {
+  history_id: string;
+  issue_set: DcIssueSet;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssueSet".
+ */
+export interface DcIssueSet {
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  adoptions:
+    | []
+    | [DcExactReference]
+    | [DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ];
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  definition: DcIssueDefinition;
+  id: string;
+  no_effects: DcNoEffects;
+  package_digest: string;
+  project: string;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateLibraryRequest".
+ */
+export interface DcCreateLibraryRequest {
+  artifact: DcArtifactInput;
+  company: string;
+  definition: DcLibraryDefinition;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateLibraryResponse".
+ */
+export interface DcCreateLibraryResponse {
+  history_id: string;
+  library: DcLibrary;
+  library_revision: DcLibraryRevision;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibrary".
+ */
+export interface DcLibrary {
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  current_revision: string;
+  id: string;
+  no_effects: DcNoEffects;
+  project: string;
+  revision_number: number;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibraryRevision".
+ */
+export interface DcLibraryRevision {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  definition: DcLibraryDefinition;
+  id: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  predecessor: string | null;
+  project: string;
+  revision_number: number;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateRedlineRequest".
+ */
+export interface DcCreateRedlineRequest {
+  clause_use_digest: string;
+  clause_use_id: string;
+  company: string;
+  expected_version: string | null;
+  operation_id: string;
+  project: string;
+  proposed_text: string;
+  reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateRedlineResponse".
+ */
+export interface DcCreateRedlineResponse {
+  history_id: string;
+  operation: DcOperation;
+  redline: DcRedline;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRedline".
+ */
+export interface DcRedline {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  clause_use_digest: string;
+  clause_use_id: string;
+  company: string;
+  created_at: string;
+  id: string;
+  no_effects: DcNoEffects;
+  original_text: string;
+  parent_id: string;
+  predecessor: string | null;
+  project: string;
+  proposed_sha256: string;
+  proposed_text: string;
+  reason: string;
+  revision_number: number;
+  scope_type: "Project";
+  status: "proposed";
+  target: DcClauseTarget;
+  target_changed: false;
+  target_snapshot: DcClauseTargetSnapshot;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateSharedAdoptionRequest".
+ */
+export interface DcCreateSharedAdoptionRequest {
+  company: string;
+  definition: DcAdoptionDefinition;
+  library_digest: string;
+  library_revision: string;
+  library_scope: DcLibraryScope;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateSharedAdoptionResponse".
+ */
+export interface DcCreateSharedAdoptionResponse {
+  adoption_request: DcSharedAdoptionRequest;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcSharedAdoptionRequest".
+ */
+export interface DcSharedAdoptionRequest {
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  author_person: string;
+  author_user: string;
+  company: string;
+  created_at: string;
+  definition: DcAdoptionDefinition;
+  id: string;
+  library_digest: string;
+  library_revision: string;
+  library_scope: DcLibraryScope;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  project: string;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateTransmittalRequest".
+ */
+export interface DcCreateTransmittalRequest {
+  company: string;
+  issue_digest: string;
+  issue_id: string;
+  operation_id: string;
+  project: string;
+  purpose: string;
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [string, ...string[]];
+  required_response: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateTransmittalResponse".
+ */
+export interface DcCreateTransmittalResponse {
+  history_id: string;
+  operation: DcOperation;
+  transmittal: DcTransmittal;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcTransmittal".
+ */
+export interface DcTransmittal {
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  author_person: string;
+  author_user: string;
+  channel: "internal";
+  company: string;
+  created_at: string;
+  id: string;
+  issue_digest: string;
+  issue_id: string;
+  no_effects: DcNoEffects;
+  package_digest: string;
+  parent_id: string;
+  project: string;
+  purpose: string;
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [DcPerson, ...DcPerson[]];
+  required_response: string;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcEvidence".
+ */
+export interface DcEvidence {
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  author_person: string;
+  author_user: string;
+  commercial_execution: false;
+  company: string;
+  created_at: string;
+  electronic_signature: false;
+  id: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  project: string;
+  scope_type: "Project";
+  statement: string;
+  status: "reported_received" | "reported_execution";
+  subject_digest: string;
+  subject_id: string;
+  subject_kind: "distribution" | "adoption";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcGetRecordRequest".
+ */
+export interface DcGetRecordRequest {
+  company: string;
+  kind:
+    | "rights"
+    | "library"
+    | "library_revision"
+    | "adoption_request"
+    | "adoption"
+    | "issue_set"
+    | "issue"
+    | "transmittal"
+    | "distribution"
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application"
+    | "lifecycle_request"
+    | "lifecycle";
+  project: string;
+  record_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcGetResponse".
+ */
+export interface DcGetResponse {
+  library_current: boolean | null;
+  record: DcRecord;
+  record_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLifecycleRequest".
+ */
+export interface DcLifecycleRequest {
+  /**
+   * @minItems 1
+   * @maxItems 16
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ]
+    | [
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact,
+        DcArtifact
+      ];
+  author_person: string;
+  author_user: string;
+  before: DcIssuedStandingBody;
+  company: string;
+  created_at: string;
+  definition: DcLifecycleDefinition;
+  expected_version: string;
+  id: string;
+  no_effects: DcNoEffects;
+  parent_id: string;
+  project: string;
+  replacement: DcIssueReference | null;
+  scope_type: "Project";
+  status: "working";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssuedStanding".
+ */
+export interface DcIssuedStanding {
+  company: string;
+  current_issued: DcIssueReference | null;
+  document_id: string;
+  last_event: DcLifecycleEventReference | null;
+  original_issued: DcIssueReference | null;
+  project: string;
+  scope_type: "Project";
+  status: "not_issued" | "issued" | "withdrawn";
+  version: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssuedStandingRequest".
+ */
+export interface DcIssuedStandingRequest {
+  company: string;
+  document_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssuedStandingResponse".
+ */
+export interface DcIssuedStandingResponse {
+  standing: DcIssuedStanding;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListPeopleRequest".
+ */
+export interface DcListPeopleRequest {
+  company: string;
+  count_mode?: "none";
+  cursor?: string | null;
+  limit?: number;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListRecordsRequest".
+ */
+export interface DcListRecordsRequest {
+  company: string;
+  count_mode?: "none";
+  cursor?: string | null;
+  kind:
+    | "rights"
+    | "library"
+    | "library_revision"
+    | "adoption_request"
+    | "adoption"
+    | "issue_set"
+    | "issue"
+    | "transmittal"
+    | "distribution"
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application"
+    | "lifecycle_request"
+    | "lifecycle";
+  limit?: number;
+  parent_id?: string | null;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListResponse".
+ */
+export interface DcListResponse {
+  count_mode: "none";
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: DcGetResponse[];
+  limit: number;
+  next_cursor: string | null;
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcPeopleResponse".
+ */
+export interface DcPeopleResponse {
+  count_mode: "none";
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: {
+    display_name: string;
+    person: string;
+    user: string;
+  }[];
+  limit: number;
+  next_cursor: string | null;
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecordEvidenceRequest".
+ */
+export interface DcRecordEvidenceRequest {
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ];
+  company: string;
+  operation_id: string;
+  project: string;
+  statement: string;
+  subject_digest: string;
+  subject_id: string;
+  subject_kind: "distribution" | "adoption";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecordEvidenceResponse".
+ */
+export interface DcRecordEvidenceResponse {
+  evidence: DcEvidence;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRequestLifecycleRequest".
+ */
+export interface DcRequestLifecycleRequest {
+  company: string;
+  definition: DcLifecycleDefinition;
+  document_id: string;
+  expected_version: string;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRequestLifecycleResponse".
+ */
+export interface DcRequestLifecycleResponse {
+  history_id: string;
+  lifecycle_request: DcLifecycleRequest;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReviseLibraryRequest".
+ */
+export interface DcReviseLibraryRequest {
+  artifact: DcArtifactInput;
+  company: string;
+  definition: DcLibraryDefinition;
+  expected_version: string;
+  library_id: string;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReviseLibraryResponse".
+ */
+export interface DcReviseLibraryResponse {
+  history_id: string;
+  library: DcLibrary;
+  library_revision: DcLibraryRevision;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcSetRightsRequest".
+ */
+export interface DcSetRightsRequest {
+  company: string;
+  definition: DcRightsDefinition;
+  document_id: string;
+  expected_version: string | null;
+  operation_id: string;
+  project: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcSetRightsResponse".
+ */
+export interface DcSetRightsResponse {
+  history_id: string;
+  operation: DcOperation;
+  rights: DcRights;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticJobResponse".
+ */
+export interface SemanticJobResponse {
+  operation_id: string;
+  generation: string;
+  status: "pending" | "running" | "retryable" | "rejected" | "active" | "retired" | "cancelled" | "deleted";
+  chunks: number;
+  indexed_chunks: number;
+  error_code: string | null;
+  replayed: boolean;
+  connected_qualification: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticPrepareRequest".
+ */
+export interface SemanticPrepareRequest {
+  scope: SemanticScope;
+  /**
+   * @minItems 1
+   * @maxItems 16
+   */
+  sources:
+    | [SemanticSource]
+    | [SemanticSource, SemanticSource]
+    | [SemanticSource, SemanticSource, SemanticSource]
+    | [SemanticSource, SemanticSource, SemanticSource, SemanticSource]
+    | [SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource]
+    | [SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource]
+    | [SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource, SemanticSource]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ]
+    | [
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource,
+        SemanticSource
+      ];
+  operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticJobRequest".
+ */
+export interface SemanticJobRequest {
+  scope: SemanticScope;
+  operation_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticQueryRequest".
+ */
+export interface SemanticQueryRequest {
+  scope: SemanticScope;
+  question: string;
+  limit: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticQueryResponse".
+ */
+export interface SemanticQueryResponse {
+  status: "ready";
+  generation: string;
+  profile_id: string;
+  /**
+   * @maxItems 16
+   */
+  results:
+    | []
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ]
+    | [
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        },
+        {
+          id: string;
+          score: number;
+          excerpt: string;
+          chunk_sha256: string;
+          start: number;
+          end: number;
+          citation: {
+            id: string;
+            document_id: string;
+            revision_id: string;
+            document_title: string;
+            revision_number: number;
+            page: number;
+            page_label: string;
+            excerpt_sha256: string;
+            source_sha256: string;
+            company?: string;
+            scope_type?: "Company" | "Project";
+            project?: string | null;
+          };
+          source: SemanticSource;
+        }
+      ];
+  connected_qualification: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "SemanticStatusRequest".
+ */
+export interface SemanticStatusRequest {
+  scope: SemanticScope;
+  /**
+   * Reference to the existing rebuild operation; this read does not create a command.
+   */
+  job_operation_id: string;
 }

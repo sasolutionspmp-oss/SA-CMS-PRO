@@ -60,11 +60,15 @@ test('task creation recovers a lost response using the original operation', asyn
   await page.getByRole('textbox', { name: 'Task name', exact: true }).fill('Prepare site access review');
   await page.getByRole('button', { name: 'Create task', exact: true }).click();
   await expect(page.getByText('The workspace could not be reached.', { exact: false })).toBeVisible();
-  await page.getByRole('button', { name: 'Create task', exact: true }).click();
+  await expect(page.getByRole('textbox', { name: 'Task name', exact: true })).toBeDisabled();
+  await expect(page.getByRole('button', { name: 'Cancel', exact: true })).toBeDisabled();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('button', { name: 'Recover task', exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Recover task', exact: true }).click();
   await expect(page.getByRole('note', { name: /Task “Prepare site access review” was created/ })).toBeVisible();
   expect(fixture.tasks.filter(task => task.subject === 'Prepare site access review')).toHaveLength(1);
   expect(fixture.writes).toHaveLength(2);
-  expect(fixture.writes[0].body.operation_id).toBe(fixture.writes[1].body.operation_id);
+  expect(fixture.writes[0].body).toEqual(fixture.writes[1].body);
 });
 
 test('stale task source reports a conflict without success', async ({ page }) => {
@@ -75,6 +79,26 @@ test('stale task source reports a conflict without success', async ({ page }) =>
   await page.getByRole('button', { name: 'Create task', exact: true }).click();
   await expect(page.getByRole('note', { name: /The project changed. Refresh and review/ })).toBeVisible();
   await expect(page.getByText('Task “Stale task” was created.', { exact: true })).toHaveCount(0);
+});
+
+test('a transient project refresh keeps the stale task draft mounted', async ({ page }) => {
+  await mockWorkspace(page, { staleTask: true });
+  let unavailable = false;
+  await page.route('**/api/method/cipher_aec.api.v1.project?**', route => unavailable ? route.fulfill({ status: 503, contentType: 'application/json', body: JSON.stringify({ message: { schema: 'cipher.api.v1', error: { code: 'unavailable', message: 'The project refresh is temporarily unavailable.' } } }) }) : route.fallback());
+  await page.goto(`/projects/${projects[0].id}`);
+  await page.getByRole('button', { name: 'New task', exact: true }).click();
+  const dialog = page.locator('ui5-dialog[header-text="Create project task"]');
+  await dialog.getByRole('textbox', { name: 'Task name', exact: true }).fill('Preserved access review');
+  await dialog.getByRole('textbox', { name: 'Task description', exact: true }).fill('Keep this authored description.');
+  await dialog.getByRole('button', { name: 'Create task', exact: true }).click();
+  unavailable = true;
+  await dialog.getByRole('button', { name: 'Refresh project', exact: true }).click();
+  await expect(page.getByRole('note', { name: /The project refresh is temporarily unavailable/ })).toBeVisible();
+  await expect(dialog.getByRole('textbox', { name: 'Task name', exact: true })).toHaveValue('Preserved access review');
+  await expect(dialog.getByRole('textbox', { name: 'Task description', exact: true })).toHaveValue('Keep this authored description.');
+  unavailable = false;
+  await dialog.getByRole('button', { name: 'Refresh project', exact: true }).click();
+  await expect(dialog.getByRole('textbox', { name: 'Task name', exact: true })).toHaveValue('Preserved access review');
 });
 
 test('upload sends exact bytes and preview renders source as text', async ({ page }, testInfo) => {

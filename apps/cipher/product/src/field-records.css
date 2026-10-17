@@ -1,0 +1,28 @@
+.field-page { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }
+.field-tabs, .field-inline-actions, .field-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; }
+.field-tabs { border-bottom: 1px solid var(--sapGroup_ContentBorderColor); padding-bottom: .65rem; }
+.field-panel, .field-editor { min-width: 0; border: 1px solid var(--sapGroup_ContentBorderColor); background: var(--sapGroup_ContentBackground); border-radius: .75rem; padding: 1.25rem; }
+.field-panel-heading { display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem; }
+.field-facts, .field-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); gap: 1rem; margin: 1rem 0; }
+.field-editor ui5-input, .field-editor ui5-textarea, .field-editor ui5-select, .field-source-picker ui5-select, .field-panel[aria-label="Field documentary decision"] ui5-textarea, .field-panel[aria-label="Field documentary decision"] ui5-select, .field-panel[aria-label="Field documentary decision"] ui5-input { width: 100%; max-width: 100%; }
+.field-editor ui5-label, .field-panel[aria-label="Field documentary decision"] ui5-label { display: block; margin: .75rem 0 .3rem; }
+.field-editor-section, .field-revision-facts > section { margin-top: 1.5rem; }
+.field-source-picker, .field-line, .field-review-current { border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: .5rem; padding: 1rem; margin: .75rem 0; min-width: 0; }
+.field-source-picker { background: var(--sapList_Background); }
+.field-source-chip { display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .5rem 0; overflow-wrap: anywhere; }
+.field-source-fact { display: flex; flex-direction: column; align-items: start; gap: .45rem; margin: .75rem 0; padding: .75rem; background: var(--sapList_Background); border-radius: .4rem; min-width: 0; }
+.field-page code { font-size: .8rem; overflow-wrap: anywhere; word-break: break-all; }
+.field-source-fact code { max-width: 100%; }
+.field-photo { max-width: 100%; max-height: 560px; object-fit: contain; }
+.field-form-actions { justify-content: flex-end; margin-top: 1rem; }
+.field-review-check { margin-top: 1rem; }
+.field-table-scroll { max-width: 100%; overflow-x: auto; }
+.field-table-scroll ui5-table { min-width: 580px; }
+.field-table-scroll ui5-table-header-row, .field-table-scroll ui5-table-row { grid-template-columns: minmax(170px, 2fr) minmax(80px, .7fr) minmax(120px, 1fr) minmax(130px, 1fr); }
+.field-history { list-style: none; padding: 0; }
+.field-history li { padding: 1rem 0; border-top: 1px solid var(--sapGroup_ContentBorderColor); overflow-wrap: anywhere; }
+.field-history li > span { margin-left: .75rem; }
+.field-authored-text { white-space: pre-wrap; }
+.field-exact-quantity { font-size: 1.2rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.field-command-state { margin: 1rem 2rem; display: grid; gap: .7rem; }
+@media (max-width: 600px) { .field-panel, .field-editor { padding: .85rem; } .field-source-picker, .field-line { padding: .7rem; } .field-command-state { margin: .75rem; } .field-form-actions ui5-button { max-width: 100%; } .field-panel-heading { flex-direction: column; } }

@@ -6,7 +6,9 @@ import { sameValue, schemaShape } from './schema-validation';
 import type * as D from './document-control.generated';
 import type { ApprovalCommandResponse, DocumentIssueSetApprovalPacket, DocumentAdoptionRequestApprovalPacket, DocumentTransmittalApprovalPacket, DocumentApprovalExecutionResponse } from './contracts.generated';
 
-export type DocumentKind = D.DcGetRecordRequest['kind'];
+// This client owns the original Project workflows. The additive Company,
+// clause and lifecycle contracts are handled by document-control-next.
+export type DocumentKind = 'rights' | 'library' | 'library_revision' | 'adoption_request' | 'adoption' | 'issue_set' | 'issue' | 'transmittal' | 'distribution' | 'evidence';
 export type DocumentPacket = DocumentIssueSetApprovalPacket | DocumentAdoptionRequestApprovalPacket | DocumentTransmittalApprovalPacket;
 export type DocumentSubjectKind = 'issue_set' | 'adoption_request' | 'transmittal';
 export const documentAction = { issue_set: 'document.issue.v1', adoption_request: 'document.library.adopt.v1', transmittal: 'document.transmit.v1' } as const;
@@ -15,7 +17,7 @@ const defs: Record<DocumentKind, string> = { rights: 'DcRights', library: 'DcLib
 const prefix = 'cipher_aec.document_control.api.';
 export const documentShape = (name: string, value: unknown) => schemaShape(schema, name, value);
 export const invalidDocumentControl = () => new ApiError('This reply could not be matched to the exact Project, original document revisions and reviewed request.', 'INVALID_CONTRACT', 200);
-const scoped = (value: D.DcRecord, scope: Scope) => value.scope_type === 'Project' && value.company === scope.company && value.project === scope.project;
+const scoped = (value: { scope_type: string; company: string; project: string | null }, scope: Scope) => value.scope_type === 'Project' && value.company === scope.company && value.project === scope.project;
 const exactArtifacts = (actual: D.DcArtifact[], expected: D.DcArtifactInput[]) => actual.length === expected.length && actual.every((row, i) => row.revision_id === expected[i].revision_id && row.source_sha256 === expected[i].source_sha256);
 const artifactInputs = (rows: D.DcArtifact[]) => rows.map(({ revision_id, source_sha256 }) => ({ revision_id, source_sha256 }));
 export async function validateDocumentRecord(value: D.DcGetResponse, scope: Scope, kind: DocumentKind, id?: string, parent?: string) {
@@ -64,18 +66,18 @@ export const documentControl = {
       if (result.packet.requester.id !== actor.personId) throw invalidDocumentControl(); return result;
     }
     if (command.kind === 'authorization_action') {
-      const { packet, action } = command; validateDocumentPacket(packet, command.payload);
-      const result = await api.approvalAction(action, { ...command.payload, packet_id: packet.id, manifest_hash: packet.manifest_hash, reason: command.reason, operation_id: command.operation_id });
+      const { packet, action } = command; const reason = command.reason.trim(); validateDocumentPacket(packet, command.payload);
+      const result = await api.approvalAction(action, { ...command.payload, packet_id: packet.id, manifest_hash: packet.manifest_hash, reason, operation_id: command.operation_id });
       if (!schemaShape(coreSchema, action === 'execute' ? 'DocumentApprovalExecutionResponse' : 'ApprovalCommandResponse', result)) throw invalidDocumentControl();
       const current = validateDocumentPacket(result.packet as DocumentPacket, command.payload, packet.id);
       const decisionIdentity = (row: DocumentPacket['decisions'][number]) => ({ id: row.id, actor_person: row.actor.id, decision: row.decision, at: row.at, reason: row.reason });
       // Display names are current labels; original canonical people and recorded decisions cannot change.
-      if (current.manifest_hash !== packet.manifest_hash || current.requester.id !== packet.requester.id || current.created_at !== packet.created_at || current.expires_at !== packet.expires_at || current.policy.id !== packet.policy.id || !sameValue(current.review_manifest, packet.review_manifest) || !sameValue(current.decisions.slice(0, packet.decisions.length).map(decisionIdentity), packet.decisions.map(decisionIdentity)) || current.decisions.length !== packet.decisions.length + (action === 'Grant' || action === 'Reject' ? 1 : 0)) throw invalidDocumentControl();
+      if (current.manifest_hash !== packet.manifest_hash || current.requester.id !== packet.requester.id || current.created_at !== packet.created_at || current.expires_at !== packet.expires_at || current.policy.id !== packet.policy.id || !sameValue(current.review_manifest, packet.review_manifest) || !sameValue(current.decisions.slice(0, packet.decisions.length).map(decisionIdentity), packet.decisions.map(decisionIdentity)) || current.decisions.length !== packet.decisions.length + (action === 'execute' ? 0 : 1)) throw invalidDocumentControl();
       if (action === 'execute') {
         const factKind = { 'document.issue.v1': 'issue', 'document.library.adopt.v1': 'adoption', 'document.transmit.v1': 'distribution' }[packet.action] as 'issue' | 'adoption' | 'distribution';
         const effect = packet.review_manifest.effect, fact = (result as unknown as { effect: Record<string, D.DcIssue | D.DcAdoption | D.DcDistribution> }).effect[factKind];
         if (!fact || !scoped(fact, command.payload) || fact.author_person !== actor.personId || fact.author_user !== actor.user || fact.parent_id !== packet.subject.id || fact.subject_id !== packet.subject.id || fact.subject_digest !== packet.source_version || fact.packet_id !== packet.id || fact.effect_digest !== await engineeringDigest(effect) || !sameValue(fact.artifacts, effect.artifacts) || !packet.decisions.some(row => row.id === fact.decision_id && row.actor.id === fact.checked_by_person && row.actor.id !== packet.requester.id && row.decision === 'Grant') || 'package_digest' in effect && (!('package_digest' in fact) || fact.package_digest !== effect.package_digest) || 'recipients' in effect && (!('recipients' in fact) || !sameValue(fact.recipients, effect.recipients) || fact.channel !== 'internal') || current.state !== 'Consumed') throw invalidDocumentControl();
-      } else if (action === 'withdraw' ? current.state !== 'Withdrawn' : !current.decisions.some(row => row.actor.id === actor.personId && row.decision === action && row.reason === command.reason)) throw invalidDocumentControl();
+      } else if (action === 'withdraw' ? current.state !== 'Withdrawn' || !current.decisions.some(row => row.actor.id === actor.personId && row.decision === 'Withdraw' && row.reason === reason) : !current.decisions.some(row => row.actor.id === actor.personId && row.decision === action && row.reason === reason)) throw invalidDocumentControl();
       return result as DocumentReply;
     }
     const input = { ...command.payload, operation_id: command.operation_id } as Inputs[keyof Inputs], definition = commandDefs[command.kind];
