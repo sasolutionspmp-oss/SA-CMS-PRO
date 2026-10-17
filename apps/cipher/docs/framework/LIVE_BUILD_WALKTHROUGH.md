@@ -6,6 +6,10 @@ synthetic business records. They are not generated images or design mockups.
 The private development service listens at `http://127.0.0.1:18880` in the
 execution environment; this address does not make it publicly reachable.
 
+The latest [Company saved-evidence gallery](evidence/r1/company-takeoff-history-r20/ui/README.md) shows actual reopened attachments, stored predecessor comparison and the corrected manual form at desktop/tablet/phone widths. The final form quantity 4.250000 is unsaved; every POST was blocked.
+
+The latest [Company successor gallery](evidence/r1/company-takeoff-successor-r19/ui/README.md) shows the original manual quantity, explicitly reviewed replacement, verified comparison and reopened superseded original at desktop/tablet/phone widths, using one actual browser command.
+
 The latest [Company quantity evidence gallery](evidence/r1/company-takeoff-binding-r18/ui/README.md) shows the original manual measurement, exact saved-line review, independently verified attachment and unchanged saved estimate at desktop, tablet and phone widths, using one actual browser command against the isolated backend.
 
 The latest [Company drawing takeoff gallery](evidence/r1/company-takeoff-r17/ui/README.md) shows the actual register, authorized stored PDF, reviewed manual entry and saved measurement at desktop, tablet and phone widths. It uses the real isolated backend and preserves the original OCR dependency failure separately from its successful corrected continuation.

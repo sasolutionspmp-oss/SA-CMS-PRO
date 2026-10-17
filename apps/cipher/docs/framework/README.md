@@ -14,6 +14,10 @@ Start with [current implementation status](IMPLEMENTATION_STATUS.md) for actual 
 
 The [live build walkthrough](LIVE_BUILD_WALKTHROUGH.md) links the actual container screenshots in workflow order.
 
+[Reopened Company takeoff evidence](COMPANY_TAKEOFF_HISTORY.md) now reads saved attachments and predecessor comparisons after navigation/reload. [Fifteen actual current screens](evidence/r1/company-takeoff-history-r20/ui/README.md) include the corrected phone form and zero new business commands.
+
+[Company manual successors](COMPANY_TAKEOFF_SUCCESSORS.md) now save explicit quantity revisions with immutable lineage and independent comparison. [Twelve actual R19 screens](evidence/r1/company-takeoff-successor-r19/ui/README.md) show the successor and preserved original.
+
 [Company manual quantity evidence](COMPANY_TAKEOFF_EVIDENCE.md) now links a saved measurement to an explicitly reviewed exact saved estimate line. [Twelve actual R18 screens](evidence/r1/company-takeoff-binding-r18/ui/README.md) and independent native audits show the saved attachment and unchanged pricing.
 
 [Company drawing takeoff](COMPANY_TAKEOFF.md) now provides pre-award sets, exact stored PDF viewing without an OCR dependency and explicit manual quantities. [Twelve actual R17 screens](evidence/r1/company-takeoff-r17/ui/README.md) and independent native audits retain the original failed run and qualify its separate continuation.

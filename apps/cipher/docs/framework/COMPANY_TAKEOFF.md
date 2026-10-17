@@ -11,4 +11,6 @@ The register and saved measurement list request bounded pages with `limit=25`, `
 
 Commands retain their original UUID and immutable inputs through uncertain replies while the view remains mounted. Global navigation protection prevents leaving an uncertain request in the SPA; recovery requires the original identity. This is not a persisted cross-reload command journal. Saved working quantities confer no acceptance, issue, award or accounting authority.
 
-[Qualification and retained failure](evidence/r1/company-takeoff-r17/README.md) explain the real native correction. [Twelve actual screens](evidence/r1/company-takeoff-r17/ui/README.md) show desktop, tablet and phone flow. [Saved estimate-line evidence attachment](COMPANY_TAKEOFF_EVIDENCE.md) is now qualified in R18. Calibration authoring/independent verification and measurement successors/revision comparison remain next work; EST-02/UX-03 are still active.
+[Qualification and retained failure](evidence/r1/company-takeoff-r17/README.md) explain the real native correction. [Twelve actual screens](evidence/r1/company-takeoff-r17/ui/README.md) show desktop, tablet and phone flow. [Saved estimate-line evidence attachment](COMPANY_TAKEOFF_EVIDENCE.md) is now qualified in R18. [Measurement successors and revision comparison](COMPANY_TAKEOFF_SUCCESSORS.md) are now qualified in R19. Calibration authoring/independent verification and broader EST-02/UX-03 remain active.
+
+[Reopen saved evidence and predecessor comparisons](COMPANY_TAKEOFF_HISTORY.md) after navigation or reload.

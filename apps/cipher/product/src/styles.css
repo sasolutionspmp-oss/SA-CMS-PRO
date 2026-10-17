@@ -229,3 +229,8 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .company-takeoff-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; min-width: 0; }
 .company-takeoff-page > .surface > *, .company-takeoff-section-heading > * { min-width: 0; max-width: 100%; }
 .company-takeoff-page p { overflow-wrap: anywhere; }
+
+/* The successor source card is nested within the selected measurement. */
+.company-takeoff-page .company-takeoff-source { padding: 1rem; }
+.company-takeoff-source > *, .company-takeoff-source section { min-width: 0; max-width: 100%; }
+.company-takeoff-source ui5-select, .company-takeoff-source ui5-input, .company-takeoff-source ui5-textarea, .company-takeoff-source ui5-checkbox, .company-takeoff-source ui5-button { min-width: 0; max-width: 100%; }

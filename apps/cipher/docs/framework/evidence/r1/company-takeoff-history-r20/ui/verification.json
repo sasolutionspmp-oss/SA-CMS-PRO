@@ -1,0 +1,2351 @@
+{
+  "schema": "cipher.r20.actual-persisted-evidence-readonly.v1",
+  "status": "passed",
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "synthetic_business_data": true,
+  "model_invoked": false,
+  "login_requests": 0,
+  "backend_origin": "http://127.0.0.1:18886",
+  "backend_host": "cipher-ci-ai04-20261016.localhost",
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.compare_measurements",
+      "parameter_names": [
+        "company",
+        "before_id",
+        "after_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_document",
+      "parameter_names": [
+        "company",
+        "document_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.download_revision",
+      "parameter_names": [
+        "company",
+        "revision_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_units",
+      "parameter_names": [
+        "company"
+      ]
+    }
+  ],
+  "static_responses": [
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "a57804a3be04831aaafabad500e23868352aa6dde6b1b3f3ed9201daae0ac5d3"
+    },
+    {
+      "path": "assets/index-kiAVIP5L.css",
+      "bytes": 42076,
+      "sha256": "80ba1ac57059eb2219726ab66bbbe209bc3aa728da599bb967472d2953106cf6"
+    },
+    {
+      "path": "assets/Input-i1We3FBI.js",
+      "bytes": 56529,
+      "sha256": "670e4108e4e10ef1e7fe012ce48114e718b547566f731d701882172b2d0b948c"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/CheckBox-CvZcmQay.js",
+      "bytes": 372,
+      "sha256": "55e9c717cc9a3a93f84ddefe50d4ea5011641a3ac92a0b5d35ca898fdebdaaef"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/Input-MPrh1QEn.js",
+      "bytes": 511,
+      "sha256": "1c8d67f88478834b2f328d91a4358c99b43e300f6e89e7a54707df300e2c6374"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/components-DK3PpVvX.js",
+      "bytes": 81835,
+      "sha256": "a958e934290bf6051697c07f90a34b42b07947c34cf84dac34718ed67bcebaf4"
+    },
+    {
+      "path": "assets/TableHeaderRow-wvcsKgOg.js",
+      "bytes": 52987,
+      "sha256": "0bbc07b5a5a324516ab68ccf25c60b558c0b1ab7cd253320ac8f0a57dc85158c"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Bk8MPLBi.js",
+      "bytes": 20074,
+      "sha256": "662deae91eb1f37ad804a1072d10fc1f87c0ea9ffb7191be6d41faf29b2ff7e8"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Link-DAN9fLx9.js",
+      "bytes": 387,
+      "sha256": "235d606f2292e157886f7f4ca9d2cb4ed732171d9f0bf0358d17cbba1b4b2140"
+    },
+    {
+      "path": "assets/useMutation-CbqtH2eY.js",
+      "bytes": 1632,
+      "sha256": "15fc0500de534402d6db8157bf55a499f1759e9f798fd13451de902618a3741e"
+    },
+    {
+      "path": "assets/estimating-Cn90jHkO.js",
+      "bytes": 1468,
+      "sha256": "887d484c9c01bed162b9b74243ef0044cde5eb8dbb951b532d3f79f8f087b95c"
+    },
+    {
+      "path": "assets/TextArea-DixWlfHP.js",
+      "bytes": 26979,
+      "sha256": "f940a3a17811f5c1a5a9c712fdf7059a9cd124319fcf92f91405d51b62b6855b"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/index-D4frxjjD.js",
+      "bytes": 1335252,
+      "sha256": "e604efbffb70b51008fa0c17506b6a5b056ee1d281a1a1aa2ff05cf1236096d2"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "assets/CompanyTakeoff-aP0w_G0-.js",
+      "bytes": 147353,
+      "sha256": "c450b537a2d3194752568a6ef77c81b611d8c2cafb1eb26c8b8705c2dc4778d8"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "a57804a3be04831aaafabad500e23868352aa6dde6b1b3f3ed9201daae0ac5d3"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/Input-i1We3FBI.js",
+      "bytes": 56529,
+      "sha256": "670e4108e4e10ef1e7fe012ce48114e718b547566f731d701882172b2d0b948c"
+    },
+    {
+      "path": "assets/index-kiAVIP5L.css",
+      "bytes": 42076,
+      "sha256": "80ba1ac57059eb2219726ab66bbbe209bc3aa728da599bb967472d2953106cf6"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/CheckBox-CvZcmQay.js",
+      "bytes": 372,
+      "sha256": "55e9c717cc9a3a93f84ddefe50d4ea5011641a3ac92a0b5d35ca898fdebdaaef"
+    },
+    {
+      "path": "assets/Input-MPrh1QEn.js",
+      "bytes": 511,
+      "sha256": "1c8d67f88478834b2f328d91a4358c99b43e300f6e89e7a54707df300e2c6374"
+    },
+    {
+      "path": "assets/components-DK3PpVvX.js",
+      "bytes": 81835,
+      "sha256": "a958e934290bf6051697c07f90a34b42b07947c34cf84dac34718ed67bcebaf4"
+    },
+    {
+      "path": "assets/TableHeaderRow-wvcsKgOg.js",
+      "bytes": 52987,
+      "sha256": "0bbc07b5a5a324516ab68ccf25c60b558c0b1ab7cd253320ac8f0a57dc85158c"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/useMutation-CbqtH2eY.js",
+      "bytes": 1632,
+      "sha256": "15fc0500de534402d6db8157bf55a499f1759e9f798fd13451de902618a3741e"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Bk8MPLBi.js",
+      "bytes": 20074,
+      "sha256": "662deae91eb1f37ad804a1072d10fc1f87c0ea9ffb7191be6d41faf29b2ff7e8"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Link-DAN9fLx9.js",
+      "bytes": 387,
+      "sha256": "235d606f2292e157886f7f4ca9d2cb4ed732171d9f0bf0358d17cbba1b4b2140"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/TextArea-DixWlfHP.js",
+      "bytes": 26979,
+      "sha256": "f940a3a17811f5c1a5a9c712fdf7059a9cd124319fcf92f91405d51b62b6855b"
+    },
+    {
+      "path": "assets/estimating-Cn90jHkO.js",
+      "bytes": 1468,
+      "sha256": "887d484c9c01bed162b9b74243ef0044cde5eb8dbb951b532d3f79f8f087b95c"
+    },
+    {
+      "path": "assets/index-D4frxjjD.js",
+      "bytes": 1335252,
+      "sha256": "e604efbffb70b51008fa0c17506b6a5b056ee1d281a1a1aa2ff05cf1236096d2"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/CompanyTakeoff-aP0w_G0-.js",
+      "bytes": 147353,
+      "sha256": "c450b537a2d3194752568a6ef77c81b611d8c2cafb1eb26c8b8705c2dc4778d8"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "a57804a3be04831aaafabad500e23868352aa6dde6b1b3f3ed9201daae0ac5d3"
+    },
+    {
+      "path": "assets/index-kiAVIP5L.css",
+      "bytes": 42076,
+      "sha256": "80ba1ac57059eb2219726ab66bbbe209bc3aa728da599bb967472d2953106cf6"
+    },
+    {
+      "path": "assets/Input-i1We3FBI.js",
+      "bytes": 56529,
+      "sha256": "670e4108e4e10ef1e7fe012ce48114e718b547566f731d701882172b2d0b948c"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/components-DK3PpVvX.js",
+      "bytes": 81835,
+      "sha256": "a958e934290bf6051697c07f90a34b42b07947c34cf84dac34718ed67bcebaf4"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/Input-MPrh1QEn.js",
+      "bytes": 511,
+      "sha256": "1c8d67f88478834b2f328d91a4358c99b43e300f6e89e7a54707df300e2c6374"
+    },
+    {
+      "path": "assets/CheckBox-CvZcmQay.js",
+      "bytes": 372,
+      "sha256": "55e9c717cc9a3a93f84ddefe50d4ea5011641a3ac92a0b5d35ca898fdebdaaef"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Bk8MPLBi.js",
+      "bytes": 20074,
+      "sha256": "662deae91eb1f37ad804a1072d10fc1f87c0ea9ffb7191be6d41faf29b2ff7e8"
+    },
+    {
+      "path": "assets/TableHeaderRow-wvcsKgOg.js",
+      "bytes": 52987,
+      "sha256": "0bbc07b5a5a324516ab68ccf25c60b558c0b1ab7cd253320ac8f0a57dc85158c"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/useMutation-CbqtH2eY.js",
+      "bytes": 1632,
+      "sha256": "15fc0500de534402d6db8157bf55a499f1759e9f798fd13451de902618a3741e"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/Link-DAN9fLx9.js",
+      "bytes": 387,
+      "sha256": "235d606f2292e157886f7f4ca9d2cb4ed732171d9f0bf0358d17cbba1b4b2140"
+    },
+    {
+      "path": "assets/estimating-Cn90jHkO.js",
+      "bytes": 1468,
+      "sha256": "887d484c9c01bed162b9b74243ef0044cde5eb8dbb951b532d3f79f8f087b95c"
+    },
+    {
+      "path": "assets/TextArea-DixWlfHP.js",
+      "bytes": 26979,
+      "sha256": "f940a3a17811f5c1a5a9c712fdf7059a9cd124319fcf92f91405d51b62b6855b"
+    },
+    {
+      "path": "assets/index-D4frxjjD.js",
+      "bytes": 1335252,
+      "sha256": "e604efbffb70b51008fa0c17506b6a5b056ee1d281a1a1aa2ff05cf1236096d2"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/CompanyTakeoff-aP0w_G0-.js",
+      "bytes": 147353,
+      "sha256": "c450b537a2d3194752568a6ef77c81b611d8c2cafb1eb26c8b8705c2dc4778d8"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "bytes": 24532,
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    },
+    {
+      "path": "assets/72-Regular-full-C65g7v5R.woff2",
+      "bytes": 57984,
+      "sha256": "a4331d6b66b3045cd4e2c7444b800df9be1a9ee0800934012e828aa7c7e72946"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "a57804a3be04831aaafabad500e23868352aa6dde6b1b3f3ed9201daae0ac5d3"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/Input-i1We3FBI.js",
+      "bytes": 56529,
+      "sha256": "670e4108e4e10ef1e7fe012ce48114e718b547566f731d701882172b2d0b948c"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/components-DK3PpVvX.js",
+      "bytes": 81835,
+      "sha256": "a958e934290bf6051697c07f90a34b42b07947c34cf84dac34718ed67bcebaf4"
+    },
+    {
+      "path": "assets/CheckBox-CvZcmQay.js",
+      "bytes": 372,
+      "sha256": "55e9c717cc9a3a93f84ddefe50d4ea5011641a3ac92a0b5d35ca898fdebdaaef"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/index-kiAVIP5L.css",
+      "bytes": 42076,
+      "sha256": "80ba1ac57059eb2219726ab66bbbe209bc3aa728da599bb967472d2953106cf6"
+    },
+    {
+      "path": "assets/Input-MPrh1QEn.js",
+      "bytes": 511,
+      "sha256": "1c8d67f88478834b2f328d91a4358c99b43e300f6e89e7a54707df300e2c6374"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Bk8MPLBi.js",
+      "bytes": 20074,
+      "sha256": "662deae91eb1f37ad804a1072d10fc1f87c0ea9ffb7191be6d41faf29b2ff7e8"
+    },
+    {
+      "path": "assets/TableHeaderRow-wvcsKgOg.js",
+      "bytes": 52987,
+      "sha256": "0bbc07b5a5a324516ab68ccf25c60b558c0b1ab7cd253320ac8f0a57dc85158c"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Link-DAN9fLx9.js",
+      "bytes": 387,
+      "sha256": "235d606f2292e157886f7f4ca9d2cb4ed732171d9f0bf0358d17cbba1b4b2140"
+    },
+    {
+      "path": "assets/useMutation-CbqtH2eY.js",
+      "bytes": 1632,
+      "sha256": "15fc0500de534402d6db8157bf55a499f1759e9f798fd13451de902618a3741e"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/estimating-Cn90jHkO.js",
+      "bytes": 1468,
+      "sha256": "887d484c9c01bed162b9b74243ef0044cde5eb8dbb951b532d3f79f8f087b95c"
+    },
+    {
+      "path": "assets/TextArea-DixWlfHP.js",
+      "bytes": 26979,
+      "sha256": "f940a3a17811f5c1a5a9c712fdf7059a9cd124319fcf92f91405d51b62b6855b"
+    },
+    {
+      "path": "assets/index-D4frxjjD.js",
+      "bytes": 1335252,
+      "sha256": "e604efbffb70b51008fa0c17506b6a5b056ee1d281a1a1aa2ff05cf1236096d2"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/CompanyTakeoff-aP0w_G0-.js",
+      "bytes": 147353,
+      "sha256": "c450b537a2d3194752568a6ef77c81b611d8c2cafb1eb26c8b8705c2dc4778d8"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "bytes": 24532,
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    },
+    {
+      "path": "assets/PdfDrawing-DTU1XXo7.js",
+      "bytes": 439953,
+      "sha256": "4a1b3aedfa5a12a79eafc806165747870f5b2a81184c41c9cfb65358b7a98674"
+    },
+    {
+      "path": "assets/pdf.worker.min-CjEcRF4W.mjs",
+      "bytes": 1264342,
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "assets/InputComposition-DStib4IT.js",
+      "bytes": 753,
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    }
+  ],
+  "commands": [],
+  "downloads": [
+    {
+      "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+      "status": 200,
+      "bytes": 523,
+      "sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-full-C65g7v5R.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    }
+  ],
+  "comparisons": [
+    {
+      "before_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+      "after_id": "0daf4160-b144-4619-81e2-f011f6d95840",
+      "result": {
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "before": {
+          "id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "source": {
+            "byte_length": 523,
+            "company": "Cipher Synthetic Company",
+            "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+            "current_revision_number": 1,
+            "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+            "extraction_status": "ocr_unavailable",
+            "is_current": true,
+            "mime_type": "application/pdf",
+            "page": 1,
+            "page_count": 1,
+            "project": null,
+            "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+          }
+        },
+        "after": {
+          "id": "0daf4160-b144-4619-81e2-f011f6d95840",
+          "digest": "0f7ebf1ec72eb45b9928462d9592009b758632256b6caf33cedd57c3d31dc5dd",
+          "quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "source": {
+            "byte_length": 523,
+            "company": "Cipher Synthetic Company",
+            "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+            "current_revision_number": 1,
+            "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+            "extraction_status": "ocr_unavailable",
+            "is_current": true,
+            "mime_type": "application/pdf",
+            "page": 1,
+            "page_count": 1,
+            "project": null,
+            "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+          }
+        },
+        "changed": {
+          "source": false,
+          "quantity": true,
+          "geometry_or_manual_inputs": true,
+          "calibration": false
+        },
+        "original_records_preserved": true
+      }
+    }
+  ],
+  "measurement_reads": [
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T02:08:06.669970+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R17 Sheet 01 / manual quantity reference",
+          "manual_quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic author quantity for workflow verification. Quantity is not inferred from drawing pixels.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "page_geometry": null,
+        "predecessor": null,
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "result_digest": "31a02546a0301d8e07a5143728e469d7cdef6e247c46bdf9158702fe2023f394",
+          "result_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 1,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+      "current_use": {
+        "eligible": false,
+        "reasons": [
+          "takeoff_revision_superseded"
+        ],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T02:08:06.669970+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R17 Sheet 01 / manual quantity reference",
+          "manual_quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic author quantity for workflow verification. Quantity is not inferred from drawing pixels.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "page_geometry": null,
+        "predecessor": null,
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "result_digest": "31a02546a0301d8e07a5143728e469d7cdef6e247c46bdf9158702fe2023f394",
+          "result_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 1,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+      "current_use": {
+        "eligible": false,
+        "reasons": [
+          "takeoff_revision_superseded"
+        ],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T03:02:27.068489+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R19 Sheet 01 / revised manual quantity",
+          "manual_quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic manual quantity successor after additional review. Original drawing bytes and estimate attachments remain unchanged; no calibrated geometry is asserted.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "0daf4160-b144-4619-81e2-f011f6d95840",
+        "page_geometry": null,
+        "predecessor": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "result_digest": "303e268acde3a808c7785e4015cc169b9bb5f080fb85d29c8448c348a9b4b7d6",
+          "result_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 2,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "0daf4160-b144-4619-81e2-f011f6d95840",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "0f7ebf1ec72eb45b9928462d9592009b758632256b6caf33cedd57c3d31dc5dd",
+      "current_use": {
+        "eligible": true,
+        "reasons": [],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T03:02:27.068489+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R19 Sheet 01 / revised manual quantity",
+          "manual_quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic manual quantity successor after additional review. Original drawing bytes and estimate attachments remain unchanged; no calibrated geometry is asserted.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "0daf4160-b144-4619-81e2-f011f6d95840",
+        "page_geometry": null,
+        "predecessor": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "result_digest": "303e268acde3a808c7785e4015cc169b9bb5f080fb85d29c8448c348a9b4b7d6",
+          "result_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 2,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "0daf4160-b144-4619-81e2-f011f6d95840",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "0f7ebf1ec72eb45b9928462d9592009b758632256b6caf33cedd57c3d31dc5dd",
+      "current_use": {
+        "eligible": true,
+        "reasons": [],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T02:08:06.669970+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R17 Sheet 01 / manual quantity reference",
+          "manual_quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic author quantity for workflow verification. Quantity is not inferred from drawing pixels.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "page_geometry": null,
+        "predecessor": null,
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "result_digest": "31a02546a0301d8e07a5143728e469d7cdef6e247c46bdf9158702fe2023f394",
+          "result_interval": {
+            "lower": {
+              "denominator": "2",
+              "numerator": "5"
+            },
+            "upper": {
+              "denominator": "2",
+              "numerator": "5"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 1,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+      "current_use": {
+        "eligible": false,
+        "reasons": [
+          "takeoff_revision_superseded"
+        ],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "calibration_digest": null,
+        "calibration_id": null,
+        "company": "Cipher Synthetic Company",
+        "conversion_ids": [],
+        "created_at": "2026-10-17T03:02:27.068489+00:00",
+        "definition": {
+          "formula_version": "cipher.takeoff.planar.v1",
+          "kind": "length",
+          "locator": "R19 Sheet 01 / revised manual quantity",
+          "manual_quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "method": "manual",
+          "reason": "Explicit synthetic manual quantity successor after additional review. Original drawing bytes and estimate attachments remain unchanged; no calibrated geometry is asserted.",
+          "result_precision": 6,
+          "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+        "id": "0daf4160-b144-4619-81e2-f011f6d95840",
+        "page_geometry": null,
+        "predecessor": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "project": null,
+        "result": {
+          "calibration_claim": "none-manual",
+          "formula_version": "cipher.takeoff.planar.v1",
+          "geometry_kind": "manual",
+          "method": "manual",
+          "quantity": {
+            "amount": "3.750000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "raw_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "result_digest": "303e268acde3a808c7785e4015cc169b9bb5f080fb85d29c8448c348a9b4b7d6",
+          "result_interval": {
+            "lower": {
+              "denominator": "4",
+              "numerator": "15"
+            },
+            "upper": {
+              "denominator": "4",
+              "numerator": "15"
+            }
+          },
+          "rounding": "half_up_unique_interval",
+          "tolerance": "0.000001",
+          "waste_fraction": "0"
+        },
+        "revision_number": 2,
+        "scope_type": "Company",
+        "source": {
+          "byte_length": 523,
+          "company": "Cipher Synthetic Company",
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "current_revision_number": 1,
+          "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "extraction_status": "ocr_unavailable",
+          "is_current": true,
+          "mime_type": "application/pdf",
+          "page": 1,
+          "page_count": 1,
+          "project": null,
+          "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+        },
+        "source_citations": [],
+        "source_head_policy": "current-working-revision-v1",
+        "status": "authored",
+        "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+        "unit_manifest": {
+          "dataset_id": "0daf4160-b144-4619-81e2-f011f6d95840",
+          "records": [
+            {
+              "fields": {
+                "currency": "USD",
+                "name": "Cipher Synthetic Company",
+                "timezone": "Asia/Kolkata"
+              },
+              "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+              "kind": "company",
+              "revision": 1,
+              "target": {
+                "doctype": "Company",
+                "name": "Cipher Synthetic Company"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "length",
+                "precision": 6,
+                "symbol": "RC01cc066dc8ba8"
+              },
+              "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Ricky metre 1cc066dc8ba8"
+              }
+            }
+          ],
+          "schema": "cipher.canonical.v2",
+          "scope": {
+            "company": "Cipher Synthetic Company",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "unit_conversions": []
+        },
+        "verification_id": null
+      },
+      "record_digest": "0f7ebf1ec72eb45b9928462d9592009b758632256b6caf33cedd57c3d31dc5dd",
+      "current_use": {
+        "eligible": true,
+        "reasons": [],
+        "current_working_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+        "head_policy": "current-working-revision-v1",
+        "original_record_preserved": true,
+        "verification": null
+      }
+    }
+  ],
+  "binding_reads": [
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "company": "Cipher Synthetic Company",
+        "created_at": "2026-10-17T02:50:55.634643+00:00",
+        "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+        "estimate_line_digest": "ee698b787d6f8c1368e631c68623f1a57f93a74e026b4f8a78d191a7d5c23e59",
+        "estimate_line_record": "034c4d79-ec08-4bcc-a8f2-d91c798daf4f",
+        "estimate_revision": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+        "id": "33b65e38-213a-4d92-a18f-c384ebb08206",
+        "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+        "measurement_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+        "measurement_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "original_snapshot_claim": "authored-quantity-not-recomputed",
+        "project": null,
+        "provenance": "subsequently-attached-takeoff-evidence-v1",
+        "quantity": {
+          "amount": "2.500000",
+          "precision": 6,
+          "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+        },
+        "quantity_basis": "net-quantity-v1",
+        "reason": "Explicit synthetic reviewed manual quantity evidence. This exact saved line retains its original quantity and pricing; no calibrated geometry is asserted.",
+        "scope_type": "Company",
+        "status": "authored",
+        "waste_policy": "net-takeoff-estimate-component-waste-v1"
+      },
+      "record_digest": "d1a8b84554a18cdb2012ce065fabd88cc4b9549cba3cc82b89d2730b3d2fa257"
+    },
+    {
+      "record": {
+        "author_person": "7e351e70e0",
+        "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+        "company": "Cipher Synthetic Company",
+        "created_at": "2026-10-17T02:50:55.634643+00:00",
+        "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+        "estimate_line_digest": "ee698b787d6f8c1368e631c68623f1a57f93a74e026b4f8a78d191a7d5c23e59",
+        "estimate_line_record": "034c4d79-ec08-4bcc-a8f2-d91c798daf4f",
+        "estimate_revision": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+        "id": "33b65e38-213a-4d92-a18f-c384ebb08206",
+        "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+        "measurement_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+        "measurement_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+        "original_snapshot_claim": "authored-quantity-not-recomputed",
+        "project": null,
+        "provenance": "subsequently-attached-takeoff-evidence-v1",
+        "quantity": {
+          "amount": "2.500000",
+          "precision": 6,
+          "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+        },
+        "quantity_basis": "net-quantity-v1",
+        "reason": "Explicit synthetic reviewed manual quantity evidence. This exact saved line retains its original quantity and pricing; no calibrated geometry is asserted.",
+        "scope_type": "Company",
+        "status": "authored",
+        "waste_policy": "net-takeoff-estimate-component-waste-v1"
+      },
+      "record_digest": "d1a8b84554a18cdb2012ce065fabd88cc4b9549cba3cc82b89d2730b3d2fa257"
+    }
+  ],
+  "binding_catalogs": [
+    {
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ],
+      "limit": 25,
+      "count_mode": "none",
+      "total": null,
+      "items": 1
+    },
+    {
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ],
+      "limit": 25,
+      "count_mode": "none",
+      "total": null,
+      "items": 1
+    }
+  ],
+  "failures": [],
+  "console": [],
+  "blocked_requests": [],
+  "attachment_reopened_after_reload": true,
+  "authenticated_original_session_reused": true,
+  "business_commands": 0,
+  "all_POST_requests_blocked": true,
+  "proposed_unsaved_quantity": {
+    "amount": "4.250000",
+    "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+    "precision": 6
+  },
+  "unsaved_form_reviewed": true,
+  "actual_nested_form_containment_verified": true,
+  "captures": [
+    {
+      "name": "01-company-wide-attachment-register",
+      "width": 1440,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "2791cd45aeb30104d1098384bbdcb15df306d5a787d108b7338f836a0387e55a",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "01-company-wide-attachment-register-1440.png"
+    },
+    {
+      "name": "01-company-wide-attachment-register",
+      "width": 900,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "5771e8a6eeecfae5d5d1ba7d7e768b705b900c8a901747ebc7783b6fb3f47cb4",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "01-company-wide-attachment-register-900.png"
+    },
+    {
+      "name": "01-company-wide-attachment-register",
+      "width": 390,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "519ca023530bcad8445139f16f9849df467b3003063d6db39a6a9d693b73605b",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "01-company-wide-attachment-register-390.png"
+    },
+    {
+      "name": "02-reopened-original-attachment",
+      "width": 1440,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "36e0ca29171fba7a3ce5f6a01acda07826d5395abdbe09a3f6f5a93d288b71be",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "02-reopened-original-attachment-1440.png"
+    },
+    {
+      "name": "02-reopened-original-attachment",
+      "width": 900,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "e64e2e58fbab74f016802e546331649feb68e1cd800bcc195b86429326e3905b",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "02-reopened-original-attachment-900.png"
+    },
+    {
+      "name": "02-reopened-original-attachment",
+      "width": 390,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "55e6707657aa3fd4616aec777e0f3d3686d0167d7acc4d4385266fb272be45a0",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "02-reopened-original-attachment-390.png"
+    },
+    {
+      "name": "03-reopened-predecessor-comparison",
+      "width": 1440,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "e77e0d014b6e91d4163c5d10b6226b070f98d524f0f258fa583f701baf9d11fc",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "03-reopened-predecessor-comparison-1440.png"
+    },
+    {
+      "name": "03-reopened-predecessor-comparison",
+      "width": 900,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "ffd1067e21d91ae7c7561bdb35fa490459e99112ca3af364394ee9852fcfdff4",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "03-reopened-predecessor-comparison-900.png"
+    },
+    {
+      "name": "03-reopened-predecessor-comparison",
+      "width": 390,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "d4cdb60d49f1ffcff6efa7eb44634a7570fb192404f78fcb1c98348eacedcb25",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "03-reopened-predecessor-comparison-390.png"
+    },
+    {
+      "name": "04-corrected-unsaved-manual-form",
+      "width": 1440,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "3411bf0a438385344e8034426154f4efdd0bae38d9415d6da2b73a50c1f8e9fd",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "04-corrected-unsaved-manual-form-1440.png"
+    },
+    {
+      "name": "05-reviewed-unsaved-form-not-submitted",
+      "width": 1440,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "015ffcd4f9a2e3b563bd5bff92592f37ae8f2bb7166f8f5fb34b580b6fb83683",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "05-reviewed-unsaved-form-not-submitted-1440.png"
+    },
+    {
+      "name": "04-corrected-unsaved-manual-form",
+      "width": 900,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "515790b370ea6be379eaa73983bb856cc6c3ac38472e891707c70278bdd7b5bc",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "04-corrected-unsaved-manual-form-900.png"
+    },
+    {
+      "name": "05-reviewed-unsaved-form-not-submitted",
+      "width": 900,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "b587a90934ca733c80d13cc15a620eb32b6223f6ca3ef45dc592b9267da3ed6f",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "05-reviewed-unsaved-form-not-submitted-900.png"
+    },
+    {
+      "name": "04-corrected-unsaved-manual-form",
+      "width": 390,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "583eb70648242e944dc789ab5d8d8edd222868ac2065913cb0bcb0c3ed04ac39",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "04-corrected-unsaved-manual-form-390.png"
+    },
+    {
+      "name": "05-reviewed-unsaved-form-not-submitted",
+      "width": 390,
+      "url": "http://127.0.0.1:5218/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "c95730fed7b37f7ffbcbe262e396efb3c8bbbe2d16fc7d36418243876884a955",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "05-reviewed-unsaved-form-not-submitted-390.png"
+    }
+  ]
+}

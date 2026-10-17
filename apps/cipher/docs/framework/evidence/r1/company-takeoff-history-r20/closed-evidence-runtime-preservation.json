@@ -1,0 +1,31 @@
+{
+  "schema": "cipher.r20.one-shot-readonly.v1",
+  "status": "passed",
+  "start": "2026-10-17T03:19:28.012854+00:00",
+  "runtime_baseline_before": {
+    "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+    "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+    "containers": {
+      "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+      "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+    }
+  },
+  "reviewed_source_sha256": "d48aedf77c215558dc6a089945d71aea6a6ef327f8ba601b998d13fb033a2269",
+  "driver_sha256": {
+    "capture.mjs": "e40c7baa0df9d59ac76d13a0efeed295ddabe5a9b02363b49b4ab1c994380e3f",
+    "verify_native.py": "7a829e39a82db6bb49db5ab1ee4484841710082ac15c2a05cbc1d57f02ef1191",
+    "observe.py": "8fe32445d9e43b3d54b19ea46089e2e2ffc4a1e644071997fb07beefa5ec55ad"
+  },
+  "end": "2026-10-17T03:19:47.472439+00:00",
+  "closed_host_trees_unchanged": true,
+  "runtime_baseline_after": {
+    "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+    "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+    "containers": {
+      "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+      "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+    }
+  },
+  "MAIN_runtime_unchanged": true,
+  "source_build_unchanged": true
+}

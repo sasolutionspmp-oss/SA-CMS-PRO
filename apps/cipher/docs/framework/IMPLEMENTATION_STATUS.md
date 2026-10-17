@@ -4,7 +4,19 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
-## Current checkpoint: exact manual quantity evidence
+## Current checkpoint: reopened Company takeoff evidence
+
+[Saved evidence review](COMPANY_TAKEOFF_HISTORY.md) now reopens Company-wide attachments and stored predecessor comparisons after navigation/reload. The 729-file combined source includes explicit R19 manual successors, persistent readers and the corrected long-unit phone form. 105 affected checks, type/build and thirteen generated checks passed; backend source is unchanged. R18 hosted CI passed all 25 stages.
+
+[Fifteen actual current-build screens](evidence/r1/company-takeoff-history-r20/ui/README.md) read the existing original 2.500000 attachment, its saved 3.750000 successor and canonical comparison, then stage 4.250000 without saving. Every POST was blocked. Independent native audit proves zero new business rows/effects, all original quantities/bindings/pricing and other business/source/configuration/index state exact, and MAIN/runtime/closed evidence unchanged. Original R19 native success and later failed inner-phone visual review remain separate; the failing-first width regression and latest real nested-bound checks qualify the correction. Calibration and broader ERP modules/enterprise acceptance remain active.
+
+## Prior checkpoint: manual measurement successors
+
+[Manual successors](COMPANY_TAKEOFF_SUCCESSORS.md) now preserve the original quantity and attachments while saving an explicitly reviewed replacement measurement. The frozen 724-file source passed 107 affected checks, type/build and all thirteen generated checks. Backend source is unchanged.
+
+One actual browser command saved the original 2.500000 measurement's 3.750000 successor on the same stored source page. Independent native reconciliation verified the family/predecessor/revision, canonical manual arithmetic, actual comparison GET, receipt/history chain and three declared additions. The original now reports superseded for new use while retaining its original facts. The R18 binding and estimate pricing snapshot remain unchanged, as do other inventoried business/source/configuration/index state and all closed evidence. [Twelve archived native screens](evidence/r1/company-takeoff-successor-r19/ui/README.md) preserve that source. Later visual review found nested phone form clipping; the failing-first long-unit regression and scoped CSS correction are integrated into R20 alongside reopened evidence/comparison reads. MAIN/runtime are unchanged; calibration and broader EST-02/UX-03 remain active.
+
+## Prior checkpoint: exact manual quantity evidence
 
 [Company quantity evidence](COMPANY_TAKEOFF_EVIDENCE.md) now attaches an existing manual measurement to an explicitly reviewed immutable saved estimate line. The frozen 719-file source passed 105 focused/static checks, type/build and thirteen generated checks; backend source remains unchanged. [R17 hosted CI](evidence/r1/company-takeoff-r17/hosted-ci.json) passed all 25 stages, including full backend/browser suites.
 

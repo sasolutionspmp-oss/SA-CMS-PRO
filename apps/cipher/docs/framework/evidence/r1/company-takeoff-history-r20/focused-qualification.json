@@ -1,0 +1,154 @@
+{
+  "R19_native_and_layout_history": "Original R19 business proof and 12 screens remain historical; phone long-unit clipping discovered afterwards. Exact root two-rule CSS and new regression are composed here and freshly qualified; root plans combined R19/R20 publication.",
+  "browser_cases": 85,
+  "build": {
+    "files": 915,
+    "modules": 2044,
+    "path": "/dev/shm/cipher-company-takeoff-history-ui-r20/dist",
+    "status": "passed"
+  },
+  "classification": "synthetic_interception_host_qualification",
+  "configuration_sha256": {
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/BASELINE.json": "fef23431cb7c1f9f325eeb436f2925aab46b5c968ae5eb256548569419cd3716",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/BASELINE_R19_LAYOUT.json": "e97b43de59b20b12f6924dc404681725e219a1221012d16b50e14fd0803a51e0",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/playwright-r20.config.mjs": "f14bd74659afe4abef2782722d48ec552d84489c8ec4f707d7fcfb6885201358",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/vite-r20.config.mjs": "4a861018b172720dd642c3366705f6f2b00db7df41f9095bef0daddab07f0fe0"
+  },
+  "failing_first": {
+    "cause": "self-consistently rehashed stored manual definition quantity/unit metadata did not initially match immutable result; stored binding review now rejects both mismatches",
+    "failures": 2,
+    "report": "attempt-02-failing-first"
+  },
+  "focused_cases": 105,
+  "fresh_distinct_cases": 105,
+  "full_suite": "not run; meaningful new readers and affected R18/R19/R17/R15 compatibility only",
+  "generated_contracts_verified": 13,
+  "integrity": {
+    "App_backend_all13generated_ProjectTakeoff": "byte-identical to R19",
+    "R19_frozen_delta_verified_files": 8,
+    "R19_original_workspace_verified_files": 724,
+    "R20_own_changed_paths_against_composed_baseline": 9,
+    "R20_own_production_paths": 6,
+    "R20_own_test_paths": 3,
+    "changed_paths_against_original_R19": 11,
+    "production_paths": 7,
+    "root_layout_correction_exact": {
+      "files": {
+        "apps/cipher/product/src/styles.css": "c8e671b54280223403bf917dd3f9be7e049b818e9df0ac2bcb19701a1d1ca450",
+        "apps/cipher/product/tests/company-takeoff-successor-layout.spec.ts": "9222f52db5eaae82b179d568f4cb3f4550be02dcd114ec8a3285d43eeafc9b24"
+      },
+      "source_workspace": "/dev/shm/cipher-company-takeoff-successor-ui-r19/v2/workspace"
+    },
+    "source_files": 729,
+    "test_paths": 4,
+    "unchanged_original_R19_files": 718
+  },
+  "logs_sha256": {
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-01.log": "b05808db4e23d18bae8ad96fce751b5059a6699d33644a4ee958e9a97e438401",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-02-failing-first.log": "62088db1580cdb91e924245ed66c161742f0113ba37b3c2225dce53c51a9ca00",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/build-qualified.log": "8b80e3fb3422d10bc39de60e21465cb8e7896c838ea3b8a4b11041b3dc40a080",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-final.log": "b9fddc119ee332ea8bb2e8a57de988c58135fba8342706c887d0946d1fef70cd",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-readers.log": "de0a30ddcd91331894adea35c78cd38a147eca76daf3b8cd3dfe5706660410ae",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/generated-qualified.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/typecheck-01.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/typecheck-02.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-history-ui-r20/typecheck-qualified.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+  },
+  "native_qualification": "pending root-owned read-only capture over actual R18/R19 records; child made no native calls or captures",
+  "new_R20_cases": 32,
+  "node_contract_cases": 20,
+  "reports": {
+    "attempt-01": {
+      "path": "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-01/report.json",
+      "sha256": "9dbc342c663545adc198a4b1dd6992b2307ce315bd8eefebc5f231e5f6b1efe7",
+      "stats": {
+        "duration": 33047.35,
+        "expected": 20,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:08:45.771Z",
+        "unexpected": 0
+      }
+    },
+    "attempt-02-failing-first": {
+      "path": "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-02-failing-first/report.json",
+      "sha256": "76578d1ea77735ee025978fbc7ad1e742b8afc4ff9531045c268e3867a885c1f",
+      "stats": {
+        "duration": 1458.459,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:11:43.128Z",
+        "unexpected": 2
+      }
+    },
+    "focused-final": {
+      "path": "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-final/report.json",
+      "sha256": "e6a765f97300e978261c5154c4f74d3c4cfe8445d20581bf767527148b257ca6",
+      "stats": {
+        "duration": 226509.39299999998,
+        "expected": 105,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:14:01.953Z",
+        "unexpected": 0
+      }
+    },
+    "focused-readers": {
+      "path": "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-readers/report.json",
+      "sha256": "d2157f84f3373da63695c0cf3f301775a3fde7ab4600eb337efdea2eac52c74a",
+      "stats": {
+        "duration": 48116.255000000005,
+        "expected": 31,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:12:15.833Z",
+        "unexpected": 0
+      }
+    }
+  },
+  "retained_attempt_artifacts": {
+    "attempt-01": {
+      "files": {
+        "report.json": "9dbc342c663545adc198a4b1dd6992b2307ce315bd8eefebc5f231e5f6b1efe7",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-01"
+    },
+    "attempt-02-failing-first": {
+      "files": {
+        "report.json": "76578d1ea77735ee025978fbc7ad1e742b8afc4ff9531045c268e3867a885c1f",
+        "test-results/.last-run.json": "1ecf78c45e53609f535887cfd4f1284a323e54c4c452d42792c6e3000deede57",
+        "test-results/company-takeoff-evidence-v-64238-y-after-whole-record-rehash/error-context.md": "4f925344a5c362b7605d51aff552a4f141984d662118f6b6ab58616cb06eb5da",
+        "test-results/company-takeoff-evidence-v-64238-y-after-whole-record-rehash/trace.zip": "fe71e770b648f1c623e8d15c0622b9992ab6b503ae1902fb02efb44a105c2487",
+        "test-results/company-takeoff-evidence-v-78647-t-after-whole-record-rehash/error-context.md": "da2bd6ca7f1bcf138efd441206558e5ded7a72fa9acaddbcebc2c9489cdf5ade",
+        "test-results/company-takeoff-evidence-v-78647-t-after-whole-record-rehash/trace.zip": "d046c5397d3dc8e34ed49248453c89d87e13d547040843e2eee5ad8c9c1ac110"
+      },
+      "root": "/dev/shm/cipher-company-takeoff-history-ui-r20/attempt-02-failing-first"
+    },
+    "focused-final": {
+      "files": {
+        "report.json": "e6a765f97300e978261c5154c4f74d3c4cfe8445d20581bf767527148b257ca6",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-final"
+    },
+    "focused-readers": {
+      "files": {
+        "report.json": "d2157f84f3373da63695c0cf3f301775a3fde7ab4600eb337efdea2eac52c74a",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-takeoff-history-ui-r20/focused-readers"
+    }
+  },
+  "retries": 0,
+  "schema": "cipher.company-takeoff-history.ui-qualification.v1",
+  "screenshots": "disabled",
+  "static_asset_sha256": {
+    "THIRD_PARTY_NOTICES.txt": "817da3f114c1fa4dd5e36e6c2444ea0c0dd403cc59c3b80b365ecebf1c46f287",
+    "cipher-mark.svg": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+  },
+  "static_assets": "packaged SVG and dependency notice exact source bytes verified on host; no extra browser run",
+  "typecheck": "passed",
+  "workers": 1
+}

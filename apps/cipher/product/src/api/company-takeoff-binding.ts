@@ -75,3 +75,30 @@ export const companyTakeoffBinding = {
     return { binding: response.binding, review: checked, currentUse: measured.current_use, currentRevision: fresh.estimate.current_revision };
   },
 };
+
+// Persisted evidence is read under the current reader's authority. Its author
+// remains a stored fact; a read never manufactures a command or receipt.
+export function storedBindingFacts(b: CompanyTakeoffBindingRecord, v: LineReview) {
+  const m = v.measurement, q = m.result.quantity, authored = v.line.authored.quantity;
+  const net = /^0(?:\.0+)?$/.test(m.definition.waste_fraction);
+  if (m.definition.result_unit_id !== q.unit_id || m.definition.result_precision !== q.precision || m.result.method !== m.definition.method || decimal(m.result.waste_fraction) !== decimal(m.definition.waste_fraction) || net && m.definition.method === 'manual' && !matchingManualQuantity(v) || !takeoffShape('CompanyTakeoffBindingRecord', b) || !scoped(b, v.estimate.company) || b.measurement_id !== m.id || b.measurement_digest !== v.measurementDigest || b.estimate_line_record !== v.line.id || b.estimate_line_digest !== v.lineDigest || b.estimate !== v.estimate.id || b.estimate_revision !== v.revision.id || b.line_id !== v.line.line_id || !same(b.quantity, q) || q.unit_id !== authored.unit_id || q.precision !== authored.precision || decimal(q.amount) !== decimal(authored.amount) || b.quantity_basis !== (net ? 'net-quantity-v1' : 'after-takeoff-waste-v1') || b.waste_policy !== (net ? 'net-takeoff-estimate-component-waste-v1' : 'takeoff-waste-only-v1') || b.provenance !== 'subsequently-attached-takeoff-evidence-v1' || b.original_snapshot_claim !== 'authored-quantity-not-recomputed') throw invalidTakeoff();
+  return b;
+}
+export async function listStoredBindings(company: string, cursor?: string, signal?: AbortSignal) {
+  const page = await companyTakeoff.list({ company, kind: 'binding', cursor }, signal);
+  await Promise.all(page.items.map(async row => { if (await bindingDigest(row.record) !== row.record_digest) throw invalidTakeoff(); }));
+  return page;
+}
+export async function readStoredBinding(company: string, selected: CompanyTakeoffGetResponse, signal?: AbortSignal) {
+  const saved = await companyTakeoff.get(company, 'binding', selected.record.id, signal);
+  if (!same(saved.record, selected.record) || saved.record_digest !== selected.record_digest || await bindingDigest(saved.record) !== saved.record_digest) throw invalidTakeoff();
+  const b = saved.record as CompanyTakeoffBindingRecord;
+  const measured = await companyTakeoff.get(company, 'measurement', b.measurement_id, signal);
+  const measurement = measured.record as Measurement;
+  const set = await companyTakeoff.get(company, 'set', measurement.takeoff_set, signal);
+  if (await bindingDigest(set.record) !== set.record_digest) throw invalidTakeoff();
+  const history = await companyTakeoffBinding.review(company, b.estimate, signal, b.estimate_revision);
+  const line = await get<Line>(company, 'line', 'CompanyEstLineRecord', b.estimate_line_record, signal);
+  const review = await companyTakeoffBinding.lineReview(history, line, measured);
+  return { binding: storedBindingFacts(b, review), review, takeoffSet: set.record as import('./company-takeoff.generated').CompanyTakeoffSetRecord, currentUse: measured.current_use, currentRevision: history.estimate.current_revision };
+}

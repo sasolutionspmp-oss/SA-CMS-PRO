@@ -13,7 +13,7 @@ export const companyTakeoff = {
     return validateTakeoffRecord(await rpc<CompanyTakeoffGetResponse>(prefix + 'get_record', { company, kind, record_id }, false, signal), { company, kind, takeoff_set }, record_id);
   },
   createSet: (input: CompanyTakeoffCreateSetRequest) => rpc<CompanyTakeoffCreateSetResponse>(prefix + 'create_set', { company: input.company, operation_id: input.operation_id, title: input.title, discipline: input.discipline, drawing_package: input.drawing_package, basis: input.basis }, true),
-  createMeasurement: (input: CompanyTakeoffCreateMeasurementRequest) => rpc<CompanyTakeoffCreateMeasurementResponse>(prefix + 'create_measurement', { company: input.company, operation_id: input.operation_id, takeoff_set: input.takeoff_set, source: input.source, definition: input.definition, conversion_ids: input.conversion_ids }, true),
+  createMeasurement: (input: CompanyTakeoffCreateMeasurementRequest) => rpc<CompanyTakeoffCreateMeasurementResponse>(prefix + 'create_measurement', { company: input.company, operation_id: input.operation_id, takeoff_set: input.takeoff_set, source: input.source, definition: input.definition, conversion_ids: input.conversion_ids, ...(input.predecessor ? { predecessor: input.predecessor } : {}) }, true),
   async units(company: string, signal?: AbortSignal) {
     const result = await rpc<CompanyListEstimateUnitsResponse>('cipher_aec.estimating.company_api.list_units', { company }, false, signal);
     if (!takeoffShape('CompanyListEstimateUnitsResponse', result) || new Set(result.items.map(row => row.id)).size !== result.items.length) throw invalidTakeoff();

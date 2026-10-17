@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
-import { Button, Input, Label, Link, MessageStrip, Option, Select, TextArea, Title } from '@ui5/webcomponents-react';
+import { Button, CheckBox, Input, Label, Link, MessageStrip, Option, Select, TextArea, Title } from '@ui5/webcomponents-react';
 import { ApiError } from './api/client';
 import { companyTakeoff } from './api/company-takeoff';
 import { invalidTakeoff, matchesCreatedMeasurement, matchesCreatedSet, takeoffShape, validTakeoffPdfMetadata } from './api/company-takeoff-validation';
@@ -7,11 +7,15 @@ import type { CommandActor } from './api/company-takeoff-validation';
 import type { CompanyTakeoffCreateSetRequest, CompanyTakeoffCreateSetResponse, CompanyTakeoffCreateMeasurementRequest, CompanyTakeoffCreateMeasurementResponse, CompanyTakeoffMeasurementRecord, CompanyTakeoffSetRecord } from './api/company-takeoff.generated';
 import CompanyTakeoffBinding, { SavedBinding } from './CompanyTakeoffBinding';
 import type { SavedLineBinding } from './CompanyTakeoffBinding';
-import { companyTakeoffBinding, matchesBinding } from './api/company-takeoff-binding';
+import { bindingDigest, companyTakeoffBinding, matchesBinding } from './api/company-takeoff-binding';
 import type { LineReview } from './api/company-takeoff-binding';
 import type { CompanyTakeoffBindLineRequest, CompanyTakeoffBindLineResponse } from './api/company-takeoff.generated';
+import { SuccessorEditor, SuccessorComparison, StoredSuccessorComparison } from './CompanyTakeoffSuccessor';
+import { savedManual, successorLineage } from './api/company-takeoff-successor';
+import type { SavedSuccessor } from './api/company-takeoff-successor';
+import CompanyTakeoffEvidence from './CompanyTakeoffEvidence';
 import { sourceApi } from './api/sources';
-import { useResource } from './hooks';
+import { human, useResource } from './hooks';
 import { useMutation } from './useMutation';
 import { Empty, Fact, Failure, Loading, PageHeading } from './components';
 const PdfDrawing = lazy(() => import('./PdfDrawing'));
@@ -27,7 +31,7 @@ const pathFor = (company: string, id?: string) => `/company/takeoff${id ? '/' + 
 // Keep commands outside the authority-keyed read/form subtree. Known revocation
 // clears source pixels and cursors without discarding an uncertain original UUID.
 export default function CompanyTakeoff(props: Props) {
-  const binding = useRef<(CommandActor & { company: string; documentId?: string }) | undefined>(undefined);
+  const binding = useRef<(CommandActor & { company: string; documentId?: string; original?: Awaited<ReturnType<typeof savedManual>>; authority?: string }) | undefined>(undefined);
   const [savedSet, setSavedSet] = useState<{ company: string; id: string }>();
   const [commandKind, setCommandKind] = useState<'set' | 'measurement' | 'line'>('set');
   const [notice, setNotice] = useState(''); const [revision, setRevision] = useState(0); const [accessDenied, setAccessDenied] = useState(false);
@@ -35,15 +39,25 @@ export default function CompanyTakeoff(props: Props) {
     const result = await companyTakeoff.createSet(input);
     if (!binding.current || !matchesCreatedSet(result, input, binding.current)) throw invalidTakeoff(); return result;
   });
+  const measurementSent = useRef(false);
+  const [savedSuccessor, setSavedSuccessor] = useState<SavedSuccessor>();
   const createMeasurement = useMutation<MeasureInput, CompanyTakeoffCreateMeasurementResponse>(async input => {
+    const plan = binding.current;
+    if (input.predecessor && !measurementSent.current) {
+      try { if (!plan?.original || input.predecessor !== plan.original.record.id) throw invalidTakeoff(); await savedManual(plan.original); if (plan.authority !== currentAuthority.current) throw invalidTakeoff(); }
+      catch { throw new ApiError('The successor was not submitted. Reopen the original measurement with current access and review the replacement inputs.', 'successor_review_refused', 412); }
+    }
+    measurementSent.current = true;
     const result = await companyTakeoff.createMeasurement(input);
-    if (!binding.current?.documentId || !matchesCreatedMeasurement(result, input, binding.current, binding.current.documentId)) throw invalidTakeoff(); return result;
+    if (!binding.current?.documentId || !matchesCreatedMeasurement(result, input, binding.current, binding.current.documentId)) throw invalidTakeoff();
+    if (input.predecessor) { if (!plan?.original || !successorLineage(plan.original.record, result.measurement)) throw invalidTakeoff(); await savedManual({ record: result.measurement, record_digest: await bindingDigest(result.measurement) }, false); }
+    return result;
   });
   const authority = JSON.stringify([props.company, props.user, props.personId, [...props.capabilities].sort()]);
   const currentAuthority = useRef(authority); currentAuthority.current = authority;
   const linePlan = useRef<{ review: LineReview; authority: string; actor: CommandActor; sent: boolean; controller: AbortController } | undefined>(undefined);
   const [savedLine, setSavedLine] = useState<SavedLineBinding>();
-  useEffect(() => { const plan = linePlan.current; if (plan && !plan.sent && plan.authority !== authority) plan.controller.abort(); setSavedLine(undefined); }, [authority]);
+  useEffect(() => { const plan = linePlan.current; if (plan && !plan.sent && plan.authority !== authority) plan.controller.abort(); setSavedLine(undefined); setSavedSuccessor(undefined); }, [authority]);
   const bindLine = useMutation<CompanyTakeoffBindLineRequest, CompanyTakeoffBindLineResponse>(async input => {
     const plan = linePlan.current; if (!plan) throw invalidTakeoff();
     if (!plan.sent) {
@@ -63,7 +77,7 @@ export default function CompanyTakeoff(props: Props) {
   useEffect(() => { props.onLockedChange(ownLocked); return () => props.onLockedChange(false); }, [ownLocked, props.onLockedChange]);
   useEffect(() => { setNotice(''); setSavedSet(undefined); }, [authority]);
   const finishSet = (v?: CompanyTakeoffCreateSetResponse) => { if (v) { setSavedSet({ company: v.takeoff_set.company, id: v.takeoff_set.id }); setNotice('Company takeoff set created.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
-  const finishMeasurement = (v?: CompanyTakeoffCreateMeasurementResponse) => { if (v) { setNotice('Manual measurement saved. This is an authored quantity, without a calibrated geometry claim.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
+  const finishMeasurement = (v?: CompanyTakeoffCreateMeasurementResponse) => { if (v) { const plan = binding.current; if (plan?.original && plan.authority) setSavedSuccessor({ before: plan.original, response: v, authority: plan.authority }); setNotice(plan?.original ? 'Manual measurement successor saved. Original records and estimate attachments are preserved.' : 'Manual measurement saved. This is an authored quantity, without a calibrated geometry claim.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
   const commandError = commandKind === 'set' ? createSet.error : commandKind === 'measurement' ? createMeasurement.error : bindLine.error;
   useEffect(() => { if (commandError && [403, 404].includes(commandError.status)) setAccessDenied(true); }, [commandError]);
   return <>
@@ -73,15 +87,16 @@ export default function CompanyTakeoff(props: Props) {
       {notice && <MessageStrip design="Positive" hideCloseButton>{notice}</MessageStrip>}
       {savedSet && !locked && <Button onClick={() => props.navigate(pathFor(savedSet.company, savedSet.id))}>Open created takeoff set</Button>}
     </div>}
+    {props.active && !accessDenied && savedSuccessor?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SuccessorComparison saved={savedSuccessor} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && !accessDenied && savedLine?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SavedBinding saved={savedLine} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && accessDenied && <div className="page"><MessageStrip design="Information" hideCloseButton>Source access changed. Previous takeoff content is hidden. Recover an uncertain request before reopening current sources.</MessageStrip><Button disabled={locked} onClick={() => { setAccessDenied(false); setRevision(n => n + 1); }}>Recheck Company takeoff access</Button></div>}
-    {props.active && !accessDenied && <AuthorityView key={authority} {...props} locked={locked} revision={revision}
-      bindLine={async (review, reason) => { if (locked) return false; setCommandKind('line'); binding.current = { company: props.company, user: props.user, personId: props.personId }; linePlan.current = { review: structuredClone(review), authority, actor: { user: props.user, personId: props.personId }, sent: false, controller: new AbortController() }; setNotice(''); setSavedLine(undefined); return finishLine(await bindLine.run({ company: props.company, measurement_id: review.measurement.id, estimate_line_record: review.line.id, quantity_basis: 'net-quantity-v1', reason })); }}
+    {props.active && !accessDenied && <AuthorityView key={authority} {...props} locked={locked} revision={revision} onDenied={() => setAccessDenied(true)}
+      bindLine={async (review, reason) => { if (locked) return false; setCommandKind('line'); binding.current = { company: props.company, user: props.user, personId: props.personId }; linePlan.current = { review: structuredClone(review), authority, actor: { user: props.user, personId: props.personId }, sent: false, controller: new AbortController() }; setNotice(''); setSavedLine(undefined); setSavedSuccessor(undefined); return finishLine(await bindLine.run({ company: props.company, measurement_id: review.measurement.id, estimate_line_record: review.line.id, quantity_basis: 'net-quantity-v1', reason })); }}
       createSet={async input => { if (locked) return false; setCommandKind('set'); binding.current = { company: props.company, user: props.user, personId: props.personId }; setNotice(''); return finishSet(await createSet.run(input)); }}
-      createMeasurement={async (input, documentId) => { if (locked) return false; setCommandKind('measurement'); binding.current = { company: props.company, user: props.user, personId: props.personId, documentId }; setNotice(''); return finishMeasurement(await createMeasurement.run(input)); }} />}
+      createMeasurement={async (input, documentId, original) => { if (locked) return false; setCommandKind('measurement'); binding.current = { company: props.company, user: props.user, personId: props.personId, documentId, original: original ? structuredClone(original) : undefined, authority }; measurementSent.current = false; setSavedSuccessor(undefined); setSavedLine(undefined); setNotice(''); return finishMeasurement(await createMeasurement.run(input)); }} />}
   </>;
 }
-type ViewProps = Props & { bindLine: (review: LineReview, reason: string) => Promise<boolean>; locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string) => Promise<boolean> };
+type ViewProps = Props & { onDenied: () => void; bindLine: (review: LineReview, reason: string) => Promise<boolean>; locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string, original?: Awaited<ReturnType<typeof savedManual>>) => Promise<boolean> };
 function AuthorityView(props: ViewProps) {
   if (!props.capabilities.includes('estimate.read') || !props.capabilities.includes('document.read')) return <div className="page"><PageHeading eyebrow="COMPANY ESTIMATING" title="Company drawing takeoff" /><Failure error={new ApiError('Company takeoff needs current estimate and source read access.', 'capability_denied', 403)} /></div>;
   return props.setId ? <Workspace key={props.setId} {...props} setId={props.setId} /> : <Register {...props} />;
@@ -102,7 +117,7 @@ function Register(props: ViewProps) {
     {open && <CreateSet {...props} onClose={() => setOpen(false)} />}
     <section className="surface"><Title level="H2">Company takeoff sets</Title>{rows.loading ? <Loading /> : rows.error ? <Failure error={rows.error} onRetry={props.locked ? undefined : paging.reset} /> : rows.data?.items.length ? <ul className="company-takeoff-list">{rows.data.items.map(({ record }) => { const r = record as CompanyTakeoffSetRecord; return <li key={r.id}><Button design="Transparent" disabled={props.locked} onClick={() => props.navigate(pathFor(props.company, r.id))}>{r.title}</Button><p>{r.discipline} · {r.drawing_package}</p><p>{r.basis}</p></li>; })}</ul> : <Empty title="No Company takeoff sets" icon="measure">Create a set for a drawing package and an explicit measurement basis.</Empty>}
       {!rows.loading && !rows.error && <Pager paging={paging} next={rows.data?.next_cursor} disabled={props.locked} />}
-    </section></div>;
+    </section><CompanyTakeoffEvidence company={props.company} locked={props.locked} onDenied={props.onDenied} /></div>;
 }
 function CreateSet(props: ViewProps & { onClose: () => void }) {
   const [title, setTitle] = useState(''); const [discipline, setDiscipline] = useState(''); const [drawingPackage, setPackage] = useState(''); const [basis, setBasis] = useState('');
@@ -110,16 +125,17 @@ function CreateSet(props: ViewProps & { onClose: () => void }) {
   return <section className="surface" aria-label="New Company takeoff set"><Title level="H2">New Company takeoff set</Title><div className="company-takeoff-fields"><Field label="Takeoff set title" value={title} onChange={setTitle} disabled={props.locked} /><Field label="Discipline" value={discipline} onChange={setDiscipline} disabled={props.locked} /><Field label="Drawing package" value={drawingPackage} onChange={setPackage} disabled={props.locked} /><Field label="Takeoff set basis" value={basis} onChange={setBasis} disabled={props.locked} /></div><Button design="Emphasized" disabled={props.locked || !takeoffShape('CompanyTakeoffCreateSetRequest', input) || ![title, discipline, drawingPackage, basis].every(v => v.trim())} onClick={async () => { if (await props.createSet(input)) props.onClose(); }}>Create Company takeoff set</Button><Button disabled={props.locked} onClick={props.onClose}>Cancel new takeoff set</Button></section>;
 }
 function Workspace(props: ViewProps & { setId: string }) {
+  const [successorOpen, setSuccessorOpen] = useState(false);
   const set = useResource(`${props.company}/takeoff-set/${props.setId}/${props.revision}`, signal => companyTakeoff.get(props.company, 'set', props.setId, signal));
   if (set.loading) return <Loading label="Opening Company takeoff set…" />;
   if (set.error) return <div className="page"><Failure error={set.error} onRetry={props.locked ? undefined : set.refresh} /></div>;
   if (!set.data) return null;
   const record = set.data.record as CompanyTakeoffSetRecord;
   return <div className="page company-takeoff-page"><PageHeading eyebrow="COMPANY DRAWING TAKEOFF" title={record.title} description={`${record.discipline} · ${record.drawing_package}`} actions={<Button disabled={props.locked} onClick={() => props.navigate(pathFor(props.company))}>Company takeoff sets</Button>} /><p>{record.basis}</p><MessageStrip design="Information" hideCloseButton>Quantity basis: Manual entry. Record the drawing reference and reason for each authored quantity.</MessageStrip>
-    <SourceWorkspace {...props} /><SavedMeasurements {...props} />
+    <>{!successorOpen && <SourceWorkspace {...props} />}<SavedMeasurements {...props} onSuccessorMode={setSuccessorOpen} /><CompanyTakeoffEvidence company={props.company} locked={props.locked} onDenied={props.onDenied} /></>
   </div>;
 }
-function SourceWorkspace(props: ViewProps & { setId: string }) {
+function SourceWorkspace(props: ViewProps & { setId: string; original?: Awaited<ReturnType<typeof savedManual>> }) {
   const docs = useResource(`${props.company}/takeoff-sources`, signal => companyTakeoff.sources(props.company, signal));
   const [documentId, setDocument] = useState(''); const [revisionId, setRevision] = useState(''); const [page, setPage] = useState(1); const [refresh, setRefresh] = useState(0); const [pdfAttempt, setPdfAttempt] = useState(0); const [verifiedPdf, setVerifiedPdf] = useState('');
   const detail = useResource(documentId && docs.data && !docs.loading && !docs.error ? `${props.company}/takeoff-source/${documentId}/${refresh}` : null, signal => companyTakeoff.source(props.company, documentId, signal));
@@ -143,29 +159,33 @@ function SourceWorkspace(props: ViewProps & { setId: string }) {
     </>}
   </section>;
 }
-function ManualForm(props: ViewProps & { setId: string; documentId: string; source: MeasureInput['source'] }) {
+function ManualForm(props: ViewProps & { setId: string; original?: Awaited<ReturnType<typeof savedManual>>; documentId: string; source: MeasureInput['source'] }) {
   const units = useResource(`${props.company}/takeoff-units`, signal => companyTakeoff.units(props.company, signal));
   const [unitId, setUnit] = useState(''); const [amount, setAmount] = useState(''); const [locator, setLocator] = useState(''); const [reason, setReason] = useState(''); const [error, setError] = useState('');
   const unit = units.data?.items.find(r => r.id === unitId);
   const precision = unit?.fields.precision ?? 0;
   const definition: MeasureInput['definition'] = { method: 'manual', kind: unit?.fields.dimension || 'count', locator, reason, result_unit_id: unitId, result_precision: precision, tolerance: '0.000001', waste_fraction: '0', formula_version: 'cipher.takeoff.planar.v1', manual_quantity: { amount, unit_id: unitId, precision } };
-  const input: MeasureInput = { company: props.company, takeoff_set: props.setId, source: props.source, definition, conversion_ids: [] };
+  const [reviewed, setReviewed] = useState(false);
+  const update = (setter: (v: string) => void) => (v: string) => { setter(v); setReviewed(false); };
+  const input: MeasureInput = { company: props.company, takeoff_set: props.setId, source: props.source, definition, conversion_ids: [], ...(props.original ? { predecessor: props.original.record.id } : {}) };
   const exact = /^(0|[1-9][0-9]*)(\.[0-9]{1,12})?$/.test(amount) && (amount.split('.')[1]?.length ?? 0) <= precision;
-  return <section aria-label="Author manual quantity"><Title level="H3">Author a manual quantity</Title><p>Enter a quantity in its declared unit. Precision comes from the canonical unit; no conversion, geometry or waste is inferred.</p>{units.loading ? <Loading /> : units.error ? <Failure error={units.error} onRetry={props.locked ? undefined : units.refresh} /> : <><Label>Quantity unit</Label><Select accessibleName="Manual quantity unit" disabled={props.locked} onChange={event => setUnit(event.detail.selectedOption.value!)}><Option value="" selected={!unitId}>Choose a qualified unit</Option>{units.data?.items.map(r => <Option key={r.id} value={r.id} selected={unitId === r.id}>{r.fields.symbol} · {r.fields.dimension} · {r.fields.precision} decimal places</Option>)}</Select><div className="company-takeoff-fields"><Field label="Manual quantity" value={amount} onChange={setAmount} disabled={props.locked} /><Field label="Drawing locator" value={locator} onChange={setLocator} disabled={props.locked} /><Field label="Manual quantity reason" value={reason} onChange={setReason} disabled={props.locked} multiline /></div>{unit && <p className="caption">{unit.fields.dimension} · precision {precision} · arithmetic tolerance 0.000001 · waste 0</p>}{error && <MessageStrip design="Negative" hideCloseButton>{error}</MessageStrip>}<Button design="Emphasized" disabled={props.locked || !unit || !exact || !takeoffShape('CompanyTakeoffCreateMeasurementRequest', input) || !locator.trim() || !reason.trim()} onClick={async () => { setError(''); if (!exact || !unit) { setError('Use an exact decimal within the selected unit precision.'); return; } if (await props.createMeasurement(input, props.documentId)) { setAmount(''); setLocator(''); setReason(''); } }}>Save manual measurement</Button></>}
+  return <section aria-label="Author manual quantity"><Title level="H3">Author a manual quantity</Title><p>Enter a quantity in its declared unit. Precision comes from the canonical unit; no conversion, geometry or waste is inferred.</p>{units.loading ? <Loading /> : units.error ? <Failure error={units.error} onRetry={props.locked ? undefined : units.refresh} /> : <><Label>Quantity unit</Label><Select accessibleName="Manual quantity unit" disabled={props.locked} onChange={event => update(setUnit)(event.detail.selectedOption.value!)}><Option value="" selected={!unitId}>Choose a qualified unit</Option>{units.data?.items.map(r => <Option key={r.id} value={r.id} selected={unitId === r.id}>{r.fields.symbol} · {r.fields.dimension} · {r.fields.precision} decimal places</Option>)}</Select><div className="company-takeoff-fields"><Field label="Manual quantity" value={amount} onChange={update(setAmount)} disabled={props.locked} /><Field label="Drawing locator" value={locator} onChange={update(setLocator)} disabled={props.locked} /><Field label="Manual quantity reason" value={reason} onChange={update(setReason)} disabled={props.locked} multiline /></div>{unit && <p className="caption">{unit.fields.dimension} · precision {precision} · arithmetic tolerance 0.000001 · waste 0</p>}{props.original && <CheckBox text="I reviewed the original measurement and the replacement source, quantity and unit" checked={reviewed} disabled={props.locked} onChange={e => setReviewed(e.currentTarget!.checked)} />}{error && <MessageStrip design="Negative" hideCloseButton>{error}</MessageStrip>}<Button design="Emphasized" disabled={props.locked || !unit || !exact || !takeoffShape('CompanyTakeoffCreateMeasurementRequest', input) || !locator.trim() || !reason.trim() || Boolean(props.original && !reviewed)} onClick={async () => { setError(''); if (!exact || !unit) { setError('Use an exact decimal within the selected unit precision.'); return; } if (await props.createMeasurement(input, props.documentId, props.original)) { setAmount(''); setLocator(''); setReason(''); } }}>{props.original ? 'Save manual successor' : 'Save manual measurement'}</Button></>}
   </section>;
 }
-function SavedMeasurements(props: ViewProps & { setId: string }) {
-  const paging = usePages(); const [selected, setSelected] = useState('');
+function SavedMeasurements(props: ViewProps & { setId: string; onSuccessorMode: (v: boolean) => void }) {
+  const paging = usePages(); const [selected, setSelected] = useState(''); const [authoring, setAuthoring] = useState(''); const [compareId, setCompare] = useState('');
   const rows = useResource(`${props.company}/${props.setId}/measurements/${paging.cursor || ''}/${paging.generation}/${props.revision}`, async signal => paging.verify(await companyTakeoff.list({ company: props.company, kind: 'measurement', takeoff_set: props.setId, cursor: paging.cursor }, signal)));
   const member = Boolean(!rows.loading && !rows.error && rows.data?.items.some(row => row.record.id === selected));
   const detail = useResource(member ? `${props.company}/${props.setId}/measurement/${selected}/${props.revision}` : null, signal => companyTakeoff.get(props.company, 'measurement', selected, signal, props.setId));
   useEffect(() => { setSelected(''); }, [paging.cursor, paging.generation]);
   const r = member && !detail.loading && !detail.error ? detail.data?.record as CompanyTakeoffMeasurementRecord | undefined : undefined;
+  const successorActive = Boolean(r && authoring === r.id);
+  useEffect(() => { props.onSuccessorMode(successorActive); return () => props.onSuccessorMode(false); }, [successorActive, props.onSuccessorMode]);
   return <section className="surface"><div className="company-takeoff-section-heading"><Title level="H2" wrappingType="Normal">Saved measurements</Title><Button disabled={props.locked} onClick={() => { setSelected(''); paging.reset(); }}>Refresh saved measurements</Button></div>
     {rows.loading ? <Loading /> : rows.error ? <Failure error={rows.error} onRetry={props.locked ? undefined : () => { setSelected(''); paging.reset(); }} /> : rows.data?.items.length ? <ul className="company-takeoff-list">{rows.data.items.map(value => { const row = value.record as CompanyTakeoffMeasurementRecord; return <li key={row.id}><Button disabled={props.locked} design="Transparent" onClick={() => setSelected(row.id)}>{row.definition.locator}</Button><p>{quantityLabel(row)} · {row.result.method === 'manual' ? 'Authored manual quantity' : 'Saved calibrated quantity'}</p><p>{value.current_use?.eligible ? 'Server reports eligible for current use' : 'Historical / unavailable for new use'}</p></li>; })}</ul> : <Empty title="No saved measurements" icon="measure">Save a manual quantity against an exact source page.</Empty>}
     {!rows.loading && !rows.error && <Pager paging={paging} next={rows.data?.next_cursor} disabled={props.locked} />}
     {detail.loading && <Loading label="Reading saved measurement…" />}{detail.error && <Failure error={detail.error} onRetry={props.locked ? undefined : detail.refresh} />}
-    {r && <section aria-label="Saved Company measurement"><Title level="H3">{r.definition.locator}</Title><p>{r.definition.reason}</p><Fact label="Quantity">{quantityLabel(r)} · precision {r.result.quantity.precision}</Fact><p>{r.result.method === 'manual' ? 'Authored manual quantity. No calibrated geometry claim.' : 'Historical calibrated result. This workspace provides read-only inspection.'}</p><p>Source revision {r.source.revision_number} · Page {r.source.page}</p><p>{detail.data?.current_use?.eligible ? 'Server reports eligible for current use.' : `Unavailable for new use: ${detail.data?.current_use?.reasons.join(', ')}`}</p><Button disabled={props.locked} onClick={() => props.navigate(`/company/documents/${encodeURIComponent(r.source.document_id)}/revisions/${encodeURIComponent(r.source.revision_id)}?${new URLSearchParams({ company: props.company, page: String(r.source.page) })}`)}>Open exact measurement source</Button>{props.capabilities.includes('estimate.write') && detail.data && <CompanyTakeoffBinding key={r.id} company={props.company} selected={detail.data} locked={props.locked} submit={props.bindLine} />}<details><summary>Stored measurement integrity</summary><code>{r.id}</code><p>Unit {r.result.quantity.unit_id}</p><code>{r.source.source_sha256}</code><p>Recorded {r.created_at} by {r.author_user}</p></details></section>}
+    {r && <section aria-label="Saved Company measurement"><Title level="H3">{r.definition.locator}</Title><p>{r.definition.reason}</p><Fact label="Quantity">{quantityLabel(r)} · precision {r.result.quantity.precision}</Fact><p>{r.result.method === 'manual' ? 'Authored manual quantity. No calibrated geometry claim.' : 'Historical calibrated result. This workspace provides read-only inspection.'}</p><p>Source revision {r.source.revision_number} · Page {r.source.page}</p><p>{detail.data?.current_use?.eligible ? 'Server reports eligible for current use.' : `Unavailable for new use: ${detail.data?.current_use?.reasons.map(human).join(', ')}`}</p><Button disabled={props.locked} onClick={() => props.navigate(`/company/documents/${encodeURIComponent(r.source.document_id)}/revisions/${encodeURIComponent(r.source.revision_id)}?${new URLSearchParams({ company: props.company, page: String(r.source.page) })}`)}>Open exact measurement source</Button>{r.definition.method === 'manual' && Number(r.definition.waste_fraction) === 0 && r.predecessor && <Button disabled={props.locked} onClick={() => setCompare(r.id)}>Compare with predecessor</Button>}{compareId === r.id && detail.data && <StoredSuccessorComparison selected={detail.data} locked={props.locked} onDenied={props.onDenied} />}{props.capabilities.includes('estimate.write') && r.definition.method === 'manual' && Number(r.definition.waste_fraction) === 0 && <Button disabled={props.locked} onClick={() => setAuthoring(r.id)}>Author manual successor</Button>}{successorActive && detail.data && <SuccessorEditor selected={detail.data} locked={props.locked} onCancel={() => setAuthoring('')}>{original => <SourceWorkspace key={original.record.id} {...props} original={original} />}</SuccessorEditor>}{props.capabilities.includes('estimate.write') && detail.data && !successorActive && <CompanyTakeoffBinding key={r.id} company={props.company} selected={detail.data} locked={props.locked} submit={props.bindLine} />}<details><summary>Stored measurement integrity</summary><code>{r.id}</code><p>Unit {r.result.quantity.unit_id}</p><code>{r.source.source_sha256}</code><p>Recorded {r.created_at} by {r.author_user}</p></details></section>}
   </section>;
 }
 function Field({ label, value, onChange, disabled, multiline = false }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean; multiline?: boolean }) {

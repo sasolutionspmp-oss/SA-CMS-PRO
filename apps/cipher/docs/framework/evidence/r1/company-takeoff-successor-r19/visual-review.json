@@ -1,0 +1,12 @@
+{
+  "schema": "cipher.r19.post-native-visual-review.v1",
+  "status": "failed_phone_nested_form_containment",
+  "original_native_business_and_outer_check_status_preserved": "passed",
+  "reason": "Long canonical unit labels caused the nested manual form and its prose/checkbox to exceed the padded source-card content edge. Outer page checks did not detect the inner clipping.",
+  "original_screenshot": "ui/02-reviewed-manual-successor-390.png",
+  "original_screenshot_sha256": "1dfe680ce71ab2c487f140a00a26b3bdb6f72133a87292ae96c3689745f3dae3",
+  "failing_first_report_sha256": "d8be598fb69c1515a58ba0ebb93936c3a3ea23f09b5880f48b1cc11e610d9827",
+  "corrected_regression_report_sha256": "098aac81895b37ca00838c0e0c2990ea8e6457eab8f51049f96d9cd67822d972",
+  "business_commands_repeated": 0,
+  "correction_scope": "Two CSS min-width/max-width constraints for Company source descendants and controls; one new long-unit containment regression; integrated into R20 before publication"
+}
