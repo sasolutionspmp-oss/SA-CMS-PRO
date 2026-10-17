@@ -1,4 +1,5 @@
 """The Fluent practice surface owns synthetic data and cannot reach action APIs."""
+import errno
 import http.client
 import json
 from pathlib import Path
@@ -123,8 +124,9 @@ class PracticeServerTests(unittest.TestCase):
             self.assertEqual(status, 200)
             self.assertTrue(headers["Content-Type"].startswith(mime))
             self.assertEqual(headers["X-Content-Type-Options"], "nosniff")
-        status, _, _ = self.request("/assets/missing.js")
+        status, _, raw = self.request("/assets/missing.js")
         self.assertEqual(status, 404)
+        self.assertEqual(json.loads(raw)["error"]["code"], "web_build_missing")
 
     def test_encoded_traversal_and_symlink_escape_are_refused(self):
         secret = Path(self.temp.name).parent / (Path(self.temp.name).name + "-secret.txt")
@@ -159,6 +161,13 @@ class PracticeServerTests(unittest.TestCase):
             self.assertNotIn(str(link).encode(), raw)
         finally:
             link.unlink()
+
+    def test_static_stat_error_is_a_typed_refusal(self):
+        with patch.object(Path, "stat", side_effect=OSError(errno.ELOOP, "synthetic symlink loop")):
+            status, _, raw = self.request("/assets/app.js")
+        self.assertEqual(status, 404)
+        self.assertEqual(json.loads(raw)["error"]["code"], "route_not_found")
+        self.assertNotIn(b"synthetic symlink loop", raw)
 
     def test_cli_exposes_no_file_workspace_or_host_option(self):
         from apps.cipher.__main__ import main

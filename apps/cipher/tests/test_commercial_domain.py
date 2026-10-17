@@ -1,5 +1,6 @@
 """Runnable isolated commercial72 prototype checks; no main repository edits."""
 import copy
+from contextlib import closing
 import os
 import sqlite3
 import tempfile
@@ -360,9 +361,9 @@ class CommercialDomainTests(unittest.TestCase):
             self.domain.source_inventory(project_ids=(self.project,))
 
     def test_owned_backup_is_readable_but_copy_cannot_create_manual_revision(self):
-        with tempfile.TemporaryDirectory(dir="/tmp/cipher-completion/commercial-draft") as directory:
+        with tempfile.TemporaryDirectory() as directory:
             path = os.path.join(directory, "commercial-copy.db")
-            with sqlite3.connect(path) as copied_connection:
+            with closing(sqlite3.connect(path)) as copied_connection:
                 self.c.db.conn.backup(copied_connection)
             copied = service.Cipher(path)
             try:

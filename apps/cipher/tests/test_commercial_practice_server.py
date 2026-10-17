@@ -15,6 +15,7 @@ import uuid
 
 from apps.cipher.commercial_practice_server import API_PREFIX, COOKIE_NAME, make_commercial_practice_server
 from apps.cipher.commercial_practice_fixture import BOOTSTRAP_LOGIN, ESTIMATOR_LOGIN
+from apps.cipher.commercial_sessions import IDLE_SECONDS
 from apps.cipher.core.db import WorkspaceModeError
 
 
@@ -421,11 +422,16 @@ class CommercialPracticeServerTests(unittest.TestCase):
         self.assertEqual(before, self.snapshot())
 
     def test_expired_or_absent_session_cannot_read_or_preview(self):
+        # Create and expire sessions on one exact, deterministic clock.
+        now = 1000.0
+        self.server.sessions.clock = lambda: now
         for headers in ({}, self.anonymous()[0], {"Cookie": COOKIE_NAME + "=" + "x" * 43}):
             self.assertEqual(self.api("estimates", headers=headers)[0], 401)
         headers = self.session()
-        stored = self.server.sessions._sessions[headers["Cookie"].partition("=")[2]]
-        self.server.sessions.clock = lambda: stored.last_seen + 1800
+        now += IDLE_SECONDS - 1
+        self.assertEqual(self.api("estimates", headers=headers)[0], 200)
+        # The successful read refreshed activity; expire exactly at its cutoff.
+        now += IDLE_SECONDS
         before = self.snapshot()
         self.assertEqual(self.api("estimates", headers=headers)[0], 401)
         status, _, _ = self.api(f"estimates/{self.r['current_estimate_id']}/request-acceptance:preflight",

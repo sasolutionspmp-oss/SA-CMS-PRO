@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 import re
 import secrets
+from stat import S_ISREG
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import parse_qs, unquote, urlsplit
@@ -29,6 +30,14 @@ MIME_TYPES = {
     ".ico": "image/x-icon",
     ".woff2": "font/woff2",
 }
+
+
+def _is_static_file(path: Path) -> bool:
+    """Keep filesystem errors visible instead of suppressing them in is_file()."""
+    try:
+        return S_ISREG(path.stat().st_mode)
+    except (FileNotFoundError, NotADirectoryError):
+        return False
 
 
 class PracticeHTTPServer(ThreadingHTTPServer):
@@ -183,11 +192,11 @@ class PracticeHandler(BaseHTTPRequestHandler):
             candidate = (root / relative).resolve()
             candidate.relative_to(root)
             # Missing assets never fall back to the shell.
-            if not candidate.is_file() and "." not in path and not path.startswith("/assets/"):
+            if not _is_static_file(candidate) and "." not in path and not path.startswith("/assets/"):
                 candidate = (root / "index.html").resolve()
             candidate.relative_to(root)
             mime = MIME_TYPES.get(candidate.suffix)
-            if not candidate.is_file() or not mime:
+            if not _is_static_file(candidate) or not mime:
                 self._error(404, "web_build_missing", "Build the Fluent practice app in apps/cipher/web before opening this page.")
                 return
             payload = candidate.read_bytes()
