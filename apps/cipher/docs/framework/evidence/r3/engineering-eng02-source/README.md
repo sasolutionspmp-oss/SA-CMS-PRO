@@ -7,3 +7,9 @@
 [Original failures](retained-failures.json) retain the duplicate-review-dialog product defect, test selector/harness failures, build exit 137 and renderer/memory interruptions. [Backend failures](backend-retained-failures.json) remain separately preserved. Passing continuations never rewrite failed runs.
 
 The actual built SAP UI5 app is exercised against explicit API contract fixtures. Shared standalone fixture pages use their proper harness. No image or fixture result is native persistence or a live operational screenshot. Native Frappe ENG-02 integration and an actual native UI walkthrough remain pending; no source/schema was installed into MAIN or the preserved isolated site. Live Ricky/QuickBooks, solver execution, professional certification, external distribution and commercial effects are outside this source qualification.
+
+## Compiled CI continuation
+
+[The six-path continuation](ci-static-source-manifest.json) retains 834 full source files and the unchanged 925-file shipped build. It builds 381 private fixture/app files, including the three existing standalone HTML entry points, then serves them through a light static preview. The application, contracts and business/permission services are unchanged. The native test correction is separate from product grants.
+
+[Fresh qualification](ci-static-qualification.json) passed all 513 frontend checks in one run, with one worker, no retries/skips/flaky outcomes and no new memory kills. 20 reporter checks cover the bounded diagnostics, including two real subprocess failure/timeout cases. CI uses two bounded workers and reports process exit/duration/timeout without raw private output. Historical failed/hung runs stay failed. The corrected native ENG-02 fixture still requires its fresh hosted result.

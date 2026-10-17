@@ -15,7 +15,7 @@ Foundation services, the official SAP UI5/Horizon shell, persistent Project/Task
 
 Current engineering work follows the original package sequence:
 
-- **[ENG-01: RFIs/submittals](ENGINEERING_ENG01.md)** has implemented backend and unified SAP UI5 journeys for independent official technical decisions and separately authorized internal transmittals. Host/browser contract checks pass; corrected native CI and actual native UI qualification remain open.
+- **[ENG-01: RFIs/submittals](ENGINEERING_ENG01.md)** has implemented backend and unified SAP UI5 journeys for independent official technical decisions and separately authorized internal transmittals. Host/browser contract checks pass. Corrected 9029585b CI passed native backend integration and workflows, then timed out in its browser stage; actual native UI and full CI qualification remain open.
 - **[ENG-02: engineering work packages](ENGINEERING_ENG02.md)** adds assignments, design basis, exact authored quantities/units, recorded calculations, deliverables and designated independent checks. Backend and UI source are implemented and locally verified; native qualification remains open. A completed manual calculation record does not mean a solver executed or a document was issued.
 - **DOC-03: issued sets and specifications/contracts library** is the next original backend package, now started in a separate source workspace. Its implementation is not yet published or qualified.
 

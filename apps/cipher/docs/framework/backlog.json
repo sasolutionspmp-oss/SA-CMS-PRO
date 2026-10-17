@@ -912,9 +912,9 @@
       "scope": "RFI and submittal revisions, checking/dispositions and controlled distribution",
       "evidence": "Successor revisions retain originals; technical response does not authorize commercial change",
       "status": "active",
-      "local_contract_status": "implemented_host_and_browser_contracts_verified_native_pending",
+      "local_contract_status": "implemented_host_browser_contracts_and_exact_source_native_backend_verified_UI_pending",
       "external_qualification_status": "not_evaluated",
-      "qualification_limit": "Original RFI/submittal and separate internal transmittal backend/SAP UI5 source implemented. Host checks and browser contract fixtures verified; actual Frappe integration, native UI walkthrough and C18 completion remain pending. No MAIN installation, default duty grant, external delivery, commercial effect or live model/accounting connection.",
+      "qualification_limit": "Native integration/backend/workflow CI passed on 9029585b. Overall CI failed at browser-stage 920-second ceiling without a report. Actual native UI and current changed-source full CI remain pending; source and original failures remain separately tracked. No MAIN installation or live providers.",
       "implementation_evidence": "ENGINEERING_ENG01.md"
     },
     {

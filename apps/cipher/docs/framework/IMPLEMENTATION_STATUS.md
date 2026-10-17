@@ -10,6 +10,10 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 The original DOC-03 issued-set/specification/contract-library backend has started in a separate source workspace. It is not yet published or qualified. Closed estimating/calibration work stays closed. MAIN and the preserved isolated runtime remain unchanged; live Ricky and QuickBooks remain unconnected.
 
+The corrected ENG-01 hosted run passed native integration/backend checks and all eight workflow procedures on 9029585b; overall CI failed at the browser-stage 920-second ceiling without a final report. [Exact outcome](evidence/r3/engineering-eng01-source/native-ci-corrected-backend-pass.json). The new ENG-02 source has its own fresh CI run; no earlier pass is applied to changed source.
+
+[The compiled CI continuation](evidence/r3/engineering-eng02-source/ci-static-qualification.json) now passes all 513 frontend checks in one fresh run with no retries/skips/failures. It serves a private compiled app plus standalone test pages rather than the memory-heavy development server. Bounded process diagnostics and the isolated native-UOM fixture correction accompany it; the new native result is pending. Shipped UI/business services are unchanged.
+
 ## Prior source checkpoint: original ENG-01 implementation
 
 [The Engineering workspace](ENGINEERING_ENG01.md) adds original RFI/submittal revisions, source selection, designated reviews, independent official technical facts and separately controlled exact-recipient internal transmittals. The shared SAP UI5 shell includes project registers, ObjectPages, approval review, immutable history and mounted original-UUID recovery. The combined source binds 789 files and the production build 921 files. Backend host verification and the focused browser flows passed; actual Frappe integration and native UI evidence remain pending, so ENG-01/C18 are not marked complete.

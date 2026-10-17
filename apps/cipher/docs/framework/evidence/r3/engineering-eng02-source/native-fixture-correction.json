@@ -1,0 +1,16 @@
+{
+  "schema": "cipher.eng02.native-fixture-correction.v1",
+  "source_path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_packages_native.py",
+  "before_sha256": "d226569fd2dc0390285621a9b1601b36d83a5280630cf350c15ad7d4de312434",
+  "after_sha256": "d2ebff87a187787b4234bdc5d03b158975a2e4be94d17f77953b097f4859f201",
+  "changes": [
+    "Add a unique fixture-only native UOM-read role to preparer/checker using supported Frappe permission APIs; product role grants stay unchanged.",
+    "Assert actual native UOM read before selector assertions.",
+    "Find the exact qualified unit through bounded25/none cursor pages instead of assuming it appears in the first page.",
+    "Rollback fixture rights and clear permission caches during teardown."
+  ],
+  "reason": "Fixture omitted the native UOM read prerequisite used by the existing adapter; assertion line also assumed first-page presence. Fresh native execution is required to verify the correction.",
+  "product_service_or_permission_changes": false,
+  "local_native_execution": false,
+  "new_hosted_result": "pending"
+}

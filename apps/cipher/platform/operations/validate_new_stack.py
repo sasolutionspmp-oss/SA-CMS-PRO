@@ -252,6 +252,7 @@ class Runner:
                 process.communicate(input=input_text, timeout=min(self.args.stage_timeout + 20,
                     self.args.overall_timeout - (time.monotonic() - self.started)))
             except subprocess.TimeoutExpired:
+                row["timed_out"] = True
                 os.killpg(process.pid, signal.SIGTERM)
                 try:
                     process.wait(timeout=5)
@@ -263,6 +264,8 @@ class Runner:
                        private_log=str(log), log_sha256=sha(log))
         if row["status"] == "timed_out" or process.returncode:
             row["status"] = "failed"
+            print("PROCESS_FAILURE " + json.dumps({key: row.get(key) for key in
+                  ("name", "exit_code", "duration_seconds", "timed_out")}, sort_keys=True), flush=True)
             raise ValidationFailure(name + " failed; inspect its private log")
         row["status"] = "passed"
         print("PASS " + name, flush=True)
@@ -452,6 +455,10 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
             require(executable and Path(executable).is_file(), "Supply CIPHER_CHROME or use --install-browser")
             env["CIPHER_CHROME"] = executable
         browser_report = self.work / "browser-contracts.json"
+        env["CIPHER_BUILT_PRODUCT_DIST"] = str(target / "dist")
+        env["CIPHER_BROWSER_BUILD_DIR"] = str(self.work / "browser-fixtures-dist")
+        env["CIPHER_BROWSER_WORKERS"] = "2"
+        self.stage("frontend-browser-fixture-build", ["node", "scripts/build-browser-fixtures.mjs"], cwd=target, env=env)
         env["PLAYWRIGHT_JSON_OUTPUT_FILE"] = str(browser_report)
         self.browser_contracts(target, env, browser_report)
 

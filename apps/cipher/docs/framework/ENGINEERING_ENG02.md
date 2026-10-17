@@ -25,3 +25,7 @@ Browser contract checks run the actual built SAP UI5 application against explici
 The actual Frappe integration workflow `TestEngineeringPackagesNative` is declared for the fresh-site CI gate. It covers a real stored no-text PDF and qualified UOM, package-only selectors, all three independent check facts, original receipt replay, successor preservation and native write denial. Its execution result must be recorded separately; the source implementation alone does not complete ENG-02 or C19.
 
 MAIN and the preserved isolated site remain unchanged. This package does not connect the live Ricky model or QuickBooks, issue documents or authorize external delivery. The existing award-action rejection remains unchanged. Optional closed Company refinements remain deferred; the next original dependency-ready work is ENG-03/DOC-03.
+
+## Native follow-up
+
+The [first fresh-site run](evidence/r3/engineering-eng02-source/native-ci-first-failure.json) installed the new app/schema, then failed at the checker/unit selector assertions in `test_engineering_packages_native.py:45`. The isolated fixture had not provisioned native UOM-read permission, which the shared unit adapter requires. The [fixture continuation](evidence/r3/engineering-eng02-source/native-fixture-correction.json) adds an explicit temporary native reader role, asserts actual read permission and follows bounded unit pages rather than assuming first-page placement. No product permission or service guard changes. Its native result remains pending.
