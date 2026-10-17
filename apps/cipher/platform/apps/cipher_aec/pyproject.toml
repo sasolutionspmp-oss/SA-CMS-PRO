@@ -9,7 +9,7 @@ description = "Cipher AEC project operations and governed integration services f
 requires-python = ">=3.12"
 authors = [{name = "S&A Solutions"}]
 license = {text = "GPL-3.0-or-later"}
-dependencies = ["pypdf==6.15.0", "fonttools==4.67.0"]
+dependencies = ["pypdf==6.15.0", "fonttools==4.67.0", "Pillow==12.3.0"]
 
 [project.optional-dependencies]
 validation = ["jsonschema>=4.23,<5", "openapi-spec-validator==0.7.2"]

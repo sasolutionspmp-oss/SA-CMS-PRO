@@ -6,7 +6,7 @@ import secrets
 import frappe
 
 from cipher_aec.api.errors import DomainError
-from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, ENGINEERING_ABILITIES, DOCUMENT_CONTROL_ABILITIES, assert_synthetic_site, trusted_write
+from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, ENGINEERING_ABILITIES, DOCUMENT_CONTROL_ABILITIES, FIELD_ABILITIES, SEMANTIC_ABILITIES, assert_synthetic_site, trusted_write
 
 
 def after_install():
@@ -23,6 +23,8 @@ def after_install():
 def after_migrate():
     ensure_site_keys()
     migrate_explicit_scopes()
+    from cipher_aec.projects.install import after_migrate as project_migrate
+    project_migrate()
     for table, columns, name in (
         ("Cipher Project Duty", ["person", "company", "project", "ability"], "cipher_duty_scope_unique"),
         ("Cipher Command Receipt", ["person", "operation_id"], "cipher_command_person_uuid_unique"),
@@ -53,6 +55,8 @@ def after_migrate():
     package_migrate()
     from cipher_aec.document_control.install import after_migrate as documentary_migrate
     documentary_migrate()
+    from cipher_aec.field.install import after_migrate as field_migrate
+    field_migrate()
     from cipher_aec.governance.approvals import install_policy
     for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
         frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
@@ -159,7 +163,7 @@ def seed_synthetic(passwords=None):
             projects[key] = name
         for ability in ("project.read", "approval.decide"):
             _grant(people["reviewer"], company_name, projects["project"], ability)
-        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES):
+        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES - FIELD_ABILITIES - SEMANTIC_ABILITIES):
             _grant(people["primary"], company_name, projects["project"], ability)
             _grant(people["outsider"], company_name, projects["other_project"], ability)
             for project in projects.values():
@@ -219,7 +223,7 @@ def grant_synthetic_company_duties(user, company, abilities=None):
     assert_synthetic_site()
     if frappe.session.user != "Administrator":
         raise DomainError("administrator_required", "Only the synthetic administrator may grant fixture duties.", 403)
-    abilities = abilities or sorted(COMPANY_ABILITIES)
+    abilities = abilities or sorted(COMPANY_ABILITIES - DOCUMENT_CONTROL_ABILITIES - SEMANTIC_ABILITIES)
     person = frappe.db.get_value("Cipher Identity Binding", {"user": user, "active": 1}, "person")
     if not person or not frappe.db.exists("Company", company):
         raise DomainError("not_found", "The explicit fixture identity or Company is unavailable.", 404)

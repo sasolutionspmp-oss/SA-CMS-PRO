@@ -21,8 +21,17 @@ def present_project(doc, actor=None):
 def present_task(doc):
     from html import unescape
     from frappe.utils import strip_html
+    from .tasks import present_assignees, active_assignments
+    from .task_rules import assignment_state, task_version
+    assignments = active_assignments(doc)
+    try:
+        assignment_state(doc, assignments)
+        assignment_conflict = False
+    except DomainError:
+        assignment_conflict = True
     return {"id": doc.name, "subject": doc.subject, "status": doc.status, "project": doc.project,
-        "version": version_of(doc), "description": unescape(strip_html((doc.description or "").replace("<br>", "\n")))}
+        "version": task_version(doc), "description": unescape(strip_html((doc.description or "").replace("<br>", "\n"))),
+        "assignees": present_assignees(doc, assignments), "assignment_conflict": assignment_conflict}
 
 
 def _page_scope(actor, company, project, collection):
@@ -101,6 +110,8 @@ def create_task(company, project, operation_id, expected_version, subject, descr
             raise DomainError("stale_version", "This project changed. Refresh it before saving the task.", 412)
         task = frappe.get_doc({"doctype": "Task", "project": project, "subject": subject,
             "description": rendered_description, "status": "Open"})
+        task.flags.from_project = True
+        task.flags.ignore_reschedule = True
         task.insert(ignore_permissions=True)
         record.db_set("modified", now_datetime(), update_modified=False)
         append_event(actor=actor, company=company, project=project, event="task.created",

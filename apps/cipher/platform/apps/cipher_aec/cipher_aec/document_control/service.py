@@ -36,7 +36,11 @@ def command(company,project,operation_id,name,payload,effect,*,ability=rules.WRI
         if ability!=rules.MANAGE and project_doc.status in ('Completed','Cancelled'):raise DomainError('project_closed','This Project is closed for new documentary work.',409)
         if any(current_actor(user).person_id!=person for user,person in plan.items()):raise DomainError('document_people_changed','The exact recipient identities changed.',412)
     token=_people.set(plan)
-    try:return run_command(company=company,project=project,operation_id=operation_id,command='document.control.'+name+'.v1',payload=payload,ability=ability,guard=guard,effect=effect,participant_people=tuple(sorted(set(plan.values()))))
+    try:
+        from .locking import for_payload
+        context=for_payload(company,project,name,payload,recipient_people=plan)
+        options={'document_context':context} if context is not None else {}
+        return run_command(company=company,project=project,operation_id=operation_id,command='document.control.'+name+'.v1',payload=payload,ability=ability,guard=guard,effect=effect,participant_people=tuple(sorted(set(plan.values()))),**options)
     finally:_people.reset(token)
 
 def _document(name,company,project,actor,*,lock=False):
@@ -45,16 +49,26 @@ def _document(name,company,project,actor,*,lock=False):
     if value.company!=company or value.project!=project or (value.scope_type or 'Project')!='Project':raise DomainError('not_found','This original Project document is unavailable.',404)
     return value
 
-def _prelock(artifacts,company,project,actor,*,lock=False):
+def _prelock(artifacts,company,project,actor,*,lock=False,allow_foreign=False):
     # The full immutable closure is known before the first native Document lock.
     locators=[FrappeDocumentRepository().revision_scope(row['revision_id']) for row in artifacts]
+    if allow_foreign and any(row.project!=project or (row.scope_type or 'Project')!='Project' for row in locators):
+        if lock:
+            from .locking import DocumentContext
+            with DocumentContext(company,project,artifacts=artifacts).hold(actor):pass
+        return
     if any(row.company!=company or row.project!=project or (row.scope_type or 'Project')!='Project' for row in locators):raise DomainError('not_found','This original Project source is unavailable.',404)
     if lock:rights.prelock({row.document for row in locators},company,project,actor)
 
 def verify_artifacts(artifacts,company,project,actor,*,operation='read',lock=False):
+    locators=[FrappeDocumentRepository().revision_scope(row['revision_id']) for row in artifacts]
+    if any(row.company!=company or row.project!=project or (row.scope_type or 'Project')!='Project' for row in locators):
+        from .shared import verify_artifacts as verify_originals
+        return verify_originals(artifacts,company,actor,operation=operation,lock=lock)
     _prelock(artifacts,company,project,actor,lock=lock)
     for row in artifacts:rights.require(row['document_id'],company,project,operation,actor,lock=lock)
-    actual=sources.resolve_artifacts(company,project,[{k:row[k] for k in ('revision_id','source_sha256')} for row in artifacts],actor,lock=lock)
+    actual=[]
+    for offset in range(0,len(artifacts),8):actual.extend(sources.resolve_artifacts(company,project,[{k:row[k] for k in ('revision_id','source_sha256')} for row in artifacts[offset:offset+8]],actor,lock=lock))
     if actual!=artifacts:raise DomainError('document_control_integrity','The retained original artifact bytes or metadata differ.',409)
 
 def resolve(artifacts,company,project,actor,*,lock=False):
@@ -117,7 +131,7 @@ def create_issue_set(company,project,operation_id,definition,artifacts,adoptions
     if len({r['id'] for r in adoptions})!=len(adoptions):rules.fail('Choose each adoption once.','adoptions')
     def effect(actor,_):
         planned=[a for ref in adoptions for a in raw('adoption',ref['id'],company,project)['artifacts']]
-        _prelock([*artifacts,*planned],company,project,actor,lock=True)
+        _prelock([*artifacts,*planned],company,project,actor,lock=True,allow_foreign=True)
         selected=[]
         for ref in adoptions:
             value=read('adoption',ref['id'],company,project,actor,lock=True)
@@ -136,11 +150,15 @@ def create_transmittal(company,project,operation_id,issue_id,issue_digest,recipi
     def effect(actor,_):
         original=read('issue',issue_id,company,project,actor,lock=True)
         if digest(original)!=issue_digest:raise DomainError('stale_issue','Select the exact independently issued set.',412)
+        from .lifecycle import require_current_issue
+        require_current_issue(original,actor,lock=True)
         people=[];plan=_people.get() or {}
         for user in recipients:
             person=current_actor(user)
             if plan.get(user)!=person.person_id:raise DomainError('document_people_changed','The exact intended recipient changed.',412)
-            person=current_actor(user,lock=True);require_project(company,project,ability=rules.READ,actor=person,lock=True);verify_artifacts(original['artifacts'],company,project,person,lock=True);people.append({'user':person.user,'person':person.person_id})
+            from .locking import recipient_read
+            declared={'user':person.user,'person':person.person_id}
+            recipient_read({'company':company,'project':project,'issue_id':issue_id,'artifacts':original['artifacts']},declared,actor,lock=True);people.append(declared)
         if len({p['person'] for p in people})!=len(people):rules.fail('Select distinct canonical recipients.','recipients')
         value=base(company,project,actor,parent_id=issue_id,issue_id=issue_id,issue_digest=issue_digest,artifacts=deepcopy(original['artifacts']),recipients=people,purpose=purpose,required_response=required_response,channel='internal',package_digest=original['package_digest']);repo.write('transmittal',value)
         return {'transmittal':value,'history_id':event(actor,value,operation_id,'transmittal','transmittal.prepared')}
@@ -164,7 +182,7 @@ def read(kind,name,company,project,actor,*,lock=False):
     planned=value.get('artifacts',[])
     if kind=='library':planned=raw('library_revision',value['current_revision'],company,project)['artifacts']
     elif kind=='evidence':planned=[*planned,*raw(value['subject_kind'],value['subject_id'],company,project)['artifacts']]
-    if planned:_prelock(planned,company,project,actor,lock=lock)
+    if planned:_prelock(planned,company,project,actor,lock=lock,allow_foreign=True)
     if kind=='rights':
         if lock:rights.prelock([value['parent_id'],value['evidence_artifact']['document_id']],company,project,actor)
         _document(value['parent_id'],company,project,actor,lock=lock);rights.verify_evidence(value,actor,lock=lock)
@@ -181,7 +199,10 @@ def read(kind,name,company,project,actor,*,lock=False):
             if previous['parent_id']!=value['parent_id'] or previous['revision_number']+1!=value['revision_number']:raise DomainError('document_control_integrity','The retained library predecessor differs.',409)
         verify_artifacts(value['artifacts'],company,project,actor,lock=lock)
     elif kind=='adoption_request':
-        original=read('library_revision',value['library_revision'],company,project,actor,lock=lock)
+        if 'library_scope' in value:
+            from .shared import read_origin
+            original=read_origin('library_revision',value['library_revision'],company,value['library_scope'],actor,lock=lock)
+        else:original=read('library_revision',value['library_revision'],company,project,actor,lock=lock)
         if digest(original)!=value['library_digest'] or original['parent_id']!=value['parent_id'] or original['artifacts']!=value['artifacts']:raise DomainError('document_control_integrity','The adopted original library source differs.',409)
     elif kind=='issue_set':
         if rules.package_digest(value)!=value['package_digest']:raise DomainError('document_control_integrity','The original issue package differs.',409)
@@ -192,12 +213,22 @@ def read(kind,name,company,project,actor,*,lock=False):
     elif kind=='transmittal':
         original=read('issue',value['issue_id'],company,project,actor,lock=lock)
         if digest(original)!=value['issue_digest'] or original['artifacts']!=value['artifacts'] or original['package_digest']!=value['package_digest'] or value['parent_id']!=original['id']:raise DomainError('document_control_integrity','The original issued transmittal source differs.',409)
-    elif kind in ('issue','adoption','distribution'):
-        subjectkind={'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal'}[kind];original=read(subjectkind,value['subject_id'],company,project,actor,lock=lock)
-        if digest(original)!=value['subject_digest'] or original['artifacts']!=value['artifacts'] or value['parent_id']!=original['id']:raise DomainError('document_control_integrity','The independently authorized original differs.',409)
+    elif kind=='lifecycle_request':
+        from .lifecycle import verify_request
+        verify_request(value,actor,lock=lock)
+    elif kind=='lifecycle':
+        from .lifecycle import verify_event
+        verify_event(value,actor,lock=lock)
+    elif kind in ('clause_use','redline'):
+        from .clauses import verify
+        verify(kind,value,actor,lock=lock)
+    elif kind in ('issue','adoption','distribution','clause_application'):
+        subjectkind={'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal','clause_application':'redline','lifecycle':'lifecycle_request'}[kind];original=read(subjectkind,value['subject_id'],company,project,actor,lock=lock)
+        if digest(original)!=value['subject_digest'] or original['artifacts']!=value['artifacts'] or value['parent_id']!=(original['parent_id'] if kind=='lifecycle' else original['id']):raise DomainError('document_control_integrity','The independently authorized original differs.',409)
         if kind in ('issue','distribution') and original['package_digest']!=value['package_digest']:raise DomainError('document_control_integrity','The exact issued byte package differs.',409)
         if kind=='distribution' and original['recipients']!=value['recipients']:raise DomainError('document_control_integrity','The original distribution recipients differ.',409)
         _official_evidence(kind,value,actor,lock=lock)
+        if kind=='clause_application' and any(value[k]!=original[k] for k in ('target','target_snapshot','original_text','proposed_text','proposed_sha256','target_changed')):raise DomainError('clause_integrity','The approved documentary relationship differs from its original proposed redline.',409)
         if kind=='distribution' and actor.person_id not in {p['person'] for p in original['recipients']} and actor.person_id!=original['author_person']:
             require_project(company,project,ability=rules.DISTRIBUTE,actor=actor,lock=lock)
     elif kind=='evidence':
@@ -208,9 +239,13 @@ def read(kind,name,company,project,actor,*,lock=False):
 
 def _official_evidence(kind,value,actor,*,lock=False):
     packet=frappe.get_doc('Cipher Approval Packet',value['packet_id'],for_update=lock);decision=frappe.get_doc('Cipher Approval Decision',value['decision_id'],for_update=lock);outer=json.loads(packet.manifest_json);effect=outer.get('domain',{}).get('effect',{})
-    subjectkind={'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal'}[kind]
+    subjectkind={'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal','clause_application':'redline','lifecycle':'lifecycle_request'}[kind]
     consumed=frappe.db.sql('SELECT * FROM `tabCipher Approval Consumption` WHERE packet=%s'+(' FOR UPDATE' if lock else ''),(packet.name,),as_dict=True)
     if packet.company!=value['company'] or packet.project!=value['project'] or (packet.scope_type or 'Project')!='Project' or packet.action!=rules.ACTIONS[subjectkind] or packet.subject_type!=rules.KINDS[subjectkind] or packet.subject_id!=value['subject_id'] or digest(outer)!=packet.manifest_hash or digest(effect)!=value['effect_digest'] or effect.get('schema')!='cipher.document.authorization.v1' or effect.get('subject_digest')!=value['subject_digest'] or decision.packet!=packet.name or decision.manifest_hash!=packet.manifest_hash or decision.decision!='Grant' or decision.actor_person!=value['checked_by_person'] or decision.actor_person==packet.requester_person or len(consumed)!=1:raise DomainError('document_approval_integrity','The independent documentary authorization cannot be verified.',409)
+    if kind=='lifecycle':
+        original=raw('lifecycle_request',value['subject_id'],value['company'],value['project'],lock=lock)
+        expected={'schema':'cipher.document.authorization.v1','action':rules.ACTIONS['lifecycle_request'],'subject_kind':'lifecycle_request','subject_id':original['id'],'subject_digest':digest(original),'artifacts':original['artifacts'],'no_effects':dict(rules.NO_EFFECTS),'electronic_signature':False,'professional_seal':False,'external_delivery':False,'commercial_execution':False,'document_id':original['parent_id'],'before':original['before'],'definition':original['definition'],'replacement':original['replacement'],'expected_version':original['expected_version']}
+        if effect!=expected:raise DomainError('document_approval_integrity','The consumed lifecycle effect differs from its exact original request.',409)
     consumed=consumed[0]
     if consumed.decision!=decision.name or consumed.actor_person!=value['author_person'] or consumed.actor_person!=packet.requester_person or consumed.company!=value['company'] or consumed.project!=value['project'] or (consumed.scope_type or 'Project')!='Project' or consumed.result_hash!=digest({kind:value}):raise DomainError('document_approval_integrity','The exact consumed documentary effect differs.',409)
 
@@ -219,8 +254,18 @@ def get_record(company,project,kind,record_id):
     if kind in ('library_revision','adoption_request','adoption'):
         source=value
         if kind=='adoption':source=read('adoption_request',value['subject_id'],company,project,actor)
-        revision=source if kind=='library_revision' else read('library_revision',source['library_revision'],company,project,actor)
-        current=raw('library',revision['parent_id'],company,project)['current_revision']==revision['id'] and all(_document(row['document_id'],company,project,actor).current_revision==row['revision_id'] for row in revision['artifacts'])
+        if 'library_scope' in source:
+            from .shared import read_origin
+            revision=read_origin('library_revision',source['library_revision'],company,source['library_scope'],actor)
+            if source['library_scope']['scope_type']=='Company':
+                from .shared import raw as raw_company
+                header=raw_company('library',revision['parent_id'],company)
+            else:header=raw('library',revision['parent_id'],company,source['library_scope']['project'])
+            from .scopes import document
+            current=header['current_revision']==revision['id'] and all(document(row['document_id'],company,source['library_scope']['scope_type'],source['library_scope']['project'],actor).current_revision==row['revision_id'] for row in revision['artifacts'])
+        else:
+            revision=source if kind=='library_revision' else read('library_revision',source['library_revision'],company,project,actor)
+            current=raw('library',revision['parent_id'],company,project)['current_revision']==revision['id'] and all(_document(row['document_id'],company,project,actor).current_revision==row['revision_id'] for row in revision['artifacts'])
     return {'record':value,'record_digest':digest(value),'library_current':current}
 
 def list_records(company,project,kind,parent_id=None,limit=25,cursor=None,count_mode='none'):

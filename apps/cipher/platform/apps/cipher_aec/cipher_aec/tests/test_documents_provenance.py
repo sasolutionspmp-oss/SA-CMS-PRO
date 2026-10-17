@@ -22,6 +22,11 @@ def document(name):
 
 
 class ProvenanceAuthority(unittest.TestCase):
+    def setUp(self):
+        # Explicit no-policy fixture: exercise producer ancestry separately from
+        # DOC03's real current-policy/evidence admission host cases.
+        self.enterContext(patch.dict(sys.modules, {'cipher_aec.document_control.rights':types.SimpleNamespace(authorize=lambda *a,**k:None)}))
+
     def adapter(self, authorize):
         return patch.dict(sys.modules, {"cipher_aec.commercial.output_sources":types.SimpleNamespace(authorize_binding=authorize,binding_plan=lambda binding,actor,lock=False:{})})
 

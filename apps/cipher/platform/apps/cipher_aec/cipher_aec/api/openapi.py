@@ -48,7 +48,8 @@ def _signature(identifier):
 
 
 def _parameter(name, default, schemas):
-    strings={"company","project","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id","subject_id","currency","unit_id","dimension"}
+    strings={"company","project","task","document_id","revision_id","packet_id","run_id","proposal_id","filename","title","sha256","query","question","subject","description","reason","excerpt_sha256","expected_version","manifest_hash","dataset_id","subject_id","currency","unit_id","dimension"}
+    if name=="assignee_person":return {"type":["string","null"],"description":"Canonical Cipher Person to assign; null explicitly removes the governed assignment. Actor identity always comes from the session."}
     if name=="operation_id":return {"type":"string","format":"uuid","description":"Canonical UUIDv4; exactly equals Idempotency-Key."}
     if name=="manifest":return {"oneOf":[_ref("CanonicalManifest"),{"type":"string","maxLength":MAX_JSON_BYTES}]}
     if name=="references":return {"type":"array","maxItems":MAX_RECORDS,"items":_object({"id":{"type":"string","format":"uuid"},"kind":{"type":"string","enum":sorted(NATIVE_DOCTYPES)},"name":{"type":"string"},"unit_definition":_object({"dimension":{"type":"string","enum":sorted(DIMENSIONS)},"precision":{"type":"integer","minimum":0,"maximum":12}})},["id","kind","name"])}
@@ -101,8 +102,11 @@ def generate():
     schemas.update(_rewrite(estimating["$defs"]))
     est_requests={"register_unit":"RegisterUnitRequest","create_conversion":"CreateConversionRequest","create_rate":"CreateRateRequest","create_assembly":"CreateAssemblyRequest","create_estimate":"CreateEstimateRequest","calculate_revision":"CalculateRevisionRequest","get_record":"GetEstimateRecordRequest","list_records":"ListEstimateRecordsRequest","list_units":"ListEstimateUnitsRequest","list_acceptances":"ListEstimateAcceptancesRequest","acceptance_subject":"EstimateAcceptanceSubjectRequest"}
     typed_requests = {"cipher_aec.estimating.api": est_requests, "cipher_aec.api.masters":{"parties":"NativePartiesRequest","price_lists":"NativePriceListsRequest","units":"NativeUnitsRequest","currencies":"NativeCurrenciesRequest","items":"NativeItemsRequest","cost_centers":"NativeCostCentersRequest","accounts":"NativeAccountsRequest","award_items":"NativeAwardItemsRequest"}}
+    typed_requests["cipher_aec.api.semantic"] = {"prepare":"SemanticPrepareRequest", "cancel":"SemanticJobRequest", "status":"SemanticStatusRequest", "query":"SemanticQueryRequest"}
     for module, filename, requests in (
-        ("cipher_aec.document_control.api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcSetRightsRequest', 'create_library': 'DcCreateLibraryRequest', 'revise_library': 'DcReviseLibraryRequest', 'create_adoption': 'DcCreateAdoptionRequest', 'create_issue_set': 'DcCreateIssueSetRequest', 'create_transmittal': 'DcCreateTransmittalRequest', 'record_evidence': 'DcRecordEvidenceRequest', 'get_record': 'DcGetRecordRequest', 'list_records': 'DcListRecordsRequest', 'list_people': 'DcListPeopleRequest'}),
+        ("cipher_aec.field.api", "field/schemas/api-v1.schema.json", {'create_record': 'FdCreateRecordRequest', 'revise_record': 'FdReviseRecordRequest', 'transition': 'FdTransitionRequest', 'get_record': 'FdGetRecordRequest', 'list_records': 'FdListRecordsRequest'}),
+        ("cipher_aec.document_control.company_api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcCompanySetRightsRequest', 'create_library': 'DcCompanyCreateLibraryRequest', 'revise_library': 'DcCompanyReviseLibraryRequest', 'get_record': 'DcCompanyGetRecordRequest', 'list_records': 'DcCompanyListRecordsRequest'}),
+        ("cipher_aec.document_control.api", "document_control/schemas/api-v1.schema.json", {'set_rights': 'DcSetRightsRequest', 'create_library': 'DcCreateLibraryRequest', 'revise_library': 'DcReviseLibraryRequest', 'create_adoption': 'DcCreateAdoptionRequest', 'create_issue_set': 'DcCreateIssueSetRequest', 'create_transmittal': 'DcCreateTransmittalRequest', 'record_evidence': 'DcRecordEvidenceRequest', 'get_record': 'DcGetRecordRequest', 'list_records': 'DcListRecordsRequest', 'list_people': 'DcListPeopleRequest', 'create_clause_use': 'DcCreateClauseUseRequest', 'create_redline': 'DcCreateRedlineRequest', 'read_clause_target': 'DcReadClauseTargetRequest', 'create_shared_adoption':'DcCreateSharedAdoptionRequest', 'issued_standing': 'DcIssuedStandingRequest', 'request_lifecycle': 'DcRequestLifecycleRequest'}),
         ("cipher_aec.engineering_packages.api", "engineering_packages/schemas/api-v1.schema.json", {'create_package': 'EpCreatePackageRequest', 'revise_package': 'EpRevisePackageRequest', 'create_basis': 'EpCreateBasisRequest', 'create_calculation': 'EpCreateCalculationRequest', 'create_deliverable': 'EpCreateDeliverableRequest', 'get_record': 'EpGetRecordRequest', 'list_records': 'EpListRecordsRequest', 'list_people': 'EpListPeopleRequest', 'list_units': 'EpListUnitsRequest'}),
         ("cipher_aec.engineering.api", "engineering/schemas/api-v1.schema.json", {'create_rfi': 'EgCreateRfiRequest', 'revise_rfi': 'EgReviseRfiRequest', 'create_response': 'EgCreateResponseRequest', 'create_submittal': 'EgCreateSubmittalRequest', 'revise_submission': 'EgReviseSubmissionRequest', 'create_disposition': 'EgCreateDispositionRequest', 'create_transmittal': 'EgCreateTransmittalRequest', 'close_rfi': 'EgCloseRfiRequest', 'get_record': 'EgGetRecordRequest', 'list_records': 'EgListRecordsRequest', 'list_people': 'EgListPeopleRequest'}),
         ("cipher_aec.ricky.company_draft_save_api", "ricky/schemas/company-draft-save-api-v1.schema.json", {"draft_save_subject":"CompanyDraftSaveSubjectRequest", "save_draft":"CompanyDraftSaveRequest"}),
@@ -133,19 +137,22 @@ def generate():
         # contract still requires it for fresh optimistic commands.
         module, method_name = identifier.rsplit(".", 1)
         if module in typed_requests:
-            request_schema=schemas[typed_requests[module][method_name]]
-            properties=copy.deepcopy(request_schema["properties"])
-            required=list(request_schema["required"])
+            request_schema=copy.deepcopy(schemas[typed_requests[module][method_name]])
+            properties=request_schema["properties"]
+            required=request_schema["required"]
             if set(properties)!={name for name,_,_ in signature}:
                 raise ValueError("Domain request/signature drift: "+identifier)
         else:
             properties={name:_parameter(name,default,schemas) for name,required,default in signature}
             required=[name for name,is_required,default in signature if (is_required or name=="expected_version") and name!="operation_id"]
+            request_schema=_object(properties,required)
         if module in {"cipher_aec.api.approvals", "cipher_aec.api.company_approvals"} and "action" in properties:
             action_scope = "Company" if module.endswith("company_approvals") else "Project"
             properties["action"] = {"enum": sorted(action for action,spec in APPROVAL_ACTIONS.items() if spec.enabled and action_scope in spec.scopes)}
         if identifier in {"cipher_aec.documents.api.search_documents", "cipher_aec.documents.company_api.search_documents"}:
             properties["limit"]["maximum"]=20
+        if identifier=="cipher_aec.api.v1.update_task_status":
+            properties["status"]={"type":"string","enum":["Open","Working","Pending Review","Completed"]}
         data=_ref(route.response)
         body=_object({"message":_object({"schema":{"const":"cipher.api.v1"},"request_id":{"type":"string","format":"uuid"},"meta":_ref("Meta"),"data":data})})
         operation={"operationId":identifier,"tags":[identifier.split(".")[-2]],"summary":identifier.rsplit(".",1)[1].replace("_"," "),"security":[{"frappeSession":[]}],"responses":{"200":{"description":"Authorized result; Frappe message envelope is normalized once by the client.","content":{"application/json":{"schema":body}}}}}
@@ -153,12 +160,20 @@ def generate():
             operation["responses"]["200"]={"description":"Authorized source bytes as attachment; no JSON envelope.","headers":{"Content-Disposition":{"schema":{"type":"string"}},"X-Content-Type-Options":{"schema":{"const":"nosniff"}}},"content":{"application/octet-stream":{"schema":{"type":"string","format":"binary"}}}}
         if route.method=="GET":
             operation["parameters"]=[{"name":name,"in":"query","required":name in required,"schema":value} for name,value in properties.items()]
+            if identifier=="cipher_aec.document_control.api.read_clause_target":
+                # Separate query parameters cannot express sibling kind/ID
+                # conditions. Retain the exact closed request for tooling.
+                operation["x-request-schema"]=request_schema
         else:
-            operation["requestBody"]={"required":True,"content":{"application/json":{"schema":_object(properties,required)}}}
+            operation["requestBody"]={"required":True,"content":{"application/json":{"schema":request_schema}}}
             operation["parameters"]=[{"name":"X-Frappe-CSRF-Token","in":"header","required":True,"schema":{"type":"string"},"description":"Session token obtained from the authorized session endpoint."}]
             if route.command:
                 operation["parameters"].append({"name":"Idempotency-Key","in":"header","required":True,"schema":{"type":"string","format":"uuid"}})
                 operation["x-idempotency-scope"]="canonical-person + UUIDv4; payload-bound, current rights checked before replay"
+                if identifier=="cipher_aec.api.semantic.prepare":
+                    operation["x-idempotency-scope"]="explicit authorized corpus + rebuild operation UUID; source/profile/payload bound with current rights rechecked"
+                elif identifier=="cipher_aec.api.semantic.cancel":
+                    operation["x-idempotency-scope"]="explicit authorized corpus + original rebuild operation UUID; cancellation references the existing job without creating a second rebuild receipt"
         for status,description in {401:"Missing or expired session",403:"Current authority denied",404:"Unavailable or out-of-scope resource",409:"Operation, lifecycle, manifest or grant conflict",412:"Stale source version",422:"Invalid input",428:"Required version/idempotency precondition missing",429:"Rate limit",503:"Retryable concurrency or quarantined/unavailable service"}.items():
             operation["responses"][str(status)]={"description":description,"content":{"application/json":{"schema":error_body}}}
         operation["responses"]["503"]["headers"]={"Retry-After":{"schema":{"type":"integer","minimum":1},"description":"Present for retryable database concurrency conflicts."}}

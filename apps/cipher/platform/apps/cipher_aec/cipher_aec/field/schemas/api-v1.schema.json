@@ -1,0 +1,3026 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:field:api:v1",
+  "$defs": {
+    "FdUuid": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+      "format": "uuid"
+    },
+    "FdDigest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "FdTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "maxLength": 40
+    },
+    "FdDate": {
+      "type": "string",
+      "format": "date",
+      "minLength": 10,
+      "maxLength": 10
+    },
+    "FdQuantityValue": {
+      "type": "string",
+      "pattern": "^(?:0|[1-9][0-9]{0,11})(?:\\.[0-9]{1,6})?$",
+      "not": {
+        "pattern": "^0(?:\\.0{1,6})?$"
+      }
+    },
+    "FdFamily": {
+      "enum": [
+        "daily",
+        "ticket"
+      ]
+    },
+    "FdKind": {
+      "enum": [
+        "daily",
+        "daily_revision",
+        "quantity",
+        "ticket",
+        "ticket_revision",
+        "decision"
+      ]
+    },
+    "FdNoEffects": {
+      "type": "object",
+      "properties": {
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "procurement_change": {
+          "const": false
+        },
+        "invoice_change": {
+          "const": false
+        },
+        "financial_posting": {
+          "const": false
+        },
+        "payroll_release": {
+          "const": false
+        },
+        "quality_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "contract_change",
+        "budget_change",
+        "procurement_change",
+        "invoice_change",
+        "financial_posting",
+        "payroll_release",
+        "quality_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "FdPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "FdSourceInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/FdDigest"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "FdCapturedSource": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "source_sha256": {
+          "$ref": "#/$defs/FdDigest"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator",
+        "document_id",
+        "revision_number",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "FdPhotoInput": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/FdSourceInput"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "captured_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "representation": {
+          "enum": [
+            "source_image",
+            "photo_on_pdf_page"
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "caption",
+        "captured_at",
+        "representation"
+      ],
+      "additionalProperties": false
+    },
+    "FdQuantityDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "original_event_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "installed",
+            "delivered"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "wbs_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "quantity": {
+          "$ref": "#/$defs/FdQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdSourceInput"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "original_event_id",
+        "supersedes_event_id",
+        "kind",
+        "description",
+        "wbs_code",
+        "cost_code",
+        "quantity",
+        "unit",
+        "location",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FdDailyDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FdDate"
+        },
+        "superintendent_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "weather": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "weather_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdSourceInput"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "delays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "local_date",
+        "superintendent_user",
+        "weather",
+        "weather_sources",
+        "crews",
+        "activities",
+        "delays",
+        "visitors"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "weather": {
+                "minLength": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "weather_sources": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdTicketLineInput": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "labor",
+            "equipment",
+            "material"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "quantity": {
+          "$ref": "#/$defs/FdQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdSourceInput"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "description",
+        "quantity",
+        "unit",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FdTicketDefinitionInput": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FdDate"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "work_description": {
+          "type": "string",
+          "maxLength": 10000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "potential_change_reference": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdTicketLineInput"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "local_date",
+        "title",
+        "customer_name",
+        "location",
+        "work_description",
+        "potential_change_reference",
+        "lines"
+      ],
+      "additionalProperties": false
+    },
+    "FdPhoto": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/FdCapturedSource"
+        },
+        "caption": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "captured_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "representation": {
+          "enum": [
+            "source_image",
+            "photo_on_pdf_page"
+          ]
+        }
+      },
+      "required": [
+        "source",
+        "caption",
+        "captured_at",
+        "representation"
+      ],
+      "additionalProperties": false
+    },
+    "FdQuantityDefinition": {
+      "type": "object",
+      "properties": {
+        "original_event_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "installed",
+            "delivered"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "wbs_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "cost_code": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$"
+        },
+        "quantity": {
+          "$ref": "#/$defs/FdQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdCapturedSource"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "original_event_id",
+        "supersedes_event_id",
+        "kind",
+        "description",
+        "wbs_code",
+        "cost_code",
+        "quantity",
+        "unit",
+        "location",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FdDailyDefinition": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FdDate"
+        },
+        "superintendent_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "weather": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "weather_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdCapturedSource"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "crews": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "activities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 20
+        },
+        "delays": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        },
+        "visitors": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 2000,
+            "pattern": "^[^\u0000]*$",
+            "minLength": 1,
+            "allOf": [
+              {
+                "pattern": "\\S"
+              }
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 20
+        }
+      },
+      "required": [
+        "local_date",
+        "superintendent_user",
+        "weather",
+        "weather_sources",
+        "crews",
+        "activities",
+        "delays",
+        "visitors"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "weather": {
+                "minLength": 1
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "weather_sources": {
+                "minItems": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdTicketLine": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "enum": [
+            "labor",
+            "equipment",
+            "material"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 1000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "quantity": {
+          "$ref": "#/$defs/FdQuantityValue"
+        },
+        "unit": {
+          "type": "string",
+          "maxLength": 40,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdCapturedSource"
+          },
+          "minItems": 1,
+          "maxItems": 8,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "kind",
+        "description",
+        "quantity",
+        "unit",
+        "sources"
+      ],
+      "additionalProperties": false
+    },
+    "FdTicketDefinition": {
+      "type": "object",
+      "properties": {
+        "local_date": {
+          "$ref": "#/$defs/FdDate"
+        },
+        "title": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "customer_name": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "work_description": {
+          "type": "string",
+          "maxLength": 10000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "potential_change_reference": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdTicketLine"
+          },
+          "minItems": 1,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "local_date",
+        "title",
+        "customer_name",
+        "location",
+        "work_description",
+        "potential_change_reference",
+        "lines"
+      ],
+      "additionalProperties": false
+    },
+    "FdHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted",
+            "acknowledged"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FdDailyHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FdTicketHeader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted",
+            "acknowledged"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "last_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "last_decision",
+        "accepted_revision"
+      ],
+      "additionalProperties": false
+    },
+    "FdDailyRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdPhoto"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FdNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/FdDailyDefinition"
+        },
+        "superintendent": {
+          "$ref": "#/$defs/FdPerson"
+        },
+        "quantity_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdUuid"
+          },
+          "minItems": 0,
+          "maxItems": 40,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "prior_decision",
+        "amendment_of",
+        "amendment_reason",
+        "photos",
+        "no_effects",
+        "definition",
+        "superintendent",
+        "quantity_ids"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "amendment_of": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "amendment_reason": {
+                "not": {
+                  "pattern": "\\S"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "amendment_reason": {
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdTicketRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "prior_decision": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_of": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdPhoto"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FdNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/FdTicketDefinition"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "prior_decision",
+        "amendment_of",
+        "amendment_reason",
+        "photos",
+        "no_effects",
+        "definition"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "amendment_of": {
+                "type": "null"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "amendment_reason": {
+                "not": {
+                  "pattern": "\\S"
+                }
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "amendment_reason": {
+                "pattern": "\\S"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdQuantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "original_event_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "supersedes_event_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definition": {
+          "$ref": "#/$defs/FdQuantityDefinition"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FdNoEffects"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "source_revision",
+        "revision_number",
+        "original_event_id",
+        "supersedes_event_id",
+        "definition",
+        "no_effects"
+      ],
+      "additionalProperties": false
+    },
+    "FdDecision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "created_at": {
+          "$ref": "#/$defs/FdTimestamp"
+        },
+        "status": {
+          "const": "recorded"
+        },
+        "parent_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "source_revision": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "source_digest": {
+          "$ref": "#/$defs/FdDigest"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action": {
+          "enum": [
+            "submit",
+            "review",
+            "return",
+            "accept",
+            "acknowledge"
+          ]
+        },
+        "from_status": {
+          "enum": [
+            "draft",
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted"
+          ]
+        },
+        "to_status": {
+          "enum": [
+            "submitted",
+            "reviewed",
+            "returned",
+            "accepted",
+            "acknowledged"
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "acknowledged_by": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdCapturedSource"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "no_effects": {
+          "$ref": "#/$defs/FdNoEffects"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "source_revision",
+        "source_digest",
+        "predecessor",
+        "action",
+        "from_status",
+        "to_status",
+        "comment",
+        "acknowledged_by",
+        "evidence",
+        "no_effects"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "submit"
+            },
+            "from_status": {
+              "const": "draft"
+            },
+            "to_status": {
+              "const": "submitted"
+            },
+            "acknowledged_by": {
+              "const": ""
+            },
+            "evidence": {}
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "review"
+            },
+            "from_status": {
+              "const": "submitted"
+            },
+            "to_status": {
+              "const": "reviewed"
+            },
+            "acknowledged_by": {
+              "const": ""
+            },
+            "evidence": {}
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "return"
+            },
+            "from_status": {
+              "enum": [
+                "submitted",
+                "reviewed"
+              ]
+            },
+            "to_status": {
+              "const": "returned"
+            },
+            "acknowledged_by": {
+              "const": ""
+            },
+            "evidence": {}
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "accept"
+            },
+            "from_status": {
+              "const": "reviewed"
+            },
+            "to_status": {
+              "const": "accepted"
+            },
+            "acknowledged_by": {
+              "const": ""
+            },
+            "evidence": {}
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "acknowledge"
+            },
+            "from_status": {
+              "const": "accepted"
+            },
+            "to_status": {
+              "const": "acknowledged"
+            },
+            "acknowledged_by": {
+              "type": "string",
+              "maxLength": 240,
+              "pattern": "^[^\u0000]*$",
+              "minLength": 1,
+              "allOf": [
+                {
+                  "pattern": "\\S"
+                }
+              ]
+            },
+            "evidence": {
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
+    "FdRecord": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/FdHeader"
+        },
+        {
+          "$ref": "#/$defs/FdDailyRevision"
+        },
+        {
+          "$ref": "#/$defs/FdTicketRevision"
+        },
+        {
+          "$ref": "#/$defs/FdQuantity"
+        },
+        {
+          "$ref": "#/$defs/FdDecision"
+        }
+      ]
+    },
+    "FdOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "FdCreateRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "definition": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FdDailyDefinitionInput"
+            },
+            {
+              "$ref": "#/$defs/FdTicketDefinitionInput"
+            }
+          ]
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdPhotoInput"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdQuantityDefinitionInput"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "family",
+        "definition",
+        "photos",
+        "quantities"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "definition": {
+              "$ref": "#/$defs/FdDailyDefinitionInput"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "definition": {
+              "$ref": "#/$defs/FdTicketDefinitionInput"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FdReviseRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "definition": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FdDailyDefinitionInput"
+            },
+            {
+              "$ref": "#/$defs/FdTicketDefinitionInput"
+            }
+          ]
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdPhotoInput"
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdQuantityDefinitionInput"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        },
+        "record_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FdDigest"
+        },
+        "amendment_reason": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "family",
+        "definition",
+        "photos",
+        "quantities",
+        "record_id",
+        "expected_version"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "definition": {
+              "$ref": "#/$defs/FdDailyDefinitionInput"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "definition": {
+              "$ref": "#/$defs/FdTicketDefinitionInput"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FdTransitionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "record_id": {
+          "$ref": "#/$defs/FdUuid"
+        },
+        "expected_version": {
+          "$ref": "#/$defs/FdDigest"
+        },
+        "action": {
+          "enum": [
+            "submit",
+            "review",
+            "return",
+            "accept",
+            "acknowledge"
+          ]
+        },
+        "comment": {
+          "type": "string",
+          "maxLength": 2000,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdSourceInput"
+          },
+          "minItems": 0,
+          "maxItems": 8,
+          "uniqueItems": true
+        },
+        "acknowledged_by": {
+          "type": "string",
+          "maxLength": 240,
+          "pattern": "^[^\u0000]*$"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "family",
+        "record_id",
+        "expected_version",
+        "action",
+        "comment",
+        "evidence"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "action": {
+              "enum": [
+                "submit",
+                "review",
+                "return",
+                "accept"
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "action": {
+                "const": "acknowledge"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "acknowledged_by"
+            ],
+            "properties": {
+              "acknowledged_by": {
+                "type": "string",
+                "maxLength": 240,
+                "pattern": "^[^\u0000]*$",
+                "minLength": 1,
+                "allOf": [
+                  {
+                    "pattern": "\\S"
+                  }
+                ]
+              },
+              "evidence": {
+                "minItems": 1
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "acknowledged_by": {
+                "const": ""
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdGetRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "kind": {
+          "$ref": "#/$defs/FdKind"
+        },
+        "record_id": {
+          "$ref": "#/$defs/FdUuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "FdListRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "kind": {
+          "$ref": "#/$defs/FdKind"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FdUuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096,
+              "pattern": "^[^\u0000]*$",
+              "minLength": 1,
+              "allOf": [
+                {
+                  "pattern": "\\S"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "daily",
+                  "ticket"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "properties": {
+              "parent_id": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdCreateRecordResponse": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "header": {
+          "$ref": "#/$defs/FdHeader"
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FdDailyRevision"
+            },
+            {
+              "$ref": "#/$defs/FdTicketRevision"
+            }
+          ]
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation": {
+          "$ref": "#/$defs/FdOperation"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdQuantity"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "family",
+        "header",
+        "revision",
+        "history_id",
+        "operation",
+        "quantities"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FdDailyHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FdDailyRevision"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FdTicketHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FdTicketRevision"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FdReviseRecordResponse": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "header": {
+          "$ref": "#/$defs/FdHeader"
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FdDailyRevision"
+            },
+            {
+              "$ref": "#/$defs/FdTicketRevision"
+            }
+          ]
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation": {
+          "$ref": "#/$defs/FdOperation"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdQuantity"
+          },
+          "minItems": 0,
+          "maxItems": 40
+        }
+      },
+      "required": [
+        "family",
+        "header",
+        "revision",
+        "history_id",
+        "operation",
+        "quantities"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FdDailyHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FdDailyRevision"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "header": {
+              "allOf": [
+                {
+                  "$ref": "#/$defs/FdTicketHeader"
+                },
+                {
+                  "properties": {
+                    "status": {
+                      "const": "draft"
+                    },
+                    "last_decision": {
+                      "type": "null"
+                    }
+                  }
+                }
+              ]
+            },
+            "revision": {
+              "$ref": "#/$defs/FdTicketRevision"
+            },
+            "quantities": {
+              "maxItems": 0
+            }
+          }
+        }
+      ]
+    },
+    "FdTransitionResponse": {
+      "type": "object",
+      "properties": {
+        "family": {
+          "$ref": "#/$defs/FdFamily"
+        },
+        "header": {
+          "$ref": "#/$defs/FdHeader"
+        },
+        "revision": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/FdDailyRevision"
+            },
+            {
+              "$ref": "#/$defs/FdTicketRevision"
+            }
+          ]
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "pattern": "^[^\u0000]*$",
+          "minLength": 1,
+          "allOf": [
+            {
+              "pattern": "\\S"
+            }
+          ]
+        },
+        "operation": {
+          "$ref": "#/$defs/FdOperation"
+        },
+        "decision": {
+          "$ref": "#/$defs/FdDecision"
+        }
+      },
+      "required": [
+        "family",
+        "header",
+        "revision",
+        "history_id",
+        "operation",
+        "decision"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "family": {
+              "const": "daily"
+            },
+            "header": {
+              "$ref": "#/$defs/FdDailyHeader"
+            },
+            "revision": {
+              "$ref": "#/$defs/FdDailyRevision"
+            }
+          }
+        },
+        {
+          "properties": {
+            "family": {
+              "const": "ticket"
+            },
+            "header": {
+              "$ref": "#/$defs/FdTicketHeader"
+            },
+            "revision": {
+              "$ref": "#/$defs/FdTicketRevision"
+            }
+          }
+        }
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "family": {
+                "const": "daily"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "decision": {
+                "properties": {
+                  "action": {
+                    "enum": [
+                      "submit",
+                      "review",
+                      "return",
+                      "accept"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FdGetResponse": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/FdRecord"
+        },
+        "record_digest": {
+          "$ref": "#/$defs/FdDigest"
+        }
+      },
+      "required": [
+        "record",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "FdListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FdGetResponse"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096,
+              "pattern": "^[^\u0000]*$",
+              "minLength": 1,
+              "allOf": [
+                {
+                  "pattern": "\\S"
+                }
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/FdCreateRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/FdReviseRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/FdTransitionRequest"
+    },
+    {
+      "$ref": "#/$defs/FdGetRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/FdListRecordsRequest"
+    },
+    {
+      "$ref": "#/$defs/FdCreateRecordResponse"
+    },
+    {
+      "$ref": "#/$defs/FdReviseRecordResponse"
+    },
+    {
+      "$ref": "#/$defs/FdTransitionResponse"
+    },
+    {
+      "$ref": "#/$defs/FdGetResponse"
+    },
+    {
+      "$ref": "#/$defs/FdListResponse"
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import frappe
 from cipher_aec.governance.context import current_actor, duty_rows, company_duty_rows, require_company, require_project
 from cipher_aec.governance.commands import read_operation
 from cipher_aec.projects import service
+from cipher_aec.projects import tasks as task_service
 from .transport import endpoint
 
 
@@ -65,3 +66,23 @@ def operation(company, project, operation_id):
 @endpoint(methods=["POST"])
 def create_task(company, project, operation_id, expected_version=None, subject=None, description=""):
     return service.create_task(company, project, operation_id, expected_version, subject, description)
+
+
+@endpoint()
+def task(company, project, task):
+    return task_service.read_task(company, project, task)
+
+
+@endpoint()
+def task_choices(company, project):
+    return task_service.task_choices(company, project)
+
+
+@endpoint(methods=["POST"])
+def assign_task(company, project, task, assignee_person, operation_id, expected_version=None):
+    return task_service.assign_task(company, project, task, assignee_person, operation_id, expected_version)
+
+
+@endpoint(methods=["POST"])
+def update_task_status(company, project, task, status, operation_id, expected_version=None):
+    return task_service.update_task_status(company, project, task, status, operation_id, expected_version)

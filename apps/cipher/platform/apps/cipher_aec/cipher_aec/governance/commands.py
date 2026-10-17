@@ -14,17 +14,17 @@ COMPANY_RICKY_COMMANDS = frozenset({"ricky.company.read.start.v1", "ricky.compan
     "ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1",
     "ricky.company.proposal.save-scope.v1", "ricky.company.proposal.save-estimate.v1"})
 
-def run_command(*, company, project, operation_id, command, payload, ability, effect, guard=None, participant_people=()):
+def run_command(*, company, project, operation_id, command, payload, ability, effect, guard=None, participant_people=(), document_context=None):
     return _run_scoped_command(company=company, project=project, scope_type="Project", operation_id=operation_id,
-        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people, document_context=document_context)
 
 
-def run_company_command(*, company, operation_id, command, payload, ability, effect, guard=None, participant_people=(), draft_save=None):
+def run_company_command(*, company, operation_id, command, payload, ability, effect, guard=None, participant_people=(), draft_save=None, document_context=None):
     return _run_scoped_command(company=company, project=None, scope_type="Company", operation_id=operation_id,
-        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people, draft_save=draft_save)
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people, draft_save=draft_save, document_context=document_context)
 
 
-def _run_scoped_command(*, company, project, scope_type, operation_id, command, payload, ability, effect, guard, participant_people, draft_save=None):
+def _run_scoped_command(*, company, project, scope_type, operation_id, command, payload, ability, effect, guard, participant_people, draft_save=None, document_context=None):
     """One Frappe request transaction: no commits or remote effects inside this service.
 
     Person locking serializes the UUID namespace across commands and projects. Project
@@ -42,6 +42,10 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         if type(draft_save) is not DraftSaveContext or draft_save.company != company:
             raise DomainError("invalid_draft_save", "Only a concrete server-owned draft-save context is supported.", 422)
         command, payload, ability = draft_save.command(command, ability, payload)
+    if document_context is not None:
+        from cipher_aec.document_control.locking import DocumentContext
+        if type(document_context) is not DocumentContext or document_context.company!=company or document_context.project!=project:
+            raise DomainError('invalid_document_context','Only a concrete server-owned documentary source context is supported.',422)
     assert_synthetic_site()
     operation_id = parse_operation_id(operation_id)
     company = text(company, "Company")
@@ -70,6 +74,10 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         require_session_authority(actor, current_ricky_session_reference, lock=True)
     if scope_type == "Company" and draft_save is not None:
         draft_save.prelock(actor)
+    if document_context is not None:
+        from cipher_aec.document_control.command_context import original_or_new
+        document_context = original_or_new(document_context,actor,company,project,scope_type,operation_id,command,payload)
+        document_context.prelock(actor)
     locked_project = authorize(actor, lock=True)
     if scope_type == "Company":
         for prefix, read_ability in (("document.", "document.read"), ("estimate.", "estimate.read"), ("takeoff.", "estimate.read")):
@@ -99,6 +107,8 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         require_project(company, project, ability="document.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("engineering."):
         require_project(company, project, ability="engineering.package.read" if command.startswith("engineering.package.") else "engineering.read", actor=actor, lock=True)
+    if scope_type == "Project" and command.startswith("field."):
+        require_project(company, project, ability="field.read", actor=actor, lock=True)
     request_hash = digest({"command": command, "company": company, "project": project, "payload": payload})
     if scope_type == "Company":
         request_hash = digest({"scope_type": "Company", "command": command, "company": company, "project": None, "payload": payload})
@@ -111,13 +121,13 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         result = json.loads(existing.result_json)
         if digest(result) != existing.result_hash:
             raise DomainError("receipt_integrity", "The original command receipt cannot be verified.", 409)
-        with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext():
+        with (logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext()), (document_context.hold(actor,result) if document_context is not None else nullcontext()):
             authorize_receipt(actor, command, company, project, result, scope_type=scope_type)
         result["operation"] = {"id": operation_id, "status": "succeeded", "replayed": True}
         return result
     # Access is current for replay; lifecycle/source checks govern only a new effect.
     require_effects_enabled()
-    if scope_type == "Project" and ability in {"project.write", "task.create", "document.write", "estimate.write", "contract.write"} and locked_project.status in {"Completed", "Cancelled"}:
+    if scope_type == "Project" and ability in {"project.write", "task.create", "task.assign", "task.update", "document.write", "estimate.write", "contract.write"} and locked_project.status in {"Completed", "Cancelled"}:
         raise DomainError("project_closed", "This project is closed for new work.", 409)
     savepoint = "cipher_company_" + uuid.uuid4().hex if scope_type == "Company" else "cipher_command"
     frappe.db.savepoint(savepoint)
@@ -139,7 +149,7 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
                     draft_save_boundary = draft_save.new_effect(actor)
                 else:
                     draft_save_boundary = nullcontext()
-                with draft_save_boundary:
+                with draft_save_boundary, (document_context.hold(actor) if document_context is not None else nullcontext()):
                     if guard is not None:
                         guard(actor, locked_project)
                     if scope_type == "Company" and command in {"ricky.company.read.start.v1", "ricky.company.proposal.start.v1"}:
@@ -194,6 +204,15 @@ def read_operation(company, project, operation_id):
 
 
 def authorize_receipt(actor, command, company, project, result, scope_type="Project"):
+    if scope_type in ('Project','Company'):
+        from cipher_aec.document_control.locking import for_result
+        context=for_result(company,project,result,scope_type=scope_type)
+        if context is not None:
+            with context.hold(actor):return _authorize_receipt(actor,command,company,project,result,scope_type)
+    return _authorize_receipt(actor,command,company,project,result,scope_type)
+
+
+def _authorize_receipt(actor, command, company, project, result, scope_type="Project"):
     """A receipt is not a permanent entitlement to private sources or model output."""
     if scope_type == "Company":
         require_company(company, actor=actor, lock=True)
@@ -212,6 +231,9 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             require_company(company, ability="commercial.read", actor=actor, lock=True)
             from cipher_aec.commercial.service import authorize_receipt as authorize_commercial
             authorize_commercial(actor, company, result, lock=True)
+        elif command.startswith("document.control."):
+            from cipher_aec.document_control.shared import authorize_receipt as authorize_documentary
+            authorize_documentary(actor,company,result,lock=True)
         elif command.startswith("document."):
             from cipher_aec.documents.service import authorize_company_receipt
             authorize_company_receipt(actor, company, result, lock=True)
@@ -234,7 +256,10 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
             authorize_distribution(actor, company, result, lock=True)
         return
-    if command.startswith("document.control."):
+    if command.startswith("field."):
+        from cipher_aec.field.service import authorize_receipt as authorize_field
+        authorize_field(actor, company, project, result, lock=True)
+    elif command.startswith("document.control."):
         from cipher_aec.document_control.service import authorize_receipt as authorize_documentary
         authorize_documentary(actor,company,project,result,lock=True)
     elif command.startswith("document."):

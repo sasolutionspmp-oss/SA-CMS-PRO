@@ -119,7 +119,7 @@
       "label": "Extraction Status",
       "fieldtype": "Select",
       "reqd": 1,
-      "options": "ready\nocr_unavailable\nunavailable\nlimits_exceeded\nblocked"
+      "options": "ready\nocr_unavailable\nunavailable\nlimits_exceeded\nblocked\nimage_text_unavailable"
     },
     {
       "fieldname": "extractor_version",

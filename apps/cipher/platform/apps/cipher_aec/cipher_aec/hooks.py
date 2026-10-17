@@ -32,6 +32,11 @@ doc_events = {
 }
 
 permission_query_conditions = {
+    "Cipher Document Lifecycle Request": "cipher_aec.document_control.install.query_denied",
+    "Cipher Document Lifecycle Event": "cipher_aec.document_control.install.query_denied",
+    "Cipher Clause Use": "cipher_aec.document_control.install.query_denied",
+    "Cipher Redline Revision": "cipher_aec.document_control.install.query_denied",
+    "Cipher Clause Application": "cipher_aec.document_control.install.query_denied",
     "File": "cipher_aec.documents.permissions.file_query",
     "Project": "cipher_aec.projects.permissions.project_query",
     "Task": "cipher_aec.projects.permissions.task_query",
@@ -40,6 +45,11 @@ permission_query_conditions = {
 }
 
 has_permission = {
+    "Cipher Document Lifecycle Request": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Document Lifecycle Event": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Clause Use": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Redline Revision": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Clause Application": "cipher_aec.document_control.install.permission_denied",
     "File": "cipher_aec.documents.permissions.file_permission",
     "Project": "cipher_aec.projects.permissions.project_permission",
     "Task": "cipher_aec.projects.permissions.task_permission",
@@ -123,3 +133,12 @@ from cipher_aec.document_control.contracts import KINDS as _DOCUMENTARY_KINDS
 for _documentary_type in _DOCUMENTARY_KINDS.values():
     permission_query_conditions[_documentary_type] = "cipher_aec.document_control.install.query_denied"
     has_permission[_documentary_type] = "cipher_aec.document_control.install.permission_denied"
+
+from cipher_aec.field.contracts import KINDS as _FIELD_KINDS
+for _field_type in _FIELD_KINDS.values():
+    permission_query_conditions[_field_type] = "cipher_aec.field.install.query_denied"
+    has_permission[_field_type] = "cipher_aec.field.install.permission_denied"
+
+# Semantic checkpoint plaintext is available only through current-source services.
+permission_query_conditions["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.no_native_rows"
+has_permission["Cipher Semantic Corpus"] = "cipher_aec.semantic_index.store.deny_native_access"

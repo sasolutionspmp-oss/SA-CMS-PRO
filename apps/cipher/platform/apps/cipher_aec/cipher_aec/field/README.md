@@ -1,28 +1,13 @@
-# field: planned module boundary
+# Field documentary records — FLD-01
 
-Status: planning skeleton only. Do not interpret this directory as an implemented Frappe module.
+The backend source implements Project-scoped daily reports, original photo references, delivered/installed quantity observations and documentary T&M tickets. Host fixtures exercise the actual service and controller classes. Native Frappe migration, HTTP/session and unified UI qualification are separate gates; this module is not package acceptance evidence by itself.
 
-## Ownership
+`api.py` exposes bounded `create_record`, `revise_record`, `transition`, `get_record` and `list_records` routes. `contracts.py` declares closed payloads, exact dates, decimal quantity strings, unit labels, source locators and five explicit Project duties. `service.py` owns transactional commands. Headers track current standing; revisions, quantities and documentary decisions are immutable. Accepted corrections create explicit successor revisions with original acceptance and amendment lineage retained.
 
-Daily reports, installed quantities, T&M, photos, quality/safety and offline capture.
+Lifecycle: draft → submitted → reviewed → accepted. A reviewer can return a submitted/reviewed record; revising it creates a new draft revision. An accepted T&M ticket can additionally record an independent, evidence-backed customer acknowledgment. Acknowledgment records documentary evidence and a named representative; it creates no contract change, budget, purchase, invoice, ledger, payroll or external-delivery effect. Potential change references are authored documentary labels and do not create change orders.
 
-## Interfaces to implement
+Every new effect checks current canonical identity, ordinary Project duties, source head standing, exact stored bytes and current authored content-ingest rights. Reads, history and receipt retries recheck current access/content rights to retained original revisions. Original JPEG/PNG photos reference canonical image bytes; an explicitly identified photo on a PDF page retains its actual PDF representation. Capture timestamps and captions are authored observations, not proof of camera/EXIF authenticity or OCR extraction.
 
-capture envelope, sync, review, amend accepted record.
+Quantities retain positive decimal strings, verbatim documentary unit labels, location, exact evidence and original capture IDs. WBS/cost-code labels do not imply adoption into governed financial mappings. There is no unit conversion, payroll approval, installed-work certification or billing entitlement in this slice. Explicit quantity corrections identify the immediately preceding quantity fact and retain the original capture ID. Duplicate reuse of a capture under another record is denied.
 
-## Required invariant
-
-Offline drafts never authorize financial release or formal engineering issue.
-
-## Implementation sequence
-
-1. Read the master framework and the `FLD-01` work package family.
-2. Verify standard ERPNext/Frappe fields and hooks on the locked runtime.
-3. Add only the custom DocTypes, fields and indexes needed by the current slice.
-4. Implement server invariants and transactional commands, then scoped reads/API schemas.
-5. Connect the unified UI and Ricky tools to those same services.
-6. Exercise positive, denied, stale and recovery cases appropriate to this module; record actual evidence.
-
-Source of truth: [backend framework](../../../../../docs/framework/BACKEND_FRAMEWORK.md), [backlog](../../../../../docs/framework/EXECUTION_BACKLOG.md).
-
-No runtime dependency, controller, schema, route or database has been created in this planning stage.
+Shared API/catalog/OpenAPI, duty registry, generic-native denial, history and command-receipt dispatch fragments must be composed by the integration writer before native execution. See [the delivery contract](../../../../../docs/framework/FLD01_FIELD_RECORDS.md). Offline capture/conflict resolution remains FLD-02; QA/QC and safety remain FLD-03.

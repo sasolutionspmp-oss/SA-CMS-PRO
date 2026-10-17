@@ -24,9 +24,13 @@ def readable(event, actor, company, project):
     try:
         from cipher_aec.document_control.contracts import KINDS as DOCUMENTARY_KINDS
         if subject in DOCUMENTARY_KINDS.values():
-            if project is None:return False
-            from cipher_aec.document_control.service import read
-            value=read(next(k for k,v in DOCUMENTARY_KINDS.items() if v==subject),identifier,company,project,actor)
+            kind=next(k for k,v in DOCUMENTARY_KINDS.items() if v==subject)
+            if project is None:
+                from cipher_aec.document_control.shared import read
+                value=read(kind,identifier,company,actor)
+            else:
+                from cipher_aec.document_control.service import read
+                value=read(kind,identifier,company,project,actor)
             if digest(value)!=json.loads(event.details_json).get("record_digest"):raise DomainError("history_integrity","The exact documentary history source differs.",409)
             return True
         if subject == "Company":
@@ -134,6 +138,12 @@ def readable(event, actor, company, project):
             from cipher_aec.integrations.distribution import TYPES, read
             kind = next(kind for kind, name in TYPES.items() if name == subject)
             read(kind, identifier, company, actor)
+            return True
+        from cipher_aec.field.contracts import KINDS as FIELD_KINDS
+        if subject in FIELD_KINDS.values():
+            if project is None:return False
+            from cipher_aec.field.service import authorize_history
+            authorize_history(next(k for k,v in FIELD_KINDS.items() if v==subject),identifier,company,project,actor,json.loads(event.details_json))
             return True
         return False
     except frappe.DoesNotExistError:

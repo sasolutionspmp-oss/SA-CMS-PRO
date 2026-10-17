@@ -54,7 +54,7 @@ class DocumentService:
         if scan_status not in {"clean", "infected", "not_scanned", "unavailable"}:
             raise ArtifactError("Scanner returned an unsupported status.")
         extraction = extract_source(content, mime) if scan_status != "infected" else None
-        retrievable = (scan_status == "clean" or self.allow_unscanned and scan_status == "not_scanned") and extraction is not None and extraction.status in {"ready", "ocr_unavailable"}
+        retrievable = (scan_status == "clean" or self.allow_unscanned and scan_status == "not_scanned") and extraction is not None and extraction.status in {"ready", "ocr_unavailable", "image_text_unavailable"}
         if producer:
             from .preparation import _bind_revision
             _bind_revision(revision_id)
@@ -183,7 +183,7 @@ class DocumentService:
         if type(page) is not int or page < 1 or page > revision["page_count"]:
             raise ArtifactError("Citation page is outside this source revision.")
         if revision["extraction_status"] != "ready":
-            raise ArtifactError("Source has no available embedded text; OCR is not configured.")
+            raise ArtifactError("Source has no available extracted text; OCR and image interpretation are not configured.")
         text = json.loads(revision["pages_json"])[page - 1]
         checksum = digest(text.encode("utf-8"))
         if excerpt_sha256 is not None and excerpt_sha256 != checksum:

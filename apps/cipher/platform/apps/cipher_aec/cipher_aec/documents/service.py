@@ -6,7 +6,7 @@ from .extraction import ArtifactError, validate_source
 from .repository import FrappeDocumentRepository
 from .storage import FrappeFileStorage
 
-CAPABILITIES = {"antivirus": False, "ocr": False, "formats": ["text/plain", "application/pdf"],
+CAPABILITIES = {"antivirus": False, "ocr": False, "formats": ["text/plain", "application/pdf", "image/jpeg", "image/png"],
                 "semantic_search": False, "storage": "frappe-private-file"}
 
 
@@ -35,8 +35,9 @@ def _call(callback):
 def upload_document(*, company, project, title, filename, content, byte_length, sha256, operation_id,
                     document_id=None, expected_revision=None):
     from cipher_aec.governance.commands import run_command
-    # Cheap integrity validation precedes the transaction and subprocess extraction.
-    _call(lambda: validate_source(content, filename, byte_length, sha256))
+    # Cheap signature/integrity preflight precedes the governed transaction.
+    # Full image decode is performed once by the currently authorized core upload.
+    _call(lambda: validate_source(content, filename, byte_length, sha256, decode_images=False))
     payload = {"title": title, "filename": filename, "byte_length": byte_length, "sha256": sha256.lower(),
                "document_id": document_id, "expected_revision": expected_revision}
     def effect(actor, project_doc):
@@ -110,10 +111,14 @@ def _company_call(callback):
 def upload_company_document(*, company, title, filename, content, byte_length, sha256, operation_id,
                             document_id=None, expected_revision=None):
     from cipher_aec.governance.commands import run_company_command
-    _company_call(lambda: validate_source(content, filename, byte_length, sha256))
+    _company_call(lambda: validate_source(content, filename, byte_length, sha256, decode_images=False))
     payload = {"title": title, "filename": filename, "byte_length": byte_length, "sha256": sha256.lower(),
                "document_id": document_id, "expected_revision": expected_revision}
     def effect(actor, company_doc):
+        if document_id:
+            from cipher_aec.document_control.rights import require as require_rights,prelock as prelock_rights
+            prelock_rights([document_id],company,None,actor,scope_type='Company')
+            require_rights(document_id,company,None,'ingest',actor,lock=True,required=False,scope_type='Company')
         result = _company_call(lambda: _service(actor, scope_type="Company").upload(company=company, project=None, title=title,
                     filename=filename, content=content, byte_length=byte_length, sha256=sha256,
                     document_id=document_id, expected_revision=expected_revision))

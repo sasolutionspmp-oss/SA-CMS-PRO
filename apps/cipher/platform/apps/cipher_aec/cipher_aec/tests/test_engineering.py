@@ -89,10 +89,29 @@ def fixtures():
             with patch.object(service,'run_command',command):yield state,rules,repo,sources,service,gov
     for n in names:
         removed=sys.modules.pop(n,None);parentname,attribute=n.rsplit('.',1);parent=sys.modules.get(parentname)
-        if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+        if removed is not None and parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
     sys.modules.update(old)
     for n,value in old.items():
         parentname,attribute=n.rsplit('.',1);setattr(sys.modules[parentname],attribute,value)
+
+class EngineeringFixtureCleanupTests(unittest.TestCase):
+    def test_nested_documentary_cleanup_allows_absent_modules_and_preserves_originals(self):
+        from cipher_aec.document_control import contracts
+        from cipher_aec.tests.test_document_control import fixture
+        from cipher_aec.tests.test_document_control_lineage import lineage
+        from cipher_aec.tests.test_document_control_lifecycle import lifecycle_fixture
+        names=['cipher_aec.document_control.'+name for name in ('contracts','repository','rights','clauses','locking','scopes','lifecycle')]
+        for factory in (fixtures,fixture,lineage,lifecycle_fixture):
+            with self.subTest(fixture=factory.__name__):
+                with factory():
+                    # Model a nested fixture that already removed its imports.
+                    for name in names:
+                        sys.modules.pop(name,None)
+                        parentname,attribute=name.rsplit('.',1);parent=sys.modules.get(parentname)
+                        if parent is not None and hasattr(parent,attribute):delattr(parent,attribute)
+                self.assertIs(sys.modules['cipher_aec.document_control.contracts'],contracts)
+                self.assertIs(sys.modules['cipher_aec.document_control'].contracts,contracts)
+
 
 class EngineeringServiceTests(unittest.TestCase):
     def test_original_receipt_authorizes_original_sources_after_successor(self):

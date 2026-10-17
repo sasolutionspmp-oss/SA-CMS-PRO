@@ -59,8 +59,13 @@ class UnavailableAdapter:
         return False
 
 
+def _ollama_factory(profile: ConnectionProfile) -> ModelAdapter:
+    from .ollama_adapter import configured_adapter
+    return configured_adapter(profile)
+
+
 # Registration is a reviewed Python integration, never a browser/model import path.
-_factories: dict[str, Callable[[ConnectionProfile], ModelAdapter]] = {}
+_factories: dict[str, Callable[[ConnectionProfile], ModelAdapter]] = {"ollama-local-v1": _ollama_factory}
 
 
 def register_adapter(kind: str, factory: Callable[[ConnectionProfile], ModelAdapter]) -> None:

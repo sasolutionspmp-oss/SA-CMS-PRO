@@ -22,6 +22,9 @@ from cipher_aec.tests.test_documents_provenance import ACTOR, document as genera
 
 class CanonicalCompanySourceScope(unittest.TestCase):
     def setUp(self):
+        # This producer/scope fixture has no authored content policy. Actual
+        # current-rights denial/replay is covered by DOC03 service tests.
+        self.enterContext(patch.dict(sys.modules, {'cipher_aec.document_control.rights':types.SimpleNamespace(authorize=lambda *a,**k:None)}))
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         self.repo, self.calls, self.allowed = MemoryMetadata(), [], True

@@ -27,10 +27,14 @@ def document_plan(document_ids):
     for name in sorted(set(document_ids)):visit(name)
     return result
 
-def prelock(document_ids,company,project,actor):
-    from .service import _document
+def prelock(document_ids,company,project,actor,*,scope_type='Project'):
+    from . import scopes
     planned=document_plan(document_ids)
-    for name in sorted(planned):_document(name,company,project,actor,lock=True)
+    for name in sorted(planned):
+        if scope_type=='Project':
+            from .service import _document
+            _document(name,company,project,actor,lock=True)
+        else:scopes.document(name,company,scope_type,project,actor,lock=True)
     if document_plan(document_ids)!=planned:raise DomainError('source_rights_changed','Content-permission evidence changed concurrently. Retry the original request.',503)
 
 def verify_evidence(value,actor,*,lock=False):
@@ -39,19 +43,24 @@ def verify_evidence(value,actor,*,lock=False):
     if name in stack or len(stack)>=8:raise DomainError('source_rights_cycle','The original content-permission evidence is cyclic or too deep.',409)
     token=_checking.set((*stack,name))
     try:
-        original=value['evidence_artifact'];actual=artifact(value['company'],value['project'],{k:original[k] for k in ('revision_id','source_sha256')},actor,lock=lock)
+        original=value['evidence_artifact']
+        if value['scope_type']=='Company':
+            from .shared import artifact as scoped_artifact
+            actual=scoped_artifact(value['company'],'Company',None,{k:original[k] for k in ('revision_id','source_sha256')},actor,lock=lock)
+        else:actual=artifact(value['company'],value['project'],{k:original[k] for k in ('revision_id','source_sha256')},actor,lock=lock)
         if actual!=original:raise DomainError('source_rights_evidence','The exact original permission evidence cannot be verified.',409)
     finally:_checking.reset(token)
 
-def require(document_id,company,project,operation,actor,*,lock=False,required=True):
-    require_project(company,project,ability='document.read',actor=actor,lock=lock)
+def require(document_id,company,project,operation,actor,*,lock=False,required=True,scope_type='Project'):
+    from . import scopes
+    scopes.require(company,scope_type,project,actor,'document.read',lock=lock)
     value=current(document_id)
     if value is None:
         if required:raise DomainError('source_rights_required','Record the current authored rights basis before documentary ingestion or distribution.',409)
         return None
     if lock:
-        prelock([document_id],company,project,actor);value=current(document_id,lock=True)
-    if value['company']!=company or value['project']!=project or value['scope_type']!='Project':raise DomainError('document_control_integrity','The current rights policy has a different Project.',409)
+        prelock([document_id],company,project,actor,scope_type=scope_type);value=current(document_id,lock=True)
+    if value['company']!=company or value['project']!=project or value['scope_type']!=scope_type:raise DomainError('document_control_integrity','The current rights policy has a different Project.',409)
     now=today()
     if value['valid_from'] and now<value['valid_from'] or value['valid_until'] and now>value['valid_until']:raise DomainError('source_rights_inactive','The current content-use permission is not effective on this UTC date.',403)
     if not value[operation+'_allowed']:raise DomainError('source_rights_denied','Current authored source rights do not permit this '+operation+'.',403)
@@ -59,9 +68,9 @@ def require(document_id,company,project,operation,actor,*,lock=False,required=Tr
     return value
 
 def authorize(row,actor,*,lock=False):
-    if (row.get('scope_type') or 'Project')!='Project':return
+    scope_type=row.get('scope_type') or 'Project'
     document_id=row.get('document') or row.get('name')
-    if document_id:require(document_id,row['company'],row['project'],'read',actor,lock=lock,required=False)
+    if document_id:require(document_id,row['company'],row['project'],'read',actor,lock=lock,required=False,scope_type=scope_type)
 
 def distribution(value,company,project,actor,*,lock=False):
     names={row['document_id'] for key in ('source_citations','drawing_references','artifacts') for row in value.get(key,[])}
@@ -73,11 +82,11 @@ def query(doctype,user=None):
     """Bounded evidence admission before generic native counts/Long Text reads."""
     if not frappe.db.exists('DocType','Cipher Source Rights Revision'):return '1=1'
     actor=current_actor(user)
-    rows=frappe.db.sql('SELECT r.parent_id,r.company,r.project FROM `tabCipher Source Rights Revision` r WHERE NOT EXISTS (SELECT 1 FROM `tabCipher Source Rights Revision` n WHERE n.parent_id=r.parent_id AND n.revision_number>r.revision_number) ORDER BY r.parent_id LIMIT 501',as_dict=True)
+    rows=frappe.db.sql('SELECT r.parent_id,r.company,r.project,r.scope_type FROM `tabCipher Source Rights Revision` r WHERE NOT EXISTS (SELECT 1 FROM `tabCipher Source Rights Revision` n WHERE n.parent_id=r.parent_id AND n.revision_number>r.revision_number) ORDER BY r.parent_id LIMIT 501',as_dict=True)
     if len(rows)>500:return '1=0'
     denied=[]
     for row in rows:
-        try:require(row.parent_id,row.company,row.project,'read',actor)
+        try:require(row.parent_id,row.company,row.project,'read',actor,scope_type=row.scope_type)
         except DomainError:denied.append(row.parent_id)
     if not denied:return '1=1'
     identity='name' if doctype=='Cipher Document' else 'document'

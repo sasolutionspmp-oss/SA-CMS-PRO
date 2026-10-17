@@ -19,7 +19,20 @@ FINAL = ("succeeded", "failed", "cancelled", "waiting-for-review")
 def question_keywords(question: str) -> str:
     """Prepare an exact text query, with no semantic/embedding capability implied."""
     stopwords = frozenset("a an and are as at be been by can could did do does for from had has have how i in is it me my of on or our please should tell that the their them there these they this to us was we were what when where which who why will with would you your".split())
-    words = [word for word in re.findall(r"[\w-]+", question, flags=re.UNICODE) if word.casefold() not in stopwords]
+    # Remove only a recognized leading Task instruction from retrieval. The
+    # complete original question remains persisted and goes to the model.
+    intent = re.match(
+        r"^\s*(?:please\s+|(?:can|could|would)\s+you\s+(?:please\s+)?)?"
+        r"(?:(?:create|draft|propose)\s+(?:a\s+)?task\s+(?:to\s+(?:review|check|confirm|inspect)|about|for|regarding)\s+"
+        r"|task\s+(?:about|for|regarding)\s+)(.*)$",
+        question, flags=re.IGNORECASE | re.DOTALL,
+    )
+    topic = intent.group(1) if intent else question
+    words = [word for word in re.findall(r"[\w-]+", topic, flags=re.UNICODE) if word.casefold() not in stopwords]
+    if intent and not words:
+        # An instruction without literal source anchors must not become an
+        # empty/broad search. Retain the original restrictive query instead.
+        words = [word for word in re.findall(r"[\w-]+", question, flags=re.UNICODE) if word.casefold() not in stopwords]
     return " ".join(dict.fromkeys(words))[:500] or question[:500]
 
 

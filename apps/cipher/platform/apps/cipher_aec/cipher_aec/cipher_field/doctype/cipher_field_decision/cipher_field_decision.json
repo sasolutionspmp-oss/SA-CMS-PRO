@@ -1,0 +1,106 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Field Decision",
+  "module": "Cipher Field",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "parent_id",
+    "source_revision",
+    "predecessor",
+    "action"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project",
+      "default": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "options": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "options": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "options": "Cipher Person",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "length": 64,
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data JSON",
+      "hidden": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "parent_id",
+      "fieldtype": "Data",
+      "label": "Parent Id"
+    },
+    {
+      "fieldname": "source_revision",
+      "fieldtype": "Data",
+      "label": "Source Revision"
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Data",
+      "label": "Predecessor"
+    },
+    {
+      "fieldname": "action",
+      "fieldtype": "Data",
+      "label": "Action"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "index_web_pages_for_search": 0
+}

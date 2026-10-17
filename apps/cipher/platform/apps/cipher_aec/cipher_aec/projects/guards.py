@@ -44,5 +44,7 @@ def prevent_delete(doc, method=None):
 def validate_assignment(doc, method=None):
     # Frappe's assign_to endpoint checks target read, then writes ToDo with
     # ignore_permissions and updates target._assign directly. Catch that path.
-    if not _installing() and (doc.reference_type in {"Project", "Task"} or (doc.reference_type or "").startswith("Cipher ")):
+    old = doc.get_doc_before_save()
+    references = {doc.reference_type, old.reference_type if old else None}
+    if not _installing() and any(value in {"Project", "Task"} or (value or "").startswith("Cipher ") for value in references):
         require_trusted_write()

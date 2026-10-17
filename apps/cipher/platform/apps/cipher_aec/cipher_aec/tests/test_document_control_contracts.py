@@ -18,7 +18,7 @@ class DocumentaryContractTests(unittest.TestCase):
             created,ref,adoption,checker=adopted(s,r,service,gov);issue_set=service.create_issue_set('C','P',uid(),{'title':'Exact issue','purpose':'Coordination','issue_purpose':'coordination'},[],[{'id':adoption['id'],'record_digest':digest(adoption)}])['issue_set'];issued=authorize(s,r,gov,'issue_set',issue_set,checker);transmittal=service.create_transmittal('C','P',uid(),issued['id'],digest(issued),[checker.user],'Review','')['transmittal'];distribution=authorize(s,r,gov,'transmittal',transmittal,checker);service.record_evidence('C','P',uid(),'adoption',adoption['id'],digest(adoption),'Reported exact documentary evidence only',[ref])
             for (kind,name),value in s.rows.items():
                 with self.subTest(kind=kind):validate('DcGetResponse',service.get_record('C','P',kind,name))
-            self.assertEqual(set(r.KINDS),{kind for kind,_ in s.rows})
+            self.assertEqual({kind for kind,_ in s.rows},{'rights','library','library_revision','adoption_request','adoption','issue_set','issue','transmittal','distribution','evidence'});self.assertEqual(set(r.KINDS),set(SCHEMA['$defs']['DcGetRecordRequest']['properties']['kind']['enum']))
     def test_three_literal_approval_pairings_and_authorized_effects_validate(self):
         Draft202012Validator.check_schema(SCHEMA);Draft202012Validator.check_schema(CORE)
         with fixture() as (s,r,repo,rights,service,gov):
@@ -42,6 +42,6 @@ class DocumentaryContractTests(unittest.TestCase):
         with fixture() as (s,r,repo,rights,service,gov):
             created,_=library(s,service);value=created['library_revision'];doc=SimpleNamespace(name=value['id'],is_new=lambda:True)
             with self.assertRaises(DomainError):repo.require_write(doc,'library_revision',value)
-    def test_explicit_new_project_abilities_are_not_seeded_or_added_to_company(self):
+    def test_document_duties_have_explicit_scope_and_are_not_seeded(self):
         tree=ast.parse((ROOT/'governance/context.py').read_text());values={n.targets[0].id:set(ast.literal_eval(n.value.args[0])) for n in tree.body if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id in ('PROJECT_ABILITIES','COMPANY_ABILITIES','DOCUMENT_CONTROL_ABILITIES')}
-        self.assertTrue(values['DOCUMENT_CONTROL_ABILITIES']<=values['PROJECT_ABILITIES']);self.assertFalse(values['DOCUMENT_CONTROL_ABILITIES']&values['COMPANY_ABILITIES']);self.assertIn('PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES',(ROOT/'install.py').read_text());metadata=json.loads((ROOT/'cipher_document_control/doctype/cipher_library_revision/cipher_library_revision.json').read_text());self.assertFalse(metadata['is_submittable'])
+        self.assertTrue(values['DOCUMENT_CONTROL_ABILITIES']<=values['PROJECT_ABILITIES']);self.assertEqual(values['DOCUMENT_CONTROL_ABILITIES']&values['COMPANY_ABILITIES'],{'document.control.read','document.control.write','document.rights.manage'});self.assertIn('COMPANY_ABILITIES - DOCUMENT_CONTROL_ABILITIES',(ROOT/'install.py').read_text());self.assertIn('PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES',(ROOT/'install.py').read_text());metadata=json.loads((ROOT/'cipher_document_control/doctype/cipher_library_revision/cipher_library_revision.json').read_text());self.assertFalse(metadata['is_submittable'])

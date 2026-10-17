@@ -13,7 +13,10 @@ from .errors import DomainError
 from .transport import envelope
 
 from .catalog import RPC
-RESOURCE_READS = frozenset({"Project", "Task", "Cipher Document", "Cipher Document Revision"})
+# Task native JSON includes _assign and hidden native User/ToDo assignment
+# links. Product readers use canonical people through the scoped Task APIs.
+# Administrator/System Manager native tooling retains its existing bypass.
+RESOURCE_READS = frozenset({"Project", "Cipher Document", "Cipher Document Revision"})
 
 
 def allowed_request(path, method, legacy_cmd=None):

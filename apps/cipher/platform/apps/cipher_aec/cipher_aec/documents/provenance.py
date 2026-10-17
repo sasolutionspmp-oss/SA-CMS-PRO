@@ -86,9 +86,9 @@ def _document(row, *, lock=False):
 
 def authorize(row, actor, *, lock=False):
     """Current producer-source authorization; never follows its output document."""
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+    authorize_rights(row,actor,lock=lock)
     if (row.get('scope_type') or 'Project') == 'Project':
-        from cipher_aec.document_control.rights import authorize as authorize_rights
-        authorize_rights(row,actor,lock=lock)
         return
     reading = _reading.get()
     if lock and reading is not None:

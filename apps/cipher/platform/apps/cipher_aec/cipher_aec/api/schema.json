@@ -202,6 +202,17 @@
         },
         "description": {
           "type": "string"
+        },
+        "assignees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Person"
+          },
+          "description": "Current reads and new commands supply canonical active assignees. Historical immutable receipts may omit this additive field."
+        },
+        "assignment_conflict": {
+          "type": "boolean",
+          "description": "Current native assignment reconciliation state; historical immutable receipts may omit this additive field."
         }
       },
       "required": [
@@ -5459,98 +5470,13 @@
       "additionalProperties": false
     },
     "DocumentIssueSetApprovalPacket": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "company": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
         "action": {
           "const": "document.issue.v1"
         },
-        "subject": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "type": {
-              "const": "Cipher Document Issue Set"
-            },
-            "label": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "type",
-            "label"
-          ],
-          "additionalProperties": false
-        },
-        "requester": {
-          "$ref": "#/$defs/Person"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "manifest_hash": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "source_version": {
-          "type": "string"
-        },
-        "policy": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "label": {
-              "type": "string"
-            },
-            "synthetic": {
-              "const": true
-            }
-          },
-          "required": [
-            "id",
-            "label",
-            "synthetic"
-          ],
-          "additionalProperties": false
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "Pending",
-            "Granted",
-            "Rejected",
-            "Withdrawn",
-            "Expired",
-            "Stale",
-            "Consumed"
-          ]
-        },
-        "decisions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ApprovalDecision"
-          }
-        },
         "actions": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "can_decide": {
               "type": "boolean"
@@ -5574,118 +5500,115 @@
             "can_withdraw",
             "disabled_reason"
           ],
-          "additionalProperties": false
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
         },
         "review_manifest": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "subject": {
-              "type": "object",
-              "properties": {
-                "doctype": {
-                  "const": "Cipher Document Issue Set"
-                },
-                "name": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "label": {
-                  "type": "string",
-                  "maxLength": 4000
-                }
-              },
-              "required": [
-                "doctype",
-                "name",
-                "label"
-              ],
-              "additionalProperties": false
-            },
-            "sources": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "artifacts": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcArtifact"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  },
-                  "rights": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcRights"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  }
-                },
-                "required": [
-                  "artifacts",
-                  "rights"
-                ],
-                "additionalProperties": false
-              },
-              "minItems": 1,
-              "maxItems": 1
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "schema": {
-                  "const": "cipher.document.authorization.v1"
-                },
                 "action": {
                   "const": "document.issue.v1"
                 },
-                "subject_kind": {
-                  "const": "issue_set"
-                },
-                "subject_id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "subject_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
+                "adoptions": {
+                  "items": {
+                    "$ref": "#/$defs/DcExactReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0,
+                  "type": "array"
                 },
                 "artifacts": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/$defs/DcArtifact"
                   },
+                  "maxItems": 8,
                   "minItems": 1,
-                  "maxItems": 8
+                  "type": "array"
                 },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
-                },
-                "electronic_signature": {
+                "commercial_execution": {
                   "const": false
                 },
-                "professional_seal": {
+                "electronic_signature": {
                   "const": false
                 },
                 "external_delivery": {
                   "const": false
                 },
-                "commercial_execution": {
-                  "const": false
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
                 },
                 "package_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
                 },
-                "adoptions": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/$defs/DcExactReference"
-                  },
-                  "minItems": 0,
-                  "maxItems": 8
+                "professional_seal": {
+                  "const": false
+                },
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "issue_set"
                 }
               },
               "required": [
@@ -5703,13 +5626,82 @@
                 "package_digest",
                 "adoptions"
               ],
-              "additionalProperties": false
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Document Issue Set"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
             },
             "summary": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
                 "definition": {
                   "$ref": "#/$defs/DcIssueDefinition"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
                 },
                 "purpose": {
                   "type": "null"
@@ -5717,17 +5709,8 @@
                 "required_response": {
                   "type": "null"
                 },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
-                },
                 "rights_basis": {
                   "const": "authored-declaration"
-                },
-                "external_delivery": {
-                  "const": false
-                },
-                "commercial_execution": {
-                  "const": false
                 }
               },
               "required": [
@@ -5739,7 +5722,7 @@
                 "external_delivery",
                 "commercial_execution"
               ],
-              "additionalProperties": false
+              "type": "object"
             }
           },
           "required": [
@@ -5748,10 +5731,45 @@
             "effect",
             "summary"
           ],
-          "additionalProperties": false
+          "type": "object"
         },
         "schema": {
           "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Document Issue Set"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
         }
       },
       "required": [
@@ -5772,101 +5790,16 @@
         "review_manifest",
         "schema"
       ],
-      "additionalProperties": false
+      "type": "object"
     },
     "DocumentAdoptionRequestApprovalPacket": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "company": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
         "action": {
           "const": "document.library.adopt.v1"
         },
-        "subject": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "type": {
-              "const": "Cipher Adoption Request"
-            },
-            "label": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "type",
-            "label"
-          ],
-          "additionalProperties": false
-        },
-        "requester": {
-          "$ref": "#/$defs/Person"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "manifest_hash": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "source_version": {
-          "type": "string"
-        },
-        "policy": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "label": {
-              "type": "string"
-            },
-            "synthetic": {
-              "const": true
-            }
-          },
-          "required": [
-            "id",
-            "label",
-            "synthetic"
-          ],
-          "additionalProperties": false
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "Pending",
-            "Granted",
-            "Rejected",
-            "Withdrawn",
-            "Expired",
-            "Stale",
-            "Consumed"
-          ]
-        },
-        "decisions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ApprovalDecision"
-          }
-        },
         "actions": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "can_decide": {
               "type": "boolean"
@@ -5890,118 +5823,115 @@
             "can_withdraw",
             "disabled_reason"
           ],
-          "additionalProperties": false
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
         },
         "review_manifest": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "subject": {
-              "type": "object",
-              "properties": {
-                "doctype": {
-                  "const": "Cipher Adoption Request"
-                },
-                "name": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "label": {
-                  "type": "string",
-                  "maxLength": 4000
-                }
-              },
-              "required": [
-                "doctype",
-                "name",
-                "label"
-              ],
-              "additionalProperties": false
-            },
-            "sources": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "artifacts": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcArtifact"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  },
-                  "rights": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcRights"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  }
-                },
-                "required": [
-                  "artifacts",
-                  "rights"
-                ],
-                "additionalProperties": false
-              },
-              "minItems": 1,
-              "maxItems": 1
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "schema": {
-                  "const": "cipher.document.authorization.v1"
-                },
                 "action": {
                   "const": "document.library.adopt.v1"
                 },
-                "subject_kind": {
-                  "const": "adoption_request"
-                },
-                "subject_id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "subject_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
                 "artifacts": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/$defs/DcArtifact"
                   },
+                  "maxItems": 8,
                   "minItems": 1,
-                  "maxItems": 8
+                  "type": "array"
                 },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
-                },
-                "electronic_signature": {
+                "commercial_execution": {
                   "const": false
                 },
-                "professional_seal": {
+                "electronic_signature": {
                   "const": false
                 },
                 "external_delivery": {
                   "const": false
                 },
-                "commercial_execution": {
-                  "const": false
+                "library_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
                 },
                 "library_revision": {
-                  "type": "string",
-                  "format": "uuid"
+                  "format": "uuid",
+                  "type": "string"
                 },
-                "library_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "adoption_request"
                 },
                 "target_locator": {
-                  "type": "string",
-                  "maxLength": 4000
+                  "maxLength": 4000,
+                  "type": "string"
                 }
               },
               "required": [
@@ -6020,13 +5950,82 @@
                 "library_digest",
                 "target_locator"
               ],
-              "additionalProperties": false
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Adoption Request"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
             },
             "summary": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
                 "definition": {
                   "$ref": "#/$defs/DcAdoptionDefinition"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
                 },
                 "purpose": {
                   "type": "null"
@@ -6034,17 +6033,8 @@
                 "required_response": {
                   "type": "null"
                 },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
-                },
                 "rights_basis": {
                   "const": "authored-declaration"
-                },
-                "external_delivery": {
-                  "const": false
-                },
-                "commercial_execution": {
-                  "const": false
                 }
               },
               "required": [
@@ -6056,7 +6046,7 @@
                 "external_delivery",
                 "commercial_execution"
               ],
-              "additionalProperties": false
+              "type": "object"
             }
           },
           "required": [
@@ -6065,10 +6055,45 @@
             "effect",
             "summary"
           ],
-          "additionalProperties": false
+          "type": "object"
         },
         "schema": {
           "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Adoption Request"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
         }
       },
       "required": [
@@ -6089,101 +6114,16 @@
         "review_manifest",
         "schema"
       ],
-      "additionalProperties": false
+      "type": "object"
     },
     "DocumentTransmittalApprovalPacket": {
-      "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "id": {
-          "type": "string"
-        },
-        "company": {
-          "type": "string"
-        },
-        "project": {
-          "type": "string"
-        },
         "action": {
           "const": "document.transmit.v1"
         },
-        "subject": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "type": {
-              "const": "Cipher Transmittal"
-            },
-            "label": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "id",
-            "type",
-            "label"
-          ],
-          "additionalProperties": false
-        },
-        "requester": {
-          "$ref": "#/$defs/Person"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "expires_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "manifest_hash": {
-          "type": "string",
-          "pattern": "^[a-f0-9]{64}$"
-        },
-        "source_version": {
-          "type": "string"
-        },
-        "policy": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "label": {
-              "type": "string"
-            },
-            "synthetic": {
-              "const": true
-            }
-          },
-          "required": [
-            "id",
-            "label",
-            "synthetic"
-          ],
-          "additionalProperties": false
-        },
-        "state": {
-          "type": "string",
-          "enum": [
-            "Pending",
-            "Granted",
-            "Rejected",
-            "Withdrawn",
-            "Expired",
-            "Stale",
-            "Consumed"
-          ]
-        },
-        "decisions": {
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/ApprovalDecision"
-          }
-        },
         "actions": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
             "can_decide": {
               "type": "boolean"
@@ -6207,121 +6147,118 @@
             "can_withdraw",
             "disabled_reason"
           ],
-          "additionalProperties": false
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
         },
         "review_manifest": {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "subject": {
-              "type": "object",
-              "properties": {
-                "doctype": {
-                  "const": "Cipher Transmittal"
-                },
-                "name": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "label": {
-                  "type": "string",
-                  "maxLength": 4000
-                }
-              },
-              "required": [
-                "doctype",
-                "name",
-                "label"
-              ],
-              "additionalProperties": false
-            },
-            "sources": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "artifacts": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcArtifact"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  },
-                  "rights": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/$defs/DcRights"
-                    },
-                    "minItems": 1,
-                    "maxItems": 8
-                  }
-                },
-                "required": [
-                  "artifacts",
-                  "rights"
-                ],
-                "additionalProperties": false
-              },
-              "minItems": 1,
-              "maxItems": 1
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
-                "schema": {
-                  "const": "cipher.document.authorization.v1"
-                },
                 "action": {
                   "const": "document.transmit.v1"
                 },
-                "subject_kind": {
-                  "const": "transmittal"
-                },
-                "subject_id": {
-                  "type": "string",
-                  "format": "uuid"
-                },
-                "subject_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
-                },
                 "artifacts": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/$defs/DcArtifact"
                   },
+                  "maxItems": 8,
                   "minItems": 1,
-                  "maxItems": 8
+                  "type": "array"
                 },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
+                "channel": {
+                  "const": "internal"
                 },
-                "electronic_signature": {
+                "commercial_execution": {
                   "const": false
                 },
-                "professional_seal": {
+                "electronic_signature": {
                   "const": false
                 },
                 "external_delivery": {
                   "const": false
                 },
-                "commercial_execution": {
-                  "const": false
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
                 },
                 "package_digest": {
-                  "type": "string",
-                  "pattern": "^[a-f0-9]{64}$"
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "professional_seal": {
+                  "const": false
                 },
                 "recipients": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/$defs/DcPerson"
                   },
+                  "maxItems": 30,
                   "minItems": 1,
-                  "maxItems": 30
+                  "type": "array"
                 },
-                "channel": {
-                  "const": "internal"
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "transmittal"
                 }
               },
               "required": [
@@ -6340,33 +6277,93 @@
                 "recipients",
                 "channel"
               ],
-              "additionalProperties": false
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Transmittal"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
             },
             "summary": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
                 "definition": {
                   "type": "null"
-                },
-                "purpose": {
-                  "type": "string",
-                  "maxLength": 4000
-                },
-                "required_response": {
-                  "type": "string",
-                  "maxLength": 4000
-                },
-                "no_effects": {
-                  "$ref": "#/$defs/DcNoEffects"
-                },
-                "rights_basis": {
-                  "const": "authored-declaration"
                 },
                 "external_delivery": {
                   "const": false
                 },
-                "commercial_execution": {
-                  "const": false
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "purpose": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "required_response": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "rights_basis": {
+                  "const": "authored-declaration"
                 }
               },
               "required": [
@@ -6378,7 +6375,7 @@
                 "external_delivery",
                 "commercial_execution"
               ],
-              "additionalProperties": false
+              "type": "object"
             }
           },
           "required": [
@@ -6387,10 +6384,45 @@
             "effect",
             "summary"
           ],
-          "additionalProperties": false
+          "type": "object"
         },
         "schema": {
           "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Transmittal"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
         }
       },
       "required": [
@@ -6411,7 +6443,7 @@
         "review_manifest",
         "schema"
       ],
-      "additionalProperties": false
+      "type": "object"
     },
     "DocumentApprovalPacket": {
       "oneOf": [
@@ -6423,19 +6455,25 @@
         },
         {
           "$ref": "#/$defs/DocumentTransmittalApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/DocumentRedlineApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/DocumentSharedAdoptionRequestApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/DocumentLifecycleRequestApprovalPacket"
         }
       ]
     },
     "DocumentApprovalExecutionResponse": {
       "oneOf": [
         {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "packet": {
-              "$ref": "#/$defs/DocumentIssueSetApprovalPacket"
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "issue": {
                   "$ref": "#/$defs/DcIssue"
@@ -6444,10 +6482,13 @@
               "required": [
                 "issue"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "operation": {
               "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentIssueSetApprovalPacket"
             }
           },
           "required": [
@@ -6455,16 +6496,13 @@
             "effect",
             "operation"
           ],
-          "additionalProperties": false
+          "type": "object"
         },
         {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "packet": {
-              "$ref": "#/$defs/DocumentAdoptionRequestApprovalPacket"
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "adoption": {
                   "$ref": "#/$defs/DcAdoption"
@@ -6473,10 +6511,13 @@
               "required": [
                 "adoption"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "operation": {
               "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentAdoptionRequestApprovalPacket"
             }
           },
           "required": [
@@ -6484,16 +6525,13 @@
             "effect",
             "operation"
           ],
-          "additionalProperties": false
+          "type": "object"
         },
         {
-          "type": "object",
+          "additionalProperties": false,
           "properties": {
-            "packet": {
-              "$ref": "#/$defs/DocumentTransmittalApprovalPacket"
-            },
             "effect": {
-              "type": "object",
+              "additionalProperties": false,
               "properties": {
                 "distribution": {
                   "$ref": "#/$defs/DcDistribution"
@@ -6502,10 +6540,13 @@
               "required": [
                 "distribution"
               ],
-              "additionalProperties": false
+              "type": "object"
             },
             "operation": {
               "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentTransmittalApprovalPacket"
             }
           },
           "required": [
@@ -6513,7 +6554,94 @@
             "effect",
             "operation"
           ],
-          "additionalProperties": false
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "clause_application": {
+                  "$ref": "#/$defs/DcClauseApplication"
+                }
+              },
+              "required": [
+                "clause_application"
+              ],
+              "type": "object"
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentRedlineApprovalPacket"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "adoption": {
+                  "$ref": "#/$defs/DcAdoption"
+                }
+              },
+              "required": [
+                "adoption"
+              ],
+              "type": "object"
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentSharedAdoptionRequestApprovalPacket"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "lifecycle": {
+                  "$ref": "#/$defs/DcLifecycle"
+                }
+              },
+              "required": [
+                "lifecycle"
+              ],
+              "type": "object"
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            },
+            "packet": {
+              "$ref": "#/$defs/DocumentLifecycleRequestApprovalPacket"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "type": "object"
         }
       ]
     },
@@ -7164,6 +7292,5424 @@
         "package_digest",
         "recipients",
         "channel"
+      ],
+      "additionalProperties": false
+    },
+    "TaskChoices": {
+      "type": "object",
+      "properties": {
+        "people": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Person"
+          }
+        },
+        "statuses": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "Open",
+              "Working",
+              "Pending Review",
+              "Completed"
+            ]
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "task.assign",
+              "task.update"
+            ]
+          }
+        }
+      },
+      "required": [
+        "people",
+        "statuses",
+        "capabilities"
+      ],
+      "additionalProperties": false
+    },
+    "AssignTaskRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "expected_version": {
+          "type": "string"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "assignee_person": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "task",
+        "expected_version",
+        "operation_id",
+        "assignee_person"
+      ],
+      "additionalProperties": false
+    },
+    "UpdateTaskStatusRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "task": {
+          "type": "string"
+        },
+        "expected_version": {
+          "type": "string"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Open",
+            "Working",
+            "Pending Review",
+            "Completed"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "task",
+        "expected_version",
+        "operation_id",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "CurrentTask": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "assignees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Person"
+          },
+          "description": "Current reads and new commands supply canonical active assignees. Historical immutable receipts may omit this additive field."
+        },
+        "assignment_conflict": {
+          "type": "boolean",
+          "description": "Current native assignment reconciliation state; historical immutable receipts may omit this additive field."
+        }
+      },
+      "required": [
+        "id",
+        "subject",
+        "status",
+        "project",
+        "version",
+        "description",
+        "assignees",
+        "assignment_conflict"
+      ],
+      "additionalProperties": false,
+      "description": "Current Task mutation result. Unlike historical Task receipts, active canonical assignment projection and reconciliation state are always present."
+    },
+    "TaskControlResponse": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "$ref": "#/$defs/CurrentTask"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        },
+        "project_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "task",
+        "operation",
+        "project_version"
+      ],
+      "additionalProperties": false
+    },
+    "DcAdoptionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "library_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "library_revision",
+        "library_digest",
+        "definition",
+        "artifacts"
+      ],
+      "type": "object"
+    },
+    "DcArtifactInput": {
+      "additionalProperties": false,
+      "properties": {
+        "revision_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256"
+      ],
+      "type": "object"
+    },
+    "DcClauseApplication": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "checked_by_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "commercial_execution": {
+          "const": false
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decision_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "effect_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "electronic_signature": {
+          "const": false
+        },
+        "external_delivery": {
+          "const": false
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "original_text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "packet_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "professional_seal": {
+          "const": false
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "proposed_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "proposed_text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "approved_relationship"
+        },
+        "subject_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "subject_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_changed": {
+          "const": false
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "effect_digest",
+        "artifacts",
+        "electronic_signature",
+        "professional_seal",
+        "external_delivery",
+        "commercial_execution",
+        "target",
+        "target_snapshot",
+        "original_text",
+        "proposed_text",
+        "proposed_sha256",
+        "target_changed"
+      ],
+      "type": "object"
+    },
+    "DcClauseSourceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "end": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "excerpt_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "page": {
+          "maximum": 10000,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "start": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "type": "integer"
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "excerpt_sha256",
+        "start",
+        "end"
+      ],
+      "type": "object"
+    },
+    "DcClauseTarget": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "locator": {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "const": "contract_revision"
+            },
+            "locator": {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "kind": {
+              "const": "document_revision"
+            },
+            "locator": {
+              "maxLength": 2000,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "DcClauseTargetKind": {
+      "enum": [
+        "proposal_revision",
+        "contract_revision",
+        "document_revision"
+      ]
+    },
+    "DcClauseTargetResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "type": "object"
+    },
+    "DcClauseTargetSnapshot": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "id": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "parent_id": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "project": {
+              "type": "null"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "scope_type": {
+              "const": "Company"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "id": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "kind": {
+              "const": "contract_revision"
+            },
+            "parent_id": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "scope_type": {
+              "const": "Project"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "kind": {
+              "const": "document_revision"
+            },
+            "parent_id": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "scope_type": {
+              "const": "Project"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "DcClauseUse": {
+      "additionalProperties": false,
+      "properties": {
+        "adoption_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "adoption_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "source_clause": {
+          "$ref": "#/$defs/DcQuotedClause"
+        },
+        "status": {
+          "const": "referenced"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_changed": {
+          "const": false
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "adoption_id",
+        "adoption_digest",
+        "source_clause",
+        "target",
+        "target_snapshot",
+        "purpose",
+        "artifacts",
+        "target_changed"
+      ],
+      "type": "object"
+    },
+    "DcCompanyCreateLibraryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "definition",
+        "artifact"
+      ],
+      "type": "object"
+    },
+    "DcCompanyCreateLibraryResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "library": {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCompanyGetRecordRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision"
+          ]
+        },
+        "record_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "record_id"
+      ],
+      "type": "object"
+    },
+    "DcCompanyGetResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "library_current": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "record": {
+          "$ref": "#/$defs/DcCompanyRecord"
+        },
+        "record_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record",
+        "record_digest",
+        "library_current"
+      ],
+      "type": "object"
+    },
+    "DcCompanyLibrary": {
+      "additionalProperties": false,
+      "properties": {
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "current_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "project": {
+          "type": "null"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "current_revision",
+        "revision_number"
+      ],
+      "type": "object"
+    },
+    "DcCompanyLibraryRevision": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "type": "null"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "predecessor",
+        "revision_number",
+        "definition",
+        "artifacts"
+      ],
+      "type": "object"
+    },
+    "DcCompanyListRecordsRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision"
+          ]
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "maxLength": 140,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "DcCompanyListResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "count_mode": {
+          "const": "none"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/DcCompanyGetResponse"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "type": "object"
+    },
+    "DcCompanyRecord": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DcCompanyRights"
+        },
+        {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        }
+      ]
+    },
+    "DcCompanyReviseLibraryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "expected_version": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "library_id",
+        "expected_version",
+        "definition",
+        "artifact"
+      ],
+      "type": "object"
+    },
+    "DcCompanyReviseLibraryResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "library": {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCompanyRights": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_purpose": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "distribute_allowed": {
+          "type": "boolean"
+        },
+        "evidence_artifact": {
+          "$ref": "#/$defs/DcArtifact"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "ingest_allowed": {
+          "type": "boolean"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "type": "null"
+        },
+        "read_allowed": {
+          "type": "boolean"
+        },
+        "restriction": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "rights_basis": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "rights_holder": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "status": {
+          "const": "authored_rights_basis"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "predecessor",
+        "revision_number",
+        "ingest_allowed",
+        "read_allowed",
+        "distribute_allowed",
+        "rights_basis",
+        "rights_holder",
+        "allowed_purpose",
+        "restriction",
+        "valid_from",
+        "valid_until",
+        "evidence_artifact"
+      ],
+      "type": "object"
+    },
+    "DcCompanySetRightsRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcRightsDefinition"
+        },
+        "document_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "document_id",
+        "expected_version",
+        "definition"
+      ],
+      "type": "object"
+    },
+    "DcCompanySetRightsResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        },
+        "rights": {
+          "$ref": "#/$defs/DcCompanyRights"
+        }
+      },
+      "required": [
+        "rights",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateAdoptionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "library_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "library_revision",
+        "library_digest",
+        "definition"
+      ],
+      "type": "object"
+    },
+    "DcCreateAdoptionResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "adoption_request": {
+          "$ref": "#/$defs/DcAdoptionRequest"
+        },
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "adoption_request",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateClauseUseRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "adoption_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "adoption_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "source_clause": {
+          "$ref": "#/$defs/DcClauseSourceReference"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "adoption_id",
+        "adoption_digest",
+        "source_clause",
+        "target",
+        "purpose"
+      ],
+      "type": "object"
+    },
+    "DcCreateClauseUseResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "clause_use": {
+          "$ref": "#/$defs/DcClauseUse"
+        },
+        "history_id": {
+          "maxLength": 140,
+          "minLength": 1,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "clause_use",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateIssueSetRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "adoptions": {
+          "items": {
+            "$ref": "#/$defs/DcExactReference"
+          },
+          "maxItems": 8,
+          "minItems": 0,
+          "type": "array"
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifactInput"
+          },
+          "maxItems": 8,
+          "minItems": 0,
+          "type": "array"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcIssueDefinition"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "definition",
+        "artifacts",
+        "adoptions"
+      ],
+      "type": "object"
+    },
+    "DcCreateIssueSetResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "issue_set": {
+          "$ref": "#/$defs/DcIssueSet"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "issue_set",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateLibraryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "definition",
+        "artifact"
+      ],
+      "type": "object"
+    },
+    "DcCreateLibraryResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "library": {
+          "$ref": "#/$defs/DcLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcLibraryRevision"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateRedlineRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "clause_use_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "clause_use_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "proposed_text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "clause_use_id",
+        "clause_use_digest",
+        "expected_version",
+        "proposed_text",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "DcCreateRedlineResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "minLength": 1,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        },
+        "redline": {
+          "$ref": "#/$defs/DcRedline"
+        }
+      },
+      "required": [
+        "redline",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateSharedAdoptionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "library_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "library_scope": {
+          "$ref": "#/$defs/DcLibraryScope"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "library_revision",
+        "library_digest",
+        "definition",
+        "library_scope"
+      ],
+      "type": "object"
+    },
+    "DcCreateSharedAdoptionResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "adoption_request": {
+          "$ref": "#/$defs/DcSharedAdoptionRequest"
+        },
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "adoption_request",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcCreateTransmittalRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "issue_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "issue_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "recipients": {
+          "items": {
+            "maxLength": 140,
+            "type": "string"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "type": "array"
+        },
+        "required_response": {
+          "maxLength": 4000,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "issue_id",
+        "issue_digest",
+        "recipients",
+        "purpose",
+        "required_response"
+      ],
+      "type": "object"
+    },
+    "DcCreateTransmittalResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        },
+        "transmittal": {
+          "$ref": "#/$defs/DcTransmittal"
+        }
+      },
+      "required": [
+        "transmittal",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "commercial_execution": {
+          "const": false
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "electronic_signature": {
+          "const": false
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "reported_received",
+            "reported_execution"
+          ]
+        },
+        "subject_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "subject_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "subject_kind": {
+          "enum": [
+            "distribution",
+            "adoption"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "statement",
+        "artifacts",
+        "commercial_execution",
+        "electronic_signature"
+      ],
+      "type": "object"
+    },
+    "DcGetRecordRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision",
+            "adoption_request",
+            "adoption",
+            "issue_set",
+            "issue",
+            "transmittal",
+            "distribution",
+            "evidence",
+            "clause_use",
+            "redline",
+            "clause_application",
+            "lifecycle_request",
+            "lifecycle"
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "record_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "type": "object"
+    },
+    "DcGetResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "library_current": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "record": {
+          "$ref": "#/$defs/DcRecord"
+        },
+        "record_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "record",
+        "record_digest",
+        "library_current"
+      ],
+      "type": "object"
+    },
+    "DcIssueReference": {
+      "additionalProperties": false,
+      "properties": {
+        "issue_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "issue_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issue_id",
+        "issue_digest",
+        "revision_id",
+        "source_sha256"
+      ],
+      "type": "object"
+    },
+    "DcIssueSet": {
+      "additionalProperties": false,
+      "properties": {
+        "adoptions": {
+          "items": {
+            "$ref": "#/$defs/DcExactReference"
+          },
+          "maxItems": 8,
+          "minItems": 0,
+          "type": "array"
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcIssueDefinition"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "package_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "definition",
+        "artifacts",
+        "adoptions",
+        "package_digest"
+      ],
+      "type": "object"
+    },
+    "DcIssuedStanding": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "current_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "last_event": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcLifecycleEventReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "original_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "enum": [
+            "not_issued",
+            "issued",
+            "withdrawn"
+          ]
+        },
+        "version": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "scope_type",
+        "document_id",
+        "status",
+        "original_issued",
+        "current_issued",
+        "last_event",
+        "version"
+      ],
+      "type": "object"
+    },
+    "DcIssuedStandingBody": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "current_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "last_event": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcLifecycleEventReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "original_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "enum": [
+            "not_issued",
+            "issued",
+            "withdrawn"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "scope_type",
+        "document_id",
+        "status",
+        "original_issued",
+        "current_issued",
+        "last_event"
+      ],
+      "type": "object"
+    },
+    "DcIssuedStandingRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "document_id"
+      ],
+      "type": "object"
+    },
+    "DcIssuedStandingResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "standing": {
+          "$ref": "#/$defs/DcIssuedStanding"
+        }
+      },
+      "required": [
+        "standing"
+      ],
+      "type": "object"
+    },
+    "DcLibrary": {
+      "additionalProperties": false,
+      "properties": {
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "current_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "current_revision",
+        "revision_number"
+      ],
+      "type": "object"
+    },
+    "DcLibraryDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "enum": [
+            "specification",
+            "contract_clause",
+            "reference"
+          ]
+        },
+        "change_reason": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "discipline": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "ownership": {
+          "maxLength": 2000,
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "maxLength": 80,
+            "type": "string"
+          },
+          "maxItems": 20,
+          "minItems": 0,
+          "type": "array"
+        },
+        "title": {
+          "maxLength": 240,
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "category",
+        "discipline",
+        "ownership",
+        "tags",
+        "change_reason"
+      ],
+      "type": "object"
+    },
+    "DcLibraryRevision": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "predecessor",
+        "revision_number",
+        "definition",
+        "artifacts"
+      ],
+      "type": "object"
+    },
+    "DcLibraryScope": {
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "project": {
+              "type": "null"
+            },
+            "scope_type": {
+              "const": "Company"
+            }
+          },
+          "required": [
+            "scope_type",
+            "project"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "scope_type": {
+              "const": "Project"
+            }
+          },
+          "required": [
+            "scope_type",
+            "project"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "DcLifecycle": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "enum": [
+            "withdraw",
+            "supersede"
+          ]
+        },
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "before": {
+          "$ref": "#/$defs/DcIssuedStandingBody"
+        },
+        "checked_by_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "commercial_execution": {
+          "const": false
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decision_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "effect_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "electronic_signature": {
+          "const": false
+        },
+        "external_delivery": {
+          "const": false
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "packet_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "professional_seal": {
+          "const": false
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "enum": [
+            "withdrawn",
+            "superseded"
+          ]
+        },
+        "subject_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "subject_id": {
+          "format": "uuid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "effect_digest",
+        "artifacts",
+        "electronic_signature",
+        "professional_seal",
+        "external_delivery",
+        "commercial_execution",
+        "document_id",
+        "revision_number",
+        "predecessor",
+        "action",
+        "reason",
+        "replacement",
+        "before"
+      ],
+      "type": "object"
+    },
+    "DcLifecycleDefinition": {
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "withdraw"
+            },
+            "replacement_issue_digest": {
+              "type": "null"
+            },
+            "replacement_issue_id": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "supersede"
+            },
+            "replacement_issue_digest": {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            "replacement_issue_id": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        }
+      ],
+      "properties": {
+        "action": {
+          "enum": [
+            "withdraw",
+            "supersede"
+          ]
+        },
+        "issue_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "issue_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "replacement_issue_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replacement_issue_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "action",
+        "issue_id",
+        "issue_digest",
+        "replacement_issue_id",
+        "replacement_issue_digest",
+        "reason"
+      ],
+      "type": "object"
+    },
+    "DcLifecycleEventReference": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "record_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "record_digest"
+      ],
+      "type": "object"
+    },
+    "DcLifecycleRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "before": {
+          "$ref": "#/$defs/DcIssuedStandingBody"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLifecycleDefinition"
+        },
+        "expected_version": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "expected_version",
+        "before",
+        "definition",
+        "replacement",
+        "artifacts"
+      ],
+      "type": "object"
+    },
+    "DcListPeopleRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "type": "object"
+    },
+    "DcListRecordsRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision",
+            "adoption_request",
+            "adoption",
+            "issue_set",
+            "issue",
+            "transmittal",
+            "distribution",
+            "evidence",
+            "clause_use",
+            "redline",
+            "clause_application",
+            "lifecycle_request",
+            "lifecycle"
+          ]
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "maxLength": 140,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ],
+      "type": "object"
+    },
+    "DcListResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "count_mode": {
+          "const": "none"
+        },
+        "items": {
+          "items": {
+            "$ref": "#/$defs/DcGetResponse"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "type": "object"
+    },
+    "DcOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "status": {
+          "const": "succeeded"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "type": "object"
+    },
+    "DcPeopleResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "count_mode": {
+          "const": "none"
+        },
+        "items": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "display_name": {
+                "maxLength": 140,
+                "type": "string"
+              },
+              "person": {
+                "maxLength": 140,
+                "type": "string"
+              },
+              "user": {
+                "maxLength": 140,
+                "type": "string"
+              }
+            },
+            "required": [
+              "user",
+              "person",
+              "display_name"
+            ],
+            "type": "object"
+          },
+          "maxItems": 100,
+          "minItems": 0,
+          "type": "array"
+        },
+        "limit": {
+          "maximum": 100,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "type": "object"
+    },
+    "DcQuotedClause": {
+      "additionalProperties": false,
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/DcClauseSourceReference"
+        },
+        "text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "text_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reference",
+        "text",
+        "text_sha256"
+      ],
+      "type": "object"
+    },
+    "DcReadClauseTargetRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/DcClauseTargetKind"
+        },
+        "project": {
+          "maxLength": 140,
+          "minLength": 1,
+          "type": "string"
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "type": "object",
+      "oneOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_id": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "kind": {
+              "const": "contract_revision"
+            },
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_id": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "type": "object"
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "company": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "kind": {
+              "const": "document_revision"
+            },
+            "project": {
+              "maxLength": 140,
+              "minLength": 1,
+              "type": "string"
+            },
+            "record_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "type": "object"
+        }
+      ]
+    },
+    "DcRecord": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DcRights"
+        },
+        {
+          "$ref": "#/$defs/DcLibrary"
+        },
+        {
+          "$ref": "#/$defs/DcLibraryRevision"
+        },
+        {
+          "$ref": "#/$defs/DcAdoptionRequest"
+        },
+        {
+          "$ref": "#/$defs/DcAdoption"
+        },
+        {
+          "$ref": "#/$defs/DcIssueSet"
+        },
+        {
+          "$ref": "#/$defs/DcIssue"
+        },
+        {
+          "$ref": "#/$defs/DcTransmittal"
+        },
+        {
+          "$ref": "#/$defs/DcDistribution"
+        },
+        {
+          "$ref": "#/$defs/DcEvidence"
+        },
+        {
+          "$ref": "#/$defs/DcClauseUse"
+        },
+        {
+          "$ref": "#/$defs/DcRedline"
+        },
+        {
+          "$ref": "#/$defs/DcClauseApplication"
+        },
+        {
+          "$ref": "#/$defs/DcSharedAdoptionRequest"
+        },
+        {
+          "$ref": "#/$defs/DcLifecycleRequest"
+        },
+        {
+          "$ref": "#/$defs/DcLifecycle"
+        }
+      ]
+    },
+    "DcRecordEvidenceRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifactInput"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "subject_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "subject_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "subject_kind": {
+          "enum": [
+            "distribution",
+            "adoption"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "statement",
+        "artifacts"
+      ],
+      "type": "object"
+    },
+    "DcRecordEvidenceResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "$ref": "#/$defs/DcEvidence"
+        },
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "evidence",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcRedline": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "clause_use_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "clause_use_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "original_text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "proposed_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "proposed_text": {
+          "maxLength": 12000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "reason": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "type": "string"
+        },
+        "revision_number": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "proposed"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_changed": {
+          "const": false
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "clause_use_id",
+        "clause_use_digest",
+        "predecessor",
+        "revision_number",
+        "original_text",
+        "proposed_text",
+        "proposed_sha256",
+        "reason",
+        "target",
+        "target_snapshot",
+        "artifacts",
+        "target_changed"
+      ],
+      "type": "object"
+    },
+    "DcRequestLifecycleRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLifecycleDefinition"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "expected_version": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "document_id",
+        "expected_version",
+        "definition"
+      ],
+      "type": "object"
+    },
+    "DcRequestLifecycleResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "minLength": 1,
+          "type": "string"
+        },
+        "lifecycle_request": {
+          "$ref": "#/$defs/DcLifecycleRequest"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "lifecycle_request",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcReviseLibraryRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "expected_version": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "library_id",
+        "expected_version",
+        "definition",
+        "artifact"
+      ],
+      "type": "object"
+    },
+    "DcReviseLibraryResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "library": {
+          "$ref": "#/$defs/DcLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcLibraryRevision"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcRightsDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_purpose": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "distribute_allowed": {
+          "type": "boolean"
+        },
+        "evidence_artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        },
+        "ingest_allowed": {
+          "type": "boolean"
+        },
+        "read_allowed": {
+          "type": "boolean"
+        },
+        "restriction": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "rights_basis": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "rights_holder": {
+          "maxLength": 500,
+          "type": "string"
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "ingest_allowed",
+        "read_allowed",
+        "distribute_allowed",
+        "rights_basis",
+        "rights_holder",
+        "allowed_purpose",
+        "restriction",
+        "valid_from",
+        "valid_until",
+        "evidence_artifact"
+      ],
+      "type": "object"
+    },
+    "DcSetRightsRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcRightsDefinition"
+        },
+        "document_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "operation_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "document_id",
+        "expected_version",
+        "definition"
+      ],
+      "type": "object"
+    },
+    "DcSetRightsResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "history_id": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        },
+        "rights": {
+          "$ref": "#/$defs/DcRights"
+        }
+      },
+      "required": [
+        "rights",
+        "history_id",
+        "operation"
+      ],
+      "type": "object"
+    },
+    "DcSharedAdoptionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 1,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "library_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "library_revision": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "library_scope": {
+          "$ref": "#/$defs/DcLibraryScope"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "library_revision",
+        "library_digest",
+        "definition",
+        "artifacts",
+        "library_scope"
+      ],
+      "type": "object"
+    },
+    "DcTransmittal": {
+      "additionalProperties": false,
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "type": "array"
+        },
+        "author_person": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "author_user": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "channel": {
+          "const": "internal"
+        },
+        "company": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "issue_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "issue_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "package_digest": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "parent_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "project": {
+          "maxLength": 140,
+          "type": "string"
+        },
+        "purpose": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "recipients": {
+          "items": {
+            "$ref": "#/$defs/DcPerson"
+          },
+          "maxItems": 30,
+          "minItems": 1,
+          "type": "array"
+        },
+        "required_response": {
+          "maxLength": 4000,
+          "type": "string"
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "status": {
+          "const": "working"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "issue_id",
+        "issue_digest",
+        "artifacts",
+        "recipients",
+        "purpose",
+        "required_response",
+        "channel",
+        "package_digest"
+      ],
+      "type": "object"
+    },
+    "DocumentLifecycleRequestApprovalPacket": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "document.lifecycle.v1"
+        },
+        "actions": {
+          "additionalProperties": false,
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "review_manifest": {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "const": "document.lifecycle.v1"
+                },
+                "artifacts": {
+                  "items": {
+                    "$ref": "#/$defs/DcArtifact"
+                  },
+                  "maxItems": 16,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "before": {
+                  "$ref": "#/$defs/DcIssuedStandingBody"
+                },
+                "commercial_execution": {
+                  "const": false
+                },
+                "definition": {
+                  "$ref": "#/$defs/DcLifecycleDefinition"
+                },
+                "document_id": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 140
+                },
+                "electronic_signature": {
+                  "const": false
+                },
+                "expected_version": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "replacement": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/$defs/DcIssueReference"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "lifecycle_request"
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "artifacts",
+                "no_effects",
+                "electronic_signature",
+                "professional_seal",
+                "external_delivery",
+                "commercial_execution",
+                "document_id",
+                "before",
+                "definition",
+                "replacement",
+                "expected_version"
+              ],
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 16,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 16,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Document Lifecycle Request"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
+            },
+            "summary": {
+              "additionalProperties": false,
+              "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
+                "definition": {
+                  "$ref": "#/$defs/DcLifecycleDefinition"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "required_response": {
+                  "type": "null"
+                },
+                "rights_basis": {
+                  "const": "authored-declaration"
+                }
+              },
+              "required": [
+                "definition",
+                "purpose",
+                "required_response",
+                "no_effects",
+                "rights_basis",
+                "external_delivery",
+                "commercial_execution"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Document Lifecycle Request"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "type": "object"
+    },
+    "DocumentRedlineApprovalPacket": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "document.clause.apply.v1"
+        },
+        "actions": {
+          "additionalProperties": false,
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "review_manifest": {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "const": "document.clause.apply.v1"
+                },
+                "artifacts": {
+                  "items": {
+                    "$ref": "#/$defs/DcArtifact"
+                  },
+                  "maxItems": 8,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "commercial_execution": {
+                  "const": false
+                },
+                "electronic_signature": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "original_text": {
+                  "maxLength": 12000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "proposed_sha256": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "proposed_text": {
+                  "maxLength": 12000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "redline"
+                },
+                "target": {
+                  "$ref": "#/$defs/DcClauseTarget"
+                },
+                "target_changed": {
+                  "const": false
+                },
+                "target_snapshot": {
+                  "$ref": "#/$defs/DcClauseTargetSnapshot"
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "artifacts",
+                "no_effects",
+                "electronic_signature",
+                "professional_seal",
+                "external_delivery",
+                "commercial_execution",
+                "target",
+                "target_snapshot",
+                "original_text",
+                "proposed_text",
+                "proposed_sha256",
+                "target_changed"
+              ],
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Redline Revision"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
+            },
+            "summary": {
+              "additionalProperties": false,
+              "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
+                "definition": {
+                  "type": "null"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "required_response": {
+                  "type": "null"
+                },
+                "rights_basis": {
+                  "const": "authored-declaration"
+                }
+              },
+              "required": [
+                "definition",
+                "purpose",
+                "required_response",
+                "no_effects",
+                "rights_basis",
+                "external_delivery",
+                "commercial_execution"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Redline Revision"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "type": "object"
+    },
+    "DocumentSharedAdoptionRequestApprovalPacket": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "const": "document.library.adopt.v1"
+        },
+        "actions": {
+          "additionalProperties": false,
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "type": "object"
+        },
+        "company": {
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          },
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        "policy": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "type": "object"
+        },
+        "project": {
+          "type": "string"
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "review_manifest": {
+          "additionalProperties": false,
+          "properties": {
+            "effect": {
+              "additionalProperties": false,
+              "properties": {
+                "action": {
+                  "const": "document.library.adopt.v1"
+                },
+                "artifacts": {
+                  "items": {
+                    "$ref": "#/$defs/DcArtifact"
+                  },
+                  "maxItems": 8,
+                  "minItems": 1,
+                  "type": "array"
+                },
+                "commercial_execution": {
+                  "const": false
+                },
+                "electronic_signature": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "library_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "library_revision": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "library_scope": {
+                  "$ref": "#/$defs/DcLibraryScope"
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "schema": {
+                  "const": "cipher.document.authorization.v1"
+                },
+                "subject_digest": {
+                  "pattern": "^[a-f0-9]{64}$",
+                  "type": "string"
+                },
+                "subject_id": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "subject_kind": {
+                  "const": "adoption_request"
+                },
+                "target_locator": {
+                  "maxLength": 4000,
+                  "type": "string"
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "artifacts",
+                "no_effects",
+                "electronic_signature",
+                "professional_seal",
+                "external_delivery",
+                "commercial_execution",
+                "library_revision",
+                "library_digest",
+                "target_locator",
+                "library_scope"
+              ],
+              "type": "object"
+            },
+            "sources": {
+              "items": {
+                "additionalProperties": false,
+                "properties": {
+                  "artifacts": {
+                    "items": {
+                      "$ref": "#/$defs/DcArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  },
+                  "rights": {
+                    "items": {
+                      "oneOf": [
+                        {
+                          "$ref": "#/$defs/DcRights"
+                        },
+                        {
+                          "$ref": "#/$defs/DcCompanyRights"
+                        }
+                      ]
+                    },
+                    "maxItems": 8,
+                    "minItems": 1,
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "artifacts",
+                  "rights"
+                ],
+                "type": "object"
+              },
+              "maxItems": 1,
+              "minItems": 1,
+              "type": "array"
+            },
+            "subject": {
+              "additionalProperties": false,
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Adoption Request"
+                },
+                "label": {
+                  "maxLength": 4000,
+                  "type": "string"
+                },
+                "name": {
+                  "format": "uuid",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "type": "object"
+            },
+            "summary": {
+              "additionalProperties": false,
+              "properties": {
+                "commercial_execution": {
+                  "const": false
+                },
+                "definition": {
+                  "$ref": "#/$defs/DcAdoptionDefinition"
+                },
+                "external_delivery": {
+                  "const": false
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/DcNoEffects"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "required_response": {
+                  "type": "null"
+                },
+                "rights_basis": {
+                  "const": "authored-declaration"
+                }
+              },
+              "required": [
+                "definition",
+                "purpose",
+                "required_response",
+                "no_effects",
+                "rights_basis",
+                "external_delivery",
+                "commercial_execution"
+              ],
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "type": "object"
+        },
+        "schema": {
+          "const": "cipher.document.approval.v1"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ],
+          "type": "string"
+        },
+        "subject": {
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Adoption Request"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "type": "object"
+    },
+    "SemanticScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "scope_type": {
+              "const": "Company"
+            },
+            "project": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "company",
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "scope_type": {
+              "const": "Project"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SemanticSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "revision_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "selection": {
+              "enum": [
+                "working",
+                "issued"
+              ]
+            },
+            "adoption_id": {
+              "type": "null"
+            },
+            "adoption_digest": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "document_id",
+            "revision_id",
+            "source_sha256",
+            "selection",
+            "adoption_id",
+            "adoption_digest"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "revision_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "selection": {
+              "const": "adopted"
+            },
+            "adoption_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "adoption_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "document_id",
+            "revision_id",
+            "source_sha256",
+            "selection",
+            "adoption_id",
+            "adoption_digest"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SemanticJobResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "running",
+            "retryable",
+            "rejected",
+            "active",
+            "retired",
+            "cancelled",
+            "deleted"
+          ]
+        },
+        "chunks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
+        },
+        "indexed_chunks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "error_code": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "connected_qualification": {
+          "const": false
+        }
+      },
+      "required": [
+        "operation_id",
+        "generation",
+        "status",
+        "chunks",
+        "indexed_chunks",
+        "error_code",
+        "replayed",
+        "connected_qualification"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticPrepareRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SemanticSource"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "scope",
+        "sources",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticJobRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "scope",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticQueryRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      },
+      "required": [
+        "scope",
+        "question",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticQueryResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "ready"
+        },
+        "generation": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "profile_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "results": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "score": {
+                "type": "number"
+              },
+              "excerpt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "chunk_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "citation": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "document_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "revision_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "document_title": {
+                    "type": "string"
+                  },
+                  "revision_number": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "page_label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "excerpt_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "source_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "company": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "scope_type": {
+                    "enum": [
+                      "Company",
+                      "Project"
+                    ]
+                  },
+                  "project": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "document_id",
+                  "revision_id",
+                  "document_title",
+                  "revision_number",
+                  "page",
+                  "page_label",
+                  "excerpt_sha256",
+                  "source_sha256"
+                ],
+                "additionalProperties": false
+              },
+              "source": {
+                "$ref": "#/$defs/SemanticSource"
+              }
+            },
+            "required": [
+              "id",
+              "score",
+              "excerpt",
+              "chunk_sha256",
+              "start",
+              "end",
+              "citation",
+              "source"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "connected_qualification": {
+          "const": false
+        }
+      },
+      "required": [
+        "status",
+        "generation",
+        "profile_id",
+        "results",
+        "connected_qualification"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticStatusRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "job_operation_id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Reference to the existing rebuild operation; this read does not create a command."
+        }
+      },
+      "required": [
+        "scope",
+        "job_operation_id"
       ],
       "additionalProperties": false
     }

@@ -1335,6 +1335,24 @@
         },
         {
           "$ref": "#/$defs/DcEvidence"
+        },
+        {
+          "$ref": "#/$defs/DcClauseUse"
+        },
+        {
+          "$ref": "#/$defs/DcRedline"
+        },
+        {
+          "$ref": "#/$defs/DcClauseApplication"
+        },
+        {
+          "$ref": "#/$defs/DcSharedAdoptionRequest"
+        },
+        {
+          "$ref": "#/$defs/DcLifecycleRequest"
+        },
+        {
+          "$ref": "#/$defs/DcLifecycle"
         }
       ]
     },
@@ -1954,7 +1972,12 @@
             "issue",
             "transmittal",
             "distribution",
-            "evidence"
+            "evidence",
+            "clause_use",
+            "redline",
+            "clause_application",
+            "lifecycle_request",
+            "lifecycle"
           ]
         },
         "record_id": {
@@ -1992,7 +2015,12 @@
             "issue",
             "transmittal",
             "distribution",
-            "evidence"
+            "evidence",
+            "clause_use",
+            "redline",
+            "clause_application",
+            "lifecycle_request",
+            "lifecycle"
           ]
         },
         "parent_id": {
@@ -2069,6 +2097,2357 @@
         "project"
       ],
       "additionalProperties": false
+    },
+    "DcClauseSourceReference": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "start": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000000
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "excerpt_sha256",
+        "start",
+        "end"
+      ],
+      "additionalProperties": false
+    },
+    "DcClauseTargetKind": {
+      "enum": [
+        "proposal_revision",
+        "contract_revision",
+        "document_revision"
+      ]
+    },
+    "DcClauseTarget": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "locator": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "contract_revision"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "locator": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "document_revision"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "locator": {
+              "type": "string",
+              "maxLength": 2000,
+              "minLength": 1
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "locator"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DcClauseTargetSnapshot": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "null"
+            },
+            "scope_type": {
+              "const": "Company"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "contract_revision"
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "scope_type": {
+              "const": "Project"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "document_revision"
+            },
+            "id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "record_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "parent_id": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "scope_type": {
+              "const": "Project"
+            }
+          },
+          "required": [
+            "kind",
+            "id",
+            "record_digest",
+            "parent_id",
+            "company",
+            "project",
+            "scope_type"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DcQuotedClause": {
+      "type": "object",
+      "properties": {
+        "reference": {
+          "$ref": "#/$defs/DcClauseSourceReference"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "text_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "reference",
+        "text",
+        "text_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "DcClauseUse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "referenced"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "adoption_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "adoption_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_clause": {
+          "$ref": "#/$defs/DcQuotedClause"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 1
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "target_changed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "adoption_id",
+        "adoption_digest",
+        "source_clause",
+        "target",
+        "target_snapshot",
+        "purpose",
+        "artifacts",
+        "target_changed"
+      ],
+      "additionalProperties": false
+    },
+    "DcRedline": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "proposed"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clause_use_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clause_use_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "original_text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "proposed_text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "proposed_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "target_changed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "clause_use_id",
+        "clause_use_digest",
+        "predecessor",
+        "revision_number",
+        "original_text",
+        "proposed_text",
+        "proposed_sha256",
+        "reason",
+        "target",
+        "target_snapshot",
+        "artifacts",
+        "target_changed"
+      ],
+      "additionalProperties": false
+    },
+    "DcClauseApplication": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "approved_relationship"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "effect_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "electronic_signature": {
+          "const": false
+        },
+        "professional_seal": {
+          "const": false
+        },
+        "external_delivery": {
+          "const": false
+        },
+        "commercial_execution": {
+          "const": false
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "target_snapshot": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        },
+        "original_text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "proposed_text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "proposed_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "target_changed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "effect_digest",
+        "artifacts",
+        "electronic_signature",
+        "professional_seal",
+        "external_delivery",
+        "commercial_execution",
+        "target",
+        "target_snapshot",
+        "original_text",
+        "proposed_text",
+        "proposed_sha256",
+        "target_changed"
+      ],
+      "additionalProperties": false
+    },
+    "DcCreateClauseUseRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "adoption_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "adoption_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_clause": {
+          "$ref": "#/$defs/DcClauseSourceReference"
+        },
+        "target": {
+          "$ref": "#/$defs/DcClauseTarget"
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "adoption_id",
+        "adoption_digest",
+        "source_clause",
+        "target",
+        "purpose"
+      ],
+      "additionalProperties": false
+    },
+    "DcCreateRedlineRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clause_use_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "clause_use_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "proposed_text": {
+          "type": "string",
+          "maxLength": 12000,
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 4000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "clause_use_id",
+        "clause_use_digest",
+        "expected_version",
+        "proposed_text",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "DcReadClauseTargetRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140,
+          "minLength": 1
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140,
+          "minLength": 1
+        },
+        "kind": {
+          "$ref": "#/$defs/DcClauseTargetKind"
+        },
+        "record_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "kind": {
+              "const": "proposal_revision"
+            },
+            "record_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "kind": {
+              "const": "contract_revision"
+            },
+            "record_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "project": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            },
+            "kind": {
+              "const": "document_revision"
+            },
+            "record_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project",
+            "kind",
+            "record_id"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DcCreateClauseUseResponse": {
+      "type": "object",
+      "properties": {
+        "clause_use": {
+          "$ref": "#/$defs/DcClauseUse"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "minLength": 1
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "clause_use",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcCreateRedlineResponse": {
+      "type": "object",
+      "properties": {
+        "redline": {
+          "$ref": "#/$defs/DcRedline"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140,
+          "minLength": 1
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "redline",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcClauseTargetResponse": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "$ref": "#/$defs/DcClauseTargetSnapshot"
+        }
+      },
+      "required": [
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyRights": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "authored_rights_basis"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "ingest_allowed": {
+          "type": "boolean"
+        },
+        "read_allowed": {
+          "type": "boolean"
+        },
+        "distribute_allowed": {
+          "type": "boolean"
+        },
+        "rights_basis": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "rights_holder": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "allowed_purpose": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "restriction": {
+          "type": "string",
+          "maxLength": 4000
+        },
+        "valid_from": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "valid_until": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "evidence_artifact": {
+          "$ref": "#/$defs/DcArtifact"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "predecessor",
+        "revision_number",
+        "ingest_allowed",
+        "read_allowed",
+        "distribute_allowed",
+        "rights_basis",
+        "rights_holder",
+        "allowed_purpose",
+        "restriction",
+        "valid_from",
+        "valid_until",
+        "evidence_artifact"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyLibrary": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "current_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "current_revision",
+        "revision_number"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyLibraryRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "scope_type": {
+          "const": "Company"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "predecessor",
+        "revision_number",
+        "definition",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyRecord": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/DcCompanyRights"
+        },
+        {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        }
+      ]
+    },
+    "DcCompanyGetResponse": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/DcCompanyRecord"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "library_current": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record",
+        "record_digest",
+        "library_current"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcCompanyGetResponse"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanySetRightsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "expected_version": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definition": {
+          "$ref": "#/$defs/DcRightsDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "document_id",
+        "expected_version",
+        "definition"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyCreateLibraryRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "definition",
+        "artifact"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyReviseLibraryRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "library_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLibraryDefinition"
+        },
+        "artifact": {
+          "$ref": "#/$defs/DcArtifactInput"
+        }
+      },
+      "required": [
+        "company",
+        "operation_id",
+        "library_id",
+        "expected_version",
+        "definition",
+        "artifact"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyGetRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyListRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "rights",
+            "library",
+            "library_revision"
+          ]
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanySetRightsResponse": {
+      "type": "object",
+      "properties": {
+        "rights": {
+          "$ref": "#/$defs/DcCompanyRights"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "rights",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyCreateLibraryResponse": {
+      "type": "object",
+      "properties": {
+        "library": {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcCompanyReviseLibraryResponse": {
+      "type": "object",
+      "properties": {
+        "library": {
+          "$ref": "#/$defs/DcCompanyLibrary"
+        },
+        "library_revision": {
+          "$ref": "#/$defs/DcCompanyLibraryRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "library",
+        "library_revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcLibraryScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "scope_type": {
+              "const": "Company"
+            },
+            "project": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "scope_type": {
+              "const": "Project"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "DcSharedAdoptionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "library_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "library_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "library_scope": {
+          "$ref": "#/$defs/DcLibraryScope"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "library_revision",
+        "library_digest",
+        "definition",
+        "artifacts",
+        "library_scope"
+      ],
+      "additionalProperties": false
+    },
+    "DcCreateSharedAdoptionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "library_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "library_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcAdoptionDefinition"
+        },
+        "library_scope": {
+          "$ref": "#/$defs/DcLibraryScope"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "library_revision",
+        "library_digest",
+        "definition",
+        "library_scope"
+      ],
+      "additionalProperties": false
+    },
+    "DcCreateSharedAdoptionResponse": {
+      "type": "object",
+      "properties": {
+        "adoption_request": {
+          "$ref": "#/$defs/DcSharedAdoptionRequest"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "adoption_request",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DcIssueReference": {
+      "type": "object",
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "issue_id",
+        "issue_digest",
+        "revision_id",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "DcLifecycleEventReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "DcIssuedStandingBody": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "status": {
+          "enum": [
+            "not_issued",
+            "issued",
+            "withdrawn"
+          ]
+        },
+        "original_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_event": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcLifecycleEventReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "scope_type",
+        "document_id",
+        "status",
+        "original_issued",
+        "current_issued",
+        "last_event"
+      ],
+      "additionalProperties": false
+    },
+    "DcIssuedStanding": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "status": {
+          "enum": [
+            "not_issued",
+            "issued",
+            "withdrawn"
+          ]
+        },
+        "original_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "current_issued": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_event": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcLifecycleEventReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "scope_type",
+        "document_id",
+        "status",
+        "original_issued",
+        "current_issued",
+        "last_event",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "DcLifecycleDefinition": {
+      "type": "object",
+      "properties": {
+        "action": {
+          "enum": [
+            "withdraw",
+            "supersede"
+          ]
+        },
+        "issue_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "replacement_issue_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replacement_issue_digest": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        }
+      },
+      "required": [
+        "action",
+        "issue_id",
+        "issue_digest",
+        "replacement_issue_id",
+        "replacement_issue_digest",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "properties": {
+            "action": {
+              "const": "withdraw"
+            },
+            "replacement_issue_id": {
+              "type": "null"
+            },
+            "replacement_issue_digest": {
+              "type": "null"
+            }
+          }
+        },
+        {
+          "properties": {
+            "action": {
+              "const": "supersede"
+            },
+            "replacement_issue_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "replacement_issue_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        }
+      ]
+    },
+    "DcLifecycleRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "before": {
+          "$ref": "#/$defs/DcIssuedStandingBody"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLifecycleDefinition"
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "expected_version",
+        "before",
+        "definition",
+        "replacement",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "DcLifecycle": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "withdrawn",
+            "superseded"
+          ]
+        },
+        "no_effects": {
+          "$ref": "#/$defs/DcNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "effect_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DcArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 16
+        },
+        "electronic_signature": {
+          "const": false
+        },
+        "professional_seal": {
+          "const": false
+        },
+        "external_delivery": {
+          "const": false
+        },
+        "commercial_execution": {
+          "const": false
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "action": {
+          "enum": [
+            "withdraw",
+            "supersede"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "replacement": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DcIssueReference"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "before": {
+          "$ref": "#/$defs/DcIssuedStandingBody"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "effect_digest",
+        "artifacts",
+        "electronic_signature",
+        "professional_seal",
+        "external_delivery",
+        "commercial_execution",
+        "document_id",
+        "revision_number",
+        "predecessor",
+        "action",
+        "reason",
+        "replacement",
+        "before"
+      ],
+      "additionalProperties": false
+    },
+    "DcIssuedStandingRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "document_id"
+      ],
+      "additionalProperties": false
+    },
+    "DcIssuedStandingResponse": {
+      "type": "object",
+      "properties": {
+        "standing": {
+          "$ref": "#/$defs/DcIssuedStanding"
+        }
+      },
+      "required": [
+        "standing"
+      ],
+      "additionalProperties": false
+    },
+    "DcRequestLifecycleRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/DcLifecycleDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "document_id",
+        "expected_version",
+        "definition"
+      ],
+      "additionalProperties": false
+    },
+    "DcRequestLifecycleResponse": {
+      "type": "object",
+      "properties": {
+        "lifecycle_request": {
+          "$ref": "#/$defs/DcLifecycleRequest"
+        },
+        "history_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/DcOperation"
+        }
+      },
+      "required": [
+        "lifecycle_request",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
     }
   },
   "anyOf": [
@@ -2131,6 +4510,72 @@
     },
     {
       "$ref": "#/$defs/DcPeopleResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCreateClauseUseRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCreateRedlineRequest"
+    },
+    {
+      "$ref": "#/$defs/DcReadClauseTargetRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCreateSharedAdoptionRequest"
+    },
+    {
+      "$ref": "#/$defs/DcIssuedStandingRequest"
+    },
+    {
+      "$ref": "#/$defs/DcRequestLifecycleRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCreateClauseUseResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCreateRedlineResponse"
+    },
+    {
+      "$ref": "#/$defs/DcClauseTargetResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCreateSharedAdoptionResponse"
+    },
+    {
+      "$ref": "#/$defs/DcIssuedStandingResponse"
+    },
+    {
+      "$ref": "#/$defs/DcRequestLifecycleResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCompanySetRightsRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyCreateLibraryRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyReviseLibraryRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyGetRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyListRecordsRequest"
+    },
+    {
+      "$ref": "#/$defs/DcCompanySetRightsResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyCreateLibraryResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyReviseLibraryResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyGetResponse"
+    },
+    {
+      "$ref": "#/$defs/DcCompanyListResponse"
     }
   ]
 }

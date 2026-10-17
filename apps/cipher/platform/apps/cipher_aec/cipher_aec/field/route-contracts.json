@@ -1,0 +1,16 @@
+{
+  "requests": {
+    "create_record": "FdCreateRecordRequest",
+    "revise_record": "FdReviseRecordRequest",
+    "transition": "FdTransitionRequest",
+    "get_record": "FdGetRecordRequest",
+    "list_records": "FdListRecordsRequest"
+  },
+  "responses": {
+    "create_record": "FdCreateRecordResponse",
+    "revise_record": "FdReviseRecordResponse",
+    "transition": "FdTransitionResponse",
+    "get_record": "FdGetResponse",
+    "list_records": "FdListResponse"
+  }
+}
