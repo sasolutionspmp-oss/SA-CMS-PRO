@@ -1,0 +1,49 @@
+{
+  "schema": "cipher.eng02.approval-wire-qualification.v1",
+  "source_manifest_sha256": "96a1bc44c292d9ea2b8fd40216e988720ab811a750d1013eaa37bd8a576c7944",
+  "problem": "Client incorrectly equated opaque full GOV03 authority-envelope hash with digest of visible review_manifest domain projection.",
+  "correction": "Keep exact subject/source/unit/full-checker/effect/summary bindings; preserve schema-validated opaque manifest_hash unchanged for server decision/execute/recovery. Backend revalidates its complete authority envelope.",
+  "fixture": "Uses actual GOV03 outer field structure with explicitly synthetic policy/source actors; visible domain hash differs.",
+  "failing_first": {
+    "passed": 23,
+    "failed": 4,
+    "valid_native_shaped_packet_refused": true,
+    "report_sha256": "3147797760df5e938ee15471e8b79d87703d4950a4ba61e16910a13032b4ef98"
+  },
+  "corrected": {
+    "fresh_single_run": true,
+    "passed": 38,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "retries": 0,
+    "workers": 1,
+    "adapter_checks": 27,
+    "browser_journeys": 11,
+    "duration_ms": 41541.294,
+    "report_sha256": "961e5ded41322ffd4dcca07f3fd36992d6a3e9ff181e434e9dbc5d1981d8c626",
+    "typecheck": "passed",
+    "production_build_files": 925
+  },
+  "preserved_checks": [
+    "Changed source manifest rejected",
+    "Changed input/output/calculation references rejected",
+    "Changed unit manifest rejected",
+    "Full checker user/person mismatch rejected",
+    "Exact original UUID recovery retained",
+    "Independent grant/execute bindings and opaque hash retained"
+  ],
+  "API_contract_fixtures_only": true,
+  "actual_native_UI_or_live_claim": false,
+  "prior513_source_result": "Retained on unchanged250991b8 source; not applied to this changed adapter. New hosted CI will qualify full changed source.",
+  "backend_or_policy_or_permission_changes": false,
+  "native_executed_locally": false,
+  "logs_sha256": {
+    "failing-first.private.log": "6bf4d41429717e9cd5b173b0606c70c86ad20a72d9634ff59801bac09f26d802",
+    "corrected-adapter.private.log": "54c717cdc240a3d044d539b65ade3d28e6d5e0d2ed615c01d76aab9f09f7a139",
+    "focused.private.log": "2cef3364abfa28c786a86264f0823395fce6d1cd7f35a5b0cbe8fd9203848d8c",
+    "typecheck.private.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.private.log": "2f440148893cef6e7416b4575e0e11c3903b873ed9a0933047216a4581134d39"
+  },
+  "original_results_unchanged": true
+}

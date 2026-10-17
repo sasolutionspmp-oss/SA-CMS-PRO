@@ -8,11 +8,13 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 [Engineering work packages](ENGINEERING_ENG02.md) now connect Project assignments, exact source/unit design basis, human-authored calculation records, deliverables and designated independent checking in the unified SAP UI5 workspace. The frozen source contains 831 files and the production build 925 files. Local qualification, original failures and remaining native boundaries are recorded with the package evidence. Neither ENG-01 nor ENG-02 is marked complete merely from browser fixtures.
 
-The original DOC-03 issued-set/specification/contract-library backend has started in a separate source workspace. It is not yet published or qualified. Closed estimating/calibration work stays closed. MAIN and the preserved isolated runtime remain unchanged; live Ricky and QuickBooks remain unconnected.
+The original DOC-03 Project issued-set/specification/contract-library backend is frozen in a separate source workspace after 183 affected host and 16 generated checks. Its source has been composed for UI integration, but is not published or native-qualified. Company/global library and clause/redline work remains part of the original open package. Closed estimating/calibration work stays closed. MAIN and the preserved isolated runtime remain unchanged; live Ricky and QuickBooks remain unconnected.
 
 The corrected ENG-01 hosted run passed native integration/backend checks and all eight workflow procedures on 9029585b; overall CI failed at the browser-stage 920-second ceiling without a final report. [Exact outcome](evidence/r3/engineering-eng01-source/native-ci-corrected-backend-pass.json). The new ENG-02 source has its own fresh CI run; no earlier pass is applied to changed source.
 
 [The compiled CI continuation](evidence/r3/engineering-eng02-source/ci-static-qualification.json) now passes all 513 frontend checks in one fresh run with no retries/skips/failures. It serves a private compiled app plus standalone test pages rather than the memory-heavy development server. Bounded process diagnostics and the isolated native-UOM fixture correction accompany it; the new native result is pending. Shipped UI/business services are unchanged.
+
+[The approval-packet wire correction](evidence/r3/engineering-eng02-source/approval-wire-qualification.json) fixes a client rejection of valid native-shaped ENG-02 packets: GOV03 hashes the full authority envelope, whereas the visible review manifest is only its domain. Exact source/unit/checker/effect checks remain enforced. Four failing-first cases were retained; all 38 affected adapter/browser checks, typecheck and the rebuilt production bundle pass. The preceding 513-case proof remains tied to its original source; fresh full hosted qualification is pending.
 
 ## Prior source checkpoint: original ENG-01 implementation
 

@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { test, expect } from '@playwright/test';
 import * as packages from '../src/api/engineering-packages';
 import { artifact } from './engineering-fixture';
-import { drawing, hash, noEffects, people, scope, unit, unitManifest } from './engineering-packages-fixture';
+import { drawing, hash, noEffects, packageApprovalHash, people, scope, unit, unitManifest } from './engineering-packages-fixture';
 
 // Synthetic adapter tests only: fetch is replaced in-process; no browser or native requests.
 const actor = { user: people[0].user, personId: people[0].person };
@@ -84,12 +84,12 @@ function checkFixture(kind: WorkKind) {
   const type = { basis: 'Cipher Design Basis Revision', calculation: 'Cipher Calculation Revision', deliverable: 'Cipher Deliverable Revision' }[kind];
   const effect = { schema: 'cipher.engineering.package-check.v1', action: packages.packageAction[kind], subject_kind: kind, subject_id: value.id, subject_digest: subject.record_digest, parent_id: value.parent_id, package_revision: value.package_revision, package_digest: value.package_digest, preparer_person: value.author_person, checker: value.checker, outcome: 'checked', issue_authorized: false, sealed: false };
   const manifest = { subject: { doctype: type, name: value.id, label: value.definition.title }, sources: [{ source_citations: value.source_citations, drawing_references: value.drawing_references, artifacts: value.artifacts, unit_manifest: value.unit_manifest || null }], effect, summary: { definition: value.definition, inputs: value.inputs || value.quantities || [], outputs: value.outputs || [], calculations: value.calculations || [], no_effects: noEffects, solver_executed: false, issue_authorized: false, sealed: false } };
-  const packet: any = structuredClone({ id: randomUUID(), ...scope, action: effect.action, subject: { id: value.id, type, label: value.definition.title }, requester: { id: actor.personId, display_name: 'Alex Author' }, created_at: '2026-10-17T05:00:00Z', expires_at: '2026-10-18T05:00:00Z', manifest_hash: hash(manifest), source_version: subject.record_digest, policy: { id: 'fixture', label: 'Synthetic', synthetic: true }, state: 'Pending', decisions: [], actions: { can_decide: false, can_execute: false, can_withdraw: true, disabled_reason: null }, review_manifest: manifest, schema: 'cipher.engineering.package-approval.v1' });
+  const packet: any = structuredClone({ id: randomUUID(), ...scope, action: effect.action, subject: { id: value.id, type, label: value.definition.title }, requester: { id: actor.personId, display_name: 'Alex Author' }, created_at: '2026-10-17T05:00:00Z', expires_at: '2026-10-18T05:00:00Z', manifest_hash: packageApprovalHash(manifest), source_version: subject.record_digest, policy: { id: 'fixture', label: 'Synthetic', synthetic: true }, state: 'Pending', decisions: [], actions: { can_decide: false, can_execute: false, can_withdraw: true, disabled_reason: null }, review_manifest: manifest, schema: 'cipher.engineering.package-approval.v1' });
   const command: any = { kind: 'request_check', operation_id: randomUUID(), payload: scope, subject, subjectKind: kind };
   return { packet, subject, command, response: { packet, operation: { id: command.operation_id, status: 'succeeded', replayed: false } } };
 }
 for (const kind of ['basis', 'calculation', 'deliverable'] as const) test(`checking request accepts the exact ${kind} manifest`, async () => {
-  const f = checkFixture(kind); await expect(reply(f.response, () => packages.engineeringPackages.send(f.command, actor))).resolves.toMatchObject({ packet: { id: f.packet.id } });
+  const f = checkFixture(kind); expect(f.packet.manifest_hash).not.toBe(hash(f.packet.review_manifest)); await expect(reply(f.response, () => packages.engineeringPackages.send(f.command, actor))).resolves.toMatchObject({ packet: { id: f.packet.id } });
 });
 for (const wrong of ['source', 'input', 'output', 'calculations', 'manifest-unit', 'checker'] as const) test(`checking request rejects a self-consistent changed ${wrong} manifest`, async () => {
   const f = checkFixture(wrong === 'calculations' ? 'deliverable' : 'calculation'), m = f.packet.review_manifest;
@@ -99,7 +99,7 @@ for (const wrong of ['source', 'input', 'output', 'calculations', 'manifest-unit
   if (wrong === 'calculations') m.summary.calculations[0].record_digest = 'f'.repeat(64);
   if (wrong === 'manifest-unit') m.sources[0].unit_manifest.records[1].revision = 2;
   if (wrong === 'checker') m.effect.checker.user = 'other.checker@example.invalid';
-  f.packet.manifest_hash = hash(m);
+  f.packet.manifest_hash = packageApprovalHash(m, f.packet.policy.id);
   await expect(reply(f.response, () => packages.engineeringPackages.send(f.command, actor))).rejects.toMatchObject({ code: 'INVALID_CONTRACT' });
 });
 test('independently read approval helper accepts a historical subject for a different current reader', async () => {
@@ -108,7 +108,7 @@ test('independently read approval helper accepts a historical subject for a diff
   await expect((packages as any).validatePackageManifestSubject(f.packet, f.subject, 'calculation')).resolves.toMatchObject({ id: f.packet.id });
 });
 test('independently read approval helper refuses full-checker mismatch with the same person', async () => {
-  const f = checkFixture('basis'); f.packet.review_manifest.effect.checker.user = 'other.alias@example.invalid'; f.packet.manifest_hash = hash(f.packet.review_manifest);
+  const f = checkFixture('basis'); f.packet.review_manifest.effect.checker.user = 'other.alias@example.invalid'; f.packet.manifest_hash = packageApprovalHash(f.packet.review_manifest, f.packet.policy.id);
   expect(typeof (packages as any).validatePackageManifestSubject).toBe('function');
   await expect((packages as any).validatePackageManifestSubject(f.packet, f.subject, 'basis')).rejects.toMatchObject({ code: 'INVALID_CONTRACT' });
 });

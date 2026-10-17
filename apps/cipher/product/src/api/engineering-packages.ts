@@ -49,7 +49,9 @@ export async function validatePackageManifestSubject(packet: EngineeringPackageA
   const sources = [{ source_citations: value.source_citations, drawing_references: value.drawing_references, artifacts: value.artifacts, unit_manifest: 'unit_manifest' in value ? value.unit_manifest : null }];
   const summary = { definition: value.definition, inputs: 'inputs' in value ? value.inputs : 'quantities' in value ? value.quantities : [], outputs: 'outputs' in value ? value.outputs : [], calculations: 'calculations' in value ? value.calculations : [], no_effects: value.no_effects, solver_executed: false, issue_authorized: false, sealed: false };
   const manifest = packet.review_manifest;
-  if (packet.action !== packageAction[kind] || packet.subject.type !== type || packet.subject.id !== value.id || packet.source_version !== subject.record_digest || packet.requester.id !== value.author_person || !sameValue(manifest.effect, effect) || !sameValue(manifest.sources, sources) || !sameValue(manifest.summary, summary) || await engineeringDigest(manifest) !== packet.manifest_hash) throw invalidPackage();
+  // GOV03 hashes the full authority envelope; review_manifest is only its domain projection.
+  // Bind that projection exactly here and preserve the opaque full hash for server decisions.
+  if (packet.action !== packageAction[kind] || packet.subject.type !== type || packet.subject.id !== value.id || packet.source_version !== subject.record_digest || packet.requester.id !== value.author_person || !sameValue(manifest.effect, effect) || !sameValue(manifest.sources, sources) || !sameValue(manifest.summary, summary)) throw invalidPackage();
   return packet;
 }
 export const engineeringPackages = {

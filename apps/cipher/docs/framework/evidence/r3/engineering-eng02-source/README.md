@@ -13,3 +13,9 @@ The actual built SAP UI5 app is exercised against explicit API contract fixtures
 [The six-path continuation](ci-static-source-manifest.json) retains 834 full source files and the unchanged 925-file shipped build. It builds 381 private fixture/app files, including the three existing standalone HTML entry points, then serves them through a light static preview. The application, contracts and business/permission services are unchanged. The native test correction is separate from product grants.
 
 [Fresh qualification](ci-static-qualification.json) passed all 513 frontend checks in one run, with one worker, no retries/skips/flaky outcomes and no new memory kills. 20 reporter checks cover the bounded diagnostics, including two real subprocess failure/timeout cases. CI uses two bounded workers and reports process exit/duration/timeout without raw private output. Historical failed/hung runs stay failed. The corrected native ENG-02 fixture still requires its fresh hosted result.
+
+## Approval packet wire correction
+
+The backend returns an opaque hash of its full GOV03 authority envelope and exposes only the domain as `review_manifest`. The ENG-02 adapter incorrectly recomputed a hash of that visible projection. The [three-path correction](approval-wire-source-manifest.json) preserves the full backend hash, while retaining exact original subject, source, unit, checker, effect and summary joins. The fixtures now model the actual outer hash structure.
+
+[Qualification](approval-wire-qualification.json) reproduces four valid-packet failures against the old adapter, then passes all 38 affected adapter/browser checks in one fresh run, typecheck and the 925-file production build. The older 513-check result remains evidence of its exact previous source. Native UI remains unqualified; no backend permissions, policies, source services or runtime were changed.

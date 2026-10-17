@@ -1,0 +1,23 @@
+{
+  "MAIN_changed": false,
+  "at": "2026-10-17T05:28:06.988683+00:00",
+  "backend_or_permissions_changed": false,
+  "base_manifest_sha256": "448173b7d7502322b2f492167f2a6262db0efa15451e1f8b6f132e9e858ffa01",
+  "base_publication": "250991b889f38dd8b8ddd0ddda8187192c3c6f78",
+  "build_files": 925,
+  "dist_inventory_sha256": "2b46103e9af8bbd6b18f96a2c48d598bdf5e3808fef1aea60e5faf5584e62ff4",
+  "files": {
+    "apps/cipher/product/src/api/engineering-packages.ts": "fb18f5dfbe7bb041a5d037e620d65ead5a3d7cffc266c7425ac24c031cda8c85",
+    "apps/cipher/product/tests/engineering-packages-fixture.ts": "12a0f2d081febb7046f277f6841f4540a5634a57922d6c8e8c1b8e625a339b34",
+    "apps/cipher/product/tests/engineering-packages-validation.spec.ts": "d3b0e717f2285bed315ed1f7b27c2cf0135d531d378ededb4367c98ac632d1c0"
+  },
+  "native_executed_locally": false,
+  "schema": "cipher.eng02.approval-wire-source.v1",
+  "source_delta": [
+    "apps/cipher/product/src/api/engineering-packages.ts",
+    "apps/cipher/product/tests/engineering-packages-fixture.ts",
+    "apps/cipher/product/tests/engineering-packages-validation.spec.ts"
+  ],
+  "source_files": 834,
+  "source_inventory_sha256": "5e702f7fb4bf2402e0684e457f56202b98b325b035afecc117053f29975b6b35"
+}
