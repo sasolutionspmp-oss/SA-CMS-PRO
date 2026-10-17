@@ -107,3 +107,9 @@ for _ricky_type, _ricky_query in (
 # Human draft-save linkage is visible only through its exact scoped reader.
 permission_query_conditions["Cipher Ricky Draft Save"] = "cipher_aec.ricky.company_draft_save.query"
 has_permission["Cipher Ricky Draft Save"] = "cipher_aec.ricky.company_draft_save.has_permission"
+
+# Engineering JSON is exposed only by the exact source-authorized Project APIs.
+from cipher_aec.engineering.contracts import KINDS as _ENGINEERING_KINDS
+for _engineering_type in _ENGINEERING_KINDS.values():
+    permission_query_conditions[_engineering_type] = "cipher_aec.engineering.install.query_denied"
+    has_permission[_engineering_type] = "cipher_aec.engineering.install.permission_denied"

@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: 93f8e8c5248299873fd95cfb865f8461b8efcc293624da4d26ed82746f0bcd33
+ * Source SHA-256: 0f81545b9196849b7d8f13c3cdfd517e3e7fd26bb80433b8473e1dc4c29003a6
  * Regenerate: npm run generate:api
  */
 
@@ -20,12 +20,45 @@ export type CipherAPIV1 = {
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalPacket".
  */
-export type ApprovalPacket = ProjectStatusApprovalPacket | DomainApprovalPacket;
+export type ApprovalPacket = ProjectStatusApprovalPacket | DomainApprovalPacket | EngineeringApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringApprovalPacket".
+ */
+export type EngineeringApprovalPacket =
+  EngineeringResponseApprovalPacket | EngineeringDispositionApprovalPacket | EngineeringTransmittalApprovalPacket;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalExecutionResponse".
  */
-export type ApprovalExecutionResponse = ProjectStatusApprovalExecutionResponse | DomainApprovalExecutionResponse;
+export type ApprovalExecutionResponse =
+  ProjectStatusApprovalExecutionResponse | DomainApprovalExecutionResponse | EngineeringApprovalExecutionResponse;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringApprovalExecutionResponse".
+ */
+export type EngineeringApprovalExecutionResponse =
+  | {
+      packet: EngineeringResponseApprovalPacket;
+      effect: {
+        official_response: EgOfficialResponse;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: EngineeringDispositionApprovalPacket;
+      effect: {
+        official_disposition: EgOfficialDisposition;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: EngineeringTransmittalApprovalPacket;
+      effect: {
+        distribution: EgDistribution;
+      };
+      operation: Operation;
+    };
 
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -305,6 +338,822 @@ export interface DomainApprovalPacket {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringResponseApprovalPacket".
+ */
+export interface EngineeringResponseApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.rfi.authorize.v1";
+  subject: {
+    id: string;
+    type: "Cipher RFI Response Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher RFI Response Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EgCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EgArtifact]
+          | [EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ];
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.authorization.v1";
+      action: "engineering.rfi.authorize.v1";
+      subject_kind: "response";
+      subject_id: string;
+      subject_digest: string;
+      parent_id: string;
+      source_revision: string;
+      source_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 2
+       */
+      author_people: [string] | [string, string];
+    };
+    summary: {
+      schema: "cipher.engineering.review.v1";
+      definition: EgResponseDefinition;
+      purpose: null;
+      no_effects: EgNoEffects;
+      professional_seal: false;
+      external_delivery: false;
+    };
+  };
+  schema: "cipher.engineering.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgCitation".
+ */
+export interface EgCitation {
+  id: string;
+  document_id: string;
+  revision_id: string;
+  document_title: string;
+  revision_number: number;
+  page: number;
+  page_label: string;
+  excerpt: string;
+  excerpt_sha256: string;
+  source_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgArtifact".
+ */
+export interface EgArtifact {
+  document_id: string;
+  revision_id: string;
+  revision_number: number;
+  source_sha256: string;
+  byte_length: number;
+  mime_type: string;
+  page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgDrawingReference".
+ */
+export interface EgDrawingReference {
+  document_id: string;
+  revision_id: string;
+  revision_number: number;
+  source_sha256: string;
+  byte_length: number;
+  mime_type: "application/pdf";
+  page_count: number;
+  page: number;
+  locator: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgResponseDefinition".
+ */
+export interface EgResponseDefinition {
+  answer: string;
+  potential_cost_impact: string;
+  potential_schedule_impact: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgNoEffects".
+ */
+export interface EgNoEffects {
+  commercial_change: false;
+  contract_change: false;
+  budget_change: false;
+  schedule_change: false;
+  quality_acceptance: false;
+  professional_certification: false;
+  external_transmission: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringDispositionApprovalPacket".
+ */
+export interface EngineeringDispositionApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.submittal.authorize.v1";
+  subject: {
+    id: string;
+    type: "Cipher Submittal Disposition Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Submittal Disposition Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EgCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EgArtifact]
+          | [EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ];
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.authorization.v1";
+      action: "engineering.submittal.authorize.v1";
+      subject_kind: "disposition";
+      subject_id: string;
+      subject_digest: string;
+      parent_id: string;
+      source_revision: string;
+      source_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 2
+       */
+      author_people: [string] | [string, string];
+    };
+    summary: {
+      schema: "cipher.engineering.review.v1";
+      definition: EgDispositionDefinition;
+      purpose: null;
+      no_effects: EgNoEffects;
+      professional_seal: false;
+      external_delivery: false;
+    };
+  };
+  schema: "cipher.engineering.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgDispositionDefinition".
+ */
+export interface EgDispositionDefinition {
+  disposition: "approved" | "approved_as_noted" | "revise_resubmit" | "rejected";
+  comments: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringTransmittalApprovalPacket".
+ */
+export interface EngineeringTransmittalApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.distribute.v1";
+  subject: {
+    id: string;
+    type: "Cipher Engineering Transmittal";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Engineering Transmittal";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EgCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EgArtifact]
+          | [EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact]
+          | [EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact, EgArtifact];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference, EgDrawingReference]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ]
+          | [
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference,
+              EgDrawingReference
+            ];
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.authorization.v1";
+      action: "engineering.distribute.v1";
+      subject_kind: "transmittal";
+      subject_id: string;
+      subject_digest: string;
+      package_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 30
+       */
+      recipients: [EgPerson, ...EgPerson[]];
+      channel: "internal";
+    };
+    summary: {
+      schema: "cipher.engineering.review.v1";
+      definition: null;
+      purpose: string;
+      no_effects: EgNoEffects;
+      professional_seal: false;
+      external_delivery: false;
+    };
+  };
+  schema: "cipher.engineering.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgPerson".
+ */
+export interface EgPerson {
+  user: string;
+  person: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalList".
  */
 export interface ApprovalList {
@@ -343,6 +1192,83 @@ export interface DomainApprovalExecutionResponse {
     [k: string]: unknown;
   };
   operation: Operation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgOfficialResponse".
+ */
+export interface EgOfficialResponse {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "official";
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  no_effects: EgNoEffects;
+  authority: "internal-technical-only";
+  parent_id: string;
+  source_revision: string;
+  source_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgOfficialDisposition".
+ */
+export interface EgOfficialDisposition {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "official";
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  no_effects: EgNoEffects;
+  authority: "internal-technical-only";
+  parent_id: string;
+  source_revision: string;
+  source_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EgDistribution".
+ */
+export interface EgDistribution {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "recorded_internally";
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  no_effects: EgNoEffects;
+  authority: "internal-technical-only";
+  package_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [EgPerson, ...EgPerson[]];
+  channel: "internal";
+  external_delivery: false;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema

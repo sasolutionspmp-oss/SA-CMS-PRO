@@ -7,7 +7,7 @@ import { human, useResource } from './hooks';
 
 const timestamp = (value: string) => new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 
-export default function Approvals({ project, onEffect }: { project: Project; onEffect: () => void }) {
+export default function Approvals({ project, onEffect, navigate }: { project: Project; onEffect: () => void; navigate?: (path: string) => void }) {
   const [cursor, setCursor] = useState<string>();
   const [pages, setPages] = useState<(string | undefined)[]>([]);
   const packets = useResource(`${project.company}/${project.id}/approvals/${project.version}/${cursor ?? ''}`, signal => api.approvals(project.company, project.id, signal, cursor));
@@ -22,7 +22,7 @@ export default function Approvals({ project, onEffect }: { project: Project; onE
     </Table> : <Empty title="No approval requests" icon="task">Requests preserve their exact sources and effects. Review and execution remain separate.</Empty>}
     <Pagination next={packets.data?.next_cursor} total={packets.data?.total} page={pages.length + 1} previous={Boolean(pages.length)} onNext={() => { if (packets.data?.next_cursor) { setPages([...pages, cursor]); setCursor(packets.data.next_cursor); } }} onPrevious={() => { setCursor(pages[pages.length - 1]); setPages(pages.slice(0, -1)); }} />
     {requestOpen && <RequestStatus project={project} onClose={() => setRequestOpen(false)} onSourceChanged={onEffect} onRequested={packet => { setRequestOpen(false); setSelected(packet.id); setCursor(undefined); setPages([]); packets.refresh(); setNotice('Status change requested. The project has not changed.'); }} />}
-    {selected && <ReviewPacket project={project} packetId={selected} onClose={() => setSelected(undefined)} onChanged={effect => { packets.refresh(); if (effect) onEffect(); }} />}
+    {selected && <ReviewPacket navigate={navigate} project={project} packetId={selected} onClose={() => setSelected(undefined)} onChanged={effect => { packets.refresh(); if (effect) onEffect(); }} />}
   </>;
 }
 
@@ -45,7 +45,7 @@ function RequestStatus({ project, onClose, onRequested, onSourceChanged }: { pro
   </div></Dialog>;
 }
 
-export function ReviewPacket({ project, packetId, onClose, onChanged }: { project: Project; packetId: string; onClose: () => void; onChanged: (effect: boolean) => void }) {
+export function ReviewPacket({ project, packetId, onClose, onChanged, navigate }: { project: Project; packetId: string; onClose: () => void; onChanged: (effect: boolean) => void; navigate?: (path: string) => void }) {
   const resource = useResource(`${project.company}/${project.id}/${packetId}`, signal => api.approval(project.company, project.id, packetId, signal));
   const [reviewed, setReviewed] = useState(false);
   const [reason, setReason] = useState('');
@@ -55,7 +55,7 @@ export function ReviewPacket({ project, packetId, onClose, onChanged }: { projec
   const operations = useRef(new Map<string, string>());
   const packet = resource.data;
   const act = async (action: 'Grant' | 'Reject' | 'execute' | 'withdraw') => {
-    if (!packet || saving) return;
+    if (!packet || saving || packet.action.startsWith('engineering.')) return;
     const key = JSON.stringify([packet.id, packet.manifest_hash, action, action === 'execute' ? '' : reason.trim()]);
     if (!operations.current.has(key)) operations.current.set(key, crypto.randomUUID());
     setSaving(true); setError(undefined); setNotice('');
@@ -69,6 +69,10 @@ export function ReviewPacket({ project, packetId, onClose, onChanged }: { projec
     }
     finally { setSaving(false); }
   };
+  if (packet?.action.startsWith('engineering.')) {
+    const target = `/projects/${encodeURIComponent(project.id)}/engineering/approvals/${encodeURIComponent(packet.id)}`;
+    return <Dialog open headerText="Engineering authorization" onClose={onClose} footer={<Bar endContent={<Button onClick={onClose}>Close review</Button>} />}><div className="dialog-form"><Title level="H3">{actionLabel(packet.action)}</Title><p>{packet.subject.label}</p>{navigate ? <Button design="Emphasized" onClick={() => navigate(target)}>Open engineering authorization</Button> : <a href={target}>Open engineering authorization</a>}</div></Dialog>;
+  }
   return <Dialog open headerText="Review approval packet" className="approval-dialog" onClose={() => { if (!saving) onClose(); }} footer={<Bar design="Footer" endContent={<Button disabled={saving} onClick={onClose}>Close review</Button>} />}>
     {resource.loading ? <Loading label="Loading exact approval packet…" /> : resource.error ? <Failure error={resource.error} onRetry={resource.refresh} /> : packet && <div className="dialog-form">
       <div className="approval-heading"><Title level="H3">{packet.subject.label}</Title><Status value={packet.state === 'Consumed' ? 'Executed' : packet.state} /></div>
@@ -87,7 +91,7 @@ export function ReviewPacket({ project, packetId, onClose, onChanged }: { projec
   </Dialog>;
 }
 
-function actionLabel(action: ApprovalPacket['action']) { return action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
+function actionLabel(action: ApprovalPacket['action']) { return action === 'engineering.rfi.authorize.v1' ? 'Authorize RFI response' : action === 'engineering.submittal.authorize.v1' ? 'Authorize submittal disposition' : action === 'engineering.distribute.v1' ? 'Authorize internal transmittal' : action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
 export function ReviewFacts({ value }: { value: unknown }) {
   if (Array.isArray(value)) return <ol className="domain-review-list">{value.map((item, index) => <li key={index}><ReviewFacts value={item} /></li>)}</ol>;
   if (value && typeof value === 'object') return <dl className="approval-metadata">{Object.entries(value).map(([key, item]) => <div className="domain-review-field" key={key}><dt>{human(key)}</dt><dd><ReviewFacts value={item} /></dd></div>)}</dl>;

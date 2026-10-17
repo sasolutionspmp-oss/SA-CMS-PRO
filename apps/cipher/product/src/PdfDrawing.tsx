@@ -15,7 +15,8 @@ export function pickedPdfPoint(viewport: Pick<PageViewport, 'convertToPdfPoint' 
   return [coordinate(x), coordinate(y)];
 }
 
-export default function PdfDrawing({ company, revisionId, sourceSha256, page, points, onPoint, disabled = false, geometry, geometryType = 'polyline', mode, onFrame, downloadUrl }: { company: string; revisionId: string; sourceSha256: string; page: number; points: PdfPoint[]; onPoint?: (point: PdfPoint) => void; disabled?: boolean; geometry?: TakeoffPageGeometry; geometryType?: 'segment' | 'polyline' | 'rectangle' | 'polygon'; mode: string; onFrame?: (frame: PdfFrame) => void; downloadUrl?: string }) {
+export default function PdfDrawing({ company, revisionId, sourceSha256, page, points, onPoint, disabled = false, geometry, geometryType = 'polyline', mode, onFrame, downloadUrl, onAccessDenied }: { company: string; revisionId: string; sourceSha256: string; page: number; points: PdfPoint[]; onPoint?: (point: PdfPoint) => void; disabled?: boolean; geometry?: TakeoffPageGeometry; geometryType?: 'segment' | 'polyline' | 'rectangle' | 'polygon'; mode: string; onFrame?: (frame: PdfFrame) => void; downloadUrl?: string; onAccessDenied?: () => void }) {
+  const deniedCallback = useRef(onAccessDenied); deniedCallback.current = onAccessDenied;
   const canvas = useRef<HTMLCanvasElement>(null); const [pdf, setPdf] = useState<PDFDocumentProxy>();
   const sourceUrl = downloadUrl || api.downloadUrl(company, revisionId);
   const sourceKey = `${sourceUrl}/${sourceSha256}`;
@@ -60,6 +61,7 @@ export default function PdfDrawing({ company, revisionId, sourceSha256, page, po
     })().catch(failure => { if (!disposed) { setError(failure instanceof ApiError ? failure : new ApiError('This PDF page could not be rendered.', 'PDF_PAGE_UNAVAILABLE', 422)); setRendering(false); } });
     return () => { disposed = true; task?.cancel(); };
   }, [pdf, pdfSource, sourceKey, renderKey, page, zoom, rotation, geometry, sourceSha256]);
+  useEffect(() => { if (error && [401, 403, 404].includes(error.status)) deniedCallback.current?.(); }, [error]);
   const plotted = viewport ? points.map(point => viewport.convertToViewportPoint(Number(point[0]), Number(point[1]))) : [];
   const outline = geometryType === 'rectangle' && points.length === 2 && viewport ? [points[0], [points[1][0], points[0][1]], points[1], [points[0][0], points[1][1]]].map(point => viewport.convertToViewportPoint(Number(point[0]), Number(point[1]))) : plotted;
   return <section className="pdf-drawing" aria-label="Stored PDF drawing">

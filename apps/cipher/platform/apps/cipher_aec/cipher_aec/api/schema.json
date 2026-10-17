@@ -564,6 +564,9 @@
         },
         {
           "$ref": "#/$defs/DomainApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringApprovalPacket"
         }
       ]
     },
@@ -634,6 +637,9 @@
         },
         {
           "$ref": "#/$defs/DomainApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/EngineeringApprovalExecutionResponse"
         }
       ]
     },
@@ -1804,6 +1810,1557 @@
       },
       "required": [
         "company"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringResponseApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.rfi.authorize.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher RFI Response Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher RFI Response Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.rfi.authorize.v1"
+                },
+                "subject_kind": {
+                  "const": "response"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "author_people": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "minItems": 1,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "source_revision",
+                "source_digest",
+                "author_people"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "$ref": "#/$defs/EgResponseDefinition"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringDispositionApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.submittal.authorize.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Submittal Disposition Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Submittal Disposition Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.submittal.authorize.v1"
+                },
+                "subject_kind": {
+                  "const": "disposition"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "author_people": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "minItems": 1,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "source_revision",
+                "source_digest",
+                "author_people"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "$ref": "#/$defs/EgDispositionDefinition"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringTransmittalApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.distribute.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Engineering Transmittal"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Engineering Transmittal"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.distribute.v1"
+                },
+                "subject_kind": {
+                  "const": "transmittal"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "recipients": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EgPerson"
+                  },
+                  "minItems": 1,
+                  "maxItems": 30
+                },
+                "channel": {
+                  "const": "internal"
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "package_digest",
+                "recipients",
+                "channel"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "type": "null"
+                },
+                "purpose": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EngineeringResponseApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringDispositionApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringTransmittalApprovalPacket"
+        }
+      ]
+    },
+    "EngineeringApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringResponseApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "official_response": {
+                  "$ref": "#/$defs/EgOfficialResponse"
+                }
+              },
+              "required": [
+                "official_response"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringDispositionApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "official_disposition": {
+                  "$ref": "#/$defs/EgOfficialDisposition"
+                }
+              },
+              "required": [
+                "official_disposition"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringTransmittalApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "distribution": {
+                  "$ref": "#/$defs/EgDistribution"
+                }
+              },
+              "required": [
+                "distribution"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EgCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EgArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EgDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EgResponseDefinition": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "potential_cost_impact": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "potential_schedule_impact": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "answer",
+        "potential_cost_impact",
+        "potential_schedule_impact"
+      ],
+      "additionalProperties": false
+    },
+    "EgNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EgDispositionDefinition": {
+      "type": "object",
+      "properties": {
+        "disposition": {
+          "enum": [
+            "approved",
+            "approved_as_noted",
+            "revise_resubmit",
+            "rejected"
+          ]
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "disposition",
+        "comments"
+      ],
+      "additionalProperties": false
+    },
+    "EgPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialDisposition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgDistribution": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "recorded_internally"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgPerson"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "channel": {
+          "const": "internal"
+        },
+        "external_delivery": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "package_digest",
+        "recipients",
+        "channel",
+        "external_delivery"
       ],
       "additionalProperties": false
     }

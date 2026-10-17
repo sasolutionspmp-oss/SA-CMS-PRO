@@ -69,6 +69,12 @@ def readable(event, actor, company, project):
             with activate("Project" if project is not None else "Company", company, project):
                 _read(TAKEOFF_SUBJECTS[subject], identifier, company, project, actor, new_use=False)
             return True
+        from cipher_aec.engineering.contracts import KINDS as ENGINEERING_KINDS
+        if subject in ENGINEERING_KINDS.values():
+            if project is None:return False
+            from cipher_aec.engineering.service import authorize_history
+            authorize_history(next(k for k,v in ENGINEERING_KINDS.items() if v==subject),identifier,company,project,actor,event=event.event,details=json.loads(event.details_json))
+            return True
         if subject in FIN_SUBJECTS:
             if not project:
                 return False

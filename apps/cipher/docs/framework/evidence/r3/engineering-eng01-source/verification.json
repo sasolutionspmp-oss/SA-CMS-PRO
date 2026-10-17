@@ -1,0 +1,37 @@
+{
+  "schema": "cipher.eng01.source-qualification.v1",
+  "status": "passed",
+  "qualification_scope": "host and browser contract fixtures; native persistence remains pending",
+  "original_package": "ENG-01",
+  "backend_host_checks": 84,
+  "focused_engineering_checks": {
+    "passed": 23,
+    "node_contract_checks": 14,
+    "browser_workflows": 9,
+    "report_sha256": "761b5c0df009876e0002189750ccd79dd200eac8384452832387d00c96df3b3f",
+    "built_UI": true,
+    "mocked_API_responses": true
+  },
+  "existing_UI_compatibility": {
+    "distinct_passed": 36,
+    "composed": true,
+    "source_and_harness_checks": 35,
+    "production_asset_check": 1,
+    "development_report_status": "35 passed, 1 missing custom-build-path environment failed",
+    "production_asset_continuation_status": "1 passed with existing CIPHER_BUILT_PRODUCT_DIST pointing to exact build",
+    "source_report_sha256": "1c557ef645578ca74d81b0bfc3f540f1fdbc001b5c89205449ef2a30704f7592",
+    "asset_report_sha256": "25a12b765e0a908e17882068157524fc2ca145f1fcb2f4a9d1e33f0a3cd7ed04"
+  },
+  "typecheck": "passed",
+  "build": "passed",
+  "typecheck_log_sha256": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+  "build_log_sha256": "dd525605d39be11100c192900e2848c6fe6b34d87d520b17c65123b4a177d950",
+  "generated_contracts": 14,
+  "openapi": "passed",
+  "combined_manifest_sha256": "7cc0eaa3069a4a2a38cbc5df3952ee3386e9fc1534c22bdcb90e1ad21789bd67",
+  "native_integration_test_status": "written; not executed at source publication",
+  "native_schema_or_source_installed": false,
+  "MAIN_source_or_runtime_changed": false,
+  "native_UI_screenshot_claim": false,
+  "old_failures_preserved": true
+}

@@ -221,6 +221,8 @@ def present(packet, record, actor, lock=False):
             native_completion=manifest["native_completion"], task_effects={"count": len(manifest["tasks"]), "changes": []})
     else:
         result["review_manifest"] = manifest["domain"]
+    if packet.action in {"engineering.rfi.authorize.v1", "engineering.submittal.authorize.v1", "engineering.distribute.v1"}:
+        result["schema"] = "cipher.engineering.approval.v1"
     if (packet.scope_type or "Project") == "Company":
         result.update(scope_type="Company", project=None)
     return result
@@ -354,6 +356,12 @@ def _decision(actor, packet, decision, reason):
 
 
 def _award_packet_people(company,project,packet_id,scope_type):
+    if scope_type == "Project" and project is not None:
+        _scope(company,project,"Project")
+        packet=_load(company,project,packet_id,scope_type="Project")
+        if packet.action == "engineering.distribute.v1":
+            return domain_approvals.participant_people(packet.action,company,packet.subject_id,scope_type="Project")
+        return ()
     if scope_type != "Company" or project is not None:return ()
     rows=frappe.db.sql("SELECT action,subject_id FROM `tabCipher Approval Packet` WHERE name=%s AND company=%s AND scope_type='Company' AND (project IS NULL OR project='')",(packet_id,company))
     if not rows or rows[0][0]!="award.project.create.v1":return ()
@@ -570,3 +578,6 @@ def authorize_receipt(actor, company, project, result, *, scope_type="Project"):
     packet = _load(company, project, identifier, True, scope_type=scope_type)
     if packet.action != ACTION:
         domain_approvals.authorize(packet, actor, phase="receipt", lock=True)
+        if packet.action in {"engineering.rfi.authorize.v1", "engineering.submittal.authorize.v1", "engineering.distribute.v1"} and "effect" in result:
+            from cipher_aec.engineering.service import authorize_receipt as authorize_engineering
+            authorize_engineering(actor,company,project,result["effect"],lock=True)

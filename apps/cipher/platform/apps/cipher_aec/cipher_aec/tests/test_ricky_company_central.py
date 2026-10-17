@@ -30,10 +30,11 @@ def abilities(path):
 
 
 class CompanyRickyMetadataTests(unittest.TestCase):
-    def test_company_run_is_explicit_without_changing_project_catalog(self):
+    def test_company_catalog_exact_and_project_only_engineering_addition(self):
         current=abilities(ROOT/'governance/context.py');old={'PROJECT_ABILITIES': {'ricky.run', 'task.create', 'wbs.read', 'document.write', 'approval.request', 'approval.execute', 'document.read', 'approval.decide', 'estimate.write', 'budget.read', 'project.read', 'estimate.read', 'project.write', 'contract.write', 'contract.read'}, 'COMPANY_ABILITIES': {'project.cost.write', 'project.team.delegate', 'document.write', 'approval.request', 'approval.execute', 'commercial.read', 'document.read', 'estimate.write', 'approval.decide', 'commercial.distribute', 'company.read', 'estimate.read', 'commercial.write', 'project.cost.read', 'commercial.award'}}
         self.assertIn('ricky.run',current['COMPANY_ABILITIES'])
-        self.assertEqual(current['PROJECT_ABILITIES'],old['PROJECT_ABILITIES'])
+        self.assertEqual(current['PROJECT_ABILITIES'],old['PROJECT_ABILITIES']|{'engineering.read','engineering.write','engineering.distribute'})
+        self.assertFalse({'engineering.read','engineering.write','engineering.distribute'} & current['COMPANY_ABILITIES'])
         self.assertEqual(current['COMPANY_ABILITIES'],old['COMPANY_ABILITIES']|{'ricky.run'})
         metadata=json.loads((ROOT/'cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json').read_text())
         options=set(next(f for f in metadata['fields'] if f['fieldname']=='ability')['options'].splitlines())
@@ -208,9 +209,24 @@ class ProjectCompatibilityTests(unittest.TestCase):
                     return node.orelse
                 return self.generic_visit(node)
         after=LegacyProjectShape().visit(after)
+        # This later ENG-01 epoch adds only a separate Project pre-replay read
+        # guard. Validate its literal body, then retain the original hash below.
+        engineering_guard=ast.parse("if scope_type == 'Project' and command.startswith('engineering.'):\n    require_project(company, project, ability='engineering.read', actor=actor, lock=True)").body[0]
+        additions=[n for n in after.body if isinstance(n,ast.If) and ast.dump(n.test)==ast.dump(engineering_guard.test)]
+        self.assertEqual(len(additions),1);self.assertEqual(ast.dump(additions[0]),ast.dump(engineering_guard))
+        after.body=[n for n in after.body if n is not additions[0]]
         self.assertEqual(canonical_sha(ast_value(after)),expected['_run_scoped_command'])
         # Original Project receipt branches follow the Company branch's return.
         after=get(new,'authorize_receipt')
+        engineering_receipt=ast.parse("if command.startswith('engineering.'):\n    from cipher_aec.engineering.service import authorize_receipt as authorize_engineering\n    authorize_engineering(actor, company, project, result, lock=True)").body[0]
+        additions=[]
+        class OriginalProjectReceipts(ast.NodeTransformer):
+            def visit_If(self,node):
+                if ast.dump(node.test)==ast.dump(engineering_receipt.test):
+                    case.assertEqual([ast.dump(n) for n in node.body],[ast.dump(n) for n in engineering_receipt.body]);additions.append(node)
+                    return [self.visit(n) for n in node.orelse]
+                return self.generic_visit(node)
+        after=OriginalProjectReceipts().visit(after);self.assertEqual(len(additions),1)
         self.assertEqual(canonical_sha(ast_value(ast.Module(body=after.body[2:],type_ignores=[]))),expected['project_receipt_branches'])
 
 
@@ -343,7 +359,13 @@ class CompanyRickyRegistrationTests(unittest.TestCase):
         draft_saves={'/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject',
             '/api/method/cipher_aec.ricky.company_draft_save_api.save_draft'}
         self.assertEqual({key for key in generated['paths'] if key.startswith('/api/method/cipher_aec.ricky.company_draft_save_api.')},draft_saves)
-        old_paths={key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals|draft_saves}
+        engineering_prefix='/api/method/cipher_aec.engineering.api.'
+        engineering={'create_rfi','revise_rfi','create_response','create_submittal','revise_submission','create_disposition','create_transmittal','close_rfi','get_record','list_records','list_people'}
+        self.assertEqual({key for key in generated['paths'] if key.startswith(engineering_prefix)},{engineering_prefix+name for name in engineering})
+        old_paths=json.loads(json.dumps({key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals|draft_saves and not key.startswith(engineering_prefix)}))
+        actions=old_paths['/api/method/cipher_aec.api.approvals.request_action']['post']['requestBody']['content']['application/json']['schema']['properties']['action']['enum']
+        engineering_actions={'engineering.rfi.authorize.v1','engineering.submittal.authorize.v1','engineering.distribute.v1'}
+        self.assertTrue(engineering_actions<=set(actions));actions[:]=[a for a in actions if a not in engineering_actions]
         self.assertEqual(canonical_sha(old_paths),'8c755c2d712b51177683a8bed770428405d9342db1f879cedd5f7aace895a04c')
         self.assertEqual(json.loads((ROOT/'api/openapi.json').read_text()),generated)
     def test_native_projection_closes_company_rows_and_counts_without_changing_project(self):

@@ -184,6 +184,20 @@ _module("cipher_aec.ricky.company_draft_save_api", {
     "save_draft": ("POST", "CompanyDraftSaveResponse", True),
 })
 
+_module("cipher_aec.engineering.api", {
+    'create_rfi': ('POST', 'EgCreateRfiResponse', True),
+    'revise_rfi': ('POST', 'EgReviseRfiResponse', True),
+    'create_response': ('POST', 'EgCreateResponseResponse', True),
+    'create_submittal': ('POST', 'EgCreateSubmittalResponse', True),
+    'revise_submission': ('POST', 'EgReviseSubmissionResponse', True),
+    'create_disposition': ('POST', 'EgCreateDispositionResponse', True),
+    'create_transmittal': ('POST', 'EgCreateTransmittalResponse', True),
+    'close_rfi': ('POST', 'EgCloseRfiResponse', True),
+    'list_people': ('GET', 'EgPeopleResponse'),
+    'get_record': ('GET', 'EgGetResponse'),
+    'list_records': ('GET', 'EgListResponse'),
+})
+
 
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

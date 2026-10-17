@@ -5,6 +5,7 @@ import { compile } from 'json-schema-to-typescript';
 const check = process.argv.includes('--check');
 
 for (const [sourcePath, destination, title] of [
+  ['engineering/schemas/api-v1.schema.json', 'engineering.generated.ts', 'CipherEngineeringContract'],
   ['api/schema.json', 'contracts.generated.ts', 'CipherApiEnvelope'],
   ['estimating/schemas/api-v1.schema.json', 'estimating.generated.ts', 'CipherEstimatingContract'],
   ['commercial/schemas/api-v1.schema.json', 'commercial.generated.ts', 'CipherCommercialContract'],

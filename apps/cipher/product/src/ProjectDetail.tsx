@@ -56,7 +56,7 @@ export default function ProjectDetail({ projectId, company, navigate, refreshPro
         </div>
       </ObjectPageSection>
       <ObjectPageSection id="project-approvals" titleText="Approvals">
-        <div className="section-body"><Approvals project={current} onEffect={refresh} /></div>
+        <div className="section-body"><Approvals project={current} onEffect={refresh} navigate={navigate} /></div>
       </ObjectPageSection>
       <ObjectPageSection id="project-history" titleText="Activity">
         <div className="section-body history-section"><Title level="H2">Project activity</Title>

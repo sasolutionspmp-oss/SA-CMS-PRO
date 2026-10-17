@@ -16,6 +16,9 @@ class Action:
     enabled: bool = True
 
 ACTIONS = {
+    "engineering.rfi.authorize.v1": Action("engineering.rfi.authorize.v1", "Cipher RFI Response Revision", "Independent official RFI response", "engineering.read", "engineering.write", "CIPHER-ENGINEERING-RFI-POLICY-V1"),
+    "engineering.submittal.authorize.v1": Action("engineering.submittal.authorize.v1", "Cipher Submittal Disposition Revision", "Independent official submittal disposition", "engineering.read", "engineering.write", "CIPHER-ENGINEERING-SUBMITTAL-POLICY-V1"),
+    "engineering.distribute.v1": Action("engineering.distribute.v1", "Cipher Engineering Transmittal", "Independent internal engineering distribution", "engineering.read", "engineering.distribute", "CIPHER-ENGINEERING-DISTRIBUTION-POLICY-V1"),
     "award.project.create.v1": Action("award.project.create.v1", "Cipher Award Handoff Revision", "Independent full pursuit award and initial Project team", "commercial.read", "commercial.award", "CIPHER-AWARD-PROJECT-CREATE-POLICY-V1", ("Company",), True, False),
     "calibration.verify.v1": Action("calibration.verify.v1", "Cipher Calibration", "Synthetic independent calibration verification", "estimate.read", "estimate.write", "CIPHER-CALIBRATION-VERIFY-POLICY-V1", ("Project", "Company"), True),
     "contract.baseline.activate.v1": Action("contract.baseline.activate.v1", "Cipher Construction Contract", "Synthetic independent construction baseline acceptance", "contract.read", "contract.write", "CIPHER-CONTRACT-BASELINE-POLICY-V1"),
@@ -42,6 +45,9 @@ def definition(action, scope_type="Project"):
 
 def callbacks(action, scope_type="Project"):
     spec_for(action, scope_type)
+    if action in {"engineering.rfi.authorize.v1", "engineering.submittal.authorize.v1", "engineering.distribute.v1"}:
+        from cipher_aec.engineering.governance import CALLBACKS
+        return CALLBACKS[action]
     if action == "award.project.create.v1":
         from cipher_aec.awards.governance import approval_manifest, authorize_subject, apply_award
         return approval_manifest, authorize_subject, apply_award
@@ -113,6 +119,10 @@ def request_action(company, project, action, subject_id, expected_version, opera
 
 def participant_people(action, company, subject_id, *, scope_type="Project", lock=False):
     """Literal immutable metadata discovery, never source/delegation authority."""
+    if action == "engineering.distribute.v1":
+        spec_for(action,scope_type)
+        from cipher_aec.engineering.governance import participants
+        return participants(action,company,subject_id,lock=lock)
     if action != "award.project.create.v1":return ()
     spec_for(action, scope_type)
     from cipher_aec.awards.service import participant_people as discover
@@ -120,5 +130,7 @@ def participant_people(action, company, subject_id, *, scope_type="Project", loc
 
 
 def require_participants(action,company,subject_id,known,*,scope_type="Project"):
+    if action == "engineering.distribute.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):
+        raise DomainError("engineering_participants_changed", "The exact internal recipient plan changed.", 409)
     if action == "award.project.create.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):
         raise DomainError("award_participants_changed", "The exact canonical participant plan changed. Retry after reviewing it.", 409)

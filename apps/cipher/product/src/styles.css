@@ -234,3 +234,35 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .company-takeoff-page .company-takeoff-source { padding: 1rem; }
 .company-takeoff-source > *, .company-takeoff-source section { min-width: 0; max-width: 100%; }
 .company-takeoff-source ui5-select, .company-takeoff-source ui5-input, .company-takeoff-source ui5-textarea, .company-takeoff-source ui5-checkbox, .company-takeoff-source ui5-button { min-width: 0; max-width: 100%; }
+
+.engineering-workspace { min-width: 0; }
+.engineering-module-nav { padding: .5rem 1.5rem; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); background: var(--sapObjectHeader_Background); }
+.engineering-command-state:empty { display: none; }
+.engineering-command-state { display: grid; gap: .75rem; padding: 1rem 1.5rem 0; }
+.engineering-section { display: grid; gap: 1.25rem; padding: 1.25rem; min-width: 0; }
+.engineering-form-dialog { width: min(58rem, calc(100vw - 2rem)); }
+.engineering-approval-dialog { width: min(60rem, calc(100vw - 2rem)); }
+.engineering-form { max-width: 100%; }
+.engineering-field, .engineering-people { display: grid; gap: .5rem; }
+.engineering-field > ui5-input, .engineering-field > ui5-textarea, .engineering-people > ui5-select, .engineering-source-picker > ui5-select { width: 100%; }
+.engineering-inline-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.engineering-source-picker { display: grid; gap: .75rem; padding: 1rem; border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: var(--sapGroup_BorderCornerRadius); }
+.engineering-source-chip { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .4rem .75rem; border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: var(--sapButton_BorderCornerRadius); }
+.engineering-source-chip > span { min-width: 0; overflow-wrap: anywhere; }
+.engineering-authored-text { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
+.engineering-bound-sources ul { padding-left: 1.3rem; }
+.engineering-bound-sources li { margin: .75rem 0; overflow-wrap: anywhere; }
+.engineering-bound-sources p { white-space: pre-wrap; }
+.engineering-revision-list > details { padding: .75rem 0; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); }
+.engineering-revision-list summary { cursor: pointer; line-height: 1.6; }
+.engineering-definition { display: grid; gap: .75rem; }
+.engineering-definition .fact-value { white-space: pre-wrap; }
+.engineering-approval-summary { display: grid; gap: .75rem; }
+@media (max-width: 599px) {
+  .engineering-module-nav { padding: .25rem .5rem; }
+  .engineering-command-state { padding: .75rem .75rem 0; }
+  .engineering-form-dialog, .engineering-approval-dialog { width: calc(100vw - 1rem); max-height: calc(100dvh - 1rem); }
+  .engineering-section { padding: .75rem; }
+  .engineering-inline-actions > ui5-button { max-width: 100%; }
+  .engineering-source-picker { padding: .75rem; }
+}

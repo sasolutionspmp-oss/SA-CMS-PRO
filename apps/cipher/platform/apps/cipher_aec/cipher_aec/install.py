@@ -6,7 +6,7 @@ import secrets
 import frappe
 
 from cipher_aec.api.errors import DomainError
-from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, assert_synthetic_site, trusted_write
+from cipher_aec.governance.context import ABILITIES, PROJECT_ABILITIES, COMPANY_ABILITIES, ENGINEERING_ABILITIES, assert_synthetic_site, trusted_write
 
 
 def after_install():
@@ -47,6 +47,8 @@ def after_migrate():
     controls_migrate()
     from cipher_aec.awards.install import after_migrate as awards_migrate
     awards_migrate()
+    from cipher_aec.engineering.install import after_migrate as engineering_migrate
+    engineering_migrate()
     from cipher_aec.governance.approvals import install_policy
     for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
         frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")
@@ -153,7 +155,7 @@ def seed_synthetic(passwords=None):
             projects[key] = name
         for ability in ("project.read", "approval.decide"):
             _grant(people["reviewer"], company_name, projects["project"], ability)
-        for ability in sorted(PROJECT_ABILITIES):
+        for ability in sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES):
             _grant(people["primary"], company_name, projects["project"], ability)
             _grant(people["outsider"], company_name, projects["other_project"], ability)
             for project in projects.values():
