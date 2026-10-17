@@ -1,0 +1,23 @@
+{
+  "schema": "cipher.eng01.native-diagnostics-qualification.v1",
+  "status": "passed",
+  "scope": "CI diagnostic reporting only; engineering business/source/generated/UI/build bytes unchanged",
+  "base_commit": "a84bb324e81a677638b02ebf98cd7dc93888e2e2",
+  "source_files": 790,
+  "changed_source_sha256": {
+    "apps/cipher/platform/operations/validate_new_stack.py": "802a2ad9116f4921f506e4e776aef4b40777caededb8df93d7ac2ddee7cabdce",
+    "apps/cipher/platform/operations/tests/test_native_failure_report.py": "cc7d466f96a5bda552e15e7434f2820aef53baa63567fc0621efbc147594a9df"
+  },
+  "source_inventory_sha256": "3406e0a963b5ab1649d83b8b1035de21171802b6c6beebc9d6ea8dc53e50c19a",
+  "reporter_unit_checks": 18,
+  "reporter_test_log_sha256": "3a7707e6cc85a53646ed3fe1de4485efb5c3490939d1100ef2389f11264581cf",
+  "failing_first_log_sha256": "4d13701d402022e03ae9c920ec27337bd560c89964ebb697932bcc0a27776117",
+  "report_fields": [
+    "test identity",
+    "exception type",
+    "last8 source file/line/function frames"
+  ],
+  "raw_private_values_or_messages_emitted": false,
+  "first_native_attempt": "failed; original exact exception unavailable",
+  "native_result_after_diagnostic_change": "pending"
+}

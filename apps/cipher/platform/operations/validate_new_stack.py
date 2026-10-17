@@ -196,6 +196,37 @@ def browser_failure_summary(path):
     return summary
 
 
+def native_failure_summary(path):
+    """Expose only test identifiers, exception types and bounded source frames."""
+    summary = {"schema": "cipher.native.failure.v1", "status": "missing", "failures": []}
+    path = Path(path)
+    if not path.is_file():
+        return summary
+    if path.stat().st_size > 8 * 1024 * 1024:
+        summary["status"] = "oversized"
+        return summary
+    text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", path.read_text(errors="replace"))
+    summary.update(status="available", log_sha256=sha(path))
+    headers = list(re.finditer(r"^(?:ERROR|FAIL): (test_[A-Za-z0-9_]+) \((cipher_aec\.tests\.[A-Za-z0-9_.]+)\)", text, re.MULTILINE))
+    blocks = [(match.group(1), match.group(2), text[match.end():headers[index + 1].start() if index + 1 < len(headers) else len(text)]) for index, match in enumerate(headers)]
+    if not blocks:
+        blocks = [(None, None, text)]
+    for test, test_class, block in blocks[:20]:
+        types = re.findall(r"^((?:[A-Za-z_]\w*\.)*[A-Z][A-Za-z0-9_]*(?:Error|Exception|Failure)):", block, re.MULTILINE)
+        frames = []
+        for frame in re.finditer(r'File "([^"\r\n]+)", line ([0-9]{1,7}), in ([A-Za-z0-9_<>.]+)', block):
+            source = frame.group(1)
+            start = max(source.rfind("/cipher_aec/"), source.rfind("/frappe/"))
+            if start < 0:
+                continue
+            relative = source[start + 1:]
+            if re.fullmatch(r"(?:cipher_aec|frappe)/[A-Za-z0-9_./-]+\.py", relative):
+                frames.append({"file": relative, "line": int(frame.group(2)), "function": frame.group(3)})
+        if test or types:
+            summary["failures"].append({"test": test, "class": test_class, "exception_type": types[-1] if types else None, "frames": frames[-8:]})
+    return summary
+
+
 class Runner:
     def __init__(self, args):
         self.args = args
@@ -329,9 +360,18 @@ bench --site "$CIPHER_VALIDATION_SITE" execute cipher_aec.install.seed_synthetic
                 command = 'bench --site "$CIPHER_VALIDATION_SITE" run-tests --app cipher_aec --test-category integration --skip-before-tests --junit-xml-output "$CIPHER_VALIDATION_XML"'
             else:
                 command = "env/bin/python - <<'PY'\nimport os,sys,unittest,xmlrunner\nsuite=unittest.defaultTestLoader.loadTestsFromNames(" + repr(pure_classes) + ")\nwith open(os.environ['CIPHER_VALIDATION_XML'],'wb') as stream:\n result=xmlrunner.XMLTestRunner(output=stream).run(suite)\nsys.exit(0 if result.wasSuccessful() else 1)\nPY"
-            self.container("frappe-" + category + "-tests", command,
-                           env={"CIPHER_VALIDATION_SITE": self.args.site, "CIPHER_VALIDATION_XML": report,
-                                "CIPHER_VALIDATION_CATEGORY": category})
+            try:
+                self.container("frappe-" + category + "-tests", command,
+                               env={"CIPHER_VALIDATION_SITE": self.args.site, "CIPHER_VALIDATION_XML": report,
+                                    "CIPHER_VALIDATION_CATEGORY": category})
+            except ValidationFailure:
+                try:
+                    diagnostic = native_failure_summary(self.results[-1]["private_log"])
+                except Exception:
+                    diagnostic = {"schema": "cipher.native.failure.v1", "status": "unreadable", "failures": []}
+                self.results[-1]["native_failure"] = diagnostic
+                print("NATIVE_FAILURE " + json.dumps(diagnostic, sort_keys=True), flush=True)
+                raise
             test_rows.append(self.results[-1])
             local = self.work / ("frappe-" + category + "-junit.xml")
             self.stage("collect-" + category + "-junit", [str(self.args.docker), "cp", self.args.container + ":" + report, str(local)], classification="evidence")
