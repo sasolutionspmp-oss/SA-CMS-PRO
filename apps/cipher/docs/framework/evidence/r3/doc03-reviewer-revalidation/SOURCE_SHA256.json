@@ -1,0 +1,71 @@
+{
+  "base": "a3577803e09e72b9af22178bdd9c4d1225536485",
+  "files": [
+    {
+      "bytes": 41709,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py",
+      "sha256": "ba310965e993ab0ed38a02f74ccb0a400f3140a7c149b3086441cae6459f32ed"
+    },
+    {
+      "bytes": 22409,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "dad6d3b966ebcb2ca9ba5ad7ccbb0d0eaec5fa69736810465ca0160ee6b66bc1"
+    },
+    {
+      "bytes": 16413,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "9e03274ef6096c21989d0d789768cd6f3a4917851f82cca575102d8eeae14ff0"
+    },
+    {
+      "bytes": 2411,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/controllers.py",
+      "sha256": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a"
+    },
+    {
+      "bytes": 12064,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py",
+      "sha256": "1bdc70f74fcca0cc2bbeead275426bc6897592927ee4f0adf86547a2e8aadded"
+    },
+    {
+      "bytes": 18417,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py",
+      "sha256": "76a7517e4190d6107e86732365f1ffa022a1ecd697e13793eef594350c815dec"
+    },
+    {
+      "bytes": 29273,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py",
+      "sha256": "7ff4bcde5a5f1df2728a875522172bbf798ddb473a9d1955a76d0c4c5782b7ca"
+    },
+    {
+      "bytes": 10371,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py",
+      "sha256": "5724adccaddfd45febdbc4aa39edad56021cdc3a4f4897b5169993015ff76bd0"
+    },
+    {
+      "bytes": 5762,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py",
+      "sha256": "7b2652e58de6926ee8aefceb079edb3a3a388c6891e6ec7849c02142c2f8aafd"
+    },
+    {
+      "bytes": 14038,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py",
+      "sha256": "daffe41fa7023561b583f065277fe49de3f3faf474716a201893232f9b51bb45"
+    },
+    {
+      "bytes": 4993,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py",
+      "sha256": "16bcd22a827327994fa6ab36ca3592c95a5249f2b79172803341b619fc03488c"
+    },
+    {
+      "bytes": 24882,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py",
+      "sha256": "eeb2eace0e7d3499ad56128bb82f9c153933abb8132649bcaa2e209a58a0f1d0"
+    },
+    {
+      "bytes": 15312,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native.py",
+      "sha256": "5143c4982648ac30032274c32f87fb1269adb52979d8dd436691d3cb8f5051fc"
+    }
+  ],
+  "qualification": "Exact reviewed baseline files only; no full application integrity or native qualification claim."
+}

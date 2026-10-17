@@ -1,0 +1,13 @@
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py
+@@ -481,7 +481,9 @@
+                     if packet.action != ACTION:
+                         domain_approvals.authorize(packet, reviewer, phase="review", lock=True)
+                     break
+-                except DomainError:
++                except DomainError as error:
++                    if error.code in ("document_prelock_required", "source_prelock_required"):
++                        raise
+                     reviewer = None
+             kinds = frappe.db.sql("SELECT identity_kind FROM `tabCipher Person` WHERE name=%s FOR UPDATE", (decisions[-1].actor_person,))
+             if reviewer is None or not kinds or kinds[0][0] != "Human":

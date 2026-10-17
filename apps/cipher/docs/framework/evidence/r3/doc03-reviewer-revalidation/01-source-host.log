@@ -1,0 +1,180 @@
+test_company_review_hits_real_actor_bound_prelock_and_is_masked (__main__.ReviewSourceTests.test_company_review_hits_real_actor_bound_prelock_and_is_masked) ... ERROR
+test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) ... 
+  test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) (kind='adoption_request') ... ERROR
+  test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) (kind='transmittal') ... ERROR
+test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read (__main__.ReviewSourceTests.test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read) ... ERROR
+test_project_transmittal_review_hits_real_recipient_guard_and_is_masked (__main__.ReviewSourceTests.test_project_transmittal_review_hits_real_recipient_guard_and_is_masked) ... ERROR
+test_revoked_current_rights_and_nonindependent_person_remain_denied (__main__.ReviewSourceTests.test_revoked_current_rights_and_nonindependent_person_remain_denied) ... ERROR
+
+======================================================================
+ERROR: test_company_review_hits_real_actor_bound_prelock_and_is_masked (__main__.ReviewSourceTests.test_company_review_hits_real_actor_bound_prelock_and_is_masked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 153, in test_company_review_hits_real_actor_bound_prelock_and_is_masked
+    with fixture('adoption_request') as v, v.ctx.hold(v.requester):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+======================================================================
+ERROR: test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) (kind='adoption_request')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 168, in test_independent_read_checks_do_not_replace_or_borrow_requester_context
+    with self.subTest(kind=kind),fixture(kind) as v,v.ctx.hold(v.requester):
+                                 ^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+======================================================================
+ERROR: test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) (kind='transmittal')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 168, in test_independent_read_checks_do_not_replace_or_borrow_requester_context
+    with self.subTest(kind=kind),fixture(kind) as v,v.ctx.hold(v.requester):
+                                 ^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+======================================================================
+ERROR: test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read (__main__.ReviewSourceTests.test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 175, in test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read
+    with fixture('adoption_request') as v,v.ctx.hold(v.requester):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+======================================================================
+ERROR: test_project_transmittal_review_hits_real_recipient_guard_and_is_masked (__main__.ReviewSourceTests.test_project_transmittal_review_hits_real_recipient_guard_and_is_masked)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 161, in test_project_transmittal_review_hits_real_recipient_guard_and_is_masked
+    with fixture('transmittal') as v, v.ctx.hold(v.requester):
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+======================================================================
+ERROR: test_revoked_current_rights_and_nonindependent_person_remain_denied (__main__.ReviewSourceTests.test_revoked_current_rights_and_nonindependent_person_remain_denied)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 181, in test_revoked_current_rights_and_nonindependent_person_remain_denied
+    with fixture('transmittal') as v,v.ctx.hold(v.requester):
+         ^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 82, in fixture
+    service=importlib.import_module('cipher_aec.document_control.service')
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py", line 90, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 13, in <module>
+    from cipher_aec.engineering import sources
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/engineering/sources.py", line 5, in <module>
+    from cipher_aec.documents.service import source_reference,get_citation
+ImportError: cannot import name 'source_reference' from 'cipher_aec.documents.service' (unknown location)
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.101s
+
+FAILED (errors=6)

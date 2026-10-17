@@ -1,0 +1,65 @@
+{
+  "files": [
+    {
+      "bytes": 15416,
+      "path": "01-source-host.log",
+      "sha256": "a4c1934160e3e5c11cb66fb2ec0588c38977f8ffdb1d01c0beb90eaddc2a4038"
+    },
+    {
+      "bytes": 988,
+      "path": "02-source-host-fixture.log",
+      "sha256": "5d74bfb9715951083892d478645024e5ce56a674547994f2ef42d346f4dc18ca"
+    },
+    {
+      "bytes": 1174,
+      "path": "03-diagnostic-controls.log",
+      "sha256": "4f0b2de94ed43d29ada9aaf7e2f7e80690ddecd1016f49c00cb5b523cc088dd0"
+    },
+    {
+      "bytes": 2982,
+      "path": "04-fail-first-regression.log",
+      "sha256": "99dc35e073193a2187667b895ede2bfde4cd9065822e9e67906da7c018711519"
+    },
+    {
+      "bytes": 1729,
+      "path": "05-diagnostic-only-patch.log",
+      "sha256": "714569e3abfeb77d9b513394046beffdbac275f4c547b876a03595e3de956b0a"
+    },
+    {
+      "bytes": 278,
+      "path": "06-diagnostic-patch-fixture-corrected.log",
+      "sha256": "5035b89950e904080b36bdfcbcfd8756fff0ef05d66abd63fb38ba77481d6436"
+    },
+    {
+      "bytes": 194,
+      "path": "BASE.json",
+      "sha256": "dd25d5aa435703f6624fcaf4724200ddba7a0bb81e4759b107846d10234b52a6"
+    },
+    {
+      "bytes": 808,
+      "path": "DIAGNOSTIC_ONLY_UNMASK.patch",
+      "sha256": "a809fae3ebe788ff2ff9f523f4b2fe10730e5bb263700bffaf9d7ace6a8048da"
+    },
+    {
+      "bytes": 6828,
+      "path": "FINDING.md",
+      "sha256": "f0e39656100ab446f2d79b679767ce63894e3a40ebd26168700d61a58dadb163"
+    },
+    {
+      "bytes": 6003,
+      "path": "INDEPENDENT_CONFIRMATION.md",
+      "sha256": "af203709a4941a52cf9a4a4a9437be9be20cfca1035eb7896747b226fd250d82"
+    },
+    {
+      "bytes": 2929,
+      "path": "SOURCE_SHA256.json",
+      "sha256": "5071388f64e2bd0d3a36d0a8eee70617def52a34fb6f97edd6a49056873eea2d"
+    },
+    {
+      "bytes": 19917,
+      "path": "test_revalidation_host.py",
+      "sha256": "7488e972094b5687a707115f5d4ea509e56deddfaca208b349e7306bb9eb4b71"
+    }
+  ],
+  "qualification": "All original review artifacts plus source inventory; self and MANIFEST.json excluded to avoid recursive hashing."
+}

@@ -1,0 +1,20 @@
+test_authorized_project_transmittal_reviewer_survives_requester_execution (__main__.DiagnosticPatchTests.test_authorized_project_transmittal_reviewer_survives_requester_execution) ... ERROR
+test_diagnostic_only_patch_preserves_inner_denial_and_requester_tokens (__main__.DiagnosticPatchTests.test_diagnostic_only_patch_preserves_inner_denial_and_requester_tokens) ... ok
+
+======================================================================
+ERROR: test_authorized_project_transmittal_reviewer_survives_requester_execution (__main__.DiagnosticPatchTests.test_authorized_project_transmittal_reviewer_survives_requester_execution)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 231, in test_authorized_project_transmittal_reviewer_survives_requester_execution
+    self.assertEqual(reviewer_loop(v).person_id,v.reviewer.person_id)
+                     ^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/test_revalidation_host.py", line 159, in reviewer_loop
+    exec(compile(ast.Module(body=statements,type_ignores=[]),str(ROOT/'governance/approvals.py'),'exec'),env)
+  File "/dev/shm/cipher-doc03-revalidation-review-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py", line 488, in <module>
+    raise DomainError("reviewer_authority_revoked", "The reviewer's authority changed. Obtain a fresh review.", 403)
+cipher_aec.api.errors.DomainError: The reviewer's authority changed. Obtain a fresh review.
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.120s
+
+FAILED (errors=1)

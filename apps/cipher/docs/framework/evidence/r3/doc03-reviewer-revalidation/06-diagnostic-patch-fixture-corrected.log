@@ -1,0 +1,6 @@
+test_diagnostic_only_patch_preserves_inner_denial_and_requester_tokens (__main__.DiagnosticPatchTests.test_diagnostic_only_patch_preserves_inner_denial_and_requester_tokens) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.078s
+
+OK

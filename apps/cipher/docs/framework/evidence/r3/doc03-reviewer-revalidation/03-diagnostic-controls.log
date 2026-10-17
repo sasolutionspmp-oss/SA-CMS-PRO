@@ -1,0 +1,11 @@
+test_company_review_hits_real_actor_bound_prelock_and_is_masked (__main__.ReviewSourceTests.test_company_review_hits_real_actor_bound_prelock_and_is_masked) ... ok
+test_independent_read_checks_do_not_replace_or_borrow_requester_context (__main__.ReviewSourceTests.test_independent_read_checks_do_not_replace_or_borrow_requester_context) ... ok
+test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read (__main__.ReviewSourceTests.test_missing_reviewer_company_duty_and_native_permission_still_deny_fresh_read) ... ok
+test_project_transmittal_review_hits_real_recipient_guard_and_is_masked (__main__.ReviewSourceTests.test_project_transmittal_review_hits_real_recipient_guard_and_is_masked) ... ok
+test_requester_union_does_not_prelock_nonrecipient_reviewer_company_duties (__main__.ReviewSourceTests.test_requester_union_does_not_prelock_nonrecipient_reviewer_company_duties) ... ok
+test_revoked_current_rights_and_nonindependent_person_remain_denied (__main__.ReviewSourceTests.test_revoked_current_rights_and_nonindependent_person_remain_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.245s
+
+OK

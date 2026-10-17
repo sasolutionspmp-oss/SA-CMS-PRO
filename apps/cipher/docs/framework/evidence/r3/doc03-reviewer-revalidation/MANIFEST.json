@@ -1,0 +1,53 @@
+{
+  "base": "a3577803e09e72b9af22178bdd9c4d1225536485",
+  "baseline_source_manifest": "SOURCE_SHA256.json",
+  "blocked_boundary": "Existing automatic approval rejection of award remains; no alternate route/host retry; dependent procurement/finance rollout remains blocked.",
+  "branch": "cipher/doc03-reviewer-source-review-20261017",
+  "created_utc": "2026-10-17T14:54:19.476133+00:00",
+  "diagnostic_patch": "DIAGNOSTIC_ONLY_UNMASK.patch: unapplied; preserves denial and unmasks existing409 only; no authority/lock/admission/effect fix.",
+  "evidence_manifest": "ARTIFACT_SHA256.json",
+  "finding": "Requester-bound document context rejects independent reviewer; document_prelock_required409 is masked as reviewer_authority_revoked403.",
+  "functional_fix_requirements": [
+    "Preserve actor-bound requester active and provenance tokens.",
+    "Explicitly bind exact reviewed packet/grant/reviewer into verified complete source union.",
+    "Prelock reviewer identities and required target/origin duty rows before masters/source locks; requester/recipient locks alone omit nonrecipient reviewer Company duties.",
+    "Fresh independent canonical reviewer scope/native/rights checks; preserve Human/person independence, recipient and source changed-plan checks.",
+    "Do not apply blanket lock=False as a complete fix."
+  ],
+  "initial_fixture_logs": "01/02/05 retained with explicit corrections described in FINDING.md.",
+  "preserved_refs": {
+    "cipher/doc03-backend-contract-20261017": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+    "cipher/doc04-semantic-backend-20261017": "b70497f0a7e33b400d2f9ffdacb8e116bb66e556",
+    "cipher/fld02-offline-backend-20261017": "392a19f8c01b4253a5aaeaa99878408d394dc9cb"
+  },
+  "qualification": {
+    "application_source_changed": false,
+    "award_execution": false,
+    "full_legacy_or_native_suite": "Not rerun: explicit source-only delegation forbids native retries and unchanged heavy suites.",
+    "functional_fix": "NOT IMPLEMENTED: local source agent owns it",
+    "native_proof": "PENDING: local sole integration owner",
+    "reviewer_loop": "AST extracted from pinned source; actual context/locking logic; explicit SQL/native/persistence/source doubles",
+    "runtime_database_provider_actions": false
+  },
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "scope": "Independent source-only review; documentation/evidence-only handoff; not a functional implementation candidate.",
+  "tests": {
+    "diagnostic_controls": {
+      "count": 6,
+      "log": "03-diagnostic-controls.log",
+      "result": "PASS"
+    },
+    "diagnostic_unmasking": {
+      "count": 1,
+      "log": "06-diagnostic-patch-fixture-corrected.log",
+      "result": "PASS (in-memory AST patch only)",
+      "scenarios": 2
+    },
+    "fail_first_intended_behavior": {
+      "count": 2,
+      "log": "04-fail-first-regression.log",
+      "result": "EXPECTED RED: reviewer_authority_revoked403 on pinned baseline"
+    },
+    "patch_apply_check": "PASS; external diagnostic patch only, not applied to source"
+  }
+}
