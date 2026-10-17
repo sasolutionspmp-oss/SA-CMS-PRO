@@ -1,0 +1,31 @@
+{
+  "schema": "cipher.r21.corrected-readonly-native-verification.v1",
+  "status": "passed",
+  "native_business_commands": 0,
+  "new_business_rows": 0,
+  "inventory_entries": 78,
+  "existing_tables": 77,
+  "all_original_business_calibrations_measurements_bindings_estimates_pricing_exact": true,
+  "actual_original_calibration_reopened_after_reload_and_digest_readback_exact": true,
+  "recorded_status": "unverified",
+  "current_use_eligible": false,
+  "independent_verification": null,
+  "optional_repeated_pointer_capture_status": "failed_before_any_new_command",
+  "original_capture_status_preserved": "failed",
+  "bounded_saved_record_read_portion": "passed",
+  "original_successful_save_not_repeated": true,
+  "original_actual_create_reply_accepted_by_corrected_validator": true,
+  "original_save_audit_sha256": "973294f3ddfd886d7a851ffd6dabf836187a0570d767a78645c3dae854f8b57d",
+  "corrected_validator_proof_sha256": "74e1d4e4bf64a654d247947af792a16f19e2773353575fe42dea10c61576c153",
+  "source_config_indexes_closed_native_evidence_preserved": true,
+  "auth": {
+    "status": "passed",
+    "bounded_user_changes": 0,
+    "bounded_session_changes": 0,
+    "transport_ip_change_independently_hash_verified": false,
+    "observer_business_writes": 0
+  },
+  "before_sha256": "44d8a88d1fd8c71f21fc5df181189242639771cc5e4ef242d9d7e2abb84f018c",
+  "after_sha256": "22234d94b19fa2e70bc0b1f62df03675741f5f21d1a24db0313609db9e8f203a",
+  "browser_report_sha256": "a77672be4588c25b489bb346cbf93656da814631fbf3e877f1085f6adc93da5d"
+}

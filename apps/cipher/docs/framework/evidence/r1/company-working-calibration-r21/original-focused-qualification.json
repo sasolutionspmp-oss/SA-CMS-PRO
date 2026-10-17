@@ -1,0 +1,290 @@
+{
+  "affected_compatibility_cases": 67,
+  "browser_cases": 25,
+  "build": {
+    "files": 915,
+    "modules": 2046,
+    "path": "/dev/shm/cipher-company-calibration-ui-r21/dist",
+    "status": "passed"
+  },
+  "classification": "synthetic_interception_host_qualification",
+  "composed_browser_cases": 92,
+  "composed_compatibility": {
+    "explanation": "43 new calibration cases freshly passed on final source, plus67 unchanged compatibility cases from retained prior110 gate; exact handler/file hashes and the single explicit source-refusal-effect delta are recorded",
+    "mapping": "/dev/shm/cipher-company-calibration-ui-r21/COMPATIBILITY_HASHES.json",
+    "sha256": "9dfde6a3056c6f4b6c18f759c334fa421cc5cb030a27aa459883d07a9d4e9f19"
+  },
+  "composed_distinct_cases": 110,
+  "composed_node_contract_cases": 18,
+  "configuration_sha256": {
+    "/dev/shm/cipher-company-calibration-ui-r21/BASELINE.json": "d73432e062512d94104e68dcbd71772b97ca3a8cafc15a2183d93fedaece20cf",
+    "/dev/shm/cipher-company-calibration-ui-r21/COMPATIBILITY_HASHES.json": "9dfde6a3056c6f4b6c18f759c334fa421cc5cb030a27aa459883d07a9d4e9f19",
+    "/dev/shm/cipher-company-calibration-ui-r21/PRE_GATE_SOURCE_INVENTORY.json": "a00a5ed937e1c563b16cd80f72be8f16794ded9a507951a686861b0b26e23f1f",
+    "/dev/shm/cipher-company-calibration-ui-r21/PRE_GATE_SOURCE_V2_INVENTORY.json": "f4abfeed92e97e57ba36e7f36170444bc596e503b0a778b15f1b7aa5a3f6b2c1",
+    "/dev/shm/cipher-company-calibration-ui-r21/playwright-r21.config.mjs": "9bb11e381981457ae0f701bcd1cd907f6dde71c10acd930cb17668be138bdabe",
+    "/dev/shm/cipher-company-calibration-ui-r21/vite-r21.config.mjs": "7515411a7f2c1c08d41b52010cf284f57bba9f07756956cbb0bbeea374375189"
+  },
+  "failing_first": {
+    "reasons": [
+      "rehashed out-of-crop anchors and zero known distance",
+      "React anchor-field keys and changed manual inspection caption",
+      "wrong Company source plan and known canonical-unit read denial",
+      "different record status cannot be mislabeled unverified",
+      "confirmed working-source preflight change must clear prior pixels/forms"
+    ],
+    "retained_regression_failures": 8
+  },
+  "focused_cases": 43,
+  "fresh_distinct_cases": 43,
+  "full_suite": "not run; new calibration and affected R19/R20/authority/draft/Project PDF cases only",
+  "generated_contracts_verified": 13,
+  "integrity": {
+    "App_backend_all13generated_ProjectTakeoff_PdfDrawing_styles": "byte-identical to R20; exact long-unit/nested correction inherited",
+    "R20_frozen_delta_verified_files": 11,
+    "R20_original_dist_verified_files": 915,
+    "R20_original_workspace_verified_files": 729,
+    "changed_paths": 6,
+    "production_paths": 3,
+    "source_files": 734,
+    "test_paths": 3,
+    "unchanged_base_files": 728
+  },
+  "logs_sha256": {
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-01-failing-first.log": "7c9617b94115294fb9eb416077e884bf6d97210086e491690601212680c37b61",
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-02.log": "e3be670babb5ef90950c29faaa39292ad7fffa63e3907971edde4c7105954f2d",
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-03-failing-first.log": "51954a4c1558897ede84a15e0725ed75e5ad59543ef549c6184967bcf9865e4f",
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-04-failing-first.log": "b6be6d6c38572b6ac656b7fdeaba7fe2b6790d494a0ac1e35cfbb6ac979f168e",
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-05-failing-first.log": "e1bd1c605e2ef271b069fb59ab657cc7a1423484ee84df5704186bd8ef347148",
+    "/dev/shm/cipher-company-calibration-ui-r21/attempt-06-failing-first.log": "896c0035700565d3d4173bfba384643e4ac288d4762478039b1bd3ba6d8ae7b3",
+    "/dev/shm/cipher-company-calibration-ui-r21/build-qualified-v2.log": "8c55046c8942d742f1b1c23431a54a3caffa0cdad8616f2b53bad882aab0660d",
+    "/dev/shm/cipher-company-calibration-ui-r21/build-qualified.log": "bca20ffa3bb270376496ed31a5037225ccbb79654743af3aea40fecf27c00374",
+    "/dev/shm/cipher-company-calibration-ui-r21/focused-final-v2.log": "5c9886e57e68296d0f1660e8bcc8adb3f88f0e93eb54fa7eec4a7e810cf5b4d5",
+    "/dev/shm/cipher-company-calibration-ui-r21/focused-final.log": "aa19617ba1814f8eaf7796daaf2b5fa6bffbbe3d80c7e3840f5338cf42421ae4",
+    "/dev/shm/cipher-company-calibration-ui-r21/focused-new.log": "a9d66fad4f394c2e9f3813be0673ef5e7a9f892a4fa1acec1ccdb2e17541d7d8",
+    "/dev/shm/cipher-company-calibration-ui-r21/generated-qualified-v2.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-calibration-ui-r21/generated-qualified.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-01.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-02.log": "edea57f1cb73e1018f0e2e89b472415c2828ec47a241bbd101ae14b53fb6c238",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-03.log": "f7ef178b34837e1fa93d22712fccbc7bc3e38c01a47cb6389a98e131d6a985fc",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-04.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-qualified-v2.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-calibration-ui-r21/typecheck-qualified.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+  },
+  "native_qualification": "pending root-owned one ordinary calibration create plus independent readback/source proof; child made no native calls or captures",
+  "new_R21_cases": 43,
+  "node_contract_cases": 18,
+  "other_retained_failures": {
+    "attempt-02": "31 passed/3 failed: fixture/assertion corrections (explicit access recheck after denied recovery, internally consistent changed-head metadata, UI5 role locator)",
+    "focused-new": "41 passed/1 failed: browser pointer quantization versus ideal coordinate; assertion now uses a subpixel bound consistent with existing Project PDF qualification",
+    "typecheck-02/03": "fixture union/tuple/accessor typing errors retained; final typecheck passed"
+  },
+  "reports": {
+    "attempt-01-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-01-failing-first/report.json",
+      "sha256": "a4584f81d760070982a5daca6f53111c69c299d6c3a0bd7ad558d5dcef2d267c",
+      "stats": {
+        "duration": 1916.835,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:22:46.737Z",
+        "unexpected": 2
+      }
+    },
+    "attempt-02": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-02/report.json",
+      "sha256": "19dcfabdaafe5294901c056ffba62d5f5927c5421baec48f3c8f7cfe6f24338c",
+      "stats": {
+        "duration": 87340.493,
+        "expected": 31,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:23:34.567Z",
+        "unexpected": 3
+      }
+    },
+    "attempt-03-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-03-failing-first/report.json",
+      "sha256": "008643e1f45f60b1c1b9033e6096587613eb5bf186109b245830644548dcc0c1",
+      "stats": {
+        "duration": 16933.921,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:25:45.025Z",
+        "unexpected": 2
+      }
+    },
+    "attempt-04-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-04-failing-first/report.json",
+      "sha256": "21f3506728c32593ba43e5eb75d311bb1fc672f088603696366eb3bfbd1fda65",
+      "stats": {
+        "duration": 14319.596,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:26:23.495Z",
+        "unexpected": 2
+      }
+    },
+    "attempt-05-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-05-failing-first/report.json",
+      "sha256": "6ddc62b9758e34fb750031005757b0fa7b1509c59dd2b23795b10927fa646b65",
+      "stats": {
+        "duration": 1074.353,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:28:45.334Z",
+        "unexpected": 1
+      }
+    },
+    "attempt-06-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/attempt-06-failing-first/report.json",
+      "sha256": "f5c80785ff8dadc15e3db0c59365d169b5a80bb1d37bade5783be26b8a9e1895",
+      "stats": {
+        "duration": 14555.749,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:34:08.971Z",
+        "unexpected": 1
+      }
+    },
+    "focused-final": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/focused-final/report.json",
+      "sha256": "91d43294827341dfd12c615a59d21530a0a5989371c322c4b6339e5d27d9e8b4",
+      "stats": {
+        "duration": 258756.32100000003,
+        "expected": 110,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:29:07.727Z",
+        "unexpected": 0
+      }
+    },
+    "focused-final-v2": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/focused-final-v2/report.json",
+      "sha256": "8f3138c9a7598f3ea5ee4b2f938d76668d873291d845dea9a55c13f9e6d49d97",
+      "stats": {
+        "duration": 72898.316,
+        "expected": 43,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:35:01.496Z",
+        "unexpected": 0
+      }
+    },
+    "focused-new": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/focused-new/report.json",
+      "sha256": "cdad0dddf1f159b469a301471ee725a2a6c205634ad49bcfa45882dad7b95a97",
+      "stats": {
+        "duration": 82694.303,
+        "expected": 41,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:27:00.224Z",
+        "unexpected": 1
+      }
+    }
+  },
+  "retained_attempt_artifacts": {
+    "attempt-01-failing-first": {
+      "files": {
+        "report.json": "a4584f81d760070982a5daca6f53111c69c299d6c3a0bd7ad558d5dcef2d267c",
+        "test-results/.last-run.json": "6b33b01fef66e1c6dbec1da359f3b3b1b08147cc87ca474bc6df713596314c04",
+        "test-results/company-calibration-valida-27653-on-rejects-invalid-distance/error-context.md": "401ddf7f026311cf3a4b10b20a7aa13b58817a90d785e5aa65fe74f6312c730f",
+        "test-results/company-calibration-valida-27653-on-rejects-invalid-distance/trace.zip": "67761b66d87c33f4425b3edaf80a6c1238d78db0c29c1e5b46e2befed686d779",
+        "test-results/company-calibration-valida-91631-ion-rejects-invalid-anchors/error-context.md": "276eece1e9b5575be04c6ad80b3953f8e02954b484db8cf2d8f4c6c585f431db",
+        "test-results/company-calibration-valida-91631-ion-rejects-invalid-anchors/trace.zip": "eb610f26fc89af954957b87078c15a402db883ff64d48891e342121ea40ed2fd"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-01-failing-first"
+    },
+    "attempt-02": {
+      "files": {
+        "report.json": "19dcfabdaafe5294901c056ffba62d5f5927c5421baec48f3c8f7cfe6f24338c",
+        "test-results/.last-run.json": "d2364c943cc01dfa6a37499e8f67ec81ba7ef97d5ac22a2c1a9097bb022549b7",
+        "test-results/company-calibration-change-d28a2-ght-refuses-before-any-POST/error-context.md": "4023f7621934ec8b6a9a77762d0987d06c0d0bca1aac354d692652c7f133821c",
+        "test-results/company-calibration-change-d28a2-ght-refuses-before-any-POST/trace.zip": "2af1becd8b90242b21c5cfe33620ad3a5f153775a713157ae6dd993276fe5e02",
+        "test-results/company-calibration-known--0b328-nown-across-denied-recovery/error-context.md": "0ef1ee333a015b90249bfb531577436fb7695131f3874763a186b56a7db178d3",
+        "test-results/company-calibration-known--0b328-nown-across-denied-recovery/trace.zip": "e691d750fb448d338adcd6eec69b6af7bca4b722ad2f3fd08988a07da388d42a",
+        "test-results/company-calibration-known--d57da-rmed-save-stays-source-free/error-context.md": "b7ca360eaab0e43fa0a99fc4858d86ed1131498127fc4fa795a0e267ce5cfa90",
+        "test-results/company-calibration-known--d57da-rmed-save-stays-source-free/trace.zip": "ae5b29ab00571715cb3703ece94b64f3ab7525700e867d906b12867961d3c2ac"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-02"
+    },
+    "attempt-03-failing-first": {
+      "files": {
+        "report.json": "008643e1f45f60b1c1b9033e6096587613eb5bf186109b245830644548dcc0c1",
+        "test-results/.last-run.json": "f1182bb336307aa35ae8174458b10167cba383a21671678e640922bcff7d02cd",
+        "test-results/company-calibration-anchor-7008a-rs-without-React-key-errors/error-context.md": "b19643dc11e2d548f5253a4df7d5e0fd2360ad950306ed93b8e1fe120786b136",
+        "test-results/company-calibration-anchor-7008a-rs-without-React-key-errors/trace.zip": "3455c40ced61e99e4b107b5ef08bbb807e239143fe775573184e439f7ac415d9",
+        "test-results/company-calibration-manual-779d7-ves-its-non-picking-caption/error-context.md": "161700de65079d804024ee54654a94b3a5725109bfd7333eb2a94e91a79141b6",
+        "test-results/company-calibration-manual-779d7-ves-its-non-picking-caption/trace.zip": "630e5bc589b53766d5852ff171f7699bcc0db7673fbe6f27080df4d285414a55"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-03-failing-first"
+    },
+    "attempt-04-failing-first": {
+      "files": {
+        "report.json": "21f3506728c32593ba43e5eb75d311bb1fc672f088603696366eb3bfbd1fda65",
+        "test-results/.last-run.json": "153e109ae3a51a034fe7733a6f86ca67352dfc784ded5ab08facda0b677e4f16",
+        "test-results/company-calibration-known--b7757-calibration-pixels-and-form/error-context.md": "34bd354fbf857e53f22eb978b83edc3180abb039bb2eb4a902ca5ef6a95f0e9e",
+        "test-results/company-calibration-known--b7757-calibration-pixels-and-form/trace.zip": "49e86a79a2a36dad94c7f1fc5d50d574714453f83877c3be2b37899360ab166d",
+        "test-results/company-calibration-valida-337d9--a-different-Company-source/error-context.md": "e59d6101876b46c72c5dc9c03a42d6dbddb1947c5bb369757359044fad0cf2eb",
+        "test-results/company-calibration-valida-337d9--a-different-Company-source/trace.zip": "3027df2fc947e32ab7f787c9d6d14a54e1865bfdb04cae5895245fa5083d7ee8"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-04-failing-first"
+    },
+    "attempt-05-failing-first": {
+      "files": {
+        "report.json": "6ddc62b9758e34fb750031005757b0fa7b1509c59dd2b23795b10927fa646b65",
+        "test-results/.last-run.json": "f8e403d1eb3e83837177353d3ad03cec57d10b20337a4cf935386936bb673958",
+        "test-results/company-calibration-valida-898ac-rent-rehashed-record-status/error-context.md": "8536385477288822a900fb1e6919f5b9acbcea1ca9ff8619eeb5f53ae93695b3",
+        "test-results/company-calibration-valida-898ac-rent-rehashed-record-status/trace.zip": "bb4717b902412e5b96b5e09089e2fa89f540032fca901bd6ef01adbf62046879"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-05-failing-first"
+    },
+    "attempt-06-failing-first": {
+      "files": {
+        "report.json": "f5c80785ff8dadc15e3db0c59365d169b5a80bb1d37bade5783be26b8a9e1895",
+        "test-results/.last-run.json": "69de5d05cf82d2a4c835889662b566092ac34367e9543676d551ee2b1d012c65",
+        "test-results/company-calibration-change-d28a2-ght-refuses-before-any-POST/error-context.md": "06fc38a6697cf67c8ba349185ba6f2bbfdf515a9da044b27b8526b95a395e999",
+        "test-results/company-calibration-change-d28a2-ght-refuses-before-any-POST/trace.zip": "e67b3a221fb95ecbfd280fb3e959ac8296584a0ef3f6d9ee20baf4f823d3d430"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/attempt-06-failing-first"
+    },
+    "focused-final": {
+      "files": {
+        "report.json": "91d43294827341dfd12c615a59d21530a0a5989371c322c4b6339e5d27d9e8b4",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/focused-final"
+    },
+    "focused-final-v2": {
+      "files": {
+        "report.json": "8f3138c9a7598f3ea5ee4b2f938d76668d873291d845dea9a55c13f9e6d49d97",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/focused-final-v2"
+    },
+    "focused-new": {
+      "files": {
+        "report.json": "cdad0dddf1f159b469a301471ee725a2a6c205634ad49bcfa45882dad7b95a97",
+        "test-results/.last-run.json": "7d7b9ed687d8124e305eec5eb73cc2b0b02186c8a9e6d1104255784f5e964e9b",
+        "test-results/company-calibration-actual-ab7a4-t-editable-PDF-user-anchors/error-context.md": "cd5ed6b2b84e2c5d714dd35007119ed74da437b307991e7ae636058640332a0e",
+        "test-results/company-calibration-actual-ab7a4-t-editable-PDF-user-anchors/trace.zip": "6af29ae6c5ad82fadf140668c22e0455adec6ac5540cc06545db8de3e5b36bd6"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/focused-new"
+    }
+  },
+  "retries": 0,
+  "schema": "cipher.company-calibration.ui-qualification.v1",
+  "screenshots": "disabled",
+  "static_asset_sha256": {
+    "THIRD_PARTY_NOTICES.txt": "817da3f114c1fa4dd5e36e6c2444ea0c0dd403cc59c3b80b365ecebf1c46f287",
+    "cipher-mark.svg": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+  },
+  "static_assets": "packaged SVG and notice exact bytes checked on host; no additional browser gate",
+  "typecheck": "passed",
+  "workers": 1
+}

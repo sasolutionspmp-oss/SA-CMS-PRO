@@ -1,0 +1,33 @@
+{
+  "schema": "cipher.r21.original-save-native-audit.v1",
+  "status": "passed",
+  "business_commands": 1,
+  "new_rows": {
+    "Cipher Calibration": 1,
+    "Cipher Command Receipt": 1,
+    "Cipher History Event": 1
+  },
+  "inventory_entries": 78,
+  "existing_tables": 77,
+  "recorded_status": "unverified",
+  "original_frontend_status": "failed_valid_Company_plus_unit_manifest_rejected",
+  "original_HTTP_readback_observed": false,
+  "independent_verification": null,
+  "exact_scope_actor_definition_source_frame_unit_and_saved_record_verified": true,
+  "exact_request_result_receipt_history_hashes_verified": true,
+  "all_original_measurements_bindings_estimates_pricing_and_other_business_source_config_indexes_preserved": true,
+  "no_approval_verification_geometric_measurement_or_provider_effect": true,
+  "auth_PDF_math": {
+    "native_PDF_frame_and_declared_calibration_math_verified": true,
+    "independent_verification_absent": true,
+    "status": "passed",
+    "bounded_user_changes": 1,
+    "bounded_session_changes": 1,
+    "transport_ip_change_independently_hash_verified": false,
+    "observer_business_writes": 0
+  },
+  "new_calibration": "158a9d63-c823-4dd4-81b9-cd7282d9ae49",
+  "before_sha256": "12d42ef2f2ee4d139c6eb6e776ca1e120b4a854198ba463222fd478d1eb05f33",
+  "after_sha256": "98f8a112c697413db4a67981c9ef5c10919d09f0ca3e9b17a0d4fa324ef188c5",
+  "browser_report_sha256": "dbfd185f0ec5456e8d17936cdc020a69b3f3436f66f9675d1cb24d8345c05c15"
+}

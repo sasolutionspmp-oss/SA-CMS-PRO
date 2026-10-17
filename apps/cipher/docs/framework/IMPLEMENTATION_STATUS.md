@@ -1,10 +1,20 @@
 # Cipher implementation status
 
+[Progress against the original plan](DELIVERY_PROGRESS.md) tracks usable packages and remaining releases.
+
 Owner authorized execution of the framework. Current source worktree: `/tmp/cipher-company-publication-r10`, local branch `cipher/company-ricky-native`, publishing to `cipher/framework-final-draft` in PR #28. The running main site still mounts `/workspace/cipher-framework-draft` at its separately qualified `7248171c` release. New product design is independent of all prior Cipher/Odoo implementations.
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
-## Current checkpoint: reopened Company takeoff evidence
+## Current checkpoint: working calibration and return to original milestones
+
+[Company working calibration](COMPANY_WORKING_CALIBRATION.md) now records explicit PDF anchors, known distance/unit, tolerance and basis through the unchanged backend. One actual native save created exactly an unverified calibration/receipt/history. A valid Company+UOM manifest exposed an overly strict client validator; it is corrected and the original actual response now validates. No successful save was repeated. The frozen 734-file source passed 27 fresh final checks, 118 distinct composed checks, type/build and all 13 generated checks. Original failures remain explicit.
+
+[Six current real saved-record screens](evidence/r1/company-working-calibration-r21/ui/README.md) and a bounded read-only audit reopen the exact calibration after reload, with no POST, new business row or verification fact. Six original PDF/form screens remain archived. A later optional pointer-helper failure is retained rather than triggering more equivalent captures. MAIN/runtime remain unchanged. Hosted R19/R20 CI passed all 25 stages.
+
+The owner's October17 steering emphasizes the original 66-package plan and usable workflows over microfeature/check cycles. Close this estimating correction; defer the optional extra Company drawing-impact panel; advance original ENG-01 RFI/submittal backend and unified UI. Its Project document/citation and approval prerequisites are locally qualified. Award-dependent procurement remains gated by the retained earlier automatic review rejection. Live Ricky/QuickBooks and broad ERP/enterprise qualification remain unfinished. See [original execution backlog](EXECUTION_BACKLOG.md) and [completion matrix](COMPLETION_MATRIX.md).
+
+## Prior checkpoint: reopened Company takeoff evidence
 
 [Saved evidence review](COMPANY_TAKEOFF_HISTORY.md) now reopens Company-wide attachments and stored predecessor comparisons after navigation/reload. The 729-file combined source includes explicit R19 manual successors, persistent readers and the corrected long-unit phone form. 105 affected checks, type/build and thirteen generated checks passed; backend source is unchanged. R18 hosted CI passed all 25 stages.
 

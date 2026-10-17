@@ -14,6 +14,11 @@ import { SuccessorEditor, SuccessorComparison, StoredSuccessorComparison } from 
 import { savedManual, successorLineage } from './api/company-takeoff-successor';
 import type { SavedSuccessor } from './api/company-takeoff-successor';
 import CompanyTakeoffEvidence from './CompanyTakeoffEvidence';
+import CalibrationRegister, { CalibrationForm, SavedCalibrationReadback } from './CompanyTakeoffCalibration';
+import { createCalibration, matchesCalibration, calibrationPreflight } from './api/company-takeoff-calibration';
+import type { CalibrationPlan, SavedCalibration } from './api/company-takeoff-calibration';
+import type { CompanyTakeoffCreateCalibrationRequest, CompanyTakeoffCreateCalibrationResponse } from './api/company-takeoff.generated';
+import type { PdfFrame, PdfPoint } from './PdfDrawing';
 import { sourceApi } from './api/sources';
 import { human, useResource } from './hooks';
 import { useMutation } from './useMutation';
@@ -33,7 +38,7 @@ const pathFor = (company: string, id?: string) => `/company/takeoff${id ? '/' + 
 export default function CompanyTakeoff(props: Props) {
   const binding = useRef<(CommandActor & { company: string; documentId?: string; original?: Awaited<ReturnType<typeof savedManual>>; authority?: string }) | undefined>(undefined);
   const [savedSet, setSavedSet] = useState<{ company: string; id: string }>();
-  const [commandKind, setCommandKind] = useState<'set' | 'measurement' | 'line'>('set');
+  const [commandKind, setCommandKind] = useState<'set' | 'measurement' | 'line' | 'calibration'>('set');
   const [notice, setNotice] = useState(''); const [revision, setRevision] = useState(0); const [accessDenied, setAccessDenied] = useState(false);
   const createSet = useMutation<SetInput, CompanyTakeoffCreateSetResponse>(async input => {
     const result = await companyTakeoff.createSet(input);
@@ -55,6 +60,19 @@ export default function CompanyTakeoff(props: Props) {
   });
   const authority = JSON.stringify([props.company, props.user, props.personId, [...props.capabilities].sort()]);
   const currentAuthority = useRef(authority); currentAuthority.current = authority;
+  const calibrationPlan = useRef<{ inputPlan: CalibrationPlan; actor: CommandActor; authority: string; sent: boolean; controller: AbortController } | undefined>(undefined);
+  const [savedCal, setSavedCal] = useState<SavedCalibration>();
+  useEffect(() => { const plan = calibrationPlan.current; if (plan && !plan.sent && plan.authority !== authority) plan.controller.abort(); setSavedCal(undefined); }, [authority]);
+  const calibration = useMutation<CompanyTakeoffCreateCalibrationRequest, CompanyTakeoffCreateCalibrationResponse>(async input => {
+    const plan = calibrationPlan.current; if (!plan) throw invalidTakeoff();
+    if (!plan.sent) {
+      try { await calibrationPreflight(input, plan.inputPlan, plan.controller.signal); if (currentAuthority.current !== plan.authority || plan.controller.signal.aborted) throw invalidTakeoff(); }
+      catch (error) { if (error instanceof ApiError && [403,404,412].includes(error.status)) throw error; throw new ApiError('The calibration was not submitted. Reopen the current drawing and review again.', 'calibration_preflight_refused', 412); }
+      plan.sent = true;
+    }
+    const result = await createCalibration(input); if (!await matchesCalibration(result,input,plan.actor,plan.inputPlan)) throw invalidTakeoff(); return result;
+  });
+  const finishCalibration = (result?: CompanyTakeoffCreateCalibrationResponse) => { const plan = calibrationPlan.current; if (result && plan) { setSavedCal({response:result,plan:plan.inputPlan,authority:plan.authority}); setNotice('Working calibration saved as unverified. Independent verification is separate.'); setRevision(n=>n+1); calibrationPlan.current=undefined; binding.current=undefined; } return Boolean(result); };
   const linePlan = useRef<{ review: LineReview; authority: string; actor: CommandActor; sent: boolean; controller: AbortController } | undefined>(undefined);
   const [savedLine, setSavedLine] = useState<SavedLineBinding>();
   useEffect(() => { const plan = linePlan.current; if (plan && !plan.sent && plan.authority !== authority) plan.controller.abort(); setSavedLine(undefined); setSavedSuccessor(undefined); }, [authority]);
@@ -70,33 +88,35 @@ export default function CompanyTakeoff(props: Props) {
     return result;
   });
   const finishLine = (result?: CompanyTakeoffBindLineResponse) => { const plan = linePlan.current; if (result && plan) { setSavedLine({ response: result, review: plan.review, authority: plan.authority }); setNotice('Quantity evidence attachment confirmed.'); setRevision(n => n + 1); linePlan.current = undefined; binding.current = undefined; } return Boolean(result); };
-  const ownLocked = createSet.locked || createMeasurement.locked || bindLine.locked;
+  const ownLocked = createSet.locked || createMeasurement.locked || bindLine.locked || calibration.locked;
   const locked = ownLocked || Boolean(props.navigationLocked);
-  const unknown = createSet.unknown || createMeasurement.unknown || bindLine.unknown;
+  const unknown = createSet.unknown || createMeasurement.unknown || bindLine.unknown || calibration.unknown;
   const sameActor = !binding.current || binding.current.company === props.company && binding.current.user === props.user && binding.current.personId === props.personId;
   useEffect(() => { props.onLockedChange(ownLocked); return () => props.onLockedChange(false); }, [ownLocked, props.onLockedChange]);
   useEffect(() => { setNotice(''); setSavedSet(undefined); }, [authority]);
   const finishSet = (v?: CompanyTakeoffCreateSetResponse) => { if (v) { setSavedSet({ company: v.takeoff_set.company, id: v.takeoff_set.id }); setNotice('Company takeoff set created.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
   const finishMeasurement = (v?: CompanyTakeoffCreateMeasurementResponse) => { if (v) { const plan = binding.current; if (plan?.original && plan.authority) setSavedSuccessor({ before: plan.original, response: v, authority: plan.authority }); setNotice(plan?.original ? 'Manual measurement successor saved. Original records and estimate attachments are preserved.' : 'Manual measurement saved. This is an authored quantity, without a calibrated geometry claim.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
-  const commandError = commandKind === 'set' ? createSet.error : commandKind === 'measurement' ? createMeasurement.error : bindLine.error;
-  useEffect(() => { if (commandError && [403, 404].includes(commandError.status)) setAccessDenied(true); }, [commandError]);
+  const commandError = commandKind === 'set' ? createSet.error : commandKind === 'measurement' ? createMeasurement.error : commandKind === 'calibration' ? calibration.error : bindLine.error;
+  useEffect(() => { if (commandError && ([403, 404].includes(commandError.status) || commandError.code === 'calibration_review_changed')) setAccessDenied(true); }, [commandError]);
   return <>
     {(props.active || locked) && <div className="company-takeoff-command" aria-label="Company takeoff command state">
-      {unknown && <><MessageStrip design="Critical" hideCloseButton>The result is uncertain. Keep this view open and recover the original request. Recovery lasts while this view stays open.</MessageStrip>{!sameActor && <p>Restore the original Company and signed-in person to recover this request.</p>}<Button disabled={createSet.busy || createMeasurement.busy || bindLine.busy || !sameActor || !props.active || props.navigationLocked} onClick={async () => { if (createSet.unknown) finishSet(await createSet.recover()); else if (createMeasurement.unknown) finishMeasurement(await createMeasurement.recover()); else finishLine(await bindLine.recover()); }}>Recover original takeoff request</Button></>}
+      {unknown && <><MessageStrip design="Critical" hideCloseButton>The result is uncertain. Keep this view open and recover the original request. Recovery lasts while this view stays open.</MessageStrip>{!sameActor && <p>Restore the original Company and signed-in person to recover this request.</p>}<Button disabled={createSet.busy || createMeasurement.busy || bindLine.busy || calibration.busy || !sameActor || !props.active || props.navigationLocked} onClick={async () => { if (createSet.unknown) finishSet(await createSet.recover()); else if (createMeasurement.unknown) finishMeasurement(await createMeasurement.recover()); else if (calibration.unknown) finishCalibration(await calibration.recover()); else finishLine(await bindLine.recover()); }}>Recover original takeoff request</Button></>}
       {commandError && <Failure error={commandError} />}
       {notice && <MessageStrip design="Positive" hideCloseButton>{notice}</MessageStrip>}
       {savedSet && !locked && <Button onClick={() => props.navigate(pathFor(savedSet.company, savedSet.id))}>Open created takeoff set</Button>}
     </div>}
+    {props.active && !accessDenied && savedCal?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SavedCalibrationReadback saved={savedCal} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && !accessDenied && savedSuccessor?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SuccessorComparison saved={savedSuccessor} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && !accessDenied && savedLine?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SavedBinding saved={savedLine} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && accessDenied && <div className="page"><MessageStrip design="Information" hideCloseButton>Source access changed. Previous takeoff content is hidden. Recover an uncertain request before reopening current sources.</MessageStrip><Button disabled={locked} onClick={() => { setAccessDenied(false); setRevision(n => n + 1); }}>Recheck Company takeoff access</Button></div>}
     {props.active && !accessDenied && <AuthorityView key={authority} {...props} locked={locked} revision={revision} onDenied={() => setAccessDenied(true)}
+      createCalibration={async (input, plan) => { if (locked) return false; setCommandKind('calibration'); binding.current={company:props.company,user:props.user,personId:props.personId}; calibrationPlan.current={inputPlan:structuredClone(plan),actor:{user:props.user,personId:props.personId},authority,sent:false,controller:new AbortController()}; setSavedCal(undefined);setNotice('');return finishCalibration(await calibration.run(input)); }}
       bindLine={async (review, reason) => { if (locked) return false; setCommandKind('line'); binding.current = { company: props.company, user: props.user, personId: props.personId }; linePlan.current = { review: structuredClone(review), authority, actor: { user: props.user, personId: props.personId }, sent: false, controller: new AbortController() }; setNotice(''); setSavedLine(undefined); setSavedSuccessor(undefined); return finishLine(await bindLine.run({ company: props.company, measurement_id: review.measurement.id, estimate_line_record: review.line.id, quantity_basis: 'net-quantity-v1', reason })); }}
       createSet={async input => { if (locked) return false; setCommandKind('set'); binding.current = { company: props.company, user: props.user, personId: props.personId }; setNotice(''); return finishSet(await createSet.run(input)); }}
       createMeasurement={async (input, documentId, original) => { if (locked) return false; setCommandKind('measurement'); binding.current = { company: props.company, user: props.user, personId: props.personId, documentId, original: original ? structuredClone(original) : undefined, authority }; measurementSent.current = false; setSavedSuccessor(undefined); setSavedLine(undefined); setNotice(''); return finishMeasurement(await createMeasurement.run(input)); }} />}
   </>;
 }
-type ViewProps = Props & { onDenied: () => void; bindLine: (review: LineReview, reason: string) => Promise<boolean>; locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string, original?: Awaited<ReturnType<typeof savedManual>>) => Promise<boolean> };
+type ViewProps = Props & { createCalibration: (input: CompanyTakeoffCreateCalibrationRequest, plan: CalibrationPlan) => Promise<boolean>; onDenied: () => void; bindLine: (review: LineReview, reason: string) => Promise<boolean>; locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string, original?: Awaited<ReturnType<typeof savedManual>>) => Promise<boolean> };
 function AuthorityView(props: ViewProps) {
   if (!props.capabilities.includes('estimate.read') || !props.capabilities.includes('document.read')) return <div className="page"><PageHeading eyebrow="COMPANY ESTIMATING" title="Company drawing takeoff" /><Failure error={new ApiError('Company takeoff needs current estimate and source read access.', 'capability_denied', 403)} /></div>;
   return props.setId ? <Workspace key={props.setId} {...props} setId={props.setId} /> : <Register {...props} />;
@@ -132,10 +152,11 @@ function Workspace(props: ViewProps & { setId: string }) {
   if (!set.data) return null;
   const record = set.data.record as CompanyTakeoffSetRecord;
   return <div className="page company-takeoff-page"><PageHeading eyebrow="COMPANY DRAWING TAKEOFF" title={record.title} description={`${record.discipline} · ${record.drawing_package}`} actions={<Button disabled={props.locked} onClick={() => props.navigate(pathFor(props.company))}>Company takeoff sets</Button>} /><p>{record.basis}</p><MessageStrip design="Information" hideCloseButton>Quantity basis: Manual entry. Record the drawing reference and reason for each authored quantity.</MessageStrip>
-    <>{!successorOpen && <SourceWorkspace {...props} />}<SavedMeasurements {...props} onSuccessorMode={setSuccessorOpen} /><CompanyTakeoffEvidence company={props.company} locked={props.locked} onDenied={props.onDenied} /></>
+    <>{!successorOpen && <SourceWorkspace {...props} />}<SavedMeasurements {...props} onSuccessorMode={setSuccessorOpen} /><CalibrationRegister company={props.company} setId={props.setId} locked={props.locked} revision={props.revision} onDenied={props.onDenied} /><CompanyTakeoffEvidence company={props.company} locked={props.locked} onDenied={props.onDenied} /></>
   </div>;
 }
 function SourceWorkspace(props: ViewProps & { setId: string; original?: Awaited<ReturnType<typeof savedManual>> }) {
+  const [mode,setMode] = useState<'manual'|'calibration'>('manual'); const [points,setPoints]=useState<PdfPoint[]>([]); const [frame,setFrame]=useState<PdfFrame>();
   const docs = useResource(`${props.company}/takeoff-sources`, signal => companyTakeoff.sources(props.company, signal));
   const [documentId, setDocument] = useState(''); const [revisionId, setRevision] = useState(''); const [page, setPage] = useState(1); const [refresh, setRefresh] = useState(0); const [pdfAttempt, setPdfAttempt] = useState(0); const [verifiedPdf, setVerifiedPdf] = useState('');
   const detail = useResource(documentId && docs.data && !docs.loading && !docs.error ? `${props.company}/takeoff-source/${documentId}/${refresh}` : null, signal => companyTakeoff.source(props.company, documentId, signal));
@@ -146,16 +167,18 @@ function SourceWorkspace(props: ViewProps & { setId: string; original?: Awaited<
   const current = Boolean(valid && detail.data?.document.current_revision === revisionId);
   const pdfKey = revision ? `${revision.id}/${revision.sha256}/${page}/${refresh}/${pdfAttempt}` : '';
   const frameDenied = verifiedPdf === `denied:${pdfKey}`;
-  return <section className="surface company-takeoff-source" aria-label="Company drawing source"><div className="company-takeoff-section-heading"><Title level="H2" wrappingType="Normal">Drawing source</Title><Button disabled={props.locked} onClick={() => { setDocument(''); setRevision(''); setPage(1); setRefresh(n => n + 1); docs.refresh(); }}>Refresh source access</Button></div>
-    {docs.loading ? <Loading /> : docs.error ? <Failure error={docs.error} onRetry={props.locked ? undefined : docs.refresh} /> : <><Label>Company source</Label><Select accessibleName="Company takeoff source" disabled={props.locked} onChange={event => { setDocument(event.detail.selectedOption.value!); setRevision(''); setPage(1); setPdfAttempt(n => n + 1); }}><Option value="" selected={!documentId}>Choose an authorized drawing</Option>{docs.data?.items.filter(r => r.mime_type === 'application/pdf').map(r => <Option key={r.id} value={r.id} selected={r.id === documentId}>{r.title}</Option>)}</Select></>}
+  return <section className="surface company-takeoff-source" aria-label="Company drawing source"><div className="company-takeoff-section-heading"><Title level="H2" wrappingType="Normal">Drawing source</Title><Button disabled={props.locked} onClick={() => { setPoints([]);setFrame(undefined);setDocument(''); setRevision(''); setPage(1); setRefresh(n => n + 1); docs.refresh(); }}>Refresh source access</Button></div>
+    {docs.loading ? <Loading /> : docs.error ? <Failure error={docs.error} onRetry={props.locked ? undefined : docs.refresh} /> : <><Label>Company source</Label><Select accessibleName="Company takeoff source" disabled={props.locked} onChange={event => { setPoints([]);setFrame(undefined);setDocument(event.detail.selectedOption.value!); setRevision(''); setPage(1); setPdfAttempt(n => n + 1); }}><Option value="" selected={!documentId}>Choose an authorized drawing</Option>{docs.data?.items.filter(r => r.mime_type === 'application/pdf').map(r => <Option key={r.id} value={r.id} selected={r.id === documentId}>{r.title}</Option>)}</Select></>}
     {detail.loading && <Loading label="Checking selected Company source…" />}{detail.error && <Failure error={detail.error} onRetry={props.locked ? undefined : detail.refresh} />}
-    {detail.data && !detail.loading && !detail.error && <><Label>Stored revision</Label><Select accessibleName="Company takeoff revision" disabled={props.locked} onChange={event => { setRevision(event.detail.selectedOption.value!); setPage(1); setPdfAttempt(n => n + 1); }}><Option value="" selected={!revisionId}>Choose a stored revision</Option>{detail.data.revisions.filter(r => r.mime_type === 'application/pdf').map(r => <Option key={r.id} value={r.id} selected={r.id === revisionId}>Rev. {r.revision_number}{r.id === detail.data!.document.current_revision ? ' · Current working' : ' · Historical'}</Option>)}</Select></>}
+    {detail.data && !detail.loading && !detail.error && <><Label>Stored revision</Label><Select accessibleName="Company takeoff revision" disabled={props.locked} onChange={event => { setPoints([]);setFrame(undefined);setRevision(event.detail.selectedOption.value!); setPage(1); setPdfAttempt(n => n + 1); }}><Option value="" selected={!revisionId}>Choose a stored revision</Option>{detail.data.revisions.filter(r => r.mime_type === 'application/pdf').map(r => <Option key={r.id} value={r.id} selected={r.id === revisionId}>Rev. {r.revision_number}{r.id === detail.data!.document.current_revision ? ' · Current working' : ' · Historical'}</Option>)}</Select></>}
     {revision && !valid && <Failure error={invalidTakeoff()} />}
-    {valid && revision && <><div className="page-controls"><Button disabled={props.locked || page <= 1} onClick={() => { setPage(n => n - 1); setPdfAttempt(n => n + 1); }}>Previous drawing page</Button><span>Page {page} of {revision.page_count}</span><Button disabled={props.locked || page >= revision.page_count} onClick={() => { setPage(n => n + 1); setPdfAttempt(n => n + 1); }}>Next drawing page</Button></div>
-      {frameDenied ? <Failure error={new ApiError('The PDF page count does not match the authorized revision metadata. Refresh source access.', 'PDF_FRAME_MISMATCH', 422)} /> : <Suspense fallback={<Loading />}><PdfDrawing key={pdfKey} company={props.company} revisionId={revision.id} sourceSha256={revision.sha256} page={page} points={[]} disabled mode="Manual quantity source inspection" downloadUrl={sourceApi({ type: 'Company', company: props.company }).downloadUrl(revision.id)} onFrame={frame => { setVerifiedPdf(frame.sourceSha256 === revision.sha256 && frame.pageCount === revision.page_count ? pdfKey : `denied:${pdfKey}`); }} /></Suspense>}
+    {valid && revision && <><div className="page-controls"><Button disabled={props.locked || page <= 1} onClick={() => { setPoints([]);setFrame(undefined);setPage(n => n - 1); setPdfAttempt(n => n + 1); }}>Previous drawing page</Button><span>Page {page} of {revision.page_count}</span><Button disabled={props.locked || page >= revision.page_count} onClick={() => { setPoints([]);setFrame(undefined);setPage(n => n + 1); setPdfAttempt(n => n + 1); }}>Next drawing page</Button></div>
+      {frameDenied ? <Failure error={new ApiError('The PDF page count does not match the authorized revision metadata. Refresh source access.', 'PDF_FRAME_MISMATCH', 422)} /> : <Suspense fallback={<Loading />}><PdfDrawing key={pdfKey} company={props.company} revisionId={revision.id} sourceSha256={revision.sha256} page={page} points={points} disabled={props.locked || mode !== 'calibration' || !current} geometryType="segment" onPoint={mode === 'calibration' ? point=>setPoints(old=>old.length<2?[...old,point]:[point]) : undefined} mode={mode === 'calibration' ? 'Pick two known-distance anchors' : 'Manual quantity source inspection'} downloadUrl={sourceApi({ type: 'Company', company: props.company }).downloadUrl(revision.id)} onFrame={frame => { setFrame(frame); setVerifiedPdf(frame.sourceSha256 === revision.sha256 && frame.pageCount === revision.page_count ? pdfKey : `denied:${pdfKey}`); }} /></Suspense>}
       <details><summary>Exact source reference</summary><p>Revision {revision.revision_number} · Page {page}</p><code>{revision.sha256}</code></details>
       {!current && <MessageStrip design="Information" hideCloseButton>This historical revision is available for inspection. New manual measurements use a current working revision; the server rechecks eligibility when saving.</MessageStrip>}
-      {current && verifiedPdf === pdfKey && props.capabilities.includes('estimate.write') && <ManualForm key={`${documentId}/${pdfKey}`} {...props} documentId={documentId} source={{ revision_id: revision.id, source_sha256: revision.sha256, page }} />}
+      {current && verifiedPdf === pdfKey && props.capabilities.includes('estimate.write') && !props.original && <Button disabled={props.locked} onClick={()=>{setMode(mode==='manual'?'calibration':'manual');setPoints([]);}}>{mode==='manual'?'Author working calibration':'Return to manual quantity'}</Button>}
+      {current && verifiedPdf === pdfKey && mode === 'calibration' && frame && props.capabilities.includes('estimate.write') && <CalibrationForm key={`${documentId}/${pdfKey}`} company={props.company} setId={props.setId} documentId={documentId} revision={revision} source={{revision_id:revision.id,source_sha256:revision.sha256,page}} frame={frame} points={points} setPoints={setPoints} locked={props.locked} submit={props.createCalibration} onDenied={props.onDenied} />}
+      {current && verifiedPdf === pdfKey && mode === 'manual' && props.capabilities.includes('estimate.write') && <ManualForm key={`${documentId}/${pdfKey}`} {...props} documentId={documentId} source={{ revision_id: revision.id, source_sha256: revision.sha256, page }} />}
     </>}
   </section>;
 }

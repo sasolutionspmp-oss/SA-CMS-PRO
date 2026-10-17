@@ -1,0 +1,15 @@
+{
+  "schema": "cipher.r21.original-actual-reply-corrected-validation.v1",
+  "status": "passed",
+  "original_actual_create_reply_accepted": true,
+  "missing_Company_context_refused": true,
+  "operation_id": "a0d25321-2c8d-4baa-aa5e-c7fbf17328e7",
+  "calibration_id": "158a9d63-c823-4dd4-81b9-cd7282d9ae49",
+  "original_browser_report_sha256": "dbfd185f0ec5456e8d17936cdc020a69b3f3436f66f9675d1cb24d8345c05c15",
+  "corrected_adapter_sha256": "ae81945c458ca531b435c917d2e8440dddf1d8f1dedcd45aaa987b7cdf57c7ba",
+  "frozen_manifest_sha256": "3ec9ec6a7f0a7b0c56cea43135174b6b9899145062d093c208f810fae8c0b1fc",
+  "expected_plan_reconstructed_from_original_immutable_source_and_unit_facts": true,
+  "HTTP_requests": 0,
+  "business_commands": 0,
+  "qualification": "Host-only evaluation of corrected production validator against unchanged original actual create response. It does not repeat the native save or synthesize an actual browser create confirmation."
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "cipher.r21.retained-failures.v1",
+  "original_native_capture": {
+    "status": "failed",
+    "reason": "The native create returned200 and one saved record; client incorrectly required only one UOM manifest record, rejecting canonical Company+UOM context. No independent GET ran in that epoch.",
+    "browser_report_sha256": "dbfd185f0ec5456e8d17936cdc020a69b3f3436f66f9675d1cb24d8345c05c15",
+    "original_run_status": "failed",
+    "original_operation_id": "a0d25321-2c8d-4baa-aa5e-c7fbf17328e7",
+    "successful_native_save_repeated": false
+  },
+  "corrected_readonly_capture": {
+    "status": "failed",
+    "reason": "Saved-record read, reload, exact references and six responsive images completed. An optional repeated pointer helper read React/UI5 anchor inputs immediately after clicks and rejected before any command; the later failure image shows both mapped anchors. The bounded saved-read portion was independently audited, not relabeled as a fully passed capture.",
+    "browser_report_sha256": "a77672be4588c25b489bb346cbf93656da814631fbf3e877f1085f6adc93da5d",
+    "business_commands": 0,
+    "browser_or_HTTP_errors": 0,
+    "optional_helper_retried": false
+  },
+  "root_audit_helpers": [
+    {
+      "status": "failed",
+      "reason": "Initial helper assumed nonexistent Cipher Takeoff Calibration DocType; canonical repository uses Cipher Calibration.",
+      "log_sha256": "79ef96b6bbf3b38cc0d276e2d946d283366038653ef55b4dd43e89c3f7dbaf54"
+    },
+    {
+      "status": "failed",
+      "reason": "Second helper required File.get_content bytes; native Frappe returns UTF8 text for this ASCII PDF. Final helper encodes text exactly before checking original length/hash.",
+      "log_sha256": "e8f218f00f0a71bada528eb9f0ebb99ef73b88b5c6aa30c762326c4aadabc2bc"
+    }
+  ],
+  "final_original_save_audit": "passed; three declared rows and original source/frame/math verified",
+  "host_failures": "See both qualification files: failing-first regressions, fixture/type corrections and retained initial-goto Chromium crash; no whole-suite retry concealed."
+}

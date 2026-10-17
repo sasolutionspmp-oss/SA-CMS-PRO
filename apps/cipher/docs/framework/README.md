@@ -1,5 +1,7 @@
 # Cipher framework and implementation
 
+[Company working calibration](COMPANY_WORKING_CALIBRATION.md) now stores explicit source anchors and known distance as an unverified basis. [Actual saved-record screens](evidence/r1/company-working-calibration-r21/ui/README.md) reopen the original native record; original failures and form captures remain separate. Next delivery follows original **ENG-01: RFIs/submittals**.
+
 **Implementation authorized:** The owner instructed “Execute this plan as written and do not stray” on October 15, 2026. Implementation is now active under this framework. Earlier pending-approval/planning-only markers describe the completed draft stage and no longer block coding. The owner updated the execution preference on October 16, 2026: use GPT-6.1 Sol Ultra for all agent work. Keep delegation focused and review changes directly; earlier Astra assignments are historical and superseded.
 
 **Implementation worktree:** `/workspace/cipher-framework-draft`
