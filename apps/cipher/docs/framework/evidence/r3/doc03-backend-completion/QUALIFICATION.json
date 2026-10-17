@@ -1,6 +1,6 @@
 {
-  "DOC03_composition": "65 passed in combined run; one stale SQL test-double scope field corrected; affected case passed separately; no fresh 66 all-pass run claimed",
-  "DOC03_distinct_cases": 66,
+  "DOC03_composition": "65 passed in combined run; one stale SQL fixture corrected and affected case passed; 3 new local-native-finding host regressions passed separately; no fresh 69 all-pass run claimed",
+  "DOC03_distinct_cases": 69,
   "audited_WIP": "142faec7d9b3f78374761b9e735a6fc08721550b",
   "award_and_dependent_rollout": "blocked; no action taken",
   "base_candidate": "d03bce8d0116ad39a505f4bb3a57cdec672b9e47",
@@ -8,7 +8,7 @@
   "compatibility_composition": "5 Company document core cases +35 producer/scope cases using explicit no-authored-policy fixture; actual rights tested separately by DOC03 cases",
   "counts_overlap_not_additive": true,
   "cross_company_reuse": "excluded",
-  "distinct_host_cases": 106,
+  "distinct_host_cases": 109,
   "full_DOC03_C20_acceptance": false,
   "generated_contracts": "all generator --check outputs verified",
   "independent_review_original_revisions_current_rights": "implemented and host-tested",

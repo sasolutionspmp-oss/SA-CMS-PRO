@@ -1,0 +1,8 @@
+test_changed_or_nonrecipient_plan_is_refused_and_other_actions_have_no_recipients (cipher_aec.tests.test_document_control_native_regressions.DocumentaryPacketParticipantTests.test_changed_or_nonrecipient_plan_is_refused_and_other_actions_have_no_recipients) ... ok
+test_documentary_decision_and_withdrawal_capture_original_recipients (cipher_aec.tests.test_document_control_native_regressions.DocumentaryPacketParticipantTests.test_documentary_decision_and_withdrawal_capture_original_recipients) ... ok
+test_omitted_revision_number_accepts_native_integer_zero_only (cipher_aec.tests.test_document_control_native_regressions.NativeOptionalIntTests.test_omitted_revision_number_accepts_native_integer_zero_only) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.017s
+
+OK

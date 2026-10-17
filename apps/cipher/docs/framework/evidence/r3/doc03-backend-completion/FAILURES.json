@@ -2,7 +2,8 @@
   "actual_failing_first_regressions": [
     "08-company-cursor-failing-first.log",
     "11-original-context-failing-first.log",
-    "lifecycle-01-failing-first.log"
+    "lifecycle-01-failing-first.log",
+    "19-native-findings-failing-first.log"
   ],
   "notes": [
     "The citation suspicion was withdrawn: get_citation derives original revision scope; no clauses.py bug fix was made.",

@@ -19,6 +19,15 @@
          result["schema"] = "cipher.document.approval.v1"
      if packet.action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"}:
          result["schema"] = "cipher.engineering.package-approval.v1"
+@@ -363,7 +366,7 @@
+     if scope_type == "Project" and project is not None:
+         _scope(company,project,"Project")
+         packet=_load(company,project,packet_id,scope_type="Project")
+-        if packet.action == "engineering.distribute.v1":
++        if packet.action in {"engineering.distribute.v1", "document.transmit.v1"}:
+             return domain_approvals.participant_people(packet.action,company,packet.subject_id,scope_type="Project")
+         return ()
+     if scope_type != "Company" or project is not None:return ()
 @@ -582,7 +585,7 @@
      packet = _load(company, project, identifier, True, scope_type=scope_type)
      if packet.action != ACTION:

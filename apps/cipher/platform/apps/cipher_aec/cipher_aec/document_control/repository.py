@@ -15,6 +15,7 @@ def raw(kind,name,*,lock=False):
     for key in ('company','project','scope_type','author_person','status',*INDEXES):
         a,b=doc.get(key),value.get(key)
         if key=='read_allowed' and b is None:a=None if a in (None,'',0) else a
+        if key=='revision_number' and 'revision_number' not in value and type(a) is int and a==0:a=None
         if a!=b and not(a in (None,'') and b is None):raise DomainError('document_control_integrity','Native documentary indexes differ from the exact record.',409)
     return value
 

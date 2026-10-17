@@ -1,0 +1,9 @@
+{
+  "reported_by": "local native integration lane",
+  "cloud_native_execution": false,
+  "tests": "19-native-findings-failing-first.log and20-native-findings-fixed.log; 3 actual-function host regressions passed",
+  "repository_fix": "Only absent JSON revision_number accepts native type int value0. Explicitnull/nonzero/bool/float/stringmismatches remain refused.",
+  "approval_fix": "Project packet preflight now includes document.transmit.v1 alongside engineering.distribute.v1; later recipient recheck retained; Company award branch unchanged.",
+  "first_checkpoint_remote_commit": "726bde58616ac755d434431457d4273e95087ec6",
+  "local_native_savepoint_investigation": "local-owned; no cloud workaround or fixture-commit change"
+}

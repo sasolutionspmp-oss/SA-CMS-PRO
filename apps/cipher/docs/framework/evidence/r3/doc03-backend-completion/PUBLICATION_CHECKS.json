@@ -1,13 +1,15 @@
 {
   "schema": "cipher.doc03.backend-publication-checks.v1",
-  "qualified_source_files": 917,
-  "feature_paths_hashes_verified": 43,
+  "qualified_source_files": 918,
+  "feature_paths_hashes_verified": 44,
   "shared_live_paths_replaced": false,
-  "qualified_archive_member_hashes_verified": 917,
+  "qualified_archive_member_hashes_verified": 918,
   "relative_links_verified": 5,
   "credential_pattern_matches": 0,
   "private_values_printed": false,
   "MAIN_HEAD_unchanged": true,
   "native_deploy_award_actions": false,
-  "legacy_suite_not_rerun": "local coordinator owns inherited gate; no legacy source changed"
+  "legacy_suite_not_rerun": "local coordinator owns inherited gate; no legacy source changed",
+  "native_findings_host_cases": 3,
+  "first_freeze_and_archive_retained": true
 }

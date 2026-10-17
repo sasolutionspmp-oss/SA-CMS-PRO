@@ -63,7 +63,7 @@
     {
       "base_sha256": "e5b087dda81a82c8154a9b046aaede11eb9ffd1f0a746a8a255dc7ecf56b092f",
       "fragment": "platform__apps__cipher_aec__cipher_aec__governance__approvals.py.patch",
-      "qualified_sha256": "79a8fdfdc9aeda358c340c61f620065e5177826b66a21210bb911ea6762315f7",
+      "qualified_sha256": "ba310965e993ab0ed38a02f74ccb0a400f3140a7c149b3086441cae6459f32ed",
       "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py"
     },
     {

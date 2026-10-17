@@ -11,6 +11,8 @@ Local integration base: `d03bce8d0116ad39a505f4bb3a57cdec672b9e47`. Audited succ
 
 There are 16 Project RPCs and five explicit Company RPCs, described by the owned `route-contracts.json`, `company-route-contracts.json` and closed domain schema. The two new lifecycle endpoints are `issued_standing` and `request_lifecycle`. Five literal approval actions have six wire variants because original and shared adoption use distinct packet shapes.
 
+The final checkpoint also includes two native findings reported by the local lane: omitted revision-number metadata accepts native integer zero only, and documentary transmittal decision/withdrawal preflight captures its recipient plan. Three host regressions reproduce the real boundary functions; malformed/nonzero metadata and changed/nonrecipient plans remain refused. The Company award branch is unchanged. Local native qualification and its setup/savepoint investigation remain local-owned.
+
 ## Ownership and composition
 
 The commit directly changes only `document_control/`, `cipher_document_control/`, `tests/test_document_control*` and this handoff/evidence. It does **not** replace Task APIs, shared catalogs/core schemas/ability definitions, generated clients, product UI, deployment or local trial fixtures.
@@ -36,11 +38,11 @@ Then run the focused checks, typecheck and native workflow declarations in a dis
 
 ## Evidence and limits
 
-[Qualification](evidence/r3/doc03-backend-completion/QUALIFICATION.json) records 106 distinct host cases: 66 DOC-03 cases and 40 Company-document/provenance compatibility cases. These are composed outcomes with original failed attempts retained, not a single fresh 106-case all-pass run. OpenAPI/signatures and all generated client checks pass. Persistence, identity and lock instrumentation use explicit host doubles.
+[Qualification](evidence/r3/doc03-backend-completion/QUALIFICATION.json) records 109 distinct host cases: 69 DOC-03 cases and 40 Company-document/provenance compatibility cases. These are composed outcomes with original failed attempts retained, not a single fresh 109-case all-pass run. OpenAPI/signatures and all generated client checks pass. Persistence, identity and lock instrumentation use explicit host doubles.
 
 Native Company adoption, clause lineage and lifecycle workflows are declared in `test_document_control_native.py` but were not executed in the cloud. Actual migrations, database locking/concurrency, native API/UI integration and human acceptance remain local qualification. Full DOC-03/C20 is not marked accepted by this backend handoff.
 
-The [917-file qualified source inventory](evidence/r3/doc03-backend-completion/QUALIFIED_SOURCE_INVENTORY.json) and [archive manifest](evidence/r3/doc03-backend-completion/QUALIFIED_ARCHIVE_MANIFEST.json) reproduce the isolated composition. The archive includes shared-file snapshots for inspection only; **do not extract it over local Task/trial work**. Primary feature sources and fragments are the integration inputs.
+The [918-file qualified source inventory](evidence/r3/doc03-backend-completion/QUALIFIED_SOURCE_INVENTORY.json) and [archive manifest](evidence/r3/doc03-backend-completion/QUALIFIED_ARCHIVE_MANIFEST.json) reproduce the isolated composition. The archive includes shared-file snapshots for inspection only; **do not extract it over local Task/trial work**. Primary feature sources and fragments are the integration inputs.
 
 Withdrawal has no implicit reopening transition. Company/shared-origin artifacts remain rights-controlled package references, with no invented target-Project publication status. Cross-Company reuse, external delivery, electronic signing, professional sealing and commercial execution are excluded.
 

@@ -1,6 +1,6 @@
 {
-  "archive": "qualified-composed-source.tar.gz",
-  "bytes": 1658451,
+  "archive": "qualified-composed-source-v2.tar.gz",
+  "bytes": 1660032,
   "members": {
     ".github/workflows/cipher-new-stack.yml": {
       "bytes": 3508,
@@ -1559,8 +1559,8 @@
       "sha256": "df4590ed864de63079a128b0d13d5eb66ffcdb4cef263cb7e7e0e962a09b7e81"
     },
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py": {
-      "bytes": 4889,
-      "sha256": "5d30a08aa61a454914d7a96b72ffc5561ddf8c598ecd20bfcd082bd8e59b92ac"
+      "bytes": 4993,
+      "sha256": "16bcd22a827327994fa6ab36ca3592c95a5249f2b79172803341b619fc03488c"
     },
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py": {
       "bytes": 5762,
@@ -1851,8 +1851,8 @@
       "sha256": "a0d0005d870a9511b6ca38c15afa166bfbb921f8320c898977720679e7442318"
     },
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py": {
-      "bytes": 41683,
-      "sha256": "79a8fdfdc9aeda358c340c61f620065e5177826b66a21210bb911ea6762315f7"
+      "bytes": 41709,
+      "sha256": "ba310965e993ab0ed38a02f74ccb0a400f3140a7c149b3086441cae6459f32ed"
     },
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py": {
       "bytes": 22037,
@@ -2493,6 +2493,10 @@
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native.py": {
       "bytes": 15312,
       "sha256": "5143c4982648ac30032274c32f87fb1269adb52979d8dd436691d3cb8f5051fc"
+    },
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native_regressions.py": {
+      "bytes": 5189,
+      "sha256": "b4ac9bb925f454027fcd5632544c31b2ed0310074e0a4796e3fbf2c61395dc6e"
     },
     "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py": {
       "bytes": 18942,
@@ -3671,6 +3675,6 @@
       "sha256": "eb133da0959fb5665952c903df94aff97df001f223d467c83ce9554a7ace451e"
     }
   },
-  "sha256": "161594def0766528863e752b587a375c80211be2689d8ee8fc922955d22a5474",
+  "sha256": "f2ff866d9a03fa94f6c280dff93952ac9f39b0bb08969b2b3b4cf1093a231529",
   "usage": "For isolated reproduction/inspection only; never overwrite the local Task/trial overlay."
 }

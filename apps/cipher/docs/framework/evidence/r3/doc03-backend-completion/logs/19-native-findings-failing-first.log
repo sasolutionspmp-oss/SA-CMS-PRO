@@ -1,0 +1,35 @@
+test_changed_or_nonrecipient_plan_is_refused_and_other_actions_have_no_recipients (cipher_aec.tests.test_document_control_native_regressions.DocumentaryPacketParticipantTests.test_changed_or_nonrecipient_plan_is_refused_and_other_actions_have_no_recipients) ... ok
+test_documentary_decision_and_withdrawal_capture_original_recipients (cipher_aec.tests.test_document_control_native_regressions.DocumentaryPacketParticipantTests.test_documentary_decision_and_withdrawal_capture_original_recipients) ... FAIL
+test_omitted_revision_number_accepts_native_integer_zero_only (cipher_aec.tests.test_document_control_native_regressions.NativeOptionalIntTests.test_omitted_revision_number_accepts_native_integer_zero_only) ... ERROR
+
+======================================================================
+ERROR: test_omitted_revision_number_accepts_native_integer_zero_only (cipher_aec.tests.test_document_control_native_regressions.NativeOptionalIntTests.test_omitted_revision_number_accepts_native_integer_zero_only)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native_regressions.py", line 27, in test_omitted_revision_number_accepts_native_integer_zero_only
+    self.assertEqual(env['raw']('issue_set',value['id']),value)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py", line 18, in raw
+    if a!=b and not(a in (None,'') and b is None):raise DomainError('document_control_integrity','Native documentary indexes differ from the exact record.',409)
+                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: Native documentary indexes differ from the exact record.
+
+======================================================================
+FAIL: test_documentary_decision_and_withdrawal_capture_original_recipients (cipher_aec.tests.test_document_control_native_regressions.DocumentaryPacketParticipantTests.test_documentary_decision_and_withdrawal_capture_original_recipients)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native_regressions.py", line 51, in test_documentary_decision_and_withdrawal_capture_original_recipients
+    self.assertEqual(env['_award_packet_people']('C','P','packet','Project'),state.recipients)
+AssertionError: Tuples differ: () != ('recipient-person',)
+
+Second tuple contains 1 additional elements.
+First extra element 0:
+'recipient-person'
+
+- ()
++ ('recipient-person',)
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.018s
+
+FAILED (failures=1, errors=1)
