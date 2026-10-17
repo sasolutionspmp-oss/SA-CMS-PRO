@@ -1,0 +1,81 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Distribution Cancellation",
+  "module": "Cipher Integrations",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "instruction_id",
+    "dispatch_id",
+    "data_json",
+    "record_digest"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "options": "Company",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "options": "Project"
+    },
+    {
+      "fieldname": "instruction_id",
+      "label": "Instruction Id",
+      "fieldtype": "Link",
+      "options": "Cipher Distribution Instruction",
+      "reqd": 1
+    },
+    {
+      "fieldname": "dispatch_id",
+      "label": "Dispatch Id",
+      "fieldtype": "Link",
+      "options": "Cipher Distribution Dispatch",
+      "reqd": 1,
+      "unique": 1
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "length": 64,
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "cipher.r1.distribution-registered-publication.v1",
+  "status": "passed",
+  "operation_id": "gka2def6dh",
+  "canonical_state": "Queued",
+  "logical_key": "0387693f89b1cd930f4448c2677ff2e2c48b3747279265dbd7ee04f22e1bdf5c",
+  "dispatch_id": "6761201a-88d6-4d90-97ba-bad9136382d6",
+  "rq_job_id": "cipher.localhost||cipher-outbox-gka2def6dh",
+  "rq_state": "JobStatus.QUEUED",
+  "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+  "queue_contains_job": true,
+  "registered_timeout": 120,
+  "manual_deliver_or_publish_invoked": false
+}

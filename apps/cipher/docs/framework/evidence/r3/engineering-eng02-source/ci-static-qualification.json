@@ -1,0 +1,61 @@
+{
+  "schema": "cipher.eng02.ci-static-qualification.v1",
+  "at": "2026-10-17T05:17:24.871896+00:00",
+  "source_manifest_sha256": "448173b7d7502322b2f492167f2a6262db0efa15451e1f8b6f132e9e858ffa01",
+  "full_frontend": {
+    "passed": 513,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "workers": 1,
+    "retries": 0,
+    "duration_ms": 720632.6020000001,
+    "fresh_single_run": true,
+    "actual_compiled_app_and_standalone_pages": true,
+    "API_contract_fixtures_only": true,
+    "native_persistence_or_screenshot_claim": false
+  },
+  "reporter_host_tests": {
+    "distinct_passed": 20,
+    "new_real_process_cases": 2,
+    "original18_reused_unchanged": true,
+    "initial20_passed_then_only2new_cases_reconfirmed_after_timeout_test_budget_adjustment": true,
+    "failing_first_original_source": {
+      "tests": 2,
+      "errors": 2,
+      "original_source": "e8b692a9 validator lacks PROCESS_FAILURE metadata"
+    }
+  },
+  "private_fixture_build": {
+    "passed": true,
+    "files": 381,
+    "production_dist_925_unchanged": true
+  },
+  "CI_configuration": {
+    "private_fixture_build_stage": true,
+    "compiled_preview_instead_of_dev_server": true,
+    "hosted_workers": 2,
+    "process_failure_metadata": [
+      "name",
+      "exit_code",
+      "duration_seconds",
+      "timed_out"
+    ],
+    "raw_log_values_exposed": false,
+    "native_or_business_guard_changes": false
+  },
+  "native_ENG02_fixture_correction": "native-fixture-correction.json",
+  "native_ENG02_correction_executed": false,
+  "source_files": 834,
+  "source_delta_paths": 6,
+  "new_containers_or_local_native_calls": false,
+  "report_sha256": "18da6f3ca286f0e397ed882e5e8f9c922dc5d0e03cb4687aa3abf1e3cee89e6f",
+  "logs_sha256": {
+    "browser.private.log": "322bd70195183e4653e665a64d54f266ab21c4ce6db5fed612fab9baf385dcda",
+    "build.private.log": "3d1bc4ee0915903ad432411c4f5f6533e5684cff8bb2fd171cff1fa56811eda6",
+    "reporter-tests-final.private.log": "218bd03bd5d77f1fa0899f5d5768a60bf7199a99c42613a81786e89510bb341f",
+    "stage-metadata-failing-first.private.log": "9e32c94635f2fa64e102ca4a0794b30b83d1ede3cc6a948c636218fad7f46473",
+    "stage-metadata-final.private.log": "6075cb93d5f11366fd2f3852dc4fa75e93805e3b6983e939b23bcd9b35ecd4be"
+  },
+  "prior_failure_results_unchanged": true
+}

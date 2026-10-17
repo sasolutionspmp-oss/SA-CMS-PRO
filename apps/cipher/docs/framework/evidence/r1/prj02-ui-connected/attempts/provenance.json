@@ -1,0 +1,64 @@
+{
+  "schema": "cipher.award.connected-ui-incomplete-attempts.v1",
+  "recorded_at": "2026-10-15T23:40:54.235937+00:00",
+  "qualification": "Preserved actual isolated UI attempts and bounded read-only observations. None is a completed cost-administration or award walkthrough. Screenshots are original browser captures, with synthetic persisted ERP data.",
+  "backend": {
+    "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+    "snapshot_sha256": "a73d9a9a33852a8531863e61b84b3d60d5dc8da6580655e295e15e9b2489babc",
+    "source_count": 496,
+    "http_release_sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "ui": {
+    "source_count": 116,
+    "index_sha256": "2e6f686f918f146807c29e0ed44edbe91b559b12b226deace60b0a59b646f5aa",
+    "source_inventory_sha256": "dcb5fee79076134a891b62a3e4ffc61e24fa9c1b6b1f29f3c3806b5ebe5411f9"
+  },
+  "original_journal_sha256": "984fbdd64fe36fa5a20b903331b9d9a9dd3e4797e9e9e6a867171360a213a9c6",
+  "saved_operations": [
+    {
+      "step": "cost-code-create",
+      "operation_id": "24784c8c-cf89-4d19-a500-5d5b8f833cd1"
+    },
+    {
+      "step": "cost-code-revise",
+      "operation_id": "cdba20dc-27c4-4e39-8517-cb560ffd0eaf"
+    },
+    {
+      "step": "cost-type-create",
+      "operation_id": "5051785c-df22-4f8c-b438-c48c8cf4f341"
+    }
+  ],
+  "remaining_cost_revision_attempted": false,
+  "award_request_grant_execute_performed": false,
+  "diagnosis": {
+    "first_attempt": "Stopped before any business command; original helper suppressed precise exception.",
+    "second_attempt": "Three commands matched successful responses and independent readback. Helper waited for a stale account option display label after authorized results loaded; fourth command was not attempted.",
+    "session_503": "Observed in both initial attempts. Logs show helper extra session GET can overlap normal App bootstrap; exact historical database exception remains unconfirmed.",
+    "read_only": "Normal App bootstrap returned initial401 then200 without503; zero business POSTs, same original journal and canonical account. Helper placeholder-role assertion failed despite visible dropdown, so the attempt remains incomplete.",
+    "product_console_error": "No loader registered for the SAP-icons-v5 icons collection. Static UI source omits the settings icon import. Narrow official icon registration correction is pending.",
+    "database_diagnostic": "SHOW ENGINE INNODB STATUS refused PROCESS privilege1227; no privilege escalation or broader-credential fallback performed."
+  },
+  "private_artifacts_omitted": [
+    "Credentials and session bodies",
+    "Raw console logs and stack traces",
+    "Original exact command payload journal"
+  ],
+  "credential_scan": {
+    "selected_artifacts_checked": 11,
+    "known_secret_manifests_checked": 6,
+    "matches": 0
+  },
+  "artifacts_sha256": {
+    "01-zero-command/incomplete.json": "c605b0d68c376fb8674dcb0709ea4ab0d27e08a03ab5d75e9e7dac2855cfef8a",
+    "01-zero-command/incomplete.png": "3cf267887303e3a70891f8d33fa7ab9db391d35771fa48f71faf0806c0fe2990",
+    "02-three-cost-commands/incomplete.json": "daf10918ca3045a64155a74051958a0b371f5420d05083a6635871b8a2f25dd6",
+    "02-three-cost-commands/incomplete.png": "fddccee0f239e3b7d507b6e57c0fd7c2d24b827c8e2c454908b7253e5205fd6e",
+    "02-three-cost-commands/actual-cost-code-register-desktop.png": "3f3f1dde0dbe5c8452f042a0b8952ad69923cb9c87353cbd80f74cac81c63996",
+    "02-three-cost-commands/actual-cost-code-register-tablet.png": "fc2125055fe573d97d2fb4ece0d9b5886b3938fa89e8040f5c2056341474e938",
+    "02-three-cost-commands/actual-cost-code-register-phone.png": "b3ce5740b82deb2204d4339f5d0fe9343ea06930de3a5bf237edf7aef1eb29f8",
+    "03-read-only-diagnosis/incomplete.json": "3d34e243ca5010a5ff616b9dfc5b17e82aa14c0ecd6f3f2935ae4d854ad6cabf",
+    "03-read-only-diagnosis/incomplete.png": "54af126c3a81b8143f3cf721349d32af700b795c614991add6488bec3a8f4ec3",
+    "03-read-only-diagnosis/closure-sidecar.json": "1a4950deb8f6789534cb0575885993c842dd2d7adeb3ba03e8b1564f45b20160",
+    "original-ui-source-hashes.json": "dcb5fee79076134a891b62a3e4ffc61e24fa9c1b6b1f29f3c3806b5ebe5411f9"
+  }
+}

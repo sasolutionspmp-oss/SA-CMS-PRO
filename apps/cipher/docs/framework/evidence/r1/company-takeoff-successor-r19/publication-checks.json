@@ -1,0 +1,18 @@
+{
+  "schema": "cipher.r19.publication-checks.v1",
+  "status": "passed",
+  "source_files_verified": 724,
+  "changed_product_paths": 8,
+  "known_actual_private_credential_values": 16,
+  "public_files_scanned": 1773,
+  "private_credential_matches": [],
+  "private_values_emitted": false,
+  "unchanged_legacy_source_files_verified_against_HEAD": 395,
+  "required_unchanged_legacy_test_result": "2703 passed before R15 commit; exact unchanged source reverified before R19 commit; separate from new ERP acceptance",
+  "legacy_pass_record_sha256": "c3d6f8768d1a616a8e9867df195e6fee9a1d752af3d131890581943ccfa7f704",
+  "changed_paths_allowed": true,
+  "local_markdown_links_verified": 295,
+  "actual_capture_hashes_verified": 12,
+  "prior_R17_hosted_CI": "success; all25PASS stages",
+  "backend_generated_contracts_changed": false
+}

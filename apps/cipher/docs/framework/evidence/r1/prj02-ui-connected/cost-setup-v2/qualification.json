@@ -1,0 +1,40 @@
+{
+  "schema": "cipher.cost-setup.qualification.v1",
+  "scope": "Actual persistent synthetic isolated ERPNext/Frappe Company cost setup, readback and responsive UI; no award or accounting effect.",
+  "ui_variant": "prj02-cost-presentation-v2",
+  "backend_runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+  "source_files": 118,
+  "build_files": 907,
+  "fixture_unique_cases": 19,
+  "fixture_result": "19 passed; zero unexpected/flaky/skipped/retries",
+  "actual_original_commands": 4,
+  "commands_sent_in_qualified_continuation": 1,
+  "continuation_operation_id": "1e992884-b3b6-4a23-8b85-6b6a95e8d1bd",
+  "independent_original_revision_readbacks": 4,
+  "widths": [
+    1440,
+    900,
+    390
+  ],
+  "keyboard_and_settled_content_visibility": true,
+  "normal_session": "Expected initial401, then authenticated200; no unexpected API/page/console errors",
+  "authored_dates": {
+    "display_basis": "2026-10-15",
+    "successor_effective_from": "2026-10-16"
+  },
+  "font_assets": {
+    "package": "@sap-theming/theming-base-content",
+    "version": "11.36.4",
+    "license": "Apache-2.0; original package license emitted with build",
+    "method": "Official UI5 FontFace.css bundled by Vite plus public setDefaultFontLoading(false)",
+    "emitted_woff2_files": 24,
+    "actual_read_only_external_requests": 0
+  },
+  "preserved_limits": [
+    "First three commands ran on original116-source UI and are not replayed; their failed/incomplete capture evidence remains in attempts.",
+    "New current-variant fixture qualification is19 cases; older82-case award/cost proof is a separate source epoch.",
+    "The first resize capture caught the official300ms sidebar animation; settled public navigation/title/control geometry and hit-tests close that image timing issue without product CSS changes.",
+    "No award plan save/request/Grant/execute, Project creation or QuickBooks delivery is qualified by this cost evidence.",
+    "Mounted-view mutation recovery remains separate from a durable application journal."
+  ]
+}

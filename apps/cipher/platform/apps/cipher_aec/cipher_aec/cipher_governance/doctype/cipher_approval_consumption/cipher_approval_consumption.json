@@ -1,0 +1,91 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Approval Consumption",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "packet",
+    "decision",
+    "actor_person",
+    "operation_id",
+    "result_hash",
+    "consumed_at"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Project"
+    },
+    {
+      "fieldname": "packet",
+      "label": "Packet",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "unique": 1,
+      "options": "Cipher Approval Packet"
+    },
+    {
+      "fieldname": "decision",
+      "label": "Decision",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Approval Decision"
+    },
+    {
+      "fieldname": "actor_person",
+      "label": "Actor Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "operation_id",
+      "label": "Operation Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "result_hash",
+      "label": "Result Hash",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "consumed_at",
+      "label": "Consumed At",
+      "fieldtype": "Data",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,127 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Takeoff Line Binding",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "measurement",
+    "estimate",
+    "estimate_revision",
+    "estimate_line_record",
+    "line_id"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "options": "Project",
+      "search_index": 1,
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "measurement",
+      "fieldtype": "Link",
+      "label": "Measurement",
+      "reqd": 1,
+      "options": "Cipher Takeoff Measurement"
+    },
+    {
+      "fieldname": "estimate",
+      "fieldtype": "Link",
+      "label": "Estimate",
+      "reqd": 1,
+      "options": "Cipher Estimate"
+    },
+    {
+      "fieldname": "estimate_revision",
+      "fieldtype": "Link",
+      "label": "Estimate Revision",
+      "reqd": 1,
+      "options": "Cipher Estimate Revision"
+    },
+    {
+      "fieldname": "estimate_line_record",
+      "fieldtype": "Link",
+      "label": "Estimate Line Record",
+      "reqd": 1,
+      "options": "Cipher Estimate Line"
+    },
+    {
+      "fieldname": "line_id",
+      "fieldtype": "Data",
+      "label": "Line Id",
+      "reqd": 1,
+      "length": 140
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "index_web_pages_for_search": 0
+}

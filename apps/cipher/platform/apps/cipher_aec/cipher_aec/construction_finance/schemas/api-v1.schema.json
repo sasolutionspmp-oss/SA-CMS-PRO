@@ -1,0 +1,1651 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:construction-finance:api:v1",
+  "title": "FIN01 authored construction baseline foundation",
+  "description": "Closed exact inputs and scoped snapshots. Baseline acceptance is separate GOV review; legal execution/certification/posting and certified floor reader remain unqualified. POST operation_id may come from required Idempotency-Key.",
+  "$defs": {
+    "FinCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "FinCitationReference": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "page",
+        "excerpt_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "FinUnitRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "const": "uom"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "dimension": {
+              "enum": [
+                "length",
+                "area",
+                "volume",
+                "mass",
+                "count",
+                "time",
+                "labor_time",
+                "equipment_time"
+              ]
+            },
+            "precision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          },
+          "required": [
+            "symbol",
+            "dimension",
+            "precision"
+          ],
+          "additionalProperties": false
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "doctype": {
+              "const": "UOM"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "revision",
+        "fields",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "FinOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "FinQuantity": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "amount",
+        "unit_id",
+        "precision"
+      ],
+      "additionalProperties": false
+    },
+    "FinMoney": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false
+    },
+    "FinDefinition": {
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "prime",
+            "subcontract",
+            "consultant",
+            "service"
+          ]
+        },
+        "direction": {
+          "enum": [
+            "receivable",
+            "payable"
+          ]
+        },
+        "party_type": {
+          "enum": [
+            "Customer",
+            "Supplier"
+          ]
+        },
+        "party": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "original_value": {
+          "$ref": "#/$defs/FinMoney"
+        }
+      },
+      "required": [
+        "number",
+        "kind",
+        "direction",
+        "party_type",
+        "party",
+        "currency",
+        "original_value"
+      ],
+      "additionalProperties": false
+    },
+    "FinTerms": {
+      "type": "object",
+      "properties": {
+        "billing_method": {
+          "enum": [
+            "lump_sum",
+            "unit_price",
+            "cost_reimbursable",
+            "time_and_material"
+          ]
+        },
+        "effective_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "end_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "terms_text": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 8000
+        }
+      },
+      "required": [
+        "billing_method",
+        "effective_date",
+        "end_date",
+        "terms_text"
+      ],
+      "additionalProperties": false
+    },
+    "FinRetainage": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "enum": [
+            "gross_earned",
+            "installed_work",
+            "installed_plus_eligible_stored"
+          ]
+        },
+        "tiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "up_to": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/FinMoney"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "rate": {
+                "type": "string",
+                "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+                "maxLength": 50
+              }
+            },
+            "required": [
+              "up_to",
+              "rate"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "cap": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FinMoney"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "effective_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "rounding": {
+          "const": "HALF_UP"
+        },
+        "reduction_conditions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "release_conditions": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "approval_basis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "basis",
+        "tiers",
+        "cap",
+        "effective_date",
+        "rounding",
+        "reduction_conditions",
+        "release_conditions",
+        "approval_basis"
+      ],
+      "additionalProperties": false
+    },
+    "FinLineInput": {
+      "type": "object",
+      "properties": {
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "item_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "quantity": {
+          "$ref": "#/$defs/FinQuantity"
+        },
+        "scheduled_amount": {
+          "$ref": "#/$defs/FinMoney"
+        },
+        "cost_code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "stored_material_eligible": {
+          "type": "boolean"
+        },
+        "source_line_id": {
+          "type": "null",
+          "description": "Reserved for later qualified award/source-line integration."
+        }
+      },
+      "required": [
+        "line_id",
+        "item_code",
+        "description",
+        "quantity",
+        "scheduled_amount",
+        "cost_code",
+        "stored_material_eligible",
+        "source_line_id"
+      ],
+      "additionalProperties": false
+    },
+    "FinAdmission": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "enum": [
+            "cipher.contract.new-native-admission.v1",
+            "cipher.contract.award-native-admission.v1",
+            "cipher.award.initial-draft-obligation.v1"
+          ]
+        },
+        "provider_version": {
+          "const": 1
+        },
+        "contract_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "new_contract_without_supported_obligations",
+            "activity_unqualified",
+            "qualified_award_observations",
+            "qualified_award_obligations",
+            "qualified_award_draft_obligation"
+          ]
+        },
+        "channel_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_watermark": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "provider",
+        "provider_version",
+        "contract_id",
+        "status",
+        "channel_count",
+        "source_watermark"
+      ],
+      "additionalProperties": false
+    },
+    "FinPartySnapshot": {
+      "type": "object",
+      "properties": {
+        "doctype": {
+          "enum": [
+            "Customer",
+            "Supplier"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "disabled": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "doctype",
+        "name",
+        "version",
+        "disabled"
+      ],
+      "additionalProperties": false
+    },
+    "FinCurrencyPolicy": {
+      "type": "object",
+      "properties": {
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "currency_exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "fraction_units": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "native_currency_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "currency",
+        "currency_exponent",
+        "fraction_units",
+        "native_currency_version"
+      ],
+      "additionalProperties": false
+    },
+    "FinActivation": {
+      "type": "object",
+      "properties": {
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "accepted_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "legal_execution": {
+          "const": false
+        },
+        "certification": {
+          "const": false
+        },
+        "posting": {
+          "const": false
+        }
+      },
+      "required": [
+        "packet_id",
+        "decision_id",
+        "operation_id",
+        "accepted_at",
+        "accepted_person",
+        "manifest_hash",
+        "legal_execution",
+        "certification",
+        "posting"
+      ],
+      "additionalProperties": false
+    },
+    "FinContractRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "definition": {
+          "$ref": "#/$defs/FinDefinition"
+        },
+        "currency_policy": {
+          "$ref": "#/$defs/FinCurrencyPolicy"
+        },
+        "origin": {
+          "enum": [
+            "server_created_fin01",
+            "governed_award_v1"
+          ]
+        },
+        "party_at_creation": {
+          "$ref": "#/$defs/FinPartySnapshot"
+        },
+        "business_revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "draft_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "creation_admission": {
+          "$ref": "#/$defs/FinAdmission"
+        },
+        "activation": {
+          "$ref": "#/$defs/FinActivation"
+        },
+        "award_origin": {
+          "$ref": "#/$defs/FinAwardOrigin"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "definition",
+        "currency_policy",
+        "origin",
+        "party_at_creation",
+        "business_revision",
+        "revision_number",
+        "draft_revision",
+        "accepted_revision",
+        "creation_admission"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "origin": {
+                "const": "governed_award_v1"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "award_origin"
+            ]
+          }
+        }
+      ]
+    },
+    "FinRevisionRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "contract": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "accepted_predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "terms": {
+          "$ref": "#/$defs/FinTerms"
+        },
+        "policy_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sov_version": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "contract_cap": {
+          "$ref": "#/$defs/FinMoney"
+        },
+        "approved_changes": {
+          "$ref": "#/$defs/FinMoney"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinCitation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinUnitRecord"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "contract",
+        "revision_number",
+        "predecessor",
+        "accepted_predecessor",
+        "terms",
+        "policy_revision",
+        "sov_version",
+        "currency",
+        "contract_cap",
+        "approved_changes",
+        "source_citations",
+        "units"
+      ],
+      "additionalProperties": false
+    },
+    "FinPolicyRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "contract": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "policy": {
+          "$ref": "#/$defs/FinRetainage"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinCitation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "contract",
+        "revision_number",
+        "predecessor",
+        "currency",
+        "policy",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "FinSovRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "contract": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "contract_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "scheduled_total": {
+          "$ref": "#/$defs/FinMoney"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinLineInput"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinCitation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        },
+        "units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinUnitRecord"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "contract",
+        "contract_revision",
+        "revision_number",
+        "predecessor",
+        "currency",
+        "scheduled_total",
+        "lines",
+        "source_citations",
+        "units"
+      ],
+      "additionalProperties": false
+    },
+    "FinLineRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "contract": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sov_version": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "line_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "line": {
+          "$ref": "#/$defs/FinLineInput"
+        },
+        "policy_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinCitation"
+          },
+          "minItems": 1,
+          "maxItems": 64
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "contract",
+        "sov_version",
+        "line_id",
+        "sequence",
+        "line",
+        "policy_revision",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "FinRecord": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/FinContractRecord"
+        },
+        {
+          "$ref": "#/$defs/FinRevisionRecord"
+        },
+        {
+          "$ref": "#/$defs/FinPolicyRecord"
+        },
+        {
+          "$ref": "#/$defs/FinSovRecord"
+        },
+        {
+          "$ref": "#/$defs/FinLineRecord"
+        }
+      ]
+    },
+    "CreateContractRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/FinDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "definition"
+      ],
+      "additionalProperties": false
+    },
+    "AuthorContractRevisionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "contract_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "terms": {
+          "$ref": "#/$defs/FinTerms"
+        },
+        "retainage_policy": {
+          "$ref": "#/$defs/FinRetainage"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinLineInput"
+          },
+          "minItems": 1,
+          "maxItems": 100
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinCitationReference"
+          },
+          "minItems": 1,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "contract_id",
+        "expected_version",
+        "terms",
+        "retainage_policy",
+        "lines",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "GetContractRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "contract",
+            "revision",
+            "policy",
+            "sov",
+            "line"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "ListContractsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 20
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "CreateContractResponse": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "$ref": "#/$defs/FinContractRecord"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "history_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/FinOperation"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "AuthorContractRevisionResponse": {
+      "type": "object",
+      "properties": {
+        "contract": {
+          "$ref": "#/$defs/FinContractRecord"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "history_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/FinOperation"
+        },
+        "revision": {
+          "$ref": "#/$defs/FinRevisionRecord"
+        },
+        "policy": {
+          "$ref": "#/$defs/FinPolicyRecord"
+        },
+        "sov": {
+          "$ref": "#/$defs/FinSovRecord"
+        }
+      },
+      "required": [
+        "contract",
+        "version",
+        "history_id",
+        "operation",
+        "revision",
+        "policy",
+        "sov"
+      ],
+      "additionalProperties": false
+    },
+    "GetContractRecordResponse": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/FinRecord"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "record",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "ListContractsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/FinContractRecord"
+          },
+          "minItems": 0,
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "FinAwardOrigin": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.contract.award-origin.v1"
+        },
+        "handoff": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "award_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "adoption_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "issue": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "issue_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "accepted_estimate": {
+          "$ref": "#/$defs/ComAcceptedEstimate"
+        },
+        "sales_order": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "native_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "definition_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "schema",
+        "handoff",
+        "award_revision",
+        "plan_digest",
+        "adoption_id",
+        "source_company",
+        "project",
+        "issue",
+        "issue_digest",
+        "accepted_estimate",
+        "sales_order",
+        "native_digest",
+        "native_version",
+        "definition_digest",
+        "packet_id",
+        "decision_id",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "ComAcceptedEstimate": {
+      "type": "object",
+      "properties": {
+        "acceptance_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "acceptance_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "estimate_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "snapshot_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "snapshot_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "manifest_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "pursuit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "total": {
+          "type": "object",
+          "properties": {
+            "amount": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]+)?$"
+            },
+            "currency": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "amount",
+            "currency"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "acceptance_id",
+        "acceptance_digest",
+        "estimate_id",
+        "revision_id",
+        "revision_digest",
+        "snapshot_id",
+        "snapshot_digest",
+        "manifest_digest",
+        "pursuit_id",
+        "currency",
+        "total"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

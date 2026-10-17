@@ -1,0 +1,561 @@
+{
+  "certification": false,
+  "checks": [
+    "actual_independent_cookie_sessions_and_server_csrf_tokens",
+    "csrf_guard_exact_create_schema_alias_replay_and_payload_conflict",
+    "four_fin_public_apis_exact_schemas_and_stale_single_revision_protection",
+    "independent_outsider_denied_resources_collections_and_effects",
+    "independent_actual_http_review_one_baseline_consumption_and_alias_retry",
+    "current_scoped_contract_and_source_revocation_denies_resources_old_receipts_and_consumed_packets",
+    "independent_bench_native_posting_counts_unchanged_and_temporary_role_cleanup"
+  ],
+  "cleanup": {
+    "cleanup": [
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "morgan@cipher.example"
+      },
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "morgan.alias@cipher.example"
+      },
+      {
+        "pre_existing_roles_preserved": true,
+        "temporary_role_removed": true,
+        "user": "jordan@cipher.example"
+      }
+    ],
+    "native_posting_after": {
+      "Delivery Note": {
+        "installed": true,
+        "rows": 0
+      },
+      "Expense Claim": {
+        "installed": false
+      },
+      "GL Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Journal Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Material Request": {
+        "installed": true,
+        "rows": 0
+      },
+      "Payment Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Invoice": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Order": {
+        "installed": true,
+        "rows": 0
+      },
+      "Purchase Receipt": {
+        "installed": true,
+        "rows": 0
+      },
+      "Sales Invoice": {
+        "installed": true,
+        "rows": 0
+      },
+      "Sales Order": {
+        "installed": true,
+        "rows": 0
+      },
+      "Stock Entry": {
+        "installed": true,
+        "rows": 0
+      },
+      "Timesheet": {
+        "installed": true,
+        "rows": 0
+      }
+    },
+    "project": "PROJ-0030"
+  },
+  "executed_at": "2026-10-15T16:10:14.181685+00:00",
+  "failure": null,
+  "financial_posting": false,
+  "floor_provider_qualified": false,
+  "legal_execution": false,
+  "live_model_qualified": false,
+  "native_posting_before": {
+    "Delivery Note": {
+      "installed": true,
+      "rows": 0
+    },
+    "Expense Claim": {
+      "installed": false
+    },
+    "GL Entry": {
+      "installed": true,
+      "rows": 0
+    },
+    "Journal Entry": {
+      "installed": true,
+      "rows": 0
+    },
+    "Material Request": {
+      "installed": true,
+      "rows": 0
+    },
+    "Payment Entry": {
+      "installed": true,
+      "rows": 0
+    },
+    "Purchase Invoice": {
+      "installed": true,
+      "rows": 0
+    },
+    "Purchase Order": {
+      "installed": true,
+      "rows": 0
+    },
+    "Purchase Receipt": {
+      "installed": true,
+      "rows": 0
+    },
+    "Sales Invoice": {
+      "installed": true,
+      "rows": 0
+    },
+    "Sales Order": {
+      "installed": true,
+      "rows": 0
+    },
+    "Stock Entry": {
+      "installed": true,
+      "rows": 0
+    },
+    "Timesheet": {
+      "installed": true,
+      "rows": 0
+    }
+  },
+  "native_posting_unchanged": true,
+  "operations": {
+    "author": "ee8c0896-7d20-4758-b24b-2d3276d0dbac",
+    "create": "1e7e7c26-f453-41a2-8fc0-e84b959073b1",
+    "execute": "c8f9ea3a-fc8a-417d-ae2d-a187d5f68ae3"
+  },
+  "qualification": "Actual independent cookie/CSRF HTTP for FIN/GOV; isolated synthetic masters and independent readback/temporary duty changes use authenticated bench. No live external provider.",
+  "request_count": 38,
+  "requests": {
+    "alias": [
+      {
+        "elapsed_ms": 84.94,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 11.14,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b21fd176-5f4f-4693-be87-122cdc41c849",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:10:03.837787Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 61.53,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "d46216de-71e9-4c06-9478-e049b68b7f70",
+        "route": "/api/method/cipher_aec.construction_finance.api.create_contract",
+        "server_time": "2026-10-15T16:10:04.297194Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 140.73,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "7a0aed4c-f08b-439b-b0ab-c3503c2e3c98",
+        "route": "/api/method/cipher_aec.construction_finance.api.author_revision",
+        "server_time": "2026-10-15T16:10:04.841983Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 88.69,
+        "envelope_meta": true,
+        "error_code": "independent_review_required",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "0d9fc5d8-b692-4fc7-a172-65c6c4fc8b9c",
+        "route": "/api/method/cipher_aec.api.approvals.decide_packet",
+        "server_time": "2026-10-15T16:10:05.543942Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 88.17,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "4ece5e40-97fc-4412-907f-af80e5cde885",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "server_time": "2026-10-15T16:10:06.625281Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 53.7,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "9994b03e-45d8-41db-8410-3f99a42a9bd0",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "server_time": "2026-10-15T16:10:08.155170Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 14.37,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "99dd5191-4139-4377-9f13-cef01a1b3927",
+        "route": "/api/method/cipher_aec.construction_finance.api.create_contract",
+        "server_time": "2026-10-15T16:10:10.895785Z",
+        "status": 403
+      }
+    ],
+    "outsider": [
+      {
+        "elapsed_ms": 67.63,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 8.33,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "fbfec34c-5d99-4973-978a-369dcaa48d60",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:10:04.011498Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 5.41,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "56cec3d0-ecaa-41e5-a0aa-e64ed5102c18",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:04.965338Z",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 6.54,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "f8277a6a-8536-4816-aab0-2f4e32a4da10",
+        "route": "/api/method/cipher_aec.construction_finance.api.list_contracts",
+        "server_time": "2026-10-15T16:10:04.971961Z",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 7.25,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "0782b5fe-d8f2-4326-a435-6a18debf4fcb",
+        "route": "/api/method/cipher_aec.construction_finance.api.author_revision",
+        "server_time": "2026-10-15T16:10:04.979507Z",
+        "status": 404
+      }
+    ],
+    "primary": [
+      {
+        "elapsed_ms": 238.26,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 10.04,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "c54120a0-6ca4-4fbb-8bda-16e623105e4b",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:10:03.734992Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 9.14,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/cipher_aec.construction_finance.api.create_contract",
+        "status": 400
+      },
+      {
+        "elapsed_ms": 213.47,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "9c096698-0620-43b1-802f-a1d82fe40c70",
+        "route": "/api/method/cipher_aec.construction_finance.api.create_contract",
+        "server_time": "2026-10-15T16:10:04.233352Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 15.38,
+        "envelope_meta": true,
+        "error_code": "operation_conflict",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "cb60c74f-da7c-4213-bde7-fdbfdab704ef",
+        "route": "/api/method/cipher_aec.construction_finance.api.create_contract",
+        "server_time": "2026-10-15T16:10:04.313350Z",
+        "status": 409
+      },
+      {
+        "elapsed_ms": 119.01,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "e58b1ce0-4b6d-419a-895f-ad0f258833fd",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "server_time": "2026-10-15T16:10:04.430653Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 12.62,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "33cff748-1f05-4467-a60b-48f1dd29a691",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "server_time": "2026-10-15T16:10:04.445323Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 252.01,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "e73f4e1a-fba8-4589-ac14-62adce53472a",
+        "route": "/api/method/cipher_aec.construction_finance.api.author_revision",
+        "server_time": "2026-10-15T16:10:04.693592Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 36.18,
+        "envelope_meta": true,
+        "error_code": "stale_contract",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "e5f7a783-0ff5-46fa-b224-28bd7ef7e89a",
+        "route": "/api/method/cipher_aec.construction_finance.api.author_revision",
+        "server_time": "2026-10-15T16:10:04.879214Z",
+        "status": 412
+      },
+      {
+        "elapsed_ms": 47.02,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "af6d8ed1-4b3a-4a05-b7e0-0b360872748b",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:04.927320Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 29.35,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "3aa35161-94be-4cca-83fa-ff85a4f02bd7",
+        "route": "/api/method/cipher_aec.construction_finance.api.list_contracts",
+        "server_time": "2026-10-15T16:10:04.958577Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 476.24,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "66c0f24b-bcc6-4f45-b7e9-de6bbff2ef57",
+        "route": "/api/method/cipher_aec.api.approvals.request_action",
+        "server_time": "2026-10-15T16:10:05.452533Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 13.78,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "318c1015-b98a-4d22-816e-26933a745dca",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:05.994431Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 540.96,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "d601dcd0-cde4-437b-997f-f84aa8112208",
+        "route": "/api/method/cipher_aec.api.approvals.execute_packet",
+        "server_time": "2026-10-15T16:10:06.535151Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 16.58,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "d6cbde05-053a-4b31-8fb4-0579cbcb483a",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:07.970236Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 54.09,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "b31203e4-d8df-4750-87fc-f2f0f9486a77",
+        "route": "/api/method/cipher_aec.construction_finance.api.author_revision",
+        "server_time": "2026-10-15T16:10:08.024654Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 46.57,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "170f97ac-851d-4220-b4d7-6bb7d947f1c6",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "server_time": "2026-10-15T16:10:08.071322Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 30.01,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "306f9917-fb1a-4b44-9edc-b0d3f9e1c6c5",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "server_time": "2026-10-15T16:10:08.101327Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 7.82,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "4479b7ae-02b2-4531-9b9c-8700908fd368",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:10.881560Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 9.93,
+        "envelope_meta": true,
+        "error_code": "capability_denied",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "fdf090a7-a693-424d-af60-2837ea152b01",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "server_time": "2026-10-15T16:10:10.906043Z",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 26.1,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b4e67fa0-87d1-40b0-8220-6868eb0c45d2",
+        "route": "/api/method/cipher_aec.construction_finance.api.get_record",
+        "server_time": "2026-10-15T16:10:12.320044Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 83.56,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "e374b1dc-10da-4b7b-9f72-992c605cf351",
+        "route": "/api/method/cipher_aec.api.approvals.read_packet",
+        "server_time": "2026-10-15T16:10:12.402779Z",
+        "status": 200
+      }
+    ],
+    "reviewer": [
+      {
+        "elapsed_ms": 72.21,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 10.51,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "682b54b2-89f5-4210-b197-43f31af520e1",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "server_time": "2026-10-15T16:10:03.927934Z",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 436.35,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "d7579eae-de6a-4587-9fbe-81725c107678",
+        "route": "/api/method/cipher_aec.api.approvals.decide_packet",
+        "server_time": "2026-10-15T16:10:05.978233Z",
+        "status": 200
+      }
+    ]
+  },
+  "schema": "cipher.finance.http-acceptance.v1",
+  "scope": {
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0030"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/schemas/api-v1.schema.json": "97fd74f072d49df1089f5301e62e4d83bc8c10ab26383f9ff89af86dd0f584b4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_http_acceptance.py": "ca28bd1c702a6b22cf299b3ba62140653143ffe45107e97f50d2f6bdfe066ecd"
+  },
+  "status": "passed",
+  "validated_schema_definitions": [
+    "AuthorContractRevisionRequest",
+    "AuthorContractRevisionResponse",
+    "CreateContractRequest",
+    "CreateContractResponse",
+    "GetContractRecordRequest",
+    "GetContractRecordResponse",
+    "ListContractsResponse"
+  ],
+  "validated_schema_samples": 11
+}

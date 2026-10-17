@@ -1,0 +1,50 @@
+{
+  "schema": "cipher.award.saved-plan-qualification.v1",
+  "scope": "One actual persistent Company award plan successor and source readback; no approval or Project creation.",
+  "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+  "ui_variant": "prj02-cost-presentation-v2",
+  "source_files": 118,
+  "build_files": 907,
+  "saved_operation_id": "68846f9e-d7f9-40d8-92fc-d13cc3938bb1",
+  "handoff_id": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+  "original_plan_id": "19db2303-dd07-4a62-9437-52a73f862370",
+  "saved_plan_id": "133515f3-b9ea-40a8-a1a1-f0f6733d98df",
+  "saved_plan_version": "0c82d72cdb2e42cfc91429eeef992c849870a6ff2d5161b052d7521f066c5367",
+  "changed_definition_paths": [
+    "/project_definition/project_name"
+  ],
+  "final_private_context_sha256": "78dc38ba8ac6df1d1e482ff20bfc84bddb6cd00e3a13edaccef638d622948ec9",
+  "final_private_journal_sha256": "adb72e2bd65eb628f0ea7f8fcb5e7c0ae307b8785509ff76f6f2ecf929b88522",
+  "original_issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+  "original_pdf": {
+    "revision_id": "REV-adfbcdaea2ee45909ca5733859735d74",
+    "sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b",
+    "byte_length": 11751,
+    "independent_download_parity": true
+  },
+  "original_totals": {
+    "selling": "30.85",
+    "accepted_cost": "15.00",
+    "currency": "USD"
+  },
+  "captures": {
+    "widths": [
+      1440,
+      900,
+      390
+    ],
+    "scope": "Scrolled saved-plan section and keyboard interaction; PDF viewer opened but full PDF page is below captured viewport.",
+    "full_visible_pdf_page_qualified": false
+  },
+  "preserved": [
+    "Original handoff/Issue/PDF/baseline/team/WBS/cost allocations/transaction and basis dates",
+    "Exactly four original cost commands plus one plan save; no successful command replay"
+  ],
+  "not_run": [
+    "award request",
+    "Grant",
+    "Execute",
+    "native Project or Sales Order allocation",
+    "financial posting"
+  ]
+}

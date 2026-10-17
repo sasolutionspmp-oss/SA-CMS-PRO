@@ -1,0 +1,421 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+      "--grep",
+      "acknowledgment cannot|permission is lost|inconsistent with",
+      "--output=/tmp/cipher-completion/prj02-ui/cost-review-red-results",
+      "--workers=2",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-review-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "cost-masters.spec.ts"
+        ],
+        "timeout": 40000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-review-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "cost-masters.spec.ts",
+        "timeout": 40000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "cost-masters.spec.ts",
+      "file": "cost-masters.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "timedOut",
+                  "duration": 40406,
+                  "error": {
+                    "message": "\u001b[31mTest timeout of 40000ms exceeded.\u001b[39m",
+                    "stack": "\u001b[31mTest timeout of 40000ms exceeded.\u001b[39m"
+                  },
+                  "errors": [
+                    {
+                      "message": "\u001b[31mTest timeout of 40000ms exceeded.\u001b[39m"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 194,
+                        "line": 40
+                      },
+                      "message": "Error: locator.click: Test timeout of 40000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'Review or revise cost master', exact: true })\u001b[22m\n\n\n  38 |\n  39 | test('cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head', async ({ page }) => {\n> 40 |   const fixture = await mockCostMasters(page, { stale: true, holdLatest: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click(); await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Current head revision 2', exact: true })).toBeVisible(); await page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true }).check(); fixture.releaseLatest(); await expect(page.getByRole('heading', { name: 'Current head revision 3', exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed cost master version', exact: true })).toBeDisabled(); await expect(page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true })).not.toBeChecked(); expect(fixture.writes).toHaveLength(1);\n     |                                                                                                                                                                                                  ^\n  41 | });\n  42 | test('mounted unknown cost recovery remains reachable after current write permission is lost', async ({ page }) => {\n  43 |   const fixture = await mockCostMasters(page, { lost: true, denyRecovery: true });\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:40:194"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:43:26.007Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-3994045bbe63d060470d",
+          "file": "cost-masters.spec.ts",
+          "line": 39,
+          "column": 1
+        },
+        {
+          "title": "mounted unknown cost recovery remains reachable after current write permission is lost",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 2041,
+                  "error": {
+                    "message": "Error: @vitejs/plugin-react can't detect preamble. Something is wrong.",
+                    "stack": "Error: @vitejs/plugin-react can't detect preamble. Something is wrong.\n    at http://127.0.0.1:5190/src/components.tsx:296:11",
+                    "location": {
+                      "file": "http://127.0.0.1:5190/src/components.tsx",
+                      "column": 11,
+                      "line": 296
+                    }
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "http://127.0.0.1:5190/src/components.tsx",
+                        "column": 11,
+                        "line": 296
+                      },
+                      "message": "Error: @vitejs/plugin-react can't detect preamble. Something is wrong.\n    at http://127.0.0.1:5190/src/components.tsx:296:11"
+                    },
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 74,
+                        "line": 7
+                      },
+                      "message": "Error: locator.click: Test ended.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: 'New cost code', exact: true })\u001b[22m\n\n\n   5 | test.beforeEach(({ page }) => page.on('pageerror', error => { throw error; }));\n   6 | async function newCode(page: Page) {\n>  7 |   await page.getByRole('button', { name: 'New cost code', exact: true }).click(); const dialog = page.locator('ui5-dialog[header-text=\"New cost code\"]');\n     |                                                                          ^\n   8 |   await dialog.getByRole('textbox', { name: 'Cost canonical code', exact: true }).fill('FIELD'); await dialog.getByRole('textbox', { name: 'Cost revision title', exact: true }).fill('Field supervision'); await dialog.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01');\n   9 |   await dialog.getByRole('combobox', { name: 'Cost accounting target', exact: true }).click(); await page.getByRole('option', { name: 'Cedar field operations', exact: true }).click(); return dialog;\n  10 | }\n    at newCode (/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:7:74)\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:45:78"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:43:26.009Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-mounted-unkno-32ae0-nt-write-permission-is-lost/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-mounted-unkno-32ae0-nt-write-permission-is-lost/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-mounted-unkno-32ae0-nt-write-permission-is-lost/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "http://127.0.0.1:5190/src/components.tsx",
+                    "column": 11,
+                    "line": 296
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-59ebecc509f3f5583ad5",
+          "file": "cost-masters.spec.ts",
+          "line": 42,
+          "column": 1
+        },
+        {
+          "title": "cost current head rejects a revision number inconsistent with its authoritative master header",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 12581,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:50:122",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                      "column": 122,
+                      "line": 50
+                    },
+                    "snippet": "  48 |   const fixture = await mockCostMasters(page, mismatch === 'current' ? { wrongHeadNumber: true } : { stale: true, wrongRebaseNumber: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click();\n  49 |   if (mismatch === 'rebase') { await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); }\n> 50 |   await expect(page.getByRole('note', { name: /head does not match this cost master|head does not match this master/ })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Current head revision 999', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                                          ^\n  51 | });\n  52 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 122,
+                        "line": 50
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n\n\n  48 |   const fixture = await mockCostMasters(page, mismatch === 'current' ? { wrongHeadNumber: true } : { stale: true, wrongRebaseNumber: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click();\n  49 |   if (mismatch === 'rebase') { await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); }\n> 50 |   await expect(page.getByRole('note', { name: /head does not match this cost master|head does not match this master/ })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Current head revision 999', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                                          ^\n  51 | });\n  52 |\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:50:122"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:43:28.902Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-current--43248-authoritative-master-header/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-current--43248-authoritative-master-header/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-current--43248-authoritative-master-header/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                    "column": 122,
+                    "line": 50
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-b59ecdb7927c605baf63",
+          "file": "cost-masters.spec.ts",
+          "line": 47,
+          "column": 56
+        },
+        {
+          "title": "cost rebase head rejects a revision number inconsistent with its authoritative master header",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 13224,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:50:122",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                      "column": 122,
+                      "line": 50
+                    },
+                    "snippet": "  48 |   const fixture = await mockCostMasters(page, mismatch === 'current' ? { wrongHeadNumber: true } : { stale: true, wrongRebaseNumber: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click();\n  49 |   if (mismatch === 'rebase') { await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); }\n> 50 |   await expect(page.getByRole('note', { name: /head does not match this cost master|head does not match this master/ })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Current head revision 999', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                                          ^\n  51 | });\n  52 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 122,
+                        "line": 50
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByRole('note', { name: /head does not match this cost master|head does not match this master/ }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('note', { name: /head does not match this cost master|head does not match this master/ })\u001b[22m\n\n\n  48 |   const fixture = await mockCostMasters(page, mismatch === 'current' ? { wrongHeadNumber: true } : { stale: true, wrongRebaseNumber: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click();\n  49 |   if (mismatch === 'rebase') { await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); }\n> 50 |   await expect(page.getByRole('note', { name: /head does not match this cost master|head does not match this master/ })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Current head revision 999', exact: true })).toHaveCount(0); expect(fixture.effects()).toBe(0);\n     |                                                                                                                          ^\n  51 | });\n  52 |\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:50:122"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:43:42.448Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-h-ba5d6-authoritative-master-header/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-h-ba5d6-authoritative-master-header/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-review-red-results/cost-masters-cost-rebase-h-ba5d6-authoritative-master-header/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                    "column": 122,
+                    "line": 50
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-780b5ac3d0d7d0388443",
+          "file": "cost-masters.spec.ts",
+          "line": 47,
+          "column": 56
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:43:24.419Z",
+    "duration": 42578.123999999996,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

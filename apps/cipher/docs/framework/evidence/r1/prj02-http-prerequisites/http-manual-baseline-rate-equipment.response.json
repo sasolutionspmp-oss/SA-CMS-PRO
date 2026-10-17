@@ -1,0 +1,115 @@
+{
+  "history_id": "9kr0cgjk5l",
+  "operation": {
+    "id": "e4273233-b064-493b-a8e1-39a72b319d00",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "rate_source": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+    "company": "Company chain A c3c3b742a8fd",
+    "created_at": "2026-10-15T23:10:45.895772+00:00",
+    "id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+    "project": null,
+    "rate": {
+      "cost_type": "equipment",
+      "currency": "USD",
+      "exclusions": "No taxes or freight",
+      "expiry_date": null,
+      "freight_tax_assumptions": "None",
+      "geography": "Synthetic",
+      "id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+      "inclusions": "Explicit authored fixture",
+      "item": null,
+      "party": null,
+      "party_type": null,
+      "permission_basis": "Owned synthetic fixture source",
+      "predecessor": null,
+      "quote_date": "2026-10-15",
+      "quote_reference": "Authored isolated manual fixture",
+      "rate_amount": "3.00",
+      "rate_precision": 6,
+      "revision": 1,
+      "source_citations": [
+        {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "source_id": "f349463d-1c8d-4ee9-99c2-0eed48c0fb48",
+      "title": "Award equipment company-chain-c3c3b742a8fd",
+      "unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+    },
+    "scope_type": "Company",
+    "source_citations": [
+      {
+        "company": "Company chain A c3c3b742a8fd",
+        "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+        "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+        "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+        "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+        "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+        "page": 1,
+        "page_label": "1",
+        "project": null,
+        "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+        "revision_number": 1,
+        "scope_type": "Company",
+        "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+      }
+    ],
+    "status": "authored",
+    "unit_manifest": {
+      "dataset_id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+      "records": [
+        {
+          "fields": {
+            "currency": "USD",
+            "name": "Company chain A c3c3b742a8fd",
+            "timezone": "Asia/Kolkata"
+          },
+          "id": "9a9c8094-7002-557a-a12c-30147a9d618a",
+          "kind": "company",
+          "revision": 1,
+          "target": {
+            "doctype": "Company",
+            "name": "Company chain A c3c3b742a8fd"
+          }
+        },
+        {
+          "fields": {
+            "dimension": "equipment_time",
+            "precision": 6,
+            "symbol": "equipment_time-company-chain-c3c3b742a8fd"
+          },
+          "id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Award equipment_time company-chain-c3c3b742a8fd"
+          }
+        }
+      ],
+      "schema": "cipher.canonical.v2",
+      "scope": {
+        "company": "Company chain A c3c3b742a8fd",
+        "project": null,
+        "scope_type": "Company"
+      },
+      "unit_conversions": []
+    }
+  }
+}

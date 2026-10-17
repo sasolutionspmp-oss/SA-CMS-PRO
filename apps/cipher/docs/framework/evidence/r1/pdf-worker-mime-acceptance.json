@@ -1,0 +1,40 @@
+{
+  "schema": "cipher.r1.pdf-worker-mime.v1",
+  "captured_at": "2026-10-15T17:28:16.674776+00:00",
+  "initial": {
+    "status": 200,
+    "content_type": "application/octet-stream",
+    "nosniff": "nosniff",
+    "worker_sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18",
+    "bytes": 1264342
+  },
+  "observed": {
+    "/assets/pdf.worker.min-CjEcRF4W.mjs": {
+      "status": 200,
+      "content_type": "application/javascript",
+      "nosniff": "nosniff",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18",
+      "bytes": 1264342
+    },
+    "/index.html": {
+      "status": 200,
+      "content_type": "text/html",
+      "nosniff": "nosniff",
+      "sha256": "57fca26d153a040e9a407512a5fb60b22a97a29abbd8d3565f7ae744df2cb038",
+      "bytes": 1422
+    },
+    "/api/method/ping": {
+      "status": 200,
+      "content_type": "application/json",
+      "nosniff": "nosniff",
+      "sha256": "535e0f7e4562372c2262737b55d250b8a0fc4d3ed4237fc0b23a73b062ad645c",
+      "bytes": 18
+    }
+  },
+  "status": "passed",
+  "change": "Added explicit .mjs JavaScript MIME mapping to same-origin nginx; validated config then graceful nginx reload. Worker bytes unchanged.",
+  "limits": "HTTP deployment verification only; actual browser PDF rendering and drawing flow remain separately qualified.",
+  "source_sha256": {
+    "apps/cipher/platform/deployment/nginx.dev.conf": "ccbab97b3369228376ed546de455297ac23bc97aab790b598760b6d066049d8a"
+  }
+}

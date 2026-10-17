@@ -1,0 +1,121 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Calculation Snapshot",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "subject_type",
+    "subject_id",
+    "policy_version",
+    "input_digest",
+    "output_digest"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "search_index": 1,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "subject_type",
+      "fieldtype": "Data",
+      "label": "Subject Type",
+      "reqd": 1
+    },
+    {
+      "fieldname": "subject_id",
+      "fieldtype": "Data",
+      "label": "Subject Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "policy_version",
+      "fieldtype": "Data",
+      "label": "Policy Version",
+      "reqd": 1
+    },
+    {
+      "fieldname": "input_digest",
+      "fieldtype": "Data",
+      "label": "Input Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "output_digest",
+      "fieldtype": "Data",
+      "label": "Output Digest",
+      "reqd": 1,
+      "length": 64
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

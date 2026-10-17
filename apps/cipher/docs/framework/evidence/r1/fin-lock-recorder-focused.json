@@ -1,0 +1,12 @@
+{
+  "schema": "cipher.r1.fin-lock-recorder-focused.v1",
+  "status": "passed",
+  "qualification": "Pure recorder behavior only, extracted actual callback; no domain/native/provider qualification.",
+  "legacy_alias_parameter_uom_count": 4,
+  "canonical_physical_uom_count": 2,
+  "all_reacquisitions_recorded": true,
+  "complete_parent_identifiers_exclude_child_tables": true,
+  "tuple_and_dictionary_row_names_supported": true,
+  "late_new_uom_still_violates_acquisition_order": true,
+  "legacy_child_table_prefix_misclassification_reproduced": true
+}

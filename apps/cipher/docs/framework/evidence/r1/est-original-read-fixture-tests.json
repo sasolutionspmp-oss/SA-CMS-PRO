@@ -1,0 +1,28 @@
+{
+  "checks": [
+    "Each read rechecks scoped acceptance/revision/snapshot/result/currency lineage.",
+    "Same-read original authority reuse leaves requested citation checks outside.",
+    "Next read rechecks revoked original authority; a cached proof cannot hide source-byte refusal.",
+    "Wrong alias rejected; no-root/locking/Project paths retain original behavior.",
+    "Fresh verified binding traversal retains Project/Company master lock order, heads, verification, native sources and quantity basis."
+  ],
+  "combined_elapsed_seconds": 0.821,
+  "combined_estimating_takeoff_provenance_tests": 80,
+  "external_provider_qualified": false,
+  "generated_public_gate_enabled": false,
+  "live_model_qualified": false,
+  "qualification": "Explicit pure fixtures executed in the real runtime Python; no persisted data, HTTP, model/provider or native permission qualification from this unittest artifact.",
+  "schema": "cipher.est.original-read.fixture-tests.v1",
+  "source_hash_capture": "Relevant source SHA256 recorded immediately after the passing suite; native executed-source snapshots are separate evidence.",
+  "source_sha256": {
+    "documents/provenance.py": "5c59ec809a6c2009e0cffa9a72eeed5cbaa72881491ff46b3e09c5ddcfe9496a",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/governance.py": "afcf0f3dcf8d089e9cc2dfeb6c1b34ab96de51418abd3d79d46ca8eb69531c81",
+    "estimating/service.py": "9e467a53a8f697e62442f1e3d811749b634c779df4781311bf1d2e624ee7aad9",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_estimating_original_read.py": "ce83be2cd649a80ec6e1d855b74ea7a5c15a5484671ac68802692a36b84382ce",
+    "tests/test_takeoff_bundle.py": "c90ed8ebf449ab6eaa275a66e330d72e0ffc406b81471a64c65f62d041e29a9c"
+  },
+  "status": "passed",
+  "targeted_acceptance_original_read_tests": 8
+}

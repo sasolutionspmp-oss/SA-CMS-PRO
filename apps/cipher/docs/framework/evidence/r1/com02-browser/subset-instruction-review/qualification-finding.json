@@ -1,0 +1,6 @@
+{
+  "mode": "evidence-qualification-amendment",
+  "finding": "Commands, recipient subset, independent review, exactPDF and authoritative serverQueued state verified. Statusscreenshots captured before UI finishedLoading because tooling awaited headingonly; these three queuedstatusPNGs are NOT loaded-status UIproof. Subsequent read-only proof must wait verified recipient count and loadedregister/table.",
+  "original_verification_and_images_preserved": true,
+  "no_new_business_effect": true
+}

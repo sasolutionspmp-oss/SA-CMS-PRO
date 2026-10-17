@@ -1,0 +1,17 @@
+{
+  "schema": "cipher.eng01.publication-checks.v1",
+  "status": "passed",
+  "source_files_verified": 789,
+  "changed_source_paths": 77,
+  "actual_private_values_checked": 16,
+  "public_files_scanned": 1909,
+  "private_credential_matches": [],
+  "private_values_emitted": false,
+  "unchanged_legacy_source_files_verified_against_HEAD": 395,
+  "legacy_test_evidence_reused": "2703 passed before R15; exact unchanged source reverified; separate from new ERP acceptance",
+  "local_markdown_links_verified": 192,
+  "MAIN_commit_and_runtime_unchanged": true,
+  "isolated_runtime_unchanged": true,
+  "native_engineering_source_installed": false,
+  "scope_paths_verified": true
+}

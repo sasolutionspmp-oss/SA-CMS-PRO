@@ -1,0 +1,15 @@
+{
+  "schema": "cipher.r1.distribution-refused-send-native.v1",
+  "status": "passed",
+  "operation_id": "oge0b0su14",
+  "scenario": "cancelled",
+  "state": "Cancelled",
+  "error_code": "distribution_cancelled",
+  "sink_accept_calls": 0,
+  "sink_acceptance_absent": true,
+  "fixture_clock_after_persisted_deadline": false,
+  "transport": "fixture",
+  "live_external_provider_qualified": false,
+  "driver_started_at": "2026-10-15T19:13:10.730909+00:00",
+  "driver_completed_at": "2026-10-15T19:13:13.877037+00:00"
+}

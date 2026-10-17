@@ -1,0 +1,268 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+      "--grep",
+      "official responsive",
+      "--output=/tmp/cipher-completion/prj02-ui/cost-successor-layout-results",
+      "--workers=2",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 2
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-successor-layout-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "cost-masters.spec.ts"
+        ],
+        "timeout": 40000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-successor-layout-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 2
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "cost-masters.spec.ts",
+        "timeout": 40000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "cost-masters.spec.ts",
+      "file": "cost-masters.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 1440px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 3811,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:46:24.210Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-cbb12359c2e8f3268373",
+          "file": "cost-masters.spec.ts",
+          "line": 30,
+          "column": 39
+        },
+        {
+          "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 900px",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "passed",
+                  "duration": 3756,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:46:24.223Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-6881d46b48b94b0892b7",
+          "file": "cost-masters.spec.ts",
+          "line": 30,
+          "column": 39
+        },
+        {
+          "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 390px",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 2587,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m391\u001b[39m\nReceived:    \u001b[31m416.53125\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m391\u001b[39m\nReceived:    \u001b[31m416.53125\u001b[39m\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:32:1508",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                      "column": 1508,
+                      "line": 32
+                    },
+                    "snippet": "  30 | for (const width of [1440, 900, 390]) test(`cost setup official responsive table, dialog actions and keyboard remain usable at ${width}px`, async ({ page }) => {\n  31 |   await page.setViewportSize({ width, height: 1000 }); await mockCostMasters(page); await page.goto(path()); const table = page.locator('ui5-table[accessible-name=\"Company dated cost masters\"]'); await expect(table).toBeVisible(); await expect.poll(() => page.locator('.workspace-main').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1); const box = await table.boundingBox(); expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1);\n> 32 |   await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-register-${width}.png`,fullPage:true}); const dialog = await newCode(page); const code = dialog.getByRole('textbox', { name: 'Cost canonical code', exact: true }); await code.focus(); await code.press('Tab'); await expect(dialog.getByRole('textbox', { name: 'Cost revision title', exact: true })).toBeFocused(); for (const name of ['Close cost revision', 'Create cost revision']) { const button = dialog.getByRole('button', { name, exact: true }); await expect(button).toBeVisible(); const bounds = await button.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1); } await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-create-${width}.png`,fullPage:true}); await dialog.getByRole('button', { name: 'Close cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click(); const successor = page.locator('ui5-dialog[header-text=\"Revise cost code SITE\"]'); await expect(successor.getByRole('textbox', { name: 'Cost revision title', exact: true })).toHaveValue('Site works future head'); for (const name of ['Close cost revision', 'Save successor cost revision']) { const button = successor.getByRole('button', { name, exact: true }); const bounds = await button.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1); } await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-successor-${width}.png`,fullPage:true});\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  33 | });\n  34 |\n  35 | test('component cost type requires an explicit cost category and preserves its existing expense Account', async ({ page }) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 1508,
+                        "line": 32
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeLessThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: <= \u001b[32m391\u001b[39m\nReceived:    \u001b[31m416.53125\u001b[39m\n\n  30 | for (const width of [1440, 900, 390]) test(`cost setup official responsive table, dialog actions and keyboard remain usable at ${width}px`, async ({ page }) => {\n  31 |   await page.setViewportSize({ width, height: 1000 }); await mockCostMasters(page); await page.goto(path()); const table = page.locator('ui5-table[accessible-name=\"Company dated cost masters\"]'); await expect(table).toBeVisible(); await expect.poll(() => page.locator('.workspace-main').evaluate(element => element.scrollWidth - element.clientWidth)).toBeLessThanOrEqual(1); const box = await table.boundingBox(); expect(box!.x).toBeGreaterThanOrEqual(0); expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1);\n> 32 |   await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-register-${width}.png`,fullPage:true}); const dialog = await newCode(page); const code = dialog.getByRole('textbox', { name: 'Cost canonical code', exact: true }); await code.focus(); await code.press('Tab'); await expect(dialog.getByRole('textbox', { name: 'Cost revision title', exact: true })).toBeFocused(); for (const name of ['Close cost revision', 'Create cost revision']) { const button = dialog.getByRole('button', { name, exact: true }); await expect(button).toBeVisible(); const bounds = await button.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1); } await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-create-${width}.png`,fullPage:true}); await dialog.getByRole('button', { name: 'Close cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click(); const successor = page.locator('ui5-dialog[header-text=\"Revise cost code SITE\"]'); await expect(successor.getByRole('textbox', { name: 'Cost revision title', exact: true })).toHaveValue('Site works future head'); for (const name of ['Close cost revision', 'Save successor cost revision']) { const button = successor.getByRole('button', { name, exact: true }); const bounds = await button.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width + 1); } await page.screenshot({path:`/tmp/cipher-completion/prj02-ui/visual/fixture-cost-successor-${width}.png`,fullPage:true});\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  33 | });\n  34 |\n  35 | test('component cost type requires an explicit cost category and preserves its existing expense Account', async ({ page }) => {\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:32:1508"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:46:28.233Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-successor-layout-results/cost-masters-cost-setup-of-84b05-oard-remain-usable-at-390px/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-successor-layout-results/cost-masters-cost-setup-of-84b05-oard-remain-usable-at-390px/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-successor-layout-results/cost-masters-cost-setup-of-84b05-oard-remain-usable-at-390px/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                    "column": 1508,
+                    "line": 32
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-7bd1fcb49ce3d6a143b5",
+          "file": "cost-masters.spec.ts",
+          "line": 30,
+          "column": 39
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:46:22.777Z",
+    "duration": 8233.794000000002,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

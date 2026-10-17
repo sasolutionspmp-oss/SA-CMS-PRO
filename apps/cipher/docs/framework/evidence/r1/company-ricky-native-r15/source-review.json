@@ -1,0 +1,20 @@
+{
+  "schema": "cipher.company-draft-save.root-review.v1",
+  "status": "approved_for_isolated_backend_qualification",
+  "snapshot_sha256": "353279970396d8716db9ed0760079e7f13cd42b47bdc55bed238042bc9bbd46d",
+  "reviewed": [
+    "closed2route request and existing-schema preservation",
+    "sole canonical transaction;Session lock beforeCompany; immutable application+receipt+history",
+    "original+saved scope/estimate source union and pinned conversion closure beforemasters/native",
+    "sameUserPerson,currentrights and originalSID fornew effect; original5min deadline preserved",
+    "historical exactreceipt replay withoutfresh write/activeSID/deadline/head requirement",
+    "nativeheader/core linkage and unique oneapplication persuggestion",
+    "labeledscope append retainingprices/terms; exact finite estimatequantity withno rounding/doublewaste",
+    "all12 oldgenerated clients unchanged;13thsource hash binds canonical deps",
+    "explicitSAP review/save; original operation retained through denial; mounted-view recovery only"
+  ],
+  "local_backend_focused": 173,
+  "browser_distinct_composed": 239,
+  "runtime_changed": false,
+  "native_scenarios_qualified": false
+}

@@ -1,0 +1,37 @@
+{
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.integrations.distribution_api.profiles",
+      "request_id": "83c236f6-1fc6-4b46-ae60-d392983cc36a",
+      "request_seconds": 0.007757,
+      "role": "author",
+      "server_time": "2026-10-15T18:52:28.032271Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.integrations.distribution_api.create_instruction",
+      "request_id": "aad250aa-8aee-456b-ae7d-1c135992cf2a",
+      "request_seconds": 1.582837,
+      "role": "author",
+      "server_time": "2026-10-15T18:52:29.652839Z"
+    }
+  ],
+  "completed_at": "2026-10-15T18:52:29.657321+00:00",
+  "failure_type": "AssertionError",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "live_external_provider_qualified": false,
+  "schema": "cipher.r1.distribution-http-mandate.v1",
+  "schema_samples": 2,
+  "session_timings": [
+    {
+      "login_seconds": 0.28388,
+      "role": "author",
+      "session_seconds": 0.044842,
+      "status": "passed",
+      "total_seconds": 0.328727
+    }
+  ],
+  "started_at": "2026-10-15T18:52:27.687809+00:00",
+  "status": "failed"
+}

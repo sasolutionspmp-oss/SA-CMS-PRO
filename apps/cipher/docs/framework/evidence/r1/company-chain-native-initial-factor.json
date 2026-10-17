@@ -1,0 +1,109 @@
+{
+  "calibrated_company_takeoff_qualified": false,
+  "calls": [
+    {
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "alias",
+      "status": "passed"
+    },
+    {
+      "error_code": "operation_conflict",
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "role": "alias",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.get_citation",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.preview_revision",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.documents.company_api.search_documents",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "outsider",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "role": "outsider",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "project_only",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "role": "project_only",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.company_api.get_document",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.documents.api.get_document",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.commercial.api.create_pursuit",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "not_found",
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "role": "author",
+      "status": "denied"
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.create_estimate",
+      "role": "author",
+      "status": "passed"
+    },
+    {
+      "error_code": "invalid_estimate",
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "role": "author",
+      "status": "denied"
+    }
+  ],
+  "commercial_issue_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "completed_at": "2026-10-15T17:08:27.928442+00:00",
+  "external_provider_qualified": false,
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "http_cookie_csrf_qualified": false,
+  "live_model_qualified": false,
+  "schema": "cipher.r1.company-manual-native-acceptance.v1",
+  "started_at": "2026-10-15T17:08:26.793729+00:00",
+  "status": "failed"
+}

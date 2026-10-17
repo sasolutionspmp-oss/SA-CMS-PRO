@@ -1,0 +1,39 @@
+{
+  "name": "cipher-product",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node scripts/copy-pdf-assets.mjs && vite --host 0.0.0.0",
+    "typecheck": "tsc --noEmit",
+    "build": "npm run typecheck && node scripts/copy-pdf-assets.mjs && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "playwright test",
+    "test:contract": "playwright test",
+    "generate:api": "node scripts/generate-api.mjs"
+  },
+  "dependencies": {
+    "@sap-theming/theming-base-content": "11.36.4",
+    "@ui5/webcomponents": "2.27.2",
+    "@ui5/webcomponents-base": "2.27.2",
+    "@ui5/webcomponents-fiori": "2.27.2",
+    "@ui5/webcomponents-icons": "2.27.2",
+    "@ui5/webcomponents-react": "2.27.3",
+    "pdfjs-dist": "6.4.299",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.0.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "json-schema-to-typescript": "15.0.4",
+    "typescript": "6.0.3",
+    "vite": "8.3.4"
+  }
+}

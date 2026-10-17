@@ -1,0 +1,388 @@
+{
+  "schema": "cipher.finance.acceptance.v1",
+  "status": "passed",
+  "label": "explicit-synthetic-fin01-with-real-native-storage-and-governance",
+  "company": "Cipher Synthetic Company",
+  "project": "PROJ-0004",
+  "contract_id": "b9304300-578b-422b-a2b1-185048e8b18b",
+  "accepted_revision": "c4bfbd86-a760-45d8-8a07-aaa986426a74",
+  "current_draft_revision": "5861f2e8-34de-414a-9dcf-47449b9aa633",
+  "native_customer": "FIN01 native customer cfcb7b1a1137",
+  "native_supplier": "FIN01 native supplier cfcb7b1a1137",
+  "checks": [
+    "native_party_contract_origin_and_exact_single_create_replay",
+    "immutable_exact_terms_policy_sov_and_stable_line_replay",
+    "independent_human_grant_and_one_atomic_baseline_consumption",
+    "sorted_shared_master_locks_and_disabled_unit_historical_readback",
+    "accepted_cap_reduction_blocked_increase_preserves_historical_policy_and_line",
+    "stale_manifest_cannot_advance_draft_or_accepted_predecessor",
+    "current_source_rights_rechecked_on_records_receipts_and_consumed_packets",
+    "disabled_party_preserves_history_and_current_native_read_revocation_denies",
+    "unqualified_native_financial_drafts_and_generic_snapshot_reads_denied",
+    "native_supplier_contract_and_off_page_party_denial_before_pagination_counts",
+    "historical_receipt_prelocks_old_and_current_uom_union_before_party"
+  ],
+  "shared_native_master_first_lock_order": [
+    "UOM",
+    "Currency",
+    "Customer"
+  ],
+  "legal_execution": false,
+  "financial_posting": false,
+  "certification": false,
+  "native_parent_lock_queries": {
+    "author_revision": [
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      }
+    ],
+    "historical_receipt": [
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "4534b9cf-5d37-447a-a53d-57f7a9f56412"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "FIN01 replacement draft unit cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": true
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "4534b9cf-5d37-447a-a53d-57f7a9f56412"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "FIN01 replacement draft unit cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "4534b9cf-5d37-447a-a53d-57f7a9f56412"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "FIN01 replacement draft unit cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "4534b9cf-5d37-447a-a53d-57f7a9f56412"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "FIN01 replacement draft unit cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "4534b9cf-5d37-447a-a53d-57f7a9f56412"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 replacement draft unit cfcb7b1a1137",
+        "parameters": [
+          "FIN01 replacement draft unit cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Currency",
+        "name": "USD",
+        "parameters": [
+          "USD"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "Customer",
+        "name": "FIN01 native customer cfcb7b1a1137",
+        "parameters": [
+          "FIN01 native customer cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "b04a63fb-4887-44ee-9850-72b2953099ee"
+        ],
+        "first_acquisition": false
+      },
+      {
+        "kind": "UOM",
+        "name": "FIN01 qualified quantity cfcb7b1a1137",
+        "parameters": [
+          "FIN01 qualified quantity cfcb7b1a1137"
+        ],
+        "first_acquisition": false
+      }
+    ]
+  },
+  "historical_receipt_first_native_acquisitions": [
+    [
+      "UOM",
+      "FIN01 replacement draft unit cfcb7b1a1137"
+    ],
+    [
+      "UOM",
+      "FIN01 qualified quantity cfcb7b1a1137"
+    ],
+    [
+      "Currency",
+      "USD"
+    ],
+    [
+      "Customer",
+      "FIN01 native customer cfcb7b1a1137"
+    ]
+  ],
+  "floor_provider_qualified": false,
+  "live_model_qualified": false,
+  "external_provider_qualified": false
+}

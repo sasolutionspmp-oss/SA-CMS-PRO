@@ -1,0 +1,13 @@
+{
+  "company": "Company chain A c3c3b742a8fd",
+  "refusal": {
+    "error_code": "approval_action_unqualified"
+  },
+  "request": {
+    "action": "award.project.create.v1",
+    "company": "Company chain A c3c3b742a8fd",
+    "expected_version": "75b1be2bc699006de77175c84312b8491e11b0b9439ed1c8473a5cae323f4f04",
+    "operation_id": "dfa08a32-3e11-40ae-b840-b9c4da67f26e",
+    "subject_id": "19db2303-dd07-4a62-9437-52a73f862370"
+  }
+}

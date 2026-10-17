@@ -1,0 +1,11 @@
+{
+  "attempt": "03f617a2-5129-49f2-a7ea-310f6c783e41",
+  "private_journal": "/tmp/cipher-r0-runtime/com02-execute-03f617a2-5129-49f2-a7ea-310f6c783e41.private.jsonl",
+  "mutations": [
+    {
+      "path": "/api/method/cipher_aec.api.company_approvals.execute_packet",
+      "operation_id": "da0d03f4-91a4-4e9d-bf1b-73c057bd8252",
+      "raw_payload_sha256": "abd5393a64f29a9a23ada96cf49f90a31d537ceeb79f14696bea01d3709767a9"
+    }
+  ]
+}

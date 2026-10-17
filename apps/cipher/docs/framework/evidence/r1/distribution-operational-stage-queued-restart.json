@@ -1,0 +1,20 @@
+{
+  "label": "stage-queued-restart",
+  "script": "distribution-stage-operational.py",
+  "helper_sha256": "712aa5cd521f0093339509a9bfb0079139b3711ea0b654063450ecf4f3b7de39",
+  "arguments": [
+    "queued-restart"
+  ],
+  "started_at": "2026-10-15T20:06:49.885734+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:07:15.311984+00:00",
+  "result": {
+    "status": "passed",
+    "dispatch_id": "a5c49eb9-46d9-417e-a616-3f0e36762769",
+    "operations": [
+      "u1tg6if7ie"
+    ],
+    "private_context": "/tmp/cipher-r0-runtime/distribution-queued-restart-stage/distribution-http-context.json",
+    "manual_worker_or_publisher_invoked": false
+  }
+}

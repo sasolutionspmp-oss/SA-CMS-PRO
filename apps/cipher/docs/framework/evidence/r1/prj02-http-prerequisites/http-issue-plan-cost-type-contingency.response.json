@@ -1,0 +1,59 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-CONTINGENCY",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+    "id": "57529a36-b631-4965-ad82-e648ed40201b",
+    "kind": "type",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "e684a734-879e-4311-bde9-a9b300c8597c",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": "USD",
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "disabled": false,
+      "doctype": "Account",
+      "is_group": false,
+      "name": "Administrative Expenses - Q0c3c3b7",
+      "root_type": "Expense",
+      "version": "2026-10-16 04:33:06.151800"
+    },
+    "code": "AWARD-CONTINGENCY",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "contingency",
+      "cost_category": null,
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit contingency accounting target"
+    },
+    "id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+    "kind": "type",
+    "master_id": "57529a36-b631-4965-ad82-e648ed40201b",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "1a2c1b29e57f2ee5e9648ab530b27dd08f609abac601a2ca4cc4d01dc12f2b65"
+}

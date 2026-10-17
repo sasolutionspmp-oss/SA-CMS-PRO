@@ -1,0 +1,19 @@
+{
+  "README.md": "92b3736e7b4c8b4fe51adf1cfd9066bd70419496d784b27b42a7ed73e784d7aa",
+  "actual-cost-code-register-desktop.png": "47032c5e104dc97c5831597135f85814a458adc65d4242da9008b703857ead74",
+  "actual-cost-code-register-phone.png": "77f9426c22502c4cd761c6f768913bef72d1d2aadf6d6c36d6fcc7dfc78c5c80",
+  "actual-cost-code-register-tablet.png": "91e70c6e9613957fa1e68b25639f6b4ac23755c5c09075c870eac1d989ff068e",
+  "actual-cost-type-register-desktop.png": "4b371820287b2f4a0831e7b8fd204697bb2d6bb8045218c07d9c50cbd674dc59",
+  "actual-cost-type-register-phone.png": "d3aaae1a015481848cf34982e8e74ce22954975b9dc4e6e3a2064887bc163fdc",
+  "actual-cost-type-register-tablet.png": "e083bc5f36f3cd3d22246f50c39bd522608aaf721b352530ade9a9723d619edf",
+  "actual-fourth-verification.json": "2cd2c527140dbe8c740916644b9113f8ded1a3f5b2da9accf15eb6ad8b910cd9",
+  "anonymous-readiness.json": "4fe3845b2d5a4ecc3e4f147626e78fbb599aacda65210713985d71c4b5904e4f",
+  "build-inventory.json": "4650804545336d450aeb36c30d0e0c1f7820ab62fdb2fc36a9b37593565ee71a",
+  "fixture-browser-contracts.json": "1e9e5b769ae9a92e92e413349175db9cb8b52d945e21137fbe89d9806d496bdb",
+  "generated-client-check.txt": "4a5a8f597e6c60bb7764c7ec1897c7c7c506ef8a8319eefcf9308af4468a6360",
+  "isolated-build-log.txt": "86b9c554d67532444133853e79e8a078a96ebb3f785fba5200a8aea761e88810",
+  "qualification.json": "25aa5802e7e3828bdee52d27743edce53c161f7e1485d639275a4f51feab82b9",
+  "settled-read-only-verification.json": "b1d0892d697136088df4d56312cf43df6a9617a2bc0c69e11b47e99178ad0570",
+  "source-after.json": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8",
+  "source-before.json": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8"
+}

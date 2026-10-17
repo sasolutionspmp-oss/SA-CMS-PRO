@@ -1,0 +1,29 @@
+{
+  "operation": {
+    "id": "2aead21e-287c-4f20-a802-a1fb7cf3f3f1",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "pursuit": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "company": "Company chain A c3c3b742a8fd",
+    "fields": {
+      "bid_due_at": "",
+      "bid_timezone": "",
+      "delivery_method": "",
+      "geography": "",
+      "probability_basis": "",
+      "procurement_reference": "",
+      "sector": "Synthetic infrastructure",
+      "title": "Award manual pursuit company-chain-c3c3b742a8fd"
+    },
+    "id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "native_version": "2026-10-16 04:40:45.606491",
+    "opportunity": "CRM-OPP-2026-00002",
+    "party_id": "Company chain customer a c3c3b742a8fd",
+    "party_type": "Customer",
+    "revision_number": 1,
+    "stage": "identified",
+    "title": "Award manual pursuit company-chain-c3c3b742a8fd"
+  }
+}

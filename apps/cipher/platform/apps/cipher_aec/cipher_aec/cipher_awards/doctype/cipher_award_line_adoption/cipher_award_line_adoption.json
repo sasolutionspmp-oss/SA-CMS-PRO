@@ -1,0 +1,141 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Award Line Adoption",
+  "module": "Cipher Awards",
+  "custom": 0,
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "track_changes": 0,
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "data_json",
+    "record_digest",
+    "handoff",
+    "award_revision",
+    "pursuit",
+    "issue",
+    "proposal_line_id",
+    "sales_order",
+    "sales_order_item",
+    "contract",
+    "target_project"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Person",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "handoff",
+      "label": "Handoff",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Award Handoff"
+    },
+    {
+      "fieldname": "award_revision",
+      "label": "Award Revision",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Award Handoff Revision"
+    },
+    {
+      "fieldname": "pursuit",
+      "label": "Pursuit",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Pursuit"
+    },
+    {
+      "fieldname": "issue",
+      "label": "Issue",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Proposal Issue"
+    },
+    {
+      "fieldname": "proposal_line_id",
+      "label": "Proposal Line Id",
+      "fieldtype": "Data",
+      "read_only": 1
+    },
+    {
+      "fieldname": "sales_order",
+      "label": "Sales Order",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Sales Order"
+    },
+    {
+      "fieldname": "sales_order_item",
+      "label": "Sales Order Item",
+      "fieldtype": "Data",
+      "read_only": 1
+    },
+    {
+      "fieldname": "contract",
+      "label": "Contract",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Construction Contract"
+    },
+    {
+      "fieldname": "target_project",
+      "label": "Adopted Project",
+      "fieldtype": "Link",
+      "options": "Project",
+      "read_only": 1,
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "allow_rename": 0
+}

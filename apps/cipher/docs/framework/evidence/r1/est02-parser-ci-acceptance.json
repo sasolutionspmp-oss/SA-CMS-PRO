@@ -1,0 +1,52 @@
+{
+  "schema": "cipher.r1.est02-parser-acceptance.v1",
+  "status": "passed",
+  "label": "takeoff-parser-only-actual-pypdf-regression",
+  "live_model_qualified": false,
+  "live_provider_qualified": false,
+  "qualification": "Parser-only PDF metadata regression; no fixture provisioning, calibration approval, takeoff persistence, HTTP or receipt qualification.",
+  "parser": {
+    "status": "passed",
+    "label": "actual-vector-pdf-fixture-parser",
+    "frame": {
+      "coordinate_system": "pdf-user-space-v1",
+      "media_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "rotate": 0,
+      "user_unit": "1",
+      "parser": "pypdf-6.15.0:cipher-page-metadata-v1"
+    },
+    "fractional_rotation_rejected_without_truncation": true,
+    "unsupported_UserUnit_rejected": true
+  },
+  "runtime": {
+    "container": "cipher-r0-runtime-1",
+    "site": "cipher.localhost",
+    "command": "bench --site cipher.localhost execute cipher_aec.tests.test_takeoff_acceptance.run_acceptance"
+  },
+  "source_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_takeoff_acceptance.py",
+      "sha256": "b42fdda1d0bc883eb29ef04c23c42cb28918bf163b8fd6753c2081ebe258cb76"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/pdf.py",
+      "sha256": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/geometry.py",
+      "sha256": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e"
+    }
+  ],
+  "recorded_at": "2026-10-15T16:27:35.516631+00:00"
+}

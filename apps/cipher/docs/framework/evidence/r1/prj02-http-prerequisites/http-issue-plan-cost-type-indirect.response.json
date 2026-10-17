@@ -1,0 +1,59 @@
+{
+  "master": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "code": "AWARD-INDIRECT",
+    "company": "Company chain A c3c3b742a8fd",
+    "current_revision": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+    "id": "a610293f-ea62-499f-bb60-86e704af2265",
+    "kind": "type",
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-master.v1"
+  },
+  "operation": {
+    "id": "efacbcb6-21e7-4004-bd20-268e500cc283",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "revision": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "authored_native": {
+      "account_currency": "USD",
+      "company": "Company chain A c3c3b742a8fd",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "disabled": false,
+      "doctype": "Account",
+      "is_group": false,
+      "name": "Administrative Expenses - Q0c3c3b7",
+      "root_type": "Expense",
+      "version": "2026-10-16 04:33:06.151800"
+    },
+    "code": "AWARD-INDIRECT",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "indirect",
+      "cost_category": null,
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit indirect accounting target"
+    },
+    "id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+    "kind": "type",
+    "master_id": "a610293f-ea62-499f-bb60-86e704af2265",
+    "predecessor": null,
+    "project": null,
+    "revision_number": 1,
+    "schema": "cipher.cost-revision.v1"
+  },
+  "version": "594bcd9d80ec3d65f020107f53683e756e048288683fa287dff989e9deea2156"
+}

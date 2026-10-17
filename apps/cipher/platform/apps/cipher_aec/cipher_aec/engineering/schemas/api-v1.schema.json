@@ -1,0 +1,2528 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cipher.example/schemas/engineering-api-v1",
+  "title": "CipherEngineeringContract",
+  "$defs": {
+    "EgNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EgPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EgCitationInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "page",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EgDrawingInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EgDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EgArtifactInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EgArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EgRfiDefinition": {
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "question": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "responsible_users": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "due_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "contract_citation_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "subject",
+        "question",
+        "responsible_users",
+        "due_date",
+        "location",
+        "contract_citation_ids"
+      ],
+      "additionalProperties": false
+    },
+    "EgResponseDefinition": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "potential_cost_impact": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "potential_schedule_impact": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "answer",
+        "potential_cost_impact",
+        "potential_schedule_impact"
+      ],
+      "additionalProperties": false
+    },
+    "EgSubmissionDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "specification_section": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "equipment_tag": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "required_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "contractor": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "reviewer_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "submission_standing": {
+          "enum": [
+            "submitted",
+            "resubmitted"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "specification_section",
+        "equipment_tag",
+        "required_date",
+        "contractor",
+        "reviewer_user",
+        "submission_standing"
+      ],
+      "additionalProperties": false
+    },
+    "EgDispositionDefinition": {
+      "type": "object",
+      "properties": {
+        "disposition": {
+          "enum": [
+            "approved",
+            "approved_as_noted",
+            "revise_resubmit",
+            "rejected"
+          ]
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "disposition",
+        "comments"
+      ],
+      "additionalProperties": false
+    },
+    "EgOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "EgCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EgRfi": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "enum": [
+            "open",
+            "closed"
+          ]
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "response_head": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "official_response": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "closure": {
+          "type": "object",
+          "properties": {
+            "official_response": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "reason": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "person": {
+              "type": "string",
+              "maxLength": 140
+            },
+            "at": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          "required": [
+            "official_response",
+            "reason",
+            "person",
+            "at"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_revision",
+        "response_head",
+        "official_response"
+      ],
+      "additionalProperties": false
+    },
+    "EgRfiRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitation"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifact"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingReference"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgRfiDefinition"
+        },
+        "responsible_people": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgPerson"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "source_citations",
+        "artifacts",
+        "drawing_references",
+        "no_effects",
+        "definition",
+        "responsible_people"
+      ],
+      "additionalProperties": false
+    },
+    "EgResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitation"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifact"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingReference"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgResponseDefinition"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "source_citations",
+        "artifacts",
+        "drawing_references",
+        "no_effects",
+        "definition",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgSubmittal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "open"
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_submission": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "disposition_head": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "official_disposition": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "number",
+        "revision_number",
+        "current_submission",
+        "disposition_head",
+        "official_disposition"
+      ],
+      "additionalProperties": false
+    },
+    "EgSubmission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitation"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifact"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingReference"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgSubmissionDefinition"
+        },
+        "reviewer": {
+          "$ref": "#/$defs/EgPerson"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "source_citations",
+        "artifacts",
+        "drawing_references",
+        "no_effects",
+        "definition",
+        "reviewer"
+      ],
+      "additionalProperties": false
+    },
+    "EgDisposition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitation"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifact"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingReference"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgDispositionDefinition"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "source_citations",
+        "artifacts",
+        "drawing_references",
+        "no_effects",
+        "definition",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialDisposition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgTransmittal": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "awaiting_independent_authorization"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "enum": [
+                "official_response",
+                "official_disposition"
+              ]
+            },
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgPerson"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "required_response": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "channel": {
+          "const": "internal"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitation"
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifact"
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingReference"
+          },
+          "minItems": 0,
+          "maxItems": 16
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject",
+        "subject_digest",
+        "recipients",
+        "purpose",
+        "required_response",
+        "channel",
+        "source_citations",
+        "artifacts",
+        "drawing_references",
+        "package_digest",
+        "no_effects"
+      ],
+      "additionalProperties": false
+    },
+    "EgDistribution": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "recorded_internally"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgPerson"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "channel": {
+          "const": "internal"
+        },
+        "external_delivery": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "package_digest",
+        "recipients",
+        "channel",
+        "external_delivery"
+      ],
+      "additionalProperties": false
+    },
+    "EgRecord": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EgRfi"
+        },
+        {
+          "$ref": "#/$defs/EgRfiRevision"
+        },
+        {
+          "$ref": "#/$defs/EgResponse"
+        },
+        {
+          "$ref": "#/$defs/EgOfficialResponse"
+        },
+        {
+          "$ref": "#/$defs/EgSubmittal"
+        },
+        {
+          "$ref": "#/$defs/EgSubmission"
+        },
+        {
+          "$ref": "#/$defs/EgDisposition"
+        },
+        {
+          "$ref": "#/$defs/EgOfficialDisposition"
+        },
+        {
+          "$ref": "#/$defs/EgTransmittal"
+        },
+        {
+          "$ref": "#/$defs/EgDistribution"
+        }
+      ]
+    },
+    "EgGetResponse": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/EgRecord"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "record",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgGetResponse"
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateRfiRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgRfiDefinition"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "definition",
+        "source_citations",
+        "drawing_references"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateRfiResponse": {
+      "type": "object",
+      "properties": {
+        "rfi": {
+          "$ref": "#/$defs/EgRfi"
+        },
+        "revision": {
+          "$ref": "#/$defs/EgRfiRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "rfi",
+        "revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgReviseRfiRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rfi_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgRfiDefinition"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgDrawingInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "rfi_id",
+        "expected_version",
+        "definition",
+        "source_citations",
+        "drawing_references"
+      ],
+      "additionalProperties": false
+    },
+    "EgReviseRfiResponse": {
+      "type": "object",
+      "properties": {
+        "rfi": {
+          "$ref": "#/$defs/EgRfi"
+        },
+        "revision": {
+          "$ref": "#/$defs/EgRfiRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "rfi",
+        "revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateResponseRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rfi_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgResponseDefinition"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "rfi_id",
+        "source_revision",
+        "expected_version",
+        "definition",
+        "source_citations",
+        "predecessor"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateResponseResponse": {
+      "type": "object",
+      "properties": {
+        "rfi": {
+          "$ref": "#/$defs/EgRfi"
+        },
+        "response": {
+          "$ref": "#/$defs/EgResponse"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "rfi",
+        "response",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateSubmittalRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgSubmissionDefinition"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifactInput"
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "definition",
+        "artifacts",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateSubmittalResponse": {
+      "type": "object",
+      "properties": {
+        "submittal": {
+          "$ref": "#/$defs/EgSubmittal"
+        },
+        "submission": {
+          "$ref": "#/$defs/EgSubmission"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "submittal",
+        "submission",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgReviseSubmissionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "submittal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgSubmissionDefinition"
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgArtifactInput"
+          },
+          "minItems": 1,
+          "maxItems": 8
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "submittal_id",
+        "expected_version",
+        "definition",
+        "artifacts",
+        "source_citations"
+      ],
+      "additionalProperties": false
+    },
+    "EgReviseSubmissionResponse": {
+      "type": "object",
+      "properties": {
+        "submittal": {
+          "$ref": "#/$defs/EgSubmittal"
+        },
+        "submission": {
+          "$ref": "#/$defs/EgSubmission"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "submittal",
+        "submission",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateDispositionRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "submittal_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EgDispositionDefinition"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgCitationInput"
+          },
+          "minItems": 0,
+          "maxItems": 8
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "submittal_id",
+        "source_revision",
+        "expected_version",
+        "definition",
+        "source_citations",
+        "predecessor"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateDispositionResponse": {
+      "type": "object",
+      "properties": {
+        "submittal": {
+          "$ref": "#/$defs/EgSubmittal"
+        },
+        "disposition": {
+          "$ref": "#/$defs/EgDisposition"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "submittal",
+        "disposition",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateTransmittalRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_kind": {
+          "enum": [
+            "official_response",
+            "official_disposition"
+          ]
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "purpose": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "required_response": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "recipients",
+        "purpose",
+        "required_response"
+      ],
+      "additionalProperties": false
+    },
+    "EgCreateTransmittalResponse": {
+      "type": "object",
+      "properties": {
+        "transmittal": {
+          "$ref": "#/$defs/EgTransmittal"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "transmittal",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgCloseRfiRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "rfi_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "official_response": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "rfi_id",
+        "expected_version",
+        "official_response",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "EgCloseRfiResponse": {
+      "type": "object",
+      "properties": {
+        "rfi": {
+          "$ref": "#/$defs/EgRfi"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EgOperation"
+        }
+      },
+      "required": [
+        "rfi",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EgGetRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "rfi",
+            "rfi_revision",
+            "response",
+            "official_response",
+            "submittal",
+            "submission",
+            "disposition",
+            "official_disposition",
+            "transmittal",
+            "distribution"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "EgListPeopleRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    },
+    "EgListRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "rfi",
+            "rfi_revision",
+            "response",
+            "official_response",
+            "submittal",
+            "submission",
+            "disposition",
+            "official_disposition",
+            "transmittal",
+            "distribution"
+          ]
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "subject_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "EgPeopleResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "maxLength": 140
+              },
+              "person": {
+                "type": "string",
+                "maxLength": 140
+              },
+              "display_name": {
+                "type": "string",
+                "maxLength": 140
+              }
+            },
+            "required": [
+              "user",
+              "person",
+              "display_name"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 0,
+          "maxItems": 100
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/EgCreateRfiRequest"
+    },
+    {
+      "$ref": "#/$defs/EgReviseRfiRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCreateResponseRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCreateSubmittalRequest"
+    },
+    {
+      "$ref": "#/$defs/EgReviseSubmissionRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCreateDispositionRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCreateTransmittalRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCloseRfiRequest"
+    },
+    {
+      "$ref": "#/$defs/EgGetRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/EgListPeopleRequest"
+    },
+    {
+      "$ref": "#/$defs/EgListRecordsRequest"
+    },
+    {
+      "$ref": "#/$defs/EgCreateRfiResponse"
+    },
+    {
+      "$ref": "#/$defs/EgReviseRfiResponse"
+    },
+    {
+      "$ref": "#/$defs/EgCreateResponseResponse"
+    },
+    {
+      "$ref": "#/$defs/EgCreateSubmittalResponse"
+    },
+    {
+      "$ref": "#/$defs/EgReviseSubmissionResponse"
+    },
+    {
+      "$ref": "#/$defs/EgCreateDispositionResponse"
+    },
+    {
+      "$ref": "#/$defs/EgCreateTransmittalResponse"
+    },
+    {
+      "$ref": "#/$defs/EgCloseRfiResponse"
+    },
+    {
+      "$ref": "#/$defs/EgGetResponse"
+    },
+    {
+      "$ref": "#/$defs/EgListResponse"
+    },
+    {
+      "$ref": "#/$defs/EgPeopleResponse"
+    }
+  ]
+}

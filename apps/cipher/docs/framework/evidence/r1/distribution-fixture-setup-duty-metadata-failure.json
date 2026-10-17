@@ -1,0 +1,23 @@
+{
+  "schema": "cipher.r1.distribution-fixture-setup-failure.v1",
+  "status": "failed",
+  "recorded_at": "2026-10-15T18:48:34.458656+00:00",
+  "stage": "grant_synthetic_company_duties commercial.distribute",
+  "error_type": "frappe.exceptions.ValidationError",
+  "error": "Ability cannot be commercial.distribute; native Cipher Project Duty Select options omit this new capability.",
+  "following_bench_wrapper_error": "NameError: name cipher_aec is not defined",
+  "cause": "The Python capability catalog had the new ability but DocType Select metadata did not. The supported controller refused the insert.",
+  "actual_readback": {
+    "fixture_enabled": true,
+    "policy": {
+      "action": "proposal.distribute.v1",
+      "scope_type": "Company",
+      "enabled": 1
+    },
+    "policy_count": 8,
+    "target_duty": null
+  },
+  "transport_attempted": false,
+  "log_sha256": "6675fde46d7f999f35b272c37d4c50fdddfa8b032ce827936e4e3a6185fbb1de",
+  "correction": "Add exact native Select option and catalog/metadata parity coverage; supported metadata migration; retry same supported synthetic duty grant. Do not bypass native validation."
+}

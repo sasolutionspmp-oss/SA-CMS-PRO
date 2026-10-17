@@ -1,0 +1,20 @@
+{
+  "mode": "actual-frappe-read-only",
+  "origin": "http://127.0.0.1:18880",
+  "captured_at": "2026-10-15T15:00:35.805Z",
+  "browser_errors": 0,
+  "checks": [
+    "sign in through the real UI form",
+    "authenticated same-origin session",
+    "persistent project register",
+    "project tasks and document context",
+    "rendered table header/body alignment within 2 pixels including assistant resize",
+    "honest unavailable local model",
+    "document original source text",
+    "desktop 1440, tablet 900 and phone 390 viewport without page overflow",
+    "keyboard login with Tab/Enter and focused navigation activation",
+    "served bundle and source snapshot hashes independent of newer working source"
+  ],
+  "mocked_requests": false,
+  "business_writes": false
+}

@@ -1,0 +1,16 @@
+{
+  "artifacts": [
+    {
+      "name": "connected-reviewer-access-state.png",
+      "sha256": "b054ef2bf3b5fff8a8336485652ebe52e3e8885c7f8372dcc66f81e8a3f65a9b"
+    },
+    {
+      "name": "served-build-provenance.json",
+      "sha256": "9275577afa921daa94c9fe68ce8c2d49e9974ead88ce7e3fa5105e260c3d5e6c"
+    },
+    {
+      "name": "verification.json",
+      "sha256": "968c6f0be0032715fbd77cec7fd3d367b1b8bef921a87e86625cc5fe6849eafa"
+    }
+  ]
+}

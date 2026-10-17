@@ -1,0 +1,98 @@
+{
+  "browser_cases": 90,
+  "build": {
+    "files": 915,
+    "modules": 2043,
+    "path": "/dev/shm/cipher-company-takeoff-successor-ui-r19/dist",
+    "status": "passed"
+  },
+  "classification": "synthetic_interception_host_qualification",
+  "configuration_sha256": {
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/BASELINE.json": "d0251eb5c94766f4a0d8d0ca39c1ee9bad4e833a6478a3f780a6b8140a96fff7",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/playwright-r19.config.mjs": "c810df608aa74501335f052561873531c00e5539745cb2adcfd4848126f36303",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/vite-r19.config.mjs": "cf921bd7efabae323035be66173f58b334a3641382d2b165082842e272872c6c"
+  },
+  "focused_cases": 107,
+  "fresh_distinct_cases": 107,
+  "full_suite": "not run; affected gates only",
+  "generated_contracts_verified": 13,
+  "integrity": {
+    "App_backend_generated_Project_takeoff": "byte-identical to R18",
+    "R18_frozen_delta_verified_files": 7,
+    "R18_original_workspace_verified_files": 719,
+    "changed_paths": 8,
+    "production_paths": 5,
+    "source_files": 724,
+    "test_paths": 3,
+    "unchanged_base_files": 716
+  },
+  "logs_sha256": {
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/attempt-01.log": "9f466db112ad55a1acdf11ded03a5aa9a3e755249242a4160848c639b365f1a0",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/attempt-02-failing-first.log": "33f95b12df24023c12d532c1d6e4ca1edf41140e15c2924dab9c32e84e4b7d37",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/build-qualified.log": "b6570c2a7a06e9cbc5d4ac7569eb0f717ca5fde330c568fe9d57a164e2794fed",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/focused-final.log": "47ba70a07342ebe16c4c4c8803ccbfaa20ba2a11ec64b793798c651b6b5b51b9",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/focused-new.log": "190881f7a11d5b2cbbecda4c600a05afc74838d22c28bdda022c135e40adb444",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/generated-qualified.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/typecheck-01.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/typecheck-02.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-successor-ui-r19/typecheck-qualified.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+  },
+  "native_qualification": "pending root-owned; child made no native calls or captures",
+  "node_contract_cases": 17,
+  "reports": {
+    "attempt-01": {
+      "path": "/dev/shm/cipher-company-takeoff-successor-ui-r19/attempt-01/report.json",
+      "sha256": "eebfad742722c71faeb72781aba7e059188e2e8397aa88bafbf5d51e0091e189",
+      "stats": {
+        "duration": 62155.121999999996,
+        "expected": 25,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:52:29.935Z",
+        "unexpected": 1
+      }
+    },
+    "attempt-02-failing-first": {
+      "path": "/dev/shm/cipher-company-takeoff-successor-ui-r19/attempt-02-failing-first/report.json",
+      "sha256": "b4ebd736c705a77879090447976330a4b073a5e3b3d0e4bc6f1802a4e0521897",
+      "stats": {
+        "duration": 4017.148,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:54:22.457Z",
+        "unexpected": 1
+      }
+    },
+    "focused-final": {
+      "path": "/dev/shm/cipher-company-takeoff-successor-ui-r19/focused-final/report.json",
+      "sha256": "b414db6a6202e03902f864e6a2207c31924fe9687e809086ec2c53c9b01602f9",
+      "stats": {
+        "duration": 263973.023,
+        "expected": 107,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:57:17.526Z",
+        "unexpected": 0
+      }
+    },
+    "focused-new": {
+      "path": "/dev/shm/cipher-company-takeoff-successor-ui-r19/focused-new/report.json",
+      "sha256": "2a91cf2f8e0752c9635b559b4886443c9bcddd5eb466d491bbc0e9538956ea3a",
+      "stats": {
+        "duration": 72979.49699999999,
+        "expected": 29,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:55:24.399Z",
+        "unexpected": 1
+      }
+    }
+  },
+  "retries": 0,
+  "schema": "cipher.company-manual-successor.ui-qualification.v1",
+  "screenshots": "disabled",
+  "static_assets": "packaged SVG/notice exact bytes checked; no additional browser gate",
+  "typecheck": "passed",
+  "workers": 1
+}

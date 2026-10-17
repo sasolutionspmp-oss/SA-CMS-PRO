@@ -1,0 +1,37 @@
+{
+  "latest_browser_24": {
+    "adapter_sha256": "ae81945c458ca531b435c917d2e8440dddf1d8f1dedcd45aaa987b7cdf57c7ba",
+    "fixture_sha256": "4e02038d5faecca44affe7df37e6287eb37de7936cefbc167ca850807baf0993",
+    "production_bytes_unchanged_during_confirmation": true,
+    "report": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-final/report.json",
+    "sha256": "5b988872e1dbbc2582be10971aab2a26ddd283be226af2ca8849f79b79969405",
+    "test_path": "apps/cipher/product/tests/company-calibration.spec.ts",
+    "test_sha256": "f38f18b2b1e43a7414a5bee606423febf2ed526a6d383405db2959555642a1ac"
+  },
+  "mapping_sha256": "9dfde6a3056c6f4b6c18f759c334fa421cc5cb030a27aa459883d07a9d4e9f19",
+  "preserved_67_case_mapping": "/dev/shm/cipher-company-calibration-ui-r21/frozen-ui-v1/COMPATIBILITY_HASHES.json",
+  "prior_R21_manifest": "/dev/shm/cipher-company-calibration-ui-r21/frozen-ui-v1/MANIFEST.json",
+  "prior_R21_manifest_sha256": "4e2c794b259e6fa09aebfe26f36dc7ff26b60966392f7300cd20175ff187e611",
+  "type_assertion_only_correction": {
+    "final_sha256": "568a914baf0bfc7d60d75950e7e4986e18cd17ca7cc541b5a7986cc28c305e96",
+    "fresh_all_26_validators": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-confirmation/report.json",
+    "prior_sha256": "b192ca5bbb74bcd5d30c6d4ebc2615df9608ca57b795998f23ef5ff4fe849c11",
+    "prior_validator_source": "prior-typing/company-calibration-validation.spec.ts"
+  },
+  "unchanged_command_form_reader_path_sha256": {
+    "apps/cipher/product/src/App.tsx": "528dbaeebf52f5431e53332bf3c2852472558cfda14695640764385e93a77e3c",
+    "apps/cipher/product/src/CompanyTakeoff.tsx": "634aaaf1ade88e7c5c9bad62449ca6b6d5be5f96b0c927bc6a1223940c915be2",
+    "apps/cipher/product/src/CompanyTakeoffCalibration.tsx": "912e780bb368d8a73fa347408f40d04e987f70be5616555886ed5976b18cb8ce",
+    "apps/cipher/product/src/PdfDrawing.tsx": "785ec6aceb12beca5e8de765acaaa9ae147ff35daabfdc5632cb8170bdd71039",
+    "apps/cipher/product/src/styles.css": "c8e671b54280223403bf917dd3f9be7e049b818e9df0ac2bcb19701a1d1ca450",
+    "apps/cipher/product/src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1"
+  },
+  "unchanged_compatibility_test_sha256": {
+    "apps/cipher/product/tests/company-draft-save.spec.ts": "6b4552576090d60684ae1f48a038cb43125e31946c747afef7b61dd2d120dd5f",
+    "apps/cipher/product/tests/company-takeoff-authority.spec.ts": "58e5e9cbb2e4ff972abe703a7da442fe0845363772811ec66d74fb9772f144bc",
+    "apps/cipher/product/tests/company-takeoff-evidence.spec.ts": "c3dc3afcdc6fb6c44a154a6e88ea2c48a61874927b9e6573549cbb81ca38fe7b",
+    "apps/cipher/product/tests/company-takeoff-successor-layout.spec.ts": "9222f52db5eaae82b179d568f4cb3f4550be02dcd114ec8a3285d43eeafc9b24",
+    "apps/cipher/product/tests/company-takeoff-successor.spec.ts": "c0cb474046b65df756666c2d3e8821bfa2c82cf8be91a9bc8566b5c7d3a17116",
+    "apps/cipher/product/tests/takeoff.spec.ts": "967544349f65743f3e8bc11947b79cf7c5faf4b9278c616c7aecf81888cc18de"
+  }
+}

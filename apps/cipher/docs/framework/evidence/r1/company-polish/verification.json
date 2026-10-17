@@ -1,0 +1,170 @@
+{
+  "mode": "actual-frappe-read-only-polish",
+  "scope": "Company",
+  "captured_at": "2026-10-15T18:39:49.506Z",
+  "prior_effect_proof": "/workspace/cipher-live-r2/company-workspace/verification.json",
+  "created": {
+    "pursuit": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+    "proposal": "511bdce1-827a-49ba-b788-855f6e65972b",
+    "original_proposal_revision": "945bcd51-3ed5-425a-85de-c838fee5bcb7",
+    "quotation": "SAL-QTN-2026-00006",
+    "proposal_revision": "ffad1cc9-61a8-4ff1-90f9-d1adcd7888bd",
+    "document": "DOC-433cfe51c42b4949b205eb10b4e812da",
+    "source_revision": "REV-75221da84c8a4309bf640bc2835d1280",
+    "estimate": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+    "estimate_revision": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+    "snapshot": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+    "packet": "97c5oblb9t",
+    "acceptance": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071"
+  },
+  "business_writes": [],
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "keyboard_checked": true,
+  "actual_unit_metadata": {},
+  "source_hashes": {
+    "../src/App.tsx": "36e064f9a10b32e16e7655b018fc679ad963ffc64acc33cbc09e8e583eab357a",
+    "../src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "../src/Commercial.tsx": "f7635327b004a934614410fb9915e45220047f7dc8630edd0a1b6604b8f23364",
+    "../src/CompanyApprovals.tsx": "d08482666427096810c3713833c8006f037a6be52c8f1cdd7ba303ee1092547c",
+    "../src/CompanyDocuments.tsx": "19f00fda50b8662c0a2afa2964a672ca500838930bf778537497407129ccfe8d",
+    "../src/CompanyEstimates.tsx": "bc9eb5c0f0049c5774fa763cf2148188a12375a211b501c19b311d1de76b93c2",
+    "../src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "../src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "../src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "../src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "../src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "../src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "../src/PdfDrawing.tsx": "81a3ac0a0a9a9905e9a4f7fdf48db429a95ce3c6935f23160e9666c0b5b1c948",
+    "../src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "../src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "../src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "../src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "../src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "../src/Takeoff.tsx": "e50dc217e858186ee32c8dbd27b192c0201feaa2ee5d955395eaf546d50e1916",
+    "../src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "../src/api/commercial.generated.ts": "35b5e70136e618f09150b376f94aaf4176fda824d0ee5ce46ff57472ca2fc0e5",
+    "../src/api/commercial.ts": "c3ddd09c6009bf6692988a565c45036b285475570d22f0c5c7edaa76856e2172",
+    "../src/api/company-approvals.ts": "bbd454e179641c8b8ce6915b14cb01c373e425570d06bb46ab236a7fdb10edd6",
+    "../src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "../src/api/company-estimating.generated.ts": "b96ad2e9f43d484e3c7a229b332758064969b33dc75cac295a4d11a743af47e2",
+    "../src/api/company-estimating.ts": "400de8e6954c57ced96e180524409e4ae69981a7ccd18560980797413cc17241",
+    "../src/api/contracts.generated.ts": "51fb251ef909daaafa64e9a36164267fb0d01c94be8f04cb1c7a09fe11a59590",
+    "../src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "../src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "../src/api/masters.ts": "1d8ad7f5e3add764ad1631734acd2eca900494127f4f39d4be592e3984257a00",
+    "../src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "../src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "../src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "../src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "../src/components.tsx": "f5c23b454489eeee7212e7c0efcbd7ca65624e0581c45ffe7d2fe1d256185126",
+    "../src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "../src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "../src/main.tsx": "1dd45d45d97474eadb18976d33fcee2cfe1628ac3e6e9782fa1c4a7126debaa7",
+    "../src/styles.css": "c2cf080596db855ebd8c56a6ee66511230466db52d409d456c3b2f35a2b97c49",
+    "../src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "../scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "../scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "../scripts/connected-company.mjs": "676577597644bd7bfdc63cecbfeb1fcd10c7a33308d1ac92087d34753d84df06",
+    "../scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "../scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "../scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "../scripts/connected-polish-readonly.mjs": "cfdc892b890e1cf98aea16539976cfdcdee36ad2018615c8ca10c6b8cedc3d60",
+    "../scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "../scripts/connected-takeoff.mjs": "45bee60823ea90c81aeec4fb954e9c27fd671834b5c822e89a28c6d4ce3cb8a5",
+    "../scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "../scripts/generate-api.mjs": "e0fc5fe25beb8689965037d9e0e1f2f3d9e821e2d0ed29ffc57822ff337c4701",
+    "../package.json": "da049761001530552192eb95a6df4a4cedafda084ac0a22cbd0a4b03292ecb5a",
+    "../package-lock.json": "fd89c56a85d0d5f16fee82d0acb4671b7064385f4a4a87b709d51a86c2f85a64"
+  },
+  "served_assets": [
+    {
+      "path": "/assets/index-D53ptheY.js",
+      "sha256": "d35e718cd47620ac709954e82b16f16b6df2caca61d9f771f989d1e3099635ed"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-BgzUu5VV.js",
+      "sha256": "7a6e5be38ee075cd953c67ca230b10f79216719b630d010ae02a61fb6359a66a"
+    },
+    {
+      "path": "/assets/components-Og-eKZPg.js",
+      "sha256": "5dade6e934a433c3e8245f60eafe6f606a185a4596b593e2fa87cf5fab53f1df"
+    },
+    {
+      "path": "/assets/TextArea-CowevTvk.js",
+      "sha256": "0c0464e32f3c0139e8fd1aeac9d293c795e9a02503a2db663a87673ad595a354"
+    },
+    {
+      "path": "/assets/Input-C0eGX5HP.js",
+      "sha256": "ef823ab62d2fb4f7ec31e84d6f3357b375c7ce266a857e9ce882c5a4f90463b2"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964"
+    },
+    {
+      "path": "/assets/Link-BZLAZib3.js",
+      "sha256": "4dac06ecc6555d4c559048df77ee2522efb4fb019dd9e3cb0ea9ecf8c24dfe30"
+    },
+    {
+      "path": "/assets/useMutation-BcZVawU-.js",
+      "sha256": "bf0d948a5122a7fac71ece51730cebd78e6308ecd862bb80d87018329c65123e"
+    },
+    {
+      "path": "/assets/Text-DszZlDxA.js",
+      "sha256": "8516463304b771c90346909fcd80744580bf0274acabef3fb8477db446ed7339"
+    },
+    {
+      "path": "/assets/estimating-cNVbOx-g.js",
+      "sha256": "6bc3faf57bf76538eff46003544540466b111959aeffbf08f43d37aa34fd39f2"
+    },
+    {
+      "path": "/assets/index-Yn1bRptq.css",
+      "sha256": "aa41a99c87379c4c2115090ce95494b38bb5adb4b7d20ad42227be3c211e3068"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/Commercial-BkIjoeKC.js",
+      "sha256": "aa715eb51457eb0e83661c70dd38f40bc999314f6332db114a5308c437e4ee3c"
+    },
+    {
+      "path": "/assets/NativeChoice-DvLOytnd.js",
+      "sha256": "5d8148ff4dfdc6afbb4fcaf22e0042630efc73379a9e3eee01b9e8406748c6d4"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-D7hXf7Rt.js",
+      "sha256": "99ab0b5aacff925728cffc4be1a9cee63eb249de40dc837a685a78f242acec53"
+    },
+    {
+      "path": "/assets/CompanyEstimates-BAE4V3XI.js",
+      "sha256": "523b2d37c674686155ba484acf1488e553f374a148022fa8110b79787663c091"
+    },
+    {
+      "path": "/assets/CompanyApprovals-djJD0HeV.js",
+      "sha256": "f2147bcc85d0e87aa10185d4a9a949294fa7ea533a708e3401dd99243e9610b4"
+    },
+    {
+      "path": "/assets/CompanyDocuments-C9RQ67b2.js",
+      "sha256": "66bbf428d724fc511dbfdf5242b20594e65c691b382749cd1e21a6cc80987123"
+    }
+  ],
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ]
+}

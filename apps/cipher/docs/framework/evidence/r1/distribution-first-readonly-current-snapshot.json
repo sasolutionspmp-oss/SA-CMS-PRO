@@ -1,0 +1,21 @@
+{
+  "schema": "cipher.r1.distribution-queue-observation.v1",
+  "status": "passed",
+  "mode": "snapshot",
+  "observed_at": "2026-10-15T19:56:15.035771+00:00",
+  "operation_id": "gka2def6dh",
+  "dispatch_id": "6761201a-88d6-4d90-97ba-bad9136382d6",
+  "logical_key": "0387693f89b1cd930f4448c2677ff2e2c48b3747279265dbd7ee04f22e1bdf5c",
+  "canonical_state": "Succeeded",
+  "worker_attempt_count": 1,
+  "fencing_token": 1,
+  "rq_job_id": "cipher.localhost||cipher-outbox-gka2def6dh",
+  "rq_state": null,
+  "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+  "queue_contains_job": false,
+  "sink_receipt_count": 1,
+  "original_healthy_common_redis_used": true,
+  "manual_deliver_or_publish_invoked": false,
+  "live_external_provider_qualified": false,
+  "qualification": "Read-only snapshot only; no queued/completion qualification."
+}

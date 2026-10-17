@@ -1,0 +1,28 @@
+{
+  "mode": "actual-frappe-synthetic-ui-effects",
+  "captured_at": "2026-10-15T15:12:53.044Z",
+  "mocked_requests": false,
+  "business_writes": true,
+  "initial_and_final_status": "Open",
+  "browser_errors": 0,
+  "results": [
+    {
+      "packet_id": "hiefvisttb",
+      "manifest_hash": "4ab1441d8b80bf29157017e06c8285c85f6441597be09c4ba739db1794ad0d06",
+      "from": "Open",
+      "to": "On hold",
+      "unchanged_tasks": 14,
+      "independent_review": true,
+      "separate_execution": true
+    },
+    {
+      "packet_id": "hjl9lmku3m",
+      "manifest_hash": "8d903dd98cafb68b03151e3ef089156c3448efc380df6aa046ff52ceec3ec44e",
+      "from": "On hold",
+      "to": "Open",
+      "unchanged_tasks": 14,
+      "independent_review": true,
+      "separate_execution": true
+    }
+  ]
+}

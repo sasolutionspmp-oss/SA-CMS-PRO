@@ -1,0 +1,15 @@
+{
+  "schema": "cipher.r1.distribution-refused-send-native.v1",
+  "status": "passed",
+  "operation_id": "op9jlc2cj9",
+  "scenario": "revoked_distribution",
+  "state": "Failed",
+  "error_code": "capability_denied",
+  "sink_accept_calls": 0,
+  "sink_acceptance_absent": true,
+  "fixture_clock_after_persisted_deadline": false,
+  "transport": "fixture",
+  "live_external_provider_qualified": false,
+  "driver_started_at": "2026-10-15T19:13:15.261280+00:00",
+  "driver_completed_at": "2026-10-15T19:13:16.760841+00:00"
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "cipher.company-proposals-r14.review.v1",
+  "status": "reviewed_and_qualified",
+  "changed_source_paths": 44,
+  "complete_source_count": 679,
+  "reviewed_boundaries": [
+    "Separate closed deterministic-proposal registry and five Company routes; existing Project and Company-read contracts preserved.",
+    "Original draft Invocation persistent:false remains intact inside a distinct persisted versioned wrapper.",
+    "Actual authorized canonical citations and rational quantities checked before invocation and during finalization.",
+    "Complete source/native lock plan, current original User/Person/session, lease/cancellation/expiry and atomic wrapper/Run finalization.",
+    "Original immutable history and replay retained after working revisions advance; source-free Stop grants no source access.",
+    "SAP UI5 controls, closed generated response validation, exact stored review and original UUID retention through uncertain commands.",
+    "Native fixture prerequisites explicitly attributed; original failed command and evidence never overwritten."
+  ],
+  "build_generated_checks": "Production build and all twelve generated contracts passed.",
+  "unchanged_qualification": "Eight earlier native workflow procedures retain their source-bound qualification; new native cases are separately recorded.",
+  "main_changed": false
+}

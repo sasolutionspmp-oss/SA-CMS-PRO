@@ -1,0 +1,820 @@
+[
+  {
+    "operation_id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+    "method": "cipher_aec.api.approvals.request_action",
+    "payload": {
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "action": "calibration.verify.v1",
+      "subject_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "expected_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8"
+    },
+    "payload_sha256": "840a006e19f83b3f55f3fb84e03f29dafee4c623a1c80893869f174f332ce4dc",
+    "state": "response-recorded",
+    "attempts": [
+      {
+        "status": 200,
+        "error_code": null
+      }
+    ],
+    "response_envelopes": [
+      {
+        "http_status": 200,
+        "envelope": {
+          "schema": "cipher.api.v1",
+          "request_id": "19419062-7060-41bb-9fe6-7a20ace7d202",
+          "meta": {
+            "request_id": "19419062-7060-41bb-9fe6-7a20ace7d202",
+            "api_version": "v1",
+            "server_time": "2026-10-15T16:21:45.313905Z"
+          },
+          "data": {
+            "packet": {
+              "action": "calibration.verify.v1",
+              "actions": {
+                "can_decide": false,
+                "can_execute": false,
+                "can_withdraw": true,
+                "disabled_reason": null
+              },
+              "company": "Cipher Synthetic Company",
+              "created_at": "2026-10-15T16:17:03.598878Z",
+              "decisions": [],
+              "expires_at": "2026-10-16T16:17:03.598878Z",
+              "id": "n7s4cmqrne",
+              "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+              "policy": {
+                "id": "CIPHER-CALIBRATION-VERIFY-POLICY-V1",
+                "label": "Synthetic independent calibration verification",
+                "synthetic": true
+              },
+              "project": "PROJ-0031",
+              "requester": {
+                "display_name": "Morgan Lee (synthetic)",
+                "id": "CIPHER-PERSON-PM"
+              },
+              "review_manifest": {
+                "effect": {
+                  "action": "calibration.verify.v1",
+                  "author_person": "CIPHER-PERSON-PM",
+                  "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                  "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                  "verification": "independent-human-source-bound-v1"
+                },
+                "sources": [
+                  {
+                    "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                    "head_policy": "current-working-revision-v1",
+                    "page": 1,
+                    "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                    "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                    "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                  }
+                ],
+                "subject": {
+                  "doctype": "Cipher Calibration",
+                  "label": "Known10feet per100PDF user units",
+                  "name": "7aac035a-9a5b-4c3b-9f48-e95582a0130a"
+                },
+                "summary": {
+                  "calibration_status": "unverified",
+                  "definition": {
+                    "anchors": [
+                      [
+                        "100",
+                        "100"
+                      ],
+                      [
+                        "200",
+                        "100"
+                      ]
+                    ],
+                    "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+                    "coordinate_system": "pdf-user-space-v1",
+                    "derived_units": [
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                        "power": 2,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      },
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                        "power": 3,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      }
+                    ],
+                    "formula_version": "cipher.takeoff.planar.v1",
+                    "known_distance": {
+                      "amount": "10",
+                      "precision": 6,
+                      "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa"
+                    },
+                    "relative_numeric_tolerance": "0.000000000001",
+                    "title": "Known10feet per100PDF user units"
+                  },
+                  "page_geometry": {
+                    "coordinate_system": "pdf-user-space-v1",
+                    "crop_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "media_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+                    "rotate": 0,
+                    "user_unit": "1"
+                  },
+                  "unit_manifest_digest": "e5ae0020a9936608606101c4243d1b8e06248eafd7755f29efe2cb97df638f3b"
+                }
+              },
+              "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+              "state": "Pending",
+              "subject": {
+                "id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "label": "Known10feet per100PDF user units",
+                "type": "Cipher Calibration"
+              }
+            },
+            "operation": {
+              "id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+              "status": "succeeded",
+              "replayed": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "operation_id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+    "method": "cipher_aec.api.approvals.execute_packet",
+    "payload": {
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "packet_id": "n7s4cmqrne",
+      "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a"
+    },
+    "payload_sha256": "5cc98adc14a9cb924df84913857fb08b0bf6c174afe6301f569b419092ee83fa",
+    "state": "response-recorded",
+    "attempts": [
+      {
+        "status": 200,
+        "error_code": null
+      }
+    ],
+    "response_envelopes": [
+      {
+        "http_status": 200,
+        "envelope": {
+          "schema": "cipher.api.v1",
+          "request_id": "95c36654-c63f-4327-99f3-d12048e1c914",
+          "meta": {
+            "request_id": "95c36654-c63f-4327-99f3-d12048e1c914",
+            "api_version": "v1",
+            "server_time": "2026-10-15T16:21:45.351254Z"
+          },
+          "data": {
+            "effect": {
+              "verification": {
+                "author_person": "CIPHER-PERSON-PM",
+                "author_user": "morgan@cipher.example",
+                "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "company": "Cipher Synthetic Company",
+                "created_at": "2026-10-15T16:17:04.044532+00:00",
+                "decision_id": "n7uoil7442",
+                "id": "168cb31e-50a5-4c93-879d-91735d69af1d",
+                "packet_id": "n7s4cmqrne",
+                "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                "project": "PROJ-0031",
+                "source": {
+                  "byte_length": 797,
+                  "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                  "current_revision_number": 2,
+                  "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                  "extraction_status": "ready",
+                  "is_current": true,
+                  "mime_type": "application/pdf",
+                  "page": 1,
+                  "page_count": 1,
+                  "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                  "revision_number": 2,
+                  "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                },
+                "status": "verified",
+                "verified_by_person": "CIPHER-PERSON-REVIEWER"
+              }
+            },
+            "packet": {
+              "action": "calibration.verify.v1",
+              "actions": {
+                "can_decide": false,
+                "can_execute": false,
+                "can_withdraw": false,
+                "disabled_reason": "This packet has already been executed."
+              },
+              "company": "Cipher Synthetic Company",
+              "created_at": "2026-10-15T16:17:03.598878Z",
+              "decisions": [
+                {
+                  "actor": {
+                    "display_name": "Jordan Chen (synthetic reviewer)",
+                    "id": "CIPHER-PERSON-REVIEWER"
+                  },
+                  "at": "2026-10-15T16:17:03.857878Z",
+                  "decision": "Grant",
+                  "id": "n7uoil7442",
+                  "reason": "Explicit independent review of stored PDF anchors, physical units, derived relations and supported planar assumptions"
+                }
+              ],
+              "expires_at": "2026-10-16T16:17:03.598878Z",
+              "id": "n7s4cmqrne",
+              "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+              "policy": {
+                "id": "CIPHER-CALIBRATION-VERIFY-POLICY-V1",
+                "label": "Synthetic independent calibration verification",
+                "synthetic": true
+              },
+              "project": "PROJ-0031",
+              "requester": {
+                "display_name": "Morgan Lee (synthetic)",
+                "id": "CIPHER-PERSON-PM"
+              },
+              "review_manifest": {
+                "effect": {
+                  "action": "calibration.verify.v1",
+                  "author_person": "CIPHER-PERSON-PM",
+                  "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                  "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                  "verification": "independent-human-source-bound-v1"
+                },
+                "sources": [
+                  {
+                    "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                    "head_policy": "current-working-revision-v1",
+                    "page": 1,
+                    "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                    "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                    "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                  }
+                ],
+                "subject": {
+                  "doctype": "Cipher Calibration",
+                  "label": "Known10feet per100PDF user units",
+                  "name": "7aac035a-9a5b-4c3b-9f48-e95582a0130a"
+                },
+                "summary": {
+                  "calibration_status": "unverified",
+                  "definition": {
+                    "anchors": [
+                      [
+                        "100",
+                        "100"
+                      ],
+                      [
+                        "200",
+                        "100"
+                      ]
+                    ],
+                    "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+                    "coordinate_system": "pdf-user-space-v1",
+                    "derived_units": [
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                        "power": 2,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      },
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                        "power": 3,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      }
+                    ],
+                    "formula_version": "cipher.takeoff.planar.v1",
+                    "known_distance": {
+                      "amount": "10",
+                      "precision": 6,
+                      "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa"
+                    },
+                    "relative_numeric_tolerance": "0.000000000001",
+                    "title": "Known10feet per100PDF user units"
+                  },
+                  "page_geometry": {
+                    "coordinate_system": "pdf-user-space-v1",
+                    "crop_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "media_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+                    "rotate": 0,
+                    "user_unit": "1"
+                  },
+                  "unit_manifest_digest": "e5ae0020a9936608606101c4243d1b8e06248eafd7755f29efe2cb97df638f3b"
+                }
+              },
+              "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+              "state": "Consumed",
+              "subject": {
+                "id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "label": "Known10feet per100PDF user units",
+                "type": "Cipher Calibration"
+              }
+            },
+            "operation": {
+              "id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+              "status": "succeeded",
+              "replayed": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "operation_id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+    "method": "cipher_aec.api.approvals.request_action",
+    "payload": {
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "action": "calibration.verify.v1",
+      "subject_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+      "expected_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8"
+    },
+    "payload_sha256": "840a006e19f83b3f55f3fb84e03f29dafee4c623a1c80893869f174f332ce4dc",
+    "state": "response-recorded",
+    "attempts": [
+      {
+        "status": 200,
+        "error_code": null
+      }
+    ],
+    "response_envelopes": [
+      {
+        "http_status": 200,
+        "envelope": {
+          "schema": "cipher.api.v1",
+          "request_id": "f0a3f862-5275-4f53-a30c-5e573cb29087",
+          "meta": {
+            "request_id": "f0a3f862-5275-4f53-a30c-5e573cb29087",
+            "api_version": "v1",
+            "server_time": "2026-10-15T16:21:45.385276Z"
+          },
+          "data": {
+            "packet": {
+              "action": "calibration.verify.v1",
+              "actions": {
+                "can_decide": false,
+                "can_execute": false,
+                "can_withdraw": true,
+                "disabled_reason": null
+              },
+              "company": "Cipher Synthetic Company",
+              "created_at": "2026-10-15T16:17:03.598878Z",
+              "decisions": [],
+              "expires_at": "2026-10-16T16:17:03.598878Z",
+              "id": "n7s4cmqrne",
+              "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+              "policy": {
+                "id": "CIPHER-CALIBRATION-VERIFY-POLICY-V1",
+                "label": "Synthetic independent calibration verification",
+                "synthetic": true
+              },
+              "project": "PROJ-0031",
+              "requester": {
+                "display_name": "Morgan Lee (synthetic)",
+                "id": "CIPHER-PERSON-PM"
+              },
+              "review_manifest": {
+                "effect": {
+                  "action": "calibration.verify.v1",
+                  "author_person": "CIPHER-PERSON-PM",
+                  "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                  "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                  "verification": "independent-human-source-bound-v1"
+                },
+                "sources": [
+                  {
+                    "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                    "head_policy": "current-working-revision-v1",
+                    "page": 1,
+                    "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                    "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                    "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                  }
+                ],
+                "subject": {
+                  "doctype": "Cipher Calibration",
+                  "label": "Known10feet per100PDF user units",
+                  "name": "7aac035a-9a5b-4c3b-9f48-e95582a0130a"
+                },
+                "summary": {
+                  "calibration_status": "unverified",
+                  "definition": {
+                    "anchors": [
+                      [
+                        "100",
+                        "100"
+                      ],
+                      [
+                        "200",
+                        "100"
+                      ]
+                    ],
+                    "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+                    "coordinate_system": "pdf-user-space-v1",
+                    "derived_units": [
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                        "power": 2,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      },
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                        "power": 3,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      }
+                    ],
+                    "formula_version": "cipher.takeoff.planar.v1",
+                    "known_distance": {
+                      "amount": "10",
+                      "precision": 6,
+                      "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa"
+                    },
+                    "relative_numeric_tolerance": "0.000000000001",
+                    "title": "Known10feet per100PDF user units"
+                  },
+                  "page_geometry": {
+                    "coordinate_system": "pdf-user-space-v1",
+                    "crop_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "media_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+                    "rotate": 0,
+                    "user_unit": "1"
+                  },
+                  "unit_manifest_digest": "e5ae0020a9936608606101c4243d1b8e06248eafd7755f29efe2cb97df638f3b"
+                }
+              },
+              "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+              "state": "Pending",
+              "subject": {
+                "id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "label": "Known10feet per100PDF user units",
+                "type": "Cipher Calibration"
+              }
+            },
+            "operation": {
+              "id": "02dce5de-d6fc-4ba4-b614-ca7c1e6c2ceb",
+              "status": "succeeded",
+              "replayed": true
+            }
+          }
+        }
+      }
+    ]
+  },
+  {
+    "operation_id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+    "method": "cipher_aec.api.approvals.execute_packet",
+    "payload": {
+      "company": "Cipher Synthetic Company",
+      "project": "PROJ-0031",
+      "packet_id": "n7s4cmqrne",
+      "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a"
+    },
+    "payload_sha256": "5cc98adc14a9cb924df84913857fb08b0bf6c174afe6301f569b419092ee83fa",
+    "state": "response-recorded",
+    "attempts": [
+      {
+        "status": 200,
+        "error_code": null
+      }
+    ],
+    "response_envelopes": [
+      {
+        "http_status": 200,
+        "envelope": {
+          "schema": "cipher.api.v1",
+          "request_id": "791c07d1-0341-43d6-9442-2250f6b15f22",
+          "meta": {
+            "request_id": "791c07d1-0341-43d6-9442-2250f6b15f22",
+            "api_version": "v1",
+            "server_time": "2026-10-15T16:21:45.424689Z"
+          },
+          "data": {
+            "effect": {
+              "verification": {
+                "author_person": "CIPHER-PERSON-PM",
+                "author_user": "morgan@cipher.example",
+                "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "company": "Cipher Synthetic Company",
+                "created_at": "2026-10-15T16:17:04.044532+00:00",
+                "decision_id": "n7uoil7442",
+                "id": "168cb31e-50a5-4c93-879d-91735d69af1d",
+                "packet_id": "n7s4cmqrne",
+                "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                "project": "PROJ-0031",
+                "source": {
+                  "byte_length": 797,
+                  "current_revision": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                  "current_revision_number": 2,
+                  "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                  "extraction_status": "ready",
+                  "is_current": true,
+                  "mime_type": "application/pdf",
+                  "page": 1,
+                  "page_count": 1,
+                  "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                  "revision_number": 2,
+                  "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                },
+                "status": "verified",
+                "verified_by_person": "CIPHER-PERSON-REVIEWER"
+              }
+            },
+            "packet": {
+              "action": "calibration.verify.v1",
+              "actions": {
+                "can_decide": false,
+                "can_execute": false,
+                "can_withdraw": false,
+                "disabled_reason": "This packet has already been executed."
+              },
+              "company": "Cipher Synthetic Company",
+              "created_at": "2026-10-15T16:17:03.598878Z",
+              "decisions": [
+                {
+                  "actor": {
+                    "display_name": "Jordan Chen (synthetic reviewer)",
+                    "id": "CIPHER-PERSON-REVIEWER"
+                  },
+                  "at": "2026-10-15T16:17:03.857878Z",
+                  "decision": "Grant",
+                  "id": "n7uoil7442",
+                  "reason": "Explicit independent review of stored PDF anchors, physical units, derived relations and supported planar assumptions"
+                }
+              ],
+              "expires_at": "2026-10-16T16:17:03.598878Z",
+              "id": "n7s4cmqrne",
+              "manifest_hash": "c24cc6d0d67eed4f4810e5ee3705ff1145234d754969e53696f5e73d9fddbd3a",
+              "policy": {
+                "id": "CIPHER-CALIBRATION-VERIFY-POLICY-V1",
+                "label": "Synthetic independent calibration verification",
+                "synthetic": true
+              },
+              "project": "PROJ-0031",
+              "requester": {
+                "display_name": "Morgan Lee (synthetic)",
+                "id": "CIPHER-PERSON-PM"
+              },
+              "review_manifest": {
+                "effect": {
+                  "action": "calibration.verify.v1",
+                  "author_person": "CIPHER-PERSON-PM",
+                  "calibration_digest": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+                  "calibration_id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                  "verification": "independent-human-source-bound-v1"
+                },
+                "sources": [
+                  {
+                    "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                    "head_policy": "current-working-revision-v1",
+                    "page": 1,
+                    "page_geometry_digest": "badb4571f486cfe2bb4fd7a87af9ef5932910e67580a195b6054ec02568de120",
+                    "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                    "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                  }
+                ],
+                "subject": {
+                  "doctype": "Cipher Calibration",
+                  "label": "Known10feet per100PDF user units",
+                  "name": "7aac035a-9a5b-4c3b-9f48-e95582a0130a"
+                },
+                "summary": {
+                  "calibration_status": "unverified",
+                  "definition": {
+                    "anchors": [
+                      [
+                        "100",
+                        "100"
+                      ],
+                      [
+                        "200",
+                        "100"
+                      ]
+                    ],
+                    "basis": "Uniform similarity calibration from two explicit anchors; no screen pixel or OCR inference",
+                    "coordinate_system": "pdf-user-space-v1",
+                    "derived_units": [
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+                        "power": 2,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      },
+                      {
+                        "basis": "One known foot squared/cubed equals one explicit square/cubic foot UOM",
+                        "denominator": "1",
+                        "numerator": "1",
+                        "output_unit_id": "58f3952f-a3b9-4f33-9adc-70dd5bd36d1a",
+                        "power": 3,
+                        "source_citations": [
+                          {
+                            "document_id": "DOC-fc4ae095bfb0415ab0d3c139b9cecc05",
+                            "document_title": "Explicit stored takeoff drawing1",
+                            "excerpt": "Explicit takeoff drawing revision2\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+                            "excerpt_sha256": "37350074ed1aa591cd21fe5d30af3b34257e2ddb7aa697b5d41ffe7495872018",
+                            "id": "b4045b886b5e423fea0e868a4aab6235fcfc740f1f4fba93d62002858d141621",
+                            "page": 1,
+                            "page_label": "1",
+                            "revision_id": "REV-112b05a1e08b40e1ad1c3abf52b4dcee",
+                            "revision_number": 2,
+                            "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+                          }
+                        ]
+                      }
+                    ],
+                    "formula_version": "cipher.takeoff.planar.v1",
+                    "known_distance": {
+                      "amount": "10",
+                      "precision": 6,
+                      "unit_id": "55d2c132-1301-4723-8e9f-2ca50b6057aa"
+                    },
+                    "relative_numeric_tolerance": "0.000000000001",
+                    "title": "Known10feet per100PDF user units"
+                  },
+                  "page_geometry": {
+                    "coordinate_system": "pdf-user-space-v1",
+                    "crop_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "media_box": [
+                      "0",
+                      "0",
+                      "612",
+                      "792"
+                    ],
+                    "parser": "pypdf-6.15.0:cipher-page-metadata-v1",
+                    "rotate": 0,
+                    "user_unit": "1"
+                  },
+                  "unit_manifest_digest": "e5ae0020a9936608606101c4243d1b8e06248eafd7755f29efe2cb97df638f3b"
+                }
+              },
+              "source_version": "1e5ead75fec9fadb9b1a44ec4b7435d97e14b685a344ceddb5b9938c609e76e8",
+              "state": "Consumed",
+              "subject": {
+                "id": "7aac035a-9a5b-4c3b-9f48-e95582a0130a",
+                "label": "Known10feet per100PDF user units",
+                "type": "Cipher Calibration"
+              }
+            },
+            "operation": {
+              "id": "d34633e8-0d1e-438e-a6fb-910c24166d6f",
+              "status": "succeeded",
+              "replayed": true
+            }
+          }
+        }
+      }
+    ]
+  }
+]

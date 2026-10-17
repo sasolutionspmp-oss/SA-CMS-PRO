@@ -1,0 +1,19 @@
+{
+  "started_before": {
+    "master": 17,
+    "workers": [
+      14623,
+      14624
+    ]
+  },
+  "ready_after": {
+    "master": 17,
+    "workers": [
+      14738,
+      14739
+    ]
+  },
+  "recorded_at": "2026-10-15T20:08:44.101752+00:00",
+  "master_preserved": true,
+  "old_workers_exited": true
+}

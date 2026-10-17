@@ -1,0 +1,32 @@
+{
+  "schema": "cipher.checkpoint.gate-review.v1",
+  "recorded_at": "2026-10-16T02:02:10.646819+00:00",
+  "status": "passed",
+  "gate_report_sha256": "7b76f058eb23721a669af566db3839691fcf72a516c21e86f75706a97c15e308",
+  "stage_logs_verified": 23,
+  "full_sources_verified": 621,
+  "runner_sources_verified": 618,
+  "test_summary": {
+    "collected": 553,
+    "errors": 0,
+    "failures": 0,
+    "missing_declared_cases": [],
+    "skipped": 0,
+    "unique": 553
+  },
+  "browser_unique_once_only_passed": 151,
+  "browser_report_sha256": "49b7fd776ab43238ee1d9ed027ce68480bf821679a8e2505aecf9d6291354580",
+  "source_delta": {
+    "added_to_snapshot": [
+      "apps/cipher/platform/operations/tests/test_public_asset_inventory.py",
+      "apps/cipher/product/public/THIRD_PARTY_NOTICES.txt",
+      "apps/cipher/product/public/cipher-mark.svg"
+    ],
+    "changed": [
+      "apps/cipher/platform/operations/record-evidence.py",
+      "apps/cipher/product/tests/product.spec.ts"
+    ],
+    "removed": []
+  },
+  "live_model_or_provider_qualified": false
+}

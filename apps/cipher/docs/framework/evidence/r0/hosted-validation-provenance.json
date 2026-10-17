@@ -1,0 +1,22 @@
+{
+  "schema": "cipher.hosted-ci.provenance.v1",
+  "commit": "294d06d750c88e65b273b1ea727e8b84d593b3d9",
+  "run_id": 38763239781,
+  "run_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/38763239781",
+  "job_id": 116519708314,
+  "artifact_id": 11986408974,
+  "artifact_name": "cipher-new-stack-validation",
+  "github_reported_archive_sha256": "b29a9dcf94fef85555a11283b17fad62e4348f5c997eefac82883b6c4ba06e4c",
+  "status": "success",
+  "verification_source": "Authenticated GitHub connector workflow/job-step/artifact metadata",
+  "passed_steps": [
+    "checkout",
+    "setup-node",
+    "Configure isolated synthetic dependencies",
+    "Validate fresh application and isolated client build",
+    "Upload reviewed-shape validation report"
+  ],
+  "archive_downloaded_to_workspace": false,
+  "archive_download_limitation": "Workspace proxy returned HTTP 403 for the temporary artifact file URL. Hosted job success and artifact existence were read through the GitHub connector; no claim of locally inspecting the archived JSON.",
+  "qualification": "Hosted execution of the committed new-stack workflow passed. Application source changed in the subsequent wave; this result qualifies the named checkpoint only. Live model/provider qualification remains separate."
+}

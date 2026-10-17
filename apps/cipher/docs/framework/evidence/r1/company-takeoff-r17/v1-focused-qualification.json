@@ -1,0 +1,43 @@
+{
+  "schema": "cipher.company-takeoff.ui-qualification.v1",
+  "status": "focused_passed",
+  "fixture_only": true,
+  "full_suite_run": false,
+  "new_cases": 34,
+  "compatibility_static_cases": 34,
+  "distinct_cases": 68,
+  "node_contract_cases": 4,
+  "browser_cases": 64,
+  "workers": 1,
+  "retries": 0,
+  "runs": [
+    {
+      "report": "/dev/shm/cipher-company-takeoff-ui-r17/focused-final/report.json",
+      "sha256": "513a312331988dbc7968be3eb079de5ce7b1fbe358aab7197111cd4671b77aac",
+      "passed": 65
+    },
+    {
+      "report": "/dev/shm/cipher-company-takeoff-ui-r17/static-and-activity-final/report.json",
+      "sha256": "125b7283415a12b7f695867bcbf992ca5d3c8181ff7806a1157536587c11dad8",
+      "passed": 3
+    }
+  ],
+  "typecheck": "passed",
+  "build": {
+    "modules": 2039,
+    "files": 915,
+    "sha256_inventory": "/dev/shm/cipher-company-takeoff-ui-r17/build-sha256.json",
+    "inventory_sha256": "bc0dc5fddafccd4e56fc86393b8de44dbca03efde30505b13d75b55f4e8ca68c",
+    "stdout": "partial_tool_output",
+    "exit_code": 0
+  },
+  "generated_checks": 13,
+  "backend_unchanged_files": 550,
+  "generated_contracts_byte_identical": true,
+  "project_takeoff_byte_identical": true,
+  "source_before_after_identical": true,
+  "dist_before_after_identical": true,
+  "native_execution_by_child": false,
+  "screenshots_by_child": false,
+  "unresolved_concerns": []
+}

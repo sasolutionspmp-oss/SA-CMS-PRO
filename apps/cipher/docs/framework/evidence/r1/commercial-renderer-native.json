@@ -1,0 +1,37 @@
+{
+  "status": "passed",
+  "qualification": "Standalone deterministic local PDF rendering and canonical safe extraction only; no Issue, approval or provider-distribution qualification.",
+  "runtime": {
+    "container": "cipher-r0-runtime-1",
+    "weasyprint": "68.0",
+    "pydyf": "0.12.1",
+    "fonttools": "4.67.0",
+    "fonts_dejavu_core": "2.37-8"
+  },
+  "checks": [
+    "Identical bytes from separate isolated render processes for the same exact normalized input",
+    "Canonical PDF extraction preserves Unicode and escaped literal untrusted HTML without network fetch",
+    "Unsupported font glyph fails with typed unsupported_output_text before artifact storage",
+    "Changed terms change content hash",
+    "Recipients appear in reviewable PDF; changed recipient changes bytes and recipients digest"
+  ],
+  "test_result": {
+    "suite": "cipher_aec.tests.test_commercial_rendering",
+    "tests": 4,
+    "seconds": "9.421",
+    "skipped": 0,
+    "log": "/tmp/cipher-com02-renderer.log"
+  },
+  "dependency_provenance": {
+    "weasyprint_pydyf": "Frappe16.52.0 pyproject.toml declares exact68.0/0.12.1",
+    "fonttools": "Cipher direct exact4.67.0",
+    "fonts": "Package fonts-dejavu-core2.37-8 in digest-pinned upstream image; exact font bytes validated by renderer policy"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_rendering.py": "868507f4cee0f82ada5ecd992dd7cc91cc0fd0dced7f06390d89ddedac8b442f",
+    "apps/cipher/platform/apps/cipher_aec/pyproject.toml": "7ec290af7dfe87ac9f5c9c46d8ad0d6e2c2feb9579a616ebbc4efa80f0675d51",
+    "apps/cipher/platform/versions.lock.json": "36fa137300e8494c7303b0f8a04df9241c8b0afcfc0a9d7cf74be695c6d2e492"
+  }
+}

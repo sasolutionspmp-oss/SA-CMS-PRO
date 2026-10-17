@@ -1,0 +1,16 @@
+{
+  "site": "cipher-restore.localhost",
+  "result": "passed",
+  "project": "PROJ-0001",
+  "restored_task_count": 1,
+  "new_effect_denied": "execution_quarantined",
+  "dispatcher_effects": 0,
+  "scheduler_paused": true,
+  "artifacts": [
+    {
+      "revision": "REV-48bb35d67f2042bdade38dcdd1011311",
+      "sha256": "cd953407905be6319b9772460d4e6dd3966804937ff59aa3a3d23315ff1486f3",
+      "bytes": 151
+    }
+  ]
+}

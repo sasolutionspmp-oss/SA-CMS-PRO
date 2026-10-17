@@ -1,0 +1,110 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Project Profile",
+  "module": "Cipher Awards",
+  "custom": 0,
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "track_changes": 0,
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "data_json",
+    "record_digest",
+    "handoff",
+    "award_revision",
+    "adoption",
+    "sales_order",
+    "contract"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Person",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "label": "Status",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "read_only": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "handoff",
+      "label": "Handoff",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Award Handoff"
+    },
+    {
+      "fieldname": "award_revision",
+      "label": "Award Revision",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Award Handoff Revision"
+    },
+    {
+      "fieldname": "adoption",
+      "label": "Adoption",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Award Adoption"
+    },
+    {
+      "fieldname": "sales_order",
+      "label": "Sales Order",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Sales Order"
+    },
+    {
+      "fieldname": "contract",
+      "label": "Contract",
+      "fieldtype": "Link",
+      "read_only": 1,
+      "options": "Cipher Construction Contract"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "allow_rename": 0
+}

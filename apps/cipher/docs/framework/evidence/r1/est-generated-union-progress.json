@@ -1,0 +1,162 @@
+{
+  "schema": "cipher.est-generated-union-progress.v1",
+  "status": "partial-native-proof-public-admission-closed",
+  "qualification": "Actual Frappe/ERPNext/MariaDB and canonical stored generated PDFs using explicit synthetic Sessions, not HTTP; full acceptance/revocation qualification pending.",
+  "company": "EST generated Company C 8e6c80ffb7b0",
+  "pure_tests_passed": 40,
+  "generated_new_use_publicly_enabled": false,
+  "native_checks_committed_through": "takeoff.line.bind",
+  "committed_commands": 12,
+  "interrupted_request": {
+    "operation_id": "4311505b-6601-407f-a832-9262aa8253ce",
+    "method": "cipher_aec.api.company_approvals.request_action",
+    "subject_id": "a0ff1867-ecbc-47a5-80c9-835796e1e00d",
+    "receipt_committed": false,
+    "subject_packet_count_after_process_exit": 0
+  },
+  "interruption": {
+    "controlled_own_SIGINT": true,
+    "finally_rollback_error": "MySQL2014 commands-out-of-sync while interrupting a DB call; process/connection then exited. Independent new connection observed no receipt or packet for saved operation.",
+    "process_exited": true,
+    "shared_identity_contention_causality": "Shared Person locking can block concurrent fixtures; original timed-out waiter connection was not mapped, so exact causality not asserted."
+  },
+  "recorder_iterations": [
+    {
+      "attempt": "initial",
+      "finding": "Recorder expected nonexistent Money.exponent property; fixture corrected."
+    },
+    {
+      "attempt": "second",
+      "finding": "Repeated new conversion without predecessor correctly refused stale_conversion; recorder now explicitly supplies current predecessor."
+    },
+    {
+      "attempt": "third",
+      "finding": "Product apply callback admission ended before controller insert. Wrapper lifetime fixed, pure regression added; public gate stayed closed."
+    },
+    {
+      "attempt": "fourth",
+      "finding": "Product binding compared lexical amount text despite equal exact quantities. Exact rational equality fix preserves unit/precision and stored records; pure positive/negative regressions pass."
+    },
+    {
+      "attempt": "fifth",
+      "finding": "Native proof interrupted for long nested authorization/shared identity contention, after12 committed commands. Full acceptance not claimed."
+    }
+  ],
+  "record_schema_checks": [
+    {
+      "kind": "rate_source",
+      "id": "697047b2-913d-42b4-a108-69f938f1a114",
+      "schema_validation": "passed",
+      "definition": "CompanyEstRateRecord"
+    },
+    {
+      "kind": "conversion",
+      "id": "e5fac6d6-248d-449a-b7ad-426f0be409b9",
+      "schema_validation": "passed",
+      "definition": "CompanyEstConversionRecord"
+    },
+    {
+      "kind": "estimate",
+      "id": "2729104c-db07-4f78-ae84-5f35675137c0",
+      "schema_validation": "passed",
+      "definition": "CompanyEstEstimateRecord"
+    },
+    {
+      "kind": "estimate",
+      "id": "2729104c-db07-4f78-ae84-5f35675137c0",
+      "schema_validation": "passed",
+      "definition": "CompanyEstEstimateRecord"
+    },
+    {
+      "kind": "revision",
+      "id": "a0ff1867-ecbc-47a5-80c9-835796e1e00d",
+      "schema_validation": "passed",
+      "definition": "CompanyEstRevisionRecord"
+    },
+    {
+      "kind": "calculation",
+      "id": "7028bd25-bdbe-4378-b89d-8fe4a010c05e",
+      "schema_validation": "passed",
+      "definition": "CompanyEstSnapshotRecord"
+    },
+    {
+      "kind": "calibration",
+      "id": "eb3c5867-a2e5-4aef-813c-f0d165187c95",
+      "schema_validation": "passed",
+      "definition": "CompanyTakeoffCalibrationRecord"
+    },
+    {
+      "kind": "measurement",
+      "id": "9c8f5e74-e8d8-4e0a-b7eb-7867a16b599a",
+      "schema_validation": "passed",
+      "definition": "CompanyTakeoffMeasurementRecord"
+    },
+    {
+      "kind": "binding",
+      "id": "fb9a8a48-c8cd-4d72-90cb-8c0fa640aade",
+      "schema_validation": "passed",
+      "definition": "CompanyTakeoffBindingRecord"
+    }
+  ],
+  "logs": [
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-generated-union-attempt-initial.log",
+      "sha256": "d002d74eb2612ff79acafb591ed850945f44fda5a4a4a51fdac36bbe48b59b34"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-generated-union-attempt-second.log",
+      "sha256": "d9cf7903914f0a91421f7c27cf663c0c05168b6217732caf4477669253e58551"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-generated-union-attempt-third.log",
+      "sha256": "351f540172bb9f8073c0342e0dce4ee541663abd0883178a736dc8217746cc34"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-generated-union-attempt-fourth.log",
+      "sha256": "bdbaa03ea8b930f6a7df2a4df2b8911c39aacbb4f10a89a4c316d6af52108c44"
+    },
+    {
+      "path": "apps/cipher/docs/framework/evidence/r1/est-generated-union-attempt-fifth.log",
+      "sha256": "f0bf19d6d8306c531f55a2ae63928e9640cf129aa0c120410a56c09db43de221"
+    }
+  ],
+  "owned_and_shared_source_hashes": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "90737ea11fdd5f4b0286e917adda91dc36af916ebcdbb4ed3cd88aa05c66a756",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/company_service.py": "88776464fbf56d609c86e28947bebc28a317e7ab75e1864dc38c767493d0ed19",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/governance.py": "70cc174811cec10cf317be4db921c817c7f2f2a02a91f4cebea8273da7262ca7",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/lockplan.py": "81c5d792e97f47c6a9d19da1d26e1545cc7a86a44b35c16698f6440878852aa2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py": "b902d41a90cc8028cac8598e05718426e9ddfcbbc49eff5224445de5f31f61d9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py": "dda41e4397c37f60c5ad48b7609a8c50b591165c2068a1d151c1f67c5a37ae7b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py": "d82630ecb91879887a30d42aa81124db58fdf2f113f3d74e1a21ed42c0d9b011",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py": "21509159a879de0f55a9f366c6751e5b775d428eb4329473c7c8d08dd1299d42",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py": "850072234bd04162470bf4bb0700bd692945b5466b8a1153cec4aa7511e6aac9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_lockplan.py": "b82439abdeb1d410f972b0c12eefddce7e1b905968e49658572a5448008b4062"
+  },
+  "live_model_qualified": false,
+  "external_provider_qualified": false,
+  "user_auth_role_writes": false,
+  "company_a_state_mutations": false
+}

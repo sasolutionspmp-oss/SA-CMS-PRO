@@ -1,0 +1,241 @@
+{
+  "operation": {
+    "id": "6f4c1aa8-3ac9-40de-8d28-bfc6dd627fd5",
+    "replayed": false,
+    "status": "succeeded"
+  },
+  "packet": {
+    "action": "proposal.issue.v1",
+    "actions": {
+      "can_decide": false,
+      "can_execute": false,
+      "can_withdraw": true,
+      "disabled_reason": null
+    },
+    "company": "Company chain A c3c3b742a8fd",
+    "created_at": "2026-10-15T23:11:13.136413Z",
+    "decisions": [],
+    "expires_at": "2026-10-16T23:11:13.136413Z",
+    "id": "9tbvo0ocnn",
+    "manifest_hash": "55cdef500fc1b2473093e9cf66928f00c25f5246d3901a44e99f4f0b2fbb9d31",
+    "policy": {
+      "id": "CIPHER-PROPOSAL-ISSUE-POLICY-V1-COMPANY",
+      "label": "Independent proposal issue approval",
+      "synthetic": true
+    },
+    "project": null,
+    "requester": {
+      "display_name": "Explicit Company chain author",
+      "id": "CHAIN-AUTHOR-c3c3b742a8fd"
+    },
+    "review_manifest": {
+      "effect": {
+        "accepted_estimate": {
+          "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+          "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+          "currency": "USD",
+          "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+          "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+          "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+          "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+          "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+          "snapshot_digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+          "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+          "total": {
+            "amount": "15.00",
+            "currency": "USD"
+          }
+        },
+        "action": "proposal.issue.v1",
+        "native_fingerprint": "53d17e052cfc20c7c4324634e736821d8602bddbd3ba4f849a7676e10d25027d",
+        "prepared_output": {
+          "binding": {
+            "accepted_estimate": {
+              "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+              "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+              "currency": "USD",
+              "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+              "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+              "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+              "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+              "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+              "snapshot_digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+              "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+              "total": {
+                "amount": "15.00",
+                "currency": "USD"
+              }
+            },
+            "company": "Company chain A c3c3b742a8fd",
+            "cover": "Synthetic reviewed award origin only. No external transmission.",
+            "native_fingerprint": "53d17e052cfc20c7c4324634e736821d8602bddbd3ba4f849a7676e10d25027d",
+            "proposal_id": "21be2d11-ccd6-43a7-a237-1be60811030d",
+            "proposal_revision_digest": "a174e918a23e04884f7380b0daf0ac834ce5d70ffadbb78f834d35720d274e62",
+            "proposal_revision_id": "7bc84267-d002-44cb-b9fd-70789c04e4da",
+            "recipients": [
+              {
+                "email": "award.fixture@cipher.example",
+                "name": "Synthetic award recipient",
+                "organization": "Isolated fixture"
+              }
+            ],
+            "renderer": {
+              "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+              "fonts": {
+                "bold": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                  "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+                },
+                "regular": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                  "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+                }
+              },
+              "parameters": {
+                "font_size_points": "9",
+                "html": "escaped-plain-text",
+                "margin_inches": "0.6",
+                "max_bytes": 10485760,
+                "max_pages": 100,
+                "network": "disabled",
+                "page_size": "US Letter",
+                "policy": "cipher.proposal.pdf.v1"
+              },
+              "renderer": "weasyprint",
+              "versions": {
+                "fonttools": "4.67.0",
+                "pydyf": "0.12.1",
+                "weasyprint": "68.0"
+              }
+            },
+            "schema": "cipher.proposal.output.input.v1",
+            "source_citations": [
+              {
+                "citation": {
+                  "company": "Company chain A c3c3b742a8fd",
+                  "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+                  "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+                  "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+                  "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+                  "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+                  "page": 1,
+                  "page_label": "1",
+                  "project": null,
+                  "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+                  "revision_number": 1,
+                  "scope_type": "Company",
+                  "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+                },
+                "permission_basis": "Owned synthetic fixture source, no generated provenance",
+                "policy": "pinned-revision-page-v1",
+                "purpose": "Explicit original manual award evidence"
+              }
+            ]
+          },
+          "byte_length": 11751,
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-c886f1f0e6c64297972dc95690d87478",
+          "input_digest": "9ab43df084208a53a7071185844b2e226a6dbd5c019ea7492ecf6d455ae2e9c6",
+          "page_count": 1,
+          "proposal_id": "21be2d11-ccd6-43a7-a237-1be60811030d",
+          "proposal_revision_digest": "a174e918a23e04884f7380b0daf0ac834ce5d70ffadbb78f834d35720d274e62",
+          "proposal_revision_id": "7bc84267-d002-44cb-b9fd-70789c04e4da",
+          "rendering": {
+            "baseline": {
+              "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+              "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+              "currency": "USD",
+              "estimate_id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+              "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+              "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+              "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+              "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+              "snapshot_digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+              "snapshot_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+              "total": {
+                "amount": "15.00",
+                "currency": "USD"
+              }
+            },
+            "cover_digest": "02eb5e2783eb48fe05a7f24441a0f1ad453811464fcc454bf2c3e1ca5e1ba300",
+            "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+            "fonts": {
+              "bold": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+              },
+              "regular": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+              }
+            },
+            "input_digest": "9ab43df084208a53a7071185844b2e226a6dbd5c019ea7492ecf6d455ae2e9c6",
+            "output_byte_length": 11751,
+            "output_sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b",
+            "parameters": {
+              "font_size_points": "9",
+              "html": "escaped-plain-text",
+              "margin_inches": "0.6",
+              "max_bytes": 10485760,
+              "max_pages": 100,
+              "network": "disabled",
+              "page_size": "US Letter",
+              "policy": "cipher.proposal.pdf.v1"
+            },
+            "proposal_revision_digest": "a174e918a23e04884f7380b0daf0ac834ce5d70ffadbb78f834d35720d274e62",
+            "recipients_digest": "ab138b86fec7a83325e9360e8ea144cba353025c131fc23cb3f9651ce0cbd278",
+            "renderer": "weasyprint",
+            "versions": {
+              "fonttools": "4.67.0",
+              "pydyf": "0.12.1",
+              "weasyprint": "68.0"
+            }
+          },
+          "review_version": "b5589bf99a48feed083bddc914f1580b8e6ebfd38f157be2e111e989521dc71c",
+          "revision_id": "REV-adfbcdaea2ee45909ca5733859735d74",
+          "source_sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b"
+        },
+        "proposal_revision_digest": "a174e918a23e04884f7380b0daf0ac834ce5d70ffadbb78f834d35720d274e62",
+        "revision_id": "7bc84267-d002-44cb-b9fd-70789c04e4da"
+      },
+      "sources": [
+        {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "subject": {
+        "doctype": "Cipher Proposal Revision",
+        "label": "Proposal revision 1",
+        "name": "7bc84267-d002-44cb-b9fd-70789c04e4da"
+      },
+      "summary": {
+        "currency": "USD",
+        "distribution": "not-sent",
+        "independent_issue_required": true,
+        "native_lifecycle": "draft-snapshot",
+        "recipient_count": 1,
+        "total": "30.85"
+      }
+    },
+    "scope_type": "Company",
+    "source_version": "b5589bf99a48feed083bddc914f1580b8e6ebfd38f157be2e111e989521dc71c",
+    "state": "Pending",
+    "subject": {
+      "id": "7bc84267-d002-44cb-b9fd-70789c04e4da",
+      "label": "Proposal revision 1",
+      "type": "Cipher Proposal Revision"
+    }
+  }
+}

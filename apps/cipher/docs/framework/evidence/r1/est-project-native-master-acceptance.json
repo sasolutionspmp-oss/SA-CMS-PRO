@@ -1,0 +1,217 @@
+{
+  "current_entrypoint": "cipher_aec.tests.test_estimating_project_native_acceptance.run_project_native_acceptance(private_manifest)",
+  "executed_entrypoint": "cipher_aec.tests.test_estimating_project_native_acceptance.run_acceptance(private_manifest)",
+  "external_provider_qualified": false,
+  "fixture_only_rename_after_execution": true,
+  "live_model_qualified": false,
+  "qualification": "real persistent Frappe services under explicitly synthetic Sessions; no HTTP claim",
+  "recorded_at": "2026-10-15T17:28:24.459133+00:00",
+  "rename_reason": "Exclude private site-bound procedure from canonical no-argument CI discovery; body/assertions unchanged.",
+  "result": {
+    "calls": [
+      {
+        "method": "cipher_aec.documents.api.upload_document",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.documents.api.get_citation",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.create_rate",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.create_assembly",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.create_estimate",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.calculate_revision",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.list_units",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.create_assembly",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.calculate_revision",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.create_rate",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "method": "cipher_aec.estimating.api.create_assembly",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.calculate_revision",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.get_record",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.create_assembly",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.calculate_revision",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.api.create_rate",
+        "role": "project_only",
+        "status": "denied"
+      },
+      {
+        "method": "cipher_aec.estimating.api.create_assembly",
+        "role": "project_only",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.api.calculate_revision",
+        "role": "project_only",
+        "status": "passed"
+      }
+    ],
+    "checks": [
+      {
+        "actual_native_read_denied": true,
+        "assembly_receipt_denied": true,
+        "completed_receipt_denied": true,
+        "master": "UOM",
+        "no_new_snapshot": true,
+        "retained_kinds_denied": [
+          "rate",
+          "assembly",
+          "snapshot",
+          "revision",
+          "line"
+        ],
+        "returned_unit_receipt_callback_denied": true,
+        "selected_new_rate_denied": true
+      },
+      {
+        "actual_native_read_denied": true,
+        "assembly_receipt_denied": true,
+        "completed_receipt_denied": true,
+        "master": "Currency",
+        "no_new_snapshot": true,
+        "retained_kinds_denied": [
+          "rate",
+          "assembly",
+          "snapshot",
+          "revision",
+          "line"
+        ],
+        "returned_unit_receipt_callback_denied": false,
+        "selected_new_rate_denied": true
+      }
+    ],
+    "company": "Company chain B 20b85fd4edd2",
+    "external_provider_qualified": false,
+    "live_model_qualified": false,
+    "original_operation_id": "b9167294-e8d8-491a-9b29-1de4f42aee39",
+    "project": "PROJ-0034",
+    "project_scope_payload_unchanged": true,
+    "qualification": "real-Frappe-native-rights-Project-fixture-with-explicit-synthetic-Sessions-not-HTTP",
+    "revision_id": "f5f2bf6f-3b45-4507-b5ff-6394cbb8a185",
+    "snapshot_id": "19eed5ec-9b3a-4161-96af-ddafdf3ff04b",
+    "status": "passed",
+    "temporary_native_permissions_restored": true,
+    "user": "company.chain.project_only.20b85fd4edd2@cipher.example"
+  },
+  "schema": "cipher.r1.est-native-master-acceptance.v1",
+  "source": {
+    "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_project_native_acceptance.py",
+    "sha256": "cbacabd63522107e75bd2dfcddcc2bd16453ae1895ffb608a62d5ad509a926ca"
+  },
+  "status": "passed"
+}

@@ -1,0 +1,40 @@
+[WebServer] (node:698107) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 7 tests using 2 workers
+
+(node:698176) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/7] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current403 and removes action controls without inbox reads
+(node:698175) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/7] tests/company-approvals.spec.ts:37:1 › copied exact review preserves authorized second Company through sign-in and never fetches inbox
+[WebServer] 8:39:58 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:39:59 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[3/7] tests/company-approvals.spec.ts:47:34 › exact review refresh respects current404 and removes action controls without inbox reads
+[WebServer] 8:40:01 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[4/7] tests/company-approvals.spec.ts:54:1 › unavailable Company in copied review link does not fall back to the first Company or read packet
+[WebServer] 8:40:03 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:40:05 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:40:05 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[5/7] tests/company-approvals.spec.ts:59:1 › ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links
+[6/7] tests/company-approvals.spec.ts:67:1 › exact review lost grant stays mounted and recovers original payload through later denial
+[WebServer] 8:40:08 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[WebServer] 8:40:08 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+[7/7] tests/company-approvals.spec.ts:76:1 › Company inbox keeps subject state and exact review controls inside nested workspace bounds at three widths
+[WebServer] 8:40:10 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  7 passed (18.0s)

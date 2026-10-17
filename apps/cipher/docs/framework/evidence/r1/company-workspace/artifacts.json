@@ -1,0 +1,57 @@
+{
+  "schema": "cipher.browser.artifact-inventory.v1",
+  "artifacts": {
+    "actual-company-accepted-estimate.png": {
+      "sha256": "dbf9fdd7253d1a5a3d1abeae403f5c3fd07c3be12dc7100cff02530d86a79748",
+      "bytes": 167299
+    },
+    "actual-company-estimate.png": {
+      "sha256": "e13e8fff209518b1056fd641efe396fbed7e92ef0359eb240d4f5bc9d914d2a8",
+      "bytes": 166892
+    },
+    "actual-company-independent-estimate-review.png": {
+      "sha256": "d375361b8c0ac2f42c71ab5be80818b41cb39c2cb6d23d82fd655f68cada79fa",
+      "bytes": 92549
+    },
+    "actual-company-proposal-comparison.png": {
+      "sha256": "70b3c4b9502e1c94695f47962747d7c5c1ed286213833b0372f161c58c3f19f3",
+      "bytes": 173147
+    },
+    "actual-company-proposal-desktop.png": {
+      "sha256": "471432123e0ec46022285948dc2488db8cf9b73067c0d0583a01cf20eef72b39",
+      "bytes": 173236
+    },
+    "actual-company-proposal-phone.png": {
+      "sha256": "d7ea997e353c2d897ff61768e7804b0e94ef76e97569c2894586a5ac00410885",
+      "bytes": 30250
+    },
+    "actual-company-proposal-tablet.png": {
+      "sha256": "f6ce68c845383f6af5649de41d54bfc83d2f58fcd1763ca576e4cb0e99f9c20d",
+      "bytes": 119417
+    },
+    "actual-company-pursuit.png": {
+      "sha256": "144f20d63a21f5f07fff861ea6ee4cd3f330736960c8f93de5300ccbf06b49f2",
+      "bytes": 119555
+    },
+    "actual-company-source.png": {
+      "sha256": "71b4f61a9970982b461579e2ca970f76999edda6be08a39555794175c596223e",
+      "bytes": 104356
+    },
+    "native-precision-validation-attempt.json": {
+      "sha256": "cff237b33468a5a08c76b3f15972574967ce2c2ca9418a53a2caa8592561cfac",
+      "bytes": 6910
+    },
+    "native-precision-validation-attempt.png": {
+      "sha256": "f5e8b85261bcdf8681ae3d81a261cda0f6cd27be98623d43176484018a5d28f0",
+      "bytes": 169076
+    },
+    "provenance.json": {
+      "sha256": "86f3c25d2b2ee327f46bfb12fc4d75294fbfe01f274b80ddb4975de3546c89ee",
+      "bytes": 62783
+    },
+    "verification.json": {
+      "sha256": "80f90c9fd8d7e34ffaec58cc24505595e30d1bf990288d5caff69a385d430d2a",
+      "bytes": 26341
+    }
+  }
+}

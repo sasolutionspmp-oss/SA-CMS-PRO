@@ -1,0 +1,142 @@
+{
+  "schema": "cipher.company-document.native-acceptance.v1",
+  "status": "passed",
+  "company": "COM-01 isolated company fd89ca080f",
+  "user": "commercial.fixture.fd89ca080f@cipher.example",
+  "alias": "commercial.alias.fd89ca080f@cipher.example",
+  "project": null,
+  "document_id": "DOC-b90b20a686e04634b963af162abcaa19",
+  "original_revision": "REV-dab99043827e4ed8bd0e1122e31a91f1",
+  "current_revision": "REV-c5912522d3a546a09281e1b5258fb518",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "caab97f59d88247fc03d77c9af4979f3c7fa800c4c0b10616e6f35c28aedcef5",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/install.py": "a7a30d832da10106d1ad5f92cbd7831db8af0399ae97843c88889073d373d77a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/permissions.py": "f790b44716d4a52d086d915cf6b277690584cd46339f9477496c6bdda9a7ef5b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py": "3a2f4d703ef1fc8507df85c57b7f85d936c78736ff607e34b351acef8bdcbb84",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py": "bb7353767e28b39b3950e7fa052c206f1516530fcf7e0e4ba3f1227359c095e5",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/schemas/company-api-v1.schema.json": "96dd9104833ff4b734a03fed59b47b0f602c262881b39c59029f72ad3b3c3068",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.py": "75995d468595251312c16a22818d1df1db280b12253fcdcbaca01afed84ca3cf",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.py": "e1f74d0e7942262d94cd8c6185a221b751e8c5bd265c4f54c64c7cda0ac7eed0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.json": "713f0220ae0a44d43ccab4101b60ea1d23dd7cc03a6291bfc7a4945d16bb8db3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.json": "8e2f48031d93c979f3717ae686d1951ea34d59e62c91e9d0b99531ac55dfc48b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/export.py": "d2ba4960b23037c439625db4b0146b5967d96ab9d6d094a200363fb1f5a36cea",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/schemas/canonical-v1.schema.json": "03a6c857ee3c8189b16242ebd87746b2820a4e12b3a815bc4b4fea776e83c1f9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/schemas/canonical-v2.schema.json": "226b85bc00b75ff134a972cd0952c7179e55362bee1153eefe24a0592a81916a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents.py": "befcb964030f8fba2522a56fd37af5d4c6fb0e2258b5be78d3f7b7a499879afc",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_company_acceptance.py": "3fb5aaae570b1a35aab4082e6a09cdf954d8e4e15e18acb9e0594a9093acb857",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_migrations.py": "d61a17d88a6f4156c02211c40ed390e937eb3383936aabfe7c06104829a15aff",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_migrations_company.py": "9a2122dba53177c5447c52c7e009c2fc17d4430f4946cc439cf2643b95b2f6f7"
+  },
+  "citation_id": "fcd93c52920307a7771cb3b22bb8a3be085ae593e3b544fc900888935650392e",
+  "checks": [
+    {
+      "check": "company_only_pdf_exact_bytes_page_citation_preview_search_native_private_file",
+      "status": "passed"
+    },
+    {
+      "check": "canonical_alias_receipt_replay_one_document_one_revision",
+      "status": "passed"
+    },
+    {
+      "check": "project_reader_never_widens_to_company",
+      "status": "passed",
+      "error_code": "not_found"
+    },
+    {
+      "check": "immutable_retained_page_and_explicit_current_working_head",
+      "status": "passed"
+    },
+    {
+      "check": "stale_company_head",
+      "status": "passed",
+      "error_code": "revision_conflict"
+    },
+    {
+      "check": "scope_immutable_even_on_trusted_native_controller_save",
+      "status": "passed"
+    },
+    {
+      "check": "revoked_company_document_receipt",
+      "status": "passed",
+      "error_code": "capability_denied"
+    },
+    {
+      "check": "revoked_company_document_replay",
+      "status": "passed",
+      "error_code": "capability_denied"
+    },
+    {
+      "check": "revoked_company_document_new_upload",
+      "status": "passed",
+      "error_code": "capability_denied"
+    },
+    {
+      "check": "revoked_company_document_citation",
+      "status": "passed",
+      "error_code": "capability_denied"
+    }
+  ],
+  "credentials_recorded": false,
+  "qualification_limits": [
+    "Explicit synthetic allow-unscanned policy; no antivirus or OCR claim.",
+    "Same Frappe private File authority; native HTTP/private URL closure is qualified separately by independent integration QA."
+  ],
+  "captured_at": "2026-10-15T17:14:50.912214+00:00",
+  "runtime": {
+    "frappe": "16.52.0",
+    "erpnext": "16.51.0",
+    "pypdf": "6.15.0",
+    "python": "3.14",
+    "site": "cipher.localhost"
+  },
+  "native_master_resolver": {
+    "status": "passed",
+    "company": "COM-01 isolated company fd89ca080f",
+    "checks": {
+      "current_company_native_read": true,
+      "company_never_resolves_project": true,
+      "native_read_unassociated_customer_denied": true,
+      "qualified_unit_identity_reused": true,
+      "export_matches_current_native_permission": true
+    },
+    "native_unit_export_allowed": true,
+    "writes_performed": 0
+  },
+  "pure_checks": {
+    "passed": 42,
+    "old_project_document_checks": 15,
+    "new_company_document_checks": 5,
+    "old_canonical_manifest_checks": 18,
+    "new_company_manifest_checks": 4,
+    "project_manifest_fixture_digest": "ab485b55db46e6ac85747158ceac36b1f382b0278ec5b0760008115481b9466f",
+    "project_v1_schema_sha256": "03a6c857ee3c8189b16242ebd87746b2820a4e12b3a815bc4b4fea776e83c1f9"
+  },
+  "fixture_setup": {
+    "user_auth_writes": 0,
+    "role_writes": 0,
+    "main_fixture_writes": 0,
+    "own_company_document_duties_granted": [
+      "document.read",
+      "document.write"
+    ]
+  },
+  "document_source_sha256": "08c431bcb68ca4c6e5c761c3621aaa3421d47d9b3104311a879888518cb7b5b6",
+  "document_source_sha256_provenance": {
+    "source": "Retained native run result /tmp/cipher-company-doc-native.log; this hash was checked against actual downloaded PDF bytes during the native run.",
+    "revision_id": "REV-dab99043827e4ed8bd0e1122e31a91f1"
+  }
+}

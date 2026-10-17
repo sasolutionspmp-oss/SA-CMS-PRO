@@ -1,0 +1,134 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Ricky Draft Save",
+  "module": "Cipher Ricky",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "scope_type",
+    "project",
+    "requested_by",
+    "person",
+    "source_proposal",
+    "run",
+    "step",
+    "invocation",
+    "receipt",
+    "saved_doctype",
+    "saved_revision",
+    "data_json",
+    "record_digest"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "default": "Company",
+      "read_only": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Project"
+    },
+    {
+      "fieldname": "requested_by",
+      "label": "Requested By",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "User"
+    },
+    {
+      "fieldname": "person",
+      "label": "Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "source_proposal",
+      "label": "Source Proposal",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "unique": 1,
+      "options": "Cipher Proposed Change"
+    },
+    {
+      "fieldname": "run",
+      "label": "Run",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Ricky Run"
+    },
+    {
+      "fieldname": "step",
+      "label": "Step",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Ricky Step"
+    },
+    {
+      "fieldname": "invocation",
+      "label": "Invocation",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Tool Invocation"
+    },
+    {
+      "fieldname": "receipt",
+      "label": "Receipt",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "unique": 1,
+      "options": "Cipher Command Receipt"
+    },
+    {
+      "fieldname": "saved_doctype",
+      "label": "Saved Doctype",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "Cipher Proposal Revision\nCipher Estimate Revision"
+    },
+    {
+      "fieldname": "saved_revision",
+      "label": "Saved Revision",
+      "fieldtype": "Dynamic Link",
+      "reqd": 1,
+      "options": "saved_doctype"
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "hidden": 1
+    }
+  ],
+  "permissions": [],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "cipher.company-draft-save.browser-qualification.v1",
+  "status": "passed_composed",
+  "source_manifest_sha256": "d35c9e1794c4c3145ddb5481176369a0dc4a130b5e87f283b2a589374f565881",
+  "production_build": "passed",
+  "build_files": 905,
+  "build_log_sha256": "ddc677b269ca1cb339fbef537113682e5f61983ad2b97b010d0675fa9808400d",
+  "full_attempt": {
+    "report_sha256": "87ea9a44369521d7a134afa16096b6ed302dca66aa57c84987b6681437b21eb9",
+    "stats": {
+      "startTime": "2026-10-16T10:17:56.496Z",
+      "duration": 690288.304,
+      "expected": 238,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "failure": "estimating.spec.ts132 malformed-contract calculation recovery: Chromium Target crashed",
+    "original_report": "full-first.json",
+    "original_failed_evidence_preserved": true
+  },
+  "exact_failed_case_confirmation": {
+    "report_sha256": "094a65c0ee4ecafddbc26cb678a8699cabd68740ed9c9b7b198f6f9de929a9bf",
+    "stats": {
+      "startTime": "2026-10-17T00:11:14.748Z",
+      "duration": 4994.8009999999995,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "source_unchanged": true,
+    "retries": 0
+  },
+  "distinct_checks_passed": 239,
+  "focused_r15_checks_passed": 19,
+  "native_execution": false,
+  "actual_screenshots": false,
+  "old_generated_contracts_byte_identical": 12,
+  "prior_failures_preserved": [
+    "navigation-before",
+    "navigation-after-fixture-refusal",
+    "draft-first text locator",
+    "TypeScript fixture annotation failures"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "schema": "cipher.r1.distribution-publication-before-registration.v1",
+  "status": "observed",
+  "operations": [
+    {
+      "operation_id": "j5r0p9nqvq",
+      "canonical_state": "Succeeded",
+      "logical_key": "5ed59cb74bca5096567d26047ab84c2b137f6510921e06e71399fc302657476a",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    },
+    {
+      "operation_id": "o7slh68mnq",
+      "canonical_state": "Unknown",
+      "logical_key": "d382f7f16892115ed4d6370a592d080c94240e47e564f1f4e924f559800bb568",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    },
+    {
+      "operation_id": "o7slp39odp",
+      "canonical_state": "Succeeded",
+      "logical_key": "c0ca317f7decd7db22291bc5a7ca29721c3d0113fd97e746c84f76258b42ebfc",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    },
+    {
+      "operation_id": "oge0b0su14",
+      "canonical_state": "Cancelled",
+      "logical_key": "07a04bb638c2aabcfcc4c7b7dd509e792a53639184d399308411681c1819dc8b",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    },
+    {
+      "operation_id": "op9jlc2cj9",
+      "canonical_state": "Failed",
+      "logical_key": "ddfdaa57f4ffaef5f593d5ba441697ac8cd33cd27ebba161bd19ee3e6681da1a",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    },
+    {
+      "operation_id": "p2m5grsv6j",
+      "canonical_state": "Failed",
+      "logical_key": "8aefc5759493250797950b74a0424824cb2fecc9512d0b4312493ec665e2fee5",
+      "rq_job_exists": false,
+      "rq_job_id": null,
+      "rq_state": null
+    }
+  ],
+  "rq_queue_depth": 0,
+  "outbox_queue_unavailable_warning_count": 0,
+  "qualification": "Read-only canonical DB versus actual namespaced RQ job lookup before dedicated worker queue registration. A Queued DB intent is not proof of publication; manual sink proofs do not qualify RQ."
+}

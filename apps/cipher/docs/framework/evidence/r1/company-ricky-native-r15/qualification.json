@@ -1,0 +1,691 @@
+{
+  "schema": "cipher.r15.composed-release-qualification.v1",
+  "status": "qualified_with_retained_native_concurrency_expectation_failures",
+  "backend_fresh_passed": 942,
+  "browser_distinct_composed_passed": 239,
+  "browser_fresh_full_passes": 238,
+  "unchanged_crash_confirmation_passed": 1,
+  "generated_contracts": 13,
+  "production_build_files": 905,
+  "actual_screenshots": 13,
+  "actual_browser_API_GETs": 48,
+  "mocked_capture_API_responses": false,
+  "live_model_connected": false,
+  "QuickBooks_connected": false,
+  "main_changed": false,
+  "source_snapshot_sha256": "353279970396d8716db9ed0760079e7f13cd42b47bdc55bed238042bc9bbd46d",
+  "native_final_audit_sha256": "31010895923dacb9377800ae3bbdf4053b7c03cfac17c73622c87e5ea4ba3f08",
+  "root_auditor_sha256": "8dcb74139d5e9bdb430866ce1305a524ed27d53e2617df2415a421546b5879ef",
+  "helper_checks": [
+    {
+      "retained_file": "native-helper-v1-qualification.private.json",
+      "status": "passed",
+      "exit_code": 0,
+      "source_sha256": "d78bc778428d741cc54be9449a11c09344080f4a3c1f037ce707da0c697a2b29",
+      "log_sha256": "e18a30eafb00e715c05fd1acc6f9337f63306bfe5ef5183701aa1ac11763a65e",
+      "native_business_actions": 0
+    },
+    {
+      "retained_file": "native-helper-v2-qualification.private.json",
+      "status": "passed",
+      "exit_code": 0,
+      "manifest_sha256": "8784185779da248d8092e5f76eae414a5e4c41b5c24001d35f72808af5c21f93",
+      "log_sha256": "0f8e641fd9d0220ecc2afe9ff2b4267141f671923770fbb2d38b4410c1c2913b",
+      "native_business_actions": 0,
+      "test_count": 23
+    },
+    {
+      "retained_file": "native-helper-v3-qualification.private.json",
+      "status": "passed",
+      "exit_code": 0,
+      "manifest_sha256": "3c65852255a4ae0f725f7c499248c14fcc2fc4b0cc3fcb6927f93cd65027794a",
+      "helper_sha256": "57b93171fff3ca44695de772b540bfc456c4ec34a95e34dcaef8aff812492d21",
+      "test_count": 16,
+      "log_sha256": "24f3db0ed089e8896b7c2b5f9db40814f386ce5f14da36ff8add0152687304fd",
+      "native_business_actions": 0,
+      "root_review": [
+        "distinct fresh case ownership",
+        "exact supported restoration with finally",
+        "closed authenticated wires",
+        "bounded race intents and serial journal",
+        "separate native rollback entry still pending",
+        "compact evidence references and strict preservation audit"
+      ]
+    },
+    {
+      "retained_file": "native-helper-v4-qualification.private.json",
+      "status": "passed",
+      "exit_code": 0,
+      "manifest_sha256": "bdec9bb8abbe8cd0b3ff8313c7fe16c9a8a576b75024b0871427a2d45c6702b1",
+      "helper_sha256": "aff5a91342e52ae45f02fdba4851c0185fee8591a924b21e84d29f461d27686f",
+      "test_count": 25,
+      "log_sha256": "49f648c71a106d9143b8a5784d6c68eab9cf40fb0a2de6209d907bcd1e638970",
+      "root_review": [
+        "strict retained200/503batch/serialjournal/overlap bindings",
+        "nativecanonicalwinner+no loser effect",
+        "preserve original failed case/batch; explicit one sameUUIDretry",
+        "bounded original User/Session heartbeat attribution only in privateauditview",
+        "allpositive epoch addedrows exact and positive saved verifiers rerun",
+        "fullv3restoration+v2oldrows/expectedadditions/history/configsourcecookie audit"
+      ],
+      "native_business_actions": 0
+    },
+    {
+      "retained_file": "native-rollback-listener-qualification.private.json",
+      "status": "passed",
+      "exit_code": 0,
+      "manifest_sha256": "6e2b71af75409c366835ae925aa5074f03a0d0ae47ac09df6efcff6a21735b00",
+      "helper_sha256": "9891d89632bcc46204e9a1584123d41cc50aa128cc421d76d42750915dee631c",
+      "test_count": 18,
+      "log_sha256": "a74b00ebf843c8a4da76b0aa97efc64cc66bc95b337083003afb769c4f0abafb",
+      "root_review": "real pinned native init/auth/CSRF/original SID; fixed single loopback POST; instance-only rollback; native callbacks/destroy and bounded observation; no app/global/identity patch",
+      "native_business_actions": 0
+    }
+  ],
+  "retained_native_phase_records": [
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-cancel-original.private.json",
+      "sha256": "2db5352ea78e4c67a8397ae3b5afc95ff918b45cdaba6519b245b7c63c8d30b2",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-queue-after-original.private.json",
+      "sha256": "2d8580365ff202dac96511896f5e5f09a0a4a63c99586897c04e27770e6888d6",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-queue-before-original.private.json",
+      "sha256": "38bae4c4e81c8099dd0faf066e279cb735704c61dfb76e9fc921f6f36347a844",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-start-original.private.json",
+      "sha256": "a90cfd789dfb0ada212b79e241596a72bfbcbef11f8e6f2776b4d354735ec983",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-target-original.private.json",
+      "sha256": "d8294657d361d2d0431f0d9cb19dba1f1ff037661e8b7a56e889ef2c57bc4a0e",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-cancel-before-finalization-r15-worker-original.private.json",
+      "sha256": "8cc9bf146fc308982aa878c6327ab84e5ffcd4830cbe82a8ac19e8b03ebb5518",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-declare-original.private.json",
+      "sha256": "1cf1512f0bb6b604cfd23f7d277454413f199638d56e903a9536d58114fb32da",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-outage-original.private.json",
+      "sha256": "3d6425a0615c43b1b22a4ff788867592a715a875893fe286d141fffea7f57f41",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-queue-after-original.private.json",
+      "sha256": "48a5957f7bfce118ebcecc2d41ab0eaa573387189c0dfd7ced22f87019cc0469",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-queue-before-original.private.json",
+      "sha256": "5f7ba2fa13c5309e693f8dfc7aef701b25d4c6e2b3eeff7fb4571a2b1e65dfb8",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-review-original.private.json",
+      "sha256": "13c24b043996b90bb1c0dbc43756ddb8d088ff018251cfdcfda96c92804a46d5",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-start-original.private.json",
+      "sha256": "b2f5aa071f69ef477b75d935f4e9668cc05b270ed2139ac487ce9413f1cce348",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-target-original.private.json",
+      "sha256": "f893820ca4b875893e5926fae60e0dc96e735ae5e156b05cd0b8eeb2debab5d4",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-duty-outage-r15-worker-original.private.json",
+      "sha256": "555e7e5c5e60d712dad5629d44fca816278968412bd59228cca6f328e79c411a",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-identity-original.private.json",
+      "sha256": "f0c7b3bb6b7a501132a8b135e96e5f03175ccbced94d15f790801e12f1efdfa6",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-queue-after-original.private.json",
+      "sha256": "9eaeb921211ed25b6fc8957f3d78a1c081e603e743a71d7258ac85fc892bde64",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-queue-before-original.private.json",
+      "sha256": "7355e8ac90ac1213ace63b3018bbbf5c537e33d778c43b0257864a6b0f978ef1",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-review-original.private.json",
+      "sha256": "54f62c187cf0913573f9d8d6266871448b0b1a0ab42f383c26b873626d5d488a",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-start-original.private.json",
+      "sha256": "3a0f3f641ed96076a78eac475983fc4196af055e1ba7025ba481538d27a87cc4",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-target-original.private.json",
+      "sha256": "d8a8b05bea55e7259651e2fe1a93f3de259f60793fd59998147ba9b49377e4d5",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-identity-refusal-r15-worker-original.private.json",
+      "sha256": "66ec51ba1bac3c56d92599b284e367280263fb2464528cffceb8e44ba9055925",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-outage-original.private.json",
+      "sha256": "a4e13ee30cbd1e3811a081b090500f23972f2bbebf905455d75daa589adc0f38",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-queue-after-original.private.json",
+      "sha256": "39f941b1dce8df0eea3f3610815d3852d56f8a8fce4e754d7d9512ab3b37cbfb",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-queue-before-original.private.json",
+      "sha256": "3fa43056be505c8b389c0e1d831565e61b9bbc5c30c14dd002dc45ddb342b718",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-review-original.private.json",
+      "sha256": "7814a2558d97a807401def1b753b0dbfc750588e68fdedde8fe31759ef20d9d9",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-start-original.private.json",
+      "sha256": "219f2deb8a4081b0ae6ec0cb055245501226c95a477b72545723a4b03ade1a06",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-target-original.private.json",
+      "sha256": "393ad352ad9ce02a29201c62fa15b80989ff6ebbc07d525b24cf6e441e9585eb",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-native-write-outage-r15-worker-original.private.json",
+      "sha256": "3fca23499ee96fc1be055bb1fa98cea2e523d455c793e423a6d6e25181a9efba",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-queue-after-original.private.json",
+      "sha256": "3ecaf752c7a4c122cb737e15891ba53a3bdec9e40a9694d9a8af09f49523066c",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-queue-before-original.private.json",
+      "sha256": "ac759bbf3419fd65fdb11f416d7d4ed6680975fcaf2235c234dbd03aba9a3202",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-review-original.private.json",
+      "sha256": "9cb66ed6de336da61a76f39589818472ad41c8fac37a2fb7300ac6b6ebecef58",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-start-original.private.json",
+      "sha256": "f7d2b6514f971f65f2f7289e326236c25c234765d1e6e5161ab8877bf1faf670",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-target-original.private.json",
+      "sha256": "0bd50c80bc636d8d72bd830799e6db304679a4bb68b49e2e5ed70d8bb487da91",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-rollback-r15-worker-original.private.json",
+      "sha256": "47309de6d811eede326e9cc7b12ef4225707ee845820f4b0f0165c096da16dc3",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-outage-original.private.json",
+      "sha256": "b6e52c45bb49a0b8de33c6c1c7b7453eec8bfe0b17dcf03afc9ce595712dcc24",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-queue-after-original.private.json",
+      "sha256": "618709269822e7909677d43d781168d4ca32012fcb018e4bdc8b64a7eec31318",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-queue-before-original.private.json",
+      "sha256": "46e4712b6a5847a231365a5fc883a97d3b7b15b4d9a0a5f18af52aed43986c92",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-review-original.private.json",
+      "sha256": "d99f1e1a397d277ba2e8e06ebab484eef3c84e3a13d6fc54401146775f13cd7b",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-start-original.private.json",
+      "sha256": "0589127d1b0d71fb7dae9e2da34812f6bdeba4a3df104adf21e7947bfb38eb18",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-target-original.private.json",
+      "sha256": "9e092ab72e1b7a1f250521bb6d371b743b4f3abc29f47504d5cb6c2534bcb9ce",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-source-outage-r15-worker-original.private.json",
+      "sha256": "a2072c6750bb88db1f237e7ecc0186aa46f8f958def4b435650689686d1e9e29",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-queue-after-original.private.json",
+      "sha256": "487e6117ea51b6c661111e6af7ec876979f4773e978b3210fd3a64eeab3c7bc9",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-queue-before-original.private.json",
+      "sha256": "e582ce0270804aa22bc41eea1e47bdacb8f7c96b5647bff400afc8351498c8a7",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-review-original.private.json",
+      "sha256": "db74ef66bec6dc7bc9382bc6cf09ad8612ce767e34a7f671bb5cf2f05e32a6bf",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-stale-original.private.json",
+      "sha256": "081f7ed23f685f1fd7f553f131aa4d639a120147518cfbd5e8611a4c97399818",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-start-original.private.json",
+      "sha256": "4a684077defa38e7380d60ab604b802d56c20c695bc8ea1288513ecc37e08835",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-target-original.private.json",
+      "sha256": "e784fb6195a0465f97546426fe7fceee430ff276a21c52fb6421df3d4327d6b6",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-stale-target-r15-worker-original.private.json",
+      "sha256": "1689021fc8a00a5e2e84c84bb1cf1523682d2728bbcaaeba59c3ac6a9e16b4ff",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-queue-after-original.private.json",
+      "sha256": "5d7084a1676d087b69cc784b78ed4ca0af2cc680e79919fceeeed7bb0a8ef6cc",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-queue-before-original.private.json",
+      "sha256": "7c1433b5d9093b6f580804338e7ee482f6a551899b51c3b0dcfb2fc21cc08f3b",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-race-original.private.json",
+      "sha256": "3a72cda83bbd63c411c5c3dc9adfd52b4253d80538ef1ad197a4bfb283e6a89f",
+      "status": "failed",
+      "exit_code": 1
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-review-original.private.json",
+      "sha256": "bd099e97d112ec2bdd6327140367bff12edf923064e21ec4627e2a01bdeacb5e",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-start-original.private.json",
+      "sha256": "f747132636b9d820b58bd6179e6858150d5f42228565050ccb255f12e9e07f0e",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-target-original.private.json",
+      "sha256": "b9c8ccb98c2aa97fb1969b6930bf9981e35072f6cb4aa9273be51d44700f9616",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-two-operation-r15-worker-original.private.json",
+      "sha256": "8b3b2c7734c058e7e9c7c1678e1e00b88e45e921971d253008fa1d128676e2d9",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-expiry-original.private.json",
+      "sha256": "3cc750ede0c1fabebf89283c8684adee808edb1a5fd0eabae7a263ff37105e07",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-queue-after-original.private.json",
+      "sha256": "d663009ad0a0e0282b8b3a4143cd609ed18189b122fedba4ac4ccf67c4d5e660",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-queue-before-original.private.json",
+      "sha256": "4289e785ef1f6a961be7087b9ff1bcf8c36f88810ee3df8d3fbfa1360c5c10f5",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-review-original.private.json",
+      "sha256": "036369e356ae7428d173cddf1f5876bd856c003eace4d2b7940e32b4246fca39",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-start-original.private.json",
+      "sha256": "b08f4212c6091d62f04f492bb0b459dcf80142ccce806357c3eefe63ce02b511",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-target-original.private.json",
+      "sha256": "bd20c06a0434d68443d12238c5bf063a0b9cd37537faf9741075a7c27d11c80f",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "boundary-unsaved-expiry-r15-worker-original.private.json",
+      "sha256": "0ebe7269723fbf9eb8d5754fd31d0e8d945d3705a91524e7c7e0adb95fd606b1",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "final-native-root-audit-original-phase.private.json",
+      "sha256": "463bc90d36f4f34aa9ac609bfc17e2b66b7e22b9f50a1df44fd84770de0cc429",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-audit-original.private.json",
+      "sha256": "ec3ff2f514de02645598d5fbe9e4bc2a821eb3de4aec4259ada2edcb64972117",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-history-after-successor.private.json",
+      "sha256": "b3a02f484a31ae6171dec8b1a1cf76e75a9af1162e2f85febf4dabd13b3ed17c",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-history-natural-expiry-confirmed.private.json",
+      "sha256": "82b1c3e67df3681f27f5b7c5b32da6d63b54f94f862bc680ba2ce3be5b5def4b",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-queue-after-original.private.json",
+      "sha256": "60ed424263294645e94cab592a2d1cc8ef76f4a0e19a1ab83ec247f468b534aa",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-queue-before-original.private.json",
+      "sha256": "ecaf876352bdb855ab1a3044c064455642ba929df8e1d51c075aa1dfa25be61d",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-replay-after-successor.private.json",
+      "sha256": "84e20d49549e0791f79dd51b8b83887489427bab64ada0dfdfa409e925b325e8",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-replay-natural-expiry-confirmed.private.json",
+      "sha256": "ef5f4ace6a2d0480766195faf7d0bf8002467deb64c24658a83a960d596ae0e2",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-review-original.private.json",
+      "sha256": "663193689ea8a41ec7871413e122d2503b4a85053fd4b8cdda1290318b62928b",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-save-original.private.json",
+      "sha256": "d22d1cbdb9bb280e1e7d2a132679c1b4e52c96fb3b8effb56d5e7daa7efda0f1",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-start-original.private.json",
+      "sha256": "bf3c64ff33d848e838d1540706cc7e0682da4ec8202b2083ef0039a456f922b4",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-successor-original.private.json",
+      "sha256": "311e52351edfd8e32b9e7057f9ff2416450c67af78efba01e2e0b4db3b3607c5",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-verify-original.private.json",
+      "sha256": "d997c508c4b2e5730529b47bef705b19643e5ab711516b17fbc1fbb5101a00de",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-estimate-r15-worker-original.private.json",
+      "sha256": "562942ed75d853aa737a6d951c9a561dabc6b5c345fcd0e25c3be742531d45ee",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-helper-v1-qualification.private.json",
+      "sha256": "6147cb5f1be30bbb1201043ffc975aa70076387649001439708f8d95345d13eb",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-helper-v2-qualification.private.json",
+      "sha256": "1642c1280a623bf45a873bcea6e6b94eee7d17bb320a464dce123bf16fc38933",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-helper-v3-qualification.private.json",
+      "sha256": "559215281606705acfe277ffac08ef086e0c3cd641df33684dd385184af63b27",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-helper-v4-qualification.private.json",
+      "sha256": "d33c337878beafb06b13d53fa68787f1179e1eada26588d1281f8d21d3be2f36",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-prepare-original.private.json",
+      "sha256": "b46347626068cf9b6addb9e7cfb93a9f61ac43876c0ea12864c49c06b2c77706",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-rollback-listener-original.private.json",
+      "sha256": "eed9ba12ed5b539fd7305de254d30a019263877a76e3f626c4eff0f9a390eab0",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-rollback-listener-qualification.private.json",
+      "sha256": "120bff6f5eddf095a2b06e8ebc99fc16c7e117838cb44f89e3b40e2d5ac5a9c7",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-history-after-successor-expired.private.json",
+      "sha256": "3540cccdbc28e91729960ad98882e0b3e46b3ad15adff587cbe2f9126cb82d78",
+      "status": "failed",
+      "exit_code": 1
+    },
+    {
+      "retained_file": "native-scope-r15-history-after-successor.private.json",
+      "sha256": "d7e307f5c55f675c7075c6e4c5a3ae31c88044584190eb43dc5502a6700d257c",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-history-natural-expiry-confirmed.private.json",
+      "sha256": "df64093f7751e737e2982282203a0b8a9584190e4467679d0f19f724fe1cbf66",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-queue-after-original.private.json",
+      "sha256": "a18474bab3041582645a315fec7f95b9d016cfb65937876453973c4a0c8dc752",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-queue-before-original.private.json",
+      "sha256": "21eae1a371c05870132ac6a71d1c62b8c24bd586bff093a0daea65a562f1f9b4",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-replay-after-successor.private.json",
+      "sha256": "596e7c50fa38ce57af1c5f7a38737c8ab46181236756898523381a31d82fe977",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-replay-natural-expiry-confirmed.private.json",
+      "sha256": "b8fc1aa1487f5173e8de305ce2acead7b97b333cd48eadac9f430f7767471b20",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-review-original.private.json",
+      "sha256": "dabf7d59f053b350c1ead6da894546ff8c15d0e2127f887a78211e20d283ef56",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-save-original.private.json",
+      "sha256": "a20e94acb1bc5069668baa20075a6e0efd67ce74478974e257a6933acbdbd0c5",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-start-original.private.json",
+      "sha256": "93aba48cf03ece9d82004ff26a18cf3492d6d54a9bdb2ee5bf466ef9b96bfdd4",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-successor-original.private.json",
+      "sha256": "a42cccd0051e5dd390d4f221b6f041b275e8fa31debb695266612aba27f228c6",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-verify-original.private.json",
+      "sha256": "020e1b8cfe18ff4e8ac3fc8dd1168341ec5949d5cb17b835d2664e7beb61e0e1",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-scope-r15-worker-original.private.json",
+      "sha256": "801427957505164f80ebfd141b8d08ba0c9593e601bcb7d2b2b6a1e4c3b37e73",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "native-targets-original.private.json",
+      "sha256": "08135b02cab5c43bf42347f8076de134736c48f484960922054cb0cf5a9890c9",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "race-v4-declare-original.private.json",
+      "sha256": "4bf051c5092715efa6f2864c3ec99d813678fc1a039cc4fcf489fb849643e139",
+      "status": "passed",
+      "exit_code": 0
+    },
+    {
+      "retained_file": "race-v4-retry-original.private.json",
+      "sha256": "8951457ac90f5feabfbadb8f54c3db81331e8d64312775a699c21e5398724253",
+      "status": "failed",
+      "exit_code": 1
+    }
+  ],
+  "failed_native_expectations": [
+    "Original expiry-only history check ran before deadline; no API call/business change; later natural-expiry checks passed.",
+    "Original competition checker expected200/409; actual200/503concurrent_change retained and independently reconciled.",
+    "Same original loserUUID retry expecteddraft_already_saved but its deadline had passed, so actual409draft_save_expired retained. No further retry."
+  ],
+  "final_native_read_only_audit": "passed exact original rows and53positive epoch rows, expected additions, history chain, source/config/indexes/cookies; eight boundarycases passed and retained race independently adjudicated",
+  "backup_verified": true,
+  "backup_restore_tested": false,
+  "hosted_CI": "not_yet_run_for_R15",
+  "publication_checks": "publication-checks.json"
+}

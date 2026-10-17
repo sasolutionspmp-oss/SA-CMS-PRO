@@ -1,0 +1,347 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cipher.example/schemas/canonical-api-v1.schema.json",
+  "$defs": {
+    "CanonicalValidation": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.validation.v1"
+        },
+        "valid": {
+          "const": true
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "quantity_previews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "from_amount": {
+                "type": "string"
+              },
+              "from_unit_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "to_unit_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "exact_numerator": {
+                "type": "string"
+              },
+              "exact_denominator": {
+                "type": "string"
+              },
+              "rounding_applied": {
+                "const": false
+              }
+            },
+            "required": [
+              "id",
+              "from_amount",
+              "from_unit_id",
+              "to_unit_id",
+              "exact_numerator",
+              "exact_denominator",
+              "rounding_applied"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "apply_available": {
+          "const": false
+        },
+        "writes_performed": {
+          "const": 0
+        },
+        "setup_requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "const": "company_timezone_unconfigured"
+              },
+              "record_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "record_id",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "record_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conversion_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "target_existence_checked": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema",
+        "valid",
+        "manifest_sha256",
+        "quantity_previews",
+        "apply_available",
+        "writes_performed",
+        "setup_requirements",
+        "record_count",
+        "conversion_count",
+        "target_existence_checked"
+      ],
+      "additionalProperties": false
+    },
+    "CanonicalPreview": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.preview.v1"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "quantity_previews": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "from_amount": {
+                "type": "string"
+              },
+              "from_unit_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "to_unit_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "exact_numerator": {
+                "type": "string"
+              },
+              "exact_denominator": {
+                "type": "string"
+              },
+              "rounding_applied": {
+                "const": false
+              }
+            },
+            "required": [
+              "id",
+              "from_amount",
+              "from_unit_id",
+              "to_unit_id",
+              "exact_numerator",
+              "exact_denominator",
+              "rounding_applied"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "apply_available": {
+          "const": false
+        },
+        "writes_performed": {
+          "const": 0
+        },
+        "setup_requirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "const": "company_timezone_unconfigured"
+              },
+              "record_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "code",
+              "record_id",
+              "message"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "kind": {
+                "type": "string"
+              },
+              "action": {
+                "enum": [
+                  "create_candidate",
+                  "unavailable",
+                  "stale",
+                  "matches",
+                  "update_candidate",
+                  "identity_conflict",
+                  "stale_unit_revision",
+                  "declaration_candidate",
+                  "immutable_unit_conflict"
+                ]
+              },
+              "reason": {
+                "type": "string"
+              },
+              "target_version": {
+                "type": "string"
+              },
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "proposed_declaration": {
+                "type": "object",
+                "properties": {
+                  "dimension": {
+                    "type": "string"
+                  },
+                  "precision": {
+                    "type": "integer",
+                    "minimum": 0
+                  }
+                },
+                "required": [
+                  "dimension",
+                  "precision"
+                ],
+                "additionalProperties": false
+              },
+              "changes": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string"
+                    },
+                    "current": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "boolean",
+                        "null"
+                      ]
+                    },
+                    "proposed": {
+                      "type": [
+                        "string",
+                        "integer",
+                        "boolean",
+                        "null"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "field",
+                    "current",
+                    "proposed"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "required": [
+              "id",
+              "kind",
+              "action"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "apply_unavailable_reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema",
+        "manifest_sha256",
+        "quantity_previews",
+        "apply_available",
+        "writes_performed",
+        "setup_requirements",
+        "records",
+        "apply_unavailable_reason"
+      ],
+      "additionalProperties": false
+    },
+    "CanonicalExport": {
+      "type": "object",
+      "properties": {
+        "manifest": {
+          "$ref": "canonical-v1.schema.json"
+        },
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "identity_policy": {
+          "type": "string"
+        },
+        "apply_available": {
+          "const": false
+        },
+        "writes_performed": {
+          "const": 0
+        }
+      },
+      "required": [
+        "manifest",
+        "manifest_sha256",
+        "warnings",
+        "identity_policy",
+        "apply_available",
+        "writes_performed"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

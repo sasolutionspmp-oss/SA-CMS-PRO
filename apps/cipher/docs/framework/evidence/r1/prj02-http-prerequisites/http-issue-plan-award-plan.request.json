@@ -1,0 +1,162 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.awards.api.plan_handoff",
+  "prepared_at": "2026-10-15T23:11:19.199534+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "award_evidence": [
+        {
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "page": 1,
+          "permission_basis": "Owned synthetic fixture source, no generated provenance",
+          "purpose": "Explicit original manual award evidence",
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "budget_allocations": [
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "a0808c3f-a76d-54a2-8bfe-cce9ffd99949",
+          "source": {
+            "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "d2193653-20b4-5cc7-afe9-2d66b7da92bc",
+          "source": {
+            "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "6aa32199-fa9c-4a05-abe7-7deb98df2b87",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "cd8c4348-2d28-5c9b-9b62-8e6abed593b9",
+          "source": {
+            "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+            "kind": "component",
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8"
+          },
+          "type_revision_id": "4a216706-4de5-4737-b57e-2748380eb594",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "8c93c691-aa4c-56d2-ac25-907c38135233",
+          "source": {
+            "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "kind": "component",
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67"
+          },
+          "type_revision_id": "4db7db6f-f893-4af4-9e98-059cf83c44c7",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "b7a65998-09be-5405-abb1-c312ac938d18",
+          "source": {
+            "adjustment_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "4fb82501-5747-4783-8634-4f2ca2dfbc97",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        },
+        {
+          "code_revision_id": "b0c8131f-9bc1-4c31-abf9-dd08b91a29e8",
+          "id": "542704b2-62f3-54cb-9991-ee39e55ea095",
+          "source": {
+            "adjustment_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "adjustment"
+          },
+          "type_revision_id": "7f2fd12d-f564-42b5-b6e4-df19b9011243",
+          "wbs_id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de"
+        }
+      ],
+      "contract_definition": {
+        "currency": "USD",
+        "direction": "receivable",
+        "kind": "prime",
+        "number": "AWARD-company-chain-c3c3b742a8fd",
+        "original_value": {
+          "amount": "30.85",
+          "currency": "USD"
+        },
+        "party": "Company chain customer a c3c3b742a8fd",
+        "party_type": "Customer"
+      },
+      "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+      "line_mappings": [
+        {
+          "delivery_date": "2026-12-31",
+          "item_code": "CHAIN-a-c3c3b742a8fd",
+          "proposal_line_id": "11134420-fde0-46b8-b06e-502ae8b1662e"
+        }
+      ],
+      "native_order_definition": {
+        "customer": "Company chain customer a c3c3b742a8fd",
+        "delivery_date": "2026-12-31",
+        "selling_price_list": "Company chain selling a c3c3b742a8fd",
+        "transaction_date": "2026-10-15"
+      },
+      "party_correspondence": null,
+      "project_definition": {
+        "expected_end_date": "2026-12-31",
+        "expected_start_date": "2026-10-15",
+        "project_name": "Award exact new Project company-chain-c3c3b742a8fd"
+      },
+      "team": {
+        "delegator_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+        "members": [
+          {
+            "abilities": [
+              "budget.read",
+              "contract.read",
+              "project.read",
+              "wbs.read"
+            ],
+            "person_id": "CHAIN-PROJECT_ONLY-c3c3b742a8fd"
+          }
+        ],
+        "policy_digest": "c08554099e9ac42c2f159a01ab0921a0e9a0ac4f8a71a171eee4afe9a474de12",
+        "policy_id": "CIPHER-TEAM-16e24df1cff467e6e34c6648e1b7fb3d"
+      },
+      "wbs_nodes": [
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK",
+          "id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "is_leaf": false,
+          "parent_id": null,
+          "phase": "Initial",
+          "title": "Reviewed initial work"
+        },
+        {
+          "accountable_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+          "active_from": null,
+          "active_until": null,
+          "code": "WORK.01",
+          "id": "35d170bf-f4c9-4eee-8b3a-eb7353ba48de",
+          "is_leaf": true,
+          "parent_id": "21ca58a3-8fef-4da0-89cf-c4635b36b2cc",
+          "phase": "Initial",
+          "title": "Exact accepted cost"
+        }
+      ]
+    },
+    "expected_version": "3c506f08b0f079f672df4fd4c2482649566ba58dbb4febe1fe19859046d81961",
+    "handoff_id": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+    "operation_id": "ff715f3c-c532-4864-b4c2-751b42f2f377"
+  }
+}

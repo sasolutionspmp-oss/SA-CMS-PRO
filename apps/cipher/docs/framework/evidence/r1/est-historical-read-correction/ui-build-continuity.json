@@ -1,0 +1,16 @@
+{
+  "schema": "cipher.historical-estimate.ui-build-continuity.v1",
+  "prior_qualified_build_files": 907,
+  "continuation_build_files": 907,
+  "exact_byte_catalog_equal": false,
+  "added": [],
+  "removed": [],
+  "changed": [
+    "assets/PdfDrawing-B7puaZ2R.js.map"
+  ],
+  "main_ui_deployment_changed": false,
+  "source_map_difference_fields": [
+    "sourcesContent"
+  ],
+  "qualification": "906 of 907 generated files are identical. The only difference is the debug source map; no UI deployment is needed for this backend correction."
+}

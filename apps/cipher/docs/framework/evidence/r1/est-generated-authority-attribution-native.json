@@ -1,0 +1,437 @@
+{
+  "command_and_read_profiles": [
+    {
+      "actual_artifact_disk_reads": 46,
+      "elapsed_seconds": 3.195363,
+      "logical_operation_counters": [
+        {
+          "prelocked_scopes": 4,
+          "producer_authorized": 3,
+          "producer_hits": 63,
+          "producer_misses": 3
+        }
+      ],
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "profiling_overhead_in_elapsed": true,
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 6761,
+      "sql_phase_attribution": {
+        "authority.company:author:locked": {
+          "calls": 534,
+          "exclusive_seconds": 1.580159800054389,
+          "exclusive_sql": 3738,
+          "inclusive_seconds": 1.580159800054389,
+          "inclusive_sql": 3738
+        },
+        "authority.company:author:read": {
+          "calls": 260,
+          "exclusive_seconds": 0.5446626739721978,
+          "exclusive_sql": 545,
+          "inclusive_seconds": 0.5446626739721978,
+          "inclusive_sql": 545
+        },
+        "authority.company:request-context:read": {
+          "calls": 1,
+          "exclusive_seconds": 0.05028456199215725,
+          "exclusive_sql": 20,
+          "inclusive_seconds": 0.05028456199215725,
+          "inclusive_sql": 20
+        },
+        "authority.native-master:author:locked": {
+          "calls": 86,
+          "exclusive_seconds": 0.36221158504486084,
+          "exclusive_sql": 458,
+          "inclusive_seconds": 0.36221158504486084,
+          "inclusive_sql": 458
+        },
+        "authority.native-master:author:read": {
+          "calls": 30,
+          "exclusive_seconds": 0.01009914290625602,
+          "exclusive_sql": 30,
+          "inclusive_seconds": 0.01009914290625602,
+          "inclusive_sql": 30
+        },
+        "authority.qualified-unit:author:locked": {
+          "calls": 10,
+          "exclusive_seconds": 0.0027955319674219936,
+          "exclusive_sql": 10,
+          "inclusive_seconds": 0.008166304978658445,
+          "inclusive_sql": 21
+        },
+        "document.current-scope:request-context:locked": {
+          "calls": 102,
+          "exclusive_seconds": 0.0030973510874900967,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 1.4686605150636751,
+          "inclusive_sql": 2263
+        },
+        "document.exact-node-facts:author:locked": {
+          "calls": 1,
+          "exclusive_seconds": 0.010506217004149221,
+          "exclusive_sql": 15,
+          "inclusive_seconds": 0.054689452997990884,
+          "inclusive_sql": 88
+        },
+        "document.plan-discovery:author:locked": {
+          "calls": 220,
+          "exclusive_seconds": 0.26096294321177993,
+          "exclusive_sql": 441,
+          "inclusive_seconds": 3.377336460252991,
+          "inclusive_sql": 4399
+        },
+        "document.producer-authority:author:locked": {
+          "calls": 102,
+          "exclusive_seconds": 0.03003667594748549,
+          "exclusive_sql": 53,
+          "inclusive_seconds": 1.2560599649586948,
+          "inclusive_sql": 1913
+        },
+        "estimate.accepted-baseline:author:locked": {
+          "calls": 3,
+          "exclusive_seconds": 0.001408561976859346,
+          "exclusive_sql": 3,
+          "inclusive_seconds": 0.33284627298417035,
+          "inclusive_sql": 834
+        },
+        "estimate.citations:author:locked": {
+          "calls": 22,
+          "exclusive_seconds": 0.11095429497072473,
+          "exclusive_sql": 175,
+          "inclusive_seconds": 2.144784033022006,
+          "inclusive_sql": 4621
+        },
+        "estimate.native-sources:author:locked": {
+          "calls": 7,
+          "exclusive_seconds": 0.024488801922416314,
+          "exclusive_sql": 68,
+          "inclusive_seconds": 0.14289295597700402,
+          "inclusive_sql": 346
+        },
+        "estimate.original-facts:author:locked": {
+          "calls": 4,
+          "exclusive_seconds": 0.007147503012674861,
+          "exclusive_sql": 12,
+          "inclusive_seconds": 2.99790963299165,
+          "inclusive_sql": 6218
+        },
+        "estimate.plan-discovery:author:locked": {
+          "calls": 5,
+          "exclusive_seconds": 0.018287006983882748,
+          "exclusive_sql": 48,
+          "inclusive_seconds": 0.33660851600870956,
+          "inclusive_sql": 829
+        },
+        "estimate.scoped-record:author:locked": {
+          "calls": 23,
+          "exclusive_seconds": 0.014206823005224578,
+          "exclusive_sql": 32,
+          "inclusive_seconds": 3.007286854015547,
+          "inclusive_sql": 4046
+        },
+        "producer.original-authority:author:locked": {
+          "calls": 3,
+          "exclusive_seconds": 0.06232977502804715,
+          "exclusive_sql": 75,
+          "inclusive_seconds": 1.0876470720104408,
+          "inclusive_sql": 1659
+        },
+        "producer.plan:author:locked": {
+          "calls": 74,
+          "exclusive_seconds": 0.3833368288469501,
+          "exclusive_sql": 966,
+          "inclusive_seconds": 2.5515394660906168,
+          "inclusive_sql": 3987
+        },
+        "takeoff.scoped-record:author:locked": {
+          "calls": 5,
+          "exclusive_seconds": 0.0032726020290283486,
+          "exclusive_sql": 9,
+          "inclusive_seconds": 1.8847921549895545,
+          "inclusive_sql": 2677
+        },
+        "takeoff.source:author:locked": {
+          "calls": 4,
+          "exclusive_seconds": 0.007644722980330698,
+          "exclusive_sql": 16,
+          "inclusive_seconds": 0.39856316801160574,
+          "inclusive_sql": 808
+        }
+      },
+      "status": "returned",
+      "successful_exact_byte_integrity_checks": 46
+    },
+    {
+      "actual_artifact_disk_reads": 144,
+      "elapsed_seconds": 3.877563,
+      "logical_operation_counters": [],
+      "method": "direct-domain-profile.estimate._facts.lockFalse",
+      "profiling_overhead_in_elapsed": true,
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 10000,
+      "sql_phase_attribution": {
+        "authority.company:author:read": {
+          "calls": 797,
+          "exclusive_seconds": 1.63731558676227,
+          "exclusive_sql": 3985,
+          "inclusive_seconds": 1.63731558676227,
+          "inclusive_sql": 3985
+        },
+        "authority.native-master:author:read": {
+          "calls": 536,
+          "exclusive_seconds": 0.7763605471118353,
+          "exclusive_sql": 2510,
+          "inclusive_seconds": 0.7763605471118353,
+          "inclusive_sql": 2510
+        },
+        "document.current-scope:request-context:read": {
+          "calls": 288,
+          "exclusive_seconds": 0.007267995024449192,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 6.017028389847837,
+          "inclusive_sql": 9892
+        },
+        "document.plan-discovery:author:read": {
+          "calls": 122,
+          "exclusive_seconds": 0.12450645974604413,
+          "exclusive_sql": 244,
+          "inclusive_seconds": 0.8684460108343046,
+          "inclusive_sql": 1414
+        },
+        "document.producer-authority:author:read": {
+          "calls": 288,
+          "exclusive_seconds": 0.07257287291577086,
+          "exclusive_sql": 144,
+          "inclusive_seconds": 5.451080188926426,
+          "inclusive_sql": 9792
+        },
+        "estimate.accepted-baseline:author:read": {
+          "calls": 26,
+          "exclusive_seconds": 0.009519262035610154,
+          "exclusive_sql": 26,
+          "inclusive_seconds": 2.126942418035469,
+          "inclusive_sql": 5434
+        },
+        "estimate.citations:author:read": {
+          "calls": 108,
+          "exclusive_seconds": 0.2678635913907783,
+          "exclusive_sql": 571,
+          "inclusive_seconds": 4.767404239057214,
+          "inclusive_sql": 9963
+        },
+        "estimate.current-facts:author:read": {
+          "calls": 1,
+          "exclusive_seconds": 0.0022280039847828448,
+          "exclusive_sql": 7,
+          "inclusive_seconds": 3.8771288599964464,
+          "inclusive_sql": 10000
+        },
+        "estimate.native-sources:author:read": {
+          "calls": 26,
+          "exclusive_seconds": 0.20864045902271755,
+          "exclusive_sql": 650,
+          "inclusive_seconds": 0.48213760102225933,
+          "inclusive_sql": 1560
+        },
+        "estimate.original-facts:author:read": {
+          "calls": 26,
+          "exclusive_seconds": 0.07438247294339817,
+          "exclusive_sql": 182,
+          "inclusive_seconds": 1.799728063022485,
+          "inclusive_sql": 4550
+        },
+        "estimate.pinned-library:author:read": {
+          "calls": 1,
+          "exclusive_seconds": 0.00013198901433497667,
+          "exclusive_sql": 0,
+          "inclusive_seconds": 0.22493075000238605,
+          "inclusive_sql": 725
+        },
+        "estimate.plan-discovery:author:read": {
+          "calls": 26,
+          "exclusive_seconds": 0.12011129000165965,
+          "exclusive_sql": 312,
+          "inclusive_seconds": 0.23984538298100233,
+          "inclusive_sql": 494
+        },
+        "estimate.scoped-record:author:read": {
+          "calls": 135,
+          "exclusive_seconds": 0.057993224923848175,
+          "exclusive_sql": 135,
+          "inclusive_seconds": 6.95901151203725,
+          "inclusive_sql": 9993
+        },
+        "producer.original-authority:author:read": {
+          "calls": 26,
+          "exclusive_seconds": 0.3840970889723394,
+          "exclusive_sql": 874,
+          "inclusive_seconds": 5.378507316010655,
+          "inclusive_sql": 9782
+        },
+        "producer.plan:author:read": {
+          "calls": 20,
+          "exclusive_seconds": 0.1341380161466077,
+          "exclusive_sql": 360,
+          "inclusive_seconds": 0.4271320020634448,
+          "inclusive_sql": 840
+        }
+      },
+      "status": "fixture_profile_budget",
+      "successful_exact_byte_integrity_checks": 144
+    }
+  ],
+  "current_facts_read_status": "fixed-eight-second-ten-thousand-query-profile-cap",
+  "elapsed_includes_fixture_profiling_overhead": true,
+  "existing_execute_uuid": "b161e328-1d88-43f3-90c3-190a8378057a",
+  "external_provider_qualified": false,
+  "finding": "Company guard and producer-plan traversal dominate the measured locked original-only replay. The separate nonlocking current-facts profile exceeded its fixed10k SQL cap. Their modes and overlapping phase totals must not be added to reconstruct a fresh consumption latency.",
+  "fresh_consume_measured": false,
+  "generated_public_gate_enabled": false,
+  "inclusive_phase_counts_may_overlap": true,
+  "live_model_qualified": false,
+  "new_acceptance_intent_or_effect_created": false,
+  "private_capture_sha256": "e5739a8fe8d297df3925be1edc3e6a09295b7f06545ef1764457ba42a429f2da",
+  "qualification": "Known successful exact-UUID locked receipt replay plus a separate direct lock=False current-facts profile; neither measures a fresh consume. Synthetic native Sessions, not HTTP.",
+  "schema": "cipher.est.generated.authority-attribution.evidence.v1",
+  "source_snapshot_end": {
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/outputs.py": "a6101c98d19c779064921dbbbba299be3979c401223ed1924e661e5d0ecbb946",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/service.py": "ad964e1a01aab744fbd7e529b74bd4e559c900cafeccf50439513bed3dc32997",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/provenance.py": "a4e297c47567aafe95a041e8fa5fc2d384af3128992c256438d59d4e3415ae0a",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/governance.py": "afcf0f3dcf8d089e9cc2dfeb6c1b34ab96de51418abd3d79d46ca8eb69531c81",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/service.py": "b902d41a90cc8028cac8598e05718426e9ddfcbbc49eff5224445de5f31f61d9",
+    "estimating/sources.py": "dda41e4397c37f60c5ad48b7609a8c50b591165c2068a1d151c1f67c5a37ae7b",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "governance/approvals.py": "d01dd156ea2b628c316cb71bb20e73a69a4ca0f6971849e9513946d6f4e5449c",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/context.py": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_estimating_generated_acceptance.py": "4c3d5dc00ba5a1181e91e55ea5e168638a20b014af6b621976618cceb1e0c9ed"
+  },
+  "source_snapshot_start": {
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/outputs.py": "a6101c98d19c779064921dbbbba299be3979c401223ed1924e661e5d0ecbb946",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/service.py": "ad964e1a01aab744fbd7e529b74bd4e559c900cafeccf50439513bed3dc32997",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/provenance.py": "a4e297c47567aafe95a041e8fa5fc2d384af3128992c256438d59d4e3415ae0a",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/governance.py": "afcf0f3dcf8d089e9cc2dfeb6c1b34ab96de51418abd3d79d46ca8eb69531c81",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/service.py": "b902d41a90cc8028cac8598e05718426e9ddfcbbc49eff5224445de5f31f61d9",
+    "estimating/sources.py": "dda41e4397c37f60c5ad48b7609a8c50b591165c2068a1d151c1f67c5a37ae7b",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "governance/approvals.py": "d01dd156ea2b628c316cb71bb20e73a69a4ca0f6971849e9513946d6f4e5449c",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/context.py": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_estimating_generated_acceptance.py": "4c3d5dc00ba5a1181e91e55ea5e168638a20b014af6b621976618cceb1e0c9ed"
+  },
+  "static_fresh_consume_structure": {
+    "independent_current_manifest_builds": 3,
+    "locations": [
+      "central approvals._state current_manifest",
+      "estimating.governance.apply_acceptance approval_manifest",
+      "estimating.records._acceptance approval_manifest"
+    ],
+    "qualification": "Source inspection only; these phases were not executed together by this recorded replay/read profile. Each fresh current-state build remains required."
+  },
+  "status": "attribution-recorded"
+}

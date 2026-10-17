@@ -1,0 +1,24 @@
+{
+  "estimate": {
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+    "company": "Company chain A c3c3b742a8fd",
+    "created_at": "2026-10-15T23:10:46.041665+00:00",
+    "currency": "USD",
+    "current_revision": null,
+    "id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+    "pricing_date": "2026-10-15",
+    "project": null,
+    "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "revision_number": 0,
+    "scope_type": "Company",
+    "status": "draft",
+    "title": "Award manual accepted cost company-chain-c3c3b742a8fd"
+  },
+  "history_id": "9ks4c3b39c",
+  "operation": {
+    "id": "f672022e-751b-4e68-ad66-43f181ff54ee",
+    "replayed": false,
+    "status": "succeeded"
+  }
+}

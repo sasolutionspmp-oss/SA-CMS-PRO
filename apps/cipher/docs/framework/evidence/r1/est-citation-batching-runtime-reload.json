@@ -1,0 +1,7 @@
+{
+  "action": "graceful_gunicorn_reload",
+  "master_pid": 17,
+  "previous_worker_count": 2,
+  "recorded_at": "2026-10-15T21:22:17.620887+00:00",
+  "purpose": "Reviewed DOC metadata preflight and EST per-builder citation grouping; schema unchanged; inactive award modules are outside this reload qualification."
+}

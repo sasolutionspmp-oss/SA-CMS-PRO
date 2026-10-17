@@ -1,0 +1,1267 @@
+{
+  "mode": "actual-frappe-exact-granted-issue-ui",
+  "attempt": "03f617a2-5129-49f2-a7ea-310f6c783e41",
+  "completed_at": "2026-10-15T20:33:18.212Z",
+  "continuation_of": "/workspace/cipher-live-r2/com02-issue-final/incomplete-journey.json",
+  "ids": {
+    "packet": "76pdnacsi8",
+    "revision": "182e969b-dbc5-4950-af69-119ac94841cf",
+    "prepared_revision": "REV-531b7c0072a944d5b608323a13a418ad",
+    "issue": "7fc37c43-83ca-4c3a-be14-6c5bd5ce352b"
+  },
+  "company": "Company chain A 20b85fd4edd2",
+  "original_preparation_repeated": false,
+  "request_or_grant_repeated": false,
+  "mutations": [
+    {
+      "path": "/api/method/cipher_aec.api.company_approvals.execute_packet",
+      "operation_id": "da0d03f4-91a4-4e9d-bf1b-73c057bd8252",
+      "raw_payload_sha256": "abd5393a64f29a9a23ada96cf49f90a31d537ceeb79f14696bea01d3709767a9"
+    }
+  ],
+  "private_journal": "/tmp/cipher-r0-runtime/com02-execute-03f617a2-5129-49f2-a7ea-310f6c783e41.private.jsonl",
+  "exact_packet": {
+    "id": "76pdnacsi8",
+    "company": "Company chain A 20b85fd4edd2",
+    "project": null,
+    "action": "proposal.issue.v1",
+    "subject": {
+      "id": "182e969b-dbc5-4950-af69-119ac94841cf",
+      "type": "Cipher Proposal Revision",
+      "label": "Proposal revision 3"
+    },
+    "requester": {
+      "id": "CHAIN-AUTHOR-20b85fd4edd2",
+      "display_name": "Explicit Company chain author"
+    },
+    "created_at": "2026-10-15T20:22:45.706457Z",
+    "expires_at": "2026-10-16T20:22:45.706457Z",
+    "manifest_hash": "bb5b8e7f5928dcc18c01d43283bf6e870a15d3498d825f72aadb195c1e0edcd7",
+    "source_version": "88d3f7e2aa032df96b7bfcc9abffed6ac6ff5a946f1a7237b51dce3b821bc810",
+    "policy": {
+      "id": "CIPHER-PROPOSAL-ISSUE-POLICY-V1-COMPANY",
+      "label": "Independent proposal issue approval",
+      "synthetic": true
+    },
+    "state": "Granted",
+    "decisions": [
+      {
+        "id": "7g8tihh6bn",
+        "decision": "Grant",
+        "actor": {
+          "id": "CHAIN-REVIEWER-20b85fd4edd2",
+          "display_name": "Explicit Company chain reviewer"
+        },
+        "at": "2026-10-15T20:23:16.029781Z",
+        "reason": "Reviewed the exact stored PDF, intended recipient set, cover and original accepted baseline."
+      }
+    ],
+    "actions": {
+      "can_decide": false,
+      "can_execute": true,
+      "can_withdraw": true,
+      "disabled_reason": null
+    },
+    "review_manifest": {
+      "effect": {
+        "accepted_estimate": {
+          "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+          "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+          "currency": "USD",
+          "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+          "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+          "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+          "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+          "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+          "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+          "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+          "total": {
+            "amount": "154.25",
+            "currency": "USD"
+          }
+        },
+        "action": "proposal.issue.v1",
+        "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+        "prepared_output": {
+          "binding": {
+            "accepted_estimate": {
+              "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+              "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+              "currency": "USD",
+              "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+              "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+              "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+              "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+              "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+              "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+              "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+              "total": {
+                "amount": "154.25",
+                "currency": "USD"
+              }
+            },
+            "company": "Company chain A 20b85fd4edd2",
+            "cover": "Please review the enclosed utility investigation scope and stated assumptions. This synthetic issue records the exact approved PDF; delivery is managed separately.",
+            "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+            "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+            "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+            "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+            "recipients": [
+              {
+                "email": "utility.owner@example.invalid",
+                "name": "Utility owner review",
+                "organization": "Synthetic utility owner"
+              }
+            ],
+            "renderer": {
+              "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+              "fonts": {
+                "bold": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                  "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+                },
+                "regular": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                  "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+                }
+              },
+              "parameters": {
+                "font_size_points": "9",
+                "html": "escaped-plain-text",
+                "margin_inches": "0.6",
+                "max_bytes": 10485760,
+                "max_pages": 100,
+                "network": "disabled",
+                "page_size": "US Letter",
+                "policy": "cipher.proposal.pdf.v1"
+              },
+              "renderer": "weasyprint",
+              "versions": {
+                "fonttools": "4.67.0",
+                "pydyf": "0.12.1",
+                "weasyprint": "68.0"
+              }
+            },
+            "schema": "cipher.proposal.output.input.v1",
+            "source_citations": [
+              {
+                "citation": {
+                  "company": "Company chain A 20b85fd4edd2",
+                  "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+                  "document_title": "Synthetic UI basis 81352e90",
+                  "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+                  "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+                  "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+                  "page": 1,
+                  "page_label": "1",
+                  "project": null,
+                  "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+                  "revision_number": 1,
+                  "scope_type": "Company",
+                  "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+                },
+                "permission_basis": "Owned synthetic Company source; exact original revision preserved.",
+                "policy": "pinned-revision-page-v1",
+                "purpose": "Commercial assumptions supporting this utility proposal."
+              }
+            ]
+          },
+          "byte_length": 12644,
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-110be3981fde4aad8b75936beeaa0c45",
+          "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+          "page_count": 1,
+          "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+          "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+          "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+          "rendering": {
+            "baseline": {
+              "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+              "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+              "currency": "USD",
+              "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+              "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+              "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+              "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+              "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+              "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+              "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+              "total": {
+                "amount": "154.25",
+                "currency": "USD"
+              }
+            },
+            "cover_digest": "1967e5d21003d573d178dcd6af593d762e976e5b538d353a9ffac540028ad55a",
+            "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+            "fonts": {
+              "bold": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+              },
+              "regular": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+              }
+            },
+            "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+            "output_byte_length": 12644,
+            "output_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9",
+            "parameters": {
+              "font_size_points": "9",
+              "html": "escaped-plain-text",
+              "margin_inches": "0.6",
+              "max_bytes": 10485760,
+              "max_pages": 100,
+              "network": "disabled",
+              "page_size": "US Letter",
+              "policy": "cipher.proposal.pdf.v1"
+            },
+            "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+            "recipients_digest": "681663a38fa89b7436d27eecb0e0b52c74c7ecd6bf4c8934e32debe5300fc188",
+            "renderer": "weasyprint",
+            "versions": {
+              "fonttools": "4.67.0",
+              "pydyf": "0.12.1",
+              "weasyprint": "68.0"
+            }
+          },
+          "review_version": "88d3f7e2aa032df96b7bfcc9abffed6ac6ff5a946f1a7237b51dce3b821bc810",
+          "revision_id": "REV-531b7c0072a944d5b608323a13a418ad",
+          "source_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9"
+        },
+        "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+        "revision_id": "182e969b-dbc5-4950-af69-119ac94841cf"
+      },
+      "sources": [
+        {
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+          "document_title": "Synthetic UI basis 81352e90",
+          "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+          "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+          "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+        }
+      ],
+      "subject": {
+        "doctype": "Cipher Proposal Revision",
+        "label": "Proposal revision 3",
+        "name": "182e969b-dbc5-4950-af69-119ac94841cf"
+      },
+      "summary": {
+        "currency": "USD",
+        "distribution": "not-sent",
+        "independent_issue_required": true,
+        "native_lifecycle": "draft-snapshot",
+        "recipient_count": 1,
+        "total": "2589.12"
+      }
+    },
+    "scope_type": "Company"
+  },
+  "prepared_output": {
+    "binding": {
+      "accepted_estimate": {
+        "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+        "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+        "currency": "USD",
+        "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+        "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+        "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+        "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+        "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+        "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+        "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+        "total": {
+          "amount": "154.25",
+          "currency": "USD"
+        }
+      },
+      "company": "Company chain A 20b85fd4edd2",
+      "cover": "Please review the enclosed utility investigation scope and stated assumptions. This synthetic issue records the exact approved PDF; delivery is managed separately.",
+      "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+      "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+      "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+      "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+      "recipients": [
+        {
+          "email": "utility.owner@example.invalid",
+          "name": "Utility owner review",
+          "organization": "Synthetic utility owner"
+        }
+      ],
+      "renderer": {
+        "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+        "fonts": {
+          "bold": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+          },
+          "regular": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+          }
+        },
+        "parameters": {
+          "font_size_points": "9",
+          "html": "escaped-plain-text",
+          "margin_inches": "0.6",
+          "max_bytes": 10485760,
+          "max_pages": 100,
+          "network": "disabled",
+          "page_size": "US Letter",
+          "policy": "cipher.proposal.pdf.v1"
+        },
+        "renderer": "weasyprint",
+        "versions": {
+          "fonttools": "4.67.0",
+          "pydyf": "0.12.1",
+          "weasyprint": "68.0"
+        }
+      },
+      "schema": "cipher.proposal.output.input.v1",
+      "source_citations": [
+        {
+          "citation": {
+            "company": "Company chain A 20b85fd4edd2",
+            "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+            "document_title": "Synthetic UI basis 81352e90",
+            "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+            "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+            "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+          },
+          "permission_basis": "Owned synthetic Company source; exact original revision preserved.",
+          "policy": "pinned-revision-page-v1",
+          "purpose": "Commercial assumptions supporting this utility proposal."
+        }
+      ]
+    },
+    "byte_length": 12644,
+    "company": "Company chain A 20b85fd4edd2",
+    "document_id": "DOC-110be3981fde4aad8b75936beeaa0c45",
+    "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+    "page_count": 1,
+    "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+    "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+    "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+    "rendering": {
+      "baseline": {
+        "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+        "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+        "currency": "USD",
+        "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+        "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+        "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+        "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+        "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+        "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+        "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+        "total": {
+          "amount": "154.25",
+          "currency": "USD"
+        }
+      },
+      "cover_digest": "1967e5d21003d573d178dcd6af593d762e976e5b538d353a9ffac540028ad55a",
+      "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+      "fonts": {
+        "bold": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+          "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+        },
+        "regular": {
+          "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+          "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+        }
+      },
+      "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+      "output_byte_length": 12644,
+      "output_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9",
+      "parameters": {
+        "font_size_points": "9",
+        "html": "escaped-plain-text",
+        "margin_inches": "0.6",
+        "max_bytes": 10485760,
+        "max_pages": 100,
+        "network": "disabled",
+        "page_size": "US Letter",
+        "policy": "cipher.proposal.pdf.v1"
+      },
+      "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+      "recipients_digest": "681663a38fa89b7436d27eecb0e0b52c74c7ecd6bf4c8934e32debe5300fc188",
+      "renderer": "weasyprint",
+      "versions": {
+        "fonttools": "4.67.0",
+        "pydyf": "0.12.1",
+        "weasyprint": "68.0"
+      }
+    },
+    "review_version": "88d3f7e2aa032df96b7bfcc9abffed6ac6ff5a946f1a7237b51dce3b821bc810",
+    "revision_id": "REV-531b7c0072a944d5b608323a13a418ad",
+    "source_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9"
+  },
+  "issue": {
+    "accepted_estimate": {
+      "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+      "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+      "currency": "USD",
+      "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+      "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+      "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+      "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+      "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+      "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+      "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+      "total": {
+        "amount": "154.25",
+        "currency": "USD"
+      }
+    },
+    "approved_by_person": "CHAIN-REVIEWER-20b85fd4edd2",
+    "author_person": "CHAIN-AUTHOR-20b85fd4edd2",
+    "company": "Company chain A 20b85fd4edd2",
+    "composition": {
+      "currency": "USD",
+      "estimate_reference": {
+        "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+        "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+        "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+        "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb"
+      },
+      "estimate_revision": null,
+      "price_lines": [
+        {
+          "alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "description": "Utility survey package",
+          "id": "3f69b8d3-e7ca-4202-a4a4-1b74ebc1dc73",
+          "item_code": null,
+          "quantity": "13.500000",
+          "rate": "125.12",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        {
+          "alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "description": "Utility survey package — alternate coverage",
+          "id": "d7af4f21-65ee-42cc-9609-f1972d1003cf",
+          "item_code": null,
+          "quantity": "12.500000",
+          "rate": "145.12",
+          "selected": false,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        {
+          "alternate_group": null,
+          "description": "Construction coordination",
+          "id": "f785337b-5e35-4b7d-8554-6d4e96644f2c",
+          "item_code": null,
+          "quantity": "4",
+          "rate": "225.00",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        }
+      ],
+      "price_list": "Company chain selling a 20b85fd4edd2",
+      "sections": [
+        {
+          "id": "70249d3a-e3fb-40ed-a904-1fdee6465ad0",
+          "kind": "scope",
+          "text": "Authored synthetic scope: review existing records, coordinate access, and deliver a utility investigation package. Survey access and all design decisions remain subject to the stated assumptions.",
+          "title": "Utility investigation and coordination"
+        }
+      ],
+      "source_references": [
+        {
+          "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+          "page": 1,
+          "permission_basis": "Owned synthetic Company source; exact original revision preserved.",
+          "purpose": "Commercial assumptions supporting this utility proposal.",
+          "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+          "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+        }
+      ],
+      "terms": "Synthetic draft only. Manual authored rates. No tax, discount, award, external delivery or financial posting.",
+      "valid_till": "2027-01-31"
+    },
+    "decision_id": "7g8tihh6bn",
+    "distribution": "not-sent",
+    "id": "7fc37c43-83ca-4c3a-be14-6c5bd5ce352b",
+    "manifest": {
+      "effect": {
+        "accepted_estimate": {
+          "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+          "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+          "currency": "USD",
+          "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+          "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+          "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+          "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+          "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+          "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+          "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+          "total": {
+            "amount": "154.25",
+            "currency": "USD"
+          }
+        },
+        "action": "proposal.issue.v1",
+        "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+        "prepared_output": {
+          "binding": {
+            "accepted_estimate": {
+              "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+              "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+              "currency": "USD",
+              "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+              "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+              "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+              "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+              "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+              "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+              "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+              "total": {
+                "amount": "154.25",
+                "currency": "USD"
+              }
+            },
+            "company": "Company chain A 20b85fd4edd2",
+            "cover": "Please review the enclosed utility investigation scope and stated assumptions. This synthetic issue records the exact approved PDF; delivery is managed separately.",
+            "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+            "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+            "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+            "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+            "recipients": [
+              {
+                "email": "utility.owner@example.invalid",
+                "name": "Utility owner review",
+                "organization": "Synthetic utility owner"
+              }
+            ],
+            "renderer": {
+              "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+              "fonts": {
+                "bold": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                  "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+                },
+                "regular": {
+                  "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                  "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+                }
+              },
+              "parameters": {
+                "font_size_points": "9",
+                "html": "escaped-plain-text",
+                "margin_inches": "0.6",
+                "max_bytes": 10485760,
+                "max_pages": 100,
+                "network": "disabled",
+                "page_size": "US Letter",
+                "policy": "cipher.proposal.pdf.v1"
+              },
+              "renderer": "weasyprint",
+              "versions": {
+                "fonttools": "4.67.0",
+                "pydyf": "0.12.1",
+                "weasyprint": "68.0"
+              }
+            },
+            "schema": "cipher.proposal.output.input.v1",
+            "source_citations": [
+              {
+                "citation": {
+                  "company": "Company chain A 20b85fd4edd2",
+                  "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+                  "document_title": "Synthetic UI basis 81352e90",
+                  "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+                  "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+                  "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+                  "page": 1,
+                  "page_label": "1",
+                  "project": null,
+                  "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+                  "revision_number": 1,
+                  "scope_type": "Company",
+                  "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+                },
+                "permission_basis": "Owned synthetic Company source; exact original revision preserved.",
+                "policy": "pinned-revision-page-v1",
+                "purpose": "Commercial assumptions supporting this utility proposal."
+              }
+            ]
+          },
+          "byte_length": 12644,
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-110be3981fde4aad8b75936beeaa0c45",
+          "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+          "page_count": 1,
+          "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+          "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+          "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+          "rendering": {
+            "baseline": {
+              "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+              "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+              "currency": "USD",
+              "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+              "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+              "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+              "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+              "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+              "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+              "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+              "total": {
+                "amount": "154.25",
+                "currency": "USD"
+              }
+            },
+            "cover_digest": "1967e5d21003d573d178dcd6af593d762e976e5b538d353a9ffac540028ad55a",
+            "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+            "fonts": {
+              "bold": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+                "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+              },
+              "regular": {
+                "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+                "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+              }
+            },
+            "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+            "output_byte_length": 12644,
+            "output_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9",
+            "parameters": {
+              "font_size_points": "9",
+              "html": "escaped-plain-text",
+              "margin_inches": "0.6",
+              "max_bytes": 10485760,
+              "max_pages": 100,
+              "network": "disabled",
+              "page_size": "US Letter",
+              "policy": "cipher.proposal.pdf.v1"
+            },
+            "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+            "recipients_digest": "681663a38fa89b7436d27eecb0e0b52c74c7ecd6bf4c8934e32debe5300fc188",
+            "renderer": "weasyprint",
+            "versions": {
+              "fonttools": "4.67.0",
+              "pydyf": "0.12.1",
+              "weasyprint": "68.0"
+            }
+          },
+          "review_version": "88d3f7e2aa032df96b7bfcc9abffed6ac6ff5a946f1a7237b51dce3b821bc810",
+          "revision_id": "REV-531b7c0072a944d5b608323a13a418ad",
+          "source_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9"
+        },
+        "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+        "revision_id": "182e969b-dbc5-4950-af69-119ac94841cf"
+      },
+      "sources": [
+        {
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+          "document_title": "Synthetic UI basis 81352e90",
+          "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+          "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+          "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+        }
+      ],
+      "subject": {
+        "doctype": "Cipher Proposal Revision",
+        "label": "Proposal revision 3",
+        "name": "182e969b-dbc5-4950-af69-119ac94841cf"
+      },
+      "summary": {
+        "currency": "USD",
+        "distribution": "not-sent",
+        "independent_issue_required": true,
+        "native_lifecycle": "draft-snapshot",
+        "recipient_count": 1,
+        "total": "2589.12"
+      }
+    },
+    "manifest_digest": "b1e1c40cb5bb5f710876f2e1eb794ce9c924258d577e36e06207ae5f2d88b1bf",
+    "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+    "native_lifecycle": "draft-snapshot",
+    "native_snapshot": {
+      "company": "Company chain A 20b85fd4edd2",
+      "currency": "USD",
+      "docstatus": 0,
+      "id": "SAL-QTN-2026-00006",
+      "items": [
+        {
+          "amount": "1689.120000000",
+          "base_amount": "1689.120000000",
+          "base_rate": "125.120000000",
+          "cipher_alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "cipher_line_id": "3f69b8d3-e7ca-4202-a4a4-1b74ebc1dc73",
+          "conversion_factor": "1.000000000",
+          "description": "Utility survey package",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 1,
+          "idx": 1,
+          "is_alternative": 0,
+          "item_code": null,
+          "item_name": "Utility survey package",
+          "name": "vg6jimkrmq",
+          "qty": "13.500000000",
+          "rate": "125.120000000",
+          "stock_uom": "Company chain quantity 20b85fd4edd2",
+          "uom": "Company chain quantity 20b85fd4edd2"
+        },
+        {
+          "amount": "1814.000000000",
+          "base_amount": "1814.000000000",
+          "base_rate": "145.120000000",
+          "cipher_alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "cipher_line_id": "d7af4f21-65ee-42cc-9609-f1972d1003cf",
+          "conversion_factor": "1.000000000",
+          "description": "Utility survey package — alternate coverage",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 0,
+          "idx": 2,
+          "is_alternative": 1,
+          "item_code": null,
+          "item_name": "Utility survey package — alternate coverage",
+          "name": "vg6l88s77h",
+          "qty": "12.500000000",
+          "rate": "145.120000000",
+          "stock_uom": "Company chain quantity 20b85fd4edd2",
+          "uom": "Company chain quantity 20b85fd4edd2"
+        },
+        {
+          "amount": "900.000000000",
+          "base_amount": "900.000000000",
+          "base_rate": "225.000000000",
+          "cipher_alternate_group": null,
+          "cipher_line_id": "f785337b-5e35-4b7d-8554-6d4e96644f2c",
+          "conversion_factor": "1.000000000",
+          "description": "Construction coordination",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 0,
+          "idx": 3,
+          "is_alternative": 0,
+          "item_code": null,
+          "item_name": "Construction coordination",
+          "name": "vg65q9ee7p",
+          "qty": "4.000000000",
+          "rate": "225.000000000",
+          "stock_uom": "Company chain quantity 20b85fd4edd2",
+          "uom": "Company chain quantity 20b85fd4edd2"
+        }
+      ],
+      "opportunity": "CRM-OPP-2026-00011",
+      "party_name": "Company chain customer a 20b85fd4edd2",
+      "price_list_currency": "USD",
+      "quotation_to": "Customer",
+      "selling_price_list": "Company chain selling a 20b85fd4edd2",
+      "taxes": [],
+      "terms": "Synthetic draft only. Manual authored rates. No tax, discount, award, external delivery or financial posting.",
+      "totals": {
+        "additional_discount_percentage": "0.000000000",
+        "base_grand_total": "2589.120000000",
+        "base_net_total": "2589.120000000",
+        "base_total": "2589.120000000",
+        "conversion_rate": "1.000000000",
+        "discount_amount": "0.000000000",
+        "grand_total": "2589.120000000",
+        "net_total": "2589.120000000",
+        "plc_conversion_rate": "1.000000000",
+        "total": "2589.120000000",
+        "total_taxes_and_charges": "0.000000000"
+      },
+      "valid_till": "2027-01-31",
+      "version": "2026-10-16 00:44:59.872956"
+    },
+    "output_revision": "REV-531b7c0072a944d5b608323a13a418ad",
+    "packet_id": "76pdnacsi8",
+    "predecessor": null,
+    "prepared_output": {
+      "binding": {
+        "accepted_estimate": {
+          "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+          "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+          "currency": "USD",
+          "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+          "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+          "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+          "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+          "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+          "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+          "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+          "total": {
+            "amount": "154.25",
+            "currency": "USD"
+          }
+        },
+        "company": "Company chain A 20b85fd4edd2",
+        "cover": "Please review the enclosed utility investigation scope and stated assumptions. This synthetic issue records the exact approved PDF; delivery is managed separately.",
+        "native_fingerprint": "4e1144ccd241e78273dd3b3275f630a00bac4c7389ca0f8c17874795861190da",
+        "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+        "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+        "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+        "recipients": [
+          {
+            "email": "utility.owner@example.invalid",
+            "name": "Utility owner review",
+            "organization": "Synthetic utility owner"
+          }
+        ],
+        "renderer": {
+          "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+          "fonts": {
+            "bold": {
+              "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+              "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+            },
+            "regular": {
+              "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+              "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+            }
+          },
+          "parameters": {
+            "font_size_points": "9",
+            "html": "escaped-plain-text",
+            "margin_inches": "0.6",
+            "max_bytes": 10485760,
+            "max_pages": 100,
+            "network": "disabled",
+            "page_size": "US Letter",
+            "policy": "cipher.proposal.pdf.v1"
+          },
+          "renderer": "weasyprint",
+          "versions": {
+            "fonttools": "4.67.0",
+            "pydyf": "0.12.1",
+            "weasyprint": "68.0"
+          }
+        },
+        "schema": "cipher.proposal.output.input.v1",
+        "source_citations": [
+          {
+            "citation": {
+              "company": "Company chain A 20b85fd4edd2",
+              "document_id": "DOC-433cfe51c42b4949b205eb10b4e812da",
+              "document_title": "Synthetic UI basis 81352e90",
+              "excerpt": "SYNTHETIC COMPANY SOURCE\n\nAuthored estimate quantities are manual; this source records the stated commercial assumptions.\n<script>window.syntheticSourceInjection=true</script>",
+              "excerpt_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf",
+              "id": "5b3d018cd039c90b7012665f1c5586b3f5bd2ea1a697e145dcc845e16a7ba678",
+              "page": 1,
+              "page_label": "1",
+              "project": null,
+              "revision_id": "REV-75221da84c8a4309bf640bc2835d1280",
+              "revision_number": 1,
+              "scope_type": "Company",
+              "source_sha256": "de1fe90a76a13370a984f12099861bdac3b8971a6aadab95474ef43b63003ebf"
+            },
+            "permission_basis": "Owned synthetic Company source; exact original revision preserved.",
+            "policy": "pinned-revision-page-v1",
+            "purpose": "Commercial assumptions supporting this utility proposal."
+          }
+        ]
+      },
+      "byte_length": 12644,
+      "company": "Company chain A 20b85fd4edd2",
+      "document_id": "DOC-110be3981fde4aad8b75936beeaa0c45",
+      "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+      "page_count": 1,
+      "proposal_id": "511bdce1-827a-49ba-b788-855f6e65972b",
+      "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+      "proposal_revision_id": "182e969b-dbc5-4950-af69-119ac94841cf",
+      "rendering": {
+        "baseline": {
+          "acceptance_digest": "99dc2845e5b32b5e9e5576908781f6d225ebd29435fe630b30fd5f7f3e3e8cfb",
+          "acceptance_id": "a849bed0-33e8-40d3-bc99-f3ab0e6d9071",
+          "currency": "USD",
+          "estimate_id": "c8858bc4-9d36-4d38-b485-abf344d2adee",
+          "manifest_digest": "04bdfa799bf0bfd24e9c2e759d439b4656d954dfaace8a44e1b2b063f862f796",
+          "pursuit_id": "852cf262-e27a-48c7-8728-31e75d6b8cb1",
+          "revision_digest": "cf5925a021f45bc257ca88884ebf354b58a4c209619b29bba0841e7c3b811916",
+          "revision_id": "098ffb13-e441-4c45-b7cf-59434ee486eb",
+          "snapshot_digest": "32ca0f17edce5f6777befd4b302465699f1560a25c5971c943947776ebc80f2d",
+          "snapshot_id": "a00e3c08-2941-40a5-91f4-f5bff54487c3",
+          "total": {
+            "amount": "154.25",
+            "currency": "USD"
+          }
+        },
+        "cover_digest": "1967e5d21003d573d178dcd6af593d762e976e5b538d353a9ffac540028ad55a",
+        "fingerprint": "3628651d24ed5b53bd854d71faf4c15a10d9e7834efab511921471fd908a6f01",
+        "fonts": {
+          "bold": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "sha256": "a4c5bc453ca281d90ea079e596da7ae0dfeb5777497c29ec254e76d97ff6f890"
+          },
+          "regular": {
+            "path": "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "sha256": "57f73e11f51999432bf7ab22ce55b6f945d5eca1bf824404cfa9ec2e3718c84e"
+          }
+        },
+        "input_digest": "184968d69c866f0aec97f629259573ea576227b4aa233f9dd1c0ef48fef7baa7",
+        "output_byte_length": 12644,
+        "output_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9",
+        "parameters": {
+          "font_size_points": "9",
+          "html": "escaped-plain-text",
+          "margin_inches": "0.6",
+          "max_bytes": 10485760,
+          "max_pages": 100,
+          "network": "disabled",
+          "page_size": "US Letter",
+          "policy": "cipher.proposal.pdf.v1"
+        },
+        "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+        "recipients_digest": "681663a38fa89b7436d27eecb0e0b52c74c7ecd6bf4c8934e32debe5300fc188",
+        "renderer": "weasyprint",
+        "versions": {
+          "fonttools": "4.67.0",
+          "pydyf": "0.12.1",
+          "weasyprint": "68.0"
+        }
+      },
+      "review_version": "88d3f7e2aa032df96b7bfcc9abffed6ac6ff5a946f1a7237b51dce3b821bc810",
+      "revision_id": "REV-531b7c0072a944d5b608323a13a418ad",
+      "source_sha256": "c2b93ca0992e290c64e6de18eaba70c84f55dd4273308ed02ee6930a3a34f6b9"
+    },
+    "pricing": {
+      "currency_exponent": 2,
+      "lines": [
+        {
+          "alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "amount": "1689.12",
+          "description": "Utility survey package",
+          "id": "3f69b8d3-e7ca-4202-a4a4-1b74ebc1dc73",
+          "item_code": null,
+          "quantity": "13.500000",
+          "rate": "125.12",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        {
+          "alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "amount": "1814.00",
+          "description": "Utility survey package — alternate coverage",
+          "id": "d7af4f21-65ee-42cc-9609-f1972d1003cf",
+          "item_code": null,
+          "quantity": "12.500000",
+          "rate": "145.12",
+          "selected": false,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        {
+          "alternate_group": null,
+          "amount": "900.00",
+          "description": "Construction coordination",
+          "id": "f785337b-5e35-4b7d-8554-6d4e96644f2c",
+          "item_code": null,
+          "quantity": "4",
+          "rate": "225.00",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        }
+      ],
+      "policy": "native-no-tax-no-discount-half-up-v1",
+      "total": "2589.12"
+    },
+    "proposal": "511bdce1-827a-49ba-b788-855f6e65972b",
+    "proposal_revision": "182e969b-dbc5-4950-af69-119ac94841cf",
+    "proposal_revision_digest": "e09e0edb8c951630628a657c142972856e9f60eb04ebfb1f925f0cf0f8d25b0d",
+    "revision_number": 1,
+    "selected_lines": [
+      {
+        "line": {
+          "alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "amount": "1689.12",
+          "description": "Utility survey package",
+          "id": "3f69b8d3-e7ca-4202-a4a4-1b74ebc1dc73",
+          "item_code": null,
+          "quantity": "13.500000",
+          "rate": "125.12",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        "native_item": {
+          "amount": "1689.120000000",
+          "base_amount": "1689.120000000",
+          "base_rate": "125.120000000",
+          "cipher_alternate_group": "525c7653-af83-41e4-a19d-e6045b54e1ed",
+          "cipher_line_id": "3f69b8d3-e7ca-4202-a4a4-1b74ebc1dc73",
+          "conversion_factor": "1.000000000",
+          "description": "Utility survey package",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 1,
+          "idx": 1,
+          "is_alternative": 0,
+          "item_code": null,
+          "item_name": "Utility survey package",
+          "name": "vg6jimkrmq",
+          "qty": "13.500000000",
+          "rate": "125.120000000",
+          "stock_uom": "Company chain quantity 20b85fd4edd2",
+          "uom": "Company chain quantity 20b85fd4edd2"
+        },
+        "unit": {
+          "fields": {
+            "dimension": "count",
+            "precision": 6,
+            "symbol": "chain20b85fd4edd2"
+          },
+          "id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Company chain quantity 20b85fd4edd2"
+          }
+        }
+      },
+      {
+        "line": {
+          "alternate_group": null,
+          "amount": "900.00",
+          "description": "Construction coordination",
+          "id": "f785337b-5e35-4b7d-8554-6d4e96644f2c",
+          "item_code": null,
+          "quantity": "4",
+          "rate": "225.00",
+          "selected": true,
+          "unit_id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "unit_revision": 1
+        },
+        "native_item": {
+          "amount": "900.000000000",
+          "base_amount": "900.000000000",
+          "base_rate": "225.000000000",
+          "cipher_alternate_group": null,
+          "cipher_line_id": "f785337b-5e35-4b7d-8554-6d4e96644f2c",
+          "conversion_factor": "1.000000000",
+          "description": "Construction coordination",
+          "discount_amount": "0.000000000",
+          "discount_percentage": "0.000000000",
+          "has_alternative_item": 0,
+          "idx": 3,
+          "is_alternative": 0,
+          "item_code": null,
+          "item_name": "Construction coordination",
+          "name": "vg65q9ee7p",
+          "qty": "4.000000000",
+          "rate": "225.000000000",
+          "stock_uom": "Company chain quantity 20b85fd4edd2",
+          "uom": "Company chain quantity 20b85fd4edd2"
+        },
+        "unit": {
+          "fields": {
+            "dimension": "count",
+            "precision": 6,
+            "symbol": "chain20b85fd4edd2"
+          },
+          "id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+          "kind": "uom",
+          "revision": 1,
+          "target": {
+            "doctype": "UOM",
+            "name": "Company chain quantity 20b85fd4edd2"
+          }
+        }
+      }
+    ],
+    "status": "issued",
+    "units": {
+      "9be918f2-68d5-4205-a8b8-1282d65babc9": {
+        "fields": {
+          "dimension": "count",
+          "precision": 6,
+          "symbol": "chain20b85fd4edd2"
+        },
+        "id": "9be918f2-68d5-4205-a8b8-1282d65babc9",
+        "kind": "uom",
+        "revision": 1,
+        "target": {
+          "doctype": "UOM",
+          "name": "Company chain quantity 20b85fd4edd2"
+        }
+      }
+    }
+  },
+  "actual_pdf_bytes_verified": true,
+  "inbox_requests": [],
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "source_hashes": {
+    "../src/App.tsx": "3d509136406f6ecabc41473886958a8ede41d49d3d14113ce5435ced9b544735",
+    "../src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "../src/Commercial.tsx": "162b5d51905594fd145000c236a2f367220b5ff5f9320fe30935816e831e606d",
+    "../src/CommercialObjectTitle.tsx": "910bcf55561d865e3a4bde7e51cc7250eef468e94ac12026bef1ee5012339009",
+    "../src/CompanyApprovals.tsx": "c7810c224c6efc616a6b0400fcccba97a2886cec8e40197407905f38906ba8fc",
+    "../src/CompanyDocuments.tsx": "5490656961cbe588daebb617eca7d22208714c9b2ca6d721321eff24ca6e4490",
+    "../src/CompanyEstimates.tsx": "bc9eb5c0f0049c5774fa763cf2148188a12375a211b501c19b311d1de76b93c2",
+    "../src/DistributionReview.tsx": "d536b7475a14c66cfa8ac631969b8bb03d06740ff801407347bf021bee7d297f",
+    "../src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "../src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "../src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "../src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "../src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "../src/IssuePreparedReview.tsx": "e14d71d4664867bee11004ec8f87ecb5e86c0a3d89dbc8a657dd84831c746608",
+    "../src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "../src/PdfDrawing.tsx": "785ec6aceb12beca5e8de765acaaa9ae147ff35daabfdc5632cb8170bdd71039",
+    "../src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "../src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "../src/ProposalDistribution.tsx": "141b7f470dc922388c6ad76d1af86d4732f3a757a64f6909480c5f741032e94a",
+    "../src/ProposalOutput.tsx": "df3fcc359b416e70c46095bfce52ed1d227aea15282721597313e737067aa00a",
+    "../src/ProposalSources.tsx": "bc2a12e3e4aa7879e251c0f09fe7a4ec1485df58f47b11b960ce018aefa55078",
+    "../src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "../src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "../src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "../src/Takeoff.tsx": "e50dc217e858186ee32c8dbd27b192c0201feaa2ee5d955395eaf546d50e1916",
+    "../src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "../src/api/commercial.generated.ts": "f0f2f06bba0a5d2454365e90f938f3276d94c99830c2db8717ffb20c2e0cc09b",
+    "../src/api/commercial.ts": "556026976235ccae0e5306e7bf31d3063a3254b7f03c2dcca9708daa772f3f60",
+    "../src/api/company-approvals.ts": "e6d9d51df14b56098710e6a50b53e48cd8f0331d1eae3961c1ee7545ea19d687",
+    "../src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "../src/api/company-estimating.generated.ts": "9c723903fbcf403c84ea9aa74f6345602e53d74b5092d666a3894d7b28288585",
+    "../src/api/company-estimating.ts": "ccc19ab23b49dda97fb298a052e1bb23e3be1c1866071616a41f95b0755cd8bb",
+    "../src/api/contracts.generated.ts": "3fa727df578dff466c0d162ca0e52b3ef7bdb47a6e53228743395ba6779b4dc9",
+    "../src/api/distribution.generated.ts": "2d57048085f61580a63ade03c51c5001bf5805b4926a4dc5570a9c1214e2a515",
+    "../src/api/distribution.ts": "ca7cc3c48cbeee264f774900f194b84e8afb37ef200354ffb97424176877a6c0",
+    "../src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "../src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "../src/api/masters.ts": "1d8ad7f5e3add764ad1631734acd2eca900494127f4f39d4be592e3984257a00",
+    "../src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "../src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "../src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "../src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "../src/components.tsx": "f5c23b454489eeee7212e7c0efcbd7ca65624e0581c45ffe7d2fe1d256185126",
+    "../src/distribution-contract.ts": "9d7cbe3c5966d361418036734140603defdda9ccf480289e9cb3d93708b39f02",
+    "../src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "../src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "../src/main.tsx": "1dd45d45d97474eadb18976d33fcee2cfe1628ac3e6e9782fa1c4a7126debaa7",
+    "../src/styles.css": "2ea7d61d399c96b455f18ca62ffece78a87badbd96f3f1d05014531102e8e755",
+    "../src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "../scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "../scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "../scripts/connected-com02-execute.mjs": "f40be9cb31bafa337182427f5e9fc897c684390005369831fe3be13533797d7e",
+    "../scripts/connected-com02.mjs": "0b0ae7fe82898acd8ffda559a4328eca9c7d24f71d8f09ad1e4f039f494a6e83",
+    "../scripts/connected-company.mjs": "676577597644bd7bfdc63cecbfeb1fcd10c7a33308d1ac92087d34753d84df06",
+    "../scripts/connected-distribution.mjs": "9ea26068b0d3578944940adc1139251bb039e7c6c853b5955262fad39494a9fd",
+    "../scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "../scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "../scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "../scripts/connected-polish-readonly.mjs": "cfdc892b890e1cf98aea16539976cfdcdee36ad2018615c8ca10c6b8cedc3d60",
+    "../scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "../scripts/connected-takeoff.mjs": "45bee60823ea90c81aeec4fb954e9c27fd671834b5c822e89a28c6d4ce3cb8a5",
+    "../scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "../scripts/generate-api.mjs": "f873ad31ec6addb0a2617be2c98e668d6abd7fef58102541d856156ae35af84e"
+  },
+  "served_assets": [
+    {
+      "path": "/assets/index-DmhOBUhr.js",
+      "sha256": "764bdb1347ccc61934d5149b90bcbe6b8615b687aa3c6775f555fd29eb70ad33"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-BgzUu5VV.js",
+      "sha256": "7a6e5be38ee075cd953c67ca230b10f79216719b630d010ae02a61fb6359a66a"
+    },
+    {
+      "path": "/assets/components-BmRFSRns.js",
+      "sha256": "057721956415aa2b4e4abc4e0a3f95a29aef05fa131241c3850d358d798ed3f3"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964"
+    },
+    {
+      "path": "/assets/useMutation-B7FEum11.js",
+      "sha256": "c42aa31d1b2c0c2d6714a19ffe7b2e0c2944f12e2ac242fc0aa8fc5df3c0ea27"
+    },
+    {
+      "path": "/assets/Approvals-iTGucEzQ.js",
+      "sha256": "b4e904c8680022dba0a23a35ee7f4fd10b0e5711293114cf7c3708b449f5f034"
+    },
+    {
+      "path": "/assets/Input-CHvf0cAl.js",
+      "sha256": "9b877590c1e0e4c153848b27a6bd6417f3ff5381ce659e12c05bc970090ef4e8"
+    },
+    {
+      "path": "/assets/Input-0B3zfOsS.js",
+      "sha256": "a8b2953489cda593b21e08fcb117f1d32e4d826560cdea006f39e2767a596e9b"
+    },
+    {
+      "path": "/assets/Text-DszZlDxA.js",
+      "sha256": "8516463304b771c90346909fcd80744580bf0274acabef3fb8477db446ed7339"
+    },
+    {
+      "path": "/assets/estimating-C90fSZ_i.js",
+      "sha256": "b26f377e3d0b48fc9e8cc164e3a1b2abc7a2248210461b103e06af6eacf49b4b"
+    },
+    {
+      "path": "/assets/index-C4G8nBCn.css",
+      "sha256": "235069e08cad4f2fa40a483e5004084a959bdb211e41f1e505a945a0fe99e56e"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/CompanyApprovals-D9fybGF0.js",
+      "sha256": "ccff058d6a8c421279e7a75d1376fb86056d42884127c78d2a28b10d026e05bb"
+    },
+    {
+      "path": "/assets/PdfDrawing-C99X1scA.js",
+      "sha256": "190f3f269a244bb5b77069f57d2f3e5fdbe70c6a680c0bb85975571675737414"
+    },
+    {
+      "path": "/assets/pdf.worker.min-CjEcRF4W.mjs",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-D7hXf7Rt.js",
+      "sha256": "99ab0b5aacff925728cffc4be1a9cee63eb249de40dc837a685a78f242acec53"
+    }
+  ]
+}

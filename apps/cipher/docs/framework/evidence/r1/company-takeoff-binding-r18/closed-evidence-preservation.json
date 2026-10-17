@@ -1,0 +1,11 @@
+{
+  "schema": "cipher.r18.original-browser-binding-phase.v1",
+  "status": "passed",
+  "start": "2026-10-17T02:50:47.461780+00:00",
+  "prepared_target_verification_sha256": "b93ae442eab9fccee231531b65bf2ef44365147756c2deec21d3354f27805f68",
+  "reviewed_source_sha256": "55a5d3a0f0c3ca77a8c5b462b7f0b4dbf3e9078b6d284e43e179526c7161b299",
+  "capture_driver_sha256": "daa3d40c61b17d30020e774823c3b5207fbb361fd7da8165aa91f1bdc61616c8",
+  "end": "2026-10-17T02:51:04.712889+00:00",
+  "closed_host_trees_unchanged": true,
+  "source_build_unchanged": true
+}

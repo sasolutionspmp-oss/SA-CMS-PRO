@@ -1,0 +1,43 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Person",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "display_name",
+    "active",
+    "identity_kind"
+  ],
+  "fields": [
+    {
+      "fieldname": "display_name",
+      "label": "Display Name",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "active",
+      "label": "Active",
+      "fieldtype": "Check",
+      "reqd": 0
+    },
+    {
+      "fieldname": "identity_kind",
+      "label": "Identity Kind",
+      "fieldtype": "Select",
+      "options": "Human\nService",
+      "default": "Human",
+      "reqd": 1
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

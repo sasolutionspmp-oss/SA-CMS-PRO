@@ -1,0 +1,21 @@
+{
+  "label": "quarantine-lifted-pair-start",
+  "script": "distribution-pair-control.py",
+  "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+  "arguments": [
+    "start"
+  ],
+  "started_at": "2026-10-15T20:09:53.006136+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:09:53.131377+00:00",
+  "result": {
+    "action": "start",
+    "process": {
+      "pid": 14854,
+      "start_ticks": "11466863",
+      "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+      "started_at": 1792094993.1159596
+    },
+    "outer_restart": "operator-managed"
+  }
+}

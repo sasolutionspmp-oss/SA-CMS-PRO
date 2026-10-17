@@ -1,0 +1,198 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/playwright-award.config.mjs",
+      "--grep",
+      "phone award actions",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/playwright-award.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "awards.spec.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "awards.spec.ts",
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "awards.spec.ts",
+      "file": "awards.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "phone award actions keep the first action within bounds or expose it through supported keyboard overflow",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 3015,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m0\u001b[39m\nReceived:    \u001b[31m-32.328125\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m0\u001b[39m\nReceived:    \u001b[31m-32.328125\u001b[39m\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:85:108",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                      "column": 108,
+                      "line": 85
+                    },
+                    "snippet": "  83 |   await page.setViewportSize({ width: 390, height: 1000 }); await mockAward(page); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award');\n  84 |   const returnAction = page.getByRole('button', { name: 'Return to proposal', exact: true });\n> 85 |   if (await returnAction.isVisible()) { const bounds = await returnAction.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390); }\n     |                                                                                                            ^\n  86 |   else { const more = page.getByRole('button', { name: 'More award actions', exact: true }); await expect(more).toBeVisible(); await more.focus(); await more.press('Enter'); await expect(returnAction).toBeVisible(); }\n  87 |   await returnAction.focus(); await returnAction.press('Enter'); await expect(page).toHaveURL(/\\/commercial\\/proposals\\//);\n  88 | });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                        "column": 108,
+                        "line": 85
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThanOrEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: >= \u001b[32m0\u001b[39m\nReceived:    \u001b[31m-32.328125\u001b[39m\n\n  83 |   await page.setViewportSize({ width: 390, height: 1000 }); await mockAward(page); await page.goto(path); await expect(page.getByRole('textbox', { name: 'Project name', exact: true })).toHaveValue('Cedar Valley award');\n  84 |   const returnAction = page.getByRole('button', { name: 'Return to proposal', exact: true });\n> 85 |   if (await returnAction.isVisible()) { const bounds = await returnAction.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390); }\n     |                                                                                                            ^\n  86 |   else { const more = page.getByRole('button', { name: 'More award actions', exact: true }); await expect(more).toBeVisible(); await more.focus(); await more.press('Enter'); await expect(returnAction).toBeVisible(); }\n  87 |   await returnAction.focus(); await returnAction.press('Enter'); await expect(page).toHaveURL(/\\/commercial\\/proposals\\//);\n  88 | });\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts:85:108"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:16:09.686Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-phone-award-actions-a46a1-supported-keyboard-overflow/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-phone-award-actions-a46a1-supported-keyboard-overflow/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/test-results/awards-phone-award-actions-a46a1-supported-keyboard-overflow/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/awards.spec.ts",
+                    "column": 108,
+                    "line": 85
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "75f671c56a8f18d605d5-2545d7a94f891a19b405",
+          "file": "awards.spec.ts",
+          "line": 82,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:16:08.584Z",
+    "duration": 4523.069,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

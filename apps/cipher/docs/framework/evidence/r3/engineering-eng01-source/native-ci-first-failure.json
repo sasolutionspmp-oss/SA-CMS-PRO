@@ -1,0 +1,21 @@
+{
+  "schema": "cipher.eng01.native-ci-attempt.v1",
+  "status": "failed",
+  "commit": "a84bb324e81a677638b02ebf98cd7dc93888e2e2",
+  "run_id": 39002419414,
+  "job_id": 117307959286,
+  "run_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/39002419414",
+  "passed_stages": [
+    "validation-reporter-tests",
+    "deployment-process-lifecycle",
+    "fresh-site-install",
+    "runtime-matrix",
+    "runtime-image"
+  ],
+  "failed_stage": "frappe-integration-tests",
+  "actual_error_detail": "Native test exception omitted from the accessible original job log; exact exception remains unknown.",
+  "artifact_download": "Connector returned an authorized file reference, but the container network proxy rejected its download with403. No alternate download route attempted.",
+  "actual_job_log_sha256": "82703468db0b1fe6a585a64c3b77ac63e53edd055bcaf75a429a68b508221be0",
+  "native_completed": false,
+  "followup": "Add bounded native test/class/exception/source-frame diagnostics to the runner; retain the original failing status."
+}

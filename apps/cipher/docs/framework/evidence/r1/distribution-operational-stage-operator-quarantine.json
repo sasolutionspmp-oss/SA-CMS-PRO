@@ -1,0 +1,20 @@
+{
+  "label": "stage-operator-quarantine",
+  "script": "distribution-stage-operational.py",
+  "helper_sha256": "712aa5cd521f0093339509a9bfb0079139b3711ea0b654063450ecf4f3b7de39",
+  "arguments": [
+    "operator-quarantine"
+  ],
+  "started_at": "2026-10-15T20:08:07.360992+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:29.405174+00:00",
+  "result": {
+    "status": "passed",
+    "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+    "operations": [
+      "uofcdn69oc"
+    ],
+    "private_context": "/tmp/cipher-r0-runtime/distribution-operator-quarantine-stage/distribution-http-context.json",
+    "manual_worker_or_publisher_invoked": false
+  }
+}

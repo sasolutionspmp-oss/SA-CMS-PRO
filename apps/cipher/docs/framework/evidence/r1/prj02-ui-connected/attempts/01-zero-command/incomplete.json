@@ -1,0 +1,33 @@
+{
+  "qualification": "Actual isolated ERP UI attempt; incomplete until all assertions pass.",
+  "phase": "cost-author",
+  "widths": [
+    1440,
+    900,
+    390
+  ],
+  "mutations": [],
+  "page_errors": [],
+  "console_errors": [],
+  "unexpected_http": [],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "source_reads": [
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session"
+  ],
+  "served_assets": [],
+  "keyboard_checks": [],
+  "root_released_backend_epoch": {
+    "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+    "manifest_sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "cost_records": [],
+  "stage": "sign in",
+  "failure": "Walkthrough stopped; reconcile private original command journal before any new mutation."
+}

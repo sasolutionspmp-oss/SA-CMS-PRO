@@ -1,0 +1,70 @@
+{
+  "captured_at": "2026-10-15T16:10:48.247886+00:00",
+  "artifacts": [
+    {
+      "name": "connected-estimate-assembly-source.png",
+      "sha256": "258ecc68a212d962ae93274c8e15fa285f622dcfdc424517b9c7c784b8a08ad8",
+      "byte_length": 173574
+    },
+    {
+      "name": "connected-estimate-editor-desktop.png",
+      "sha256": "560bcf14e823be291772ed86c20ede7c66e28b15ce46f1e1dd99c69ceecf199c",
+      "byte_length": 142385
+    },
+    {
+      "name": "connected-estimate-editor-phone.png",
+      "sha256": "bfc3bbd12505d9fc0e3ae900f82d561418155f03a64cbc950d81634647fb6647",
+      "byte_length": 82589
+    },
+    {
+      "name": "connected-estimate-editor-tablet.png",
+      "sha256": "1670c049a048c7c1fada1a06bf1f2017eff413ef3ce1f102fcee977b73503933",
+      "byte_length": 116071
+    },
+    {
+      "name": "connected-estimate-numeric-focus-phone.png",
+      "sha256": "9e0ad3d159484ca055b7213dfd0aeb657dbcbef6bc8c729968d9d9aa01902b32",
+      "byte_length": 82980
+    },
+    {
+      "name": "connected-estimate-numeric-focus-tablet.png",
+      "sha256": "a43805c439035866b926fb252c5ae8e1c05dd1fecc82cb89b053fd5b1fa12f96",
+      "byte_length": 116342
+    },
+    {
+      "name": "connected-estimate-rate-source.png",
+      "sha256": "074a9c8ff214df48f3fcfc68e0d4ca3d9a6bee36eeaeb324bb7f5d4379b10fc5",
+      "byte_length": 154866
+    },
+    {
+      "name": "connected-estimate-register.png",
+      "sha256": "d2be11102b56466d4d2de51fe641a55166c739475093558765f74317c3786d8d",
+      "byte_length": 86628
+    },
+    {
+      "name": "connected-estimate-revision-comparison.png",
+      "sha256": "5d5a0aeb57f96df746dd2c0de71b1cb77503141494bb21c2400bb4ecf448d726",
+      "byte_length": 149165
+    },
+    {
+      "name": "connected-estimate-snapshot.png",
+      "sha256": "e0cf5d4b4a6c0598967efe1f890356ae73cf338b5b4363272665df0d37a04dcd",
+      "byte_length": 158683
+    },
+    {
+      "name": "connected-estimate-source-page.png",
+      "sha256": "4d0cb1f305f4fa7c693f8fb6dbc551dda850649ac513cd505af56a5cd7cedaf4",
+      "byte_length": 174022
+    },
+    {
+      "name": "served-build-provenance.json",
+      "sha256": "dea157f95a66aafde81b87c37653ba6feebc4ed69b2c2b596e7df156bac9192b",
+      "byte_length": 151762
+    },
+    {
+      "name": "verification.json",
+      "sha256": "89549601097bd11689c877e0252176c667bdce7dd80d89dfb2b2b718212dec84",
+      "byte_length": 1406
+    }
+  ]
+}

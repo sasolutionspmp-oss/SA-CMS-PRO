@@ -1,0 +1,33 @@
+{
+  "schema": "cipher.browser.artifact-inventory.v1",
+  "artifacts": {
+    "actual-company-accepted-estimate.png": {
+      "sha256": "174571a9e717c9855bfca5eea660f9392bdbac1854143df00f4c14917eb39e2e",
+      "bytes": 121262
+    },
+    "actual-company-proposal-desktop.png": {
+      "sha256": "4d073d81fdf38bc8c9ba06c39c3e7b01d582c6d7339baf1a2c91d868b3322a93",
+      "bytes": 167381
+    },
+    "actual-company-proposal-phone.png": {
+      "sha256": "b02e5baa7654b926ff4fe8a08af6832c21db25c691f2419e0e4080b540a27e98",
+      "bytes": 31826
+    },
+    "actual-company-proposal-tablet.png": {
+      "sha256": "b42367a6ab6b55561bb4367327e6eb9aed222295926166f96ef97add94738f1a",
+      "bytes": 115028
+    },
+    "actual-company-source.png": {
+      "sha256": "cfd8beb237a475d86cfcc7ab531bd409ad50e548ed0b05a984eac17a29dbdaf5",
+      "bytes": 103768
+    },
+    "provenance.json": {
+      "sha256": "ce81fbd8fdcb1e376dfee86e960164a7b1fd954b4475f6637ba1bbac9026171b",
+      "bytes": 7155
+    },
+    "verification.json": {
+      "sha256": "39cc76ae8de00e343e11d287ef43bee373efe53e54cb13896660d6de4dde4be0",
+      "bytes": 9505
+    }
+  }
+}

@@ -1,0 +1,763 @@
+{
+  "client_python": "3.12.14",
+  "executed_at": "2026-10-15T14:25:35.076280+00:00",
+  "fixture": {
+    "base_url": "http://127.0.0.1:18880",
+    "company": "Cipher Synthetic Company",
+    "fixture_id": "cipher-r0-fresh-synthetic",
+    "project": "PROJ-0001"
+  },
+  "git_revision": "a84cde6ac1b633450d7a122549b6bf9589ec8bc3",
+  "host_header": null,
+  "http": {
+    "alias": [
+      {
+        "elapsed_ms": 54.32,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 7.53,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "6ac3f43b-efa5-462e-b717-57edf95551a9",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 9.77,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "2268e9b9-eb5b-418a-9738-49c9c88a4990",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 200
+      }
+    ],
+    "guest": [
+      {
+        "elapsed_ms": 26.61,
+        "envelope_meta": true,
+        "error_code": "authentication_required",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "4eed7e78-fab1-4bab-a7c7-f6f7b6b278d9",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 401
+      }
+    ],
+    "outsider": [
+      {
+        "elapsed_ms": 58.8,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 7.21,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "dfd557e8-acc0-4097-9238-9a418a3b2a4b",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 14.25,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "6429c10b-847e-40e2-9412-c6ac647f119f",
+        "route": "/api/method/cipher_aec.api.v1.projects",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 5.09,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "46a0cf58-bd0e-4cd7-b43b-4287e53697b8",
+        "route": "/api/method/cipher_aec.api.v1.project",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 5.57,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "8d2095e6-d071-4a4d-8037-95e2a3055464",
+        "route": "/api/method/cipher_aec.api.v1.tasks",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 5.68,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "d873d1ee-0c30-4de6-836d-424b22af58ac",
+        "route": "/api/method/cipher_aec.api.v1.history",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 157.34,
+        "media_type": "application/json",
+        "method": "GET",
+        "route": "/api/resource/Project/PROJ-0001",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 4.83,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "456472f3-9aab-46b9-a103-fff008cb97c8",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 8.5,
+        "media_type": "application/json",
+        "method": "GET",
+        "route": "/api/resource/Task/TASK-2026-00001",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 5.14,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b8d43914-cbd9-4e5b-bbbc-b3e5e1a1e2fe",
+        "route": "/api/method/cipher_aec.documents.api.list_documents",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 4.69,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "5740f4cc-d976-4ba1-8fea-68728c04d3ae",
+        "route": "/api/method/cipher_aec.documents.api.get_document",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 5.05,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "012a46d9-a1ce-4585-835e-47741675f204",
+        "route": "/api/method/cipher_aec.documents.api.preview_revision",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 4.43,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "867f5f0d-0506-4138-a8f9-ff636fd93563",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 3.95,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "5aa9e6ef-3160-4822-9b47-5f36df084458",
+        "route": "/api/method/cipher_aec.documents.api.search_documents",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 9.57,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "08205681-e117-43cc-a662-221f418a4b2f",
+        "route": "/api/method/cipher_aec.documents.api.download_revision",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 9.95,
+        "media_type": "application/json",
+        "method": "GET",
+        "route": "/api/resource/Cipher%20Document%20Revision/REV-48bb35d67f2042bdade38dcdd1011311",
+        "status": 403
+      },
+      {
+        "elapsed_ms": 5.46,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "840d0d30-9bc3-45cd-b846-be70de162c08",
+        "route": "/api/method/cipher_aec.ricky.api.start_run",
+        "status": 404
+      }
+    ],
+    "primary": [
+      {
+        "elapsed_ms": 311.07,
+        "media_type": "application/json",
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 6.79,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "3a1a956d-371a-45a5-8788-830f46c27465",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 27.69,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "3144461a-92e4-4557-bf3d-99046e72c76d",
+        "route": "/api/method/cipher_aec.api.v1.project",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 82.73,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "9da7dff2-9b48-4515-ad6e-2e67e860669e",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 36.96,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "d19e456a-3255-47ab-b845-9eaca9a2dc94",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 7.94,
+        "envelope_meta": true,
+        "error_code": "operation_conflict",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "285c677c-bd5c-4305-8a2c-4c861bbb2ce7",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 409
+      },
+      {
+        "elapsed_ms": 10.28,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "4cb7c952-99c0-45e9-821e-76ebf42e9df8",
+        "route": "/api/method/cipher_aec.api.v1.tasks",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 6.16,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "4ff25d70-70ea-42ba-8110-33c071c8fae9",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 5.52,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "e5582c59-5473-4a83-b108-db91460b78b9",
+        "route": "/api/method/cipher_aec.api.v1.project",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 3.41,
+        "envelope_meta": true,
+        "error_code": "version_required",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "60e8c8f2-202c-43ff-bce3-99c586a55abb",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 428
+      },
+      {
+        "elapsed_ms": 6.41,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "8726ff5d-84a3-4951-aeec-463d2861bff8",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 7.59,
+        "envelope_meta": true,
+        "error_code": "stale_version",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "7661a0d4-4f91-45f2-b1fd-19e5055fa35c",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 412
+      },
+      {
+        "elapsed_ms": 6.35,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "6f28f463-c328-4ccb-bf4f-273b7e4436c9",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 7.2,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b6bb4469-2656-433b-8b04-440987ec4be1",
+        "route": "/api/method/cipher_aec.api.v1.tasks",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 6.33,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "23d765cc-4ae7-4821-ac3d-8384249821ef",
+        "route": "/api/method/cipher_aec.api.v1.project",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 3.99,
+        "envelope_meta": true,
+        "error_code": "idempotency_key_required",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "01e860a3-1f75-4a7e-9a7f-245e184fe82d",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 428
+      },
+      {
+        "elapsed_ms": 6.8,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "81655c2c-3ec9-42fa-a39c-ebca9026cf0b",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 4.76,
+        "envelope_meta": true,
+        "error_code": "operation_conflict",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "e132eb52-a4a6-45db-837c-1a0f88d6c97b",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 409
+      },
+      {
+        "elapsed_ms": 6.09,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "e314ef64-8433-4874-9322-0bf56cc23614",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 3.35,
+        "envelope_meta": true,
+        "error_code": "forged_authority",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "bc1be0c6-12f7-4780-8720-564f89eea64b",
+        "route": "/api/method/cipher_aec.api.v1.create_task",
+        "status": 422
+      },
+      {
+        "elapsed_ms": 5.93,
+        "envelope_meta": true,
+        "error_code": "not_found",
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b8c89317-98bd-4e7c-a33b-7606b7c57020",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 404
+      },
+      {
+        "elapsed_ms": 88.15,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "1dfae79f-e397-42da-9947-998aba738b1a",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 8.9,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "e9a42665-0080-41bc-984f-9e612990ce79",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 7.84,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "309fcee2-f10d-49e3-8876-7e0b348207f8",
+        "route": "/api/method/cipher_aec.documents.api.get_document",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 8.03,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "a7178845-1969-4df4-8d89-89ad1cb1a602",
+        "route": "/api/method/cipher_aec.documents.api.list_documents",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 8.27,
+        "envelope_meta": true,
+        "error_code": "operation_conflict",
+        "media_type": "application/json",
+        "method": "POST",
+        "request_id": "323abed7-1df7-49a2-b7ed-300d335fbded",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 409
+      },
+      {
+        "elapsed_ms": 8.75,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "d1dce2ee-692c-4cff-a39e-59a9c75bb7fe",
+        "route": "/api/method/cipher_aec.documents.api.preview_revision",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 7.01,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "b4e8dcb3-0737-455d-9f65-eeebc6d0a1ab",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 10.51,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "4affc4e1-ec2c-427a-947d-a1d41c194139",
+        "route": "/api/method/cipher_aec.documents.api.search_documents",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 6.75,
+        "media_type": "text/plain",
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.download_revision",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 3.93,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "88f1e6f5-664c-461e-814e-e884e2cb0a6a",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200
+      },
+      {
+        "elapsed_ms": 11.7,
+        "envelope_meta": true,
+        "media_type": "application/json",
+        "method": "GET",
+        "request_id": "2a296969-d95e-47e2-ab1b-3b5d30fdc563",
+        "route": "/api/method/cipher_aec.ricky.api.connection_status",
+        "status": 200
+      }
+    ]
+  },
+  "limits": [
+    "No connected-model inference qualified by this verifier.",
+    "Restart, restore, concurrent worker crash/fencing and browser behavior need separate evidence.",
+    "Mid-session duty revocation and source-document proposal invalidation require additional runtime scenarios."
+  ],
+  "phase": "journey",
+  "results": [
+    {
+      "check": "unauthenticated API boundary",
+      "detail": "An unauthenticated session receives a safe, versioned 401 envelope.",
+      "status": "passed"
+    },
+    {
+      "check": "authenticated canonical-person synthetic boundary",
+      "detail": "Three authenticated synthetic accounts; two share one canonical person.",
+      "status": "passed"
+    },
+    {
+      "check": "authorized Project version",
+      "detail": {
+        "project": "PROJ-0001",
+        "version": "2026-10-15 19:54:51.272288"
+      },
+      "status": "passed"
+    },
+    {
+      "check": "independent-person scoped denial",
+      "detail": "Project, Task list, and history are inaccessible to an independent person.",
+      "status": "passed"
+    },
+    {
+      "check": "Task retry, alias replay, changed-payload conflict and receipt",
+      "detail": {
+        "id": "TASK-2026-00001",
+        "operation_id": "31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525",
+        "subject": "SYNTHETIC R0 acceptance 31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525"
+      },
+      "status": "passed"
+    },
+    {
+      "check": "missing/stale source preconditions",
+      "detail": "Missing/stale Project preconditions produce no committed command receipt.",
+      "status": "passed"
+    },
+    {
+      "check": "command transport and identity boundary",
+      "detail": "Missing/mismatched idempotency headers and caller-asserted identity are rejected without receipts.",
+      "status": "passed"
+    },
+    {
+      "check": "real document bytes, citations, retry and independent denial",
+      "detail": {
+        "byte_length": 151,
+        "document_id": "DOC-fba5b0883cc746679417556d2b3ebb68",
+        "operation_id": "1c77251c-0f6b-4ecf-a76f-0053422b2e8d",
+        "page_2_excerpt_sha256": "f4f1f841f93f084eef3b1a8e22aeebdb776d6d85a2a1c89b3e759a33e4002dfc",
+        "revision_id": "REV-48bb35d67f2042bdade38dcdd1011311",
+        "sha256": "cd953407905be6319b9772460d4e6dd3966804937ff59aa3a3d23315ff1486f3"
+      },
+      "status": "passed"
+    },
+    {
+      "check": "honest capability observation",
+      "detail": {
+        "capabilities": [
+          "document.read",
+          "document.write",
+          "project.read",
+          "project.write",
+          "ricky.run",
+          "task.create"
+        ],
+        "model_status": {
+          "adapter_kind": "unconfigured",
+          "available": false,
+          "capabilities": {
+            "cancellation": {
+              "status": "unverified",
+              "value": null
+            },
+            "concurrency": {
+              "status": "unverified",
+              "value": null
+            },
+            "context_limit": {
+              "status": "unverified",
+              "value": null
+            },
+            "image_input": {
+              "status": "unverified",
+              "value": null
+            },
+            "native_tools": {
+              "status": "unverified",
+              "value": null
+            },
+            "structured_output": {
+              "status": "unverified",
+              "value": null
+            }
+          },
+          "cloud_fallback": false,
+          "code": "upstream_unavailable",
+          "message": "The existing local Ricky connection has not been configured.",
+          "requirements": [
+            "serving_protocol",
+            "endpoint_reference",
+            "authentication_contract",
+            "model_selection",
+            "health_contract"
+          ],
+          "status": "unavailable"
+        },
+        "qualification": "Status observation only; no model inference or provider connection claimed."
+      },
+      "status": "passed"
+    }
+  ],
+  "retry_payload": {
+    "company": "Cipher Synthetic Company",
+    "description": "Synthetic HTTP acceptance; no operational project data.",
+    "expected_version": "2026-10-15 19:54:51.272288",
+    "operation_id": "31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525",
+    "project": "PROJ-0001",
+    "subject": "SYNTHETIC R0 acceptance 31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525"
+  },
+  "runtime_versions": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8"
+  },
+  "saved_document": {
+    "byte_length": 151,
+    "document_id": "DOC-fba5b0883cc746679417556d2b3ebb68",
+    "operation_id": "1c77251c-0f6b-4ecf-a76f-0053422b2e8d",
+    "page_2_excerpt_sha256": "f4f1f841f93f084eef3b1a8e22aeebdb776d6d85a2a1c89b3e759a33e4002dfc",
+    "revision_id": "REV-48bb35d67f2042bdade38dcdd1011311",
+    "sha256": "cd953407905be6319b9772460d4e6dd3966804937ff59aa3a3d23315ff1486f3"
+  },
+  "saved_task": {
+    "id": "TASK-2026-00001",
+    "operation_id": "31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525",
+    "subject": "SYNTHETIC R0 acceptance 31fbcb7c-ae8b-4bfe-b9f9-4bfd259f3525"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec.egg-info/SOURCES.txt": "435ae2ea744ae0e51f2a1e5cd05820e3d9b5fb3ca70a7d0a70ce413ddf7f2b42",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec.egg-info/dependency_links.txt": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec.egg-info/requires.txt": "02567d446a92ee220a930e523d4146f9d2fe9cca53fefcdf0fe29614f23dea75",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec.egg-info/top_level.txt": "eab3ff24c4c226b21caa7f64c80687b9c86d0e4a1f75e66a5e441a3091d95a43",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/__init__.py": "aa06f7682da17c65cec391e23e3cbb6e01bb5867fa1f1edff04646779fa7c8f7",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/__init__.py": "779404288fb87bf4f2f023ad06353ffe73fa04697bc269deb1ab03ddfee99b5b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/contracts.py": "97b6533c710811655a22293432330e66e9f449ffef43dc044b8460b8e8f1598e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/errors.py": "dc396a94f5fb3fcffafdb579f7c6df21d2352ae2709e31c9b342f18e704edf9e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/schema.json": "d07bdf3778e7e7f3baacd2a0de0364ca75c40ed41e3cd2a97a7c5fda2503f046",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/transport.py": "e03549c987b5aa64906e9ef3b721894761e498fc78083def0b5c29ba50c260d1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/v1.py": "5860b2daf7b93c3f8d4cb1b8e727debe88b9a40c61f06d84f4ee47e9531d5e2d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.json": "98974b509124f93dc40ffd7a1154bf4f79aecf4ecdbea3dc5e4e51d59efc51c6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document/cipher_document.py": "b4c81b98a311daba4476f2a2794c2a8134fd71a2385a30347ac587ac6527340f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.json": "21f6ceb16a02d4166922418cc74bf86570ff07c759ed4bd323afd98ae55eb1d0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_documents/doctype/cipher_document_revision/cipher_document_revision.py": "dc68f453b3ceb57de2f529361a0174157532fc7972d6c04cbaebcc4c75e4a7d1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_command_receipt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.json": "b997130a0e069542710a01d01819dd2409e9403b7327e1805422b6b8d3aa619b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.py": "af4a155fb6f801a509e83b1417583620e711fe3dcefd2d9806470638a28f6fdd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_history_event/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_history_event/cipher_history_event.json": "5662a3ef74bc945b17e2e7678be155973a6103a9699814c28a26b9303302e985",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_history_event/cipher_history_event.py": "f774908374c4aeaeecd3e3062792e937e284febfd1ed1c05bbb120dd55d340c8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_identity_binding/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_identity_binding/cipher_identity_binding.json": "70edf8ad399e372d30969bbd9363ff8bbfbbb318185a806b285ca14f0f5e792f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_identity_binding/cipher_identity_binding.py": "f47f861055c2e1f0297e66d0e3884036511357c8c0a1de7d9f0f9b9beff35379",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_person/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_person/cipher_person.json": "2fe6d14c10419216b5ff574a4bdbf1f5fb568b00de2a79d3c7b9cea8b801a303",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_person/cipher_person.py": "c531e8578aee2f42dcb947d8f631a4f68dca902fe960eeb1cd8014beea38ad26",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json": "8f946baef02f1ce2b9cca86307b145f9b0da14fe0e14f0d01da0b13c8d4bd359",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/cipher_project_duty.py": "30fe48a65929c89e412a26c849904df534240ca02633295ac03d4d3953bffe14",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_delivery_attempt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_delivery_attempt/cipher_delivery_attempt.json": "0ae0ac70a6504251c2a806487b225f7fa1e0e19c44507290e7b0680c32e4c92c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_delivery_attempt/cipher_delivery_attempt.py": "03e176ca8c8bdd45e4e4089a077e5da4725c345d4f5da07c00a88963b0650c64",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_integration_operation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_integration_operation/cipher_integration_operation.json": "376772275782e55878452e210aad030f7750d9c0333d8283b389c571cd1a9c78",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_integrations/doctype/cipher_integration_operation/cipher_integration_operation.py": "c2f78c1d47bab8b0bbb30c36d374b2a70811f55018a91a5af4785c72b4151437",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_projects/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/cipher_delegation.json": "d00805908bae03e5631f4dedb02f2782202ea0b48cb5131181f94dc09f232a14",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/cipher_delegation.py": "9a223e48cbfe91e1d5d27ee7a7b2434cb2c69d688b726e34a81240fb347b1277",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.json": "2055c5cb25d9acc4866d433efd853b0d9c41fca71dd4536182c774394c8b166d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.py": "efea2e590de2174f804b13f835691c756b6717575c45b2373a0f70e31f445c85",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.json": "fedfbcfbb93b0b2a57c9bdcb72dcb9e33015cfd02ffb9f54050965ee4a971f62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.py": "68a4e767023c3db8a9b0d396304e10c2d43819201fd8b1cb55d55f17a702c97d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.json": "a69e43eaf028c7ec289dcd22bda6aeeb88fb82c6840ab6b008c936b2d5868a5c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.py": "c9dd4ee46f99c64d7711971147b6614afa25a7be8d6c8daea8bc244d1e8cc108",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.json": "bd87240d027ecebb60ef66d8a72fa035fe6fc168ac551611725682863ccf9695",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.py": "290cc1dda72998225c98b2ecf879436c740a522affc2cddc438959110e54bf3b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.json": "4c738be812198af17afc8e7cbfeec4dcd76c47bb0b6bdf837517f930a3e5a0dd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.py": "d0ddd36bbc563febb68f2f3e2720face1468fe0731fb2b2ac9e4c38663ff4186",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "56965e30ea83b33b02a1d644e105b6fe49db88212656467333c6b68eb8418d52",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/install.py": "d9f76b46abaa219ddb894e900eb01be13ab9d97e62e40f875b8270ab7fae8179",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/permissions.py": "27b845d196e264fd791e835cbc2e667b8be28f2efe284b16a24aaf53a6ef361f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py": "da7b54078960c6ae2a0124626ebbbf2213a984676e7f446d4cd064caaedffbd2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py": "0b6443bc41f4906f4fe669e67288629a9687ab86acc9e9e3cc1667237cf43a01",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/__init__.py": "270aa42c5f80e33397496b916a00268234e1fb420126ce81f1e6f2110cb05c0d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py": "481063e984e83908a9b170cc0fc45514c8c84130b48696d3a9c3ee16797f7297",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py": "bd1c0b252c2b4e0dd02d281616f155b3b7cd4e925a09b314c37f4996b24b3c87",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/controllers.py": "bd69d4b4a6db4d959456c3d88cb002385a311e31a31b0cba3d78356b7a01cc54",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history.py": "d8a40815066605930b5e36ada5957f7994dd2738eb5ef15b8fbce77671ed9937",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py": "8cbdd459137d03d82f964a84e290b3fd5d7928e5e50c3f376e1321d407fbf25c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py": "106173a5f53d58edbae5deee069df6b87088496eb1e0ee8e647a58c5d8a4eac2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/controllers.py": "29186f4a3d235dc0dd49bc0abc950203444369392828f426a43b2162c8341a3d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/outbox.py": "e9f8fdd0410b61912b86900a5e1c543ff02d8fdf6151f93a28d301fb0fd6e2bd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/modules.txt": "a415684d2f2409dbe9a885997d62660edfe43eba087f0be9b8ec66c8dfb7db9f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/patches.txt": "4035dd3718a71e6b1f33b4e417b5b9f75d50f744c10f3a8166f261e9682e2635",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/__init__.py": "0dce6e899124a129327b974fbbaf70fa1257f528390a8fc42b6584d764958e91",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/guards.py": "dccf3c63828742779b16d0fce3fca06df13a2bf48ce343d764deaca188124b65",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/permissions.py": "70676157fcab21dace72676158c2da30f6b715c36ed5c793f0a780b47d3811f1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/projects/service.py": "bcf018d411d6d17b1e70cb7d1daf7a6baafb67db8a8eb3e5e89ca47b3197da6c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/__init__.py": "095ab3028edd219ede3104a1dd8473ca89310182f5add1f95f9721610ff75b71",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/adapter.py": "557158868e1a2d5fa5b3e267a9d63bf0025d35e92731d9a421014d4927dc0bea",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/api.py": "2e7baead865c2ed24650cac8f4b3a924b6aa4ae5239e63c37612d3a44ee3c37d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/backend.py": "7abfcb17f8187f17eeee0bcc9115412195aeff00fc223df2425617e52a5e1292",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/contracts.py": "5ef1b535f24da4937727e35970a4a99ac0f8d25dc5daaa827ee7790133d1f762",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/engine.py": "9cef19740788593f6b52f5d4e5aba9cc2f827ab979f5e13e6fca1af88441582c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/records.py": "6d0baeb9aaa349d3fa68485f66f67967634e14cedd6874404b6ea9e1c6f4febc",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/storage.py": "7d19f6a63b56fcf2e8801dd6d7e15f5f40cb6d7f7184dac293f0414593ddca63",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/tools.py": "74fcf6eb7632a8e66c6149964f71334cf04f8f54a41e34c966a2a06ff5012d88",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/worker.py": "4b4929df275cd0d7ee5b417da6595b338b6c128f5b3c57dab6cc6eee21be3a8e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_contracts.py": "b97dcfa80cc1ce4085ff8485921a3d629637f603a9bb9873464786322f17e02b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents.py": "53007d57cea0b61ac3dc22c2d1df19c05b8e6537706a8cc0edbf09a1cf31f78b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_governance_projects.py": "f6cdf4080d9c8d6f2ed3f44e64141b21a796b25dd25cf523321d09068f33b38a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky.py": "2dc69c44791b319e356b1a425d9527efe2b60e31b8b1ccb8bf63c6341f517af8",
+    "apps/cipher/platform/apps/cipher_aec/pyproject.toml": "fe667aaf69db130fba552b785f92871a206cea14753d32083e99083df73e8ea3",
+    "apps/cipher/platform/operations/verify_r0.py": "f875bf9625ec9d9fdf93a80a33bf113ad15f0aeb2db2f7db741ec4a481902718"
+  }
+}

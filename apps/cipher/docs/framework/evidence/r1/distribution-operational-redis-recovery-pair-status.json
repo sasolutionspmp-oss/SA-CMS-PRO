@@ -1,0 +1,39 @@
+{
+  "label": "redis-recovery-pair-status",
+  "script": "distribution-pair-control.py",
+  "helper_sha256": "ba41d26fe11922952171c024a914244eeb782a3779b41f8ae1eabc34f6cd1564",
+  "arguments": [
+    "status"
+  ],
+  "started_at": "2026-10-15T20:08:06.946377+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:08:07.111311+00:00",
+  "result": {
+    "action": "status",
+    "running": true,
+    "process": {
+      "pid": 14521,
+      "start_ticks": "11455726",
+      "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+      "started_at": 1792094881.7492208
+    },
+    "children": [
+      {
+        "pid": 14522,
+        "state": "S",
+        "parent": 14521,
+        "start_ticks": "11455729",
+        "session": 14522,
+        "role": "consumer"
+      },
+      {
+        "pid": 14523,
+        "state": "S",
+        "parent": 14521,
+        "start_ticks": "11455729",
+        "session": 14523,
+        "role": "publisher"
+      }
+    ]
+  }
+}

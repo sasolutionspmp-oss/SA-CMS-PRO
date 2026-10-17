@@ -1,0 +1,1884 @@
+{
+  "distinct_behavioral_cases": 262,
+  "focused_executions": 33,
+  "focused_old_compatibility_overlap": 10,
+  "full_v1_result": {
+    "failed": 1,
+    "flaky": 0,
+    "passed": 256,
+    "report": "/dev/shm/cipher-history-ui-r16/full-suite-v1/report.json",
+    "retries": 0,
+    "sha256": "1ea5c8b7625cdf324b456a949f22d6254f25bcc3e76bbf0c62088a622ce6f05e"
+  },
+  "full_v2_run_performed": false,
+  "latest_activity_case_results": [
+    {
+      "file": "company-activity-validation.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "published HistoryList keeps count_mode none and null total without invented Company fields"
+    },
+    {
+      "file": "company-activity-validation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "malformed, duplicated, extra-scope and non-timestamp event rows fail closed"
+    },
+    {
+      "file": "company-activity-validation.spec.ts",
+      "line": 19,
+      "retry": 0,
+      "status": "passed",
+      "title": "only implemented scoped record routes can open; raw revision/native/Run references stay details"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 6,
+      "retry": 0,
+      "status": "passed",
+      "title": "bounded Company activity preserves actual event order, actor and timestamp without totals or eager next reads"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 32,
+      "retry": 0,
+      "status": "passed",
+      "title": "403 source or cursor refusal hides prior rows and requires explicit fresh paging"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 32,
+      "retry": 0,
+      "status": "passed",
+      "title": "404 source or cursor refusal hides prior rows and requires explicit fresh paging"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 32,
+      "retry": 0,
+      "status": "passed",
+      "title": "409 source or cursor refusal hides prior rows and requires explicit fresh paging"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 44,
+      "retry": 0,
+      "status": "passed",
+      "title": "an unauthorized Company query never falls back to another Company activity"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 50,
+      "retry": 0,
+      "status": "passed",
+      "title": "changing Company drops an older in-flight page and restarts cursor state"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 63,
+      "retry": 0,
+      "status": "passed",
+      "title": "changing user clears paging and drops the old in-flight result"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 63,
+      "retry": 0,
+      "status": "passed",
+      "title": "changing personId clears paging and drops the old in-flight result"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 74,
+      "retry": 0,
+      "status": "passed",
+      "title": "permission removal clears cached rows and does not read with absent Company capability"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 86,
+      "retry": 0,
+      "status": "passed",
+      "title": "known commercial.read loss with Company read retained clears source rows and reauthorizes page one"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 86,
+      "retry": 0,
+      "status": "passed",
+      "title": "known estimate.read loss with Company read retained clears source rows and reauthorizes page one"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 86,
+      "retry": 0,
+      "status": "passed",
+      "title": "known document.read loss with Company read retained clears source rows and reauthorizes page one"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 104,
+      "retry": 0,
+      "status": "passed",
+      "title": "known domain capability loss aborts the old cursor request and drops its late source-bearing page"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 118,
+      "retry": 0,
+      "status": "passed",
+      "title": "reordering unchanged Company capabilities preserves the current authorized page"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 129,
+      "retry": 0,
+      "status": "passed",
+      "title": "a mounted global mutation lock disables every activity navigation control"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 137,
+      "retry": 0,
+      "status": "passed",
+      "title": "malformed response clears old rows; details are collapsed and authored text stays escaped"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 147,
+      "retry": 0,
+      "status": "passed",
+      "title": "implemented record navigation preserves Company context and unsupported revision IDs do not become links"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 155,
+      "retry": 0,
+      "status": "passed",
+      "title": "the new activity navigation cannot escape an uncertain original draft save"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 166,
+      "retry": 0,
+      "status": "passed",
+      "title": "activity paging and record details work by keyboard at 390px without overflow"
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "line": 166,
+      "retry": 0,
+      "status": "passed",
+      "title": "activity paging and record details work by keyboard at 900px without overflow"
+    }
+  ],
+  "latest_activity_cases": 23,
+  "latest_focused": {
+    "failed": 0,
+    "passed": 33,
+    "report": "/dev/shm/cipher-history-ui-r16-v2/focused-after-fix/report.json",
+    "sha256": "b45e01cc45b443c52bf9cdc4118fe5d8442f5d83f47470c4b529e04f983cd103"
+  },
+  "legacy_case_results_original": [
+    {
+      "file": "award-effect.spec.ts",
+      "line": 10,
+      "retry": 0,
+      "status": "passed",
+      "title": "award review opens the exact fixture PDF before independent Grant and preserves the frozen team and cost plan"
+    },
+    {
+      "file": "award-effect.spec.ts",
+      "line": 19,
+      "retry": 0,
+      "status": "passed",
+      "title": "award execution refuses an old independent Grant receipt then recovers the exact original operation through later denial"
+    },
+    {
+      "file": "award-effect.spec.ts",
+      "line": 25,
+      "retry": 0,
+      "status": "passed",
+      "title": "same-key refreshed adoption props are revalidated against the original immutable Company review"
+    },
+    {
+      "file": "award-effect.spec.ts",
+      "line": 29,
+      "retry": 0,
+      "status": "passed",
+      "title": "adopted author sees Company completion without new draft actions or inferred Project access"
+    },
+    {
+      "file": "award-effect.spec.ts",
+      "line": 34,
+      "retry": 0,
+      "status": "passed",
+      "title": "lost award review request keeps the original saved-plan snapshot and same UUID after current access denial"
+    },
+    {
+      "file": "award-effect.spec.ts",
+      "line": 39,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company completion refuses an adoption linked to a superseded independent Grant"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 8,
+      "retry": 0,
+      "status": "passed",
+      "title": "award workspace preserves a copied second Company through sign-in without Project reads or implicit team membership"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 17,
+      "retry": 0,
+      "status": "passed",
+      "title": "foreign Company award link fails before any award source request"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 20,
+      "retry": 0,
+      "status": "passed",
+      "title": "selecting reviewed cost revisions requires cost read access without cost-master write authority"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 23,
+      "retry": 0,
+      "status": "passed",
+      "title": "unqualified original estimate input blocks new award authoring without treating its ordinary Issue PDF as a cause"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 29,
+      "retry": 0,
+      "status": "passed",
+      "title": "explicit award source denial removes retained source/editor content and offers no permission retry"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 33,
+      "retry": 0,
+      "status": "passed",
+      "title": "saved historical award facts remain visible when current authoring policy is unavailable"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 38,
+      "retry": 0,
+      "status": "passed",
+      "title": "award save preserves source decimal strings and identities while the server check remains read-only"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 45,
+      "retry": 0,
+      "status": "passed",
+      "title": "award lost result keeps the exact pending save through later412 and recovers one effect"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 45,
+      "retry": 0,
+      "status": "passed",
+      "title": "award wrong-subject result keeps the exact pending save through later412 and recovers one effect"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 45,
+      "retry": 0,
+      "status": "passed",
+      "title": "award wrong-lineage result keeps the exact pending save through later412 and recovers one effect"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 52,
+      "retry": 0,
+      "status": "passed",
+      "title": "dated cost selection uses the effective revision instead of a future authoring head"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 57,
+      "retry": 0,
+      "status": "passed",
+      "title": "definitive stale award preserves authored fields for an explicit reviewed version"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 62,
+      "retry": 0,
+      "status": "passed",
+      "title": "rebase refuses a fetched current plan from another handoff while keeping authored input"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 66,
+      "retry": 0,
+      "status": "passed",
+      "title": "rebase rejects a wrong root handoff even when its returned plan consistently matches that wrong root"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 70,
+      "retry": 0,
+      "status": "passed",
+      "title": "a prior preview412 cannot rebase the local version during an in-flight save"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 74,
+      "retry": 0,
+      "status": "passed",
+      "title": "unknown handoff creation recovers its same key instead of reserving a second handoff"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 77,
+      "retry": 0,
+      "status": "passed",
+      "title": "award inputs, cost identity and keyboard stay inside workspace at 1440px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 77,
+      "retry": 0,
+      "status": "passed",
+      "title": "award inputs, cost identity and keyboard stay inside workspace at 900px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 77,
+      "retry": 0,
+      "status": "passed",
+      "title": "award inputs, cost identity and keyboard stay inside workspace at 390px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 91,
+      "retry": 0,
+      "status": "passed",
+      "title": "award toolbar exposes first action within bounds with supported keyboard overflow at 1440px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 91,
+      "retry": 0,
+      "status": "passed",
+      "title": "award toolbar exposes first action within bounds with supported keyboard overflow at 900px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 91,
+      "retry": 0,
+      "status": "passed",
+      "title": "award toolbar exposes first action within bounds with supported keyboard overflow at 390px"
+    },
+    {
+      "file": "awards.spec.ts",
+      "line": 95,
+      "retry": 0,
+      "status": "passed",
+      "title": "desktop to phone resize preserves a visible save action and supported return navigation"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 7,
+      "retry": 0,
+      "status": "passed",
+      "title": "company commercial creates a pursuit using an existing native party without Project requests"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 21,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal exact string editing preserves stable identity and compares saved native revisions"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 32,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal preserves original request through lost response and later permission denial"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 32,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal preserves original request through incomplete success and later permission denial"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 42,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal stale rejection preserves authored input for explicit reviewed rebase"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 52,
+      "retry": 0,
+      "status": "passed",
+      "title": "an unknown proposal retry412 keeps original recovery and hides local head rebasing"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 60,
+      "retry": 0,
+      "status": "passed",
+      "title": "commercial price columns align and keyboard input stays usable at 1440px"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 60,
+      "retry": 0,
+      "status": "passed",
+      "title": "commercial price columns align and keyboard input stays usable at 900px"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 60,
+      "retry": 0,
+      "status": "passed",
+      "title": "commercial price columns align and keyboard input stays usable at 390px"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 70,
+      "retry": 0,
+      "status": "passed",
+      "title": "commercial paste rejects invalid exact numbers without a write"
+    },
+    {
+      "file": "commercial.spec.ts",
+      "line": 76,
+      "retry": 0,
+      "status": "passed",
+      "title": "commercial scope denial contains no proposal lines or native totals"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 37,
+      "retry": 0,
+      "status": "passed",
+      "title": "copied exact review preserves authorized second Company through sign-in and never fetches inbox"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 47,
+      "retry": 0,
+      "status": "passed",
+      "title": "exact review refresh respects current403 and removes action controls without inbox reads"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 47,
+      "retry": 0,
+      "status": "passed",
+      "title": "exact review refresh respects current404 and removes action controls without inbox reads"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 54,
+      "retry": 0,
+      "status": "passed",
+      "title": "unavailable Company in copied review link does not fall back to the first Company or read packet"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 59,
+      "retry": 0,
+      "status": "passed",
+      "title": "ordinary Company inbox uses ten-row cursor pages without implying an exact total and exposes copyable links"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 67,
+      "retry": 0,
+      "status": "passed",
+      "title": "exact review lost grant stays mounted and recovers original payload through later denial"
+    },
+    {
+      "file": "company-approvals.spec.ts",
+      "line": 76,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company inbox keeps subject state and exact review controls inside nested workspace bounds at three widths"
+    },
+    {
+      "file": "company-context.spec.ts",
+      "line": 18,
+      "retry": 0,
+      "status": "passed",
+      "title": "copied second-Company award evidence link preserves exact Company and revision through sign-in"
+    },
+    {
+      "file": "company-context.spec.ts",
+      "line": 39,
+      "retry": 0,
+      "status": "passed",
+      "title": "unavailable Company in a copied document link fails before source detail, preview or byte requests"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 8,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.scope.draft preview binds full canonical original and outer receipt"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 27,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.scope.draft preview rejects changed original, expiry, payload and extra fields"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 41,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.scope.draft historical saved link remains readable after expiry, with no new save eligibility"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 8,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.estimate.draft preview binds full canonical original and outer receipt"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 27,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.estimate.draft preview rejects changed original, expiry, payload and extra fields"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 41,
+      "retry": 0,
+      "status": "passed",
+      "title": "aec.estimate.draft historical saved link remains readable after expiry, with no new save eligibility"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 50,
+      "retry": 0,
+      "status": "passed",
+      "title": "exact estimate quantities retain all twelve places and refuse rounding"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 59,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company estimate contracts refuse Project envelopes and full citation records as command inputs"
+    },
+    {
+      "file": "company-draft-save-validation.spec.ts",
+      "line": 66,
+      "retry": 0,
+      "status": "passed",
+      "title": "saved snapshot pins conversion definitions even without separate Stage B manifest rows"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 17,
+      "retry": 0,
+      "status": "passed",
+      "title": "human-reviewed scope saves one linked canonical draft"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 17,
+      "retry": 0,
+      "status": "passed",
+      "title": "human-reviewed estimate saves one linked canonical draft"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 33,
+      "retry": 0,
+      "status": "passed",
+      "title": "lost save retains original operation across denial and locks panel/navigation"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 33,
+      "retry": 0,
+      "status": "passed",
+      "title": "wrongReceipt save retains original operation across denial and locks panel/navigation"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "expired suggestion remains reviewable with save disabled"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "denyWrite suggestion remains reviewable with save disabled"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 59,
+      "retry": 0,
+      "status": "passed",
+      "title": "stale original head is rejected without a recovery lock or an invented saved draft"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 68,
+      "retry": 0,
+      "status": "passed",
+      "title": "draft review and explicit save remain usable at 390px"
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "line": 68,
+      "retry": 0,
+      "status": "passed",
+      "title": "draft review and explicit save remain usable at 900px"
+    },
+    {
+      "file": "company-ricky-navigation-guard.spec.ts",
+      "line": 4,
+      "retry": 0,
+      "status": "passed",
+      "title": "uncertain Company command keeps its original identity and mounted recovery through workspace controls"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "closed generated aec.scope.draft contract retains all common metadata and original linkage"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "closed generated aec.estimate.draft contract retains all common metadata and original linkage"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 26,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal selection rejects missing evidence, duplicate sources, unsupported fields and quantity IDs"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 35,
+      "retry": 0,
+      "status": "passed",
+      "title": "only the immutable queued Start and exact matching operation shape can admit a request"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 44,
+      "retry": 0,
+      "status": "passed",
+      "title": "source-free Stop stays narrow and cannot supply a full source-bearing observation"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "rehashed scope wrapper cannot replace original sections"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "rehashed scope wrapper cannot replace original dependencies"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "rehashed scope wrapper cannot replace original references"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 51,
+      "retry": 0,
+      "status": "passed",
+      "title": "rehashed scope wrapper cannot replace original document"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 61,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate preparation retains exact source IDs, target units and authored notes"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 71,
+      "retry": 0,
+      "status": "passed",
+      "title": "full original citation identity, not only citation hash fields, governs review"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 78,
+      "retry": 0,
+      "status": "passed",
+      "title": "terminal status/result pairing and exact result digest fail closed"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 86,
+      "retry": 0,
+      "status": "passed",
+      "title": "historical expiry does not erase valid original review or invent head eligibility"
+    },
+    {
+      "file": "company-ricky-proposals-validation.spec.ts",
+      "line": 93,
+      "retry": 0,
+      "status": "passed",
+      "title": "same-Person alias and Company pointers cannot reuse each other or old read pointers"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 8,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company saved-suggestion mode is explicit beside unchanged Company reads"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 16,
+      "retry": 0,
+      "status": "passed",
+      "title": "scope preparation retains authored sections, evidence and exact current working revision"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 30,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate preparation selects canonical saved quantities and renders exact rational values with original units"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 41,
+      "retry": 0,
+      "status": "passed",
+      "title": "lost Start response retains original UUID and blocks mode/close until exact queued replay"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 41,
+      "retry": 0,
+      "status": "passed",
+      "title": "terminal admission mismatch retains original UUID and blocks mode/close until exact queued replay"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 48,
+      "retry": 0,
+      "status": "passed",
+      "title": "lost source-free Stop retains original UUID while denied full reads cannot be initialized by its narrow receipt"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 55,
+      "retry": 0,
+      "status": "passed",
+      "title": "current source denial removes an observed suggestion while terminal Stop never claims cancellation"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 62,
+      "retry": 0,
+      "status": "passed",
+      "title": "changed terminal Run fails closed after a valid original observation"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 62,
+      "retry": 0,
+      "status": "passed",
+      "title": "changed terminal suggestion fails closed after a valid original observation"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 69,
+      "retry": 0,
+      "status": "passed",
+      "title": "historical estimate review uses the retained base after its working head advances"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 74,
+      "retry": 0,
+      "status": "passed",
+      "title": "same-Person alias reload and Company switch do not reopen another identity pointer"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 81,
+      "retry": 0,
+      "status": "passed",
+      "title": "official suggestion controls and readable review fit 1440px"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 81,
+      "retry": 0,
+      "status": "passed",
+      "title": "official suggestion controls and readable review fit 900px"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 81,
+      "retry": 0,
+      "status": "passed",
+      "title": "official suggestion controls and readable review fit 390px"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 89,
+      "retry": 0,
+      "status": "passed",
+      "title": "changed selected working head is refused before any suggestion command"
+    },
+    {
+      "file": "company-ricky-proposals.spec.ts",
+      "line": 95,
+      "retry": 0,
+      "status": "passed",
+      "title": "long authored review text and optional integrity details remain contained on phone"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 6,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company run gate refuses changed Company, run, scope and model standing"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 10,
+      "retry": 0,
+      "status": "passed",
+      "title": "source-free Stop has its own exact scope and terminal identity gate"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 15,
+      "retry": 0,
+      "status": "passed",
+      "title": "browser pointers isolate exact native User, Person and Company without delimiter ambiguity"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 18,
+      "retry": 0,
+      "status": "passed",
+      "title": "event inventory rejects wrong run, wrong action, duplicates and malformed rows without throwing"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 24,
+      "retry": 0,
+      "status": "passed",
+      "title": "selected payload equality preserves primitive types, array order and exact closed field inventory"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 28,
+      "retry": 0,
+      "status": "passed",
+      "title": "result linkage binds the original selected pursuit and rejects successful null output"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 34,
+      "retry": 0,
+      "status": "passed",
+      "title": "Stop rejects source-bearing extras and a terminal status with a contradictory cancellation flag"
+    },
+    {
+      "file": "company-ricky-validation.spec.ts",
+      "line": 38,
+      "retry": 0,
+      "status": "passed",
+      "title": "queued or failed partial result and inconsistent completion cannot become a positive observation"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 46,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company deterministic pursuit run uses explicit selection and never calls a model or Project action"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 49,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company lost start preserves exact mounted UUID/payload recovery"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 49,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company wrong start preserves exact mounted UUID/payload recovery"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 52,
+      "retry": 0,
+      "status": "passed",
+      "title": "restored pointer with denied original sources hides contents and retains source-free Stop"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 55,
+      "retry": 0,
+      "status": "passed",
+      "title": "aggregate Project Ricky capability cannot grant Company Ricky access"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 59,
+      "retry": 0,
+      "status": "passed",
+      "title": "later original-source denial removes displayed result and keeps Stop independent of full reads"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 62,
+      "retry": 0,
+      "status": "passed",
+      "title": "copied unavailable Company query emits no Company Ricky or source RPC"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 67,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company deterministic recompute uses exact saved-source IDs and string output"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 67,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company deterministic compare uses exact saved-source IDs and string output"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 67,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company deterministic convert uses exact saved-source IDs and string output"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 74,
+      "retry": 0,
+      "status": "passed",
+      "title": "canonical Company citation is selected unchanged and opens its exact Company-bound source"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 77,
+      "retry": 0,
+      "status": "passed",
+      "title": "measurement conversion explicitly binds the same selected measurement ID"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 80,
+      "retry": 0,
+      "status": "passed",
+      "title": "late old-Company full response never appears after explicit authorized Company switch"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 85,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company Ricky public controls remain visible and keyboard usable at 1440px"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 85,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company Ricky public controls remain visible and keyboard usable at 900px"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 85,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company Ricky public controls remain visible and keyboard usable at 390px"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 89,
+      "retry": 0,
+      "status": "passed",
+      "title": "unknown Stop stays reachable after a later full terminal read"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 92,
+      "retry": 0,
+      "status": "passed",
+      "title": "coherent same-ID selection and result substitution is refused against original mounted expectation"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 96,
+      "retry": 0,
+      "status": "passed",
+      "title": "changing estimate clears stale comparison revision and blocks a new request until a current choice exists"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 99,
+      "retry": 0,
+      "status": "passed",
+      "title": "quantity target choices exclude a currently qualified unit absent from the exact saved source manifest"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 102,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company panel loads pinned local SAP72 font and makes no external asset requests"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 106,
+      "retry": 0,
+      "status": "passed",
+      "title": "authorized pursuit choices beyond first page remain discoverable and bind the selected exact ID"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 110,
+      "retry": 0,
+      "status": "passed",
+      "title": "retained terminal Company observation refuses later result substitution"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 110,
+      "retry": 0,
+      "status": "passed",
+      "title": "retained terminal Company observation refuses later regression substitution"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 110,
+      "retry": 0,
+      "status": "passed",
+      "title": "retained terminal Company observation refuses later completion substitution"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 110,
+      "retry": 0,
+      "status": "passed",
+      "title": "retained terminal Company observation refuses later error substitution"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 110,
+      "retry": 0,
+      "status": "passed",
+      "title": "retained terminal Company observation refuses later cancel substitution"
+    },
+    {
+      "file": "company-ricky.spec.ts",
+      "line": 113,
+      "retry": 0,
+      "status": "passed",
+      "title": "a coherent completed Start response remains unknown until exact queued admission replay"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 7,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company estimate title and actions remain usable at 1440px"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 7,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company estimate title and actions remain usable at 900px"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 7,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company estimate title and actions remain usable at 390px"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 27,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company estimate loads and calculates exact lines without Project authority parameters"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 34,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company unknown calculation keeps exact recovery reachable through later412 without exposing rebase"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 43,
+      "retry": 0,
+      "status": "passed",
+      "title": "a successful operation UUID with wrong estimate subject remains unknown until matching replay"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 48,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company upload recovery uses retained bytes after the local File becomes unreadable"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 56,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company source text remains literal and source preview uses Company endpoint"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 61,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company source revision links open the exact owned stored revision"
+    },
+    {
+      "file": "company.spec.ts",
+      "line": 66,
+      "retry": 0,
+      "status": "passed",
+      "title": "a foreign Company revision link never reads bytes or preview under the wrong document title"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 12,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost register distinguishes dated revision from future authoring head and reads the exact head before a successor"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 16,
+      "retry": 0,
+      "status": "passed",
+      "title": "new canonical cost code uses an existing native target and exposes its saved future effective date"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 19,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost lost response preserves original request through a later denial and recovers one revision"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 19,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost wrongParent response preserves original request through a later denial and recovers one revision"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 22,
+      "retry": 0,
+      "status": "passed",
+      "title": "definitive stale cost head preserves authored inputs and requires explicit review of the new exact head"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 25,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost read access can inspect exact historical native facts without native setup choices or authoring"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 28,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost setup refuses missing Company cost-read access before a controls or native selector request"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 31,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 1440px"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 31,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 900px"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 31,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost setup official responsive table, dialog actions and keyboard remain usable at 390px"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 36,
+      "retry": 0,
+      "status": "passed",
+      "title": "component cost type requires an explicit cost category and preserves its existing expense Account"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 40,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 43,
+      "retry": 0,
+      "status": "passed",
+      "title": "mounted unknown cost recovery remains reachable after current write permission is lost"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 47,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost current head rejects a revision number inconsistent with its authoritative master header"
+    },
+    {
+      "file": "cost-masters.spec.ts",
+      "line": 47,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost rebase head rejects a revision number inconsistent with its authoritative master header"
+    },
+    {
+      "file": "cost-presentation.spec.ts",
+      "line": 4,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost navigation renders bundled Horizon icons and SAP 72 fonts without external assets"
+    },
+    {
+      "file": "cost-presentation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost accounting target and status have separate spacing and plain version wording at 1440px"
+    },
+    {
+      "file": "cost-presentation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost accounting target and status have separate spacing and plain version wording at 900px"
+    },
+    {
+      "file": "cost-presentation.spec.ts",
+      "line": 13,
+      "retry": 0,
+      "status": "passed",
+      "title": "cost accounting target and status have separate spacing and plain version wording at 390px"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 12,
+      "retry": 0,
+      "status": "passed",
+      "title": "saved fixture instruction chooses a canonical issued subset and remains discoverable after leaving its deep URL"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 15,
+      "retry": 0,
+      "status": "passed",
+      "title": "instruction lost then current-right denial retains exact payload and UUID"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 15,
+      "retry": 0,
+      "status": "passed",
+      "title": "instruction wrong-parent then current-right denial retains exact payload and UUID"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 18,
+      "retry": 0,
+      "status": "passed",
+      "title": "independent fixture distribution review opens the exact body and issued PDF before separate queue authorization"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 21,
+      "retry": 0,
+      "status": "passed",
+      "title": "malformed dispatch lineage success and later denial recover the original queue authorization only once"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 21,
+      "retry": 0,
+      "status": "passed",
+      "title": "malformed dispatch domain action success and later denial recover the original queue authorization only once"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 24,
+      "retry": 0,
+      "status": "passed",
+      "title": "partial acknowledgment survives stop response loss, denial and exact same-key stop recovery"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 27,
+      "retry": 0,
+      "status": "passed",
+      "title": "Unknown delivery means original-key fixture readback pending without a replacement dispatch action"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 30,
+      "retry": 0,
+      "status": "passed",
+      "title": "explicit denied instruction refresh removes cached message, recipients and PDF review controls"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 33,
+      "retry": 0,
+      "status": "passed",
+      "title": "configured fixture profile does not claim worker health and disabled profile preserves read-only records"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 36,
+      "retry": 0,
+      "status": "passed",
+      "title": "distribution authoring retains keyboard focus and page bounds at desktop tablet and phone widths"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 39,
+      "retry": 0,
+      "status": "passed",
+      "title": "a mismatched instruction version in the manifest blocks independent distribution approval"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 44,
+      "retry": 0,
+      "status": "passed",
+      "title": "refresh cannot display a fixture acknowledgment for a recipient outside the approved instruction"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 49,
+      "retry": 0,
+      "status": "passed",
+      "title": "refreshed copied-recipient receipts cannot count as exact recipient fixture acknowledgments"
+    },
+    {
+      "file": "distribution.spec.ts",
+      "line": 49,
+      "retry": 0,
+      "status": "passed",
+      "title": "refreshed missing-expectations receipts cannot count as exact recipient fixture acknowledgments"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 11,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate editing sends exact text and recovers one original saved revision"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 34,
+      "retry": 0,
+      "status": "passed",
+      "title": "stale estimate preserves authored edits through explicit review and rebase"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 52,
+      "retry": 0,
+      "status": "passed",
+      "title": "paste is atomic and invalid decimals never reach calculation"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 66,
+      "retry": 0,
+      "status": "passed",
+      "title": "source inspection opens the exact cited text"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 76,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate numeric columns align at 1440px without page overflow"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 76,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate numeric columns align at 900px without page overflow"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 76,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate numeric columns align at 390px without page overflow"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 91,
+      "retry": 0,
+      "status": "passed",
+      "title": "estimate denial exposes no source rows or calculated totals"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 98,
+      "retry": 0,
+      "status": "passed",
+      "title": "new estimate requires explicit currency and opens its persisted draft"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 111,
+      "retry": 0,
+      "status": "passed",
+      "title": "create recovery retains exact request after lost following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 111,
+      "retry": 0,
+      "status": "passed",
+      "title": "create recovery retains exact request after malformed-json following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 111,
+      "retry": 0,
+      "status": "passed",
+      "title": "create recovery retains exact request after malformed-contract following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 111,
+      "retry": 0,
+      "status": "passed",
+      "title": "create recovery retains exact request after malformed-receipt following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 111,
+      "retry": 0,
+      "status": "passed",
+      "title": "create recovery retains exact request after server-error following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 132,
+      "retry": 0,
+      "status": "passed",
+      "title": "calculation recovery retains exact request after malformed-json following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 132,
+      "retry": 0,
+      "status": "passed",
+      "title": "calculation recovery retains exact request after malformed-contract following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 132,
+      "retry": 0,
+      "status": "passed",
+      "title": "calculation recovery retains exact request after malformed-receipt following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 132,
+      "retry": 0,
+      "status": "passed",
+      "title": "calculation recovery retains exact request after server-error following one effect"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 144,
+      "retry": 0,
+      "status": "passed",
+      "title": "definitive create rejection unlocks correction with a new operation"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 158,
+      "retry": 0,
+      "status": "passed",
+      "title": "create remains unknown after a recovery permission denial until original receipt resolves"
+    },
+    {
+      "file": "estimating.spec.ts",
+      "line": 173,
+      "retry": 0,
+      "status": "passed",
+      "title": "calculation remains unknown after a recovery permission denial until original receipt resolves"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "users sign in and sign out within Cipher using the real auth contract"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 20,
+      "retry": 0,
+      "status": "passed",
+      "title": "server cursors page the register without exposing a previous page as current"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 31,
+      "retry": 0,
+      "status": "passed",
+      "title": "disconnected workspace never substitutes fixture records"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 39,
+      "retry": 0,
+      "status": "passed",
+      "title": "project register filters and opens the actual ObjectPage"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 56,
+      "retry": 0,
+      "status": "passed",
+      "title": "task creation recovers a lost response using the original operation"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 70,
+      "retry": 0,
+      "status": "passed",
+      "title": "stale task source reports a conflict without success"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 80,
+      "retry": 0,
+      "status": "passed",
+      "title": "upload sends exact bytes and preview renders source as text"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 96,
+      "retry": 0,
+      "status": "passed",
+      "title": "Ricky unavailable state leaves manual project work usable"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 105,
+      "retry": 0,
+      "status": "passed",
+      "title": "cited Ricky proposal requires review then updates project tasks"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 122,
+      "retry": 0,
+      "status": "passed",
+      "title": "phone layout keeps navigation and project controls usable"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 149,
+      "retry": 0,
+      "status": "passed",
+      "title": "table columns remain aligned across project, document and assistant layouts"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 165,
+      "retry": 0,
+      "status": "passed",
+      "title": "project status requires independent review and recovers execution with the original key"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 213,
+      "retry": 0,
+      "status": "passed",
+      "title": "expired sessions remove project context and return to in-app authentication"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 230,
+      "retry": 0,
+      "status": "passed",
+      "title": "stale approval sources remove decision actions without reporting a grant"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 251,
+      "retry": 0,
+      "status": "passed",
+      "title": "document HTTP 403 keeps approvals usable and offers only recoverable retries"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 251,
+      "retry": 0,
+      "status": "passed",
+      "title": "document HTTP 404 keeps approvals usable and offers only recoverable retries"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 251,
+      "retry": 0,
+      "status": "passed",
+      "title": "document HTTP 503 keeps approvals usable and offers only recoverable retries"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 272,
+      "retry": 0,
+      "status": "passed",
+      "title": "shared approval inbox renders domain manifests without invented project status effects"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 285,
+      "retry": 0,
+      "status": "passed",
+      "title": "desktop-to-phone resize closes the navigation overlay and phone selections return focusable content"
+    },
+    {
+      "file": "product.spec.ts",
+      "line": 301,
+      "retry": 0,
+      "status": "failed",
+      "title": "packaged static assets preserve exact SVG and dependency notice bytes"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 9,
+      "retry": 0,
+      "status": "passed",
+      "title": "Company proposal source choices attach server citation and accepted-reference digests with no Project authority"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 15,
+      "retry": 0,
+      "status": "passed",
+      "title": "prepared proposal PDF uses canonical authorized bytes and freezes recipients and cover for its saved revision"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 20,
+      "retry": 0,
+      "status": "passed",
+      "title": "prepared output recovers exact original bytes-bound request after lost and later denial"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 20,
+      "retry": 0,
+      "status": "passed",
+      "title": "prepared output recovers exact original bytes-bound request after wrong-subject and later denial"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 24,
+      "retry": 0,
+      "status": "passed",
+      "title": "definitive stale output rejection preserves cover for reviewed correction and a new operation"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 28,
+      "retry": 0,
+      "status": "passed",
+      "title": "proposal issue reviews the exact prepared PDF independently and preserves a not-sent issued snapshot"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 35,
+      "retry": 0,
+      "status": "passed",
+      "title": "denied 403 output refresh hides cached prepared PDF and issue controls after preparation"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 35,
+      "retry": 0,
+      "status": "passed",
+      "title": "denied 404 output refresh hides cached prepared PDF and issue controls after preparation"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 40,
+      "retry": 0,
+      "status": "passed",
+      "title": "a wrong-subject prepared PDF manifest cannot authorize independent Issue"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 44,
+      "retry": 0,
+      "status": "passed",
+      "title": "a long proposal title retains readable phone width and reachable actions after desktop resize"
+    },
+    {
+      "file": "proposal-output.spec.ts",
+      "line": 48,
+      "retry": 0,
+      "status": "passed",
+      "title": "phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar"
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "line": 10,
+      "retry": 0,
+      "status": "passed",
+      "title": "saved measurement uses compact exact quantity, authorized revision choices and readable impact labels"
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "line": 21,
+      "retry": 0,
+      "status": "passed",
+      "title": "uncertain evidence binding locks saved revision and line choices and replays exact original identity"
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "line": 27,
+      "retry": 0,
+      "status": "passed",
+      "title": "inspecting a saved rectangle restores its stored outline after the tool starts as a segment"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "PDF selection inverts native rotation 0, crop, view rotation, zoom, CSS scale and DPR"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "PDF selection inverts native rotation 90, crop, view rotation, zoom, CSS scale and DPR"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "PDF selection inverts native rotation 180, crop, view rotation, zoom, CSS scale and DPR"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 5,
+      "retry": 0,
+      "status": "passed",
+      "title": "PDF selection inverts native rotation 270, crop, view rotation, zoom, CSS scale and DPR"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 26,
+      "retry": 0,
+      "status": "passed",
+      "title": "a denied new drawing source hides every pixel of the previous source"
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "line": 34,
+      "retry": 0,
+      "status": "passed",
+      "title": "PDF bytes with a different SHA cannot render or accept drawing points"
+    }
+  ],
+  "native_execution_by_child": false,
+  "no_full_rerun": true,
+  "schema": "cipher.company-activity.composed-qualification.v2",
+  "source_composition": {
+    "all_13_generated_types_byte_identical": true,
+    "all_other_production_and_old_tests_unchanged": true,
+    "backend_byte_identical": true,
+    "sole_production_delta_from_v1": "CompanyActivity remount key includes sorted full capabilities",
+    "source_inventory_sha256": "b2a6cb181cdfcd7390f33706f0570855dc791e7801ca2f28a99a190e6c0617ee"
+  },
+  "status": "passed_composed_exact_source_with_original_failure_retained",
+  "unchanged_pre_r16_cases": 239,
+  "unchanged_static_confirmation": {
+    "case": {
+      "file": "product.spec.ts",
+      "line": 301,
+      "retry": 0,
+      "status": "passed",
+      "title": "packaged static assets preserve exact SVG and dependency notice bytes"
+    },
+    "dist_binding": "/dev/shm/cipher-history-ui-r16/dist",
+    "passed": 1,
+    "report": "/dev/shm/cipher-history-ui-r16/static-assets-confirmation-v1-attempt2/report.json",
+    "sha256": "afb3f197718aa447f31fe4ed8f9c58d87e75413226076737fab1176b30cc267c"
+  }
+}

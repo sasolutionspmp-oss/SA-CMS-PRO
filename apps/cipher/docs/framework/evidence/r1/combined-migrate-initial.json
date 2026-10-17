@@ -1,0 +1,13 @@
+{
+  "schema": "cipher.migration-attempt.v1",
+  "status": "failed",
+  "site": "cipher.localhost",
+  "recorded_at": "2026-10-15T15:59:36.594799+00:00",
+  "command": "bench --site cipher.localhost migrate",
+  "exit_code": 1,
+  "duration_seconds": 7.145,
+  "failure": "MySQL1146: Cipher Proposal Revision table absent when commercial after_migrate attempted its unique index; new module DocTypes were not synchronized.",
+  "private_log": "/tmp/cipher-r0-runtime/r1-combined-migrate.log",
+  "log_sha256": "b8536251c897b3d3e407a5abdbe4e224fc1523aa5a448529a781260c27e7069f",
+  "action": "Backend owner investigating module discovery before retry; no seed, cleanup, rollback of unrelated work or acceptance claim."
+}

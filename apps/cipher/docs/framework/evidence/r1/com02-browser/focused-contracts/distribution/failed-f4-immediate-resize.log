@@ -1,0 +1,62 @@
+[WebServer] (node:673614) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 3 tests using 1 worker
+
+(node:673638) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:13:13 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  1) tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar 
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.press: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByRole('option', { name: '50%', exact: true })
+
+
+      47 |
+      48 | test('phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar', async ({ page }) => {
+    > 49 |   await mockProposalOutput(page); await page.goto(path); await fill(page); await page.getByRole('button', { name: 'Prepare exact proposal PDF', exact: true }).click(); const canvas = page.locator('.proposal-output canvas[aria-label="Authorized stored PDF page"]'); await expect(canvas).toBeVisible(); await page.setViewportSize({ width: 390, height: 1000 }); const zoom = page.getByRole('combobox', { name: 'Drawing zoom', exact: true }); await expect(zoom).toBeVisible(); const control = (await zoom.boundingBox())!; expect(control.x).toBeGreaterThanOrEqual(0); expect(control.x + control.width).toBeLessThanOrEqual(390); await zoom.press('F4'); await page.getByRole('option', { name: '50%', exact: true }).press('Enter'); await expect.poll(async () => (await canvas.boundingBox())?.width || 0).toBeCloseTo(260, 0); await page.getByRole('button', { name: 'Rotate view', exact: true }).press('Enter'); await expect.poll(async () => (await canvas.boundingBox())?.width || 0).toBeCloseTo(170, 0); expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     ^
+      50 | });
+      51 |
+        at /workspace/cipher-framework-draft/apps/cipher/product/tests/proposal-output.spec.ts:49:709
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/proposal-output-phone-prep-b9ab3-rols-in-the-visible-toolbar/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results/proposal-output-phone-prep-b9ab3-rols-in-the-visible-toolbar/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/proposal-output-phone-prep-b9ab3-rols-in-the-visible-toolbar/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/proposal-output-phone-prep-b9ab3-rols-in-the-visible-toolbar/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:674386) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:13:59 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+(node:674617) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:14:06 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  1 failed
+    tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar 
+  2 passed (1.0m)

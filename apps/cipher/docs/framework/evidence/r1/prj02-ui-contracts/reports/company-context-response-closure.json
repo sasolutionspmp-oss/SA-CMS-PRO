@@ -1,0 +1,209 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/award-cost-final.config.mjs",
+      "company-context.spec.ts",
+      "--output=/tmp/cipher-completion/prj02-ui/context-response-final-results",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/award-cost-final.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/context-response-final-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "awards.spec.ts",
+          "commercial.spec.ts",
+          "proposal-output.spec.ts",
+          "company-approvals.spec.ts",
+          "company.spec.ts",
+          "company-context.spec.ts",
+          "award-effect.spec.ts",
+          "cost-masters.spec.ts"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/context-response-final-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "awards.spec.ts",
+          "commercial.spec.ts",
+          "proposal-output.spec.ts",
+          "company-approvals.spec.ts",
+          "company.spec.ts",
+          "company-context.spec.ts",
+          "award-effect.spec.ts",
+          "cost-masters.spec.ts"
+        ],
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "company-context.spec.ts",
+      "file": "company-context.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "copied second-Company award evidence link preserves exact Company and revision through sign-in",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2158,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:51:05.897Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1f7e868833b8f3c1f3a8-d2dad75833a7db06b905",
+          "file": "company-context.spec.ts",
+          "line": 18,
+          "column": 1
+        },
+        {
+          "title": "unavailable Company in a copied document link fails before source detail, preview or byte requests",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1743,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:51:08.268Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "1f7e868833b8f3c1f3a8-dc338d4d9e3aee18bf71",
+          "file": "company-context.spec.ts",
+          "line": 39,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:51:04.504Z",
+    "duration": 5609.326999999999,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

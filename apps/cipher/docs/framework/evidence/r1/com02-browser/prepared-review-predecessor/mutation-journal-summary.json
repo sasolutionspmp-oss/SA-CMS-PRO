@@ -1,0 +1,20 @@
+{
+  "attempt": "5db3796a-1d0b-494e-a4b0-ae552d3f0290",
+  "private_journal": "/tmp/cipher-r0-runtime/com02-ui-5db3796a-1d0b-494e-a4b0-ae552d3f0290.private.jsonl",
+  "mutations": [
+    {
+      "at": "2026-10-15T20:22:44.887Z",
+      "stage": "request independent exact-PDF Issue review",
+      "path": "/api/method/cipher_aec.api.company_approvals.request_action",
+      "operation_id": "a6f57d52-9169-4343-b940-d95631f5077f",
+      "raw_payload_sha256": "bcd9cfc824b38e200e4a0292108cc67e67aa7865784d17acea6586a88c85dcd3"
+    },
+    {
+      "at": "2026-10-15T20:23:15.181Z",
+      "stage": "independent reviewer views manifest-bound PDF and grants",
+      "path": "/api/method/cipher_aec.api.company_approvals.decide_packet",
+      "operation_id": "9c70f96f-41c9-4742-90f7-0f791f6e2ab5",
+      "raw_payload_sha256": "eb9e620877167a40d5e1194ed3957c6bbaae12e669c9ebecf4863f573fb64661"
+    }
+  ]
+}

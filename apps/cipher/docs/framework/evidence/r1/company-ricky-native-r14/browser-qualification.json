@@ -1,0 +1,38 @@
+{
+  "schema": "cipher.company-proposal-ui-r14.composed-qualification.v1",
+  "status": "passed_composed",
+  "manifest_sha256": "ae1298e3e307cda21ea72e3575b6911c206b544eb80a1b743efb752ff28dc3fd",
+  "source_unchanged": true,
+  "production_build_passed": true,
+  "build_log_sha256": "8210f06b295283a16afd629b2efb3b59689f400202f5d7a474bb9581bcd9bdd5",
+  "distinct_browser_cases": 220,
+  "full_run": {
+    "stats": {
+      "startTime": "2026-10-16T08:41:32.204Z",
+      "duration": 657267.285,
+      "expected": 219,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "sha256": "ab16a33dfa0a609934e7f19fe00aca250da5d027b8a1ec80e0282083ccfb252c",
+    "failed_case": "proposal-output.spec.ts:29",
+    "error": "locator.click: Target crashed"
+  },
+  "focused_failed_case": {
+    "stats": {
+      "startTime": "2026-10-16T08:53:28.864Z",
+      "duration": 14387.861,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "sha256": "50b1b6d3ff3ccb0abc874a2383e462eefbbfa730217089f92d1a5f336b17601b"
+  },
+  "retries": 0,
+  "claim": "219 passing complete-suite cases plus the single isolated passing crash case; not a fresh single 220/220 run.",
+  "earlier_configuration_attempts_retained": true,
+  "actual_backend_captures_qualified": false,
+  "qualification_epoch": "Mocked contract/browser qualification before actual backend captures; connected results in ui/verification.json."
+}

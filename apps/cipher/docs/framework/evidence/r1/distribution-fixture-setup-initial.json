@@ -1,0 +1,14 @@
+{
+  "schema": "cipher.r1.distribution-fixture-setup-failure.v1",
+  "status": "failed",
+  "recorded_at": "2026-10-15T18:47:18.129227+00:00",
+  "stage": "set-config cipher_distribution_fixture_enabled true --parse",
+  "error_type": "ValueError",
+  "error": "malformed node or string on line 1: Name(id='true', ctx=Load())",
+  "cause": "Pinned Frappe --parse uses ast.literal_eval and requires Python boolean True.",
+  "following_commands_executed": false,
+  "policy_install_attempted": false,
+  "company_duty_grant_attempted": false,
+  "log_sha256": "0a7bf9806862a3e56510c7493255f2dcaf6f10383bc016ee160b07ac4a7e2a30",
+  "correction": "Use literal True with the same supported set-config entry point; retain independent after-setup policy/duty preservation checks."
+}

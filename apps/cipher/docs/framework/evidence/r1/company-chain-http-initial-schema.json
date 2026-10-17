@@ -1,0 +1,318 @@
+{
+  "calibrated_company_takeoff_qualified": false,
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "request_id": "ce6c33e4-66a6-4fb5-afc9-0b39b2da61dd",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.121977Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "request_id": "aa0ba6b8-6880-4494-b123-bf30003ae7e4",
+      "role": "alias",
+      "server_time": "2026-10-15T17:15:09.241867Z"
+    },
+    {
+      "error_code": "operation_conflict",
+      "http_status": 409,
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "request_id": "752dff97-85ca-4aad-b735-c08a74eb41db",
+      "role": "alias",
+      "server_time": "2026-10-15T17:15:09.254915Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.get_citation",
+      "request_id": "064cb28e-a769-4182-9c5c-57f6c42fbf15",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.273201Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.preview_revision",
+      "request_id": "78e1322b-439e-4a65-b284-2dc4462cbe64",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.287149Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.search_documents",
+      "request_id": "1f56e8ff-f632-4ccc-91b9-f8e889b669be",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.323900Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.company_api.get_document",
+      "request_id": "ebe2c065-8bfd-4339-ad77-d81b521ed52b",
+      "role": "outsider",
+      "server_time": "2026-10-15T17:15:09.485846Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "request_id": "61643fcd-5909-41ca-a8c4-91935954390a",
+      "role": "outsider",
+      "server_time": "2026-10-15T17:15:09.492536Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.company_api.get_document",
+      "request_id": "b3a76264-5eb3-4896-890c-874278469f32",
+      "role": "project_only",
+      "server_time": "2026-10-15T17:15:09.604967Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.company_api.list_documents",
+      "request_id": "893a4c77-7904-472c-8b40-05b2252c5b9e",
+      "role": "project_only",
+      "server_time": "2026-10-15T17:15:09.610395Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.company_api.get_document",
+      "request_id": "f7b76f5f-581a-4a69-bfa6-807c023895f5",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.614752Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.documents.api.get_document",
+      "request_id": "71c00ade-a30e-4699-ba07-2fb8af44cc48",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.620057Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.commercial.api.create_pursuit",
+      "request_id": "902d7caa-218d-4da1-8cfb-8becd1e90b44",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.759981Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "request_id": "dde6f8e5-60f5-469b-9500-270d058319dd",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.860448Z"
+    },
+    {
+      "error_code": "not_found",
+      "http_status": 404,
+      "method": "cipher_aec.estimating.company_api.create_rate",
+      "request_id": "95856a82-e616-4d9c-a114-2584c382efb1",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.893891Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.create_estimate",
+      "request_id": "ee7571ff-151f-42fd-9522-badb473ca96a",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:09.955849Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "request_id": "46843a22-a68f-4341-978b-cf7151ff52cd",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:10.132707Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "request_id": "4bbdc091-2baf-4d50-91ba-7c821d2112da",
+      "role": "alias",
+      "server_time": "2026-10-15T17:15:10.298698Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "request_id": "92195f81-7699-4ba1-b03c-c27141259003",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:10.351676Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "request_id": "b0f24a46-5485-4362-997e-2d600d52f553",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:10.545840Z"
+    },
+    {
+      "error_code": "independent_estimate_required",
+      "http_status": 403,
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "request_id": "20200e16-88b6-4c85-932f-e5fea2d9de5b",
+      "role": "alias",
+      "server_time": "2026-10-15T17:15:10.615872Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "request_id": "2ff73628-1d8c-4119-be85-469cb75d3d97",
+      "role": "reviewer",
+      "server_time": "2026-10-15T17:15:10.936225Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "request_id": "339fc0ac-77c2-43a7-b0e6-ec9a71e81709",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.383868Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "request_id": "cc99d5ea-b2d1-46d6-889c-d499df92420d",
+      "role": "alias",
+      "server_time": "2026-10-15T17:15:11.456467Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.masters.parties",
+      "request_id": "1c2282fa-2fe0-4779-9130-ee56ae1d5528",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.471155Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.masters.price_lists",
+      "request_id": "92a253b4-8990-4a1b-9016-0e1414fff07e",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.493365Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.masters.units",
+      "request_id": "05521f50-d8f9-4338-9744-f9854f85faa8",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.503446Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.masters.currencies",
+      "request_id": "f72ff17a-d747-456c-bc2e-5e2468d19e98",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.513698Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.masters.items",
+      "request_id": "3f3fffeb-5a61-446c-91e2-790dffbb220b",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.527952Z"
+    },
+    {
+      "byte_length": 220,
+      "http_status": 200,
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "original_sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b",
+      "role": "author"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "request_id": "7aef55b3-2b20-49d4-bcdc-441014b9ae3b",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.684460Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.request_action",
+      "request_id": "a07700d6-f9d1-46cb-9d38-c37a02141a42",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:11.863299Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.decide_packet",
+      "request_id": "2337b1cb-70a0-4025-a0c5-17a350815933",
+      "role": "reviewer",
+      "server_time": "2026-10-15T17:15:12.145884Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "request_id": "7fde09d2-e554-4050-99db-134dcd40d689",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:12.303296Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "request_id": "5aabb462-e31e-4552-927b-47e410a0c11d",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:12.401044Z"
+    },
+    {
+      "error_code": "approval_not_executable",
+      "http_status": 409,
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "request_id": "e7ea34ac-946f-4c52-9085-c488f7966626",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:12.499858Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "request_id": "7ff8ac86-ab45-4b00-b0bd-ccaa651093c1",
+      "role": "author",
+      "server_time": "2026-10-15T17:15:12.583004Z"
+    }
+  ],
+  "checks": [
+    "actual_company_bytes_pages_citations_search_and_canonical_alias_replay",
+    "company_project_namespaces_and_foreign_company_authority_are_isolated",
+    "pursuit_linked_company_manual_estimate_exact30_85_and_single_calculation_retry",
+    "independent_company_human_review_and_one_accepted_baseline_consumption"
+  ],
+  "commercial_issue_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "completed_at": "2026-10-15T17:15:12.588077+00:00",
+  "external_provider_qualified": false,
+  "failure_type": "AssertionError",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "live_model_qualified": false,
+  "master_selectors": {
+    "currencies": {
+      "exact_count": 1,
+      "returned_target": "USD"
+    },
+    "items": {
+      "exact_count": 1,
+      "returned_target": "CHAIN-a-20b85fd4edd2"
+    },
+    "parties": {
+      "exact_count": 1,
+      "returned_target": "Company chain customer a 20b85fd4edd2"
+    },
+    "price_lists": {
+      "exact_count": 1,
+      "returned_target": "Company chain selling a 20b85fd4edd2"
+    },
+    "units": {
+      "exact_count": 1,
+      "returned_target": "Company chain quantity 20b85fd4edd2"
+    }
+  },
+  "original_attachment": {
+    "byte_length": 220,
+    "sha256": "ada77259b1e3d2bb3d7336779577660ae087ff1a1b43b20e48d7abdd32b5d18b"
+  },
+  "qualification": "Actual authenticated cookie/CSRF Company DOC/manual EST/human grant endpoints; no calibrated geometry or COM issue claim.",
+  "schema": "cipher.r1.company-manual-http-acceptance.v1",
+  "schema_samples": 40,
+  "started_at": "2026-10-15T17:15:08.552526+00:00",
+  "status": "failed"
+}

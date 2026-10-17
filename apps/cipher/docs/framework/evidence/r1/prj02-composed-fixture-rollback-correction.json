@@ -1,0 +1,24 @@
+{
+  "corrections": [
+    "same-connection full SQL comparison before harness rollback via helper with no rollback/commit",
+    "required Version/File/Document Follow/Item Price/Payment Schedule inventory",
+    "callback/local intent prefix object identity",
+    "native rollback root release manifest/source equality before and after",
+    "SQLite negative case retains row until separate harness cleanup"
+  ],
+  "local_checks": {
+    "native_runtime_executed": false,
+    "seconds": 0.002,
+    "unique_artifact_tests": 5
+  },
+  "preserved_original": "prj02-composed-fixture-source.json",
+  "qualification": "Fixture correction/local tests only; no native award, actual HTTP Grant/execute or composed rollback qualified. Final served product source manifest bound only on root release.",
+  "recorded_at": "2026-10-15T22:44:40.067866+00:00",
+  "schema": "cipher.award.composed-fixture-correction.v1",
+  "source_sha256": {
+    "apps/cipher/docs/framework/PRJ02_COMPOSED_ACCEPTANCE_PLAN.md": "dcde367786be5a2e3212cb4f2d7cb9a9d80ac43bc65d1894d55f274c3e4ee86e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_acceptance_driver.py": "348e38ee7e08c79d86a8ca44628b20aea89554c6d4b7f1a795c66c415643fb30",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_composed_acceptance.py": "2a8303bb698d9725922c2366af3ba60f6b28969fb5c60675cfe1c610c591d6f0"
+  },
+  "status": "source_corrected_pending_review_runtime_unexecuted"
+}

@@ -1,0 +1,8 @@
+{
+  "result": "passed",
+  "command": "python -m apps.cipher test",
+  "tests": 2703,
+  "duration_seconds": 2029.726,
+  "log_sha256": "5c4437afb07b73a3f0abbeb9ae6919f2a10d0de1d12a49ce25a9d29971083aee",
+  "scope": "Repository preservation check only. The new product does not import or derive its design from the legacy implementation; this result is not new-stack acceptance."
+}

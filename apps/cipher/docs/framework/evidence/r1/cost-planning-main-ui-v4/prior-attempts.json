@@ -1,0 +1,39 @@
+{
+  "schema": "cipher.ui.preserved-prior-attempts.v1",
+  "attempts": [
+    {
+      "source": "v3",
+      "artifact_sha256": "9dbbdadbe7dd47e80678c38782aad03fafa87ba2d833927703051e902d94cc03",
+      "qualification": "Failed after normal sign-in and Project reads: missing SVG in build; official transparent title surface classified as occlusion. Zero business POST attempts."
+    },
+    {
+      "source": "v4-first-capture",
+      "artifact_sha256": "d0603d08339bb29da3688f16e0d2c5a7456d13d10a25553bf093232aaa697d3a",
+      "qualification": "Stopped before login POST: one-Tab check ran without waiting for enabled Sign in control. No business writes."
+    }
+  ],
+  "geometry_correction": {
+    "schema": "cipher.ui.capture-correction.v1",
+    "original_helper_sha256": "43e61529786f269680309605fb97ed7d00fab9fee5e1bb96e86aa220841ee2c9",
+    "preserved_failed_capture": "/tmp/cipher-cost-planning-checkpoint-v3-20261016/main-ui-readonly/incomplete.json",
+    "geometry_source_sha256": "c99728eb95ebb7dc628318df1e317bb5a67638de06cb3bc37938648f8cb69256",
+    "successor_sha256": "697ad0ef493b1231533f8789223061d6aabebedc174d3fc392f3f82eb8cb5035",
+    "changes": [
+      "Exact same-owner empty transparent SAP ObjectPageTitle surface allowed for noninteractive headings; actual text/clip/viewport checks retained; controls remain direct-hit only.",
+      "Full621/runner618/UI120 exact successor snapshot bounds.",
+      "Actual selected SVG MIME and public dependency notice byte/MIME checks."
+    ],
+    "focused_geometry_cases_passed": 4,
+    "qualification": "Source and syntax checked. Actual successor browser capture pending; no business commands added."
+  },
+  "keyboard_correction": {
+    "schema": "cipher.capture.keyboard-readiness-correction.v1",
+    "original_helper_sha256": "697ad0ef493b1231533f8789223061d6aabebedc174d3fc392f3f82eb8cb5035",
+    "new_helper_sha256": "9e9b7416aa0a09884b7d66b003d3a3b5eca8793d8753583521fe74bc5b1a3c2c",
+    "preserved_failure_sha256": "d0603d08339bb29da3688f16e0d2c5a7456d13d10a25553bf093232aaa697d3a",
+    "change": "Wait for the real Sign in control to become enabled after React onInput state update, assert password still focused, then keep the original single Tab/focus/Enter check. Create bootstrap response waiter only after keyboard focus succeeds.",
+    "basis": "SignIn Button is disabled until both controlled React values are populated. Filling a UI5 input alone does not wait for the next Button render.",
+    "login_or_business_post_in_failed_attempt": false,
+    "application_source_changed": false
+  }
+}

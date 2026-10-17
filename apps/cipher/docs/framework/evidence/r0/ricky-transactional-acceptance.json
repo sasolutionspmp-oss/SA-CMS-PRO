@@ -1,0 +1,97 @@
+{
+  "recorded_at": "2026-10-15T14:51:09.418764+00:00",
+  "label": "explicit-test-fixture-adapter-with-real-frappe-storage",
+  "live_model_qualified": false,
+  "runtime": {
+    "container": "cipher-r0-runtime-1",
+    "site": "cipher.localhost",
+    "database_transaction_isolation": "REPEATABLE-READ",
+    "database_isolation_evidence": {
+      "query": "SELECT @@tx_isolation",
+      "result": [
+        [
+          "REPEATABLE-READ"
+        ]
+      ]
+    }
+  },
+  "acceptance": {
+    "command": "bench --site cipher.localhost execute cipher_aec.tests.test_ricky_acceptance.run_acceptance",
+    "exit_code": 0,
+    "result": {
+      "label": "explicit-test-fixture-adapter-with-real-frappe-storage",
+      "live_model_qualified": false,
+      "project": "PROJ-0013",
+      "document": "DOC-e2c1a68f148c4b4dbd55e05c4d11927b",
+      "run": "8a1bdcac-ea26-475a-95db-8b5fd345bf35",
+      "task": "TASK-2026-00026",
+      "cited_answer_persisted": true,
+      "task_replay_single_effect": true,
+      "generic_write_denied": true,
+      "locking_read_preexisting_snapshot_safe": true,
+      "locking_read_proof": {
+        "before": {
+          "status": "queued",
+          "lease_token": 0
+        },
+        "after": {
+          "status": "cancelled",
+          "lease_token": 1
+        },
+        "serialization_conflict": true
+      },
+      "tool_failure_atomic_rollback": true,
+      "deferred_queue_failure_preserves_run": true,
+      "database_serialization_conflict": true,
+      "concurrent_document_revocation_denied": "stale_authority"
+    },
+    "stdout": "{\"label\": \"explicit-test-fixture-adapter-with-real-frappe-storage\", \"live_model_qualified\": false, \"project\": \"PROJ-0013\", \"document\": \"DOC-e2c1a68f148c4b4dbd55e05c4d11927b\", \"run\": \"8a1bdcac-ea26-475a-95db-8b5fd345bf35\", \"task\": \"TASK-2026-00026\", \"cited_answer_persisted\": true, \"task_replay_single_effect\": true, \"generic_write_denied\": true, \"locking_read_preexisting_snapshot_safe\": true, \"locking_read_proof\": {\"before\": {\"status\": \"queued\", \"lease_token\": 0}, \"after\": {\"status\": \"cancelled\", \"lease_token\": 1}, \"serialization_conflict\": true}, \"tool_failure_atomic_rollback\": true, \"deferred_queue_failure_preserves_run\": true, \"database_serialization_conflict\": true, \"concurrent_document_revocation_denied\": \"stale_authority\"}\n",
+    "stderr": ""
+  },
+  "source_document": {
+    "document_id": "DOC-e2c1a68f148c4b4dbd55e05c4d11927b",
+    "revision_id": "REV-668a589dd9e343b8b4e51c8707c076bc",
+    "sha256": "77ad94c7c52869f7c35dc085ff313b08c57498eb22c29651e54eefa52f2f2556"
+  },
+  "unit_tests": {
+    "command": "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest discover -s apps/cipher/platform/apps/cipher_aec/cipher_aec/tests -p test_ricky*.py -v",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_active_person_limit_and_expired_delegation (test_ricky.RickyTests.test_active_person_limit_and_expired_delegation) ... ok\ntest_cancellation_fences_inflight_result (test_ricky.RickyTests.test_cancellation_fences_inflight_result) ... ok\ntest_cancelling_review_prevents_saving_pending_proposal (test_ricky.RickyTests.test_cancelling_review_prevents_saving_pending_proposal) ... ok\ntest_changed_authority_project_or_proposal_cannot_apply (test_ricky.RickyTests.test_changed_authority_project_or_proposal_cannot_apply) ... ok\ntest_commit_and_cancel_acquire_scope_before_run_records (test_ricky.RickyTests.test_commit_and_cancel_acquire_scope_before_run_records) ... ok\ntest_context_failure_rolls_back_proposal_and_success_receipt (test_ricky.RickyTests.test_context_failure_rolls_back_proposal_and_success_receipt) ... ok\ntest_document_contract_normalization_is_explicit (test_ricky.RickyTests.test_document_contract_normalization_is_explicit) ... ok\ntest_each_tool_requires_its_declared_permission (test_ricky.RickyTests.test_each_tool_requires_its_declared_permission) ... ok\ntest_expired_proposal_and_wrong_version_are_denied (test_ricky.RickyTests.test_expired_proposal_and_wrong_version_are_denied) ... ok\ntest_failed_preparation_cannot_apply_even_successfully_recorded_proposal (test_ricky.RickyTests.test_failed_preparation_cannot_apply_even_successfully_recorded_proposal) ... ok\ntest_invented_citation_cannot_be_delivered (test_ricky.RickyTests.test_invented_citation_cannot_be_delivered) ... ok\ntest_locked_storage_read_uses_current_payload_instead_of_orm_snapshot (test_ricky.RickyTests.test_locked_storage_read_uses_current_payload_instead_of_orm_snapshot) ... ok\ntest_model_loop_is_bounded_even_when_same_proposal_repeats (test_ricky.RickyTests.test_model_loop_is_bounded_even_when_same_proposal_repeats) ... ok\ntest_model_shell_request_is_rejected_even_if_attachment_instructs_it (test_ricky.RickyTests.test_model_shell_request_is_rejected_even_if_attachment_instructs_it) ... ok\ntest_no_source_never_promotes_model_claims (test_ricky.RickyTests.test_no_source_never_promotes_model_claims) ... ok\ntest_outage_preserves_request_and_does_not_invent_answer (test_ricky.RickyTests.test_outage_preserves_request_and_does_not_invent_answer) ... ok\ntest_proposal_saves_exact_fields_through_domain_command_once (test_ricky.RickyTests.test_proposal_saves_exact_fields_through_domain_command_once) ... ok\ntest_quarantine_preserves_read_status_but_stops_new_effects (test_ricky.RickyTests.test_quarantine_preserves_read_status_but_stops_new_effects) ... ok\ntest_question_is_prepared_for_exact_document_search (test_ricky.RickyTests.test_question_is_prepared_for_exact_document_search) ... ok\ntest_recovery_reuses_source_receipts_and_rejects_old_worker (test_ricky.RickyTests.test_recovery_reuses_source_receipts_and_rejects_old_worker) ... ok\ntest_revocation_before_delivery_discards_model_result (test_ricky.RickyTests.test_revocation_before_delivery_discards_model_result) ... ok\ntest_session_revocation_blocks_worker_and_proposal_effects (test_ricky.RickyTests.test_session_revocation_blocks_worker_and_proposal_effects) ... ok\ntest_source_cited_answer_and_invocation_provenance (test_ricky.RickyTests.test_source_cited_answer_and_invocation_provenance) ... ok\ntest_start_replay_requires_current_permission (test_ricky.RickyTests.test_start_replay_requires_current_permission) ... ok\ntest_timed_out_proposal_handler_rolls_back_all_local_effects (test_ricky.RickyTests.test_timed_out_proposal_handler_rolls_back_all_local_effects) ... ok\ntest_tool_cannot_override_company_project_or_actor (test_ricky.RickyTests.test_tool_cannot_override_company_project_or_actor) ... ok\ntest_unconfigured_adapter_has_no_fabricated_capability (test_ricky.RickyTests.test_unconfigured_adapter_has_no_fabricated_capability) ... ok\n\n----------------------------------------------------------------------\nRan 27 tests in 0.045s\n\nOK\n"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/cipher_delegation.json": "d00805908bae03e5631f4dedb02f2782202ea0b48cb5131181f94dc09f232a14",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_delegation/cipher_delegation.py": "9a223e48cbfe91e1d5d27ee7a7b2434cb2c69d688b726e34a81240fb347b1277",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.json": "2055c5cb25d9acc4866d433efd853b0d9c41fca71dd4536182c774394c8b166d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.py": "efea2e590de2174f804b13f835691c756b6717575c45b2373a0f70e31f445c85",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.json": "fedfbcfbb93b0b2a57c9bdcb72dcb9e33015cfd02ffb9f54050965ee4a971f62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.py": "68a4e767023c3db8a9b0d396304e10c2d43819201fd8b1cb55d55f17a702c97d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.json": "a69e43eaf028c7ec289dcd22bda6aeeb88fb82c6840ab6b008c936b2d5868a5c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.py": "c9dd4ee46f99c64d7711971147b6614afa25a7be8d6c8daea8bc244d1e8cc108",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.json": "bd87240d027ecebb60ef66d8a72fa035fe6fc168ac551611725682863ccf9695",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.py": "290cc1dda72998225c98b2ecf879436c740a522affc2cddc438959110e54bf3b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.json": "4c738be812198af17afc8e7cbfeec4dcd76c47bb0b6bdf837517f930a3e5a0dd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.py": "d0ddd36bbc563febb68f2f3e2720face1468fe0731fb2b2ac9e4c38663ff4186",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/__init__.py": "095ab3028edd219ede3104a1dd8473ca89310182f5add1f95f9721610ff75b71",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/adapter.py": "557158868e1a2d5fa5b3e267a9d63bf0025d35e92731d9a421014d4927dc0bea",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/api.py": "997c34937b4e23d9b1f5e8cfb156a2b84215812a03c847b160c42f9551f431a4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/backend.py": "a6b756f993defd53c83ea080eeb5af6b66eb9c860d67d0f4db3c3f93ec72de3e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/contracts.py": "97d9cd3fe82578f3de38a48c99f87cec8920161343b806cc36991e349d7e7eba",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/engine.py": "e27f8b208a2cb927e45f8ce83e477c1d149fd8e91a7f6eb69cc656fa00648c2e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/records.py": "6d0baeb9aaa349d3fa68485f66f67967634e14cedd6874404b6ea9e1c6f4febc",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/storage.py": "8b6ae67a08d1c03ed4349af4486697eb756520567fb5490d543fc74d8d0349eb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/tools.py": "74fcf6eb7632a8e66c6149964f71334cf04f8f54a41e34c966a2a06ff5012d88",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/worker.py": "6474dab4c994e8c2df3384db2ea17553c851dc1706bee0e1a1e73035d7a02285",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky.py": "78b35a6c61986d78e66941758c9a041888e9ed798a7ede4ad2e3646e09ac992f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_acceptance.py": "7c68dd06f1cb88e0d6566ae3cd09227a061dca72f39da1018e78ad2ff2b62468"
+  },
+  "qualification_limit": "Inference used an explicitly injected test-only adapter. No existing local model endpoint, protocol, authentication, weights, or live capability was inferred or qualified."
+}

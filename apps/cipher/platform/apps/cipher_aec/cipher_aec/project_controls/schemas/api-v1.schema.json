@@ -1,0 +1,1620 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:project-controls:api:v1",
+  "$defs": {
+    "PcCodeDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "effective_until": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "native_target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "doctype": {
+              "const": "Cost Center"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "effective_from",
+        "effective_until",
+        "enabled",
+        "native_target"
+      ]
+    },
+    "PcTypeDefinition": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "effective_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "effective_until": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "native_target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "doctype": {
+              "const": "Account"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ]
+        },
+        "cost_category": {
+          "anyOf": [
+            {
+              "enum": [
+                "material",
+                "labor",
+                "equipment",
+                "subcontract",
+                "other"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allocation_class": {
+          "enum": [
+            "component",
+            "indirect",
+            "contingency"
+          ]
+        }
+      },
+      "required": [
+        "title",
+        "effective_from",
+        "effective_until",
+        "enabled",
+        "native_target",
+        "cost_category",
+        "allocation_class"
+      ]
+    },
+    "PcDefinition": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PcCodeDefinition"
+        },
+        {
+          "$ref": "#/$defs/PcTypeDefinition"
+        }
+      ]
+    },
+    "PcNativeTarget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "doctype": {
+          "enum": [
+            "Cost Center",
+            "Account"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "is_group": {
+          "type": "boolean"
+        },
+        "disabled": {
+          "type": "boolean"
+        },
+        "root_type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "account_currency": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 3
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency_policy": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "currency": {
+                  "type": "string",
+                  "pattern": "^[A-Z]{3}$"
+                },
+                "currency_exponent": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 6
+                },
+                "fraction_units": {
+                  "type": "integer"
+                },
+                "native_currency_version": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "currency",
+                "currency_exponent",
+                "fraction_units",
+                "native_currency_version"
+              ]
+            }
+          ]
+        }
+      },
+      "required": [
+        "doctype",
+        "name",
+        "company",
+        "version",
+        "is_group",
+        "disabled",
+        "root_type",
+        "account_currency",
+        "currency_policy"
+      ]
+    },
+    "PcMaster": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.cost-master.v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "current_revision": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "schema",
+        "id",
+        "company",
+        "project",
+        "kind",
+        "code",
+        "author_person",
+        "current_revision",
+        "revision_number"
+      ]
+    },
+    "PcRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.cost-revision.v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "null"
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "master_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definition": {
+          "$ref": "#/$defs/PcDefinition"
+        },
+        "authored_native": {
+          "$ref": "#/$defs/PcNativeTarget"
+        }
+      },
+      "required": [
+        "schema",
+        "id",
+        "company",
+        "project",
+        "kind",
+        "code",
+        "author_person",
+        "master_id",
+        "revision_number",
+        "predecessor",
+        "definition",
+        "authored_native"
+      ]
+    },
+    "PcResolvedRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "basis_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "purpose": {
+          "enum": [
+            "award.initial-budget.v1",
+            "cost.author.v1",
+            "historical_read"
+          ]
+        },
+        "revision": {
+          "$ref": "#/$defs/PcRevision"
+        },
+        "revision_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "native": {
+          "$ref": "#/$defs/PcNativeTarget"
+        }
+      },
+      "required": [
+        "kind",
+        "company",
+        "basis_date",
+        "purpose",
+        "revision",
+        "revision_digest",
+        "native"
+      ]
+    },
+    "PcOperation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ]
+    },
+    "PcMasterCommand": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "master": {
+          "$ref": "#/$defs/PcMaster"
+        },
+        "revision": {
+          "$ref": "#/$defs/PcRevision"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "operation": {
+          "$ref": "#/$defs/PcOperation"
+        }
+      },
+      "required": [
+        "master",
+        "revision",
+        "version",
+        "operation"
+      ]
+    },
+    "PcMasterItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "master": {
+          "$ref": "#/$defs/PcMaster"
+        },
+        "revision": {
+          "$ref": "#/$defs/PcResolvedRevision"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "master",
+        "revision",
+        "version"
+      ]
+    },
+    "PcMasterPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcMasterItem"
+          },
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ]
+    },
+    "PcWbsNode": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "is_leaf": {
+          "type": "boolean"
+        },
+        "accountable_person": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "phase": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "active_from": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "active_until": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "code",
+        "parent_id",
+        "title",
+        "is_leaf",
+        "accountable_person",
+        "phase",
+        "active_from",
+        "active_until"
+      ]
+    },
+    "PcAllocationSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "component"
+            },
+            "line_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "component_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "line_id",
+            "component_id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "const": "adjustment"
+            },
+            "adjustment_id": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          "required": [
+            "kind",
+            "adjustment_id"
+          ]
+        }
+      ]
+    },
+    "PcAllocation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "$ref": "#/$defs/PcAllocationSource"
+        },
+        "wbs_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "code_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "type_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "wbs_id",
+        "code_revision_id",
+        "type_revision_id"
+      ]
+    },
+    "PcMoney": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,6})?$",
+          "maxLength": 32
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ]
+    },
+    "PcRational": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "numerator": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)$",
+          "maxLength": 100
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]*$",
+          "maxLength": 100
+        }
+      },
+      "required": [
+        "numerator",
+        "denominator"
+      ]
+    },
+    "PcBudgetLine": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source": {
+          "$ref": "#/$defs/PcAllocationSource"
+        },
+        "wbs_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "code_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "type_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "amount": {
+          "$ref": "#/$defs/PcMoney"
+        },
+        "cost_category": {
+          "anyOf": [
+            {
+              "enum": [
+                "material",
+                "labor",
+                "equipment",
+                "subcontract",
+                "other"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "allocation_class": {
+          "enum": [
+            "component",
+            "indirect",
+            "contingency"
+          ]
+        },
+        "source_quantity": {
+          "anyOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "source_unit_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "resource_quantity_exact": {
+                  "$ref": "#/$defs/PcRational"
+                },
+                "priced_quantity_exact": {
+                  "$ref": "#/$defs/PcRational"
+                }
+              },
+              "required": [
+                "source_unit_id",
+                "resource_quantity_exact",
+                "priced_quantity_exact"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "source",
+        "wbs_id",
+        "code_revision_id",
+        "type_revision_id",
+        "amount",
+        "cost_category",
+        "allocation_class",
+        "source_quantity"
+      ]
+    },
+    "PcQualifiedUnit": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "const": "uom"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "dimension": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "precision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          },
+          "required": [
+            "symbol",
+            "dimension",
+            "precision"
+          ]
+        },
+        "target": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "doctype": {
+              "const": "UOM"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "revision",
+        "fields",
+        "target"
+      ]
+    },
+    "PcInitialPlan": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.project-controls.initial-plan.v1"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "basis_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "acceptance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "estimate_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "revision_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "snapshot_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "manifest_digest": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "digest",
+            "estimate_id",
+            "revision_id",
+            "snapshot_id",
+            "manifest_digest"
+          ]
+        },
+        "wbs_nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcWbsNode"
+          },
+          "maxItems": 500
+        },
+        "allocations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcAllocation"
+          },
+          "maxItems": 5030
+        },
+        "resolved_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcResolvedRevision"
+          },
+          "maxItems": 500
+        },
+        "resolved_types": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcResolvedRevision"
+          },
+          "maxItems": 500
+        },
+        "budget_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcBudgetLine"
+          },
+          "maxItems": 5030
+        },
+        "excluded_source_lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "line_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "line_id",
+              "digest"
+            ]
+          },
+          "maxItems": 100
+        },
+        "source_units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcQualifiedUnit"
+          },
+          "maxItems": 500
+        },
+        "currency": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3
+        },
+        "currency_exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "totals": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "direct": {
+              "$ref": "#/$defs/PcMoney"
+            },
+            "indirect": {
+              "$ref": "#/$defs/PcMoney"
+            },
+            "contingency": {
+              "$ref": "#/$defs/PcMoney"
+            },
+            "total": {
+              "$ref": "#/$defs/PcMoney"
+            }
+          },
+          "required": [
+            "direct",
+            "indirect",
+            "contingency",
+            "total"
+          ]
+        }
+      },
+      "required": [
+        "schema",
+        "company",
+        "basis_date",
+        "acceptance",
+        "wbs_nodes",
+        "allocations",
+        "resolved_codes",
+        "resolved_types",
+        "budget_lines",
+        "excluded_source_lines",
+        "source_units",
+        "currency",
+        "currency_exponent",
+        "totals"
+      ]
+    },
+    "PcAwardContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "award_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "award_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "award_id",
+        "award_revision_id",
+        "plan_digest",
+        "packet_id",
+        "decision_id",
+        "operation_id"
+      ]
+    },
+    "PcBudgetRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.project-budget.v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "award_context": {
+          "$ref": "#/$defs/PcAwardContext"
+        },
+        "controls_plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "award_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "award_revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "adopted"
+        },
+        "version_number": {
+          "const": 1
+        },
+        "predecessor": {
+          "type": "null"
+        },
+        "plan": {
+          "$ref": "#/$defs/PcInitialPlan"
+        }
+      },
+      "required": [
+        "schema",
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "award_context",
+        "controls_plan_digest",
+        "award_id",
+        "award_revision_id",
+        "status",
+        "version_number",
+        "predecessor",
+        "plan"
+      ]
+    },
+    "PcWbsRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.project-wbs.v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "award_context": {
+          "$ref": "#/$defs/PcAwardContext"
+        },
+        "controls_plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "budget_version": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "node": {
+          "$ref": "#/$defs/PcWbsNode"
+        }
+      },
+      "required": [
+        "schema",
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "award_context",
+        "controls_plan_digest",
+        "budget_version",
+        "node"
+      ]
+    },
+    "PcBudgetLineRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema": {
+          "const": "cipher.project-budget-line.v1"
+        },
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "author_person": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "award_context": {
+          "$ref": "#/$defs/PcAwardContext"
+        },
+        "controls_plan_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "budget_version": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "line": {
+          "$ref": "#/$defs/PcBudgetLine"
+        }
+      },
+      "required": [
+        "schema",
+        "id",
+        "company",
+        "project",
+        "author_person",
+        "award_context",
+        "controls_plan_digest",
+        "budget_version",
+        "line"
+      ]
+    },
+    "PcProjectRecord": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/PcBudgetRecord"
+        },
+        {
+          "$ref": "#/$defs/PcWbsRecord"
+        },
+        {
+          "$ref": "#/$defs/PcBudgetLineRecord"
+        }
+      ]
+    },
+    "PcProjectPage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/PcProjectRecord"
+          },
+          "maxItems": 200
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "total": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ]
+    },
+    "PcCreateMasterRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "code": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{0,63}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/PcDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "code",
+        "definition"
+      ]
+    },
+    "PcReviseMasterRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "master_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/PcDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "master_id",
+        "expected_version",
+        "definition"
+      ]
+    },
+    "PcGetRevisionRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "revision_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_date": {
+          "type": "string",
+          "format": "date"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "revision_id",
+        "basis_date"
+      ]
+    },
+    "PcListMastersRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "code",
+            "type"
+          ]
+        },
+        "basis_date": {
+          "type": "string",
+          "format": "date"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company",
+        "kind",
+        "basis_date"
+      ]
+    },
+    "PcGetProjectRecordRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "wbs",
+            "budget",
+            "budget_line"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ]
+    },
+    "PcListProjectRecordsRequest": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "company": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "wbs",
+            "budget",
+            "budget_line"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ]
+    }
+  }
+}

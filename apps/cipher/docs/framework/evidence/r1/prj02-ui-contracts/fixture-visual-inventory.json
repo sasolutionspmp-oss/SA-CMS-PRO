@@ -1,0 +1,92 @@
+[
+  {
+    "path": "fixture-visuals/fixture-cost-create-1440.png",
+    "sha256": "2ca182de83057586c7a8a2cfbaefc9eef06a1e0dac63ca7215dd1e04579c1e26",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-create-390.png",
+    "sha256": "607ebd1c0ff987463fa1bf73dab63ce07c0490c59056a8f80b2221054ac8d945",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-create-900.png",
+    "sha256": "c46e3b71f92cbc8add3f258e1169b09a53c90d53bf91abcae29bcf5eb572aea2",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-register-1440.png",
+    "sha256": "e88e18061d1dbebf8104b8d8775ec0e58c26171727936a7b83d6bfb9c2a096ab",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-register-390.png",
+    "sha256": "6aecbf471d8a72a6a2ef7cbd76cf44bb77cdd08a62138c86838dda76c837094a",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-register-900.png",
+    "sha256": "9083a9d2522b64017cfce7a74fb392baef88b0fbafb6a45b7712b906004e99ca",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-successor-1440.png",
+    "sha256": "08b8e73e2b13d29fe93ca8b7e404dfedd13ae4043b92eb5fbbd6a999a1035a43",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-successor-390.png",
+    "sha256": "f7abe3f7548b7d7bbd9c8821a3a53113ed77ad2df0b9aa3c9006746ecbbbeb80",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/fixture-cost-successor-900.png",
+    "sha256": "404dce3198ee5d5a8ef81c7a2c98f7984302ae031c0058c789c7e3e87b4edf27",
+    "qualification": "Captured during final82-case local explicit-fixture run; same116-file source inventory. Not connected ERP evidence."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-award-1440.png",
+    "sha256": "258d6f06047be3dbfdce6d9279f1c5af19dd768f67ebff6886356084c2ac8bb4",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-award-390-before-toolbar-fix.png",
+    "sha256": "0ddb9d6bb34ed063fe95195d3901df695366d706424c73de22a669b8ba032767",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-award-390.png",
+    "sha256": "3d67088c3322f67d7f1528199add2df2afbd60e4f1968ff09bb510bde0ea5469",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-award-900.png",
+    "sha256": "412f31a682288e0ca32d47c46513e5a8f7e6966aa51e938758f5992eb9b1d23a",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-cost-1440.png",
+    "sha256": "11abf035f7e252832d36d5659bfce970bb6ce2f61fc695d6284fbb0df0e7d381",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-cost-390-before-toolbar-fix.png",
+    "sha256": "77fa9ef08ccb41f697850976ec3b0951716a4099908ee3f8d800fbf4181d76f6",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-cost-390.png",
+    "sha256": "b92622ef882f92ae19f4609bc5b6327d2ba2e8bd79ddafa4c8c33e1dcb2c8027",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-cost-900.png",
+    "sha256": "9a2dc7e3f9a2f4874124ca6d664124be0b29684459cc1efecf3c39606eea78ad",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  },
+  {
+    "path": "fixture-visuals/historical/fixture-cost-successor-390-before-footer-fix.png",
+    "sha256": "d3f8ca302052338c1aded9f4692a987daeee561d455afb151cb0b71fe120b071",
+    "qualification": "Historical local fixture visual; earlier source. Failed phone images explicitly retain clipping."
+  }
+]

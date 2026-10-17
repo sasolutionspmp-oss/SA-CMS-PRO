@@ -1,0 +1,5474 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:api:v1",
+  "title": "Cipher API v1",
+  "description": "Frappe message contains schema/data/meta; errors contain schema/error/meta. POST Idempotency-Key must equal operation_id and X-Frappe-CSRF-Token is required for authenticated session commands.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "cipher.api.v1"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "meta": {
+      "$ref": "#/$defs/Meta"
+    },
+    "data": {},
+    "error": {
+      "$ref": "#/$defs/Error"
+    }
+  },
+  "required": [
+    "schema",
+    "request_id",
+    "meta"
+  ],
+  "oneOf": [
+    {
+      "required": [
+        "data"
+      ]
+    },
+    {
+      "required": [
+        "error"
+      ]
+    }
+  ],
+  "$defs": {
+    "Person": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "display_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "display_name"
+      ],
+      "additionalProperties": false
+    },
+    "Company": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "Session": {
+      "type": "object",
+      "properties": {
+        "authenticated": {
+          "const": true
+        },
+        "user": {
+          "type": "string"
+        },
+        "person": {
+          "$ref": "#/$defs/Person"
+        },
+        "companies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Company"
+          }
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "site_mode": {
+          "const": "synthetic"
+        },
+        "csrf_token": {
+          "type": "string"
+        },
+        "company_scopes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": "string"
+              },
+              "capabilities": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "company",
+              "capabilities"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "authenticated",
+        "user",
+        "person",
+        "companies",
+        "capabilities",
+        "site_mode",
+        "csrf_token",
+        "company_scopes"
+      ],
+      "additionalProperties": false
+    },
+    "Project": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "expected_start_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "expected_end_date": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "capabilities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "company",
+        "status",
+        "version",
+        "expected_start_date",
+        "expected_end_date"
+      ],
+      "additionalProperties": false
+    },
+    "Task": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "subject",
+        "status",
+        "project",
+        "version",
+        "description"
+      ],
+      "additionalProperties": false
+    },
+    "HistoryItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "event": {
+          "type": "string"
+        },
+        "actor": {
+          "type": "string"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "subject_type": {
+          "type": "string"
+        },
+        "subject_id": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "event",
+        "actor",
+        "at",
+        "subject_type",
+        "subject_id",
+        "details"
+      ],
+      "additionalProperties": false
+    },
+    "Operation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "CreateTaskRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 140
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 12000
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "expected_version",
+        "subject"
+      ],
+      "additionalProperties": false
+    },
+    "CreateTaskResponse": {
+      "type": "object",
+      "properties": {
+        "task": {
+          "$ref": "#/$defs/Task"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        },
+        "project_version": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "task",
+        "operation",
+        "project_version"
+      ],
+      "additionalProperties": false
+    },
+    "Money": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)\\.[0-9]{2}$"
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "amount",
+        "currency"
+      ],
+      "additionalProperties": false
+    },
+    "Meta": {
+      "type": "object",
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "api_version": {
+          "const": "v1"
+        },
+        "server_time": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "request_id",
+        "api_version",
+        "server_time"
+      ],
+      "additionalProperties": false
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "object"
+        },
+        "retryable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "details",
+        "retryable"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Project"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "TaskList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Task"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "HistoryList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/HistoryItem"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalDecision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "decision": {
+          "type": "string",
+          "enum": [
+            "Grant",
+            "Reject",
+            "Withdraw"
+          ]
+        },
+        "actor": {
+          "$ref": "#/$defs/Person"
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "decision",
+        "actor",
+        "at",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProjectStatusApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/DomainApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageApprovalPacket"
+        }
+      ]
+    },
+    "ApprovalList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalPacket"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalCommandResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/ApprovalPacket"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/ProjectStatusApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/DomainApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/EngineeringApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageApprovalExecutionResponse"
+        }
+      ]
+    },
+    "ProjectStatusApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "project.status.change.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Project"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "changes": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "from",
+                "to"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false
+        },
+        "native_completion": {
+          "type": "object",
+          "properties": {
+            "percent_complete_method": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "percent_complete": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "percent_complete_method",
+            "percent_complete"
+          ],
+          "additionalProperties": false
+        },
+        "task_effects": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "changes": {
+              "type": "array",
+              "maxItems": 0,
+              "items": {}
+            }
+          },
+          "required": [
+            "count",
+            "changes"
+          ],
+          "additionalProperties": false
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "changes",
+        "native_completion",
+        "task_effects",
+        "policy",
+        "state",
+        "decisions",
+        "actions"
+      ],
+      "additionalProperties": false
+    },
+    "DomainApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "calibration.verify.v1",
+            "contract.baseline.activate.v1",
+            "estimate.accept.v1"
+          ]
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Cipher Calibration",
+                "Cipher Construction Contract",
+                "Cipher Estimate Revision"
+              ]
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "effect": {
+              "type": "object"
+            },
+            "summary": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest"
+      ],
+      "additionalProperties": false
+    },
+    "ProjectStatusApprovalExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/ProjectStatusApprovalPacket"
+        },
+        "effect": {
+          "type": "object",
+          "properties": {
+            "project": {
+              "$ref": "#/$defs/Project"
+            }
+          },
+          "required": [
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "effect",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "DomainApprovalExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/DomainApprovalPacket"
+        },
+        "effect": {
+          "type": "object"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "effect",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "null"
+        },
+        "action": {
+          "enum": [
+            "calibration.verify.v1",
+            "estimate.accept.v1",
+            "proposal.issue.v1",
+            "proposal.distribute.v1",
+            "award.project.create.v1"
+          ]
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "Cipher Calibration",
+                "Cipher Estimate Revision",
+                "Cipher Proposal Revision",
+                "Cipher Distribution Instruction",
+                "Cipher Award Handoff Revision"
+              ]
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              }
+            },
+            "effect": {
+              "type": "object"
+            },
+            "summary": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "scope_type": {
+          "const": "Company"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "scope_type"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/CompanyApprovalPacket"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalCommandResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/CompanyApprovalPacket"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "CompanyApprovalExecutionResponse": {
+      "type": "object",
+      "properties": {
+        "packet": {
+          "$ref": "#/$defs/CompanyApprovalPacket"
+        },
+        "effect": {
+          "type": "object"
+        },
+        "operation": {
+          "$ref": "#/$defs/Operation"
+        }
+      },
+      "required": [
+        "packet",
+        "effect",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "NativeMasterChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "Customer",
+            "Lead",
+            "Price List",
+            "UOM",
+            "Currency",
+            "Item",
+            "Cost Center",
+            "Account"
+          ]
+        },
+        "version": {
+          "type": "string"
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "dimension": {
+          "type": "string"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "exponent": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 6
+        },
+        "currency": {
+          "type": "string"
+        },
+        "stock_uom": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "kind",
+        "version"
+      ],
+      "additionalProperties": false
+    },
+    "NativeMasterList": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeMasterChoice"
+          }
+        },
+        "total": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "next_cursor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "count_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "exact"
+          ]
+        },
+        "company_currency": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total",
+        "company_currency"
+      ],
+      "additionalProperties": false
+    },
+    "NativePartiesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "party_type": {
+          "enum": [
+            "Customer",
+            "Lead"
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "party_type"
+      ],
+      "additionalProperties": false
+    },
+    "NativePriceListsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "currency": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeUnitsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "dimension": {
+          "enum": [
+            null,
+            "length",
+            "area",
+            "volume",
+            "mass",
+            "count",
+            "time",
+            "labor_time",
+            "equipment_time"
+          ]
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCurrenciesRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeItemsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "unit_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeCostCentersRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAccountsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "NativeAwardItemsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string"
+        },
+        "query": {
+          "type": "string",
+          "maxLength": 80,
+          "default": ""
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200,
+          "default": 50
+        },
+        "cursor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "maxLength": 4096
+        },
+        "count_mode": {
+          "enum": [
+            "none",
+            "exact"
+          ],
+          "default": "none"
+        },
+        "unit_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringResponseApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.rfi.authorize.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher RFI Response Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher RFI Response Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.rfi.authorize.v1"
+                },
+                "subject_kind": {
+                  "const": "response"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "author_people": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "minItems": 1,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "source_revision",
+                "source_digest",
+                "author_people"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "$ref": "#/$defs/EgResponseDefinition"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringDispositionApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.submittal.authorize.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Submittal Disposition Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Submittal Disposition Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.submittal.authorize.v1"
+                },
+                "subject_kind": {
+                  "const": "disposition"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "source_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "author_people": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "minItems": 1,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "source_revision",
+                "source_digest",
+                "author_people"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "$ref": "#/$defs/EgDispositionDefinition"
+                },
+                "purpose": {
+                  "type": "null"
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringTransmittalApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.distribute.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Engineering Transmittal"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Engineering Transmittal"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 500
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgCitation"
+                    },
+                    "minItems": 0,
+                    "maxItems": 64
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgArtifact"
+                    },
+                    "minItems": 0,
+                    "maxItems": 8
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EgDrawingReference"
+                    },
+                    "minItems": 0,
+                    "maxItems": 16
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "artifacts",
+                  "drawing_references"
+                ],
+                "additionalProperties": false
+              },
+              "minItems": 1,
+              "maxItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.authorization.v1"
+                },
+                "action": {
+                  "const": "engineering.distribute.v1"
+                },
+                "subject_kind": {
+                  "const": "transmittal"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "recipients": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EgPerson"
+                  },
+                  "minItems": 1,
+                  "maxItems": 30
+                },
+                "channel": {
+                  "const": "internal"
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "package_digest",
+                "recipients",
+                "channel"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.review.v1"
+                },
+                "definition": {
+                  "type": "null"
+                },
+                "purpose": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EgNoEffects"
+                },
+                "professional_seal": {
+                  "const": false
+                },
+                "external_delivery": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "definition",
+                "purpose",
+                "no_effects",
+                "professional_seal",
+                "external_delivery"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EngineeringResponseApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringDispositionApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringTransmittalApprovalPacket"
+        }
+      ]
+    },
+    "EngineeringApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringResponseApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "official_response": {
+                  "$ref": "#/$defs/EgOfficialResponse"
+                }
+              },
+              "required": [
+                "official_response"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringDispositionApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "official_disposition": {
+                  "$ref": "#/$defs/EgOfficialDisposition"
+                }
+              },
+              "required": [
+                "official_disposition"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringTransmittalApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "distribution": {
+                  "$ref": "#/$defs/EgDistribution"
+                }
+              },
+              "required": [
+                "distribution"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EgCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EgArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EgDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EgResponseDefinition": {
+      "type": "object",
+      "properties": {
+        "answer": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "potential_cost_impact": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "potential_schedule_impact": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "answer",
+        "potential_cost_impact",
+        "potential_schedule_impact"
+      ],
+      "additionalProperties": false
+    },
+    "EgNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EgDispositionDefinition": {
+      "type": "object",
+      "properties": {
+        "disposition": {
+          "enum": [
+            "approved",
+            "approved_as_noted",
+            "revise_resubmit",
+            "rejected"
+          ]
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 20000
+        }
+      },
+      "required": [
+        "disposition",
+        "comments"
+      ],
+      "additionalProperties": false
+    },
+    "EgPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgOfficialDisposition": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "official"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "source_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "parent_id",
+        "source_revision",
+        "source_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EgDistribution": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "recorded_internally"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checked_by_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EgNoEffects"
+        },
+        "authority": {
+          "const": "internal-technical-only"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "recipients": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EgPerson"
+          },
+          "minItems": 1,
+          "maxItems": 30
+        },
+        "channel": {
+          "const": "internal"
+        },
+        "external_delivery": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "subject_id",
+        "subject_digest",
+        "packet_id",
+        "decision_id",
+        "checked_by_person",
+        "no_effects",
+        "authority",
+        "package_digest",
+        "recipients",
+        "channel",
+        "external_delivery"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageBasisApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.basis.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Design Basis Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Design Basis Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.basis.check.v1"
+                },
+                "subject_kind": {
+                  "const": "basis"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpBasisDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageCalculationApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.calculation.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Calculation Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Calculation Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.calculation.check.v1"
+                },
+                "subject_kind": {
+                  "const": "calculation"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpCalculationDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageDeliverableApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.deliverable.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Deliverable Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Deliverable Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.deliverable.check.v1"
+                },
+                "subject_kind": {
+                  "const": "deliverable"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpDeliverableDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EngineeringPackageBasisApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageCalculationApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageDeliverableApprovalPacket"
+        }
+      ]
+    },
+    "EngineeringPackageApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageBasisApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageCalculationApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageDeliverableApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EpCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitManifest": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.v1"
+        },
+        "dataset_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "records": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "company"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "timezone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "currency",
+                      "timezone"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Company"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "uom"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "dimension": {
+                        "enum": [
+                          "area",
+                          "count",
+                          "equipment_time",
+                          "labor_time",
+                          "length",
+                          "mass",
+                          "time",
+                          "volume"
+                        ]
+                      },
+                      "precision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 12
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "dimension",
+                      "precision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "UOM"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalconversion"
+          }
+        },
+        "quantities": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalquantity"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "dataset_id",
+        "scope",
+        "records",
+        "unit_conversions"
+      ],
+      "additionalProperties": false,
+      "title": "Cipher independent canonical master/dimension manifest v1",
+      "$comment": "Structural interchange schema. Server validator additionally enforces exact references, scoped company, reduced rational factors, conversion consistency, precision and current authorization."
+    },
+    "EpCanonicaluuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "EpCanonicalconversion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "from_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "dimension": {
+          "enum": [
+            "area",
+            "count",
+            "equipment_time",
+            "labor_time",
+            "length",
+            "mass",
+            "time",
+            "volume"
+          ]
+        },
+        "numerator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "from_unit_id",
+        "to_unit_id",
+        "dimension",
+        "numerator",
+        "denominator",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpCanonicalquantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+          "maxLength": 50
+        },
+        "unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "convert_to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        }
+      },
+      "required": [
+        "id",
+        "amount",
+        "unit_id"
+      ],
+      "additionalProperties": false
+    },
+    "EpPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EpBasisDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "criteria": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "criteria",
+        "assumptions",
+        "design_codes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "edition": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "clause": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "code",
+        "edition",
+        "clause"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantityRow": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "quantity": {
+          "$ref": "#/$defs/EpQuantity"
+        },
+        "source": {
+          "$ref": "#/$defs/EpDrawingInput"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "quantity",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantity": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "amount",
+        "unit_id",
+        "precision"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EpNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "method": {
+          "const": "human-authored-results-v1"
+        },
+        "algorithm_reference": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_name": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_version": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "model_version": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "method",
+        "algorithm_reference",
+        "tool_name",
+        "tool_version",
+        "model_version",
+        "design_codes",
+        "explanation",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpDeliverableDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "deliverable_type": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "checking_notes": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "deliverable_type",
+        "description",
+        "checking_notes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCheck": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "checked"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_kind": {
+          "enum": [
+            "basis",
+            "calculation",
+            "deliverable"
+          ]
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "preparer_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "outcome": {
+          "const": "checked"
+        },
+        "issue_authorized": {
+          "const": false
+        },
+        "sealed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "preparer_person",
+        "packet_id",
+        "decision_id",
+        "comments",
+        "outcome",
+        "issue_authorized",
+        "sealed"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "x-routes": {
+    "GET session": "Session",
+    "GET projects": "ProjectList",
+    "GET project": "Project",
+    "GET tasks": "TaskList",
+    "GET history": "HistoryList",
+    "GET operation": "CreateTaskResponse",
+    "POST create_task": "CreateTaskResponse",
+    "GET approvals.list_packets": "ApprovalList",
+    "GET approvals.read_packet": "ApprovalPacket",
+    "POST approvals.request_project_status": "ApprovalCommandResponse",
+    "POST approvals.decide_packet": "ApprovalCommandResponse",
+    "POST approvals.withdraw_packet": "ApprovalCommandResponse",
+    "POST approvals.execute_packet": "ApprovalExecutionResponse",
+    "GET company.history": "HistoryList",
+    "GET company.operation": "CommandResult",
+    "POST approvals.request_action": "ApprovalCommandResponse"
+  }
+}

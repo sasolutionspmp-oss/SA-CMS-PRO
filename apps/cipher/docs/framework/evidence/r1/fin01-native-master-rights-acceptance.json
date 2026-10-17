@@ -1,0 +1,71 @@
+{
+  "certification": false,
+  "checks": [
+    {
+      "executor_native_read_retained": true,
+      "explicit_reviewer_actor_denied_under_executor_session": true,
+      "grant_unconsumed": true,
+      "historical_record_kinds_denied": [
+        "revision",
+        "sov",
+        "line"
+      ],
+      "native_master": "UOM"
+    },
+    {
+      "executor_native_read_retained": true,
+      "explicit_reviewer_actor_denied_under_executor_session": true,
+      "grant_unconsumed": true,
+      "historical_record_kinds_denied": [
+        "contract",
+        "policy",
+        "revision",
+        "sov",
+        "line"
+      ],
+      "native_master": "Currency"
+    }
+  ],
+  "cleanup": {
+    "contract_id": "01d055ec-024b-4d72-850b-bfca2892fd87",
+    "main_site_mutated": false,
+    "native_master_enabled_restored": {
+      "Currency": 1,
+      "UOM": 1
+    },
+    "owned_native_role_read_flags_restored": {
+      "Currency": 0,
+      "UOM": 0
+    },
+    "site": "cipher-ci-20261015163655-377137.localhost",
+    "status": "passed",
+    "temporary_user_permissions_remaining": 0,
+    "user_auth_rows_written": false
+  },
+  "company": "Cipher Synthetic Company",
+  "completed_at": "2026-10-15T17:22:07.437511+00:00",
+  "consumption_count": 1,
+  "contract_id": "01d055ec-024b-4d72-850b-bfca2892fd87",
+  "disabled_original_history_and_receipt_preserved": true,
+  "external_provider_qualified": false,
+  "financial_posting": false,
+  "floor_provider_qualified": false,
+  "legal_execution": false,
+  "live_model_qualified": false,
+  "original_operation_id": "52236014-989c-4ce6-a6b9-47e2c42b0168",
+  "project": "PROJ-0003",
+  "qualification": "Targeted real MariaDB/ERPNext native rights proof on retained isolated CI site, with existing identities. No HTTP or new financial/floor authority claim; main site untouched.",
+  "schema": "cipher.r1.fin-native-rights-acceptance.v1",
+  "site": "cipher-ci-20261015163655-377137.localhost",
+  "source_inventory_recorded_at": "2026-10-15T17:23:16.579936+00:00",
+  "source_sha256": {
+    "construction_finance/governance.py": "362b00a7386d5b76c30ed4c6d3c5d0eeae1aac68231b141faabfa71dccbf71ef",
+    "construction_finance/service.py": "2e15ffc7277608afaa1462b9f0f4f82b9a39ae06e5d0b0147ac9ce813dc16ac2",
+    "estimating/units.py": "45f21184f6f9a7059d090424f5b2d01882b12b33111d7d613c1c1c8748a0d9a7",
+    "tests/test_construction_finance_acceptance.py": "1a430415da40df05f19a4ea5a39b311fc29aa22e1c8c918a474c3986249e6c18",
+    "tests/test_construction_finance_http_acceptance.py": "1820af8c241f97b488dd4977a46fb6e67d5d9df29774c690047747117162c29d",
+    "tests/test_construction_finance_native_permissions_acceptance.py": "d1fba796d55791e605c1f09534d8113027eba7ec90b68bcd6cc610fb18f11259"
+  },
+  "started_at": "2026-10-15T17:21:58.255728+00:00",
+  "status": "passed"
+}

@@ -1,0 +1,34 @@
+{
+  "attempt": "70ee36f5-4aea-49cc-9bb0-b38a44009195",
+  "private_journal": "/tmp/cipher-r0-runtime/distribution-ui-70ee36f5-4aea-49cc-9bb0-b38a44009195.private.jsonl",
+  "mutations": [
+    {
+      "at": "2026-10-15T20:33:59.206Z",
+      "stage": "author exact original recipient subset",
+      "path": "/api/method/cipher_aec.integrations.distribution_api.create_instruction",
+      "operation_id": "ecd771a7-0811-4eb9-bd97-ebc672eb0dfa",
+      "raw_payload_sha256": "7f67b70471dda779c6476357f9393129354a8cb8145b17ec4303a04b8674ede6"
+    },
+    {
+      "at": "2026-10-15T20:34:03.736Z",
+      "stage": "discover saved immutable instruction",
+      "path": "/api/method/cipher_aec.api.company_approvals.request_action",
+      "operation_id": "f323ec8d-85e4-440e-9e21-709d20c51289",
+      "raw_payload_sha256": "d231fd57c80f62c67bd7345b19a69c8797bfe1f09107d4e9b70ec022f9a70f55"
+    },
+    {
+      "at": "2026-10-15T20:34:09.908Z",
+      "stage": "independent reviewer exact message recipient and PDF review",
+      "path": "/api/method/cipher_aec.api.company_approvals.decide_packet",
+      "operation_id": "3faac111-fb4a-428c-9f7e-44215bfc27cd",
+      "raw_payload_sha256": "83835e92dd118e59d4504ea6a096e66f18836228963d635846a888cfececbc46"
+    },
+    {
+      "at": "2026-10-15T20:34:14.974Z",
+      "stage": "original author separately queues approved fixture dispatch",
+      "path": "/api/method/cipher_aec.api.company_approvals.execute_packet",
+      "operation_id": "79697277-127d-499d-b758-6aac0a97bbe3",
+      "raw_payload_sha256": "2b31fea1d2d5cdc1be998cbe15aaf7fcee6fb15567f15f7f0a42c9bef0bc1879"
+    }
+  ]
+}

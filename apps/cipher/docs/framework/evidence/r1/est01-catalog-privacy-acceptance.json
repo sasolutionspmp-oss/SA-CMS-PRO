@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "label": "real-frappe-two-record-off-page-native-permission-regression",
+  "project": "PROJ-0027",
+  "newer_accessible_rate": "08beb1ef-3489-46b8-87a7-1e931b9380f4",
+  "older_private_rate": "a50ee4f1-1f6b-4d31-a1e2-acb4004673bf",
+  "limit": 1,
+  "first_candidate_is_readable": true,
+  "older_native_source_is_private": true,
+  "denials": [
+    {
+      "count_mode": "none",
+      "code": "not_found",
+      "total_or_cursor_returned": false
+    },
+    {
+      "count_mode": "exact",
+      "code": "not_found",
+      "total_or_cursor_returned": false
+    }
+  ],
+  "catalog_policy": "bounded-candidate-authorization-before-page-count-and-cursor",
+  "schema": "cipher.r1.est01-catalog-privacy.v1",
+  "recorded_at": "2026-10-15T16:23:10.791166+00:00",
+  "source_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+      "sha256": "623ba529795a80a97d2077dad467b41cfc24af69eb96125a5e450faa61947362"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+      "sha256": "a5fb944791de53b9aaa2fc41313fc75376ce72f9f1eeb185d510040c6e284e1f"
+    }
+  ],
+  "takeoff_catalog_same_policy_source": {
+    "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/takeoff/service.py",
+    "sha256": "d9a5bb834a9e365d4d4cc8cba19172b901c90184d81bbee1e4e56c330ca3743c"
+  },
+  "historical_checkpoint_evidence": "Prior EST01 evidence remains unchanged; these hashes qualify the new collection privacy fix.",
+  "unit_test_count": 12,
+  "evidence_amendments": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+      "previous_sha256": "5f3b054cb198334da5a5185a7f355f2cf8021a5d013bb2ccb92b235357ddc5f3",
+      "sha256": "a5fb944791de53b9aaa2fc41313fc75376ce72f9f1eeb185d510040c6e284e1f",
+      "qualification": "Receipt callback fixture signature only; the catalog regression function is unchanged and was not rerun. Full native EST acceptance passed separately on the retained failed fresh site.",
+      "targeted_evidence": "est01-receipt-boundary-acceptance.json"
+    }
+  ]
+}

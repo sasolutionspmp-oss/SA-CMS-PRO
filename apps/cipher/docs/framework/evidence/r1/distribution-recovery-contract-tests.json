@@ -1,0 +1,21 @@
+{
+  "schema": "cipher.qualification.v1",
+  "captured_at": "2026-10-15T19:16:39.488413+00:00",
+  "runtime_python": "3.14.8",
+  "result": "passed",
+  "tests": 8,
+  "kind": "executable SQL/guard contract tests; SQLite relational fixture, not native Frappe/Redis acceptance",
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution_recovery.py": "22d78d0fb0c913f4af163e4f1fd4c21e43767f000768f1d61ace9e5dc822afe7",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_distribution_recovery.py": "416e577e4d5ee1cd93663327c07d71dbf7a1c73a988cfd47e2daa69a57d7ac1b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution_install.py": "d72576cad9f89888329825e33d15740ae485ed4afe7debe9cce213ec661c3da9",
+    "apps/cipher/platform/deployment/run-dev-services.py": "e1e8e29eaba7dc1419e80c0722907acc8af6a703a8f063a93bbc425b889930fa"
+  },
+  "log": "test_batch_bound_and_original_names_are_stable_on_repeat (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_batch_bound_and_original_names_are_stable_on_repeat) ... ok\ntest_existing_business_writes_refuse_before_rollback_or_queue (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_existing_business_writes_refuse_before_rollback_or_queue) ... ok\ntest_invalid_existing_queue_configuration_fails_without_overwrite (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_invalid_existing_queue_configuration_fails_without_overwrite) ... ok\ntest_literal_existing_company_states_only_no_task_or_sink_execution (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_literal_existing_company_states_only_no_task_or_sink_execution) ... ok\ntest_quarantine_changed_during_sweep_stops_remaining_names (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_quarantine_changed_during_sweep_stops_remaining_names) ... ok\ntest_query_failure_closes_transaction_without_discarding_intents (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_query_failure_closes_transaction_without_discarding_intents) ... ok\ntest_queue_configuration_preserves_other_workers_and_is_idempotent (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_queue_configuration_preserves_other_workers_and_is_idempotent) ... ok\ntest_restored_quarantine_suppresses_query_and_all_publication (cipher_aec.tests.test_distribution_recovery.DistributionRecoveryTests.test_restored_quarantine_suppresses_query_and_all_publication) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.005s\n\nOK\n",
+  "pending_actual_proofs": [
+    "Real failed after-commit publication with database-only intent",
+    "Restored exact queue endpoint and scoped publisher republish original job key",
+    "Persistent dedicated consumer/restart and original acknowledgment readback",
+    "Supported common worker queue registration and native RQ acceptance"
+  ]
+}

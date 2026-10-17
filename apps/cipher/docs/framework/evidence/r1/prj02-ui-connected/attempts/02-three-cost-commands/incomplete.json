@@ -1,0 +1,158 @@
+{
+  "qualification": "Actual isolated ERP UI attempt; incomplete until all assertions pass.",
+  "phase": "cost-author",
+  "widths": [
+    1440,
+    900,
+    390
+  ],
+  "mutations": [
+    {
+      "step": "cost-code-create",
+      "path": "/api/method/cipher_aec.project_controls.company_api.create_master",
+      "operation_id": "24784c8c-cf89-4d19-a500-5d5b8f833cd1",
+      "payload_sha256": "ac0c18230c6fcf7bf33be12b672c66682b41dc15e66c4f53107d964a3ab3e0d7",
+      "response_sha256": "97a22e5b3dbb03d21567e51a75322b3a8fc33dc5b5baff5d9c4d17b1b0aa4d97"
+    },
+    {
+      "step": "cost-code-revise",
+      "path": "/api/method/cipher_aec.project_controls.company_api.revise_master",
+      "operation_id": "cdba20dc-27c4-4e39-8517-cb560ffd0eaf",
+      "payload_sha256": "3cc54aebd8e45907f3731afa15a10347d420527b16808325b61c2b07ca3f3f75",
+      "response_sha256": "88923fc31fc43df9d38ad8225e501178bb3d63b95ff4da87df190951ffeaf10e"
+    },
+    {
+      "step": "cost-type-create",
+      "path": "/api/method/cipher_aec.project_controls.company_api.create_master",
+      "operation_id": "5051785c-df22-4f8c-b438-c48c8cf4f341",
+      "payload_sha256": "9f6a25c008d459a11d3becc2d7267e2b6d0ec71282b4688998586fdd7ca81fca",
+      "response_sha256": "14bb38aa3bf751d71ca8093d9437bf8c996a5e0284543c4cf0c02f81bb5588c0"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [
+    {
+      "message_sha256": "f5468f474a43167260aac52995accf3209734552a897c4ee05bb3d493fd53805",
+      "location_path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    },
+    {
+      "message_sha256": "1c5cc9bd00272b0a91b0ae00349b6a4a91f683e9c2e8093eccd66f19c623c514",
+      "location_path": "/assets/ResponsivePopover-ENj9Xw2H.js"
+    }
+  ],
+  "unexpected_http": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 503
+    }
+  ],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "source_reads": [
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.api.masters.cost_centers",
+    "/api/method/cipher_aec.api.masters.cost_centers",
+    "/api/method/cipher_aec.project_controls.company_api.get_revision",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.project_controls.company_api.get_revision",
+    "/api/method/cipher_aec.api.masters.cost_centers",
+    "/api/method/cipher_aec.api.masters.cost_centers",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.project_controls.company_api.get_revision",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.api.masters.accounts",
+    "/api/method/cipher_aec.api.masters.accounts",
+    "/api/method/cipher_aec.project_controls.company_api.list_masters",
+    "/api/method/cipher_aec.project_controls.company_api.get_revision",
+    "/api/method/cipher_aec.project_controls.company_api.get_revision",
+    "/api/method/cipher_aec.api.masters.accounts",
+    "/api/method/cipher_aec.api.masters.accounts"
+  ],
+  "served_assets": [],
+  "keyboard_checks": [
+    {
+      "scope": "cost-code",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "scope": "cost-code",
+      "width": 900,
+      "passed": true
+    },
+    {
+      "scope": "cost-code",
+      "width": 390,
+      "passed": true
+    }
+  ],
+  "root_released_backend_epoch": {
+    "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+    "manifest_sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "cost_records": [
+    {
+      "step": "cost-code-create",
+      "master_id": "c837ab9d-ce90-4a50-835c-46baba62cf82",
+      "revision_id": "fb00d9f2-6235-4218-8983-57801fc7a1fc",
+      "revision_number": 1,
+      "version": "2593dd0969a4a3861fdc96785091a9f439bc764e11af9c0fdddce6491cdec5fb"
+    },
+    {
+      "step": "cost-code-revise",
+      "master_id": "c837ab9d-ce90-4a50-835c-46baba62cf82",
+      "revision_id": "7f426c0a-ac57-47b6-b42b-24ba67c8ffa2",
+      "revision_number": 2,
+      "version": "71004b700c86e9dc07c5e9092a8142e6495d2735b007336618a80f38fa53d159"
+    },
+    {
+      "step": "cost-type-create",
+      "master_id": "f40639a5-7001-4edf-83c7-2f147639f39c",
+      "revision_id": "8a917728-ea63-405c-b3d2-2575e7bea1b0",
+      "revision_number": 1,
+      "version": "043ad1853d6e0626094a89902bffbf6a5e5ba94880463d403cb0963b700538a4"
+    }
+  ],
+  "failure_category": "helper_wait_timeout",
+  "stage": "select cost-type-revise native target",
+  "failure": "Walkthrough stopped; reconcile private original command journal before any new mutation."
+}

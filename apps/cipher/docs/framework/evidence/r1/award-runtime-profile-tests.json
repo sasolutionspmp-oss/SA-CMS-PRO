@@ -1,0 +1,53 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T21:50:36.013741+00:00",
+  "qualification": "Seventeen isolated configuration-profile tests plus15overlappingnative/contract tests; no site initialized, no database fixtures/config/metadata/business writes, native profile or award writer runtime acceptance. Fixed reviewed installed-app/hook/controller/source catalog remains a separate final writer prerequisite.",
+  "tests": {
+    "passed": 32,
+    "profile_cases": 17,
+    "neighbor_cases": 15,
+    "overlaps_prior_captures": true,
+    "output": "................................\n----------------------------------------------------------------------\nRan 32 tests in 0.403s\n\nOK\n"
+  },
+  "profile_scope": [
+    "Loaded+fresh selected indexing profile; actual cached common-site and fresh common-site scripting flag, including merged-site false override.",
+    "Fresh+actual native cached Notification, Assignment main/due-date, Webhook, Workflow, ServerScript, AutomationFlow catalogs.",
+    "Fresh+actual native cached MilestoneTracker, SLA (all rows, not enabled-only), and nonstandardUserType target mappings.",
+    "Effective parent Project/SalesOrder metadata must have no Attach/AttachImage fields; unrelated mappings/fields remain allowed.",
+    "Malformed/missing schema/catalog/helper exceptions failclosed; no generic callback bypass, install flag spoof, core patch or command-local configuration toggle."
+  ],
+  "native_callback_audit": {
+    "source_hashes": {
+      "model/document.py": "38fc658498a23a42cc8a14ae424591e527c6354d4eada06f12a19644e85b8d00",
+      "realtime.py": "5bd9cde9fd97cfe0f8050b1be4098bc10907ecb153c79a3bfdcd0e9cf12ce386",
+      "integrations/doctype/webhook/__init__.py": "645a562a68282ae57b25dde88022da28b701c4a9c5bbc265854031896a027a7b",
+      "automation_engine/registry.py": "54bd851750eab076f585818809a8cb442431031d0dce45c04841bffd793dbb02",
+      "automation_engine/dispatch.py": "76465e6de8ab06378790fa92ddac2f8dc5da237478aaa97b09beb5391feacaca",
+      "automation_engine/settings.py": "6f9dd36bf5db85f212519d3f8f1965ed8304749137f669d8923715b9beae1e58",
+      "automation/doctype/automation_flow/automation_flow.json": "91a1151455a1110297e3a854b24957a42fddea086580cb30cb26f9a5675a450d",
+      "utils/safe_exec.py": "5e998ecf01bc66ff37e71b2d3d7e1f9fb895ac389718e257c3e76525fe21c370",
+      "core/doctype/server_script/server_script_utils.py": "a428201c350584d35651a42a2171b5586b263c1674ffeed4b04144ae468dc324",
+      "core/doctype/server_script/server_script.py": "43303da178c77fc97e7605e76ef90769a69e12ca3486c485085592280f5ebceb",
+      "workflow/doctype/workflow_action/workflow_action.py": "23ce2b8e0f51e96509f964d729c2193d081e42ed1fcd00138865d3c32ed8b33d",
+      "model/workflow.py": "dca11d1ba5fd98b0ab394a91fff97dfd7d31792f53771d097954ce88811dcee4",
+      "automation/doctype/assignment_rule/assignment_rule.py": "369aa6cce1b76e8f0e7ebf6c8abb4d8133709b22316a6cca23e7c33863d5d547",
+      "cache_manager.py": "b1f7515fb4f542aef1d0ec7a450b218517b28bf4f2eca7f6c54dbb2957ee72ac",
+      "desk/form/assign_to.py": "e317417e9f7ad0a6c2a60c5238f5c393fe9302b0209c2c9fab11014d624143f1",
+      "email/doctype/notification/notification.py": "afabe23c39bd3b82c6c49a7143db9dd51a86916499e0fbcfde141e09f4f8ec9a"
+    },
+    "exact_local_queues": [
+      "_webhook_queue",
+      "_realtime_log"
+    ],
+    "source_only_facts": "Automation queues transactional trigger+aftercommitdrainer; workflow queues aftercommit email; assignments createToDo/share/notification; NotificationSMS/Slack may execute synchronously before late insert failure. Common-site setting controls safe_exec, configured event still throws when disabled."
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/runtime_profile.py": "9bc1485143ec84bf5464a60f803f128b525f009e25ab4e19218731a0a848f6bb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_runtime_profile.py": "e19afd0bf9bbfdb0105e65adb6eab001d9612bd70b37ae577a7d3b6e44c323a8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/native.py": "d82256735f47aea21fe01f4cf92a958233a7de363aa19cbe01df8eda095fb226",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_native.py": "a2ce5fae9886bc5efaaa534d732c00dab1ec3330cdaa4b3914149df9ebe21fda",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/effect.py": "d747f275afb2176c005e975a2644a52a303b264e5e2aff823c98565357459015",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/runtime.py": "5c70cee18a2559d706a3d4a849155a4b687eeb5caeda36efdfa52545af115c59"
+  },
+  "prior_fixture_failure": "Initial direct helper import required a bench logging cwd; test setup now patches frappe.logger to a stdlib logger with immediate ExitStack cleanup before imports. Default no-site/cwd invocation passes without folder creation or site initialization."
+}

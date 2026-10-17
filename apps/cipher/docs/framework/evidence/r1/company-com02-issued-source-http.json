@@ -1,0 +1,140 @@
+{
+  "schema": "cipher.r1.issued-source-http-revocation.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "company": "Company chain A 20b85fd4edd2",
+  "started_at": "2026-10-15T18:36:58.783689+00:00",
+  "distribution_qualified": false,
+  "live_external_provider_qualified": false,
+  "commercial_read_revoked": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "scope_type": "Company",
+    "company": "Company chain A 20b85fd4edd2",
+    "role": "author",
+    "ability": "commercial.read",
+    "active": 0
+  },
+  "revoked_visible_history_count": 37,
+  "commercial_read_restored": {
+    "fixture_id": "company-chain-20b85fd4edd2",
+    "scope_type": "Company",
+    "company": "Company chain A 20b85fd4edd2",
+    "role": "author",
+    "ability": "commercial.read",
+    "active": 1
+  },
+  "issue_id": "6c200369-c843-424d-9faf-bcdf0acb7f20",
+  "protected_history_rows": 6,
+  "original_receipt_replayed": true,
+  "document_read_retained": true,
+  "reviewer_access_retained": true,
+  "original_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.history",
+      "http_status": 200,
+      "request_id": "d218c6e4-d9ec-413b-b4da-8aac00b86558",
+      "server_time": "2026-10-15T18:37:22.380721Z"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 200,
+      "request_id": "ac5a0c0f-75ca-4537-832b-5be42cb18af0",
+      "server_time": "2026-10-15T18:37:23.393982Z"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.commercial.api.issue",
+      "http_status": 403,
+      "request_id": "7ea743f3-dd8e-4461-91c9-4f9476435719",
+      "server_time": "2026-10-15T18:37:24.866636Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.commercial.api.issues",
+      "http_status": 403,
+      "request_id": "a9254c79-1f31-4a6e-a7f0-74fdc0c19153",
+      "server_time": "2026-10-15T18:37:24.873083Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "http_status": 403,
+      "request_id": "0eb2650c-c1d3-4280-b048-5202ede410fa",
+      "server_time": "2026-10-15T18:37:24.886106Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.operation",
+      "http_status": 403,
+      "request_id": "20e88b35-5ec4-40e2-a5ce-a6297dacd76d",
+      "server_time": "2026-10-15T18:37:26.238672Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 403,
+      "request_id": "3762cc2d-b98b-4836-90c9-b1d6118f838a",
+      "server_time": "2026-10-15T18:37:26.310303Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 403,
+      "request_id": "567c45db-2b02-47c0-beea-86f2e0c2290a",
+      "server_time": "2026-10-15T18:37:28.458340Z",
+      "error_code": "capability_denied"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.history",
+      "http_status": 200,
+      "request_id": "8e30e4d5-716a-4fca-86e0-7289232205b5",
+      "server_time": "2026-10-15T18:37:34.427661Z"
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.commercial.api.issue",
+      "http_status": 200,
+      "request_id": "45017601-a545-42af-83f3-a719cdd16339",
+      "server_time": "2026-10-15T18:37:35.029124Z"
+    },
+    {
+      "role": "reviewer",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 200,
+      "source_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+      "byte_length": 12377
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "http_status": 200,
+      "request_id": "f39c9836-0ae3-4935-bd03-3a0575e46436",
+      "server_time": "2026-10-15T18:37:59.967854Z"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.api.company.history",
+      "http_status": 200,
+      "request_id": "091f91cf-8379-4f14-b3c2-dfb598f54cbd",
+      "server_time": "2026-10-15T18:38:22.578993Z"
+    },
+    {
+      "role": "author",
+      "method": "cipher_aec.documents.company_api.download_revision",
+      "http_status": 200,
+      "source_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+      "byte_length": 12377
+    }
+  ],
+  "schema_samples": 7,
+  "completed_at": "2026-10-15T18:38:22.806134+00:00"
+}

@@ -1,0 +1,66 @@
+{
+  "calls": [
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "request_id": "70758382-97c4-4bae-ad21-946a848b0f65",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.228954Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "request_id": "69484d6a-7df3-4a16-9410-bd01d05234b1",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.360438Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company_approvals.read_packet",
+      "request_id": "203c552d-da7f-4656-b76d-bfa994b9cf7e",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.447744Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.operation",
+      "request_id": "1f7d4e55-bdaa-4a57-91f2-0152a0d31e58",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.485261Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.operation",
+      "request_id": "22c24792-c5e4-4cb7-b0bf-41da2cf3f24e",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.609692Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.operation",
+      "request_id": "28bb934c-9ac8-423b-98f0-61eb14e0e81f",
+      "role": "author",
+      "server_time": "2026-10-15T17:25:58.670681Z"
+    },
+    {
+      "http_status": 200,
+      "method": "cipher_aec.api.company.history",
+      "request_id": "49e2e666-e825-4da4-96be-c4e4e7e9dac9",
+      "role": "author",
+      "server_time": "2026-10-15T17:26:06.675530Z"
+    }
+  ],
+  "commercial_issue_qualified": false,
+  "company": "Company chain A 20b85fd4edd2",
+  "completed_at": "2026-10-15T17:26:06.689657+00:00",
+  "external_provider_qualified": false,
+  "failure_type": "AssertionError",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "live_model_qualified": false,
+  "native_private_file": [],
+  "qualification": "Actual cookie/CSRF source and completed-receipt denial plus native private File byte boundary. Root-coordinated Company Duty toggle only; no User/Auth writes.",
+  "schema": "cipher.r1.company-source-http-revocation.v1",
+  "schema_samples": 7,
+  "started_at": "2026-10-15T17:25:57.792271+00:00",
+  "status": "failed"
+}

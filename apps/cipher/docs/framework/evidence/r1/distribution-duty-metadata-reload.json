@@ -1,0 +1,14 @@
+{
+  "schema": "cipher.r1.distribution-duty-metadata-reload.v1",
+  "status": "passed",
+  "exit_code": 0,
+  "started_at": "2026-10-15T18:49:39.872681+00:00",
+  "duration_seconds": 1.771,
+  "supported_entry": "bench --site cipher.localhost reload-doc cipher_governance doctype cipher_project_duty",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json": "015b396252123c6a4e5d4b827513979ca7a4326e84cb7a0a2d136cf6f46c403d"
+  },
+  "source_unchanged": true,
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "qualification": "Supported narrow reload of the native Select vocabulary. No business record write or authority grant is performed by this command."
+}

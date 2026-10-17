@@ -1,0 +1,1149 @@
+{
+  "schema_version": 1,
+  "implementation_authorized": true,
+  "tasks": [
+    {
+      "id": "PLT-01",
+      "release": "R0",
+      "dependencies": [],
+      "scope": "Resolve supported storage capacity and lock compatible ERPNext/Frappe/UI5/runtime versions",
+      "evidence": "Recorded capacity check and exact resolved versions/digests; successful isolated platform startup",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "platform/versions.lock.json",
+        "docs/framework/evidence/r0/image-preparation.json"
+      ]
+    },
+    {
+      "id": "PLT-02",
+      "release": "R0",
+      "dependencies": [
+        "PLT-01"
+      ],
+      "scope": "Create installable cipher_aec app, deployment profiles and migrations bootstrap",
+      "evidence": "Fresh site installs app and repeat migrate is safe; workers/scheduler readiness reported",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/runtime-bootstrap.json"
+      ]
+    },
+    {
+      "id": "PLT-03",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Persistent volumes, artifact development adapter, backup and restore quarantine",
+      "evidence": "Restart retains records; isolated restore does not send external effects",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/restore-verification-final.json",
+        "docs/framework/evidence/r0/http-restart-readback.json"
+      ]
+    },
+    {
+      "id": "GOV-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Canonical person/identity bindings and company/project duties",
+      "evidence": "Alias identities cannot self-approve; cross-company and revoked membership access denied",
+      "status": "verified",
+      "local_contract_status": "verified_project_and_exact_company_scope",
+      "external_qualification_status": "not_required_for_synthetic_identity_policy",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-governance-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ]
+    },
+    {
+      "id": "GOV-02",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01"
+      ],
+      "scope": "Command receipt registry, version/manifest checks and exact-value primitives",
+      "evidence": "Duplicate command has one effect; reused key with changed company/payload conflicts; decimals round correctly",
+      "status": "verified",
+      "local_contract_status": "verified_shared_person_receipt_namespace_project_and_company",
+      "external_qualification_status": "not_required_for_local_commands",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-governance-acceptance.json",
+        "docs/framework/evidence/r1/commercial-http-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ]
+    },
+    {
+      "id": "GOV-03",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02"
+      ],
+      "scope": "Approval packet/decision service and generic-route document hooks",
+      "evidence": "Direct submit/cancel/import attempts cannot bypass required authority",
+      "status": "active",
+      "local_contract_status": "project_actions_verified_company_actions_in_progress",
+      "external_qualification_status": "not_required_for_synthetic_policy",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/governance-approval-acceptance.json",
+        "docs/framework/evidence/r0/approval-concurrency.json",
+        "docs/framework/evidence/r0/approvals-browser/verification.json"
+      ]
+    },
+    {
+      "id": "MIG-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02"
+      ],
+      "scope": "Design independent canonical import/export contracts and fresh synthetic master/dimension fixtures",
+      "evidence": "Target schemas and fixtures stand alone; no Odoo/prior-code access or compatibility needed",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/migration-acceptance.json",
+        "docs/framework/evidence/r0/migration-http-acceptance.json"
+      ]
+    },
+    {
+      "id": "API-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01",
+        "GOV-02"
+      ],
+      "scope": "Same-origin session, typed envelopes, errors, paging and OpenAPI generation",
+      "evidence": "Contract checks validate auth/CSRF, permissions, cursor scope, stale errors and generated client",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "platform/apps/cipher_aec/cipher_aec/api/openapi.json",
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/fresh-validation.json"
+      ]
+    },
+    {
+      "id": "PRJ-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "ERPNext Project/Task read/write services and project profile",
+      "evidence": "Authorized project/task persists across restart; inaccessible records and counts stay private",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/http-closed-project.json",
+        "docs/framework/evidence/r0/http-project-revoked.json"
+      ]
+    },
+    {
+      "id": "DOC-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-01",
+        "PLT-03"
+      ],
+      "scope": "Canonical document/revision, upload quarantine and authorized byte download",
+      "evidence": "Uploaded bytes verified by hash; unauthorized and superseded URL access handled correctly",
+      "status": "active",
+      "local_contract_status": "project_and_company_documents_native_http_ui_passed_fresh_gate_passed",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/http-source-revoked.json",
+        "docs/framework/evidence/r0/http-native-artifact.json",
+        "docs/framework/evidence/r1/company-document-native-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-manual-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-source-acceptance.json",
+        "docs/framework/evidence/r1/company-com02-generated-source-http.json",
+        "docs/framework/evidence/r1/issue-original-read-authority-native.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+      ],
+      "qualification_limit": "Canonical Company documents, revisions, raw bytes and original generated-output provenance passed actual native/HTTP/connected UI checks. Current frozen fresh-site gate passed. Development uploads remain explicitly not_scanned; generated-document input mutations are still gated by their estimating dependency/performance qualification."
+    },
+    {
+      "id": "AI-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "Recover existing Ricky contract and implement replaceable adapter with honest capability status",
+      "evidence": "Fixture and connected-model modes distinct; no presumed protocol, embeddings or tool support",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "UX-01",
+      "release": "R0",
+      "dependencies": [
+        "API-01"
+      ],
+      "scope": "Official UI5 shell, company/project context, work inbox and truthful states",
+      "evidence": "Real Horizon UI5 navigation at three widths; keyboard focus and session expiration handled",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/browser/verification.json",
+        "docs/framework/evidence/r0/browser/served-build-provenance.json"
+      ]
+    },
+    {
+      "id": "QA-01",
+      "release": "R0",
+      "dependencies": [
+        "PLT-02",
+        "API-01"
+      ],
+      "scope": "CI/test runners, real Frappe database fixtures and release evidence manifest",
+      "evidence": "Reproducible fresh build/type checks/integration checks; evidence binds source version",
+      "status": "verified",
+      "local_contract_status": "company_com02_gate_passed_diagnostics_only_505fb754_full_gate_passed",
+      "external_qualification_status": "hosted_e21ed89f_and_505fb754_passed_f709a336_failure_retained_cause_unknown",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/QA01_VALIDATION.md",
+        "docs/framework/evidence/r0/fresh-validation-initial.json",
+        "docs/framework/evidence/r0/fresh-validation-reporter-initial.json",
+        "docs/framework/evidence/r0/fresh-validation-registry-initial.json",
+        "docs/framework/evidence/r0/fresh-validation.json",
+        "docs/framework/evidence/r0/hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2043.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T204745Z.json",
+        "docs/framework/evidence/r1/standalone-unit-fixture-correction.json",
+        "docs/framework/evidence/r1/fin-lock-recorder-correction.json",
+        "docs/framework/evidence/r1/company-com02-hosted-validation-provenance.json",
+        "docs/framework/evidence/r1/CI_BROWSER_DIAGNOSTICS.md",
+        "docs/framework/evidence/r1/ci-browser-diagnostics-fresh-validation-20261015T2140Z.json",
+        "docs/framework/evidence/r1/ci-browser-diagnostics-hosted-validation-provenance.json"
+      ],
+      "qualification_limit": "Published 505fb754 passed isolated local and hosted fresh-site gates with 315 backend cases, seven workflow procedures, four process checks and 100 browser scenarios; eleven added reporting checks also passed. Hosted provenance records stage passes and artifact identity, not independent parsing of its raw JUnit/browser artifacts. Original f709a336 browser-stage failure remains preserved with cause unknown. These checkpoints do not qualify subsequent domain edits or real provider/model connections."
+    },
+    {
+      "id": "INT-01",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02",
+        "PLT-03"
+      ],
+      "scope": "Generic durable outbox/inbox, attempts, leases and recovery scheduler",
+      "evidence": "Crash after commit before queueing still delivers work; duplicate callback has one effect",
+      "status": "verified",
+      "local_contract_status": "verified",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/outbox-acceptance.json"
+      ],
+      "qualification_limit": "Registered internal local Task effect only; no normal public enqueue route. Current user/person/duty revocation is checked; original browser session authority is not persisted by this generic internal outbox. A public workflow must supply its session or durable-delegation authorization contract; external provider delivery is separate."
+    },
+    {
+      "id": "DOC-02",
+      "release": "R0",
+      "dependencies": [
+        "DOC-01",
+        "INT-01"
+      ],
+      "scope": "Text/PDF extraction, source/page citations and exact search",
+      "evidence": "Known source fact returns exact accessible revision/page; failed extraction remains visible",
+      "status": "active",
+      "local_contract_status": "project_extraction_verified_company_source_access_in_progress",
+      "external_qualification_status": "not_required_for_current_local_scope",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/http-journey-final.json",
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json"
+      ]
+    },
+    {
+      "id": "AI-02",
+      "release": "R0",
+      "dependencies": [
+        "GOV-02",
+        "API-01",
+        "INT-01"
+      ],
+      "scope": "Persist Ricky runs/steps/delegations/tool receipts with budgets and cancellation",
+      "evidence": "Worker restart resumes original operation; late worker fenced; cancellation preserves completed effects",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "AI-03",
+      "release": "R0",
+      "dependencies": [
+        "DOC-02",
+        "AI-01",
+        "AI-02",
+        "PRJ-01"
+      ],
+      "scope": "Permission-aware cited answer and task-proposal/commit tool",
+      "evidence": "Revoked access and injected source instructions cannot create unauthorized task; repeat commit creates one task",
+      "status": "active",
+      "local_contract_status": "verified_with_explicit_test_adapter",
+      "external_qualification_status": "blocked_missing_existing_model_connection_contract",
+      "evidence_paths": [
+        "docs/framework/evidence/r0/ricky-transactional-acceptance.json",
+        "docs/framework/evidence/r0/http-journey-final.json"
+      ]
+    },
+    {
+      "id": "UX-02",
+      "release": "R0",
+      "dependencies": [
+        "UX-01",
+        "PRJ-01",
+        "DOC-02",
+        "AI-03"
+      ],
+      "scope": "Connect project/document/Ricky/proposed task/history journey",
+      "evidence": "Actual browser captures plus persistent restart, one task after retry and second-user denial",
+      "status": "active",
+      "local_contract_status": "implementation_under_verification",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "COM-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-01",
+        "GOV-03",
+        "MIG-01"
+      ],
+      "scope": "Extend Opportunity/Quotation with pursuit, proposal sections and immutable revisions",
+      "evidence": "Scope/alternates/terms survive revision comparison without creating a duplicate customer master",
+      "status": "verified",
+      "local_contract_status": "verified_native_company_only_pursuit_proposal_drafts",
+      "external_qualification_status": "not_required_for_drafts",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/commercial-native-acceptance.json",
+        "docs/framework/evidence/r1/commercial-http-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Native company-only drafts and immutable revisions are qualified. Company document/estimate references, proposal acceptance/issue and award follow their explicit next contracts; no placeholder Project."
+    },
+    {
+      "id": "EST-01",
+      "release": "R1",
+      "dependencies": [
+        "DOC-02",
+        "GOV-02"
+      ],
+      "scope": "Units/conversions, rate sources, assembly revisions and exact estimate calculation",
+      "evidence": "Known quantity/rate/waste examples and invalid-dimension cases produce deterministic results",
+      "status": "active",
+      "local_contract_status": "project_estimates_verified_company_pursuit_scope_in_progress",
+      "external_qualification_status": "not_required_for_authored_sources",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/est01-acceptance.json",
+        "docs/framework/evidence/r1/est01-schema-samples.json",
+        "docs/framework/evidence/r1/est01-http-acceptance.json",
+        "docs/framework/evidence/r0/fresh-validation.json",
+        "docs/framework/evidence/r1/est01-catalog-privacy-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json"
+      ],
+      "qualification_limit": "Project scope and off-page current-source privacy are qualified. Company/Pursuit scope is the next additive contract. Exact earlier calculation/HTTP evidence remains bound to its captured source."
+    },
+    {
+      "id": "EST-02",
+      "release": "R1",
+      "dependencies": [
+        "EST-01",
+        "DOC-02"
+      ],
+      "scope": "Takeoff measurement, calibration, geometric/manual lineage and revision comparison",
+      "evidence": "Calibrated fixture reproduces quantities; manual entry is labeled; new drawing invalidates affected dependencies",
+      "status": "active",
+      "local_contract_status": "company_manual_takeoff_evidence_successors_and_working_unverified_calibration_composed_verified",
+      "external_qualification_status": "not_required_for_authored_drawings",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/est02-acceptance.json",
+        "docs/framework/evidence/r1/est02-parser-ci-acceptance.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/COMPANY_TAKEOFF.md",
+        "docs/framework/evidence/r1/company-takeoff-r17/README.md",
+        "docs/framework/evidence/r1/company-takeoff-r17/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_EVIDENCE.md",
+        "docs/framework/evidence/r1/company-takeoff-binding-r18/README.md",
+        "docs/framework/evidence/r1/company-takeoff-binding-r18/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_SUCCESSORS.md",
+        "docs/framework/evidence/r1/company-takeoff-successor-r19/README.md",
+        "docs/framework/evidence/r1/company-takeoff-successor-r19/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_HISTORY.md",
+        "docs/framework/evidence/r1/company-takeoff-history-r20/README.md",
+        "docs/framework/evidence/r1/company-takeoff-history-r20/ui/README.md",
+        "docs/framework/COMPANY_WORKING_CALIBRATION.md",
+        "docs/framework/evidence/r1/company-working-calibration-r21/README.md",
+        "docs/framework/evidence/r1/company-working-calibration-r21/ui/README.md"
+      ],
+      "qualification_limit": "Project-scoped actual vector-PDF calibration, verification, measurements, bindings and impact are qualified. Company scope and connected takeoff viewer remain next work. Original lost-UUID503 attempt is disclosed; known-success UUID replays are not unknown-outcome recovery proof. R17 connects Company set creation, raw PDF viewing without OCR and authored manual quantities. The original native run remains failed after two successful commands; a separate continuation reused exact records and saved one measurement. Eleven declared additions across both epochs, exact receipt/history/core hashes and 77-table preservation passed. Twelve actual responsive captures passed. Estimate-line binding/calibration UI, broader acceptance and dependent award/procurement remain active. R18 qualified exact saved-line evidence with two dedicated synthetic estimate target commands plus one actual browser binding. Eleven declared additions and immutable original pricing/measurement/source preservation passed; twelve actual responsive screens passed. Original HTTP428/header, checkbox capture-helper and narrower verifier failures remain retained. R17 hosted CI passed all25 stages. Successors/comparison, calibration and broader EST-02/UX-03 remain active. R19 qualified explicit manual successors/comparison with 107 affected checks, one actual browser command, three declared native additions, canonical comparison and immutable original measurement/binding/pricing preservation. Twelve actual native screenshots were captured; later inner-phone visual clipping was retained and corrected in R20. Changed-drawing fixtures and same-drawing native quantity revision remain distinct. Reopening saved evidence, calibration and broader enterprise acceptance remain active. R20 adds Company-wide bounded persisted attachment review, exact historical graph and stored predecessor comparisons. 105 affected checks passed; fifteen actual read-only screens and native zero-business-effect preservation passed, including corrected long-unit phone form with proposed 4.250000 never saved. Original native/source/visual failures stay retained. R18 hosted CI passed all 25 stages. Calibration and broader module/enterprise acceptance remain active. Working calibration: one actual saved unverified record/receipt/history independently audited; corrected Company+UOM validator accepts original actual response; six actual corrected saved-read screens, zero repeatPOST.27fresh/118composed checks,type/build/13generated passed. Original create-capture and optional repeated-pointer capture remain failed; bounded saved-read audit passed. No independent verification/geometric use claim. Broader original package remains active."
+    },
+    {
+      "id": "EST-03",
+      "release": "R1",
+      "dependencies": [
+        "EST-02",
+        "GOV-03"
+      ],
+      "scope": "Estimate acceptance and frozen baseline",
+      "evidence": "Changed material source rejects stale acceptance; successor estimate does not reprice baseline",
+      "status": "active",
+      "local_contract_status": "raw_manual_geometry_baselines_native_http_ui_passed_original_authority_passed_generated_input_performance_active_fresh_gate_passed",
+      "external_qualification_status": "not_required_for_local_accepted_baselines",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/company-chain-native-acceptance.json",
+        "docs/framework/evidence/r1/company-chain-http-manual-acceptance.json",
+        "docs/framework/evidence/r1/est-company-and-est03-source-manifest.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/est-generated-authority-continuations-native.json",
+        "docs/framework/evidence/r1/est-original-read-authority-native.json",
+        "docs/framework/evidence/r1/history-literal-authority-partial-profile.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/document-mutation-preflight-tests.json",
+        "docs/framework/evidence/r1/est-citation-batching-native.json",
+        "docs/framework/evidence/r1/est-citation-batching-runtime-reload.json",
+        "docs/framework/evidence/r1/company-authority-sql-native.json",
+        "docs/framework/evidence/r1/company-authority-sql-runtime-reload.json",
+        "docs/framework/evidence/r1/est-recorded-performance-native.json"
+      ],
+      "qualification_limit": "Raw/manual/geometry accepted-baseline lineage has connected native, HTTP and actual UI evidence. Original-only historical authority, revocation/restoration and unchanged accepted bytes passed. Latest source-bound generated-input consume after reviewed citation grouping took 4.296 seconds with 15,156 SQL calls and 169 actual byte checks, above the 3-second target; full history latency remains unqualified. Public generated-document input admission remains disabled. A normally generated proposal PDF output with original-producer provenance is a separate supported path."
+    },
+    {
+      "id": "COM-02",
+      "release": "R1",
+      "dependencies": [
+        "COM-01",
+        "EST-03",
+        "INT-01"
+      ],
+      "scope": "Proposal review, output snapshots, issue and controlled distribution contract",
+      "evidence": "Issued output matches approved revision; send is separate and fixture delivery labeled",
+      "status": "active",
+      "local_contract_status": "prepared_issue_distribution_native_http_operational_recovery_actual_ui_passed_fresh_gate_passed",
+      "external_qualification_status": "not_configured_for_external_distribution",
+      "evidence_paths": [
+        "docs/framework/COM02_PREPARED_OUTPUT_CONTRACT.md",
+        "docs/framework/evidence/r1/commercial-output-preparation-native-qualified.json",
+        "docs/framework/evidence/r1/commercial-complete-admission-native.json",
+        "docs/framework/evidence/r1/company-com02-preparation-http.json",
+        "docs/framework/evidence/r1/company-com02-generated-source-http.json",
+        "docs/framework/evidence/r1/proposal-issue-policy-install.json",
+        "docs/framework/evidence/r1/commercial-issue-native-acceptance.json",
+        "docs/framework/evidence/r1/company-com02-issue-http.json",
+        "docs/framework/evidence/r1/company-com02-issue-native-readback.json",
+        "docs/framework/evidence/r1/company-com02-issued-source-http.json",
+        "docs/framework/evidence/r1/distribution-migrate.json",
+        "docs/framework/evidence/r1/distribution-migration-preservation.json",
+        "docs/framework/evidence/r1/distribution-duty-metadata-reload.json",
+        "docs/framework/evidence/r1/distribution-duty-native-parity.json",
+        "docs/framework/evidence/r1/distribution-fixture-setup.json",
+        "docs/framework/evidence/r1/distribution-http-mandate.json",
+        "docs/framework/evidence/r1/distribution-worker-lost-ack.json",
+        "docs/framework/evidence/r1/distribution-worker-readback.json",
+        "docs/framework/evidence/r1/distribution-evidence-progress.json",
+        "docs/framework/evidence/r1/distribution-operational-acceptance.json",
+        "docs/framework/evidence/r1/distribution-current-ack-http-delta.json",
+        "docs/framework/evidence/r1/distribution-ui-automatic-delivery.json",
+        "docs/framework/evidence/r1/company-approval-inbox-http.json",
+        "docs/framework/evidence/r1/com02-browser/provenance.json",
+        "docs/framework/evidence/r1/issue-original-read-authority-native.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md"
+      ],
+      "qualification_limit": "Separate preparation, independent issuance, recipient-subset approval and controlled fixture delivery are exercised. Actual restart, queue-publication fault and operator-quarantine recovery retained one original operation and acknowledgment. Responsive actual UI and exact current receipt readback passed. Fresh combined gate passed; live customer/provider delivery is not configured or qualified."
+    },
+    {
+      "id": "FIN-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-01",
+        "GOV-03"
+      ],
+      "scope": "Construction contract/SOV base schemas, terms and retainage policies before award orchestration",
+      "evidence": "SOV caps cannot fall below certified amounts without correction; no manufacturing-subcontract shortcut",
+      "status": "verified",
+      "local_contract_status": "verified_synthetic_contract_sov_baseline_and_conservative_floor_admission",
+      "external_qualification_status": "not_required_for_unposted_synthetic_baseline",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/FIN01_ACCEPTANCE.md",
+        "docs/framework/evidence/r1/fin01-native-acceptance.json",
+        "docs/framework/evidence/r1/fin01-http-acceptance.json",
+        "docs/framework/evidence/r1/fin01-http-history.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/fin01-native-master-rights-acceptance.json"
+      ],
+      "qualification_limit": "Synthetic independently approved baseline only; no legal execution, certification, posting or GL movement. Unsupported activity and reductions/deletions fail closed until qualified FIN03 floor/correction contracts exist."
+    },
+    {
+      "id": "PRJ-02",
+      "release": "R1",
+      "dependencies": [
+        "COM-02",
+        "EST-03",
+        "FIN-01"
+      ],
+      "scope": "Atomic award to project, WBS, budget, contract and Sales Order links",
+      "evidence": "Repeated award yields one project/baseline; line lineage and totals reconcile",
+      "status": "active",
+      "local_contract_status": "canonical_controls_connected_cost_admin_and_plan_authoring_and_full_gate_passed_main_deployment_active_composed_award_blocked_main_disabled",
+      "external_qualification_status": "not_evaluated",
+      "evidence_paths": [
+        "docs/framework/PRJ02_NATIVE_AWARD_CONTRACT.md",
+        "docs/framework/PRJ02_FIN_ADMISSION_CONTRACT.md",
+        "docs/framework/PRJ02_HANDOFF_SCHEMA.md",
+        "docs/framework/PRJ02_COMPOSED_ACCEPTANCE_PLAN.md",
+        "docs/framework/evidence/r1/controls-inactive-migration.json",
+        "docs/framework/evidence/r1/project-controls-native-qualification.json",
+        "docs/framework/evidence/r1/project-controls-account-attribution.json",
+        "docs/framework/evidence/r1/PROJECT_CONTROLS_ACCEPTANCE_STATUS.md",
+        "docs/framework/evidence/r1/award-runtime-install-native.json",
+        "docs/framework/evidence/r1/prj02-disabled-native-preflight.json",
+        "docs/framework/evidence/r1/prj02-native-prerequisite-setup.json",
+        "docs/framework/evidence/r1/prj02-disabled-http-prerequisites.json",
+        "docs/framework/evidence/r1/prj02-enabled-policy-native.json",
+        "docs/framework/evidence/r1/prj02-ui-contracts/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/cost-setup-v2/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/saved-plan-v2/qualification.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v3-passed.json",
+        "docs/framework/evidence/r1/cost-planning-browser-origin-correction.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v4-passed.json",
+        "docs/framework/evidence/r1/cost-planning-main-deployment-v4.json",
+        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json"
+      ],
+      "qualification_limit": "Canonical cost controls passed ten isolated native groups. Actual independent HTTP preparation accepted a 15.00 mixed cost baseline, issued a 30.85 proposal PDF and saved the original award plan; the disabled award request returned 403 with all 51 compared tables unchanged. Four normal UI cost-code/type create/revise operations now have exact receipts and independent readback, with corrected real desktop/tablet/phone captures. One final same-handoff plan successor saved and independently read back with only the Project name changed; original source/PDF/dates/team/WBS/cost preserved. The isolated enabled source/policy passed passive preservation checks, but platform content review blocked preparation of its recovery-test driver; no native award probe or positive effect is qualified. Main award writer remains disabled. After the preserved fixture cleanup and test-only configured-origin correction, the third full 618-file checkpoint gate passed 553 unique backend cases, eight workflows and all150 browser cases with no source changes. Main backup passed; schema/preservation and web deployment remain active. Generated-document input admission remains disabled."
+    },
+    {
+      "id": "BUY-01",
+      "release": "R1",
+      "dependencies": [
+        "PRJ-02"
+      ],
+      "scope": "Requests/RFQs/quote comparisons and project procurement packages",
+      "evidence": "Supplier quote normalization preserves original; unauthorized award blocked",
+      "status": "planned",
+      "local_contract_status": "unregistered_nonpersistent_draft_slice_source_reviewed_27_pure_checks_native_adapter_pending_award",
+      "external_qualification_status": "not_evaluated",
+      "evidence_paths": [
+        "docs/framework/BUY_NATIVE_PROCUREMENT_CONTRACT.md",
+        "docs/framework/evidence/r1/buy01-unregistered-draft-tests-v2.json"
+      ],
+      "qualification_limit": "Unpublished working follow-on; executable sources are excluded from the cost/planning checkpoint and its gate. Seven isolated unregistered files preserve original supplier values, exact unit/rate comparisons, predecessor source rights and quantity mismatch blockers. No native procurement records, public endpoint, awarded-Project adapter, purchase order or financial effect is qualified."
+    },
+    {
+      "id": "BUY-02",
+      "release": "R1",
+      "dependencies": [
+        "BUY-01",
+        "FIN-01"
+      ],
+      "scope": "Purchase orders, construction commitments and controlled release",
+      "evidence": "Commitment links standard PO and approved contract without creating a payable",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "BUY-03",
+      "release": "R1",
+      "dependencies": [
+        "BUY-02",
+        "DOC-01"
+      ],
+      "scope": "Partial receipts, inspection evidence and stored-material inventory links",
+      "evidence": "Delivered/accepted/rejected quantities and remaining PO reconcile after partial receipt",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-04",
+      "release": "R1",
+      "dependencies": [
+        "COM-01",
+        "EST-03",
+        "AI-03"
+      ],
+      "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
+      "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
+      "status": "in_progress",
+      "local_contract_status": "company_reads_suggestions_reviewed_draft_saves_and_activity_native_ui_verified",
+      "external_qualification_status": "live_model_not_connected",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/ai04-isolated-tools-tests.json",
+        "docs/framework/AI04_COMPANY_READ_INTEGRATION.md",
+        "docs/framework/evidence/r1/company-ricky-native-r10/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r11/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r12/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r13/README.md",
+        "docs/framework/AI04_COMPANY_PROPOSALS.md",
+        "docs/framework/evidence/r1/company-ricky-native-r14/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r14/ui/README.md",
+        "docs/framework/AI04_COMPANY_DRAFT_SAVES.md",
+        "docs/framework/evidence/r1/company-ricky-native-r15/README.md",
+        "docs/framework/evidence/r1/company-ricky-native-r15/ui/README.md",
+        "docs/framework/COMPANY_ACTIVITY.md",
+        "docs/framework/evidence/r1/company-activity-r16/README.md",
+        "docs/framework/evidence/r1/company-activity-r16/ui/README.md"
+      ],
+      "qualification_limit": "R15 passed 942 fresh backend and 239 distinct composed browser cases, 13 generated contracts and a 905-file build. Actual HTTP/RQ scope/estimate saves, successors/natural-expiry replay and eight refusal/rollback cases passed. The final read-only audit verified the retained one-winner 200/503 competition plus a same-loser-UUID 409 expired refusal, without resetting failed expectations. All inventoried original rows and 53 positive-epoch additions were preserved with three explicit restoration audit deltas and 141 bounded authentication observations. Thirteen connected screenshots used 48 actual GETs, no mocked responses, business commands or model call. Original failures remain retained. R16 Company Activity passed 262 composed browser cases and nine real screens using three GETs, preserving 78 inventoried tables and closed R15 evidence. Live model/QuickBooks, broader operational recovery and main deployment remain unfinished. Working-draft saves confer no baseline/issue/award/accounting authority."
+    },
+    {
+      "id": "UX-03",
+      "release": "R1",
+      "dependencies": [
+        "COM-02",
+        "EST-03",
+        "BUY-03",
+        "UX-02"
+      ],
+      "scope": "Commercial/estimate/award/procurement pages including dense editing",
+      "evidence": "Keyboard/paste/validation works on estimate lines; all transitions operate through shared APIs",
+      "status": "active",
+      "local_contract_status": "company_manual_takeoff_evidence_successors_and_working_unverified_calibration_composed_verified",
+      "external_qualification_status": "not_required_for_current_estimate_drafts",
+      "qualification_limit": "Connected Company cost administration and final plan revision passed in the retained isolated site. Complete621-source checkpoint passed553backend/8workflow/151browser checks; corrected907-file main UI passed9 actual responsive read-only captures. Main Company cost-positive route is unexercised. Atomic award acceptance and dependent procurement remain pending. Existing mutation recovery remains mounted-view only. R17 connects Company set creation, raw PDF viewing without OCR and authored manual quantities. The original native run remains failed after two successful commands; a separate continuation reused exact records and saved one measurement. Eleven declared additions across both epochs, exact receipt/history/core hashes and 77-table preservation passed. Twelve actual responsive captures passed. Estimate-line binding/calibration UI, broader acceptance and dependent award/procurement remain active. R18 qualified exact saved-line evidence with two dedicated synthetic estimate target commands plus one actual browser binding. Eleven declared additions and immutable original pricing/measurement/source preservation passed; twelve actual responsive screens passed. Original HTTP428/header, checkbox capture-helper and narrower verifier failures remain retained. R17 hosted CI passed all25 stages. Successors/comparison, calibration and broader EST-02/UX-03 remain active. R19 qualified explicit manual successors/comparison with 107 affected checks, one actual browser command, three declared native additions, canonical comparison and immutable original measurement/binding/pricing preservation. Twelve actual native screenshots were captured; later inner-phone visual clipping was retained and corrected in R20. Changed-drawing fixtures and same-drawing native quantity revision remain distinct. Reopening saved evidence, calibration and broader enterprise acceptance remain active. R20 adds Company-wide bounded persisted attachment review, exact historical graph and stored predecessor comparisons. 105 affected checks passed; fifteen actual read-only screens and native zero-business-effect preservation passed, including corrected long-unit phone form with proposed 4.250000 never saved. Original native/source/visual failures stay retained. R18 hosted CI passed all 25 stages. Calibration and broader module/enterprise acceptance remain active. Working calibration: one actual saved unverified record/receipt/history independently audited; corrected Company+UOM validator accepts original actual response; six actual corrected saved-read screens, zero repeatPOST.27fresh/118composed checks,type/build/13generated passed. Original create-capture and optional repeated-pointer capture remain failed; bounded saved-read audit passed. No independent verification/geometric use claim. Broader original package remains active.",
+      "evidence_paths": [
+        "docs/framework/evidence/r1/estimating-draft-workspace/verification.json",
+        "docs/framework/evidence/r1/estimating-responsive-correction/verification.json",
+        "docs/framework/evidence/r1/estimating-create-recovery-final/verification.json",
+        "docs/framework/evidence/r1/combined-fresh-validation.json",
+        "docs/framework/evidence/r1/project-pdf-workspace/verification.json",
+        "docs/framework/evidence/r1/company-workspace/verification.json",
+        "docs/framework/evidence/r1/project-pdf-polish/verification.json",
+        "docs/framework/evidence/r1/company-polish/verification.json",
+        "docs/framework/evidence/r1/com02-browser/provenance.json",
+        "docs/framework/evidence/r1/com02-browser/exact-issue/verification.json",
+        "docs/framework/evidence/r1/com02-browser/subset-instruction-review/verification.json",
+        "docs/framework/evidence/r1/com02-browser/fixture-readback/verification.json",
+        "docs/framework/evidence/r1/com02-browser/inbox-responsive/verification.json",
+        "docs/framework/evidence/r1/company-com02-fresh-validation-20261015T2100Z.json",
+        "docs/framework/evidence/r1/company-com02-checkpoint-review.md",
+        "docs/framework/evidence/r1/prj02-ui-connected/cost-setup-v2/qualification.json",
+        "docs/framework/evidence/r1/prj02-ui-connected/saved-plan-v2/qualification.json",
+        "docs/framework/evidence/r1/cost-planning-fresh-gate-v4-passed.json",
+        "docs/framework/evidence/r1/cost-planning-main-deployment-v4.json",
+        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json",
+        "docs/framework/COMPANY_ACTIVITY.md",
+        "docs/framework/evidence/r1/company-activity-r16/README.md",
+        "docs/framework/evidence/r1/company-activity-r16/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF.md",
+        "docs/framework/evidence/r1/company-takeoff-r17/README.md",
+        "docs/framework/evidence/r1/company-takeoff-r17/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_EVIDENCE.md",
+        "docs/framework/evidence/r1/company-takeoff-binding-r18/README.md",
+        "docs/framework/evidence/r1/company-takeoff-binding-r18/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_SUCCESSORS.md",
+        "docs/framework/evidence/r1/company-takeoff-successor-r19/README.md",
+        "docs/framework/evidence/r1/company-takeoff-successor-r19/ui/README.md",
+        "docs/framework/COMPANY_TAKEOFF_HISTORY.md",
+        "docs/framework/evidence/r1/company-takeoff-history-r20/README.md",
+        "docs/framework/evidence/r1/company-takeoff-history-r20/ui/README.md",
+        "docs/framework/COMPANY_WORKING_CALIBRATION.md",
+        "docs/framework/evidence/r1/company-working-calibration-r21/README.md",
+        "docs/framework/evidence/r1/company-working-calibration-r21/ui/README.md"
+      ]
+    },
+    {
+      "id": "FIN-02",
+      "release": "R2",
+      "dependencies": [
+        "FIN-01",
+        "BUY-03"
+      ],
+      "scope": "Invoice intake, duplicate detection, matching and service/no-PO exceptions",
+      "evidence": "Original supplier evidence retained; duplicate/variance resolution explicit; no accidental posting",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-03",
+      "release": "R2",
+      "dependencies": [
+        "FIN-02"
+      ],
+      "scope": "Installed-work certificates, supplier applications and stored-material consumption",
+      "evidence": "Prior/current/cumulative work reconciles; material is not billed twice when installed",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-04",
+      "release": "R2",
+      "dependencies": [
+        "FIN-03",
+        "GOV-03",
+        "INT-01"
+      ],
+      "scope": "Independent approval and Purchase Invoice posting with exact GL comparison",
+      "evidence": "Changed facts/self-posting denied; invoice, consumed grant, receipt and outbox commit together",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-05",
+      "release": "R2",
+      "dependencies": [
+        "FIN-04"
+      ],
+      "scope": "Retainage withholding/release and linked credits/corrections",
+      "evidence": "Release transfers retained to ordinary payable without duplicate cost; paid/closed-period cases explicit",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-02",
+      "release": "R2",
+      "dependencies": [
+        "INT-01",
+        "MIG-01",
+        "FIN-04"
+      ],
+      "scope": "QuickBooks capabilities, mapping, OAuth storage and sandbox handoff/readback",
+      "evidence": "Provider supported document mapping proven where credentials exist; unknown outcomes do not create duplicates",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-03",
+      "release": "R2",
+      "dependencies": [
+        "INT-02",
+        "FIN-05"
+      ],
+      "scope": "BILL/payment route mapping, status import and reconciliation",
+      "evidence": "One nominated payment creator; confirmed/held/failed/unknown distinct; retry never pays twice",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-04",
+      "release": "R2",
+      "dependencies": [
+        "INT-02"
+      ],
+      "scope": "Inventory/asset/labor/adjustment effect classification and official-origin import rules",
+      "evidence": "No unclassified GL effect exported; QuickBooks-origin adjustments do not echo back",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-06",
+      "release": "R2",
+      "dependencies": [
+        "FIN-01",
+        "FIN-05"
+      ],
+      "scope": "Owner applications, Sales Invoice posting and retainage receivable",
+      "evidence": "Claimed/reviewed/SOV totals reconcile; issue/send separate from posting",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-07",
+      "release": "R2",
+      "dependencies": [
+        "FIN-06",
+        "INT-02"
+      ],
+      "scope": "Receipts, allocation, returns, deposits, credits and collections",
+      "evidence": "Allocation bounded by actual open balances; returned receipt restores eligible amount only",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FIN-08",
+      "release": "R2",
+      "dependencies": [
+        "FIN-05",
+        "FIN-07",
+        "INT-04"
+      ],
+      "scope": "Operational/official reconciliation, WIP and period close",
+      "evidence": "Unresolved differences reported; policy-driven close blocks incompatible postings",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "UX-04",
+      "release": "R2",
+      "dependencies": [
+        "FIN-08",
+        "UX-03"
+      ],
+      "scope": "Unified AP/AR/retained balance/collections/reconciliation pages",
+      "evidence": "Human can complete supplier and owner journeys without Desk; real captures include exception states",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-05",
+      "release": "R2",
+      "dependencies": [
+        "FIN-08",
+        "AI-04"
+      ],
+      "scope": "Ricky coding/matching/explanations and granted-action execution",
+      "evidence": "Tool cannot invent debt or bypass posting duties; exact proposal/source binding verified",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "PRJ-03",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-02",
+        "FIN-01"
+      ],
+      "scope": "Change events, contract changes, budget transfers and forecast versions",
+      "evidence": "RFI impact alone does not change contract; approved/pending exposure distinctly reported",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "PRJ-04",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-03"
+      ],
+      "scope": "Schedule baseline, dependencies, calendars, progress and lookahead",
+      "evidence": "Cycle invalidation and changed baseline history tested; forecast uses declared progress basis",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-01",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-01",
+        "DOC-01"
+      ],
+      "scope": "Daily reports, photos, installed quantities and T&M tickets",
+      "evidence": "Accepted records amend with lineage; acknowledged T&M does not silently amend contract",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-02",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "GOV-02"
+      ],
+      "scope": "Offline capture envelopes and explicit conflict resolution",
+      "evidence": "Repeated reconnect does not duplicate event; revoked project access prevents sync effects",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-01",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "INT-04"
+      ],
+      "scope": "Compatible Frappe HR installation, crews/classifications/time approval, payroll handoff and job-cost allocation",
+      "evidence": "Provider totals reconcile to approved time; no duplicate payroll execution or inferred rates",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-02",
+      "release": "R3",
+      "dependencies": [
+        "OPS-01",
+        "INT-04"
+      ],
+      "scope": "Asset/rental equipment allocations, meters, maintenance and costing",
+      "evidence": "Rate revision/source retained; operational usage and official asset accounting reconcile",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-01",
+      "release": "R3",
+      "dependencies": [
+        "DOC-02",
+        "GOV-03"
+      ],
+      "scope": "RFI and submittal revisions, checking/dispositions and controlled distribution",
+      "evidence": "Successor revisions retain originals; technical response does not authorize commercial change",
+      "status": "active",
+      "local_contract_status": "implemented_host_browser_contracts_and_exact_source_native_backend_verified_UI_pending",
+      "external_qualification_status": "not_evaluated",
+      "qualification_limit": "Native integration/backend/workflow CI passed on 9029585b. Overall CI failed at browser-stage 920-second ceiling without a report. Actual native UI and current changed-source full CI remain pending; source and original failures remain separately tracked. No MAIN installation or live providers.",
+      "implementation_evidence": "ENGINEERING_ENG01.md"
+    },
+    {
+      "id": "ENG-02",
+      "release": "R3",
+      "dependencies": [
+        "ENG-01"
+      ],
+      "scope": "Engineering work packages, design basis, calculations, checking and deliverables",
+      "evidence": "Author/checker and source units enforced; completed calculation is not automatically issued",
+      "status": "active",
+      "local_contract_status": "implemented_host_and_browser_contracts_verified_native_pending",
+      "external_qualification_status": "not_evaluated",
+      "qualification_limit": "Original work packages, exact source/unit design basis, human-authored calculation records, deliverables and designated independent checking implemented in backend and SAP UI5. Native fresh-site integration and actual native UI qualification remain pending. No solver/tool execution, professional seal, issue/distribution authority or commercial effect.",
+      "implementation_evidence": "ENGINEERING_ENG02.md"
+    },
+    {
+      "id": "ENG-03",
+      "release": "R3",
+      "dependencies": [
+        "ENG-02",
+        "AI-02"
+      ],
+      "scope": "Existing Ricky CAD/takeoff/calculation tool adapters and isolated jobs",
+      "evidence": "Actual supported tool input/output fixture passes; cancellation/readback and immutable output verified",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "DOC-03",
+      "release": "R3",
+      "dependencies": [
+        "DOC-02",
+        "ENG-01"
+      ],
+      "scope": "Issued sets/transmittals, specifications/contracts library and adopted revisions",
+      "evidence": "Source update does not overwrite adopted/executed text; current rights enforced",
+      "status": "active",
+      "local_contract_status": "backend_implementation_in_progress_unpublished",
+      "external_qualification_status": "not_evaluated",
+      "qualification_limit": "Original issued sets/transmittals and specification/contract library backend work started in a separate source workspace. No completed implementation or native qualification claimed.",
+      "implementation_evidence": "EXECUTION_BACKLOG.md#doc-03--issued-setstransmittals-specificationscontracts-library-and-adopted-revisions"
+    },
+    {
+      "id": "DOC-04",
+      "release": "R3",
+      "dependencies": [
+        "DOC-03",
+        "AI-03"
+      ],
+      "scope": "Qdrant semantic index and actual embedding adapter with ACL rechecks",
+      "evidence": "Unauthorized snippets/citations never enter context; deletion/reindex reproducible",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "FLD-03",
+      "release": "R3",
+      "dependencies": [
+        "FLD-01",
+        "ENG-01"
+      ],
+      "scope": "QA/QC inspections, deficiencies, safety observations/incidents and permits",
+      "evidence": "Closure requires evidence; sensitive incident fields hidden from general project users",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENG-04",
+      "release": "R3",
+      "dependencies": [
+        "ENG-02",
+        "DOC-03",
+        "FLD-03"
+      ],
+      "scope": "Commissioning, punch, O&M/warranties and asset handover/closeout",
+      "evidence": "Required missing evidence blocks completion; turnover package contains exact accepted revisions",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "RPT-01",
+      "release": "R3",
+      "dependencies": [
+        "FIN-08",
+        "PRJ-03",
+        "OPS-02"
+      ],
+      "scope": "Project/portfolio dashboards, job cost, forecasts and snapshot exports",
+      "evidence": "As-of watermarks visible; private project values excluded from aggregates and exports",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "UX-05",
+      "release": "R3",
+      "dependencies": [
+        "PRJ-04",
+        "FLD-02",
+        "ENG-04",
+        "RPT-01",
+        "UX-04"
+      ],
+      "scope": "Connect remaining field/engineering/library/schedule/reporting workflows",
+      "evidence": "Full required internal journeys usable in one UI/session with manual paths during model outage",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "AI-06",
+      "release": "R3",
+      "dependencies": [
+        "ENG-03",
+        "DOC-04",
+        "AI-05"
+      ],
+      "scope": "Cross-domain Ricky AEC workflows and controlled automation inbox",
+      "evidence": "Multi-step source/tool provenance retained; budgets, revocation and ambiguous outcomes enforced",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "QA-02",
+      "release": "R3",
+      "dependencies": [
+        "UX-05",
+        "AI-06"
+      ],
+      "scope": "Integrated permission/recovery/accessibility/performance qualification",
+      "evidence": "Completion matrix evidence with actual dataset/hardware; no hidden critical workflow gaps",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "MIG-02",
+      "release": "R4",
+      "dependencies": [
+        "MIG-01",
+        "FIN-08",
+        "DOC-03"
+      ],
+      "scope": "Optional source-specific business-data onboarding into the finalized target model",
+      "evidence": "If selected for rollout, imported IDs/counts/balances reconcile; optional transfer never alters architecture to inherit prior workflows",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "OPS-03",
+      "release": "R4",
+      "dependencies": [
+        "QA-02"
+      ],
+      "scope": "Operational identity/secrets, monitored deployment and actual restore rehearsal",
+      "evidence": "Approved environment demonstrates recovery target or reports measured shortfall",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "INT-05",
+      "release": "R4",
+      "dependencies": [
+        "INT-03",
+        "MIG-02",
+        "OPS-03"
+      ],
+      "scope": "Authorized real accounting integration and controlled writer cutover",
+      "evidence": "Actual external acknowledgments/reconciled balances; old writer disabled per migrated class",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "REL-01",
+      "release": "R4",
+      "dependencies": [
+        "INT-05",
+        "QA-02"
+      ],
+      "scope": "Internal pilot rollout, support runbooks, training and defect closure",
+      "evidence": "Named scenarios completed on operational setup; acceptance and unresolved limits recorded",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-01",
+      "release": "R5",
+      "dependencies": [
+        "REL-01"
+      ],
+      "scope": "Multi-company/intercompany and separate-site enterprise qualification",
+      "evidence": "Isolation and supported consolidation/intercompany transactions verified on declared requirements",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-02",
+      "release": "R5",
+      "dependencies": [
+        "ENT-01"
+      ],
+      "scope": "Enterprise SSO/SCIM/delegation, legal hold/retention and audit export",
+      "evidence": "Identity lifecycle and retention verified; no unsupported certification claims",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    },
+    {
+      "id": "ENT-03",
+      "release": "R5",
+      "dependencies": [
+        "ENT-02"
+      ],
+      "scope": "Scale, disaster recovery, security review and commercial packaging",
+      "evidence": "Measured enterprise workloads, resolved findings, license obligations and support evidence",
+      "status": "planned",
+      "local_contract_status": "planned",
+      "external_qualification_status": "not_evaluated"
+    }
+  ]
+}

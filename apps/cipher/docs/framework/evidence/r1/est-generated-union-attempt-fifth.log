@@ -1,0 +1,236 @@
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 177, in <module>
+    main()
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 77, in main
+    FrappeClickWrapper(click.Group, handle_exception)(commands=commands)(prog_name="bench")
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1569, in __call__
+    return self.main(*args, **kwargs)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1490, in main
+    rv = self.invoke(ctx)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1970, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1970, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1353, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 907, in invoke
+    return callback(*args, **kwargs)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/__init__.py", line 28, in _func
+    ret = f(ctx.obj, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 309, in execute
+    ret = frappe.get_attr(method)(*fn_args, **fn_kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 249, in run_generated_union_acceptance
+    rpc.close()
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py", line 408, in close
+    frappe.db.rollback()
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 1211, in rollback
+    self.sql("rollback")
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 300, in sql
+    traceback.print_stack()
+Error in query:
+('rollback', None)
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 212, in run_generated_union_acceptance
+    _, result = command(gov + "request_action", {"action": "estimate.accept.v1", "subject_id": revision["id"], "expected_version": digest(revision)})
+                ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 148, in command
+    return values, rpc.invoke(method, values)
+                   ~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py", line 393, in invoke
+    result=function(**(values or {}))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/api/company_approvals.py", line 15, in request_action
+    return service.request_action(company, None, action, subject_id, expected_version, operation_id, scope_type="Company")
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 502, in request_action
+    return _command(scope_type=scope_type, company=company, project=project, operation_id=operation_id, command="approval.request_action", payload={"action": action, "subject_id": subject_id, "expected_version": source_version}, ability="approval.request", effect=effect)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 71, in _command
+    return run_company_command(company=company, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 16, in run_company_command
+    return _run_scoped_command(company=company, project=None, scope_type="Company", operation_id=operation_id,
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/commands.py", line 92, in _run_scoped_command
+    result = effect(actor, locked_project)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 501, in effect
+    return {"packet": present(packet, record, actor, True)}
+                      ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 192, in present
+    state, decisions = _state(packet, record, lock, actor=actor)
+                       ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/approvals.py", line 176, in _state
+    if domain_approvals.current_manifest(packet, actor or current_actor(), lock=lock) != manifest["domain"]:
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/governance/domain_approvals.py", line 75, in current_manifest
+    return builder(actor=actor, company=packet.company, project=packet.project or None,
+        subject_id=packet.subject_id, expected_version=outer["source_version"], lock=lock, **scope_kwargs(packet.action, scope_type))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/governance.py", line 27, in wrapped
+    return function(*args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/lockplan.py", line 363, in wrapped
+    return function(*args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/governance.py", line 193, in approval_manifest
+    revision, snapshot, facts = _facts(actor=actor, company=company, project=project, subject_id=subject_id, lock=lock)
+                                ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/estimating/governance.py", line 110, in _facts
+    facts["generated_sources"] = node_manifest(source_plan, actor, company, lock=lock)
+                                 ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/provenance.py", line 206, in node_manifest
+    source = _company_call(lambda: bound.source_reference(company, None, parent["current_revision"], 1, lock=lock))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 98, in _company_call
+    return _call(callback)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 26, in _call
+    return callback()
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/provenance.py", line 206, in <lambda>
+    source = _company_call(lambda: bound.source_reference(company, None, parent["current_revision"], 1, lock=lock))
+                                   ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/core.py", line 116, in source_reference
+    self._scope(revision, company, project, lock=lock)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/core.py", line 87, in _scope
+    self.source_authorize(row, lock=lock)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 19, in <lambda>
+    return DocumentService(FrappeDocumentRepository(scope_type), FrappeFileStorage(), authorize, scope_type=scope_type, source_authorize=lambda row, lock=False: authorize_source(row, actor, lock=lock),
+                                                                                                                                                                 ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/provenance.py", line 103, in authorize
+    authorize_binding(value, actor, lock=lock)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/output_sources.py", line 49, in authorize_binding
+    revision = _read("revision", binding["proposal_revision_id"], company, actor, lock=lock)[1]
+               ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/service.py", line 65, in _read
+    sources.verify(value["composition"], company, proposal["pursuit"], actor, lock=lock, stored=value)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/sources.py", line 41, in verify
+    citation = get_company_citation(company, row["revision_id"], row["page"], row["excerpt_sha256"], actor, lock=lock)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 147, in get_company_citation
+    return _company_call(lambda: _service(actor, scope_type="Company").citation(company, revision_id, page, excerpt_sha256, lock=lock))
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 98, in _company_call
+    return _call(callback)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 26, in _call
+    return callback()
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 147, in <lambda>
+    return _company_call(lambda: _service(actor, scope_type="Company").citation(company, revision_id, page, excerpt_sha256, lock=lock))
+                                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/core.py", line 137, in citation
+    revision = self.revision(company, revision_id, lock=lock)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/core.py", line 92, in revision
+    self._scope(scope, company, lock=lock)
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/core.py", line 87, in _scope
+    self.source_authorize(row, lock=lock)
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/service.py", line 19, in <lambda>
+    return DocumentService(FrappeDocumentRepository(scope_type), FrappeFileStorage(), authorize, scope_type=scope_type, source_authorize=lambda row, lock=False: authorize_source(row, actor, lock=lock),
+                                                                                                                                                                 ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/documents/provenance.py", line 103, in authorize
+    authorize_binding(value, actor, lock=lock)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/output_sources.py", line 49, in authorize_binding
+    revision = _read("revision", binding["proposal_revision_id"], company, actor, lock=lock)[1]
+               ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/service.py", line 61, in _read
+    _, _, complete_plan = native.sources(value["composition"], company, actor, lock=lock, for_new=False, party_ref=party_ref, native_refs=refs, extra_plan=source_plan, include_plan=True)
+                          ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/native.py", line 67, in sources
+    record = require_native(doctype, name, actor, lock=lock)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 156, in require_native
+    return original_native(kind, name, actor, **kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/commercial/native.py", line 12, in require_native
+    doc = frappe.get_doc(doctype, name, for_update=lock)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/utils/__init__.py", line 225, in wrapper
+    return dispatch(args[0])(*args, **kw)
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 145, in get_doc_str
+    doc = controller(doctype, name, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 228, in __init__
+    self.load_from_db()
+    ~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 304, in load_from_db
+    self.load_children_from_db()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 361, in load_children_from_db
+    children = self._load_child_table_from_db(fieldname, child_doctype)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/model/document.py", line 375, in _load_child_table_from_db
+    return frappe.db.sql(
+           ~~~~~~~~~~~~~^
+    	"""SELECT * FROM {table_name}
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<8 lines>...
+    	as_dict=True,
+     ^^^^^^^^^^^^^
+    )
+    ^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 179, in execute
+    res = self._query(mogrified_query)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 330, in _query
+    db.query(q)
+    ~~~~~~~~^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/connections.py", line 280, in query
+    _mysql.connection.query(self, query)
+    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+KeyboardInterrupt
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 309, in execute
+    ret = frappe.get_attr(method)(*fn_args, **fn_kwargs)
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_estimating_generated_acceptance.py", line 249, in run_generated_union_acceptance
+    rpc.close()
+    ~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py", line 408, in close
+    frappe.db.rollback()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 1211, in rollback
+    self.sql("rollback")
+    ~~~~~~~~^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 272, in sql
+    self.execute_query(query, values)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/database/database.py", line 372, in execute_query
+    return self._cursor.execute(query, values)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 174, in execute
+    self._discard()
+    ~~~~~~~~~~~~~^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/MySQLdb/cursors.py", line 95, in _discard
+    while con.next_result() == 0:  # -1 means no more data.
+          ~~~~~~~~~~~~~~~^^
+MySQLdb.ProgrammingError: (2014, "Commands out of sync; you can't run this command now")
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/utils/bench_helper.py", line 48, in invoke
+    return super().invoke(ctx)
+           ~~~~~~~~~~~~~~^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1970, in invoke
+    return _process_result(sub_ctx.command.invoke(sub_ctx))
+                           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 1353, in invoke
+    return ctx.invoke(self.callback, **ctx.params)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/core.py", line 907, in invoke
+    return callback(*args, **kwargs)
+  File "/home/frappe/frappe-bench/env/lib/python3.14/site-packages/click/decorators.py", line 34, in new_func
+    return f(get_current_context(), *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/__init__.py", line 28, in _func
+    ret = f(ctx.obj, *args, **kwargs)
+  File "/home/frappe/frappe-bench/apps/frappe/frappe/commands/utils.py", line 313, in execute
+    ret = eval(code, globals(), locals())  # nosemgrep
+  File "<bench execute>", line 1, in <module>
+NameError: name 'cipher_aec' is not defined
+
+name 'cipher_aec' is not defined

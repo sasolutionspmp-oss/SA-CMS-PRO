@@ -1,0 +1,67 @@
+{
+  "schema": "cipher.est.recorded-performance.native.v1",
+  "status": "observations-recorded",
+  "qualification": "Native synthetic Sessions; existing exact-UUID locked receipt replay and separate nonlocking public business reads. No fresh consume, HTTP, workload or p95 qualification.",
+  "new_acceptance_intent_or_effect_created": false,
+  "permissions_or_native_masters_changed": false,
+  "baseline_id": "cf2065ff-37e6-4bac-be56-02ed7d047c8a",
+  "baseline_digest": "2dc75ff22944dafafb5ec7a0b8c161393f9717f80fc4128f1e276e40b773e363",
+  "recorder_sha256": "d5d8b227c9b47385bf1dfd22fed9ef022515cd097a9516a845a0ddcb9fe8a01e",
+  "generated_public_gate_enabled": false,
+  "live_model_qualified": false,
+  "external_provider_qualified": false,
+  "original_operation_id": "184271b9-d705-4951-8a4e-9d54d23db886",
+  "private_result_sha256": "aa360ec2c1fa021c892d4ecb997f9ed170b4448201536826cff86ccb194bebcb",
+  "child_exit_code": 0,
+  "source_install_sha256": "dcb0c709867e256ac43870a546009398c20b4c7d4d46fb24c452574ce8b29304",
+  "exact_inventory_before_after_equal": true,
+  "event_inventory_count": 105,
+  "exact_event_inventory_before_after_equal": true,
+  "source_snapshot_before_after_equal": true,
+  "source_files_verified": 121,
+  "inventory_counts": {
+    "acceptance_count": 1,
+    "consumption_count": 1,
+    "receipt_count": 1,
+    "company_project_count": 0
+  },
+  "phases": [
+    {
+      "method": "actual-Frappe-Company-native-hook-parity.lockFalse",
+      "status": "returned",
+      "elapsed_seconds": 0.040031,
+      "sql_calls": 6
+    },
+    {
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "status": "returned",
+      "elapsed_seconds": 0.899619,
+      "sql_calls": 2797
+    },
+    {
+      "method": "public-Company-baseline-GET.lockFalse",
+      "status": "returned",
+      "elapsed_seconds": 0.362745,
+      "sql_calls": 1257
+    },
+    {
+      "method": "full-Company-history.lockFalse.exact-visible-count",
+      "status": "fixture_profile_budget",
+      "elapsed_seconds": 3.097789,
+      "sql_calls": 10000
+    }
+  ],
+  "history_complete": false,
+  "performance_qualification": "Single synthetic native-session observation with profiler overhead; no HTTP, load or p95 qualification.",
+  "independent_exact_row_reconciliation": {
+    "original_pre_correction_sha256": "8a52d3e2771ca9c9fb681617c1d20859d027b70d4461fc5924306424b7fb0cc4",
+    "post_correction_sha256": "8a52d3e2771ca9c9fb681617c1d20859d027b70d4461fc5924306424b7fb0cc4",
+    "all_selected_rows_equal": true,
+    "row_counts": {
+      "acceptance": 1,
+      "receipt": 1,
+      "consumption": 1,
+      "events": 105
+    }
+  }
+}

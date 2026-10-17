@@ -1,0 +1,30 @@
+{
+  "approval_action_enabled": false,
+  "canonical_noarg_entry_added": false,
+  "commands": [
+    "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_project_controls cipher_aec.tests.test_award_acceptance_driver -v"
+  ],
+  "identity_setup_performed": false,
+  "local_checks": {
+    "artifact_integrity": 3,
+    "combined_seconds": 0.112,
+    "combined_unique_tests": 25,
+    "controls_pure": 22,
+    "latest_artifact_checks": {
+      "count": 3,
+      "seconds": 0.001
+    }
+  },
+  "product_delta": "Backend-requested quiet_award_write call immediately before controls repository insert/save; helper is no-op outside exact literal lazy award stage. Earlier controls foundation report remains bound to its frozen source.",
+  "qualification": "Fixture authoring/local artifact integrity only. Real cookie Grant, award execute, native rollback, queue/search residue, FIN recognition and composed adoption remain unexecuted. Final product/served-source manifest is bound only at root runtime release.",
+  "recorded_at": "2026-10-15T22:30:47.773536+00:00",
+  "runtime_invoked": false,
+  "schema": "cipher.award.composed-fixture-source.v1",
+  "source_sha256": {
+    "apps/cipher/docs/framework/PRJ02_COMPOSED_ACCEPTANCE_PLAN.md": "3c96857d3dd68c4ab6aa06456b4e560f165c0f390e5470f1df035739a92b5f87",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/project_controls/repository.py": "2b8f5b0ec0f4a481d5dad071a02927e44a22e540b82e7c8c907f519ed24f31a6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_acceptance_driver.py": "a8bd9e13fc7d3c0d750cf328a7c6dec098a6ec9cd03c1c073c93b75ad4d74395",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_composed_acceptance.py": "9fdb3b0c0a2586e31eb0729295ff92a55144e5ff12e1105a3c873e80416df2cf"
+  },
+  "status": "authored_pending_review_and_runtime_release"
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "cipher.source-audit.v1",
+  "captured_at": "2026-10-15T19:11:36.004937+00:00",
+  "status": "source_audit_only",
+  "versions": {
+    "erpnext": "16.51.0",
+    "frappe": "16.52.0",
+    "python": "3.14.8"
+  },
+  "source_root": "/home/frappe/frappe-bench/apps",
+  "inspected_copy_matches_runtime": true,
+  "files": {
+    "erpnext/erpnext/accounts/doctype/purchase_invoice/purchase_invoice.py": "17760632ee5cec56d5527e3c3315ca46466117fac3cc80aec18c552c2c425d28",
+    "erpnext/erpnext/accounts/doctype/purchase_invoice/purchase_invoice.json": "d14e28187e02ccd3a8bb2473f3d345091ceb0700dc939f0de619fbdc3e058571",
+    "erpnext/erpnext/accounts/doctype/purchase_invoice_item/purchase_invoice_item.json": "4c88eb2a1291dc59cfbd527a6505569dc6e90808dd860f886268c64f927ac4a9",
+    "erpnext/erpnext/buying/doctype/purchase_order/purchase_order.py": "6ab6e8bd7bf10c00dbf8459977748782be0c7a109cdf772c8488e6efa8c4b520",
+    "erpnext/erpnext/stock/doctype/purchase_receipt/purchase_receipt.py": "838d214afc11df52a09fe3f7bebe0ff14b033d203e0031f58b2382fd94526758",
+    "erpnext/erpnext/controllers/accounts_controller.py": "7cd15abb621544b594fa43e550a95039fa2aa0a6bf395c8464eef01b0bd24d5d",
+    "erpnext/erpnext/controllers/buying_controller.py": "6fdd6f47d645b9da3962dc93004aa59f2779b322f257cc87247e6bdc20bcaeed",
+    "erpnext/erpnext/controllers/status_updater.py": "a96eb39d3f01a79dc2c26c285ac6aeb2f3f0bb8b2cedebe8a2dee8453dc9e3dc",
+    "erpnext/erpnext/controllers/sales_and_purchase_return.py": "020f03f9dedd539bd4dc4865b539ae6c90d29894c3f36a5f665b1b0a8ab17a14",
+    "erpnext/erpnext/utilities/transaction_base.py": "7e184c78d8392ab15b5ed6b79420b4f56661193384d9bbfa116fbce4101a0ce5",
+    "erpnext/erpnext/controllers/taxes_and_totals.py": "acdf602bdded7d3b39f69858c1c4307c21fa1dde5375bcadf92e6be852dd59e7",
+    "erpnext/erpnext/accounts/general_ledger.py": "9a315ae0618d5e1ed6da0f0e09a03f01438c309cb5a22806ee4f405fc9a81702",
+    "erpnext/erpnext/controllers/stock_controller.py": "58de46a8ccfe547a602f87bbfc0e5d144c34ef53cb1cdedb27f6820efc9109ca",
+    "frappe/frappe/model/document.py": "38fc658498a23a42cc8a14ae424591e527c6354d4eada06f12a19644e85b8d00",
+    "frappe/frappe/model/mapper.py": "067caba9540eb6e65f069169549ce8ed7af1234d98fd7a1a720c0acc7d576ac0"
+  },
+  "runtime_gates": {
+    "planned": 13,
+    "executed": 0
+  },
+  "boundaries": [
+    "No Purchase Invoice create/submit/cancel/amend/export was executed",
+    "No master, Accounts/Buying Settings, action registry or writer guard changed",
+    "Initial posting-profile exclusions are temporary qualification boundaries",
+    "Operational ERPNext ledger and official QBO acknowledgment remain separate"
+  ]
+}

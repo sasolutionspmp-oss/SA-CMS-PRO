@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "completed_at": "2026-10-15T20:09:57.259142+00:00",
+  "queued_job_restart_qualified": true,
+  "actual_after_commit_publication_failure_recovered_automatically": true,
+  "operator_flag_quarantine_same_id_requeue_qualified": true,
+  "actual_restored_site_rehearsal_qualified": false,
+  "manual_delivery_or_publication_invoked": false,
+  "live_external_provider_qualified": false,
+  "preserved_helper_failure": "Initial absent-key restore used parsed None (null); corrected supported unparsed string None removed key. No new intent."
+}

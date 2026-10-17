@@ -1,0 +1,42 @@
+{
+  "schema": "cipher.award.native-profile-setup-tests.v1",
+  "status": "passed",
+  "qualification": "No-site temporary-file/unit checks only. Native installation and loaded-worker guard qualification pending isolated coherent epoch; main configuration unchanged.",
+  "command": [
+    "apps/cipher/platform/deployment/docker-local.sh",
+    "exec",
+    "cipher-r0-runtime-1",
+    "env/bin/python",
+    "-m",
+    "unittest",
+    "cipher_aec.tests.test_award_runtime_install",
+    "cipher_aec.tests.test_award_runtime_profile",
+    "-v"
+  ],
+  "duration_seconds": 1.257,
+  "exit_code": 0,
+  "unit_summary": "Ran 36 tests in 0.444s\n\nOK",
+  "source_hashes": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/runtime_install.py": "e2764a170e5dc6b6fea9114ad90e5232ff5d8ab97c4bff2bfa59acdf2b9ee279",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_runtime_install.py": "b8365f1d39d8046be1cf15b890a0649db463ed2a6eb440439c8b47918177c44f",
+    "apps/cipher/platform/deployment/install-cipher.sh": "f075111527c3af061a1ad17c2f5cd1c992ef0629f20ee61e85a0dbdc17db0a80",
+    "apps/cipher/platform/deployment/run-dev-services.py": "3fb1c5debbc02aad0200e5a14be61d502de739d273be51c1d4b1944a59d135e0",
+    "apps/cipher/platform/operations/validate_new_stack.py": "75dd10b4d5d31114749eddb1e9ef560c7f89743b9c8a05726f79bddea1dd9d56",
+    "apps/cipher/platform/deployment/README.md": "8db2b62093d456f2c223b137c5821b22b181d97387f1a828d293f8fd6912782d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/runtime_profile.py": "89fdd2e4b56c4bc888c292aef48a31e1743b9b44d05c3f172701d85f5f5ee199",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_runtime_profile.py": "5639da3b8e8ab06cff20549a77d2438cb3094b3839a806fa1ed1d76702655fb7",
+    "apps/cipher/platform/operations/README.md": "a15f6cdec83a26376cdac8c7f99262a1e244a24d6db290491057e8315f81b088"
+  },
+  "source_unchanged": true,
+  "private_log_sha256": "e1d9c02c5d48caa3600397f1239a03b07ed3050a47ba60832d94cd7915f7b791",
+  "private_log": "/tmp/cipher-completion/award-runtime-install/unit-final.log",
+  "config_writes": "temporary unit-test files only; supported native setter mocked",
+  "runtime_calls": 0,
+  "syntax_checks": [
+    "python py_compile installer, unit module, dev manager and validation runner",
+    "bash -n install-cipher.sh",
+    "git diff --check"
+  ],
+  "installer_case_count": 17,
+  "profile_neighbor_case_count": 19
+}

@@ -1,0 +1,542 @@
+{
+  "schema": "cipher.r17.actual-responsive-read-only.v3",
+  "status": "passed",
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "synthetic_business_data": true,
+  "model_invoked": false,
+  "login_requests": 0,
+  "backend_origin": "http://127.0.0.1:18886",
+  "backend_host": "cipher-ci-ai04-20261016.localhost",
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_document",
+      "parameter_names": [
+        "company",
+        "document_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.download_revision",
+      "parameter_names": [
+        "company",
+        "revision_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_units",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    }
+  ],
+  "static_responses": [
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "c59602b17837ae0bfd30846d059ce3e136313143cff04c5a1984399ead6cf530"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/Input-T7R0fkcC.js",
+      "bytes": 56529,
+      "sha256": "6401df712b2b82e3c40da2a7ea36f41bd0907f4a4407d86cb9a1d39e61a6825e"
+    },
+    {
+      "path": "assets/CheckBox-BAAw9rdb.js",
+      "bytes": 372,
+      "sha256": "254f14b7d419595111a15f0ae235d17215f59f51a10dc390731731cc0cf81901"
+    },
+    {
+      "path": "assets/components-CS3UfxbL.js",
+      "bytes": 81835,
+      "sha256": "d59c5d7ae0b0512e77b5ce6828a0ea4327e960f97e8d74093b894049146ae7ea"
+    },
+    {
+      "path": "assets/index-DzZ3Ez3J.css",
+      "bytes": 41754,
+      "sha256": "2a34a4446cad3b8170c85b057c080c63822abf163a552a56fad3cfddeb040192"
+    },
+    {
+      "path": "assets/Input-FSR-QuKJ.js",
+      "bytes": 511,
+      "sha256": "20f799af6e04f54db6672b5a7d3f92469068d4a95187c4ed5a245dbabaa4ac0d"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Cix1IDz_.js",
+      "bytes": 20074,
+      "sha256": "ea96d133d610c7f77671bb0de1f8f055350e89aa44d9fe7522067e2ce04f57fd"
+    },
+    {
+      "path": "assets/TableHeaderRow-B2IwKHHK.js",
+      "bytes": 52987,
+      "sha256": "128d113d7a16dfc07a0bee91669d393fe46e9d2058b6f1d3ba5f2f74e5daf58c"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Link-DG_B59h4.js",
+      "bytes": 387,
+      "sha256": "3aa220222c32319484e7266500354cf165d6ae9b3d49e67157572252748530b6"
+    },
+    {
+      "path": "assets/useMutation-Dy54T9Ye.js",
+      "bytes": 1632,
+      "sha256": "b63f27fce7f792e80a6dda2d15241805d1c4648516a963176a6093677e55f3e9"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/TextArea-DjcY5OIg.js",
+      "bytes": 26979,
+      "sha256": "64702aa0be236483a04a2be04bb5854c874d4aa555f38c7cce9cdd349782c280"
+    },
+    {
+      "path": "assets/index-BgVTjoaK.js",
+      "bytes": 1335249,
+      "sha256": "fd42166143a27e24459b5522ee7c238a0ce9d7c56b642767738a47205dc6859a"
+    },
+    {
+      "path": "assets/estimating-C6yoW6j4.js",
+      "bytes": 1468,
+      "sha256": "68c7d8717a033d2a5f5154577020d5042e3428fcf71c8e1d9b3b37d49a4cc8db"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/CompanyTakeoff-Bj9pBAv6.js",
+      "bytes": 112495,
+      "sha256": "033b6c91a73f9204020f295a7e10e0985cc424568def3e82a05ab13293e34467"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/PdfDrawing-ByPQzujq.js",
+      "bytes": 439953,
+      "sha256": "b7eff6623645705ca8f28c66bf9c9306706a1a1cd535afde4d1d7d10766b293e"
+    },
+    {
+      "path": "assets/pdf.worker.min-CjEcRF4W.mjs",
+      "bytes": 1264342,
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "assets/InputComposition-DStib4IT.js",
+      "bytes": 753,
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "bytes": 24532,
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    }
+  ],
+  "downloads": [
+    {
+      "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+      "status": 200,
+      "bytes": 523,
+      "sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f"
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    }
+  ],
+  "failures": [],
+  "console": [],
+  "blocked_requests": [],
+  "authenticated_original_session_reused": true,
+  "business_commands": 0,
+  "command_kinds": [],
+  "actual_read_only_responsive_followup": true,
+  "original_upload_and_set_reused": true,
+  "commands": [],
+  "captures": [
+    {
+      "name": "01-company-takeoff-register",
+      "width": 1440,
+      "url": "http://127.0.0.1:5212/company/takeoff?company=Cipher%20Synthetic%20Company",
+      "sha256": "391e314c01b291bbc2c029bcd9cc50c7ce618832b7d93a22197b1cfed2bcae17",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "01-company-takeoff-register-1440.png"
+    },
+    {
+      "name": "01-company-takeoff-register",
+      "width": 900,
+      "url": "http://127.0.0.1:5212/company/takeoff?company=Cipher%20Synthetic%20Company",
+      "sha256": "1b120620f777d34d2df9b7e08ace942b0b5dc8194e4ad3b40b3c1a5bc37daade",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "01-company-takeoff-register-900.png"
+    },
+    {
+      "name": "01-company-takeoff-register",
+      "width": 390,
+      "url": "http://127.0.0.1:5212/company/takeoff?company=Cipher%20Synthetic%20Company",
+      "sha256": "cc1eba61cb4c2b32e8ab2e0340af6c5572fa08401bb309313be9daa7ff00ab50",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "01-company-takeoff-register-390.png"
+    },
+    {
+      "name": "02-authorized-company-drawing",
+      "width": 1440,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "f2fa7e33221216d8c8534a80aca1d5bf5cd7f898adc57183dbdd6de60844094f",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "02-authorized-company-drawing-1440.png"
+    },
+    {
+      "name": "02-authorized-company-drawing",
+      "width": 900,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "e9cf011a1c73a39136bd572ef81c4f3479519c91451ba02aff9273575c427889",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "02-authorized-company-drawing-900.png"
+    },
+    {
+      "name": "02-authorized-company-drawing",
+      "width": 390,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "24263b5bb1be960551bac471ede3ccf071532ab7123d9f360143ba1653200d69",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "02-authorized-company-drawing-390.png"
+    },
+    {
+      "name": "03-reviewed-manual-quantity",
+      "width": 1440,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "4daad2cb76b6b8d4a3b33c028958ebaf9d6b86bb543f11b9b35d086d8fb59d17",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "03-reviewed-manual-quantity-1440.png"
+    },
+    {
+      "name": "03-reviewed-manual-quantity",
+      "width": 900,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "e9158991742343f8a24555d88f8b9437a5c42dc78e8f46d15a2bc8679cff7655",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "03-reviewed-manual-quantity-900.png"
+    },
+    {
+      "name": "03-reviewed-manual-quantity",
+      "width": 390,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "d9f23592934e50f22e7e9b921f6907bc89040c360594a6cc87ee06e1e1a6356b",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "03-reviewed-manual-quantity-390.png"
+    },
+    {
+      "name": "04-saved-manual-measurement",
+      "width": 1440,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "3a0abccef22313bd96c316e00a91da171f6c90cd112c11d058656d31e703852f",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "04-saved-manual-measurement-1440.png"
+    },
+    {
+      "name": "04-saved-manual-measurement",
+      "width": 900,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "2e80fc7e2b6ce393b6fb027625dcbd1d52db1b75429ce37d9e6cf0d5743e4872",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "04-saved-manual-measurement-900.png"
+    },
+    {
+      "name": "04-saved-manual-measurement",
+      "width": 390,
+      "url": "http://127.0.0.1:5212/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher+Synthetic+Company",
+      "sha256": "116a15dba4be75d575df452bfd9caf8b9d0d54ddfeda95763eb0e65e9f741642",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "04-saved-manual-measurement-390.png"
+    }
+  ]
+}

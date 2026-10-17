@@ -1,0 +1,39 @@
+{
+  "schema": "cipher.company-command-history.native-fixture-source-review.v1",
+  "source_files": [
+    {
+      "bytes": 2389,
+      "kind": "accepted production",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/ricky/company_api.py",
+      "sha256": "53085ff239c2e82a0e22779c90e442988aedd4afeb1e5a8da95ffe4dbf480a7a"
+    },
+    {
+      "bytes": 25623,
+      "kind": "fixture/host regression",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_history.py",
+      "sha256": "04d17b9234f7ba3c04348a7882043aa007b599ece3639317c1c742071b938209"
+    },
+    {
+      "bytes": 24401,
+      "kind": "fixture/host regression",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/ricky_company_history_acceptance.py",
+      "sha256": "077260ef5d8aeade52ff32c7a953deef187182ec4893919c967337317a657af4"
+    },
+    {
+      "bytes": 14950,
+      "kind": "fixture/host regression",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_ricky_company_history_acceptance_source.py",
+      "sha256": "7849abb9670718fee12963809c6f9a8d581edd3ca3f5812d349b90e0fb453f89"
+    }
+  ],
+  "focused_host_tests": 89,
+  "focused_log_sha256": "937d72baac744e2aa46b3ab94e024890d99e9d980f8bf01faef33be05dc842ce",
+  "accepted_review_sha256": "2f8e88ef692f45b76d1e493c29b2de87738368377c7c9c629c6380231ef304b2",
+  "review_sha256": "0f845b1b4d335a615b8c7abaa22d40c004816b01ea57a207ad220a7e503a3c4e",
+  "combined_patch_sha256": "3220745e412d7970d1cd02c7fa1ad7e52d5a0aa47867332fb56ce9ae768aea01",
+  "retained_cookie_guard_failure": {
+    "result": "1 failing regression: missing cookie provenance could enter inherited login branch; fixture now refuses before wire",
+    "sha256": "a9ccc881ea5ebad2e94483e5dacf7356ca04241d5ea06cf9d71d8a4305e05161"
+  },
+  "rollback_qualification": "Actual API/command/history functions against transaction-capable host SQLite adapter; forced post-history/post-receipt failures rolled back Run/event/receipt. No native MariaDB failure-injection claim."
+}

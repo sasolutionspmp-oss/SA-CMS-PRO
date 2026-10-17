@@ -1,0 +1,13 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.api.company_approvals.request_action",
+  "prepared_at": "2026-10-15T23:10:46.326755+00:00",
+  "role": "author",
+  "values": {
+    "action": "estimate.accept.v1",
+    "company": "Company chain A c3c3b742a8fd",
+    "expected_version": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+    "operation_id": "baf10650-db5c-4a1b-9cd2-2719948b6411",
+    "subject_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084"
+  }
+}

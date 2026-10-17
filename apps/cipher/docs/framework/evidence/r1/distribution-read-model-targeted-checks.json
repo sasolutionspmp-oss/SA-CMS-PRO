@@ -1,0 +1,42 @@
+{
+  "schema": "cipher.distribution-read-model-targeted-checks.v1",
+  "captured_at": "2026-10-15T20:02:43.958942+00:00",
+  "status": "targeted_checks_passed",
+  "runtime_python": "3.14.8",
+  "packet_history_tests": 4,
+  "distribution_read_tests": 8,
+  "openapi_tests": 4,
+  "openapi_3_1_real_validator": "passed",
+  "fixed_routes": 118,
+  "new_routes": [
+    "cipher_aec.integrations.distribution_api.recipient_choices",
+    "cipher_aec.integrations.distribution_api.list_instructions"
+  ],
+  "scope": "Additive read models and exact stored-manifest history rights; no effect, action or DocType additions",
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py": "d01dd156ea2b628c316cb71bb20e73a69a4ca0f6971849e9513946d6f4e5449c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py": "1acdcc1da0cd31fb0238e0e393e62cb6cec829478636a8840fe3c9147b81e5d1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution.py": "591ad6afacc1cb46a1dde7239967de07c27ec31918cf15a53863365c30abdac2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/distribution_api.py": "a595e689e4c293e7803369f12b7e2530e702b68dc7b1bc8eb90ef7a5c63cfc4c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py": "c5c0a70b9dd183007de232b64db8fef1756faee4946df6814e37c24b885cda1e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.py": "2bdfb2870e196f4e9be5ab5ec75f0cebecfee18e1d3153b93ed277c7067e14ae",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.json": "39fcd486852d149c38f9c8d18a9ae16bafe0d96a7bc956737cb84286c5c60016",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/integrations/schemas/distribution-v1.schema.json": "d2a13a6c39d9124718b2b5b152784f3b535482bafec303f1e59af87bb3cbcf62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_history_packet_authorization.py": "49bd4a7eb596d7356b6b8e6997640f69f996676182c3a25b0f7adf298e61b488",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_distribution_reads.py": "fe0a2d386b0be033051d963bd20bcf47044bee45b945c9999644974b39e0227c"
+  },
+  "logs": {
+    "packet_history": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_history_packet_authorization, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 4 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_history_packet_authorization.HistoryPacketAuthorizationTests\n   \u001b[32m \u2714 \u001b[0m test_corrupt_packet_or_original_manifest_aborts_history\n   \u001b[32m \u2714 \u001b[0m test_literal_reader_authorizes_exact_stored_manifest_with_passed_actor\n   \u001b[32m \u2714 \u001b[0m test_project_status_history_preserves_project_scope_without_domain_callback\n   \u001b[32m \u2714 \u001b[0m test_revoked_original_source_hides_history_event\n\n\n----------------------------------------------------------------------\nRan 4 tests in 0.003s\n\nOK\n",
+    "distribution_reads": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_distribution_reads, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 8 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_distribution_reads.DistributionReadTests\n   \u001b[32m \u2714 \u001b[0m test_choices_are_exact_server_identity_order_and_reusable_subset\n   \u001b[32m \u2714 \u001b[0m test_current_source_denial_is_rechecked_on_next_inventory\n   \u001b[32m \u2714 \u001b[0m test_cursor_binds_filter_count_mode_company_user_person_and_authority\n   \u001b[32m \u2714 \u001b[0m test_exact_issue_filter_and_scope_exclude_other_records_before_read\n   \u001b[32m \u2714 \u001b[0m test_integrity_and_overflow_propagate_without_partial_inventory\n   \u001b[32m \u2714 \u001b[0m test_native_sql_keyset_ties_and_global_count_preserved\n   \u001b[32m \u2714 \u001b[0m test_off_page_denied_instructions_cannot_affect_total_or_cursor\n   \u001b[32m \u2714 \u001b[0m test_scope_or_filter_denial_precedes_graph_and_query\n\n\n----------------------------------------------------------------------\nRan 8 tests in 0.016s\n\nOK\n"
+  },
+  "remaining": [
+    "Astra final source review",
+    "Actual HTTP recipient/instruction positive and current-rights qualification",
+    "Actual whole-history latency after coordinated reload"
+  ],
+  "review": {
+    "status": "approved",
+    "reviewer": "Astra",
+    "scope": "Stored-manifest-only history authority and two literal read routes; no wider cache"
+  }
+}

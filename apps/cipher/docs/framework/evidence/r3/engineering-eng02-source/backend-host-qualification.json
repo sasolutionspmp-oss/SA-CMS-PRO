@@ -1,0 +1,104 @@
+{
+  "all_passed": true,
+  "browser_executed": false,
+  "build_executed": false,
+  "domain_and_compatibility_cases": 106,
+  "failures": "FAILURES.json",
+  "fresh_distinct_cases": 124,
+  "generated_contracts_verified": 15,
+  "logs": {
+    "01-openapi-initial.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/01-openapi-initial.log",
+      "sha256": "a0d9ff26bdf13fb22fbf90ff60f8bda5fa624fa1bb4d0f72083ba304749e2b73"
+    },
+    "02-generation-initial.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/02-generation-initial.log",
+      "sha256": "4065c91f0a41877aa07344e8d09328f5ea83e6b8dba8fd503b882dceac792fab"
+    },
+    "03-host-initial.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/03-host-initial.log",
+      "sha256": "1030e4e34e76313b89d025b6d23d37b4399b0a2d275f1cd5ce18b95a35841f27"
+    },
+    "04-revocation-isolated.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/04-revocation-isolated.log",
+      "sha256": "ca4a23aaa3be2a6591689511653e513db566a1b3c6060ecab09c9aba88a45580"
+    },
+    "05-host-corrected-source-adapter.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/05-host-corrected-source-adapter.log",
+      "sha256": "6f5c8a2902e7fa9b1015a512f2b354428074d5825e4fb4e7f112c591e62bd81c"
+    },
+    "06-contract-host.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/06-contract-host.log",
+      "sha256": "da99adca6de2046797a83e03bb1683db818b21a3db4ffccd8ae5af626f24aa60"
+    },
+    "07-check-lineage-failing-first.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/07-check-lineage-failing-first.log",
+      "sha256": "33cc7c8a213e4c4eee673431ae8649a718172005c5e63a0c41c90fed4f6753b7"
+    },
+    "08-affected-initial.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/08-affected-initial.log",
+      "sha256": "f07e6616223887ce440612c7cc7a242efb43d7d016cdb7321524b51b49b9a3e0"
+    },
+    "09-compat-normalized.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/09-compat-normalized.log",
+      "sha256": "34d9a3a43dc6fd8458354f6a48e2e2ea0050dee29f9ae2f6ec3957bf3bbbb432"
+    },
+    "10-compat-flatten-corrected.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/10-compat-flatten-corrected.log",
+      "sha256": "1d3dd53a7dc53ff2a5bf86f0852778eddb3e99c968e8f41d689bc49458fa15b1"
+    },
+    "11-engineering-final-host.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/11-engineering-final-host.log",
+      "sha256": "87df72abb75fa577ac5fc9b3413ca7c5d52b85306225ee9e13b12c373db3b961"
+    },
+    "12-upstream-reporter.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/12-upstream-reporter.log",
+      "sha256": "305fcdd564a26a01791e42d4c2510528367b49a1e6cf0bbfaa7a06251ccf2364"
+    },
+    "13-openapi-check.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/13-openapi-check.log",
+      "sha256": "b7ee80f39c03778ef37aec2e67fdd0585a0bce9ec0aa8b8d4d7787c2583f6195"
+    },
+    "14-affected-final.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/14-affected-final.log",
+      "sha256": "24141f05f3c12b1fecf183cdc0f27445cd41b2a68008d5abb2b6ef56dd41923c"
+    },
+    "15-isolated-typecheck.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/15-isolated-typecheck.log",
+      "sha256": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+    },
+    "16-isolated-generated.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/16-isolated-generated.log",
+      "sha256": "837b4588c08d074b58bea14717ce6ff3b76ae895c13e67a100164f0f405bcf47"
+    },
+    "17-isolated-affected.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/17-isolated-affected.log",
+      "sha256": "f09efca8c4980bed1fe152e09e70be8208bfdc7f97232c9475b32a4964ad420c"
+    },
+    "18-isolated-openapi.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/18-isolated-openapi.log",
+      "sha256": "b7ee80f39c03778ef37aec2e67fdd0585a0bce9ec0aa8b8d4d7787c2583f6195"
+    },
+    "19-blank-check-failing-first.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/19-blank-check-failing-first.log",
+      "sha256": "9e3b5f6ee506877ea40c41bfa2c3e2d47927f3b7f65d9e7ca1e3eeb7dab541b0"
+    },
+    "20-isolated-final.log": {
+      "path": "/dev/shm/cipher-engineering-eng02/logs/20-isolated-final.log",
+      "sha256": "30c810b17f10ddf3d6ae2846fed63652eb4162332bf049ab8d4821f7237d3672"
+    }
+  },
+  "native_integration_class": "TestEngineeringPackagesNative",
+  "native_integration_executed": false,
+  "native_integration_methods": 1,
+  "native_integration_source": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_packages_native.py",
+  "new_engineering_cases": 22,
+  "openapi_signature_schema_check": true,
+  "preserved_engineering01_and_compatibility_cases": 84,
+  "schema": "cipher.engineering-packages.backend-qualification.v1",
+  "source_inventory_sha256": "385859d8aa12bf76991c1d977826394f842853c246952cda8e01651955576baa",
+  "syntax_check": true,
+  "typecheck": true,
+  "upstream_diagnostic_reporter_cases": 18,
+  "upstream_update": "UPSTREAM_UPDATE.json"
+}

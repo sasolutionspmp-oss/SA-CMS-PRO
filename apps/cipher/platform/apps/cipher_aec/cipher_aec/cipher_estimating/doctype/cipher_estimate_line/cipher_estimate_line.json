@@ -1,0 +1,163 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Estimate Line",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "estimate",
+    "estimate_revision",
+    "line_id",
+    "quantity_amount",
+    "unit",
+    "currency",
+    "extension_amount",
+    "cost_code",
+    "rate_source",
+    "assembly_revision"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "search_index": 1,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "estimate",
+      "fieldtype": "Link",
+      "label": "Estimate",
+      "reqd": 1,
+      "options": "Cipher Estimate"
+    },
+    {
+      "fieldname": "estimate_revision",
+      "fieldtype": "Link",
+      "label": "Estimate Revision",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Cipher Estimate Revision"
+    },
+    {
+      "fieldname": "line_id",
+      "fieldtype": "Data",
+      "label": "Line Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "quantity_amount",
+      "fieldtype": "Data",
+      "label": "Quantity Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "unit",
+      "fieldtype": "Link",
+      "label": "Unit",
+      "reqd": 1,
+      "options": "UOM"
+    },
+    {
+      "fieldname": "currency",
+      "fieldtype": "Link",
+      "label": "Currency",
+      "reqd": 1,
+      "options": "Currency"
+    },
+    {
+      "fieldname": "extension_amount",
+      "fieldtype": "Data",
+      "label": "Extension Amount",
+      "reqd": 1,
+      "length": 50
+    },
+    {
+      "fieldname": "cost_code",
+      "fieldtype": "Data",
+      "label": "Cost Code",
+      "reqd": 0
+    },
+    {
+      "fieldname": "rate_source",
+      "fieldtype": "Link",
+      "label": "Rate Source",
+      "reqd": 0,
+      "options": "Cipher Rate Source"
+    },
+    {
+      "fieldname": "assembly_revision",
+      "fieldtype": "Link",
+      "label": "Assembly Revision",
+      "reqd": 0,
+      "options": "Cipher Assembly Revision"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

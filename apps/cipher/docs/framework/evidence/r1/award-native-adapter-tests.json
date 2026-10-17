@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T21:32:58.561048+00:00",
+  "qualification": "Source/resource/persisted-projection and mocked factory orchestration tests only. Eleven adapter cases plus4purecontract cases overlap with existing contract tests. No actual native Sales Order insert/controller/rollback, award effect activation, finance admission or runtime-profile acceptance is qualified by this artifact.",
+  "tests": {
+    "passed": 15,
+    "failed": 0,
+    "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 0.015s\n\nOK\n",
+    "log_sha256": "cd718e54215dc9ad2963fc6b559a6eb5465f636d4af07d7f27ce78b7fb57e926"
+  },
+  "checks": [
+    "Complete selected immutable Issue facts and explicit existing freeform Item mapping.",
+    "Passed complete resource token plus ambient actor-scoped subset before any locking native acquisition.",
+    "Current create rights are checked for actual requester/factory; independent reviewers return only identical static native_create_policy.",
+    "Historical disabled originals retain current native scope/read and exact qualified UOM identity without new-use policy or create rights.",
+    "Base currency, qualified1:1stockUOM, enabled sameCompany nonstock Item and explicit sellingPriceList for new use.",
+    "SQLDECIMALstrings and exact reviewed totals/lines; changed source IDs, quantities, prices, taxes, packing/defaults and precision fail.",
+    "Nonrecursive projection excludes deriveddigest/modified/creation/idx; final nativeversion stored separately.",
+    "Supported insert then deriveddigest save; post-save child/projection drift refuses.",
+    "Required exactaward context and actual backend native_order_effect profile assertion precede first insert; profile failure writes nothing.",
+    "Official notify_update=False remains through both supported writes."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/native.py": "d82256735f47aea21fe01f4cf92a958233a7de363aa19cbe01df8eda095fb226",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/effect.py": "85171f95f9ba16bb15f727355e413b96aa655109e89eae24246f7709904c3f0d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/runtime.py": "1164ce44f94ab2dc1602da350f4b8397892e08254b575f401822843a3cbacd83",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/awards/contracts.py": "b00bc65e5735e5e6a8d4ce0a00de1c9c1d392956243833ea64bf1046b7684a29",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_native.py": "2b922fea5ec3a3db8eb2a4628cc9a376bc5f2ea751c5cb095e5712787ec929d6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_contracts.py": "37683e57504710fbc368221da89b5724f397d89783daf5d18db3359ca942abb0",
+    "apps/cipher/docs/framework/PRJ02_NATIVE_AWARD_CONTRACT.md": "29ec483196d10e12a6cc5c9ed7a768a8fb2b9546e86a193e346f159a721b6faf",
+    "apps/cipher/docs/framework/PRJ02_PROJECT_PREALLOCATION_AUDIT.md": "223773538f009fe39090104d7bff5b5c91fd8bc88b7833886a038bd4a2b0399d"
+  },
+  "native_qualification": "Pending root-controlled metadata/profile/fixtures and targeted source review; no writer enabled by this file."
+}

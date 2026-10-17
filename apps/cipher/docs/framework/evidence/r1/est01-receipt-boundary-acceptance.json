@@ -1,0 +1,118 @@
+{
+  "schema": "cipher.r1.est01-receipt-boundary-acceptance.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T16:36:09.129008+00:00",
+  "qualification": "Fixture receipt callback contract adaptation only; production domain and authorization behavior unchanged.",
+  "runtime": {
+    "container": "cipher-r0-runtime-1",
+    "site": "cipher-ci-20261015163159-bd642d.localhost",
+    "command": "bench --site cipher-ci-20261015163159-bd642d.localhost execute cipher_aec.tests.test_estimating_acceptance.run_acceptance",
+    "exit_code": 0
+  },
+  "change": {
+    "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+    "previous_sha256": "5f3b054cb198334da5a5185a7f355f2cf8021a5d013bb2ccb92b235357ddc5f3",
+    "sha256": "a5fb944791de53b9aaa2fc41313fc75376ce72f9f1eeb185d510040c6e284e1f",
+    "details": "Boundary accepts scope_type, asserts it is Project, and forwards it unchanged to the real authorize_receipt; original snapshot/concurrency assertions remain."
+  },
+  "actual_native_result": {
+    "label": "explicit-authored-est01-fixture-with-real-frappe-storage",
+    "live_provider_qualified": false,
+    "geometry_qualified": false,
+    "estimate_acceptance_implemented": false,
+    "project": "PROJ-0005",
+    "estimate": "1da14355-ccfe-4e90-a7fd-3b612ec4fdb4",
+    "source_revision": "REV-f6f4e9457019415f9f139398d0b57c2b",
+    "source_sha256": "f25f5bd9f9381a4eb73d578504c415e85ce0ae469d4a66638368c95ea54d8483",
+    "first_revision": "496d091b-596d-4174-b60e-30bf21d581f8",
+    "second_revision": "71c8c937-db2b-425d-a4a8-b4b1688a171e",
+    "known_direct": "923.10",
+    "known_total": "1025.41",
+    "explicit_successor_total": "1028.24",
+    "exact_precision_roundtrip": "0.000000000001",
+    "native_money_storage": "canonical-decimal-Data-plus-declared-scale",
+    "stable_line_id": "12ef7b20-02d0-4e63-bdea-00fa6b0a6e7a",
+    "single_effect_replay": true,
+    "immutable_source_snapshot": true,
+    "published_schema_samples_available": [
+      "CalculateRevisionRequest",
+      "CalculateRevisionResponse",
+      "EstAssemblyRecord",
+      "EstConversionRecord",
+      "EstRateRecord",
+      "EstSnapshotRecord",
+      "ListEstimateUnitsResponse"
+    ],
+    "native_reference_checks": {
+      "foreign_company_native_readable_denied": [
+        "Item",
+        "Supplier",
+        "Customer"
+      ],
+      "retained_reference_company_denied": [
+        "rate",
+        "snapshot",
+        "line"
+      ],
+      "native_read_revocation_denied": true,
+      "new_calculation_refused_revoked_source_without_snapshot": true,
+      "separate_db_connections": true,
+      "tx_isolation": "REPEATABLE-READ",
+      "old_snapshot_observed_after_concurrent_commit": true,
+      "receipt_replay_revocation_denied": true,
+      "safe_serialization_conflict_before_fresh_denial": true
+    },
+    "actual_resource_lock_order": {
+      "create_rate": [
+        "UOM",
+        "Currency",
+        "native Item/party",
+        "native Item/party"
+      ],
+      "create_assembly": [
+        "UOM",
+        "native Item/party",
+        "native Item/party"
+      ],
+      "calculate_revision": [
+        "UOM",
+        "Currency",
+        "native Item/party",
+        "native Item/party"
+      ]
+    },
+    "generic_write_denials": [
+      "Cipher Rate Source",
+      "Cipher Assembly Revision",
+      "Cipher Estimate Revision",
+      "Cipher Calculation Snapshot"
+    ],
+    "qualified_unit_metadata_denied": "immutable_unit",
+    "invalid_dimension_denied": "invalid_dimension",
+    "invalid_calculation_left_no_snapshot": true,
+    "source_revocation_denied_reads_and_receipt": [
+      "capability_denied",
+      "capability_denied",
+      "capability_denied"
+    ]
+  },
+  "source_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+      "sha256": "a5fb944791de53b9aaa2fc41313fc75376ce72f9f1eeb185d510040c6e284e1f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "22c50fc4524cf4e9254f41534d3a3e3e1a8af8699cac2dc44d96516baa718db0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "decb37e43d131975b6bd835dd033e6e586788176430b5b0b9680fc96158f30b5"
+    }
+  ],
+  "initial_gate_failure": "apps/cipher/docs/framework/evidence/r1/combined-fresh-validation-initial.json",
+  "broader_gate_rerun": false,
+  "historical_checkpoint_evidence_unchanged": true,
+  "live_model_qualified": false,
+  "live_provider_qualified": false
+}

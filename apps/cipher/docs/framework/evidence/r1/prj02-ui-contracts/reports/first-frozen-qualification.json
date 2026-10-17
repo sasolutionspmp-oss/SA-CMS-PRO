@@ -1,0 +1,31 @@
+{
+  "qualification": "Failed local explicit-fixture relevant suite; not native/connected qualification.",
+  "stats": {
+    "passed": 81,
+    "failed": 1,
+    "flaky": 0,
+    "skipped": 0
+  },
+  "source_files": 116,
+  "source_unchanged": true,
+  "failure": "New Company-context test counted an aborted development StrictMode effect as a completed source read.",
+  "trace_observation": [
+    {
+      "method": "get_document",
+      "company": "TEST-SECOND-COMPANY",
+      "status": -1,
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "method": "get_document",
+      "company": "TEST-SECOND-COMPANY",
+      "status": 200
+    },
+    {
+      "method": "preview_revision",
+      "company": "TEST-SECOND-COMPANY",
+      "status": 200
+    }
+  ],
+  "correction": "Astra-approved test-only assertion over every attempted exact Company/source identity, exactly two successful response identities, and explicit refusal of any failure besides the aborted initial detail mount. No product/retry/skip change."
+}

@@ -1,0 +1,10 @@
+{
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "scope_type": "Company",
+  "company": "Company chain A 20b85fd4edd2",
+  "role": "author",
+  "ability": "commercial.distribute",
+  "active": 0,
+  "driver_started_at": "2026-10-15T19:13:13.877477+00:00",
+  "driver_completed_at": "2026-10-15T19:13:15.261074+00:00"
+}

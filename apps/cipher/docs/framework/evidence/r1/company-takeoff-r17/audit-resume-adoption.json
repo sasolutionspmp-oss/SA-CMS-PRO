@@ -1,0 +1,8 @@
+{
+  "status": "original_successful_audit_verified_and_adopted",
+  "original_verifier_failed_status_preserved": true,
+  "successful_report_sha256": "75c19ea4da9c8874498cf8e0fae8e177cedcac94c4db481352877ee8897e3dcb",
+  "later_readonly_duplicate_refusal_sha256": "4caddd85491d5f682778e6ba9b73ed25368af9c5b01b86ae3adcad3807e49668",
+  "later_refusal_reason": "Existing proof file guard refused overwriting retained audit output after environment transition",
+  "business_actions_repeated": 0
+}

@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T20:17:54.423883+00:00",
+  "qualification": "Focused owned source/lifetime/branch compatibility tests only; native same-inventory history latency and next-read source revocation remain separate. Existing renderer and approval effect qualification are preserved historical captures. Generated mutation admission remains disabled.",
+  "change": "Within an existing valid Company read_graph, reuse only successful original recursive authority for literal Company Proposal Issue and Company Estimate Acceptance, after fresh immutable metadata/digest/linkage checks. No new roots or public API.",
+  "tests": {
+    "passed": 66,
+    "failed": 0,
+    "output": "..................................................................\n----------------------------------------------------------------------\nRan 66 tests in 0.877s\n\nOK\n",
+    "runtime": "cipher-r0-runtime-1 pinned Frappe Python",
+    "log_sha256": "6282015e585baa23c56339ea4c1339b87b0cbfbae86d4694ebecc5bf3f8803bd",
+    "overlaps_prior_slices": true
+  },
+  "assertions": [
+    "Literal original-read namespaces only; exact actor/person/Company/digest and successful normal exit.",
+    "Active kind+ID ancestry checked before digest hit; cache saturation continues uncached authorization.",
+    "Fresh Issue/revision/prepared binding, generation, scope and scan-policy checks precede every proof hit.",
+    "Same pure prepared snapshot construction is shared with full canonical output reads.",
+    "Requested PDF canonical read and exact SHA/length checks remain outside the proof; missing bytes still deny.",
+    "No existing graph and locking/Project/command paths retain full authorization. New graph fully reauthorizes.",
+    "No DTO, bytes, current head or current-use authorization is cached. Existing graph write/DB/transaction/finally boundaries remain authoritative."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "5c59ec809a6c2009e0cffa9a72eeed5cbaa72881491ff46b3e09c5ddcfe9496a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py": "8af5d66c4a5c62b83b0788dd2bdf7be60a9bd1aa26d0d8b8b94492ae111e44fb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/outputs.py": "a8d99f4236e26dcb77c473f5262bd00b51719e38468b37f6a72d3add28cc13ec",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py": "31cb2ad04bd56b98224c89818aede727ae353dbae9d54e57bd6826ec6ef04abb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_output_reads.py": "c9c7b7655590bca2e70a04262d34db4a3350502ad819543d72d12751351e4f9e"
+  },
+  "prior_captures_preserved": [
+    "generated-read-graph-tests.json",
+    "commercial-output-read-discovery-tests.json",
+    "commercial-issue-native-acceptance.json"
+  ]
+}

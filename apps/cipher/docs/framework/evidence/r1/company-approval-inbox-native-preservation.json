@@ -1,0 +1,41 @@
+{
+  "schema": "cipher.r1.company-approval-inbox-native-preservation.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T20:31:48.796509+00:00",
+  "qualification": "Read-only raw preservation only; original three successful operations, six immutable receipts and independent sink facts identical to their earlier native baseline. No business command or transport invocation.",
+  "cases": {
+    "queued-restart": {
+      "operation_id": "u1tg6if7ie",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:37:21.350307",
+      "original_receipt_hashes": {
+        "create": "d21f0352257a43234ca717abecc1c76471def342f65ae3d141f869d9e54a2be8",
+        "execute": "6717391ef7da4f731bb68a6a2554b0415f7b951c93fa572fece1fbd966517d2a"
+      },
+      "original_stored_ack_sha256": "40f7a6c3422abf2325434d0a3d1d0eabf3df7cef904fee911f65e20944502412"
+    },
+    "redis-publication-failure": {
+      "operation_id": "ucn4babims",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:38:06.446779",
+      "original_receipt_hashes": {
+        "create": "b0550a5a3a700ab534d2eebe5532cb85e51bd4a1318484761122458ce3ed6eab",
+        "execute": "8fc5f857d6212a39549d292c7d3760022980de72e29efec97800b86174d2b3d9"
+      },
+      "original_stored_ack_sha256": "f334c8da146cffad18e4c93028fbe1e9c5c82badee4d4795c12f303f21859ffd"
+    },
+    "operator-quarantine": {
+      "operation_id": "uofcdn69oc",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:39:56.586761",
+      "original_receipt_hashes": {
+        "create": "8cc1c840e9168f102f454983561d76cff792a31f7579bf5b6126f41e7d593505",
+        "execute": "a8c0b337336c60a46bf5884522bb8ab7b8e8ed839804d244885b6d0742a65e62"
+      },
+      "original_stored_ack_sha256": "6d1157bbe58631f57a0b7403981ae42b1ed2b71a7b9fa9049e7f803f3a689a18"
+    }
+  }
+}

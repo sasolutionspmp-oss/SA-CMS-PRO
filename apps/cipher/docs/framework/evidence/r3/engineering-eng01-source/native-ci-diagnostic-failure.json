@@ -1,0 +1,57 @@
+{
+  "schema": "cipher.eng01.native-ci-attempt.v1",
+  "status": "failed",
+  "commit": "f2beb20044062e85d4ed74a71c242f311661c176",
+  "run_id": 39002906657,
+  "job_id": 117309384206,
+  "run_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/39002906657",
+  "failed_stage": "frappe-integration-tests",
+  "diagnostic": {
+    "failures": [
+      {
+        "class": null,
+        "exception_type": "frappe.exceptions.TimestampMismatchError",
+        "frames": [
+          {
+            "file": "cipher_aec/tests/test_engineering_native.py",
+            "function": "test_immutable_rfi_submittal_independent_officials_internal_receipt_and_replay",
+            "line": 72
+          },
+          {
+            "file": "frappe/model/document.py",
+            "function": "save",
+            "line": 558
+          },
+          {
+            "file": "frappe/model/document.py",
+            "function": "_save",
+            "line": 589
+          },
+          {
+            "file": "frappe/model/document.py",
+            "function": "check_if_latest",
+            "line": 1111
+          },
+          {
+            "file": "frappe/utils/messages.py",
+            "function": "msgprint",
+            "line": 118
+          },
+          {
+            "file": "frappe/utils/messages.py",
+            "function": "_raise_exception",
+            "line": 59
+          }
+        ],
+        "test": null
+      }
+    ],
+    "log_sha256": "c2d813debcf686fcb75b53b983871744e8a925054c1c397d96e62be392b426b6",
+    "schema": "cipher.native.failure.v1",
+    "status": "available"
+  },
+  "actual_job_log_sha256": "c0c24154364e1a792c610d5eb6540748d5144fcfbaaec376f53806618ad266da",
+  "cause": "The native test reused a Frappe Document after an intentionally rejected save; its in-memory modified timestamp changed and the next attempt raised TimestampMismatchError before reaching the second control assertion.",
+  "correction": "Reload the same original row before testing the trusted-write guard. Business controllers/permissions/services unchanged.",
+  "native_result_after_correction": "pending"
+}

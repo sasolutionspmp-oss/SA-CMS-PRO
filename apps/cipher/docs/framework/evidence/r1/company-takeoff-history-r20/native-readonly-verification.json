@@ -1,0 +1,22 @@
+{
+  "schema": "cipher.r20.native-readonly-verification.v1",
+  "status": "passed",
+  "native_business_commands": 0,
+  "new_business_rows": 0,
+  "inventory_entries": 78,
+  "existing_tables": 77,
+  "all_original_business_measurements_bindings_estimates_pricing_exact": true,
+  "actual_reopened_binding_and_comparison_match_original_native_facts": true,
+  "unsaved_proposed_quantity_not_persisted": true,
+  "source_config_indexes_closed_native_evidence_preserved": true,
+  "auth": {
+    "status": "passed",
+    "bounded_user_changes": 1,
+    "bounded_session_changes": 1,
+    "transport_ip_change_independently_hash_verified": false,
+    "observer_business_writes": 0
+  },
+  "before_sha256": "29d4896e4866a802634e01f5b99a1c484d00259b49c67eae8d23109d8578e97c",
+  "after_sha256": "f75af088a6504358ad97ed32565f2ec02f417acee7b470b50f675d0e0d016641",
+  "browser_report_sha256": "8d814ccf0d8d601b594ef3969b0a3afcf6f5514c41ce060f7de6070441a53415"
+}

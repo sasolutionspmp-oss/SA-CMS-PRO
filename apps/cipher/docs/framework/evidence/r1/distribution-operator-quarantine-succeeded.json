@@ -1,0 +1,30 @@
+{
+  "schema": "cipher.r1.distribution-queue-observation.v1",
+  "status": "passed",
+  "mode": "succeeded",
+  "observed_at": "2026-10-15T20:09:56.663039+00:00",
+  "operation_id": "uofcdn69oc",
+  "dispatch_id": "fc38d8ca-faf6-4447-9189-1922da816654",
+  "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+  "canonical_state": "Succeeded",
+  "worker_attempt_count": 1,
+  "fencing_token": 1,
+  "rq_job_id": "cipher.localhost||cipher-outbox-uofcdn69oc",
+  "rq_state": "finished",
+  "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+  "queue_contains_job": false,
+  "sink_receipt_count": 1,
+  "original_healthy_common_redis_used": true,
+  "manual_deliver_or_publish_invoked": false,
+  "live_external_provider_qualified": false,
+  "acknowledgment": {
+    "mode": "fixture",
+    "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+    "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+    "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+    "byte_length": 12377,
+    "acknowledgment_id": "475a6be4-e532-45ba-9fda-78ee0e619bd8",
+    "accepted_at": "2026-10-15T20:09:56.578408+00:00"
+  },
+  "source_pdf_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380"
+}

@@ -1,0 +1,1133 @@
+{
+  "schema": "cipher.r1.est01-http-acceptance.v1",
+  "status": "passed",
+  "executed_at": "2026-10-15T15:34:57.462761+00:00",
+  "label": "explicit-authored-est01-fixture-real-cookie-csrf-http",
+  "live_provider_qualified": false,
+  "live_model_qualified": false,
+  "geometry_qualified": false,
+  "estimate_acceptance_implemented": false,
+  "origin": "http://127.0.0.1:18880",
+  "company": "Cipher Synthetic Company",
+  "project": "PROJ-0001",
+  "checks": [
+    {
+      "check": "primary real authenticated cookie and CSRF token",
+      "status": "passed"
+    },
+    {
+      "check": "alias real authenticated cookie and CSRF token",
+      "status": "passed"
+    },
+    {
+      "check": "alias resolves same canonical person",
+      "status": "passed"
+    },
+    {
+      "check": "outsider real authenticated cookie and CSRF token",
+      "status": "passed"
+    },
+    {
+      "check": "server-qualified units used without dimension inference",
+      "status": "passed"
+    },
+    {
+      "check": "register_unit denied unit_administrator_required",
+      "status": "passed"
+    },
+    {
+      "check": "exact 12-place rate persists over HTTP",
+      "status": "passed"
+    },
+    {
+      "check": "known exact total over HTTP",
+      "status": "passed"
+    },
+    {
+      "check": "alias replay one original effect",
+      "status": "passed"
+    },
+    {
+      "check": "shared receipt resolves original calculation",
+      "status": "passed"
+    },
+    {
+      "check": "snapshot preserved exact inputs and output",
+      "status": "passed"
+    },
+    {
+      "check": "paged estimate catalog includes real current record",
+      "status": "passed"
+    },
+    {
+      "check": "catalog cursor has no first-record duplication",
+      "status": "passed"
+    },
+    {
+      "check": "calculate_revision denied operation_conflict",
+      "status": "passed"
+    },
+    {
+      "check": "calculate_revision denied invalid_dimension",
+      "status": "passed"
+    },
+    {
+      "check": "invalid calculation leaves estimate pointer unchanged",
+      "status": "passed"
+    },
+    {
+      "check": "calculate_revision denied stale_estimate",
+      "status": "passed"
+    },
+    {
+      "check": "create_estimate denied idempotency_key_required",
+      "status": "passed"
+    },
+    {
+      "check": "create_estimate denied forged_authority",
+      "status": "passed"
+    },
+    {
+      "check": "get_record denied authentication_required",
+      "status": "passed"
+    },
+    {
+      "check": "outsider estimate denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider rate denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider assembly denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider revision denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider snapshot denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider line denied",
+      "status": "passed"
+    },
+    {
+      "check": "cross-project snapshot refused",
+      "status": "passed"
+    },
+    {
+      "check": "missing CSRF refused before command",
+      "status": "passed"
+    },
+    {
+      "check": "outsider direct backend denied with schema-valid envelope",
+      "status": "passed"
+    },
+    {
+      "check": "guest direct backend denied with schema-valid envelope",
+      "status": "passed"
+    },
+    {
+      "check": "successful estimate snapshot full envelope schema valid",
+      "status": "passed"
+    },
+    {
+      "check": "primary generic native snapshot read denied",
+      "status": "passed"
+    },
+    {
+      "check": "outsider generic native snapshot read denied",
+      "status": "passed"
+    },
+    {
+      "check": "generic estimating insert refused",
+      "status": "passed"
+    }
+  ],
+  "schema_validations": [
+    {
+      "definition": "ListEstimateUnitsRequest",
+      "status": "passed",
+      "canonical_value_sha256": "931116244ca81bb43034cd6f65dbee86b7f2eadc2dc1059976cc9acc80a973bd"
+    },
+    {
+      "definition": "ListEstimateUnitsResponse",
+      "status": "passed",
+      "canonical_value_sha256": "5df0e45276b0452a60936871e4ca4ae908026ed0932e6ed50ee4b5620d214abf"
+    },
+    {
+      "definition": "RegisterUnitRequest",
+      "status": "passed",
+      "canonical_value_sha256": "20ef6a322047be7b179a1f1206ad5e24c104f6c1a37274c5a3bc698985ef77f3"
+    },
+    {
+      "definition": "EstCitation",
+      "status": "passed",
+      "canonical_value_sha256": "f8120c4d24565e2806d5969f90202b46fa8bb44e9611ad38bfdd37568ab2a6b3"
+    },
+    {
+      "definition": "EstListResponse",
+      "status": "passed",
+      "canonical_value_sha256": "4734aaad6fbb2965819bb48e783b589f18f45572c3c7dcabcf9938d240abe3eb"
+    },
+    {
+      "definition": "CreateConversionRequest",
+      "status": "passed",
+      "canonical_value_sha256": "fd90873018d4a576644a0174fbfa2d3e7f02756f898159a5f9bbe490e5426df1"
+    },
+    {
+      "definition": "CreateConversionResponse",
+      "status": "passed",
+      "canonical_value_sha256": "da9e65aa544878a0bb9a5919e6ce71bdd8ab08c4441e66b4b93bde3192c5e708"
+    },
+    {
+      "definition": "CreateRateRequest",
+      "status": "passed",
+      "canonical_value_sha256": "f0fd387b0089178c0bf7bea37ebd2941255c64dbe69f299423c7e4b58164770c"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "canonical_value_sha256": "c2193b3541331d478989c87ae0d0eb7cb2fe9a7e91812e9cba6cc5a8ef419a6a"
+    },
+    {
+      "definition": "CreateRateRequest",
+      "status": "passed",
+      "canonical_value_sha256": "d650b1a665d4696538b68b3a834188ac71002a3089ab09d67e04db52e82ae5f4"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "canonical_value_sha256": "7aebc2cf7d0dede1f9275cf0e8dfe8ed8ba0d5f3f5f54586920e589dbb66fad5"
+    },
+    {
+      "definition": "CreateRateRequest",
+      "status": "passed",
+      "canonical_value_sha256": "563fef5bc479caeb5f83922f2e7c3335c0c3b1bb434fa50d51f961b1945b8381"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "canonical_value_sha256": "8fcf97423725fac6c48008e3a2bf1a7a7ba083a93d3237348990cd646c2012cd"
+    },
+    {
+      "definition": "CreateRateRequest",
+      "status": "passed",
+      "canonical_value_sha256": "92c7885fe6750ebdc2014eda5294c43b285061b35e3eaa03eeaaa2630226ec51"
+    },
+    {
+      "definition": "CreateRateResponse",
+      "status": "passed",
+      "canonical_value_sha256": "d8518f428dae9ff0704e8f47e2ea1083e70e9628f53b79376e73e7c17de0b894"
+    },
+    {
+      "definition": "EstRateRecord",
+      "status": "passed",
+      "canonical_value_sha256": "4a1f69c55f2c2be27255cbf2a76dcacfba161bd62ad7312d320c12fca85a13b2"
+    },
+    {
+      "definition": "CreateAssemblyRequest",
+      "status": "passed",
+      "canonical_value_sha256": "355afaeae3d48ed5e7ed054a5620f11c8819a26dd0489be36ccc7c544d9f4fa6"
+    },
+    {
+      "definition": "CreateAssemblyResponse",
+      "status": "passed",
+      "canonical_value_sha256": "0f19bce9f9ac1fee15bf36372176b2a984de6e4dd6d91db320dc58dbafe55029"
+    },
+    {
+      "definition": "CreateEstimateRequest",
+      "status": "passed",
+      "canonical_value_sha256": "52b4fc695dc093b1f1c615755cd9db16e2c6d77860ea82b7119936247fbb775a"
+    },
+    {
+      "definition": "CreateEstimateResponse",
+      "status": "passed",
+      "canonical_value_sha256": "80a70cda8e2453593ca659915072be1822cc3ab442f75bc7c230b2812ef8499c"
+    },
+    {
+      "definition": "CalculateRevisionRequest",
+      "status": "passed",
+      "canonical_value_sha256": "6bb393b7ac918d242c4385822ab5ce22ff3e02f092c2aee1b9b4b51166a4eb01"
+    },
+    {
+      "definition": "CalculateRevisionResponse",
+      "status": "passed",
+      "canonical_value_sha256": "1916d739001f9a51fe4709519affb26797decb7413ef0a428e57ab4b67d820e0"
+    },
+    {
+      "definition": "CalculateRevisionRequest",
+      "status": "passed",
+      "canonical_value_sha256": "6bb393b7ac918d242c4385822ab5ce22ff3e02f092c2aee1b9b4b51166a4eb01"
+    },
+    {
+      "definition": "CalculateRevisionResponse",
+      "status": "passed",
+      "canonical_value_sha256": "a71017b70e3bbf19ae5311676ed68ea133d2dee83135d29c5d4631dd75751b0a"
+    },
+    {
+      "definition": "CalculateRevisionResponse",
+      "status": "passed",
+      "canonical_value_sha256": "a71017b70e3bbf19ae5311676ed68ea133d2dee83135d29c5d4631dd75751b0a"
+    },
+    {
+      "definition": "GetEstimateRecordRequest",
+      "status": "passed",
+      "canonical_value_sha256": "bc1be66400f6902560fb16d8902d9bcf19ccc9a1128c71ee60545b9328f47b9c"
+    },
+    {
+      "definition": "EstSnapshotRecord",
+      "status": "passed",
+      "canonical_value_sha256": "8b605232a4b86532436f69aaadd87fd64959b7e4acd859e39d4311ab090c8eb4"
+    },
+    {
+      "definition": "GetEstimateRecordRequest",
+      "status": "passed",
+      "canonical_value_sha256": "70415e435175602c16cdb3dbb2a11ae7d1ef0f3ac2abf0447cf180cb937fd6e4"
+    },
+    {
+      "definition": "EstRevisionRecord",
+      "status": "passed",
+      "canonical_value_sha256": "7d1c6073dcfb4c15ecfc5abc010f4b42ef24efa8122c9c5b0d83045d1066f9bb"
+    },
+    {
+      "definition": "GetEstimateRecordRequest",
+      "status": "passed",
+      "canonical_value_sha256": "0cce72477d571e13285996d3bf0091f5ebc0b4ec2c21aea29e6451fb24c45d4f"
+    },
+    {
+      "definition": "EstLineRecord",
+      "status": "passed",
+      "canonical_value_sha256": "941ca41b3089db68a4e6c7451dae20cac7d3f138f57ce9492a6c7092228020e4"
+    },
+    {
+      "definition": "GetEstimateRecordRequest",
+      "status": "passed",
+      "canonical_value_sha256": "07e5befa93270f740e1787e247b15ff91245768595aaa407e007f20473ff699a"
+    },
+    {
+      "definition": "EstAssemblyRecord",
+      "status": "passed",
+      "canonical_value_sha256": "38fbc6eca7234df385bb695a338f6a7a39d53eb021face16b06605441f343295"
+    },
+    {
+      "definition": "GetEstimateRecordRequest",
+      "status": "passed",
+      "canonical_value_sha256": "41cf767b8815a14dceec0f0b1cbaf7bb97a00911b8cb0786a78767e13a770efb"
+    },
+    {
+      "definition": "EstConversionRecord",
+      "status": "passed",
+      "canonical_value_sha256": "b368070312f4849271e93f0223996c5e083f3991e8a922fc9c8bfcf434039e46"
+    },
+    {
+      "definition": "ListEstimateRecordsRequest",
+      "status": "passed",
+      "canonical_value_sha256": "a07db0897784e369ba62b7d9086d658eb8588e6b03a92e5d11cb781a3c82c5d0"
+    },
+    {
+      "definition": "EstListResponse",
+      "status": "passed",
+      "canonical_value_sha256": "e01118f5f612d3b8dc3c9fcf323671c329b664c650b90fd15c9bdd9db1a32bcc"
+    },
+    {
+      "definition": "ListEstimateRecordsRequest",
+      "status": "passed",
+      "canonical_value_sha256": "abc1bf8f70f1dfa8cd4044775e3ab06035c755a7a3ca48df42524ef09aa88f0e"
+    },
+    {
+      "definition": "EstListResponse",
+      "status": "passed",
+      "canonical_value_sha256": "5eee2b6dd9d6ffaa89c39fd70f1d9f16ca73b3af1840dfb79863838676312f2c"
+    },
+    {
+      "definition": "EstEstimateRecord",
+      "status": "passed",
+      "canonical_value_sha256": "2a58230c7c942ae8c2e74a114f67c0c33ec3570a6e312c16def502f5e96b9358"
+    },
+    {
+      "definition": "cipher.api.v1 envelope",
+      "status": "passed",
+      "case": "outsider direct-backend denial",
+      "canonical_value_sha256": "f059ad0aa885daf41fb597210d943a55eedb61ace5a101d4bac2173b73552c52"
+    },
+    {
+      "definition": "cipher.api.v1 envelope",
+      "status": "passed",
+      "case": "guest direct-backend denial",
+      "canonical_value_sha256": "60f332e0515786d12bb5eb1f2931544876745ae375a1dd040f1302b8d9d9d139"
+    },
+    {
+      "definition": "cipher.api.v1 envelope",
+      "status": "passed",
+      "case": "authenticated snapshot success",
+      "canonical_value_sha256": "1d65222b443ca95982f54a3d43a1a5b799d2547f924e94e30c2210f7fe1b7929"
+    }
+  ],
+  "http": {
+    "primary": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 89.49
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 13.65,
+        "request_id": "a8fab4f7-b1bb-41f7-b5f9-9f7e21e6e966",
+        "server_time": "2026-10-15T15:34:57.571532Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.list_units",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 13.02,
+        "request_id": "72995bb7-3fa1-4043-9cb1-d1399817ebe9",
+        "server_time": "2026-10-15T15:34:57.746114Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.register_unit",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 15.09,
+        "request_id": "89688969-9afb-4f9e-b065-949d143f48ec",
+        "server_time": "2026-10-15T15:34:57.762669Z",
+        "envelope_meta": true,
+        "error_code": "unit_administrator_required"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.documents.api.upload_document",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 62.12,
+        "request_id": "c2aa278e-1b4e-4ef9-8cc8-44a1b5d42468",
+        "server_time": "2026-10-15T15:34:57.822347Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.documents.api.get_citation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 9.39,
+        "request_id": "1c95fe7b-4de0-46c2-99eb-3eb8aa056817",
+        "server_time": "2026-10-15T15:34:57.835294Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.list_records",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 16.68,
+        "request_id": "2363e8f6-b73f-4733-a6cb-6ebd0ef5b062",
+        "server_time": "2026-10-15T15:34:57.852317Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_conversion",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 65.22,
+        "request_id": "81f90143-d54a-4e44-a700-d069926bd7a0",
+        "server_time": "2026-10-15T15:34:57.924090Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 51.86,
+        "request_id": "689a7931-cf33-4004-b712-af5d763b8f96",
+        "server_time": "2026-10-15T15:34:57.977778Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 41.99,
+        "request_id": "a591d4e4-9889-433c-b6a7-078b7163fb46",
+        "server_time": "2026-10-15T15:34:58.024113Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 39.54,
+        "request_id": "cd950b6c-dfd4-41fd-9b11-ac5ee790bbba",
+        "server_time": "2026-10-15T15:34:58.067360Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_rate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 50.63,
+        "request_id": "921f52d6-39f6-46bf-bd2d-9187869dafd2",
+        "server_time": "2026-10-15T15:34:58.119676Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 13.99,
+        "request_id": "5c7edcd0-f9e5-45e1-a2ac-5f5844581af9",
+        "server_time": "2026-10-15T15:34:58.136776Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_assembly",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 86.91,
+        "request_id": "824b2c02-08f2-493a-8f0f-36d4e5d28951",
+        "server_time": "2026-10-15T15:34:58.222796Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_estimate",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 38.03,
+        "request_id": "3b2756d0-effa-4142-a2d0-ea321958113e",
+        "server_time": "2026-10-15T15:34:58.267220Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 110.99,
+        "request_id": "7da534b9-67dc-450b-a90f-638b266e3b37",
+        "server_time": "2026-10-15T15:34:58.378560Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 18.24,
+        "request_id": "93b8d964-f02a-4f29-a6c1-1192af44c587",
+        "server_time": "2026-10-15T15:34:58.508686Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 20.2,
+        "request_id": "b907f880-53b2-4b81-8d0c-69ef5a0fdb65",
+        "server_time": "2026-10-15T15:34:58.536282Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 24.38,
+        "request_id": "df6194b8-41d4-4e52-a041-efbbd381ba8f",
+        "server_time": "2026-10-15T15:34:58.561119Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 16.41,
+        "request_id": "5aa856b2-3ecc-4807-86a5-894967282c59",
+        "server_time": "2026-10-15T15:34:58.579394Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 14.17,
+        "request_id": "d88e19f3-1cc7-4ede-8d2c-5b6642c40b79",
+        "server_time": "2026-10-15T15:34:58.601477Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.list_records",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 12.13,
+        "request_id": "6786a53b-3584-4ef0-92a5-249e3d7ea6e1",
+        "server_time": "2026-10-15T15:34:58.616919Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.list_records",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 11.26,
+        "request_id": "7b273bdb-6fe8-48ee-8305-7e23deff1d30",
+        "server_time": "2026-10-15T15:34:58.629063Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 409,
+        "media_type": "application/json",
+        "elapsed_ms": 17.87,
+        "request_id": "40a6baff-9573-49d1-b8b6-43fed8c9a93f",
+        "server_time": "2026-10-15T15:34:58.647882Z",
+        "envelope_meta": true,
+        "error_code": "operation_conflict"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 422,
+        "media_type": "application/json",
+        "elapsed_ms": 64.2,
+        "request_id": "57e34897-8bed-4241-bad7-3a82c5f0c266",
+        "server_time": "2026-10-15T15:34:58.710008Z",
+        "envelope_meta": true,
+        "error_code": "invalid_dimension"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.52,
+        "request_id": "f176bac3-042a-4d56-93d0-201b92efbc0a",
+        "server_time": "2026-10-15T15:34:58.719683Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 412,
+        "media_type": "application/json",
+        "elapsed_ms": 16.77,
+        "request_id": "cbb205d0-7f78-4917-a394-87fb58ef007c",
+        "server_time": "2026-10-15T15:34:58.737238Z",
+        "envelope_meta": true,
+        "error_code": "stale_estimate"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_estimate",
+        "status": 428,
+        "media_type": "application/json",
+        "elapsed_ms": 6.13,
+        "request_id": "22e8233b-df85-4939-be02-b2a4afe6b452",
+        "server_time": "2026-10-15T15:34:58.743513Z",
+        "envelope_meta": true,
+        "error_code": "idempotency_key_required"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_estimate",
+        "status": 422,
+        "media_type": "application/json",
+        "elapsed_ms": 4.19,
+        "request_id": "aabed1ef-9f4e-4268-bc23-fc420cba4607",
+        "server_time": "2026-10-15T15:34:58.748381Z",
+        "envelope_meta": true,
+        "error_code": "forged_authority"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.create_estimate",
+        "status": 400,
+        "media_type": "application/json",
+        "elapsed_ms": 8.93
+      }
+    ],
+    "alias": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 62.93
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 12.9,
+        "request_id": "6bfc62de-3f69-4446-80be-4912baf604ee",
+        "server_time": "2026-10-15T15:34:57.654258Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 44.72,
+        "request_id": "da9db2e6-0fc8-4954-8804-7cba1afb4c57",
+        "server_time": "2026-10-15T15:34:58.434771Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.operation",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 39.21,
+        "request_id": "09d55cbd-6bd5-4d0e-a0fd-4921af663759",
+        "server_time": "2026-10-15T15:34:58.480620Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.51,
+        "request_id": "9374ffb7-aeba-48dc-b036-16f42d908fa2",
+        "server_time": "2026-10-15T15:34:58.789814Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      }
+    ],
+    "outsider": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 54.06
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.41,
+        "request_id": "3c2437ab-4626-4b40-a9c6-f57d105689be",
+        "server_time": "2026-10-15T15:34:57.722617Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.07,
+        "request_id": "6ee7cacc-70be-440e-827c-5a1365aa0e21",
+        "server_time": "2026-10-15T15:34:58.757226Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.42,
+        "request_id": "e0243b5c-ce18-4d3e-a529-d168c150f16a",
+        "server_time": "2026-10-15T15:34:58.761700Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.26,
+        "request_id": "525f542c-78c3-4f44-8a32-10c0ac8fb9a0",
+        "server_time": "2026-10-15T15:34:58.766040Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.33,
+        "request_id": "3833cc7b-3a23-4bed-92b4-d68db2e662cb",
+        "server_time": "2026-10-15T15:34:58.770277Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.81,
+        "request_id": "0550757b-7c72-493a-aeb2-18fffe1f62eb",
+        "server_time": "2026-10-15T15:34:58.775202Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 4.46,
+        "request_id": "0c607df2-d596-44ba-b608-188e12235dc0",
+        "server_time": "2026-10-15T15:34:58.779652Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      },
+      {
+        "method": "POST",
+        "route": "/api/method/cipher_aec.estimating.api.calculate_revision",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 5.08,
+        "request_id": "3dde4558-b6f1-4741-a370-9ab5a1973053",
+        "server_time": "2026-10-15T15:34:58.785204Z",
+        "envelope_meta": true,
+        "error_code": "not_found"
+      }
+    ],
+    "guest": [
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 401,
+        "media_type": "application/json",
+        "elapsed_ms": 4.5,
+        "request_id": "f767e2d8-db0b-4670-9a2f-c238dc000e31",
+        "server_time": "2026-10-15T15:34:58.751695Z",
+        "envelope_meta": true,
+        "error_code": "authentication_required"
+      }
+    ],
+    "primary_followup": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 72.06
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 8.32,
+        "request_id": "ce3f5338-c18f-4a40-b8cb-94bb52c94b45",
+        "server_time": "2026-10-15T15:35:57.172607Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 20.55
+      },
+      {
+        "method": "GET",
+        "route": "/api/resource/Cipher%20Calculation%20Snapshot/f58d8071-141b-4def-a869-6d354feff462",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 106.21
+      },
+      {
+        "method": "POST",
+        "route": "/api/resource/Cipher%20Estimate",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 6.26
+      }
+    ],
+    "outsider_backend": [
+      {
+        "method": "POST",
+        "route": "/api/method/login",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 76.19
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.api.v1.session",
+        "status": 200,
+        "media_type": "application/json",
+        "elapsed_ms": 7.95,
+        "request_id": "c5d7745c-e6c6-439b-bc34-0ce066172770",
+        "server_time": "2026-10-15T15:35:57.263406Z",
+        "envelope_meta": true
+      },
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 404,
+        "media_type": "application/json",
+        "elapsed_ms": 6.92
+      },
+      {
+        "method": "GET",
+        "route": "/api/resource/Cipher%20Calculation%20Snapshot/f58d8071-141b-4def-a869-6d354feff462",
+        "status": 403,
+        "media_type": "application/json",
+        "elapsed_ms": 7.78
+      }
+    ],
+    "guest_backend": [
+      {
+        "method": "GET",
+        "route": "/api/method/cipher_aec.estimating.api.get_record",
+        "status": 401,
+        "media_type": "application/json",
+        "elapsed_ms": 5.2
+      }
+    ]
+  },
+  "records": {
+    "estimate": "63fcdbec-ff95-4902-bc70-4fa9df927a0c",
+    "first_revision": "25dc3b73-ae70-4ea2-a1fe-ecf06b75b5f6",
+    "snapshot": "f58d8071-141b-4def-a869-6d354feff462",
+    "line": "600ab0e6-6bb1-4e7a-a039-a8ebc5e8b5ba",
+    "rate": "47e6c8cc-0f48-4e8b-be40-74722749869a",
+    "assembly": "1d12d619-43a6-464d-848a-f049415425bd",
+    "conversion": "73596e6c-e81f-4ce1-bfd8-4fe93ebcce86",
+    "source_revision": "REV-72c7ce4879c14f3cba826c669e0c16d7",
+    "source_sha256": "43f092b0f9fc2d9e4729f19ab199a3cd482bcc7000fa6c7cafddbb7256fd24c6"
+  },
+  "totals": {
+    "direct": "923.10",
+    "indirect": "92.31",
+    "contingency": "10.00",
+    "total": "1025.41"
+  },
+  "exact_rate_roundtrip": "0.000000000001",
+  "same_person_alias_replay": true,
+  "source_unit_setup": "Previously qualified real native UOM metadata from explicit EST DB fixtures; no new UOM qualification or source inference performed by this HTTP user.",
+  "qualification_limits": [
+    "Authored synthetic source document and quantities; no live model/quote provider.",
+    "HTTP checks current permissions and scoped source results; concurrent native association revocation is qualified separately in est01-acceptance.json.",
+    "No geometry, takeoff, estimate acceptance, award, baseline or ledger workflow exercised."
+  ],
+  "runner_location": "temporary runner outside frozen application/product/operations/workflow source",
+  "schema_source_sha256": "8c5296687071ef33395322460562f73c78f03277fe64c0037e1dc41d7e4ea119",
+  "client_python": "3.12.14",
+  "source_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.json",
+      "sha256": "15dc808c0ebf0e029e16ffadc1a90eb08683e22059ce79f0d13ea17a73e99ef0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.py",
+      "sha256": "57f860cbc32634ce3e4e68bf9d20671e9ceecc9f2356e02cb3fa3756bd571efa"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.json",
+      "sha256": "0d7984c52034f9b8e301c8a5cb8ca33310df38b214cb998bffccd42bde04ea94"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.py",
+      "sha256": "6eb83daee9317f23938d752ca2d4a3543db3b49c874ca6071ce22e593282af15"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/cipher_estimate.json",
+      "sha256": "7c3440582d2da73d8cfd27f15aade24dc812a511ea5309a68bf443ca5241f3d2"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate/cipher_estimate.py",
+      "sha256": "f285405714db10f5be367b922256628c1048729d75be9372f52aa7d02a54b308"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.json",
+      "sha256": "7366bc970ccf0d61d0b40942c8f8a69cff1a31514fdfac0e2304b5e5019dfc43"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.py",
+      "sha256": "7870fcbf63b36b6e2a50ad6c9569c5a736fd5984c0fef54d471c5e64ec4e8447"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.json",
+      "sha256": "b3b4e8db93bffaafa412ac7ab25007aa4fd63aadab35a5ef1b2d6d531a08e6c0"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.py",
+      "sha256": "2a0a6c1d1249079d68eeda900999be4214be4048c7d3885196364f21d271856c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.json",
+      "sha256": "7f46d6421805882d42e8fd416cf5956bc57293a998a2cd7d2a1060eb8d692f07"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.py",
+      "sha256": "50d6ae00629c67d5a783a355c81ed1092865991ed0f2f74c6ace94db82bb194f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.json",
+      "sha256": "e0b0b67d468a3c5d54f7f1d827663f64c74c4f5eb3dc9f77a721ea66f96e87db"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.py",
+      "sha256": "55b22a601b4e6d69b5a963003ee91c11aa1b939d8081293a065677771e767ecb"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/__init__.py",
+      "sha256": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/api.py",
+      "sha256": "ed492a8ede0e74fa5a283b2f6482b991d178f80a7ae81db5047f584dcd5bc1ac"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/calculation.py",
+      "sha256": "9f803027f8aca8c23406a862bf2c3d205aac24b335212bf38b71579c40676c5b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/contracts.py",
+      "sha256": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/guards.py",
+      "sha256": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/install.py",
+      "sha256": "15f8dbc2fd9726f4fc7544aba373e37a08382a9df74e8c94824ed6cd9ded8d5b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/records.py",
+      "sha256": "59044ec7fee48e64b964ce2aaafb467709b398fe4fa32703233579d455089933"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/repository.py",
+      "sha256": "e6150079ac6282c0ec9f44249e445e7c5854012322d9f070d9b716191777811a"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/schemas/api-v1.schema.json",
+      "sha256": "8c5296687071ef33395322460562f73c78f03277fe64c0037e1dc41d7e4ea119"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/service.py",
+      "sha256": "41154d187f61243b9c83134e843eb977dc063a720ad768443b3b755aac5d025f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/sources.py",
+      "sha256": "c39c1c9509e4afd4398c87e49a78812e5949a7478d8bcbb6dd95cea03a592312"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/units.py",
+      "sha256": "5fa5605e3305353514a8ae2c8341f87380257200b22fb70b9114b532dce74521"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_acceptance.py",
+      "sha256": "a913eed88e8707e47d25353c27b1ecef0b442141d37897c7c2bf17a6e4616bb1"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_core.py",
+      "sha256": "adccb17656115fc1bfa0443af8113a887a34573f5792a0d78d7e2dc1886c4b79"
+    }
+  ],
+  "shared_dependency_hashes": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/export.py",
+      "sha256": "25f83828d90f1775e716437d76cc76650c05efbcd62ff15e43af7eeb3600559c"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py",
+      "sha256": "4e8ff1684355b4f6c0b620b5fde87949333ee17827916e7f9cca89805124bb1f"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py",
+      "sha256": "39ba1841d2530d59041d81e322c8cc352c109ba4e4a70b586407b99d1346a440"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "f005d37fe6c6fe9605516c7f1fbca4cbeafafe47cc8972229be9fdb54a31989b"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "9e2204d7b02f815e49a1dca86fb929ef63b1c8b851d14bb8c454320cbe270771"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py",
+      "sha256": "0b6443bc41f4906f4fe669e67288629a9687ab86acc9e9e3cc1667237cf43a01"
+    }
+  ],
+  "core_envelope_schema_sha256": "709e25884717e4116d59075b82515949e7353da1d82ca9a6647dfe401b73397a",
+  "direct_backend_origin": "http://127.0.0.1:18881",
+  "completed_at": "2026-10-15T15:35:57.429094+00:00",
+  "runner_hashes": [
+    {
+      "role": "main HTTP journey",
+      "sha256": "36f835e123c01d2474cd3ac89a03877b2eadcf68d81207ec22b79f23f507b74d"
+    },
+    {
+      "role": "backend/envelope/generic-route followup",
+      "sha256": "fb49344dff800ba8cac7a4da43ef071cc95dafc84d35a85d422dbc394c6f085a"
+    }
+  ]
+}

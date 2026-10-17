@@ -1,0 +1,28 @@
+[WebServer] (node:676123) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 3 tests using 1 worker
+
+(node:676147) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:15:16 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+(node:676414) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:15:23 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+(node:676679) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] tests/proposal-output.spec.ts:48:1 › phone prepared PDF keeps functional zoom and rotation controls in the visible toolbar
+[WebServer] 8:15:31 PM [vite] (client) [console.warn] Lit is in dev mode. Not recommended for production! See https://lit.dev/msg/dev-mode for more information.
+
+  3 passed (22.1s)

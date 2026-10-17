@@ -1,0 +1,29 @@
+{
+  "scope": "Synthetic Node-side adapter checks; no browser/native requests",
+  "workspace": "/dev/shm/cipher-engineering-eng02/workspace",
+  "source_sha256": {
+    "apps/cipher/product/src/api/engineering-packages.ts": "0a56b24e2bef0b79ba12d90f04ac93c7ace9e2c20aff45e929a5f4b999eb885a",
+    "apps/cipher/product/tests/engineering-packages-validation.spec.ts": "dcbea062e69eaf30ef4510dcc564a12c63286afb2420cb6683f7791bacbc0c95"
+  },
+  "failing_first": {
+    "passed": 8,
+    "failed": 19,
+    "total": 27
+  },
+  "final": {
+    "passed": 27,
+    "failed": 0,
+    "workers": 1,
+    "retries": 0,
+    "typecheck": "passed"
+  },
+  "artifact_sha256": {
+    "adapter-validation-failing-first.private.log": "8a2bc2b4b543b912a59eacb7e8796329cfc37fb3e7a1fed3b931c749d53d5e4c",
+    "adapter-tests/first-report.json": "7f97672aa86be34386db2c1a3c442df1110cb3c8b1b55199ce961c1a4a9b009c",
+    "adapter-tests/adapter-before.ts": "c0a81b1dda9fa8b25759a1b569fa32ae8ae244d4370bf30f70cb1a8a0cf7c70b",
+    "adapter-validation-corrected.private.log": "6685bd0e5ebb99ec7a60215c57b6e803415a8892cb94c32278d8b597698e259b",
+    "adapter-tests/corrected-report.json": "a0531d4bd16a0a20a9682a3f1de0ef71005979823deef53651d49fb8368571c3",
+    "adapter-validation-typecheck.private.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+  },
+  "helper": "await validatePackageManifestSubject(packet, subject: EpGetResponse, kind: basis|calculation|deliverable) returns validated packet"
+}

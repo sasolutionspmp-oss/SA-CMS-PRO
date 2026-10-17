@@ -1,0 +1,735 @@
+{
+  "schema": "cipher.company.activity.live-ui.v1",
+  "status": "passed",
+  "fixture_id": "ricky-company-1cc066dc8ba8",
+  "frontend": "/dev/shm/cipher-history-ui-r16-v2/dist",
+  "backend_origin": "http://127.0.0.1:18886",
+  "backend_host": "cipher-ci-ai04-20261016.localhost",
+  "synthetic_business_data": true,
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "model_invoked": false,
+  "reused_existing_authenticated_session": true,
+  "login_requests": 0,
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameters": [],
+      "cursor_present": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.company.history",
+      "parameters": [
+        "company",
+        "limit",
+        "count_mode"
+      ],
+      "cursor_present": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.company.history",
+      "parameters": [
+        "company",
+        "limit",
+        "count_mode",
+        "cursor"
+      ],
+      "cursor_present": true
+    }
+  ],
+  "history_pages": [
+    {
+      "status": 200,
+      "limit": 25,
+      "count_mode": "none",
+      "total": null,
+      "items": [
+        {
+          "id": "klm0fmj14g",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:58:45.494053Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "cf9d3806-64f2-4f95-a325-6ba3a9672dcd"
+        },
+        {
+          "id": "kk1vt5qm0c",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:58:40.103078Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "4e819d3f-d149-4206-a7cc-b1b433325065"
+        },
+        {
+          "id": "jo3mckrueh",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:57:10.774659Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "cd07fcef-3ab3-4a99-8b87-c6bfe7b9a891"
+        },
+        {
+          "id": "jmf85q2qd4",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:57:05.555371Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "a6116e52-deeb-42f5-96dc-8283297bf5d3"
+        },
+        {
+          "id": "hkbpbojm4l",
+          "event": "ricky.company.proposal.draft-saved",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:53:33.939367Z",
+          "subject_type": "Cipher Ricky Draft Save",
+          "subject_id": "cdf6ffa1-e1bd-5222-94f4-96a6531ced0d"
+        },
+        {
+          "id": "hk9tv9qgt3",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:53:33.787345Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "c6eae7ce-9582-4057-bdff-34bac0e76340"
+        },
+        {
+          "id": "hf6thevgjq",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:53:17.466802Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "f4d4c396-1a7d-471c-8710-382eba0789cc"
+        },
+        {
+          "id": "hdkl0qe3qk",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:53:12.494953Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "9d50bba3-4948-40d3-8a73-fe96f850e6dd"
+        },
+        {
+          "id": "gve5gubmu5",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:52:27.063433Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "fafcff5f-5b71-4f1e-bece-952bcbe65492"
+        },
+        {
+          "id": "gts0qjpe2r",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:52:22.095646Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "433da34d-4330-4456-ab13-c921ef862fdd"
+        },
+        {
+          "id": "gqjr8l2aqd",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:52:11.537219Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "e8a0f229-7fae-477a-8688-79bc26be5a02"
+        },
+        {
+          "id": "glu8g4755u",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:51:56.658335Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "4fb9e347-d940-4303-b77e-43c68e9b5dff"
+        },
+        {
+          "id": "gkcr97blup",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:51:51.677985Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "88ed1ab1-3c17-44ea-8986-1805ad15d56a"
+        },
+        {
+          "id": "g5utfvaogu",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:51:05.416811Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "ee123788-bc9d-41fe-8412-38da3f7e84f1"
+        },
+        {
+          "id": "g46occ6oj4",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:59.899394Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "55f6658b-4403-4e79-87fc-217abf2b074c"
+        },
+        {
+          "id": "g3qtn5e6r0",
+          "event": "estimate.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:58.674848Z",
+          "subject_type": "Cipher Estimate",
+          "subject_id": "c6d59fa8-73fa-4767-976e-301b8eb3ee08"
+        },
+        {
+          "id": "fsfgmu5nqo",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:35.126530Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "639a3481-7372-43c4-921e-f4f3882f5de4"
+        },
+        {
+          "id": "fqud6k1u53",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:30.234822Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "30bb3778-d0a2-42b2-8c49-52b088507b0c"
+        },
+        {
+          "id": "fjn8knb3ed",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:07.107296Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "af97b2f4-1fc5-4176-bed1-dd361d7d8b1b"
+        },
+        {
+          "id": "fi6q54rg40",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:50:02.285858Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "c499b5f9-e231-44a5-ab32-d47124709d94"
+        },
+        {
+          "id": "fbts9av9ib",
+          "event": "ricky.company.proposal.stop.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:49:42.185585Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "d126b1fe-90dc-49d9-9927-c704230073f2"
+        },
+        {
+          "id": "fai21r0fpb",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:49:37.836780Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "d126b1fe-90dc-49d9-9927-c704230073f2"
+        },
+        {
+          "id": "f94ju6pc85",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:49:33.207874Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "f86d022d-ba5d-4bb7-b80f-29cde5b22cb4"
+        },
+        {
+          "id": "ap1758dn5o",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:41:52.139842Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "5ab18d25-f3b9-452b-a1a3-f7647169d8d5"
+        },
+        {
+          "id": "a8mju4v62h",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:40:59.875589Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "1fe4825f-d381-451b-a631-ee9918b76113"
+        }
+      ],
+      "has_next_cursor": true
+    },
+    {
+      "status": 200,
+      "limit": 25,
+      "count_mode": "none",
+      "total": null,
+      "items": [
+        {
+          "id": "8lcse8l6uv",
+          "event": "ricky.company.proposal.draft-saved",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:38:15.623636Z",
+          "subject_type": "Cipher Ricky Draft Save",
+          "subject_id": "e03e931e-7a7f-5f7e-8195-59a39c1e1808"
+        },
+        {
+          "id": "8l7nali0cp",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:38:15.137768Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "4b482bc1-db8e-4c54-b6b7-8f71d35ef473"
+        },
+        {
+          "id": "8baavopd0e",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:43.452753Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "13aba0b5-8fb1-4e8d-932a-2cb38a846fc5"
+        },
+        {
+          "id": "87licd1d3u",
+          "event": "ricky.company.proposal.draft-saved",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:31.770435Z",
+          "subject_type": "Cipher Ricky Draft Save",
+          "subject_id": "5a2e6e92-4b62-5f30-b231-d5220a4729ec"
+        },
+        {
+          "id": "87kemju3af",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:31.617167Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "3386d95a-f5b3-4b34-8a7c-978ea5cf0b22"
+        },
+        {
+          "id": "82jdo1bnps",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:15.543985Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "11828da2-323e-445f-b56d-6bdbbff14351"
+        },
+        {
+          "id": "80bfh22n8q",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:08.373247Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "d571078a-733d-4b1e-91b2-a854e9441cb4"
+        },
+        {
+          "id": "8008iuvgq9",
+          "event": "estimate.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:07.261217Z",
+          "subject_type": "Cipher Estimate",
+          "subject_id": "270c3693-1baa-419f-b822-96cee0a8ad41"
+        },
+        {
+          "id": "7vm90pluat",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-17T00:37:06.224565Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "21e1ad75-5e18-4a50-98d5-83e9e10bcaac"
+        },
+        {
+          "id": "l917u3viqc",
+          "event": "ricky.company.proposal.stop.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:31:21.744695Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "2168de63-936b-4e40-9c99-aadef933939f"
+        },
+        {
+          "id": "ic6p52a1a2",
+          "event": "ricky.company.proposal.stop.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:26:24.673891Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "5d592fc5-b8e2-407e-8d91-1a6f26edc634"
+        },
+        {
+          "id": "iao23trv79",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:26:20.014076Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "5d592fc5-b8e2-407e-8d91-1a6f26edc634"
+        },
+        {
+          "id": "gc0h2t7igm",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:22:59.282999Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "8fca930b-0482-49ae-9b1d-0cf294efea7b"
+        },
+        {
+          "id": "g7ne4s53bu",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:22:45.534174Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "80efdbc3-0bac-4f29-ac51-a6f9f8292409"
+        },
+        {
+          "id": "g7h9m5pqcv",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:22:44.954247Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "a2282bfc-3561-4e37-bdb5-e956f8a69bf5"
+        },
+        {
+          "id": "dqece9rpac",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:18:38.229351Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "43c4a478-d561-42af-a425-074bd7cc8db0"
+        },
+        {
+          "id": "dkpgle0hog",
+          "event": "ricky.company.proposal.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:18:20.122882Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "2168de63-936b-4e40-9c99-aadef933939f"
+        },
+        {
+          "id": "c9hs8qkuhb",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:16:01.780069Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "68a87daa-0996-4ef7-a1a9-48ce37d01126"
+        },
+        {
+          "id": "c9cp85dm41",
+          "event": "estimate.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:16:01.210516Z",
+          "subject_type": "Cipher Estimate",
+          "subject_id": "1b74a33d-39df-426f-bb2c-6fe109360497"
+        },
+        {
+          "id": "c96qqfqvbt",
+          "event": "commercial.proposal.revision.created",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T09:16:00.663812Z",
+          "subject_type": "Cipher Proposal Revision",
+          "subject_id": "7a91b56c-3cc5-4b2c-b577-234258080916"
+        },
+        {
+          "id": "8qgt067ov6",
+          "event": "ricky.company.read.stop.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T06:26:16.085768Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9"
+        },
+        {
+          "id": "7vbp970ob8",
+          "event": "ricky.company.read.start.accepted",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T06:24:49.190282Z",
+          "subject_type": "Cipher Ricky Run",
+          "subject_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9"
+        },
+        {
+          "id": "q9gge3pi8e",
+          "event": "takeoff.measurement.authored",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T04:12:14.488587Z",
+          "subject_type": "Cipher Takeoff Measurement",
+          "subject_id": "4b82bff6-406c-4493-877f-e1dd1a2c83a1"
+        },
+        {
+          "id": "q9g3cgio0h",
+          "event": "takeoff.set.authored",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T04:12:14.402101Z",
+          "subject_type": "Cipher Takeoff Set",
+          "subject_id": "45475a29-8cae-40f1-b175-77e71eb8c3b9"
+        },
+        {
+          "id": "q9fptr9oqu",
+          "event": "estimate.revision.calculated",
+          "actor": "Company Ricky fixture 1cc066dc8ba8",
+          "at": "2026-10-16T04:12:14.304326Z",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "afc4fb19-7a0e-4ff4-a516-d89d26cc7d1c"
+        }
+      ],
+      "has_next_cursor": true
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    }
+  ],
+  "console": [],
+  "failures": [],
+  "blocked_requests": [],
+  "captures": [
+    {
+      "name": "01-company-activity-first-page",
+      "width": 1440,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/01-company-activity-first-page-1440.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "f5d2c3d3ce6b21afe1bb47fedaa6f3b9ef9ebb6fce8d7a1ed7c88d15754e5484",
+      "bounds": {
+        "document": 1440,
+        "viewport": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1126,
+            "scroll": 1126
+          }
+        ]
+      }
+    },
+    {
+      "name": "01-company-activity-first-page",
+      "width": 900,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/01-company-activity-first-page-900.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "cceaeb3d714070ec8ddac8256bef3bc178c04f7d3aa8e11ed5ae150232c2f0bc",
+      "bounds": {
+        "document": 900,
+        "viewport": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 610,
+            "scroll": 610
+          }
+        ]
+      }
+    },
+    {
+      "name": "01-company-activity-first-page",
+      "width": 390,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/01-company-activity-first-page-390.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "38f900f0ddb10d9f29811c93dda80b77ea9a67eda8aa6f63fe200fdf36e7c4c2",
+      "bounds": {
+        "document": 390,
+        "viewport": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 356,
+            "scroll": 356
+          }
+        ]
+      }
+    },
+    {
+      "name": "02-company-activity-record-details",
+      "width": 1440,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/02-company-activity-record-details-1440.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "7f10320f646baf67af55b18df9e6c2841034320651cb46401e9240f4c60ff1b9",
+      "bounds": {
+        "document": 1440,
+        "viewport": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1126,
+            "scroll": 1126
+          }
+        ]
+      }
+    },
+    {
+      "name": "02-company-activity-record-details",
+      "width": 900,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/02-company-activity-record-details-900.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "5f02702984de8a8a2e7b04a4c0d8faa322fcd8d6817f2acab4d2240034943afe",
+      "bounds": {
+        "document": 900,
+        "viewport": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 610,
+            "scroll": 610
+          }
+        ]
+      }
+    },
+    {
+      "name": "02-company-activity-record-details",
+      "width": 390,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/02-company-activity-record-details-390.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "114fc9a77fa1c99ea775b0bd3651c46649621debe7294706025c61ade7590505",
+      "bounds": {
+        "document": 390,
+        "viewport": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 356,
+            "scroll": 356
+          }
+        ]
+      }
+    },
+    {
+      "name": "03-company-activity-next-page",
+      "width": 1440,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/03-company-activity-next-page-1440.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "b08f4618dcff98ad6c2ef15e53a54f9f2252eadee1dd3984360519e69db4cc9d",
+      "bounds": {
+        "document": 1440,
+        "viewport": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1126,
+            "scroll": 1126
+          }
+        ]
+      }
+    },
+    {
+      "name": "03-company-activity-next-page",
+      "width": 900,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/03-company-activity-next-page-900.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "18dcc7a5783f9af39fc6cdc962a389c81d7086183b6860057711da6f35f80472",
+      "bounds": {
+        "document": 900,
+        "viewport": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 610,
+            "scroll": 610
+          }
+        ]
+      }
+    },
+    {
+      "name": "03-company-activity-next-page",
+      "width": 390,
+      "path": "/dev/shm/cipher-company-live-ui-r16-20261017/03-company-activity-next-page-390.png",
+      "url": "http://127.0.0.1:5204/company/activity?company=Cipher%20Synthetic%20Company",
+      "sha256": "83cac2409623e1849fcdef04ce1d8b2b2a0d9b22d73d84f27481f2f28d6886cd",
+      "bounds": {
+        "document": 390,
+        "viewport": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 356,
+            "scroll": 356
+          }
+        ]
+      }
+    }
+  ],
+  "font_status": {
+    "status": "loaded",
+    "fonts": [
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-Bold",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-SemiboldDuplex",
+        "status": "loaded"
+      }
+    ]
+  },
+  "business_writes": 0,
+  "ricky_commands": 0,
+  "capture_note": "Actual connected Company Activity, existing original authenticated session; only requested first and next history pages, no exact count, no business command."
+}

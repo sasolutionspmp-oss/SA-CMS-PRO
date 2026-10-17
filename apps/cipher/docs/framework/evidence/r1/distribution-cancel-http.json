@@ -1,0 +1,65 @@
+{
+  "schema": "cipher.r1.distribution-cancel-http.v1",
+  "status": "passed",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "started_at": "2026-10-15T19:13:07.958272+00:00",
+  "live_external_provider_qualified": false,
+  "dispatch_id": "6829c4f6-9c2a-4f6c-9bb9-2214d330e02c",
+  "cancellation": {
+    "id": "5366b83d-6507-46ca-98dc-d4cfd8c9f561",
+    "scope_type": "Company",
+    "company": "Company chain A 20b85fd4edd2",
+    "project": null,
+    "dispatch_id": "6829c4f6-9c2a-4f6c-9bb9-2214d330e02c",
+    "instruction_id": "fcc5e0b5-40e8-4a5b-a03a-2f3b1d224922",
+    "actor_person": "CHAIN-AUTHOR-20b85fd4edd2",
+    "reason": "Independent stop-before-acceptance fixture",
+    "cancelled_at": "2026-10-15T19:13:08.406507Z",
+    "in_flight_may_complete": true
+  },
+  "original_uuid_replayed": true,
+  "calls": [
+    {
+      "role": "author",
+      "method": "cipher_aec.integrations.distribution_api.cancel_dispatch",
+      "http_status": 200,
+      "request_id": "eb97214f-8feb-4eff-a089-1d08bd44a94b",
+      "server_time": "2026-10-15T19:13:09.087373Z",
+      "request_seconds": 1.055012
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.cancel_dispatch",
+      "http_status": 200,
+      "request_id": "03a0dc43-7fcb-42c6-9a5b-8b01dcc94306",
+      "server_time": "2026-10-15T19:13:10.047264Z",
+      "request_seconds": 0.812184
+    },
+    {
+      "role": "alias",
+      "method": "cipher_aec.integrations.distribution_api.get_dispatch",
+      "http_status": 200,
+      "request_id": "eef75d14-fa23-4c7b-8d83-37926b9faf86",
+      "server_time": "2026-10-15T19:13:10.726632Z",
+      "request_seconds": 0.678305
+    }
+  ],
+  "schema_samples": 5,
+  "session_timings": [
+    {
+      "role": "author",
+      "login_seconds": 0.059267,
+      "session_seconds": 0.010667,
+      "status": "passed",
+      "total_seconds": 0.069938
+    },
+    {
+      "role": "alias",
+      "login_seconds": 0.126352,
+      "session_seconds": 0.011598,
+      "status": "passed",
+      "total_seconds": 0.137953
+    }
+  ],
+  "completed_at": "2026-10-15T19:13:10.728570+00:00"
+}

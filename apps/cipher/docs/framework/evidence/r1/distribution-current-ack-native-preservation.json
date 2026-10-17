@@ -1,0 +1,78 @@
+{
+  "schema": "cipher.r1.distribution-current-ack-native-preservation.v1",
+  "status": "passed",
+  "baseline_at": "2026-10-15T20:16:06.436632+00:00",
+  "current_readback_at": "2026-10-15T20:21:22.444160+00:00",
+  "qualification": "Read-only raw native receipt/operation and independent SQLite bytes compared across the HTTP delta; no worker or source-authority claim from this raw read.",
+  "cases": {
+    "queued-restart": {
+      "operation_id": "u1tg6if7ie",
+      "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+      "payload_hash": "f6b914ab6252fb459f437f83a58e1c570c36b2766dd1199184a1990e350fccfd",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:37:21.350307",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+        "payload_hash": "f6b914ab6252fb459f437f83a58e1c570c36b2766dd1199184a1990e350fccfd",
+        "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+        "byte_length": 12624,
+        "acknowledgment_id": "9bf84c43-12e1-401e-a894-c9e462cde04b",
+        "accepted_at": "2026-10-15T20:07:21.338193+00:00"
+      },
+      "original_result_json_sha256": "40f7a6c3422abf2325434d0a3d1d0eabf3df7cef904fee911f65e20944502412",
+      "original_command_receipt_hashes": {
+        "create": "d21f0352257a43234ca717abecc1c76471def342f65ae3d141f869d9e54a2be8",
+        "execute": "6717391ef7da4f731bb68a6a2554b0415f7b951c93fa572fece1fbd966517d2a"
+      },
+      "exact_native_and_sink_facts_unchanged": true
+    },
+    "redis-publication-failure": {
+      "operation_id": "ucn4babims",
+      "logical_key": "647d1fd518c359f5499fec8bc4125cce5792633bb5c624350c09bf55a00dfb67",
+      "payload_hash": "9c28929f31b314ceb6e71fb1b4cbc5ae8040abd18e123af4a20c55d43278bd2d",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:38:06.446779",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "647d1fd518c359f5499fec8bc4125cce5792633bb5c624350c09bf55a00dfb67",
+        "payload_hash": "9c28929f31b314ceb6e71fb1b4cbc5ae8040abd18e123af4a20c55d43278bd2d",
+        "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+        "byte_length": 12377,
+        "acknowledgment_id": "0309d785-68f7-4ccb-9b36-cfbd60ad4add",
+        "accepted_at": "2026-10-15T20:08:06.436317+00:00"
+      },
+      "original_result_json_sha256": "f334c8da146cffad18e4c93028fbe1e9c5c82badee4d4795c12f303f21859ffd",
+      "original_command_receipt_hashes": {
+        "create": "b0550a5a3a700ab534d2eebe5532cb85e51bd4a1318484761122458ce3ed6eab",
+        "execute": "8fc5f857d6212a39549d292c7d3760022980de72e29efec97800b86174d2b3d9"
+      },
+      "exact_native_and_sink_facts_unchanged": true
+    },
+    "operator-quarantine": {
+      "operation_id": "uofcdn69oc",
+      "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+      "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+      "attempt_count": 1,
+      "fencing_token": 1,
+      "modified": "2026-10-16 01:39:56.586761",
+      "acknowledgment": {
+        "mode": "fixture",
+        "logical_key": "c00dfa60b3b3ec57031dcebe895bcd9e0c4e80ada5d69435468b90dc7c7e809a",
+        "payload_hash": "93221991b2916e4dd106455da29997f1e979fc8cb1a958af60e0c5927257252a",
+        "attachment_sha256": "26d784bcfe054126369d63fe6968541cbf1474227258961fbbb00b522c967380",
+        "byte_length": 12377,
+        "acknowledgment_id": "475a6be4-e532-45ba-9fda-78ee0e619bd8",
+        "accepted_at": "2026-10-15T20:09:56.578408+00:00"
+      },
+      "original_result_json_sha256": "6d1157bbe58631f57a0b7403981ae42b1ed2b71a7b9fa9049e7f803f3a689a18",
+      "original_command_receipt_hashes": {
+        "create": "8cc1c840e9168f102f454983561d76cff792a31f7579bf5b6126f41e7d593505",
+        "execute": "a8c0b337336c60a46bf5884522bb8ab7b8e8ed839804d244885b6d0742a65e62"
+      },
+      "exact_native_and_sink_facts_unchanged": true
+    }
+  }
+}

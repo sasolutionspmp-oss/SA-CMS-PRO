@@ -1,0 +1,52 @@
+{
+  "action_enabled": false,
+  "canonical_run_acceptance_added": false,
+  "completion_entry": "test_award_prerequisites.complete_award_prerequisites(private_manifest,setup_directory,repository,release_manifest)",
+  "http_entries": [
+    "build_award_manual_baseline_http",
+    "build_award_issue_and_mappings_http"
+  ],
+  "local_checks": {
+    "actual_pure_calculator_expected": {
+      "contingency": "0.42",
+      "direct": "13.25",
+      "excluded_alternative": "5.00",
+      "indirect": "1.33",
+      "total": "15.00"
+    },
+    "authored_cost_type_request_shapes_validated": 5,
+    "new_check": "Replaced release epoch/hash or fixture ID refuses before native continuation.",
+    "seconds": 0.01,
+    "unique_fixture_integrity_tests": 8
+  },
+  "native_setup_entry": "test_award_prerequisites.prepare_award_prerequisites(private_directory,repository,release_manifest)",
+  "new_identity_provisioned": false,
+  "original_base_setup_recovery": "test_award_prerequisites.resume_award_base_fixture(private_manifest,setup_directory)",
+  "original_default_fixture_behavior_unchanged": true,
+  "preservation": "Private full original Accounts captured before both Company/chart setups; unexpected original fields/ancestors or new Account Company outside exact two fixtureCompanies is unresolved.",
+  "preserved_prior_artifacts": [
+    "prj02-composed-fixture-source.json",
+    "prj02-composed-fixture-rollback-correction.json"
+  ],
+  "qualification": "Source/local fixture checks only. Native setup/controller recovery, actual cookie/CSRF independent baseline/Issue/award grants, adoption, concurrency and preservation remain unexecuted. Root supplies final disabled/enabled served-source releases and named isolated runtime.",
+  "recorded_at": "2026-10-15T22:59:41.119485+00:00",
+  "recovery_identity_closure": "Original stored release paths must resolve to exactly setup_intent.source_before before native operations; resumed completion also checks original source_before and fixture_id.",
+  "runtime_invoked": false,
+  "schema": "cipher.award.prerequisite-source.v1",
+  "setup_recovery": "Original native unit/Task UUIDs+bodies durably journaled BEFORE firstcommit/effects; resume original prerequisites_created manifest without identity allocation.",
+  "source_sha256": {
+    "apps/cipher/docs/framework/PRJ02_PREREQUISITE_FIXTURE.md": "384d6900e825cfe64d430cf2b03ef54fb80e9dc25f930f5b964f636ddfd909bb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_acceptance_driver.py": "7f85cb3c644ba99c2fa2cb9e6344a6181e129ecab79ba4ff851eec16f9c12a5f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_composed_acceptance.py": "c6d1591d4d095dcce4ffca735fe7c1a4f0fcd73efc219b8af843d428936a678e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_award_prerequisites.py": "d20b88d218cf4d6df87fda932bb21570db78d4dc54482fefd982c0735bf20287",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_company_chain_acceptance.py": "dda6b0a430e1bbb5c5a460a25d11307fe33319b345aab8c2ad9bbecce9aec264"
+  },
+  "status": "source_corrected_pending_final_review_runtime_unexecuted",
+  "supersedes_source_marker": {
+    "original_artifact_preserved": true,
+    "path": "apps/cipher/docs/framework/evidence/r1/prj02-award-prerequisite-source.json",
+    "previous_unique_tests": 7,
+    "sha256": "2fee75413e5cd8e0430614d9d6985c80cde21b3b01e82510895a3986284f6989"
+  },
+  "transport": "Explicit optional host_header routes only root-selected isolated site; existing defaults unchanged."
+}

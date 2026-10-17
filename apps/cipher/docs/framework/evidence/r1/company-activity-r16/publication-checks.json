@@ -1,0 +1,16 @@
+{
+  "schema": "cipher.r16.publication-checks.v1",
+  "status": "passed",
+  "source_files_verified": 704,
+  "changed_UI_paths": 9,
+  "known_actual_private_credential_values": 16,
+  "public_files_scanned": 1670,
+  "private_credential_matches": [],
+  "private_values_emitted": false,
+  "unchanged_legacy_source_files_verified_against_HEAD": 395,
+  "required_unchanged_legacy_test_result": "2703 passed before R15 commit; unchanged source reverified before R16 commit; separate from new ERP acceptance",
+  "legacy_pass_record_sha256": "c3d6f8768d1a616a8e9867df195e6fee9a1d752af3d131890581943ccfa7f704",
+  "changed_paths_allowed": true,
+  "local_markdown_links_verified": 265,
+  "prior_R15_hosted_CI": "success; all25PASS stages"
+}

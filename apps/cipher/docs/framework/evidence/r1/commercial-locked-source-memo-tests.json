@@ -1,0 +1,31 @@
+{
+  "status": "passed",
+  "captured_at_utc": "2026-10-15T18:59:40.676563+00:00",
+  "qualification": "Focused actual Frappe runtime unit regressions for the separate locked-original producer memo and citation current-read mode delta. No new renderer, Issue, native nested-DAG performance or generated EST admission qualification is asserted.",
+  "runtime": "Frappe16.52.0 / Python3.14.8 / cipher-r0-runtime-1",
+  "tests": {
+    "passed": 47,
+    "failed": 0,
+    "errors": 0,
+    "log": "/tmp/cipher-com02-locked-original-memo-tests.log",
+    "sha256": "6e8fd6ec3d8a5419c2dcde88d5cc7146c91af87ec6c58adcf0aa4b689ddfdcfb",
+    "output": "...............................................\n----------------------------------------------------------------------\nRan 47 tests in 1.455s\n\nOK\n"
+  },
+  "boundaries": [
+    "Only successful original producer source authority is memoized under exact lock=True actor/user/person/Company and immutable complete node/resource admission.",
+    "Fresh parent/digest/active ancestry checks occur before a hit.",
+    "Nonlocking reads, failed authorization, heads, fresh acceptance facts and requested PDF bytes are not cached.",
+    "Scope exit and exception reset; full Frappe commit/rollback watchers revoke active admission. Savepoint invalidation is not implemented or claimed; audited current domain callbacks never cross a savepoint rollback or transaction boundary in this context.",
+    "Existing renderer/preparation/Issue captures retain their original hashes; this file records the later delta.",
+    "EST owner separately qualifies actual nested-source authority and SQL/time impact while public generated EST gate stays closed."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py": "06ffbca9ce24502c9f28ffb76fa46f6f86dcdbe2ba5af69d02338e6d1d2370eb",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents.py": "c36cf10281d50c52a12a9d77400d9ef6b8d85dfcc03950943d7980132d5b1236",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py": "cf51437aff57eaa2277047fa50391ffa95fb253da3748329b0c4b933ad53b671",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_preparation.py": "0ee8837f4a8d504f59c477897ca01d61cfea6fbc4760b67c5eff6665b876ca7c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_estimating_lockplan.py": "5de16a915b3cfa4e36825dbc28cf12ede46f1a5c838fcb1db7ab48d1f09cbcac",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953"
+  }
+}

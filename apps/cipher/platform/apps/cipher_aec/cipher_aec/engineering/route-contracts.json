@@ -1,0 +1,28 @@
+{
+  "requests": {
+    "create_rfi": "EgCreateRfiRequest",
+    "revise_rfi": "EgReviseRfiRequest",
+    "create_response": "EgCreateResponseRequest",
+    "create_submittal": "EgCreateSubmittalRequest",
+    "revise_submission": "EgReviseSubmissionRequest",
+    "create_disposition": "EgCreateDispositionRequest",
+    "create_transmittal": "EgCreateTransmittalRequest",
+    "close_rfi": "EgCloseRfiRequest",
+    "get_record": "EgGetRecordRequest",
+    "list_people": "EgListPeopleRequest",
+    "list_records": "EgListRecordsRequest"
+  },
+  "responses": {
+    "create_rfi": "EgCreateRfiResponse",
+    "revise_rfi": "EgReviseRfiResponse",
+    "create_response": "EgCreateResponseResponse",
+    "create_submittal": "EgCreateSubmittalResponse",
+    "revise_submission": "EgReviseSubmissionResponse",
+    "create_disposition": "EgCreateDispositionResponse",
+    "create_transmittal": "EgCreateTransmittalResponse",
+    "close_rfi": "EgCloseRfiResponse",
+    "get_record": "EgGetResponse",
+    "list_records": "EgListResponse",
+    "list_people": "EgPeopleResponse"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "cipher.eng02.native-first-ci.v1",
+  "commit": "e8b692a9ae83884caf77f92fe30fe9478de14161",
+  "run_id": 39004698263,
+  "job_id": 117314657948,
+  "url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/39004698263",
+  "overall_conclusion": "failure",
+  "passed_stages": [
+    "validation-reporter-tests",
+    "deployment-process-lifecycle",
+    "fresh-site-install",
+    "runtime-matrix",
+    "runtime-image"
+  ],
+  "failed_stage": "frappe-integration-tests",
+  "exception_type": "AssertionError",
+  "file": "cipher_aec/tests/test_engineering_packages_native.py",
+  "line": 45,
+  "function": "test_exact_manual_workflow_independent_checks_and_no_issue_effect",
+  "bounded_diagnostic": "Checker and unit selector assertions share the original source line; accessible log does not expose assertion values.",
+  "native_log_sha256": "7a43c18a50a932940861c59e9e3ffa9a83e3d955d843865d7db84bcca9a865be",
+  "job_log_sha256": "633607243d63ce79eb87fff14844cf714d1ff49db1e3bc2100e4d308d598c71c",
+  "original_failure_retained": true,
+  "native_completion_claim": false
+}

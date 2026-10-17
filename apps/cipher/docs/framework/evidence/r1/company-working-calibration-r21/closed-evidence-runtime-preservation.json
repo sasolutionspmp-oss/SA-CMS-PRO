@@ -1,0 +1,66 @@
+{
+  "original_failed_capture": {
+    "schema": "cipher.r21.one-shot-working-calibration.v1",
+    "status": "failed",
+    "start": "2026-10-17T03:36:59.852919+00:00",
+    "runtime_baseline_before": {
+      "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+      "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+      "containers": {
+        "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+        "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+      }
+    },
+    "reviewed_source_sha256": "801b88f12f3574434e9a2ec472a07c5579a338b490392baad8090c6d085b2f09",
+    "driver_sha256": {
+      "capture.mjs": "aca53fcd50155892ffbb0105f9135a631bb6d0300542cd07c7591ca732f5c53e",
+      "verify_native.py": "9974b80ae53a8a1268b97c3e98cdc38441beb844f413587d995d189952d3ed65",
+      "observe.py": "121a59bb9a2a292e5a6d6df23eb3a1bf9ab965d01ef1b74c7b7a31ef3da06400"
+    },
+    "error": "AssertionError",
+    "end": "2026-10-17T03:37:42.326868+00:00",
+    "closed_host_trees_unchanged": true,
+    "runtime_baseline_after": {
+      "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+      "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+      "containers": {
+        "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+        "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+      }
+    },
+    "MAIN_runtime_unchanged": true,
+    "source_build_unchanged": true
+  },
+  "corrected_readonly_failed_optional_capture": {
+    "schema": "cipher.r21.one-shot-corrected-readonly.v1",
+    "status": "failed",
+    "start": "2026-10-17T03:46:00.538127+00:00",
+    "runtime_baseline_before": {
+      "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+      "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+      "containers": {
+        "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+        "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+      }
+    },
+    "reviewed_source_sha256": "6a2d3639567c53550478b20bb66ff0d8046d1ec1ae9f824be32253117a7f429f",
+    "driver_sha256": {
+      "capture.mjs": "e3f8e2de4fbe8ce29f6a31aadc9f76ef9ea21fecf506707a60b50dac51c2c873",
+      "verify_native.py": "1e9671e2109e5c936f6e4da974838e09381a0cc200c522590ea405abc3f2fb91",
+      "observe.py": "121a59bb9a2a292e5a6d6df23eb3a1bf9ab965d01ef1b74c7b7a31ef3da06400"
+    },
+    "error": "AssertionError",
+    "end": "2026-10-17T03:46:13.570322+00:00",
+    "closed_host_trees_unchanged": true,
+    "runtime_baseline_after": {
+      "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+      "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+      "containers": {
+        "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+        "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+      }
+    },
+    "MAIN_runtime_unchanged": true,
+    "source_build_unchanged": true
+  }
+}

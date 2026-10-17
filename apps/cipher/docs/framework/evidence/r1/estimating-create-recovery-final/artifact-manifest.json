@@ -1,0 +1,20 @@
+{
+  "qualification": "Actual connected browser with explicitly injected delivery loss and receipt denial; screenshot bytes copied without modification.",
+  "artifacts": [
+    {
+      "path": "actual-create-original-operation-recovered.png",
+      "sha256": "a9e13d96e472e0d428b58e3989b40193bd0190b3d29c703532a4c46ccf7c67da",
+      "bytes": 120808
+    },
+    {
+      "path": "actual-create-result-unknown.png",
+      "sha256": "ad5318d6ec04bc582d2635d212caf8251659ac4c6c398213fcea03268e9a6b44",
+      "bytes": 156204
+    },
+    {
+      "path": "actual-create-still-unknown-after-injected-denial.png",
+      "sha256": "fefaef0b21009f8c5472862ec0f02027db23e485b7f65bf612c08f33ecd7999e",
+      "bytes": 153482
+    }
+  ]
+}

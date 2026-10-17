@@ -1,0 +1,15 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.documents.company_api.upload_document",
+  "prepared_at": "2026-10-15T23:10:45.154708+00:00",
+  "role": "author",
+  "values": {
+    "byte_length": 450,
+    "company": "Company chain A c3c3b742a8fd",
+    "content_base64": "U3ludGhldGljIGF3YXJkIG1hbnVhbCBzb3VyY2UgY29tcGFueS1jaGFpbi1jM2MzYjc0MmE4ZmQKTWF0ZXJpYWwgcmF0ZVVTRDEuMjUvY291bnQ7IGxhYm9yVVNEMi4wMC9sYWJvci1ob3VyOyBlcXVpcG1lbnRVU0QzLjAwL2VxdWlwbWVudC1ob3VyLgpBc3NlbWJseSB3b3JrMWNvdW50IG5lZWRzMm1hdGVyaWFsLWNvdW50LDFsYWJvci1ob3VyLDAuNWVxdWlwbWVudC1ob3VyLiBNYW51YWwgYXNzZW1ibHkgcXVhbnRpdHkyY291bnQ7IGV4dHJhIG1hdGVyaWFsMWNvdW50OyBleGNsdWRlZCBhbHRlcm5hdGl2ZTRjb3VudC4KSW5kaXJlY3QxMHBlcmNlbnQgb2YgZGlyZWN0OyBjb250aW5nZW5jeVVTRDAuNDIuIENvbW1lcmNpYWwgc2VsbGluZyByYXRlVVNEMTIuMzQvY291bnQgc2VwYXJhdGVseSBhdXRob3JlZC4gTm8gZ2VuZXJhdGVkL2NhbGlicmF0ZWQvbW9kZWwvcHJvdmlkZXIgY2xhaW0u",
+    "filename": "award-manual-source.txt",
+    "operation_id": "5cac1011-e55f-42c3-9966-ee9ad9c8e44a",
+    "sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+    "title": "Award explicit manual source company-chain-c3c3b742a8fd"
+  }
+}

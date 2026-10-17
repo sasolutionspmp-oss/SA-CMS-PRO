@@ -1,0 +1,77 @@
+{
+  "schema": "cipher.buy01.unregistered-review-source-tests.v1",
+  "captured_at": "2026-10-15T23:29:08.937186+00:00",
+  "standing": "unregistered-nonpersistent-review-composition-only",
+  "tests": {
+    "count": 27,
+    "elapsed_seconds": 0.063,
+    "exit_code": 0,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "modules": [
+      "test_procurement_contracts",
+      "test_procurement_normalization",
+      "test_procurement_drafts"
+    ],
+    "command": "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_procurement_contracts cipher_aec.tests.test_procurement_normalization cipher_aec.tests.test_procurement_drafts -q",
+    "output": "----------------------------------------------------------------------\nRan 27 tests in 0.063s\n\nOK\n"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/__init__.py": "fd307d0fac516e7b76e5aee569409b7dab961043f276be6207f4dae7a7a2a2e8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/contracts.py": "e12af6ee5fa71ffff1fccacab51f9c281a8921e4c0106215ee0144fcbeb62a37",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/drafts.py": "9dd4b8cbcae72b675c5c71984fd5d4e3cd18e11e3b779b4605c0324461db7943",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/normalization.py": "dd8fe67c51813d9e3df09a3f1787fcc9c83b4e15938ea820d901c7415931bb7d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_contracts.py": "be99b35f33702c7e3f3ae40fb36ae39079238fb2ae775a88f8e73575ba97147c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_drafts.py": "f6237a02b70e43be463bbc2789d62d001c3e136c99e92ab0f25e749d8faf58bd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_normalization.py": "4d4d4428b17a5ec4787b4e5f05805dccf212d54c11f158c20f4489bf42cf6d8b"
+  },
+  "pure_dependency_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/fixtures/canonical-masters-v1.json": "559dd8de01651929487543bb0dee07b10fa78e967557eee5195910cd6fae53ba"
+  },
+  "corrections": [
+    "Canonical Actor Person names use bounded exact native text, including native hash IDs, not a UUID assumption. The trusted origin port must freshly resolve that exact user/person/scope.",
+    "Complete package/response source snapshots compare canonical JSON digests, distinguishing bool/integer/float/text aliases.",
+    "Response source snapshots now include their exact qualified package+quoted unit/conversion manifest. Predecessor validation freshly calls the trusted unit authority for the predecessor original refs even when the successor uses a different unit; normalization uses that same freshly authorized manifest.",
+    "Normalized quoted quantity differing from requested quantity adds quoted_quantity_basis_differs_from_requested and comparison_usable=false; exact reciprocal unit-rate and requested-quantity amount facts remain available. Exact rational quantity equality (including different authored scales) does not add the blocker."
+  ],
+  "covered": [
+    "Vendor original authored text and decimal scale retained; exact rational reciprocal units and explicit no-FX/expiry/dimension/coverage/math blockers.",
+    "Exact proposed UUID references and unit revisions; native-hash Actor propagation and changed-person denial before source details.",
+    "Default concrete adapter refuses unavailable qualified awarded-Project origin dependency.",
+    "Nonpersistent review values cannot select/award/create native or canonical records.",
+    "Every original/predecessor/comparison source is reauthorized through the trusted internal port; private source refuses entire result; complete citation DTO comparison is type-sensitive."
+  ],
+  "frozen_award": {
+    "catalog_sha256": "1c5d8fa4686b6e575e3fc706e586fc3707beee05983be53435681dd5728c6fa5",
+    "fixed_cipher_pins": 69,
+    "body_drift": [],
+    "product_edits": "none"
+  },
+  "activation_dependencies": [
+    "Locally qualified PRJ-02 and a Project-authorized exact adopted-origin reader.",
+    "Concrete fresh authorization/source adapter, explicit procurement duties, registered persistence/controller/API/schema/receipt contracts.",
+    "Actual native MR/RFQ/Supplier Quotation guarded controller and no-send/no-identity-side-effect qualification."
+  ],
+  "limits": [
+    "Disconnected test port proves pure composition and denial ordering only; no native permissions/source bytes/runtime adoption qualification.",
+    "No metadata, shared registration, API, adapter, native procurement writer, communication/portal/user, commitment, stock or ledger effects.",
+    "Review candidates and proposed IDs do not establish persisted record/revision/approval standing.",
+    "No BUY-01 completion or connected provider claim."
+  ],
+  "previous_capture": {
+    "path": "apps/cipher/docs/framework/evidence/r1/buy01-unregistered-draft-tests.json",
+    "sha256": "9142e7b56989ff188312524b28ccc90936449fbb8dc424c1347f95efe7cb77b9",
+    "tests": 25,
+    "preserved_unchanged": true
+  },
+  "executed_sources_unchanged_during_tests": true,
+  "regression_evidence": {
+    "before_fix": "Both added targeted tests failed before the corresponding product changes: missing predecessor-only unit denial and missing quantity-basis blocker.",
+    "after_fix": [
+      "Old quoted inch source revoked while new quoted foot source remains allowed: independent new response succeeds, successor with exact original predecessor denies not_found.",
+      "12 inch quote versus 10 foot request keeps exact 6/5 normalized unit rate and blocks readiness; 1.000 foot request equals normalized offered quantity and remains usable."
+    ],
+    "scope": "Disconnected pure port tests; no native permission, storage or runtime authority qualification."
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "cipher.r17.independent-native-epoch.v1",
+  "status": "passed",
+  "browser_status_retained": "passed",
+  "inventory_entries": 78,
+  "existing_tables": 77,
+  "new_rows": {
+    "Cipher Takeoff Measurement": 1,
+    "Cipher Command Receipt": 1,
+    "Cipher History Event": 1
+  },
+  "business_commands": 1,
+  "original_rows_preserved": true,
+  "exact_request_result_receipt_history_hashes_verified": true,
+  "immutable_core_readback_matches_HTTP": true,
+  "all_other_tables_projects_financial_estimates_unchanged": true,
+  "closed_R15_R16_evidence_unchanged": true,
+  "source_config_indexes_unchanged": true,
+  "source_build_unchanged": true,
+  "auth_storage": {
+    "status": "passed",
+    "bounded_user_changes": 0,
+    "bounded_session_changes": 0,
+    "stored_PDF_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f",
+    "stored_PDF_bytes": 523,
+    "observers_business_writes": 0
+  },
+  "before_sha256": "cd738369455a87a6d0108eed8d5ffdfb3256ccdceb1d389d29989c44fb0f282b",
+  "after_sha256": "5a28d38142e73690b78401898a9aaf89931db373391a0c51aea16114e6886223",
+  "browser_report_sha256": "9a8b7616acfb503c586efdb8e9119edc2f12ea4664178c0a38fbad9c302389f1"
+}

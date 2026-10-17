@@ -1,0 +1,43 @@
+{
+  "schema": "cipher.r1.distribution-restoration-readback.v1",
+  "status": "passed",
+  "current_author_document_read_authorized": true,
+  "current_duties": [
+    {
+      "ability": "commercial.distribute",
+      "active": 1
+    },
+    {
+      "ability": "document.read",
+      "active": 1
+    }
+  ],
+  "operations": [
+    {
+      "name": "oge0b0su14",
+      "state": "Cancelled"
+    },
+    {
+      "name": "op9jlc2cj9",
+      "state": "Failed"
+    },
+    {
+      "name": "p2m5grsv6j",
+      "state": "Failed"
+    },
+    {
+      "name": "j5r0p9nqvq",
+      "state": "Succeeded"
+    },
+    {
+      "name": "o7slh68mnq",
+      "state": "Succeeded"
+    },
+    {
+      "name": "o7slp39odp",
+      "state": "Succeeded"
+    }
+  ],
+  "resolved_unknown_operation": "o7slh68mnq",
+  "qualification": "Independent read-only native verification after the original completed privacy proof; no retry/recreation of the Unknown or command."
+}

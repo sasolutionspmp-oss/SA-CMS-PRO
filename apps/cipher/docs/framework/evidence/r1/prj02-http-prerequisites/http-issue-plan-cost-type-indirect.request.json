@@ -1,0 +1,24 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.project_controls.company_api.create_master",
+  "prepared_at": "2026-10-15T23:11:18.665460+00:00",
+  "role": "author",
+  "values": {
+    "code": "AWARD-INDIRECT",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "indirect",
+      "cost_category": null,
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit indirect accounting target"
+    },
+    "kind": "type",
+    "operation_id": "efacbcb6-21e7-4004-bd20-268e500cc283"
+  }
+}

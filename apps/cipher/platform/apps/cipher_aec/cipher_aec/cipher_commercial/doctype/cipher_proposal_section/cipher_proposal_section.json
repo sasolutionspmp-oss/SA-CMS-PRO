@@ -1,0 +1,46 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposal Section",
+  "module": "Cipher Commercial",
+  "custom": 0,
+  "istable": 1,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "stable_id",
+    "section_kind",
+    "title",
+    "content"
+  ],
+  "fields": [
+    {
+      "fieldname": "stable_id",
+      "label": "Stable Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "section_kind",
+      "label": "Section Kind",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "title",
+      "label": "Title",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "content",
+      "label": "Content",
+      "fieldtype": "Long Text",
+      "reqd": 0
+    }
+  ],
+  "permissions": [],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

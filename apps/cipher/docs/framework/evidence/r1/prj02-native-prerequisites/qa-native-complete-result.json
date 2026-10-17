@@ -1,0 +1,65 @@
+{
+  "company": "Company chain A c3c3b742a8fd",
+  "fixture_id": "company-chain-c3c3b742a8fd",
+  "units": {
+    "count": {
+      "fields": {
+        "dimension": "count",
+        "precision": 6,
+        "symbol": "chainc3c3b742a8fd"
+      },
+      "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+      "kind": "uom",
+      "revision": 1,
+      "target": {
+        "doctype": "UOM",
+        "name": "Company chain quantity c3c3b742a8fd"
+      }
+    },
+    "labor_time": {
+      "id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "labor_time-company-chain-c3c3b742a8fd",
+        "dimension": "labor_time",
+        "precision": 6
+      },
+      "target": {
+        "doctype": "UOM",
+        "name": "Award labor_time company-chain-c3c3b742a8fd"
+      }
+    },
+    "equipment_time": {
+      "id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+      "kind": "uom",
+      "revision": 1,
+      "fields": {
+        "symbol": "equipment_time-company-chain-c3c3b742a8fd",
+        "dimension": "equipment_time",
+        "precision": 6
+      },
+      "target": {
+        "doctype": "UOM",
+        "name": "Award equipment_time company-chain-c3c3b742a8fd"
+      }
+    }
+  },
+  "team_policy": {
+    "id": "CIPHER-TEAM-16e24df1cff467e6e34c6648e1b7fb3d",
+    "company": "Company chain A c3c3b742a8fd",
+    "version": 1,
+    "digest": "c08554099e9ac42c2f159a01ab0921a0e9a0ac4f8a71a171eee4afe9a474de12"
+  },
+  "team_person": "CHAIN-PROJECT_ONLY-c3c3b742a8fd",
+  "cost_center": "Main - Q0c3c3b7",
+  "expense_account": "Administrative Expenses - Q0c3c3b7",
+  "private_manifest": "/home/frappe/frappe-bench/sites/cipher-ci-20261015213708-508077.localhost/private/cipher-fixtures/company-chain-c3c3b742a8fd.secret.json",
+  "source_after": {
+    "runtime_epoch": "cipher-award-disabled-20261015-496-6aef3950",
+    "source_manifest_sha256": "e30d370b1da9df2734e577cbb839e1c8bb0df306f285b78a4d0d590ba9ac2057",
+    "source_files": 496,
+    "qualification": "Operator-declared served epoch plus exact on-disk equality."
+  },
+  "qualification": "Native prerequisite setup only; no accepted baseline/Issue/award created."
+}

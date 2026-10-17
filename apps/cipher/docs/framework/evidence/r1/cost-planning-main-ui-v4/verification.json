@@ -1,0 +1,527 @@
+{
+  "schema": "cipher.main.ui-readonly-capture.v1",
+  "status": "passed",
+  "captured_at": "2026-10-16T02:05:10.919Z",
+  "mode": "actual-synthetic-frappe-read-only",
+  "release_sha256": "812448c08aa807ffb900645a26e445960e4c302d902919b91d5c0f3c95db1c71",
+  "backend_epoch": "main-v3-web-20261016T013918Z-56064c38e293",
+  "ui_source_inventory": {
+    "path": "/workspace/.cipher-ui-bundle-releases/cost-planning-v4-20261016/ui_source_inventory.json",
+    "sha256": "e5151ab2c4400b587a48ea85c86d13651eb903e55904f7fe84b222a40341c3d8"
+  },
+  "build_inventory": {
+    "path": "/workspace/.cipher-ui-bundle-releases/cost-planning-v4-20261016/build_inventory.json",
+    "sha256": "fd477f0292f0f8ce573ae6ee8c3817baa678317bab6090def1b4d32442537e80"
+  },
+  "gate_report": {
+    "path": "/tmp/cipher-cost-planning-checkpoint-v4-20261016/full-gate-20261016.json",
+    "sha256": "7b76f058eb23721a669af566db3839691fcf72a516c21e86f75706a97c15e308"
+  },
+  "project_id": "PROJ-0001",
+  "company": "Cipher Synthetic Company",
+  "person_id": "CIPHER-PERSON-PM",
+  "checks": [
+    "Normal keyboard sign-in; App session response consumed without an extra concurrent session GET.",
+    {
+      "width": 1440,
+      "register_geometry": {
+        "heading": {
+          "left": 284,
+          "right": 650.265625,
+          "top": 155,
+          "bottom": 191.390625,
+          "width": 366.265625,
+          "viewport": 1440,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 284,
+              "right": 391.859375,
+              "top": 157,
+              "bottom": 188,
+              "hit_tag": "H1",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 1440,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 1184,
+          "scroll_width": 1184,
+          "scroll_left": 0
+        }
+      },
+      "detail_geometry": {
+        "heading": {
+          "left": 288,
+          "right": 654.75,
+          "top": 158,
+          "bottom": 189.1875,
+          "width": 366.75,
+          "viewport": 1440,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 288,
+              "right": 654.75,
+              "top": 160,
+              "bottom": 187,
+              "hit_tag": "SPAN",
+              "hit_component": "ObjectPageTitleClickElement",
+              "owner_overlay": true,
+              "direct_hit": false,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 1440,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 1184,
+          "scroll_width": 1184,
+          "scroll_left": 0
+        }
+      },
+      "task_table_checked": true,
+      "capture_scope": "Visible viewport; no document or full-page-PDF claim."
+    },
+    {
+      "width": 900,
+      "register_geometry": {
+        "heading": {
+          "left": 272,
+          "right": 638.265625,
+          "top": 147,
+          "bottom": 183.390625,
+          "width": 366.265625,
+          "viewport": 900,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 272,
+              "right": 379.859375,
+              "top": 149,
+              "bottom": 180,
+              "hit_tag": "H1",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 900,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 644,
+          "scroll_width": 644,
+          "scroll_left": 0
+        }
+      },
+      "detail_geometry": {
+        "heading": {
+          "left": 288,
+          "right": 654.75,
+          "top": 164,
+          "bottom": 195.1875,
+          "width": 366.75,
+          "viewport": 900,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 288,
+              "right": 654.75,
+              "top": 166,
+              "bottom": 193,
+              "hit_tag": "SPAN",
+              "hit_component": "ObjectPageTitleClickElement",
+              "owner_overlay": true,
+              "direct_hit": false,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 900,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 644,
+          "scroll_width": 644,
+          "scroll_left": 0
+        }
+      },
+      "task_table_checked": true,
+      "capture_scope": "Visible viewport; no document or full-page-PDF claim."
+    },
+    {
+      "width": 390,
+      "register_geometry": {
+        "heading": {
+          "left": 16,
+          "right": 374,
+          "top": 147,
+          "bottom": 178.1875,
+          "width": 358,
+          "viewport": 390,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 16,
+              "right": 108.453125,
+              "top": 149,
+              "bottom": 176,
+              "hit_tag": "H1",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 390,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "scroll_left": 0
+        }
+      },
+      "detail_geometry": {
+        "heading": {
+          "left": 16,
+          "right": 300.34375,
+          "top": 158,
+          "bottom": 220.375,
+          "width": 284.34375,
+          "viewport": 390,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 16,
+              "right": 213.453125,
+              "top": 160,
+              "bottom": 187,
+              "hit_tag": "SPAN",
+              "hit_component": "ObjectPageTitleClickElement",
+              "owner_overlay": true,
+              "direct_hit": false,
+              "visible": true
+            },
+            {
+              "left": 16,
+              "right": 179.3125,
+              "top": 191.1875,
+              "bottom": 218.1875,
+              "hit_tag": "SPAN",
+              "hit_component": "ObjectPageTitleClickElement",
+              "owner_overlay": true,
+              "direct_hit": false,
+              "visible": true
+            }
+          ]
+        },
+        "control": {
+          "left": 15,
+          "right": 49,
+          "top": 9,
+          "bottom": 43,
+          "width": 34,
+          "viewport": 390,
+          "visible_hit": true,
+          "samples": [
+            {
+              "left": 15,
+              "right": 49,
+              "top": 9,
+              "bottom": 43,
+              "hit_tag": "UI5-BUTTON",
+              "hit_component": null,
+              "owner_overlay": false,
+              "direct_hit": true,
+              "visible": true
+            }
+          ]
+        },
+        "workspace": {
+          "client_width": 390,
+          "scroll_width": 390,
+          "scroll_left": 0
+        }
+      },
+      "task_table_checked": true,
+      "capture_scope": "Visible viewport; no document or full-page-PDF claim."
+    },
+    "Original public logo and dependency notice served with selected bytes and correct MIME."
+  ],
+  "served_assets": [
+    {
+      "path": "index.html",
+      "sha256": "37a58ac3f99a51b2b36ffd49bd7ae1119c42d643b93702c79ecf2e9400f5139f",
+      "byte_length": 1737,
+      "content_type": "text/html"
+    },
+    {
+      "path": "assets/index-DPYr16Sp.css",
+      "sha256": "152b36ef5c5390e13de9e003568942bb20ab6771c7ed63e4dc7f2ec607703aa6",
+      "byte_length": 39107,
+      "content_type": "text/css"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-0lEzI6Zz.js",
+      "sha256": "c216ff10a8f403e401a950eb07cdcc722e541429fc9c382f3fd5c0098a76a9d1",
+      "byte_length": 121326,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Input-k1UkyJZe.js",
+      "sha256": "17f982ded9890b91a2f29651d735b6a2f85ca253e3feae495a894d3737c2d537",
+      "byte_length": 55670,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/CheckBox-BHL6SDmT.js",
+      "sha256": "03c553f234301443d5ae98b7f0bf2a500b7ff43ceb3a18332978ec251f145271",
+      "byte_length": 372,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Input-upL_Z3R6.js",
+      "sha256": "268f7c53e4014795c3a26766fbb1070391553c6399d48a2d94bfc7b74fb15860",
+      "byte_length": 511,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/components-XIOErgwN.js",
+      "sha256": "46097830b33280b7290d07bdb2e4b37edab0d5271a6d6b70658c5b6f0d56c7a1",
+      "byte_length": 126646,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Text-BnIKGMtC.js",
+      "sha256": "8465928c09de7f12fffe8a27dfbb20bddaaeccffb4602808309165da29bc849a",
+      "byte_length": 2247,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/useMutation-_Fgj-XMl.js",
+      "sha256": "5218e8e9477336efe7d832fc59a5a555c5b6f21a1be12db877d7f9e1a6972dc8",
+      "byte_length": 54410,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/ToolbarSpacer-BgZZNVXw.js",
+      "sha256": "a1a9d16db049b35fb67cbb66ddf562dfdc8347d0a4ee9f7d14ccbd6f897527b5",
+      "byte_length": 20040,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Link-CuxjuDJ_.js",
+      "sha256": "39f626438462d7afd10b1ee2dd33c245dabfef7df5183977d5fe342ec230c632",
+      "byte_length": 387,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Link-iBEFqMvR.js",
+      "sha256": "5976f766dd038bf0ae467ebcb0688ef06a50672310143b223d4d1e7932f69159",
+      "byte_length": 7184,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/estimating-CsTGW64y.js",
+      "sha256": "29aff13398dde4599ea0ff3f60f143ba6a5aa2a3b377f6f04bf3264b2d398ae7",
+      "byte_length": 1468,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/Approvals-B3St2cBx.js",
+      "sha256": "9204e81f070e9f017de2ee83da23a0f193c1fe93a51f51f40e62c7d8c3184343",
+      "byte_length": 38081,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/ResponsivePopover-BVnwonhY.js",
+      "sha256": "f7d1924aad1d589490173de1df51fb42e7137d1c0b9e7daffb71cbd0f4517121",
+      "byte_length": 371150,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/index-QNbHAC_C.js",
+      "sha256": "d080c7c83864602e9e1fbffab5dea579c6be7a924fb4da7a635d72652f0313b0",
+      "byte_length": 1177721,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69",
+      "byte_length": 23756,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497",
+      "byte_length": 196,
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851",
+      "byte_length": 19532,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab",
+      "byte_length": 24584,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c",
+      "byte_length": 23684,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c",
+      "byte_length": 753,
+      "content_type": "application/javascript"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872",
+      "byte_length": 24532,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/72-Black-D-MfWIU0.woff2",
+      "sha256": "672f44858cd60f55855738fb828bbcc48ddb8714f581e9763dfaa67d4e696edc",
+      "byte_length": 25564,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/72-Semibold-full-SdHhbJpe.woff2",
+      "sha256": "bb93c71bcb029b2c95040d6834b44d281dcea91649a28fc79d41417e24ed888b",
+      "byte_length": 60956,
+      "content_type": "font/woff2"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-B9BaCY7U.js",
+      "sha256": "0575e38508668380165b6b577ce45e328e8b4c6fdd20a0676ea9814540633fcb",
+      "byte_length": 4360,
+      "content_type": "application/javascript"
+    }
+  ],
+  "expected_initial_session_401": true,
+  "classified_aborted_reads_with_exact_success": [],
+  "business_commands": 0,
+  "authentication_posts": 1,
+  "mocked_responses": false,
+  "limits": [
+    "No domain writes, source-document selection, award or Company Ricky qualification.",
+    "Screenshots are viewport captures after settled public-navigation/title/control checks.",
+    "No trace/HAR/raw authentication/session payload or login DOM retained."
+  ]
+}

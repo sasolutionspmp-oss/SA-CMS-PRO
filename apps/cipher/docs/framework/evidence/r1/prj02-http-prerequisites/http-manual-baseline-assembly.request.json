@@ -1,0 +1,67 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.estimating.company_api.create_assembly",
+  "prepared_at": "2026-10-15T23:10:45.920775+00:00",
+  "role": "author",
+  "values": {
+    "author_basis": "Exact source quantities; no generated evidence",
+    "basis_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+    "company": "Company chain A c3c3b742a8fd",
+    "components": [
+      {
+        "kind": "material",
+        "line_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+        "material_factor": "1",
+        "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+        "resource_quantity": {
+          "amount": "2",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        },
+        "waste_fraction": "0",
+        "work_quantity": {
+          "amount": "1",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        }
+      },
+      {
+        "kind": "labor",
+        "line_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+        "material_factor": "1",
+        "rate_source_id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+        "resource_quantity": {
+          "amount": "1",
+          "precision": 6,
+          "unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095"
+        },
+        "waste_fraction": "0",
+        "work_quantity": {
+          "amount": "1",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        }
+      },
+      {
+        "kind": "equipment",
+        "line_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+        "material_factor": "1",
+        "rate_source_id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+        "resource_quantity": {
+          "amount": "0.5",
+          "precision": 6,
+          "unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+        },
+        "waste_fraction": "0",
+        "work_quantity": {
+          "amount": "1",
+          "precision": 6,
+          "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+        }
+      }
+    ],
+    "conversion_ids": [],
+    "operation_id": "4aa2956c-82ee-486b-ad3a-d69e04e11a86",
+    "title": "Manual mixed assembly company-chain-c3c3b742a8fd"
+  }
+}

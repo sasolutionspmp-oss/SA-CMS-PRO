@@ -1,0 +1,76 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Delivery Attempt",
+  "module": "Cipher Integrations",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "operation",
+    "fencing_token",
+    "outcome",
+    "safe_details",
+    "company",
+    "project"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "label": "Scope Type",
+      "fieldtype": "Select",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "operation",
+      "label": "Operation",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Integration Operation"
+    },
+    {
+      "fieldname": "fencing_token",
+      "label": "Fencing Token",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "outcome",
+      "label": "Outcome",
+      "fieldtype": "Select",
+      "reqd": 1,
+      "options": "Succeeded\nFailed\nUnknown\nCancelled"
+    },
+    {
+      "fieldname": "safe_details",
+      "label": "Safe Details",
+      "fieldtype": "Long Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

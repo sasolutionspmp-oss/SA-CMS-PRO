@@ -1,0 +1,20 @@
+{
+  "label": "stage-redis-publication-failure",
+  "script": "distribution-stage-operational.py",
+  "helper_sha256": "712aa5cd521f0093339509a9bfb0079139b3711ea0b654063450ecf4f3b7de39",
+  "arguments": [
+    "redis-publication-failure"
+  ],
+  "started_at": "2026-10-15T20:07:25.108668+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:07:57.997001+00:00",
+  "result": {
+    "status": "passed",
+    "dispatch_id": "1363c26e-e189-4479-9130-1112d695917a",
+    "operations": [
+      "ucn4babims"
+    ],
+    "private_context": "/tmp/cipher-r0-runtime/distribution-redis-publication-failure-stage/distribution-http-context.json",
+    "manual_worker_or_publisher_invoked": false
+  }
+}

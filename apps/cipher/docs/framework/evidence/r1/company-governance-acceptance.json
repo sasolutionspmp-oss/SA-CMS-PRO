@@ -1,0 +1,88 @@
+{
+  "recorded_at": "2026-10-15T16:20:09.255370+00:00",
+  "scope": "Explicit Company-only GOV01/GOV02 extension and single-engine static approval registration",
+  "runtime": {
+    "frappe": "16.52.0",
+    "erpnext": "16.51.0",
+    "python": "3.14.8"
+  },
+  "suite": {
+    "name": "cipher_aec.tests.test_company_governance",
+    "tests": 11,
+    "passed": 11,
+    "elapsed_seconds": 3.797,
+    "log": "container:/tmp/cipher-company-governance-tests.log"
+  },
+  "checks": [
+    "Company-only authenticated session context and commands require no Project",
+    "Exact Company duties and nullable scope uniqueness; no Company/Project inheritance",
+    "Current Company native permission and revoked-duty receipt denial",
+    "Alias replay and canonical-person UUID conflicts across Company/Project scopes",
+    "Old Project request hashes and event payloads byte-compatible",
+    "Separate Company history chains, permission-bound signed keysets and count",
+    "Atomic rollback; quarantine denies new effects while authorized replay/read works",
+    "Closed unqualified draft writer catalog rejects all installed native types before mutation",
+    "History authorizes literal exact immutable source/revision before metadata/count/cursor; unknown/private rows omitted",
+    "Authorization scan limit fails closed without partial data",
+    "Native Company read revocation also removes Company-only session choices"
+  ],
+  "fixture_limits": [
+    "No whole-site reseed or password/session reset performed.",
+    "Earlier concurrent fixture User/Auth provisioning caused a MariaDB deadlock; serialized setup produced the clean11-test pass.",
+    "Application guards do not claim protection against host administration or raw SQL.",
+    "Historical Project-status suite rerun passed12 cases; current Project governance/history rerun passed20 cases. No unrelated arithmetic suites repeated."
+  ],
+  "openapi": {
+    "routes": 64,
+    "contract_tests_passed": 14,
+    "spec_validation": "openapi-spec-validator0.7.2 passed"
+  },
+  "sha256": {
+    "governance/context.py": "decb37e43d131975b6bd835dd033e6e586788176430b5b0b9680fc96158f30b5",
+    "governance/controllers.py": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a",
+    "governance/commands.py": "22c50fc4524cf4e9254f41534d3a3e3e1a8af8699cac2dc44d96516baa718db0",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "governance/company.py": "5df53fce84ba20dfcdc70a0c7647f69d85f839b40a36316f1ee46819bccfc4be",
+    "governance/permissions.py": "a8a0a5711471c03aeb1dfb810820adfb40741e630e0cfce00232668f89dc3316",
+    "governance/approvals.py": "4254eb62bd1346c0a79e19fd4c53ea498a8cff08111155fb0cdcb4b9eebe5411",
+    "governance/domain_approvals.py": "ffb4c490810478ca394ab01bbfad7d2b8c19bb749f00d19e7f7023860adc6cb4",
+    "api/company.py": "01e9bd3db3abdaa7d119346ea0e078450ded6d676eca4f19a2d6b7c2da00b6d1",
+    "api/v1.py": "96e4ed7bfae46ad086c6ed735119d2e7f060cd6d48b0436fe9650d9e9eb36bb2",
+    "api/catalog.py": "b9d373069ff448394a4bca54ec176fb575971ed577edfb655c91fffb29b7ed3d",
+    "api/openapi.py": "19f5ef0e1f9b426e5b854fa503c7bdc5edf7331502d16fad335c51d496d1fd60",
+    "api/openapi.json": "f4cfb8cd2512e951e6727b697a25e3a532bc62137bdf9cd345d5741be12b29da",
+    "api/schema.json": "efa57ff2851909c5696fd202556bd42caca7c8590691f26801bb056aaae8c2f4",
+    "install.py": "d3a7ff21451023e8dc4adb02179dfa92e4fc6375cbf56527097c5dd23d452c36",
+    "hooks.py": "c5843e1dda0633cfbff073891d1f55186f1353146b2d2f771aabcaa3158fe23a",
+    "tests/test_company_governance.py": "87e28f12e79567955d206303b7f2bec40556e630f09658cfd22c3b263633e230",
+    "cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json": "b64c51adfb00b4f3e2a5b615adcd13aa41821967fcd5b06e89202be27de03f59",
+    "cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.json": "01b1e11ecfe5cb35c96b0c03adc5e3d59ee81b3ee35b54300bd2e7eca7bd6582",
+    "cipher_governance/doctype/cipher_history_event/cipher_history_event.json": "040b176e0b9814617f9c48b613a0798f6823159d0bcd1ca7ac9ff10a08041719",
+    "governance/history_access.py": "6ee1cef5cd8a962f3e178df199a9fe672da51f8973475755c27e7e3db7f66c57",
+    "governance/history_listing.py": "c5029f61462ae2919ffccc7451a331ad4c1e6dc8ad0fb3efbc379b6e54eba8f3",
+    "projects/service.py": "0490b3360f911f9ca1f0950a52aae11916bcfba998674261e05fb26e52584064",
+    "tests/test_governance_projects.py": "0b55cc5cfd6c6dbb0393df14bb195712f933b33cd5980c41ba1839d7b7ed2a25",
+    "tests/test_approvals.py": "2cefd6e78f781d9282939d6a96433ac6cfc89398628d0158a63f0bcc9a52db72",
+    "commercial/schemas/api-v1.schema.json": "8cc4304e83e9294ddb2960f58e6c8f4e911d07974454961b99ce8875e3db8433",
+    "construction_finance/schemas/api-v1.schema.json": "97fd74f072d49df1089f5301e62e4d83bc8c10ab26383f9ff89af86dd0f584b4",
+    "takeoff/schemas/api-v1.schema.json": "b65e8715e391a98b1c6a57339ed70fc2fa8103e256bba71f0b7179be04388d23"
+  },
+  "regressions": [
+    {
+      "name": "cipher_aec.tests.test_governance_projects",
+      "passed": 20,
+      "elapsed_seconds": 3.544,
+      "log": "container:/tmp/cipher-governance-r1-regression.log"
+    },
+    {
+      "name": "cipher_aec.tests.test_approvals",
+      "passed": 12,
+      "elapsed_seconds": 2.555,
+      "log": "container:/tmp/cipher-approvals-r1-regression.log"
+    }
+  ],
+  "history_http_evidence": [
+    "commercial-http-acceptance.json",
+    "fin01-http-history.json"
+  ]
+}

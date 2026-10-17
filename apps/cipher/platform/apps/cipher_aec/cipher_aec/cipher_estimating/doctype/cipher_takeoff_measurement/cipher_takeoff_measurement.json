@@ -1,0 +1,175 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Takeoff Measurement",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "takeoff_set",
+    "family_id",
+    "revision_number",
+    "predecessor",
+    "source_revision",
+    "source_sha256",
+    "page",
+    "method",
+    "calibration",
+    "unit",
+    "quantity_amount"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "options": "Project",
+      "search_index": 1,
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "takeoff_set",
+      "fieldtype": "Link",
+      "label": "Takeoff Set",
+      "reqd": 1,
+      "options": "Cipher Takeoff Set"
+    },
+    {
+      "fieldname": "family_id",
+      "fieldtype": "Data",
+      "label": "Family Id",
+      "reqd": 1,
+      "length": 140,
+      "search_index": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Link",
+      "label": "Predecessor",
+      "reqd": 0,
+      "options": "Cipher Takeoff Measurement"
+    },
+    {
+      "fieldname": "source_revision",
+      "fieldtype": "Link",
+      "label": "Source Revision",
+      "reqd": 1,
+      "options": "Cipher Document Revision",
+      "search_index": 1
+    },
+    {
+      "fieldname": "source_sha256",
+      "fieldtype": "Data",
+      "label": "Source Sha256",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "page",
+      "fieldtype": "Int",
+      "label": "Page",
+      "reqd": 1
+    },
+    {
+      "fieldname": "method",
+      "fieldtype": "Data",
+      "label": "Method",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "calibration",
+      "fieldtype": "Link",
+      "label": "Calibration",
+      "reqd": 0,
+      "options": "Cipher Calibration"
+    },
+    {
+      "fieldname": "unit",
+      "fieldtype": "Data",
+      "label": "Unit",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "quantity_amount",
+      "fieldtype": "Data",
+      "label": "Quantity Amount",
+      "reqd": 1,
+      "length": 140
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "sort_field": "creation",
+  "sort_order": "DESC",
+  "index_web_pages_for_search": 0
+}

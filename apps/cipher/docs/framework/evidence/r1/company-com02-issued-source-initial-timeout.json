@@ -1,0 +1,13 @@
+{
+  "calls": [],
+  "company": "Company chain A 20b85fd4edd2",
+  "completed_at": "2026-10-15T18:35:55.692141+00:00",
+  "distribution_qualified": false,
+  "failure_type": "TimeoutError",
+  "fixture_id": "company-chain-20b85fd4edd2",
+  "live_external_provider_qualified": false,
+  "schema": "cipher.r1.issued-source-http-revocation.v1",
+  "schema_samples": 0,
+  "started_at": "2026-10-15T18:35:14.403311+00:00",
+  "status": "failed"
+}

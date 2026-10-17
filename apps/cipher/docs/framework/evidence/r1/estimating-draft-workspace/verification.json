@@ -1,0 +1,56 @@
+{
+  "mode": "actual-frappe-estimating-ui",
+  "captured_at": "2026-10-15T16:09:07.255Z",
+  "mocked_requests": false,
+  "business_writes": true,
+  "created_estimate": "5922f3d2-048b-4f05-821f-97c734e5d6a0",
+  "original_acceptance_estimate_unchanged": "63fcdbec-ff95-4902-bc70-4fa9df927a0c",
+  "source_rate": "47e6c8cc-0f48-4e8b-be40-74722749869a",
+  "source_assembly": "1d12d619-43a6-464d-848a-f049415425bd",
+  "revisions": [
+    "083e1f39-9495-40f3-b99d-c6ad889d05c2",
+    "57e91097-6b5e-4935-b807-5a92d610072c"
+  ],
+  "snapshots": [
+    "acff72a5-a0bd-4cdb-a7d2-8e33db90e8fc",
+    "b4cf3279-944b-4a17-848e-c3024b8b7e65"
+  ],
+  "operation_ids": [
+    "82438f46-836f-46e5-94af-911cfdfa5dec",
+    "f5fe7366-3601-48f7-b617-e407603440c6"
+  ],
+  "totals": [
+    {
+      "amount": "279.23",
+      "currency": "USD"
+    },
+    {
+      "amount": "306.23",
+      "currency": "USD"
+    }
+  ],
+  "manual_quantities_preserved": [
+    "10",
+    "11"
+  ],
+  "stable_line_ids_preserved": true,
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "keyboard_quantity_focus": true,
+  "column_alignment_tolerance_px": 2,
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "browser_errors": [],
+  "console_errors": [],
+  "unexpected_http_errors": [],
+  "qualified_takeoff": false,
+  "baseline_acceptance": false,
+  "live_model": false
+}

@@ -1,0 +1,675 @@
+{
+  "schema": "cipher.history-read-profile.v1",
+  "status": "failed",
+  "company": "Company chain A 20b85fd4edd2",
+  "mode": "native readonly exact200",
+  "diagnostic_budget": {
+    "seconds": 20,
+    "queries": 10000,
+    "lock_wait_seconds": 3,
+    "statement_seconds": 5
+  },
+  "source_hash": "c5029f61462ae2919ffccc7451a331ad4c1e6dc8ad0fb3efbc379b6e54eba8f3",
+  "error_type": "DomainError",
+  "code": "history_profile_budget",
+  "elapsed_seconds": 6.056543491009506,
+  "budget_seconds": 20,
+  "max_queries": 10000,
+  "lock_wait_timeout_seconds": 3,
+  "partial": true,
+  "sources": {
+    "install.py": "e5a07593506aa44d36c1e83d026559eaf9f5ead047905a663d05aab12a8e76e7",
+    "__init__.py": "aa06f7682da17c65cec391e23e3cbb6e01bb5867fa1f1edff04646779fa7c8f7",
+    "hooks.py": "4a8383884291bf0c9bb1aaeccc779d1764994bb4829a79dbf06006b824e677be",
+    "cipher_integrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "construction_finance/permissions.py": "a6aa8c782c76631925a20f445bec050793341817a62040959d05f1cd17593b28",
+    "construction_finance/core.py": "34e5a733ae980cd6436e4d9051d5ab6a553e034ac7be959011d66c5e934050e0",
+    "construction_finance/service.py": "2e15ffc7277608afaa1462b9f0f4f82b9a39ae06e5d0b0147ac9ce813dc16ac2",
+    "construction_finance/install.py": "ee4198228bd3d1c97584cb6e9f05ada255ddb764ff1aa2f961a763102330dca9",
+    "construction_finance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "construction_finance/records.py": "a129da16046d7a23530ee0cf13244c9735214a18a5f086324cb0ff6e2b9d0602",
+    "construction_finance/repository.py": "c155fd333d6a3a8efc2678c61072c9730be34d1f833117885dc5302a9e284668",
+    "construction_finance/governance.py": "362b00a7386d5b76c30ed4c6d3c5d0eeae1aac68231b141faabfa71dccbf71ef",
+    "construction_finance/api.py": "1f645ad8435d582b053d5287601013b12fe685f8df94a1f6c223f34bfdc9b164",
+    "construction_finance/sources.py": "5f6b251ac48722fdc0e560c5223911e638b3d97da5582e40ee3b172ac3718fa6",
+    "projects/permissions.py": "70676157fcab21dace72676158c2da30f6b715c36ed5c793f0a780b47d3811f1",
+    "projects/guards.py": "b68c12835313e7b3e663135b6de4b1282076f4183240836469519361e2fabb7b",
+    "projects/service.py": "0490b3360f911f9ca1f0950a52aae11916bcfba998674261e05fb26e52584064",
+    "projects/__init__.py": "0dce6e899124a129327b974fbbaf70fa1257f528390a8fc42b6584d764958e91",
+    "migrations/export.py": "d2ba4960b23037c439625db4b0146b5967d96ab9d6d094a200363fb1f5a36cea",
+    "migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "migrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "migrations/api.py": "d09fb8cbb421ea9e100b2395a4f5eb2ad29a3d6685e4cb87ad425f9d5affef41",
+    "migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "migrations/preview.py": "d7acc20ad8fb32f59262afcd0ada90ec08be9e5826febc278bf18f569394139f",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/service.py": "b902d41a90cc8028cac8598e05718426e9ddfcbbc49eff5224445de5f31f61d9",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/company_service.py": "88776464fbf56d609c86e28947bebc28a317e7ab75e1864dc38c767493d0ed19",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/governance.py": "70cc174811cec10cf317be4db921c817c7f2f2a02a91f4cebea8273da7262ca7",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "estimating/sources.py": "dda41e4397c37f60c5ad48b7609a8c50b591165c2068a1d151c1f67c5a37ae7b",
+    "cipher_projects/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "governance/permissions.py": "a8a0a5711471c03aeb1dfb810820adfb40741e630e0cfce00232668f89dc3316",
+    "governance/company.py": "5df53fce84ba20dfcdc70a0c7647f69d85f839b40a36316f1ee46819bccfc4be",
+    "governance/approvals.py": "d82630ecb91879887a30d42aa81124db58fdf2f113f3d74e1a21ed42c0d9b011",
+    "governance/history_listing.py": "c5029f61462ae2919ffccc7451a331ad4c1e6dc8ad0fb3efbc379b6e54eba8f3",
+    "governance/__init__.py": "270aa42c5f80e33397496b916a00268234e1fb420126ce81f1e6f2110cb05c0d",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/controllers.py": "5904474140b712626ccb1c6530aa6311114708a3588c627651b67d1168a83c2a",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "governance/context.py": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b",
+    "governance/history_access.py": "85cd1226fabe137d4ca596d0cebaec8548534909896d4a88dba4d068373190ff",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/service.py": "21509159a879de0f55a9f366c6751e5b775d428eb4329473c7c8d08dd1299d42",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/provenance.py": "781543e29bbd233a1af770f5a1fe47e4346aa5d19f65f5fcfa2f144d5f73dc37",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "cipher_ricky/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/service.py": "ad964e1a01aab744fbd7e529b74bd4e559c900cafeccf50439513bed3dc32997",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/outputs.py": "ba0af12b85623c1719f78eaadd9834d163749e01e906b1fd32ac6c827104e274",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "integrations/distribution_recovery.py": "22d78d0fb0c913f4af163e4f1fd4c21e43767f000768f1d61ace9e5dc822afe7",
+    "integrations/distribution_governance.py": "e2b4716fbd36dd6e7828153ad26014d92515170388ada3cbb1bc1a37ba10ce22",
+    "integrations/distribution_transport.py": "2dce44d6ede25a3550cc63e7e5d060f18f65e95ec6b92eb1a94867989ffa3a5f",
+    "integrations/distribution_sink.py": "66221b4bdc22e32edda2220c8c79cea3b17670fda6409d2280c2a535c2460484",
+    "integrations/distribution_api.py": "610a581e02700efada91284d09f6b82b932cad024965d06d24eca8a05b48b1e9",
+    "integrations/distribution_install.py": "d72576cad9f89888329825e33d15740ae485ed4afe7debe9cce213ec661c3da9",
+    "integrations/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrations/controllers.py": "b7aa6957c9fe0429de42f3499e05a900c3eb2938d439493aba95db0d06182c0c",
+    "integrations/outbox.py": "0258b5bee74e0731b36c333624f21c2efaae7c8ab2d3237e958c36049dca1bb6",
+    "integrations/distribution_records.py": "8fbcb684b4a15713e311f5c1b1674a1001b63111b624579ed05957cce53a40c5",
+    "integrations/distribution_contracts.py": "04d7933fb51a25b71afb9ab06d10b8c633e56c2901c36d5a46de280cd672ef88",
+    "integrations/distribution.py": "cf57d100813a087837a52312d8a5b339e8e06ee27890f11c1b5d0ad5f944cf44",
+    "integrations/distribution_worker.py": "b2e15ba162f99701812159e22fa64602913a6eabc8cacc453432a91d24625e06",
+    "cipher_finance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "ricky/worker.py": "6474dab4c994e8c2df3384db2ea17553c851dc1706bee0e1a1e73035d7a02285",
+    "ricky/backend.py": "a6b756f993defd53c83ea080eeb5af6b66eb9c860d67d0f4db3c3f93ec72de3e",
+    "ricky/engine.py": "e27f8b208a2cb927e45f8ce83e477c1d149fd8e91a7f6eb69cc656fa00648c2e",
+    "ricky/adapter.py": "557158868e1a2d5fa5b3e267a9d63bf0025d35e92731d9a421014d4927dc0bea",
+    "ricky/__init__.py": "095ab3028edd219ede3104a1dd8473ca89310182f5add1f95f9721610ff75b71",
+    "ricky/records.py": "6d0baeb9aaa349d3fa68485f66f67967634e14cedd6874404b6ea9e1c6f4febc",
+    "ricky/api.py": "997c34937b4e23d9b1f5e8cfb156a2b84215812a03c847b160c42f9551f431a4",
+    "ricky/storage.py": "8b6ae67a08d1c03ed4349af4486697eb756520567fb5490d543fc74d8d0349eb",
+    "ricky/contracts.py": "97d9cd3fe82578f3de38a48c99f87cec8920161343b806cc36991e349d7e7eba",
+    "ricky/tools.py": "74fcf6eb7632a8e66c6149964f71334cf04f8f54a41e34c966a2a06ff5012d88",
+    "tests/test_commercial_acceptance.py": "3a542005635b256e0a42680e716b8ba1d685594f2715db8d0ec988980b823c6c",
+    "tests/test_takeoff_company_acceptance.py": "3b2b9f92125a6bc511868b74ec25d0e2d4d3705a28ad5983be213478646b2c7e",
+    "tests/test_approval_presentation.py": "e4a85aeede302cdee6169f9adfd01303867fd0ace42a2f90cd1df7493f778fc8",
+    "tests/test_approvals.py": "2cefd6e78f781d9282939d6a96433ac6cfc89398628d0158a63f0bcc9a52db72",
+    "tests/test_commercial.py": "35aa565bfab72da7da5e3248fd97c0a12cc9f1648127dcc4abc4936281d194eb",
+    "tests/test_commercial_rendering.py": "868507f4cee0f82ada5ecd992dd7cc91cc0fd0dced7f06390d89ddedac8b442f",
+    "tests/test_takeoff_acceptance.py": "663393397eac6dbb3e7f0626b3148147b7592a45b497ca106639938b202cb70d",
+    "tests/test_distribution_company_acceptance.py": "2824096c35996d5a8cf68f169d85fde3839b0960c32a2ee6e98185ed5940975f",
+    "tests/test_documents_preparation.py": "0ee8837f4a8d504f59c477897ca01d61cfea6fbc4760b67c5eff6665b876ca7c",
+    "tests/test_takeoff_http_recorder.py": "22b9f2c7162144bb259a2150144cf1ee61d34ae062d0f2a6a0fad1162d191f27",
+    "tests/test_ricky.py": "78b35a6c61986d78e66941758c9a041888e9ed798a7ede4ad2e3646e09ac992f",
+    "tests/test_migrations.py": "d61a17d88a6f4156c02211c40ed390e937eb3383936aabfe7c06104829a15aff",
+    "tests/test_estimating_acceptance.py": "6deba4995c1adf493f5d38a76e2e8b7c1e60772f7e2aedf09a7b899e81418039",
+    "tests/test_construction_finance_native_permissions_acceptance.py": "d1fba796d55791e605c1f09534d8113027eba7ec90b68bcd6cc610fb18f11259",
+    "tests/test_company_governance.py": "f2ec82be83ae7ad63d300d8d7d4e099973d3ad0de632a4112a72246dbbca1951",
+    "tests/test_documents.py": "c36cf10281d50c52a12a9d77400d9ef6b8d85dfcc03950943d7980132d5b1236",
+    "tests/test_commercial_http_acceptance.py": "ed5560504bdc8289a4d7923a159200de1be5ce7137a846605ff51a8c511840eb",
+    "tests/test_master_selectors.py": "70acb5183a6e83cbf11e1250e8ce459166a12ace87e8fe3813caae2bee1b4a6b",
+    "tests/test_estimating_lockplan.py": "5de16a915b3cfa4e36825dbc28cf12ede46f1a5c838fcb1db7ab48d1f09cbcac",
+    "tests/test_estimating_project_native_acceptance.py": "cbacabd63522107e75bd2dfcddcc2bd16453ae1895ffb608a62d5ad509a926ca",
+    "tests/test_history_listing.py": "15f59f3dc76465d7f5e1a8b9b4d5b7747140dbdd2a5eab733fbc7fb9ac728be1",
+    "tests/test_outbox_acceptance.py": "dd091ed806873447584b53eee84477a109a031d569ba1c629626b74b218efff3",
+    "tests/test_contracts.py": "8a0bc712b8e1f66ab2f5c157e001437355cdef6d5252c6ff581c3fd9c995ab1f",
+    "tests/test_ricky_acceptance.py": "bd2b7be1b57e8fd99916c7da0f863a7ca48b02c6725e144ce019c8112cec530a",
+    "tests/test_construction_finance_acceptance.py": "1a430415da40df05f19a4ea5a39b311fc29aa22e1c8c918a474c3986249e6c18",
+    "tests/test_takeoff_geometry.py": "8e7919c3d24620d4cd9f5a2e39744f95632009b3273167bfba5c4967584b729a",
+    "tests/test_company_chain_acceptance.py": "ba726b569c5fc9c24e5cb12ade5846204a02af1b28c56b36908626ae26b7d5c1",
+    "tests/test_migrations_company.py": "9a2122dba53177c5447c52c7e009c2fc17d4430f4946cc439cf2643b95b2f6f7",
+    "tests/test_estimating_core.py": "adccb17656115fc1bfa0443af8113a887a34573f5792a0d78d7e2dc1886c4b79",
+    "tests/test_construction_finance_core.py": "c427ccd1b8517679dec8b17e7f6dce86c8457a80e0b80ca78af95d5424d63dc1",
+    "tests/test_openapi.py": "ac048fc5d49085a3285a5e4b02cac6970d7a047068e6a8c02f0de7a4df3880c5",
+    "tests/test_capability_metadata.py": "0a944a2f5a086dc18034bb9eac22ac43e4539adfe240f8b53a38c0a13d9f1746",
+    "tests/test_construction_finance_http_acceptance.py": "1820af8c241f97b488dd4977a46fb6e67d5d9df29774c690047747117162c29d",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_governance_projects.py": "0b55cc5cfd6c6dbb0393df14bb195712f933b33cd5980c41ba1839d7b7ed2a25",
+    "tests/test_distribution_recovery.py": "416e577e4d5ee1cd93663327c07d71dbf7a1c73a988cfd47e2daa69a57d7ac1b",
+    "tests/test_company_commercial_chain_http_acceptance.py": "50aa92072f5c23c1505961c86ac0dd12023f561598f5a7180bcf258e58cd3ef8",
+    "tests/test_migrations_acceptance.py": "30de59baf8f98549765a25e7a0f4e0da4ba4c330a64a5d86e042fcbdd1ad48fe",
+    "tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "tests/test_estimating_generated_acceptance.py": "3208e3ab81a464dcca00f63ee5dcbb8bf2481e5aa3aa7710734acdfe2f46eea2",
+    "tests/test_commercial_output_acceptance.py": "1de8abf23c16a478c9f80943ceba31c9b1ca5a24473ba5bbab56fd6853c0bf87",
+    "tests/test_distribution.py": "a05977a0f499bf67761de8c7695cf7915cf6531869125e03ba5a67364d58f64d",
+    "tests/test_company_chain_http_acceptance.py": "162a32cd0b11cbd03d764330c388f15e0b86afea3b085d03aeb99fb2fd38e74e",
+    "tests/test_estimating_company.py": "06d0b8ae9be8973030acdd0dc89e678fd1f3ea5c8008626e57d4e7e6452088bd",
+    "tests/test_documents_company_acceptance.py": "592b690f8050aac03d0e2a3345711d8559b909a51ed808704f87641fb79e26c7",
+    "tests/test_migrations_http_acceptance.py": "03887551685d79923a3322385a6361a686d69f4982e8e5fb0fa28e2b5b135e6a",
+    "tests/test_documents_provenance.py": "32d655efa73574c2ef3eee0c9343ed735f830913bce84b5f0ff237cc4d51fee2",
+    "api/domain-schemas.json": "326accdbb95467ad0ad9ba40dfb1383dea2ff5f5e5ae4b6e5d46cd929f4f5aa8",
+    "api/company.py": "01e9bd3db3abdaa7d119346ea0e078450ded6d676eca4f19a2d6b7c2da00b6d1",
+    "api/transport.py": "f1aba8866dc1c4bbf7210990224c37662a23f6b7a84e8f197fc419482391793a",
+    "api/errors.py": "dc396a94f5fb3fcffafdb579f7c6df21d2352ae2709e31c9b342f18e704edf9e",
+    "api/approvals.py": "02c7f9f47981bb41120630984467e87ba74d09ee25cd100f245e08aa07a1f072",
+    "api/paging.py": "4d8c4699e3089726d2387a8700d7f9c17746ef9f89291ce2ffa716aed5252082",
+    "api/company_approvals.py": "a514710ccfeac64f27a814c9c8936584f1e9aa771548c8d0b4a8b3f6efeec4fa",
+    "api/openapi.py": "9954df04806fc32c99d9eb6cc93007cb5364f048ae6b62187ccbacc1f7961956",
+    "api/v1.py": "96e4ed7bfae46ad086c6ed735119d2e7f060cd6d48b0436fe9650d9e9eb36bb2",
+    "api/openapi.json": "433bdd3a2c8b5a9960f68d3e766e367e985ff2cfe693c51a62667e677966e498",
+    "api/boundary.py": "f97daba0644c70a2cf8cba5405266e15192bf94e6ffafad2173014dd91797d3a",
+    "api/__init__.py": "779404288fb87bf4f2f023ad06353ffe73fa04697bc269deb1ab03ddfee99b5b",
+    "api/catalog.py": "f29c5877d4cdec3ae1a4f7217570c7ac1302dbc1b510c6775566a82d788d5ef6",
+    "api/masters.py": "e1d08f6a0bbba8652d5340b345ef448846591ec3d4e1f9481ad7fc74a3285d58",
+    "api/contracts.py": "f91fd0fdf834433817f427c66309bcce209210c9266e3eaa876408989f4a2e90",
+    "api/schema.json": "845e557872cb2a74fbce8be75dd3709e64a7fa2060cc0f3bb44f8ecc6c6ec1ed",
+    "cipher_estimating/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.json": "286fad8a46295e1e944ba56dea6f7958177ac22d0246a1ee7554fbd68ef0bf97",
+    "cipher_estimating/doctype/cipher_estimate_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_revision/cipher_estimate_revision.py": "2a0a6c1d1249079d68eeda900999be4214be4048c7d3885196364f21d271856c",
+    "cipher_estimating/doctype/cipher_calibration/cipher_calibration.py": "90c07df8f711ef5b98da7b919d50a78422d6ab2d70d613261ee239366087e435",
+    "cipher_estimating/doctype/cipher_calibration/cipher_calibration.json": "f298378e4a27af3d6d3157b9d6c20f5edda4488b7e89b608b23419446133b488",
+    "cipher_estimating/doctype/cipher_calibration/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_rate_source/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.py": "50d6ae00629c67d5a783a355c81ed1092865991ed0f2f74c6ace94db82bb194f",
+    "cipher_estimating/doctype/cipher_rate_source/cipher_rate_source.json": "043fa1b6b639d2209a54472b298b5d6faf19fbc4db928bc7b5f71ad0119f30ac",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.json": "a83c25ea9fdbf39dbdf4601c87ae54f2ca651837070072a3f84a7cb27826461b",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/cipher_takeoff_measurement.py": "c433a35805073004731b7861af4996992722a843d6c16a276dfc242cd0635990",
+    "cipher_estimating/doctype/cipher_takeoff_measurement/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.py": "57f860cbc32634ce3e4e68bf9d20671e9ceecc9f2356e02cb3fa3756bd571efa",
+    "cipher_estimating/doctype/cipher_assembly_revision/cipher_assembly_revision.json": "9eff3a4f5c7b87a252802716673f47104d7d4af8e9108f149a93a6c4c8970adb",
+    "cipher_estimating/doctype/cipher_assembly_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.json": "0f5b3d8f8f231d68168f8e51f47e30406fe1ac6c5619ec3a6fa314c14d6c1e52",
+    "cipher_estimating/doctype/cipher_unit_conversion/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_unit_conversion/cipher_unit_conversion.py": "55b22a601b4e6d69b5a963003ee91c11aa1b939d8081293a065677771e767ecb",
+    "cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.json": "544f8898a2a42705a04988df7d1a4a9add8927d590286aa9dd75c0d37c64d922",
+    "cipher_estimating/doctype/cipher_takeoff_set/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_takeoff_set/cipher_takeoff_set.py": "0a37e983db6c4393fc7b9fdc09fdbd393604851ac57862f5720e4127725956f9",
+    "cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.json": "ca8130db44123a6d6745326699ac6b7bd882a24ba8c2058ace851385bc8d374f",
+    "cipher_estimating/doctype/cipher_calibration_verification/cipher_calibration_verification.py": "5c3395197de04241bd1bf20f032aa31b0eff16ee1f5d3fc12015c528ef0f6725",
+    "cipher_estimating/doctype/cipher_calibration_verification/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.py": "1dbf9413663f8055548cc5723bdb84f1509c721ee7dd65d93a0daddee2c42c0c",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate_acceptance/cipher_estimate_acceptance.json": "fa66f89a1a8fa3f8110efe3779316dea5ea62457b4f060acc0d9d9d7c97616f7",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.py": "431d93ceed7a21b236f00b9ef78ae1e4b63f7f6ad70d9cc1bb890d849045cb16",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/cipher_takeoff_line_binding.json": "a94871777f04eb3e13edd2caba036dc7f0fbdd0e476b4cb1e1bd1ec5eaf2326a",
+    "cipher_estimating/doctype/cipher_takeoff_line_binding/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate/cipher_estimate.py": "f285405714db10f5be367b922256628c1048729d75be9372f52aa7d02a54b308",
+    "cipher_estimating/doctype/cipher_estimate/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_estimate/cipher_estimate.json": "7772ef9a2e0c3d03bd0306c4a4c06308ce83bac2a156cd3ddf73a2eddf819051",
+    "cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.json": "664cf155b119fb3a6ee8d30a55bac285d88447e0696dec80fbbd9b9cd54c4417",
+    "cipher_estimating/doctype/cipher_estimate_line/cipher_estimate_line.py": "7870fcbf63b36b6e2a50ad6c9569c5a736fd5984c0fef54d471c5e64ec4e8447",
+    "cipher_estimating/doctype/cipher_estimate_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.py": "6eb83daee9317f23938d752ca2d4a3543db3b49c874ca6071ce22e593282af15",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/cipher_calculation_snapshot.json": "337a3f8b795c0e8f4466459b04b8a166d899e215f4764c30fda8b8c84c9f829d",
+    "cipher_estimating/doctype/cipher_calculation_snapshot/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_decision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_decision/cipher_approval_decision.json": "9560cf4ac1406ccd0e02207f94fc92eda7f80b7a141020d82d311089ff759e13",
+    "cipher_governance/doctype/cipher_approval_decision/cipher_approval_decision.py": "e1f58fa458004d1e22419f1b085663395164b6ef828974be24a44e2524c3229d",
+    "cipher_governance/doctype/cipher_person/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_person/cipher_person.py": "c531e8578aee2f42dcb947d8f631a4f68dca902fe960eeb1cd8014beea38ad26",
+    "cipher_governance/doctype/cipher_person/cipher_person.json": "5dc0b3170864a1b62fe16605dd81ba8e602bbac7d7556edda1549645b13fdc74",
+    "cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.py": "38aefebda1af450c325e1e3ac167d2694fe9201b59df44e0a13dd0d4bfb1020e",
+    "cipher_governance/doctype/cipher_command_receipt/cipher_command_receipt.json": "01b1e11ecfe5cb35c96b0c03adc5e3d59ee81b3ee35b54300bd2e7eca7bd6582",
+    "cipher_governance/doctype/cipher_command_receipt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_consumption/cipher_approval_consumption.py": "2104d350e30ed60d77031baf12572b4b645ebbefb7dd14fcd8aacc446f7fa8fe",
+    "cipher_governance/doctype/cipher_approval_consumption/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_consumption/cipher_approval_consumption.json": "2f642404549b376ad3f6351ac78b2aaaa7f7b872621c6900581a86135c541bed",
+    "cipher_governance/doctype/cipher_identity_binding/cipher_identity_binding.py": "f47f861055c2e1f0297e66d0e3884036511357c8c0a1de7d9f0f9b9beff35379",
+    "cipher_governance/doctype/cipher_identity_binding/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_identity_binding/cipher_identity_binding.json": "70edf8ad399e372d30969bbd9363ff8bbfbbb318185a806b285ca14f0f5e792f",
+    "cipher_governance/doctype/cipher_history_event/cipher_history_event.py": "2647f8c7c4e53db2dc29800dccc86d267b64bd97fba52163cbe0653eb720589a",
+    "cipher_governance/doctype/cipher_history_event/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_history_event/cipher_history_event.json": "040b176e0b9814617f9c48b613a0798f6823159d0bcd1ca7ac9ff10a08041719",
+    "cipher_governance/doctype/cipher_approval_packet/cipher_approval_packet.json": "b80e5e4a74cafbe93e4f271398194bfac5e1a9c0eb5ae205f4e8a261a493b8de",
+    "cipher_governance/doctype/cipher_approval_packet/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_packet/cipher_approval_packet.py": "0c25416dce1d5a35d845c1ab4ab510b30f27c615206918261768c6d50c028754",
+    "cipher_governance/doctype/cipher_approval_policy_revision/cipher_approval_policy_revision.json": "5c4ec5014f1ad1a2d044df4f01e140ab090a2831297a972cfe3b02a60dd1aa9e",
+    "cipher_governance/doctype/cipher_approval_policy_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_approval_policy_revision/cipher_approval_policy_revision.py": "3ac7b200a59b5c5d0e75a977532012c8650eba0f5f23312b2df47697025bfb10",
+    "cipher_governance/doctype/cipher_project_duty/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_governance/doctype/cipher_project_duty/cipher_project_duty.py": "30fe48a65929c89e412a26c849904df534240ca02633295ac03d4d3953bffe14",
+    "cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json": "015b396252123c6a4e5d4b827513979ca7a4326e84cb7a0a2d136cf6f46c403d",
+    "cipher_commercial/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.json": "9ba9e3a4f3ca0c3babfbadbb0ce85b2ff982c6fda8d9b4e452e7578e8caf1124",
+    "cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.py": "6c6c115e1ece3f696e2fbe037031e046065d52f26822c8706dce4983ba2f5c36",
+    "cipher_commercial/doctype/cipher_proposal/cipher_proposal.json": "8d979b78bbf0d36474c42106ae5c74a305677f868e875b267ec9f4748154a77e",
+    "cipher_commercial/doctype/cipher_proposal/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal/cipher_proposal.py": "4ecc777c10f64a1d2dbfb9d08dc28c73351abb957c5ba14e8766bf79bf3abc49",
+    "cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.py": "ccdaa6fdd6af5cc42d3656b92e8def98398bff0b756149b441dc6925dffe3f0e",
+    "cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.json": "728ce64b21433b0a1947f3a94cf84117245caa29a53acd25139f71dad9556bee",
+    "cipher_commercial/doctype/cipher_pursuit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.py": "411e55d2f2eb253b9451ab06b12fe29901ddc8a59ba3cfff8750a2c8e82f37c1",
+    "cipher_commercial/doctype/cipher_proposal_price_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.json": "d1944b44755929738db0a7c7de0b4fd3a1ffc90043764f3796466bea126a0491",
+    "cipher_commercial/doctype/cipher_proposal_issue/cipher_proposal_issue.json": "d1dccec8e08ef8d7fac1b9a31938808126b5e7478d829d7dbe1e2f4bb6c35f19",
+    "cipher_commercial/doctype/cipher_proposal_issue/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_commercial/doctype/cipher_proposal_issue/cipher_proposal_issue.py": "0c9d6fda74216f6fc9f9cc039174c1e0e37cb91fac16b9106ceda0796b9cf980",
+    "cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.json": "b7f4664e22ae97027385a8d57ddf8bbd9be0582fd98424842035183c312ff92d",
+    "cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.py": "90d27c1584ac63932d10966cb3958a41437f245c04602aab8abcb294b553b839",
+    "cipher_commercial/doctype/cipher_proposal_section/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/cipher_sov_line/cipher_sov_line.json": "3a2e8be565104afbda5ae9b3fe15e7b37bf25d9592fe35989ed45c9d3e83ffbe",
+    "cipher_finance/doctype/cipher_sov_line/cipher_sov_line.py": "89c244a333d6e38a8b79a83491724124eeab2fc7353d17beb6afedba4666d005",
+    "cipher_finance/doctype/cipher_sov_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/cipher_retainage_policy_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/cipher_retainage_policy_revision/cipher_retainage_policy_revision.py": "bd4532584a9fcc8f91ef2a70a95481e70c17a7713269da1957272cd90623704a",
+    "cipher_finance/doctype/cipher_retainage_policy_revision/cipher_retainage_policy_revision.json": "324a8f68b711e509e21848e6ca7fa531c798c271b0eb516eb732d524a605a610",
+    "cipher_finance/doctype/cipher_construction_contract/cipher_construction_contract.json": "429447389b058903540a6c954a05460d59bafebd235aeb99de74571cde9cec7c",
+    "cipher_finance/doctype/cipher_construction_contract/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/cipher_construction_contract/cipher_construction_contract.py": "4ad2b5643f08e5ff1338d86401df9a6354556c51db5185c44afa67a49eff3dac",
+    "cipher_finance/doctype/cipher_contract_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_finance/doctype/cipher_contract_revision/cipher_contract_revision.py": "2e1912f3f7834914e743f6854f1cc6861e60297534da4af0a4b0ce5e8a9ced30",
+    "cipher_finance/doctype/cipher_contract_revision/cipher_contract_revision.json": "3ab5e2fccd4e7ec7821fb4b02580a0c857001f84a1d3184b2481d75174cdb5f8",
+    "cipher_finance/doctype/cipher_sov_version/cipher_sov_version.json": "04b3c7c0deb95ddb7fe988560a630fea86293dc9f246e973135bbe16cfd25a55",
+    "cipher_finance/doctype/cipher_sov_version/cipher_sov_version.py": "7663d555808aad65eeb01f6de23e55093a7bbd47b2807fda064bb178c9b8a1a2",
+    "cipher_finance/doctype/cipher_sov_version/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "integrations/schemas/distribution-v1.schema.json": "e0c28e6b16f0162399d2ab172c4d208dbdc87ad7a5e3832beb181f2121106111",
+    "commercial/schemas/api-v1.schema.json": "789422807b503709968618e1675a1c404473c49187862e7e228093799ea67fa8",
+    "cipher_ricky/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_delegation/cipher_delegation.json": "d00805908bae03e5631f4dedb02f2782202ea0b48cb5131181f94dc09f232a14",
+    "cipher_ricky/doctype/cipher_delegation/cipher_delegation.py": "9a223e48cbfe91e1d5d27ee7a7b2434cb2c69d688b726e34a81240fb347b1277",
+    "cipher_ricky/doctype/cipher_delegation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.py": "c9dd4ee46f99c64d7711971147b6614afa25a7be8d6c8daea8bc244d1e8cc108",
+    "cipher_ricky/doctype/cipher_ricky_step/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_ricky_step/cipher_ricky_step.json": "a69e43eaf028c7ec289dcd22bda6aeeb88fb82c6840ab6b008c936b2d5868a5c",
+    "cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.json": "bd87240d027ecebb60ef66d8a72fa035fe6fc168ac551611725682863ccf9695",
+    "cipher_ricky/doctype/cipher_run_artifact/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_run_artifact/cipher_run_artifact.py": "290cc1dda72998225c98b2ecf879436c740a522affc2cddc438959110e54bf3b",
+    "cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.json": "2055c5cb25d9acc4866d433efd853b0d9c41fca71dd4536182c774394c8b166d",
+    "cipher_ricky/doctype/cipher_proposed_change/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_proposed_change/cipher_proposed_change.py": "efea2e590de2174f804b13f835691c756b6717575c45b2373a0f70e31f445c85",
+    "cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.py": "68a4e767023c3db8a9b0d396304e10c2d43819201fd8b1cb55d55f17a702c97d",
+    "cipher_ricky/doctype/cipher_ricky_run/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_ricky_run/cipher_ricky_run.json": "fedfbcfbb93b0b2a57c9bdcb72dcb9e33015cfd02ffb9f54050965ee4a971f62",
+    "cipher_ricky/doctype/cipher_tool_invocation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.py": "d0ddd36bbc563febb68f2f3e2720face1468fe0731fb2b2ac9e4c38663ff4186",
+    "cipher_ricky/doctype/cipher_tool_invocation/cipher_tool_invocation.json": "4c738be812198af17afc8e7cbfeec4dcd76c47bb0b6bdf837517f930a3e5a0dd",
+    "documents/schemas/company-api-v1.schema.json": "96dd9104833ff4b734a03fed59b47b0f602c262881b39c59029f72ad3b3c3068",
+    "takeoff/schemas/api-v1.schema.json": "a1a3dd44be6dde4ede9919d1a30c94c1956e20b717a82a1eab6d303c3ed7fa57",
+    "takeoff/schemas/api-company-v2.schema.json": "e514cbb6d54517be2874a3792b0642d20aeaf3ad163128095f54e806e29f035e",
+    "cipher_documents/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_documents/doctype/cipher_document_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_documents/doctype/cipher_document_revision/cipher_document_revision.json": "3efd3b5c76070fc0736ea4b92fcf30e7ed88111e6cc1f9504011e15face86751",
+    "cipher_documents/doctype/cipher_document_revision/cipher_document_revision.py": "4b44c975492f5e0d3b97ee6cf9059933a318aa33eee2652d44bc3157b685cb6a",
+    "cipher_documents/doctype/cipher_document/cipher_document.json": "53ea163f037da97c3de9462585095f7631086f2925066a4fb3b1c1e63d3f8fcb",
+    "cipher_documents/doctype/cipher_document/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_documents/doctype/cipher_document/cipher_document.py": "57a99a19504eb5187a767bf24bc44070073e507dc6f18fd69a853913b2b3d4fa",
+    "estimating/schemas/api-v1.schema.json": "5091284c869b34dd686460903d1c420d8e40c7fce79befd370e6f63cedd15a13",
+    "estimating/schemas/api-company-v2.schema.json": "458a246db2480b33db9ad21f58c2d6ea2eb44e5d6cab87f27f5347fd66c9933c",
+    "migrations/fixtures/canonical-masters-v1.json": "559dd8de01651929487543bb0dee07b10fa78e967557eee5195910cd6fae53ba",
+    "migrations/schemas/canonical-v1.schema.json": "03a6c857ee3c8189b16242ebd87746b2820a4e12b3a815bc4b4fea776e83c1f9",
+    "migrations/schemas/canonical-v2.schema.json": "226b85bc00b75ff134a972cd0952c7179e55362bee1153eefe24a0592a81916a",
+    "migrations/schemas/canonical-api-v1.schema.json": "bcec806f305e4d92cf868004ff37ef5941dbfe0d8e9e9e329ceddf8b34050293",
+    "construction_finance/schemas/api-v1.schema.json": "97fd74f072d49df1089f5301e62e4d83bc8c10ab26383f9ff89af86dd0f584b4",
+    "cipher_integrations/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_integrations/doctype/cipher_distribution_cancellation/cipher_distribution_cancellation.json": "aff3475a6f4b48b628b79e8fbbb76d6ed32c1623274f739f8b5897343522bc98",
+    "cipher_integrations/doctype/cipher_distribution_cancellation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_integrations/doctype/cipher_distribution_cancellation/cipher_distribution_cancellation.py": "a84c64e3bc65a9ccabbbc19f1e593f9aaae33ae2f22680426db38e8e968d1b0c",
+    "cipher_integrations/doctype/cipher_integration_operation/cipher_integration_operation.py": "c2f78c1d47bab8b0bbb30c36d374b2a70811f55018a91a5af4785c72b4151437",
+    "cipher_integrations/doctype/cipher_integration_operation/cipher_integration_operation.json": "ba02caa86fc9b786003fe725ec51e30ffddeef6616cdfad0d054bcef45752586",
+    "cipher_integrations/doctype/cipher_integration_operation/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_integrations/doctype/cipher_distribution_dispatch/cipher_distribution_dispatch.json": "4818eba9d03eab81b0c38c669269d9335ee8f069255cac1a87b5449b5b5e4149",
+    "cipher_integrations/doctype/cipher_distribution_dispatch/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_integrations/doctype/cipher_distribution_dispatch/cipher_distribution_dispatch.py": "f0be06c0b94aade3bcb09c4a80db0a28772f5c4c3e7ddace8b742aeae65079e6",
+    "cipher_integrations/doctype/cipher_distribution_instruction/cipher_distribution_instruction.json": "2397ee728692e7455e1d60562a0ffe4999cf1516a9ce071ef22aff3fc36900f7",
+    "cipher_integrations/doctype/cipher_distribution_instruction/cipher_distribution_instruction.py": "1040d3a054a726677e485d79a49b44edf480653a2c1e056a7e2dda84118ef3ed",
+    "cipher_integrations/doctype/cipher_distribution_instruction/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "cipher_integrations/doctype/cipher_delivery_attempt/cipher_delivery_attempt.py": "03e176ca8c8bdd45e4e4089a077e5da4725c345d4f5da07c00a88963b0650c64",
+    "cipher_integrations/doctype/cipher_delivery_attempt/cipher_delivery_attempt.json": "8a9212363f383c259830a0819ed88c167c52817bc778c728bf0305cece5db146",
+    "cipher_integrations/doctype/cipher_delivery_attempt/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "changed_sources": [],
+  "queries": [
+    {
+      "calls": 1891,
+      "seconds": 0.5944278960232623,
+      "max_seconds": 0.006256859996938147,
+      "locking": false,
+      "tables": [
+        "tabCipher Identity Binding",
+        "tabCipher Person",
+        "tabUser"
+      ]
+    },
+    {
+      "calls": 943,
+      "seconds": 0.5115392070147209,
+      "max_seconds": 0.0031825010082684457,
+      "locking": false,
+      "tables": [
+        "tabCipher Project Duty"
+      ]
+    },
+    {
+      "calls": 946,
+      "seconds": 0.4612481719086645,
+      "max_seconds": 0.004001092005637474,
+      "locking": false,
+      "tables": [
+        "tabCipher Project Duty"
+      ]
+    },
+    {
+      "calls": 944,
+      "seconds": 0.35887780389748514,
+      "max_seconds": 0.0050050740101141855,
+      "locking": false,
+      "tables": [
+        "tabCompany"
+      ]
+    },
+    {
+      "calls": 403,
+      "seconds": 0.12129877392726485,
+      "max_seconds": 0.002762977994279936,
+      "locking": false,
+      "tables": [
+        "tabCipher Document"
+      ]
+    },
+    {
+      "calls": 246,
+      "seconds": 0.07752144697587937,
+      "max_seconds": 0.003441178996581584,
+      "locking": false,
+      "tables": [
+        "tabCipher Document Revision"
+      ]
+    },
+    {
+      "calls": 270,
+      "seconds": 0.07376075893989764,
+      "max_seconds": 0.0017092950001824647,
+      "locking": false,
+      "tables": [
+        "tabCipher Pursuit"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.04653670905099716,
+      "max_seconds": 0.003761622996535152,
+      "locking": false,
+      "tables": [
+        "tabParty Account"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.04640551806369331,
+      "max_seconds": 0.0020942060073139146,
+      "locking": false,
+      "tables": [
+        "tabCustomer"
+      ]
+    },
+    {
+      "calls": 150,
+      "seconds": 0.045908226049505174,
+      "max_seconds": 0.003557647010893561,
+      "locking": false,
+      "tables": [
+        "tabCipher Document Revision"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.0448527069092961,
+      "max_seconds": 0.009311282992712222,
+      "locking": false,
+      "tables": [
+        "tabSupplier Number At Customer"
+      ]
+    },
+    {
+      "calls": 168,
+      "seconds": 0.0444896920962492,
+      "max_seconds": 0.0022239899990381673,
+      "locking": false,
+      "tables": [
+        "tabCompetitor Detail"
+      ]
+    },
+    {
+      "calls": 146,
+      "seconds": 0.04311549894919153,
+      "max_seconds": 0.0019624229898909107,
+      "locking": false,
+      "tables": [
+        "tabFile"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.040250115052913316,
+      "max_seconds": 0.002475647008395754,
+      "locking": false,
+      "tables": [
+        "tabOpportunity"
+      ]
+    },
+    {
+      "calls": 180,
+      "seconds": 0.03929896806948818,
+      "max_seconds": 0.0004956729972036555,
+      "locking": false,
+      "tables": [
+        "tabCipher Estimate"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.03809485708188731,
+      "max_seconds": 0.0006536180007969961,
+      "locking": false,
+      "tables": [
+        "tabCustomer Credit Limit"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.03554397699190304,
+      "max_seconds": 0.000501069996971637,
+      "locking": false,
+      "tables": [
+        "tabSales Team"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.033888886027853005,
+      "max_seconds": 0.00043436000123620033,
+      "locking": false,
+      "tables": [
+        "tabAllowed To Transact With"
+      ]
+    },
+    {
+      "calls": 140,
+      "seconds": 0.033523360994877294,
+      "max_seconds": 0.000509142002556473,
+      "locking": false,
+      "tables": [
+        "tabPortal User"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.03160677498090081,
+      "max_seconds": 0.0024587320076534525,
+      "locking": false,
+      "tables": [
+        "tabOpportunity Lost Reason Detail"
+      ]
+    },
+    {
+      "calls": 84,
+      "seconds": 0.03126201301347464,
+      "max_seconds": 0.0012035919935442507,
+      "locking": false,
+      "tables": [
+        "tabItem"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.031059811954037286,
+      "max_seconds": 0.001676119994954206,
+      "locking": false,
+      "tables": [
+        "tabOpportunity Item"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.029634464110131375,
+      "max_seconds": 0.0011246039939578623,
+      "locking": false,
+      "tables": [
+        "tabCRM Note"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.02957829798106104,
+      "max_seconds": 0.0008481010008836165,
+      "locking": false,
+      "tables": [
+        "tabCipher Document Revision"
+      ]
+    },
+    {
+      "calls": 112,
+      "seconds": 0.028800213913200423,
+      "max_seconds": 0.0007770730007905513,
+      "locking": false,
+      "tables": [
+        "tabCurrency"
+      ]
+    },
+    {
+      "calls": 84,
+      "seconds": 0.028607441956410185,
+      "max_seconds": 0.0008094420045381412,
+      "locking": false,
+      "tables": [
+        "tabItem Default"
+      ]
+    },
+    {
+      "calls": 84,
+      "seconds": 0.02826545390416868,
+      "max_seconds": 0.0021739560033893213,
+      "locking": false,
+      "tables": [
+        "tabUOM Conversion Detail"
+      ]
+    },
+    {
+      "calls": 56,
+      "seconds": 0.02444762794766575,
+      "max_seconds": 0.0019474269938655198,
+      "locking": false,
+      "tables": [
+        "tabQuotation Item"
+      ]
+    },
+    {
+      "calls": 56,
+      "seconds": 0.023588342912262306,
+      "max_seconds": 0.005059204995632172,
+      "locking": false,
+      "tables": [
+        "tabPayment Schedule"
+      ]
+    },
+    {
+      "calls": 84,
+      "seconds": 0.023372863041004166,
+      "max_seconds": 0.0016924639930948615,
+      "locking": false,
+      "tables": [
+        "tabItem Tax"
+      ]
+    }
+  ],
+  "query_total": 10000,
+  "query_seconds": 3.4285190185910324,
+  "subjects": {
+    "Cipher Document Revision": {
+      "calls": 1,
+      "seconds": 0.7030174179963069,
+      "max_seconds": 0.7030174179963069,
+      "visible": 1
+    },
+    "Cipher Proposal Revision": {
+      "calls": 1,
+      "seconds": 0.1610276870051166,
+      "max_seconds": 0.1610276870051166,
+      "visible": 1
+    },
+    "Cipher Distribution Cancellation": {
+      "calls": 1,
+      "seconds": 1.530568123998819,
+      "max_seconds": 1.530568123998819,
+      "visible": 1
+    },
+    "Cipher Approval Packet": {
+      "calls": 2,
+      "seconds": 1.5437122620060109,
+      "max_seconds": 1.5317018160130829,
+      "visible": 1
+    },
+    "Cipher Distribution Dispatch": {
+      "calls": 1,
+      "seconds": 1.3978382119967137,
+      "max_seconds": 1.3978382119967137,
+      "visible": 1
+    }
+  },
+  "profile": "         3853196 function calls (3735070 primitive calls) in 6.053 seconds\n\n   Ordered by: cumulative time\n   List reduced from 5484 to 45 due to restriction <45>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    6.056    6.056 company.py:10(history)\n        1    0.000    0.000    5.361    5.361 history_listing.py:14(list_visible)\n        6    0.000    0.000    5.361    0.894 history_listing.py:22(visible)\n 10008/39    0.033    0.000    5.353    0.137 mock.py:1171(__call__)\n 10008/39    0.011    0.000    5.351    0.137 mock.py:1179(_mock_call)\n 10008/39    0.031    0.000    5.351    0.137 mock.py:1234(_execute_mock_call)\n        6    0.000    0.000    5.336    0.889 <stdin>:43(timed_readable)\n        6    0.000    0.000    5.336    0.889 history_access.py:16(readable)\n   115/16    0.005    0.000    5.053    0.316 service.py:43(_read)\n        4    0.000    0.000    4.441    1.110 distribution.py:90(read)\n        4    0.000    0.000    4.427    1.107 distribution.py:77(authorize_instruction)\n        4    0.000    0.000    4.426    1.106 distribution.py:70(issue_source)\n        3    0.000    0.000    4.405    1.468 outputs.py:119(issue_source_reference)\n   147/42    0.001    0.000    4.209    0.100 service.py:95(_company_call)\n   147/42    0.000    0.000    4.209    0.100 service.py:23(_call)\n   301/91    0.004    0.000    4.094    0.045 core.py:82(_scope)\n   301/91    0.001    0.000    3.858    0.042 service.py:19(<lambda>)\n   301/91    0.001    0.000    3.857    0.042 provenance.py:86(authorize)\n       21    0.001    0.000    3.827    0.182 output_sources.py:43(authorize_binding)\n    10002    0.108    0.000    3.631    0.000 <stdin>:30(timed_sql)\n    10000    0.081    0.000    3.398    0.000 database.py:183(sql)\n       28    0.001    0.000    3.317    0.118 sources.py:37(verify)\n      944    0.010    0.000    3.226    0.003 context.py:178(require_company)\n        6    0.000    0.000    3.223    0.537 core.py:108(source_reference)\n       28    0.001    0.000    3.058    0.109 company_service.py:56(accepted_baseline_reference)\n       28    0.000    0.000    3.057    0.109 service.py:377(accepted_baseline_reference)\n   140/28    0.003    0.000    3.042    0.109 service.py:45(_scoped)\n     2634    0.006    0.000    2.993    0.001 __init__.py:221(wrapper)\n     2634    0.011    0.000    2.985    0.001 document.py:141(get_doc_str)\n    10000    0.007    0.000    2.949    0.000 database.py:371(execute_query)\n    10000    0.019    0.000    2.942    0.000 cursors.py:162(execute)\n    10000    0.024    0.000    2.784    0.000 cursors.py:325(_query)\n       28    0.000    0.000    2.597    0.093 governance.py:24(wrapped)\n       28    0.000    0.000    2.596    0.093 lockplan.py:342(wrapped)\n       28    0.001    0.000    2.595    0.093 governance.py:177(authorize_subject)\n       28    0.003    0.000    2.518    0.090 governance.py:114(_historical)\n    10000    0.014    0.000    2.382    0.000 connections.py:276(query)\n    10000    2.367    0.000    2.367    0.000 {function Connection.query at 0x7f63e3a36560}\n        3    0.000    0.000    2.250    0.750 outputs.py:27(read_output)\n3169/2636    0.015    0.000    2.128    0.001 document.py:207(__init__)\n     2636    0.031    0.000    2.115    0.001 document.py:253(load_from_db)\n        3    0.000    0.000    1.666    0.555 outputs.py:44(<lambda>)\n        3    0.000    0.000    1.566    0.522 service.py:150(company_source_reference)\n        3    0.000    0.000    1.557    0.519 service.py:155(<lambda>)\n        2    0.000    0.000    1.541    0.770 approvals.py:229(read_packet)\n\n\n",
+  "capture_metadata_correction": "The active guard was20seconds/10000SQL, as recorded in diagnostic_budget and observed query stop. Duplicate budget_seconds/max_queries metadata from an earlier harness revision is aligned here; raw capture remains /tmp/cipher-history-baseline-profile.json."
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "cipher.r19.native-successor-verification.v1",
+  "status": "passed",
+  "business_commands": 1,
+  "new_rows": {
+    "Cipher Takeoff Measurement": 1,
+    "Cipher Command Receipt": 1,
+    "Cipher History Event": 1
+  },
+  "inventory_entries": 78,
+  "existing_tables": 77,
+  "family_predecessor_revision_quantity_source_verified": true,
+  "exact_canonical_comparison_matches_actual_GET": true,
+  "original_measurement_and_R18_binding_preserved": true,
+  "original_estimate_revision_line_calculation_snapshot_preserved": true,
+  "all_other_business_source_config_indexes_closed_native_evidence_preserved": true,
+  "old_measurement_now_superseded_new_measurement_eligible": true,
+  "exact_request_result_receipt_history_hashes_verified": true,
+  "auth_geometry": {
+    "canonical_manual_geometry_recomputed": true,
+    "status": "passed",
+    "bounded_user_changes": 1,
+    "bounded_session_changes": 1,
+    "transport_ip_change_independently_hash_verified": true,
+    "observer_business_writes": 0
+  },
+  "new_measurement": "0daf4160-b144-4619-81e2-f011f6d95840",
+  "original_measurement": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+  "before_sha256": "78cd58d861333240f1b9fd00588a494241c42316086d20b842075719eee91dd4",
+  "after_sha256": "ef053ac60ca8cf39d1b667a2ea3cd71dbdc7e86fbc16883c60a4d670b3ce6641",
+  "browser_report_sha256": "282657172263127e3b5026e2a2e1b6f66e09a676b3cf06352da5de4320a850c5"
+}

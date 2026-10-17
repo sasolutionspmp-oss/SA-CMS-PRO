@@ -1,0 +1,24 @@
+{
+  "requests": {
+    "create_package": "EpCreatePackageRequest",
+    "revise_package": "EpRevisePackageRequest",
+    "create_basis": "EpCreateBasisRequest",
+    "create_calculation": "EpCreateCalculationRequest",
+    "create_deliverable": "EpCreateDeliverableRequest",
+    "get_record": "EpGetRecordRequest",
+    "list_records": "EpListRecordsRequest",
+    "list_people": "EpListPeopleRequest",
+    "list_units": "EpListUnitsRequest"
+  },
+  "responses": {
+    "create_package": "EpCreatePackageResponse",
+    "revise_package": "EpRevisePackageResponse",
+    "create_basis": "EpCreateBasisResponse",
+    "create_calculation": "EpCreateCalculationResponse",
+    "create_deliverable": "EpCreateDeliverableResponse",
+    "get_record": "EpGetResponse",
+    "list_records": "EpListResponse",
+    "list_people": "EpPeopleResponse",
+    "list_units": "EpUnitsResponse"
+  }
+}

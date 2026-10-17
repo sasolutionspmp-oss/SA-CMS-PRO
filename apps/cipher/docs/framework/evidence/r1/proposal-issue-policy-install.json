@@ -1,0 +1,31 @@
+{
+  "schema": "cipher.r1.proposal-issue-policy-install.v1",
+  "status": "passed",
+  "started_at": "2026-10-15T18:28:47.610509+00:00",
+  "duration_seconds": 2.039,
+  "exit_code": 0,
+  "site": "cipher.localhost",
+  "supported_entry": "cipher_aec.governance.approvals.install_policy",
+  "exact_policy": "CIPHER-PROPOSAL-ISSUE-POLICY-V1-COMPANY",
+  "policy_preexisted": false,
+  "prior_count": 6,
+  "after_count": 7,
+  "added_policies": [
+    "CIPHER-PROPOSAL-ISSUE-POLICY-V1-COMPANY"
+  ],
+  "changed_existing_policies": [],
+  "prior_row_sha256": {
+    "CIPHER-CALIBRATION-VERIFY-POLICY-V1": "9884fcdd57e930adac2f9ec5b8ef4c0473e68904d077f5f23c5d1630b9195d3a",
+    "CIPHER-CALIBRATION-VERIFY-POLICY-V1-COMPANY": "aeeb182a3c966fc4dc277e25be89cf41ca6297bd19b59f1fea9abddfb60d9ce1",
+    "CIPHER-CONTRACT-BASELINE-POLICY-V1": "a79f0362e05d4e4d66ff9a3913a324aaae7b1e2c7ea5c0d6cab77f51d87d335a",
+    "CIPHER-ESTIMATE-ACCEPT-POLICY-V1": "57be875e8fd61ff7a2e04c7896f791e7ef2da58e78c3c3ea52f958e102fb78b0",
+    "CIPHER-ESTIMATE-ACCEPT-POLICY-V1-COMPANY": "a2e19eac5ed7ec7a1a35efc94d00b8648f0df73d20cb6f41e17e0295f7196aa9",
+    "CIPHER-PROJECT-STATUS-POLICY-V1": "c219bc8ce83bc7eca3eee08764fac9c5cffc9d3a846930c84399f74aa0c035f0"
+  },
+  "source_sha256": {
+    "governance/approvals.py": "199d413bc1a0eb49be78d82a25da1c228afb1b7e7433d6dadc87b418714fcdd2",
+    "governance/domain_approvals.py": "cacf515588b31634f407a22c4bb126b35ff767d2b7f370ed35d4ab612abd95ca"
+  },
+  "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "qualification": "Supported exact enabled-policy setup for synthetic independent Issue grant/consume qualification. No schema migration, Issue effect or distribution/provider enabled by this operation."
+}

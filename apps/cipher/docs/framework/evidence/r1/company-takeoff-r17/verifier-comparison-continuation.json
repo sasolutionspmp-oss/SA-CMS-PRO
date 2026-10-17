@@ -1,0 +1,11 @@
+{
+  "schema": "cipher.r17.verifier-comparison-continuation.v1",
+  "original_status": "failed",
+  "original_helper_sha256": "fbb4bb94ee48c70578def41e26f92dd0fb2354bb809d1b742280d31f43c8274f",
+  "original_log_sha256": "b09b0634148691de4d83fec31394a9624a2c94026c86299266583703642f4e9b",
+  "reason": "Extra cross-epoch comparison included native observer started_at/completed_at markers. All native/business state, canonical extras, actual User columns and Sessions were exactly equal across the gap.",
+  "correction": "Exclude only the two observer-time markers from cross-epoch observer metadata comparison; retain exact native rows, all User columns, timezone, Sessions and canonical extras. Within-epoch supported auth validators remain required.",
+  "business_commands_repeated": 0,
+  "original_files_modified": false,
+  "continuation_helper_sha256": "60ca3d231ac9c28a930c629c5c7f06351aea8cc65ee4539d5e44bfed8892c18b"
+}

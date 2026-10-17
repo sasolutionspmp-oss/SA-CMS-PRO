@@ -1,0 +1,14 @@
+{
+  "schema": "cipher.r1.fin-recorder-freeze-delta.v1",
+  "status": "passed",
+  "failed_gate_report": "company-com02-fresh-validation-20261015T204745Z.json",
+  "source_files": 487,
+  "changed": [
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_acceptance.py"
+  ],
+  "added": [],
+  "removed": [],
+  "before_sha256": "1a430415da40df05f19a4ea5a39b311fc29aa22e1c8c918a474c3986249e6c18",
+  "after_sha256": "00434103c7deccff5352cbc79597a2d225ef4a171cc1e4c8ccf3d5aeeec53459",
+  "qualification": "Only the reviewed FIN acceptance recorder/assertion changed; all product/domain/runner/workflow source hashes equal the retained failed gate snapshot."
+}

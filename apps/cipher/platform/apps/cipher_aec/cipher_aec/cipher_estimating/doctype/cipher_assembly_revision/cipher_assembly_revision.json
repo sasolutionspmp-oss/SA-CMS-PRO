@@ -1,0 +1,121 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Assembly Revision",
+  "module": "Cipher Estimating",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "assembly_id",
+    "revision_number",
+    "predecessor",
+    "title",
+    "basis_uom"
+  ],
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope Type",
+      "options": "Project\nCompany",
+      "default": "Project",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "reqd": 1,
+      "search_index": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "reqd": 0,
+      "search_index": 1,
+      "options": "Project",
+      "mandatory_depends_on": "eval:doc.scope_type == 'Project'"
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author Person",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Record Digest",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Data Json",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "assembly_id",
+      "fieldtype": "Data",
+      "label": "Assembly Id",
+      "reqd": 1,
+      "search_index": 1
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "fieldtype": "Link",
+      "label": "Predecessor",
+      "reqd": 0,
+      "options": "Cipher Assembly Revision"
+    },
+    {
+      "fieldname": "title",
+      "fieldtype": "Data",
+      "label": "Title",
+      "reqd": 1
+    },
+    {
+      "fieldname": "basis_uom",
+      "fieldtype": "Link",
+      "label": "Basis Uom",
+      "reqd": 1,
+      "options": "UOM"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

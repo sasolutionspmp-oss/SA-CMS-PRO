@@ -1,0 +1,8 @@
+{
+  "upstream": "registry-1.docker.io/frappe/erpnext@sha256:772d0f84dd308632aa8cecd615564bd7597eb98e0a7d2208bd9aa04678ced1ee",
+  "method": "crane export canonical merged rootfs streamed to docker import preserving runtime config",
+  "image": "sha256:c72e96cac528f411b81a5462afd7d047d061240549057b008dec5965d7bf0cf5",
+  "image_tag": "cipher-erpnext:v16.51.0-flat",
+  "export_exit": 0,
+  "import_exit": 0
+}

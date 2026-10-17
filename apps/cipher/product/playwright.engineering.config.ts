@@ -1,0 +1,3 @@
+import base from './playwright.config';
+import { defineConfig } from '@playwright/test';
+export default defineConfig({ ...base, testMatch: /engineering(?:-validation)?\.spec\.ts/, workers: 1, outputDir: process.env.CIPHER_ENGINEERING_OUTPUT || 'test-results/engineering', reporter: process.env.CIPHER_ENGINEERING_REPORT ? [['list'], ['json', { outputFile: process.env.CIPHER_ENGINEERING_REPORT }]] : [['list']], use: { ...base.use, baseURL: process.env.CIPHER_ENGINEERING_PREVIEW || 'http://127.0.0.1:5230' }, webServer: process.env.CIPHER_ENGINEERING_PREVIEW ? undefined : { command: 'node node_modules/vite/bin/vite.js --host 127.0.0.1 --port 5230 --strictPort', url: 'http://127.0.0.1:5230', reuseExistingServer: true } });

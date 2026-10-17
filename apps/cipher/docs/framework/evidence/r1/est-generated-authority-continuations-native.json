@@ -1,0 +1,862 @@
+{
+  "artifact_sha256": {
+    "est-generated-original-receipt-prepared.private.json": "34879aed8f27332c1723b0c090c3f0fe33c1643c1b3c1c211e3382082e8829d5",
+    "est-generated-original-receipt-private-binding.log": "36c43cc23d425cc115485e91f9dcc0f86b6d416389e89d03d3962ad3b53673b2",
+    "est-generated-original-receipt.private.json": "b3471a605bde7ba1b5e6c4b5df780c5ff8312dbf535ebf3ad9f14c70e9785408",
+    "est-generated-unit-denial-continuation.log": "fdb112bb90810a701f93f8cd5f13d851baf6d5192ddfbd474b85dba779ca1877",
+    "est-generated-unit-denial-continuation.private.json": "fe58b2969ad81071ac41b98bf51e1810c7d77e5c232c479c38944942fc53f69d"
+  },
+  "captured_source_hashes": {
+    "commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commercial/_render_worker.py": "cccbb6b2a05a40a3f9f0ad6ab02361cebdf5689101777585ee29a6a05a2e33ca",
+    "commercial/api.py": "439f52f7444147fcba23463ec710dfd77d5204aadb7d2507ec18bf528d1dbbfb",
+    "commercial/contracts.py": "53d86f25ee41bc559c3eff495d49ffcd5b9925ee873708020cf79b7f8c0a15b6",
+    "commercial/governance.py": "73a408217be65da535242ac291b0f4d6b7d609e174899d253f65b9dd65c9900c",
+    "commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "commercial/install.py": "0108b07cf488fe93ad07968feecd2163d4c5c1fa272aeed8db37938482db4352",
+    "commercial/issue_records.py": "3917ddb82623711b176154f0a04de344200c94e57edcc7b282015ff311472689",
+    "commercial/native.py": "bfb9274fe3c71abd4635651fdde2fd90152a2111743a5ea8d9c5cb2ab8ed0ebc",
+    "commercial/output_sources.py": "41cc159447e6ee21b612841acb66a0c15ffc4d9ecc1971d6825ec75b41a1352d",
+    "commercial/outputs.py": "ba0af12b85623c1719f78eaadd9834d163749e01e906b1fd32ac6c827104e274",
+    "commercial/permissions.py": "378f1c113d7377e248dd82297dd14d20b0a65a80145dd45a29439480e02c92c9",
+    "commercial/records.py": "7b97b197bdca26d3661396636aab224ecafae46a2b0869bab96d7cff8329cf69",
+    "commercial/rendering.py": "df2b42dfa3807706a853099928872540f4adbbd35f4b8ce693df86eb94ebe0a9",
+    "commercial/service.py": "ad964e1a01aab744fbd7e529b74bd4e559c900cafeccf50439513bed3dc32997",
+    "commercial/sources.py": "686f2501eb4f97ffb24bb08d1787f58e3ce0d51fa561b12300e216f88b35a85d",
+    "documents/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "documents/api.py": "d77124230e715680d3c49d9a45aa5284edfc36f90b6046323437a3cd1cc28c42",
+    "documents/company_api.py": "1e204b4b0e3e77b4efb6bd7438ae99924a5f850309da3cace6fa82b574854ba0",
+    "documents/core.py": "8f139eadd79ca06ab1e4aac0df851a078b7e5e78700a03c72d41a87da4bbba90",
+    "documents/extraction.py": "65703b39b44c0e5701ff66c9b02ad2206ac442ace04f517eb84264884c252a96",
+    "documents/guards.py": "d2b6eaefaffa6927d7009f679dc7a64d8249ebebdeb4b85e3319de89599d5cd4",
+    "documents/install.py": "ad85377ea539a92acd30b1925885413081bd6fb3b4501ebb344a0da1d6fa1a33",
+    "documents/permissions.py": "14cf950ae8a6a96ef34a158e86689d36a6031b31d2d4ccb35cbfee1fb2b03677",
+    "documents/preparation.py": "04c0af4f525c56cf36dfd21208a4ea40cead1096fbabb3b5aa2b163017129fad",
+    "documents/provenance.py": "9b70da10a92075c101b9cd94e31ce03787398e3f2a9a49e8de66172820933436",
+    "documents/repository.py": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+    "documents/scope.py": "e09e6c78c57c47ce981451c0d7d4a4416d86fe251d22c4eae90451c8f23cdf54",
+    "documents/service.py": "ddbdfb133b32cbdba82e162416fd867f46bf37dfc36ee2bae278854a04502d57",
+    "documents/storage.py": "f9eb4c777b25c8c24c7a3bdd8a431546cb20ec566b3793feb05ac69e178116fb",
+    "estimating/__init__.py": "b5ed0650cce3c43b213febe2739df5f6516be6421c55f545bd4b6831744dec6a",
+    "estimating/api.py": "c0aeb7b00950a877bb33f272a829e51a9d47b605263f0f40dbb5568c5202633b",
+    "estimating/calculation.py": "91237c0fcb4d6c8ecaf3c5314dfeb195297bff8bbfa60c5a5c0f5dfb371447cc",
+    "estimating/company_api.py": "e3b5d1af47b5c6748d8a565674967e37f067dfbbcd7ed56179223df31c4b0781",
+    "estimating/company_service.py": "37fa4e96c3332265e71382f0dd8e7c97f92b6065a9a926f1eadc2bda8ebe3b25",
+    "estimating/contracts.py": "60c5fb57166497a7e9fa5bb595e296008031fecdeca5550f6ec9e9c1052426f8",
+    "estimating/governance.py": "afcf0f3dcf8d089e9cc2dfeb6c1b34ab96de51418abd3d79d46ca8eb69531c81",
+    "estimating/guards.py": "e6550c14586fca5d768ddd237bfbb907c3fb647e2b4837ef2cb8723a11e763a5",
+    "estimating/install.py": "71949d9b9e9a78757dce9299467bd520e5b9f1cc364c226a1751cd16f63f3119",
+    "estimating/lockplan.py": "a06181f4bcb017ce3255902d81617077e4fd48d0a79344d0d1bfe6b51e90d953",
+    "estimating/records.py": "2fed5b684304b7435b7df3ed93d9a0971c38ef5a61ed181f7d53a12fec8272b3",
+    "estimating/repository.py": "cffa6ed1ee40174ce868ea29738bb6bb212bb8d0bd096e8432a074f0eec0f0c3",
+    "estimating/scopes.py": "99ddce546fa903a2b68bbd3a498e076ab030ab14e1bd1da8e5941c49f7c65f21",
+    "estimating/service.py": "b902d41a90cc8028cac8598e05718426e9ddfcbbc49eff5224445de5f31f61d9",
+    "estimating/sources.py": "dda41e4397c37f60c5ad48b7609a8c50b591165c2068a1d151c1f67c5a37ae7b",
+    "estimating/units.py": "f1d487671a7d776976f47563fbc84693687ec991325c18250e4dd7685b0938db",
+    "governance/approvals.py": "d82630ecb91879887a30d42aa81124db58fdf2f113f3d74e1a21ed42c0d9b011",
+    "governance/commands.py": "294f0a04d7630e907a3596d36fd8ce4ae05349e5770043852ad9bb2a1612270d",
+    "governance/context.py": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b",
+    "governance/domain_approvals.py": "cc12503a2da5b955af73a72dea06d71ec68c5b63965ed23ce2af42c0fd218f0f",
+    "governance/history.py": "6b59d070e74cb17baca2a5be85bf7b53eee22f51f040b1b887dc9df8be9df283",
+    "takeoff/__init__.py": "89cae1552e89399c07d87c9e06448789225561c162958f7d273990ccda4f6b31",
+    "takeoff/api.py": "1f8a2c940d4b757e790cc621ac7bf7a103b044474424f17079f4fd27314fa569",
+    "takeoff/company_api.py": "35dd961619d2d95592b8215732ac80368ef31db920b54c192db53ea4930b8b37",
+    "takeoff/company_service.py": "e99561d056b1c8d572fc6ab9086c1b83edaf268beb4deec40194ff1f3876817d",
+    "takeoff/geometry.py": "4eb1ff61205142a10b35701211402ded1b5976066133640012ce4c03dce1212e",
+    "takeoff/governance.py": "d6e29f490b9add41b7643e073f6b4d35fef546b5eb47f35e106b61c0a07815f9",
+    "takeoff/install.py": "1ddf1599fff7407901727b1b2cf031e668c83c14f4f103d32ad1c9bef58bed85",
+    "takeoff/pdf.py": "4db4ef7e87c3a0ba744c9cb5086e2ed0f3c8feddf818f034ffb751c31224c063",
+    "takeoff/records.py": "2b6e281d317d8bc91ac61602e17200b9ec0d2619d149bd52d8602a65b5f0e8b1",
+    "takeoff/repository.py": "ae65006e37ce29ec91d1d3f0e214744b1b37756472de285d1835346c3ae48cf1",
+    "takeoff/service.py": "f67431a27fbdb080f810a5dc52e369cd172afa061bdf64e213ea164914c235a8",
+    "tests/test_estimating_generated_acceptance.py": "bc8518b487a59037ad256874206b0ec7835dad9fd421a424183a71fc77553e75"
+  },
+  "external_provider_qualified": false,
+  "generated_public_gate_enabled": false,
+  "independent_new_connection_restoration": {
+    "company_c_author_commercial_read": true,
+    "no_mutations_in_readbacks": true,
+    "reviewer_outer_area_read": true,
+    "reviewer_producer_only_count_read": true,
+    "reviewer_uom_user_permission_rows": 0
+  },
+  "live_model_qualified": false,
+  "original_receipt_after_later_private_binding": {
+    "calls": [
+      {
+        "method": "cipher_aec.estimating.company_api.create_rate",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.create_estimate",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.takeoff.company_api.bind_line",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.takeoff.company_api.bind_line",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.read_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company.operation",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company.operation",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "error_code": "capability_denied",
+        "method": "cipher_aec.takeoff.company_api.get_record",
+        "role": "author",
+        "status": "denied"
+      },
+      {
+        "error_code": "capability_denied",
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "denied"
+      },
+      {
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      }
+    ],
+    "command_timings": [
+      {
+        "actual_artifact_disk_reads": 2,
+        "elapsed_seconds": 0.477408,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.estimating.company_api.create_rate",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 158,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 2
+      },
+      {
+        "actual_artifact_disk_reads": 0,
+        "elapsed_seconds": 0.02705,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.estimating.company_api.create_estimate",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 61,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 0
+      },
+      {
+        "actual_artifact_disk_reads": 2,
+        "elapsed_seconds": 0.09654,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 239,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 2
+      },
+      {
+        "actual_artifact_disk_reads": 11,
+        "elapsed_seconds": 0.21032,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 5,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 749,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 11
+      },
+      {
+        "actual_artifact_disk_reads": 12,
+        "elapsed_seconds": 0.202622,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "source_generation_stable": true,
+        "sql_calls": 802,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 12
+      },
+      {
+        "actual_artifact_disk_reads": 21,
+        "elapsed_seconds": 0.353911,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 5,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 1358,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 21
+      },
+      {
+        "actual_artifact_disk_reads": 28,
+        "elapsed_seconds": 1.294888,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 23,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.takeoff.company_api.bind_line",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 4061,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 28
+      },
+      {
+        "actual_artifact_disk_reads": 2,
+        "elapsed_seconds": 0.068188,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 206,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 2
+      },
+      {
+        "actual_artifact_disk_reads": 28,
+        "elapsed_seconds": 1.113418,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 23,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.takeoff.company_api.bind_line",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 4013,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 28
+      },
+      {
+        "actual_artifact_disk_reads": 58,
+        "elapsed_seconds": 2.750269,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 8,
+            "producer_authorized": 3,
+            "producer_hits": 79,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 8225,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 58
+      },
+      {
+        "actual_artifact_disk_reads": 72,
+        "elapsed_seconds": 2.934182,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 7,
+            "producer_authorized": 3,
+            "producer_hits": 111,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "source_generation_stable": true,
+        "sql_calls": 10056,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 72
+      },
+      {
+        "actual_artifact_disk_reads": 717,
+        "elapsed_seconds": 10.193303,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 31000,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 717
+      },
+      {
+        "actual_artifact_disk_reads": 4,
+        "elapsed_seconds": 0.053656,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 149,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 4
+      },
+      {
+        "actual_artifact_disk_reads": 3,
+        "elapsed_seconds": 0.04197,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.api.company_approvals.read_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 127,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 3
+      },
+      {
+        "actual_artifact_disk_reads": 3,
+        "elapsed_seconds": 0.091714,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 231,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 3
+      },
+      {
+        "actual_artifact_disk_reads": 3,
+        "elapsed_seconds": 0.089991,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 215,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 3
+      },
+      {
+        "actual_artifact_disk_reads": 3,
+        "elapsed_seconds": 0.078365,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company.operation",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 211,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 3
+      },
+      {
+        "actual_artifact_disk_reads": 3,
+        "elapsed_seconds": 0.069332,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 1,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company.operation",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 197,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 3
+      },
+      {
+        "actual_artifact_disk_reads": 0,
+        "elapsed_seconds": 0.009378,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.takeoff.company_api.get_record",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 26,
+        "status": "denied:capability_denied",
+        "successful_exact_byte_integrity_checks": 0
+      },
+      {
+        "actual_artifact_disk_reads": 0,
+        "elapsed_seconds": 0.027389,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 0,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 83,
+        "status": "denied:capability_denied",
+        "successful_exact_byte_integrity_checks": 0
+      },
+      {
+        "actual_artifact_disk_reads": 45,
+        "elapsed_seconds": 1.128102,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 3569,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 45
+      },
+      {
+        "actual_artifact_disk_reads": 717,
+        "elapsed_seconds": 9.541965,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.api.company.history",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 31000,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 717
+      },
+      {
+        "actual_artifact_disk_reads": 132,
+        "elapsed_seconds": 5.526794,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 11,
+            "producer_authorized": 6,
+            "producer_hits": 200,
+            "producer_misses": 6
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 17987,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 132
+      },
+      {
+        "actual_artifact_disk_reads": 32,
+        "elapsed_seconds": 1.146725,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 35,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 4357,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 32
+      }
+    ],
+    "company_duty_restored": true,
+    "equivalent_exact_quantity_text_200_vs_200_000000_native_binding_passed": true,
+    "history_counts": [
+      96,
+      20,
+      96
+    ],
+    "history_observations": [
+      {
+        "phase": "before-authority-outage",
+        "status": "returned",
+        "total": 96
+      },
+      {
+        "phase": "during-authority-outage",
+        "status": "returned",
+        "total": 20
+      },
+      {
+        "phase": "after-authority-restoration",
+        "status": "returned",
+        "total": 96
+      }
+    ],
+    "history_privacy_qualified": true,
+    "later_generated_measurement_denied": true,
+    "new_effect_denied_before_acceptance": true,
+    "old_estimate_snapshot_and_manifest_not_rewritten": true,
+    "one_effect_then_same_uuid_receipt_replay": true,
+    "original_packet_and_baseline_and_four_receipt_reads_remained_available": true,
+    "same_persisted_execute_uuid_after_authority_restoration": "1f0423cd-e02c-45ea-a8de-594b68a52093"
+  },
+  "performance_assessment": {
+    "assessment": "The representative original baseline read is below2seconds. Fresh consume9.949seconds and full exact history collection remain above framework starting targets; no p95/capacity qualification or generated public admission is claimed.",
+    "fixed_instrumentation_safety_caps": {
+      "seconds": 30,
+      "sql_calls": 50000
+    },
+    "framework_starting_command_ack_target_seconds_less_than": 3,
+    "framework_starting_p95_read_target_seconds_less_than": 2
+  },
+  "producer_only_native_uom": {
+    "calls": [
+      {
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "reviewer",
+        "status": "denied"
+      },
+      {
+        "error_code": "not_found",
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "status": "denied"
+      },
+      {
+        "error_code": "reviewer_authority_revoked",
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "denied"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "status": "passed"
+      }
+    ],
+    "command_timings": [
+      {
+        "actual_artifact_disk_reads": 50,
+        "elapsed_seconds": 0.862399,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 2522,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 50
+      },
+      {
+        "actual_artifact_disk_reads": 0,
+        "elapsed_seconds": 0.081216,
+        "logical_operation_counters": [],
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "reviewer",
+        "source_generation_stable": true,
+        "sql_calls": 218,
+        "status": "denied:not_found",
+        "successful_exact_byte_integrity_checks": 0
+      },
+      {
+        "actual_artifact_disk_reads": 0,
+        "elapsed_seconds": 0.149369,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 0,
+            "producer_authorized": 0,
+            "producer_hits": 0,
+            "producer_misses": 0
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "source_generation_stable": true,
+        "sql_calls": 444,
+        "status": "denied:not_found",
+        "successful_exact_byte_integrity_checks": 0
+      },
+      {
+        "actual_artifact_disk_reads": 72,
+        "elapsed_seconds": 3.021891,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 5,
+            "producer_authorized": 3,
+            "producer_hits": 113,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 11112,
+        "status": "denied:reviewer_authority_revoked",
+        "successful_exact_byte_integrity_checks": 72
+      },
+      {
+        "actual_artifact_disk_reads": 230,
+        "elapsed_seconds": 9.949373,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 11,
+            "producer_authorized": 6,
+            "producer_hits": 396,
+            "producer_misses": 6
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 34211,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 230
+      },
+      {
+        "actual_artifact_disk_reads": 46,
+        "elapsed_seconds": 1.775999,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 63,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "source_generation_stable": true,
+        "sql_calls": 6714,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 46
+      },
+      {
+        "actual_artifact_disk_reads": 46,
+        "elapsed_seconds": 1.706919,
+        "logical_operation_counters": [
+          {
+            "prelocked_scopes": 4,
+            "producer_authorized": 3,
+            "producer_hits": 63,
+            "producer_misses": 3
+          }
+        ],
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "source_generation_stable": true,
+        "sql_calls": 6705,
+        "status": "returned",
+        "successful_exact_byte_integrity_checks": 46
+      }
+    ],
+    "fresh_consume": {
+      "actual_artifact_disk_reads": 230,
+      "elapsed_seconds": 9.949373,
+      "logical_operation_counters": [
+        {
+          "prelocked_scopes": 11,
+          "producer_authorized": 6,
+          "producer_hits": 396,
+          "producer_misses": 6
+        }
+      ],
+      "method": "cipher_aec.api.company_approvals.execute_packet",
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 34211,
+      "status": "returned",
+      "successful_exact_byte_integrity_checks": 230
+    },
+    "native_isolation": {
+      "company_a_state_changed": false,
+      "producer_only_count_unit_read": false,
+      "restricted": true,
+      "reviewer_outer_area_unit_read_retained": true,
+      "shared_roles_and_masters_changed": false
+    },
+    "new_read_graph_and_completed_command_memo_do_not_survive_native_revocation": true,
+    "one_acceptance_one_consumption_then_exact_receipt_replay": true,
+    "original_grant_and_review_receipts_reused": true,
+    "pending_consume_refused_for_reviewer_native_rights": true,
+    "positive_original_baseline_read": {
+      "actual_artifact_disk_reads": 50,
+      "elapsed_seconds": 0.862399,
+      "logical_operation_counters": [],
+      "method": "cipher_aec.estimating.company_api.get_record",
+      "role": "author",
+      "source_generation_stable": true,
+      "sql_calls": 2522,
+      "status": "returned",
+      "successful_exact_byte_integrity_checks": 50
+    },
+    "restoration": {
+      "company_a_state_changed": false,
+      "producer_only_count_unit_read": true,
+      "restricted": false,
+      "reviewer_outer_area_unit_read_retained": true,
+      "shared_roles_and_masters_changed": false
+    },
+    "same_persisted_execute_uuid_after_restoration": "b161e328-1d88-43f3-90c3-190a8378057a"
+  },
+  "qualification": "Actual Frappe/ERPNext/MariaDB persisted sources and canonical independent people with explicit synthetic Session fixtures; not cookie/CSRF HTTP or workload/p95 performance qualification.",
+  "schema": "cipher.est.generated.authority-continuations.evidence.v1",
+  "schema_validation": {
+    "actual_baselines_checked": 2,
+    "definition": "CompanyEstAcceptanceRecord",
+    "status": "passed",
+    "validator": "jsonschema.Draft202012Validator"
+  },
+  "source_hashes_unchanged_across_both_procedures": true,
+  "status": "functional-authority-and-replay-passed-performance-open",
+  "structural_fixture_tests": {
+    "file": "tests/test_takeoff_bundle.py",
+    "qualification": "Fixture-only one-builder traversal, fresh second builder, manual labeling, stale/source/native/verification/quantity denials, Project+Company master order and unchanged binding DTO.",
+    "runtime_passed": 6,
+    "sha256": "c90ed8ebf449ab6eaa275a66e330d72e0ffc406b81471a64c65f62d041e29a9c"
+  }
+}

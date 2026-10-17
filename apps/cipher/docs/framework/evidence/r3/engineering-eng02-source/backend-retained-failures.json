@@ -1,0 +1,32 @@
+{
+  "03-host-initial.log": {
+    "classification": "retained primary implementation/fixture or compatibility-normalization attempt",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/03-host-initial.log",
+    "sha256": "1030e4e34e76313b89d025b6d23d37b4399b0a2d275f1cd5ce18b95a35841f27"
+  },
+  "04-revocation-isolated.log": {
+    "classification": "retained primary implementation/fixture or compatibility-normalization attempt",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/04-revocation-isolated.log",
+    "sha256": "ca4a23aaa3be2a6591689511653e513db566a1b3c6060ecab09c9aba88a45580"
+  },
+  "07-check-lineage-failing-first.log": {
+    "classification": "failing-first regression",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/07-check-lineage-failing-first.log",
+    "sha256": "33cc7c8a213e4c4eee673431ae8649a718172005c5e63a0c41c90fed4f6753b7"
+  },
+  "08-affected-initial.log": {
+    "classification": "retained primary implementation/fixture or compatibility-normalization attempt",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/08-affected-initial.log",
+    "sha256": "f07e6616223887ce440612c7cc7a242efb43d7d016cdb7321524b51b49b9a3e0"
+  },
+  "09-compat-normalized.log": {
+    "classification": "retained primary implementation/fixture or compatibility-normalization attempt",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/09-compat-normalized.log",
+    "sha256": "34d9a3a43dc6fd8458354f6a48e2e2ea0050dee29f9ae2f6ec3957bf3bbbb432"
+  },
+  "19-blank-check-failing-first.log": {
+    "classification": "failing-first regression",
+    "path": "/dev/shm/cipher-engineering-eng02/logs/19-blank-check-failing-first.log",
+    "sha256": "9e3b5f6ee506877ea40c41bfa2c3e2d47927f3b7f65d9e7ca1e3eeb7dab541b0"
+  }
+}

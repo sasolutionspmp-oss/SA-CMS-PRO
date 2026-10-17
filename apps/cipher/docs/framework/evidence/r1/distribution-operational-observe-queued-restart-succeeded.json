@@ -1,0 +1,46 @@
+{
+  "label": "observe-queued-restart-succeeded",
+  "script": "distribution-observe.py",
+  "helper_sha256": "f6fc92a6fc39fd870d7f1f37901ca82d87f743e57b6eb667853202491c044677",
+  "arguments": [
+    "--context",
+    "/tmp/cipher-r0-runtime/distribution-queued-restart-stage/distribution-http-context.json",
+    "--mode",
+    "succeeded",
+    "--output",
+    "/tmp/cipher-r0-runtime/distribution-queued-restart-succeeded.json"
+  ],
+  "started_at": "2026-10-15T20:07:17.007972+00:00",
+  "state": "completed",
+  "completed_at": "2026-10-15T20:07:21.825926+00:00",
+  "result": {
+    "schema": "cipher.r1.distribution-queue-observation.v1",
+    "status": "passed",
+    "mode": "succeeded",
+    "observed_at": "2026-10-15T20:07:21.454526+00:00",
+    "operation_id": "u1tg6if7ie",
+    "dispatch_id": "a5c49eb9-46d9-417e-a616-3f0e36762769",
+    "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+    "canonical_state": "Succeeded",
+    "worker_attempt_count": 1,
+    "fencing_token": 1,
+    "rq_job_id": "cipher.localhost||cipher-outbox-u1tg6if7ie",
+    "rq_state": "finished",
+    "rq_queue": "home-frappe-frappe-bench:cipher_distribution",
+    "queue_contains_job": false,
+    "sink_receipt_count": 1,
+    "original_healthy_common_redis_used": true,
+    "manual_deliver_or_publish_invoked": false,
+    "live_external_provider_qualified": false,
+    "acknowledgment": {
+      "mode": "fixture",
+      "logical_key": "5ee8d76e512808aa9b32fbaac8ff4582013b3e790afc6d464efeeab1ec3c5d61",
+      "payload_hash": "f6b914ab6252fb459f437f83a58e1c570c36b2766dd1199184a1990e350fccfd",
+      "attachment_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a",
+      "byte_length": 12624,
+      "acknowledgment_id": "9bf84c43-12e1-401e-a894-c9e462cde04b",
+      "accepted_at": "2026-10-15T20:07:21.338193+00:00"
+    },
+    "source_pdf_sha256": "c7ad45526c24c9e863128205f10699b55cfc0e6457d3027f299bd54bfa944a3a"
+  }
+}

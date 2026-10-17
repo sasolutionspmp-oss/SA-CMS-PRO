@@ -1,0 +1,356 @@
+{
+  "qualification": "Actual isolated UI phase passed; only the explicit phase and observed original context are qualified.",
+  "phase": "plan",
+  "widths": [
+    1440,
+    900,
+    390
+  ],
+  "mutations": [
+    {
+      "step": "one-explicit-award-plan-successor",
+      "path": "/api/method/cipher_aec.awards.api.plan_handoff",
+      "operation_id": "68846f9e-d7f9-40d8-92fc-d13cc3938bb1",
+      "payload_sha256": "03fb285dd7cff5d4a111c6ed4c9d19f9ab61a7bf24d698a57070278143c197b3",
+      "response_sha256": "a98240b3cd72809096cb6fd653e3a8561179220900442ec42dbaca827da117ea"
+    }
+  ],
+  "page_errors": [],
+  "console_errors": [],
+  "unexpected_http": [],
+  "expected_initial_401": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "source_reads": [
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.awards.api.source_preview",
+    "/api/method/cipher_aec.awards.api.delegation_policy",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.documents.company_api.download_revision",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.api.masters.parties",
+    "/api/method/cipher_aec.api.masters.price_lists",
+    "/api/method/cipher_aec.api.masters.award_items",
+    "/api/method/cipher_aec.awards.api.team_choices",
+    "/api/method/cipher_aec.documents.company_api.list_documents",
+    "/api/method/cipher_aec.awards.api.approval_subject",
+    "/api/method/cipher_aec.awards.api.preview_plan",
+    "/api/method/cipher_aec.awards.api.approval_subject",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.api.v1.session",
+    "/api/method/cipher_aec.awards.api.source_preview",
+    "/api/method/cipher_aec.awards.api.delegation_policy",
+    "/api/method/cipher_aec.awards.api.get_handoff",
+    "/api/method/cipher_aec.awards.api.get_plan",
+    "/api/method/cipher_aec.api.masters.parties",
+    "/api/method/cipher_aec.api.masters.price_lists",
+    "/api/method/cipher_aec.api.masters.award_items",
+    "/api/method/cipher_aec.awards.api.team_choices",
+    "/api/method/cipher_aec.documents.company_api.list_documents",
+    "/api/method/cipher_aec.awards.api.approval_subject",
+    "/api/method/cipher_aec.documents.company_api.download_revision"
+  ],
+  "served_assets": [
+    {
+      "path": "/assets/index-QNbHAC_C.js",
+      "sha256": "d080c7c83864602e9e1fbffab5dea579c6be7a924fb4da7a635d72652f0313b0"
+    },
+    {
+      "path": "/assets/ResponsivePopover-BVnwonhY.js",
+      "sha256": "f7d1924aad1d589490173de1df51fb42e7137d1c0b9e7daffb71cbd0f4517121"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-0lEzI6Zz.js",
+      "sha256": "c216ff10a8f403e401a950eb07cdcc722e541429fc9c382f3fd5c0098a76a9d1"
+    },
+    {
+      "path": "/assets/components-XIOErgwN.js",
+      "sha256": "46097830b33280b7290d07bdb2e4b37edab0d5271a6d6b70658c5b6f0d56c7a1"
+    },
+    {
+      "path": "/assets/CheckBox-BHL6SDmT.js",
+      "sha256": "03c553f234301443d5ae98b7f0bf2a500b7ff43ceb3a18332978ec251f145271"
+    },
+    {
+      "path": "/assets/Input-k1UkyJZe.js",
+      "sha256": "17f982ded9890b91a2f29651d735b6a2f85ca253e3feae495a894d3737c2d537"
+    },
+    {
+      "path": "/assets/Input-upL_Z3R6.js",
+      "sha256": "268f7c53e4014795c3a26766fbb1070391553c6399d48a2d94bfc7b74fb15860"
+    },
+    {
+      "path": "/assets/useMutation-_Fgj-XMl.js",
+      "sha256": "5218e8e9477336efe7d832fc59a5a555c5b6f21a1be12db877d7f9e1a6972dc8"
+    },
+    {
+      "path": "/assets/Text-BnIKGMtC.js",
+      "sha256": "8465928c09de7f12fffe8a27dfbb20bddaaeccffb4602808309165da29bc849a"
+    },
+    {
+      "path": "/assets/ToolbarSpacer-BgZZNVXw.js",
+      "sha256": "a1a9d16db049b35fb67cbb66ddf562dfdc8347d0a4ee9f7d14ccbd6f897527b5"
+    },
+    {
+      "path": "/assets/Link-iBEFqMvR.js",
+      "sha256": "5976f766dd038bf0ae467ebcb0688ef06a50672310143b223d4d1e7932f69159"
+    },
+    {
+      "path": "/assets/Link-CuxjuDJ_.js",
+      "sha256": "39f626438462d7afd10b1ee2dd33c245dabfef7df5183977d5fe342ec230c632"
+    },
+    {
+      "path": "/assets/Approvals-B3St2cBx.js",
+      "sha256": "9204e81f070e9f017de2ee83da23a0f193c1fe93a51f51f40e62c7d8c3184343"
+    },
+    {
+      "path": "/assets/estimating-CsTGW64y.js",
+      "sha256": "29aff13398dde4599ea0ff3f60f143ba6a5aa2a3b377f6f04bf3264b2d398ae7"
+    },
+    {
+      "path": "/assets/index-DPYr16Sp.css",
+      "sha256": "152b36ef5c5390e13de9e003568942bb20ab6771c7ed63e4dc7f2ec607703aa6"
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/Commercial-DWbQxS4A.js",
+      "sha256": "db6404e07e887691cc219425e50f63f83dafec3519d597bb781faa8d663a5d99"
+    },
+    {
+      "path": "/assets/CompanyApprovals-D4dAxRlr.js",
+      "sha256": "d49a6279932531cb64a5a15ac20599136db3f7f5206c856c29c33a11affc55fe"
+    },
+    {
+      "path": "/assets/award-draft-BIkr6qzb.js",
+      "sha256": "c7efb4f53c70dfede584381a7bc05d7005da770e2716d764890a24e36daedf91"
+    },
+    {
+      "path": "/assets/NativeChoice-jo06P7Np.js",
+      "sha256": "7735ad71d73ad6343065a472be23c8b8ececfc7b363de56f5bd29d7f8e80bb07"
+    },
+    {
+      "path": "/assets/company-estimating-DvJ86iJ5.js",
+      "sha256": "60d78c1934ef7de173fa59cd79c3184d35cdb1e310582e1610930359b752b9e9"
+    },
+    {
+      "path": "/assets/project-controls-vCw9fJ3-.js",
+      "sha256": "1cd98f2c2505e4c730ae628f80af27129f67d3388035719e5bb4c97c6b5c25d6"
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    },
+    {
+      "path": "/assets/72-Black-D-MfWIU0.woff2",
+      "sha256": "672f44858cd60f55855738fb828bbcc48ddb8714f581e9763dfaa67d4e696edc"
+    },
+    {
+      "path": "/assets/PdfDrawing-B7puaZ2R.js",
+      "sha256": "0abd489bdba7dd2a35b74e2bbc7ef0e3ed5103139cc83ddb992ee3c49b332051"
+    },
+    {
+      "path": "/assets/pdf.worker.min-CjEcRF4W.mjs",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-B9BaCY7U.js",
+      "sha256": "0575e38508668380165b6b577ce45e328e8b4c6fdd20a0676ea9814540633fcb"
+    }
+  ],
+  "keyboard_checks": [
+    {
+      "scope": "saved-plan-original-pdf",
+      "width": 1440,
+      "passed": true
+    },
+    {
+      "scope": "saved-plan-original-pdf",
+      "width": 900,
+      "passed": true
+    },
+    {
+      "scope": "saved-plan-original-pdf",
+      "width": 390,
+      "passed": true
+    }
+  ],
+  "root_released_backend_epoch": {
+    "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+    "manifest_sha256": "72d0af5de7ad755874c571b4e696211d5ea621b43539ef5e9b9b6e850203fe9c"
+  },
+  "cost_records": [],
+  "original_handoff_version": "26b6d206130cdc61086b65fc7b4e0655afa006ed2bdd0d34d9a7ba743d66d4a5",
+  "original_pdf": {
+    "revision_id": "REV-adfbcdaea2ee45909ca5733859735d74",
+    "sha256": "c743b1ae4fbe816e8114c48d48e5e7c24c44017d57741a36652a71b9826ccd5b",
+    "byte_length": 11751
+  },
+  "source": {
+    "company": "Company chain A c3c3b742a8fd",
+    "issue_id": "cf06ec74-c30f-41c1-9d2c-1369f52da459",
+    "handoff_id": "1618245b-7d6c-47f2-a494-f0c2ece71fae",
+    "plan_id": "19db2303-dd07-4a62-9437-52a73f862370",
+    "plan_digest": "75b1be2bc699006de77175c84312b8491e11b0b9439ed1c8473a5cae323f4f04"
+  },
+  "final_plan": {
+    "id": "133515f3-b9ea-40a8-a1a1-f0f6733d98df",
+    "version": "0c82d72cdb2e42cfc91429eeef992c849870a6ff2d5161b052d7521f066c5367",
+    "predecessor": "19db2303-dd07-4a62-9437-52a73f862370"
+  },
+  "ui_epoch": {
+    "variant": "prj02-cost-presentation-v2",
+    "marker_sha256": "b8019d4d6fc6f0c6e3810cf1d9a3e10029a8126ecba9e601c30e83d10623ae87",
+    "source_inventory_sha256": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8",
+    "build_inventory_sha256": "4650804545336d450aeb36c30d0e0c1f7820ab62fdb2fc36a9b37593565ee71a"
+  },
+  "source_hashes": {
+    ".gitignore": "fd5d22351821a6ba74062b02f35775259449757c7c0cad0ceffefed5a673bda7",
+    "README.md": "682e6ca5c68980eef12af645b2b719f8c43bab4e9c2e6ed7252fb85991c5be68",
+    "index.html": "4c728041bcc9a7acc9704d9d2eb00d8960e25d93f52d4f9581c44e16487e2952",
+    "package-lock.json": "23b2155625f221b195f880f7e450c1e1f9260c62d79b2c6cc66066f3e48baf6c",
+    "package.json": "ea5594c2d8f598a31f348090a5753bb2573699cadb3ba983cd82f84bda8f4dcd",
+    "playwright.config.ts": "431c0bd62923f7381790f3395a4af0ae718047a598d07c922a6bd3497f3ab93b",
+    "scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "scripts/connected-com02-execute.mjs": "f40be9cb31bafa337182427f5e9fc897c684390005369831fe3be13533797d7e",
+    "scripts/connected-com02.mjs": "0b0ae7fe82898acd8ffda559a4328eca9c7d24f71d8f09ad1e4f039f494a6e83",
+    "scripts/connected-company.mjs": "676577597644bd7bfdc63cecbfeb1fcd10c7a33308d1ac92087d34753d84df06",
+    "scripts/connected-distribution.mjs": "a41d46aedd0e210dc3f17255edb5d24da4a980ff9ad016a7dc7ef2c6486136d8",
+    "scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "scripts/connected-inbox-readonly.mjs": "3ccaded415a90e8200f2b6f6cff3cb9c4d8b2a9818a0a6ca962c987ca46bf077",
+    "scripts/connected-polish-readonly.mjs": "cfdc892b890e1cf98aea16539976cfdcdee36ad2018615c8ca10c6b8cedc3d60",
+    "scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "scripts/connected-takeoff.mjs": "45bee60823ea90c81aeec4fb954e9c27fd671834b5c822e89a28c6d4ce3cb8a5",
+    "scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "scripts/generate-api.mjs": "0d4ffa76ef020da6c95f4fdeb7603447aeba3e031523be461c1b570597d9d7c2",
+    "src/App.tsx": "29def63fae1fd3226f99b5ef216972c692e5c7ec21276bdf1dd965826a57f890",
+    "src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "src/AwardApprovalReview.tsx": "2a1c16517c4552b73704f5e1c8785123e4bad8ff26309bb2de56922363b55647",
+    "src/AwardCompletion.tsx": "88aa6d3e46d34b520444190164ca7d0bd994669940f39738dce3eb24a7d678be",
+    "src/AwardControls.tsx": "12f3a31803a6e481534b8d72a213b961f4ab4b755f323e57f433fed4ff7f3cb7",
+    "src/AwardEditor.tsx": "5b724580376145dd10983894273c476b3e26816ecab149067bd44492b2a3a106",
+    "src/AwardIssuePdf.tsx": "34a10eb9b3e490132af4c9b43171b7d91f9a834f262957f815e6ad6f6a6654ec",
+    "src/AwardPlanReview.tsx": "fbce20fed8fcbb2d6b04b63842f91bc1cd1c2296b53cc301670abfea67364644",
+    "src/AwardTeam.tsx": "ce691d18e48408ab23357046432042ce4d28106c2d0f8096fcebc1a9b53b03a3",
+    "src/AwardWorkspace.tsx": "450868bf96fe2d9565aca2daae6601ada043417dddcca88118f461f603adf92f",
+    "src/Commercial.tsx": "45b5840137dc8dc95cf82924a016a4530064a1aee8366ea49471dd0d23e67d34",
+    "src/CommercialObjectTitle.tsx": "910bcf55561d865e3a4bde7e51cc7250eef468e94ac12026bef1ee5012339009",
+    "src/CompanyApprovals.tsx": "13be07c0b59f1257608cd73f8e59454c716832c128001a3e03394e25e5f5dbce",
+    "src/CompanyDocuments.tsx": "5490656961cbe588daebb617eca7d22208714c9b2ca6d721321eff24ca6e4490",
+    "src/CompanyEstimates.tsx": "bc9eb5c0f0049c5774fa763cf2148188a12375a211b501c19b311d1de76b93c2",
+    "src/CostMasters.tsx": "edde85620de5e28d215148bd57d2ba935dbad6e3c98aa4c792d649b5f30a03ec",
+    "src/CostRevisionPicker.tsx": "f446ff707d2f6158f74d9e70f06d6de4090390fe313691cc72380e4b16026ce6",
+    "src/DistributionReview.tsx": "d536b7475a14c66cfa8ac631969b8bb03d06740ff801407347bf021bee7d297f",
+    "src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "src/IssuePreparedReview.tsx": "e14d71d4664867bee11004ec8f87ecb5e86c0a3d89dbc8a657dd84831c746608",
+    "src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "src/PdfDrawing.tsx": "785ec6aceb12beca5e8de765acaaa9ae147ff35daabfdc5632cb8170bdd71039",
+    "src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "src/ProposalDistribution.tsx": "141b7f470dc922388c6ad76d1af86d4732f3a757a64f6909480c5f741032e94a",
+    "src/ProposalOutput.tsx": "d70f7953182b8e2112930f81065a6fc8950281ee1b5933805e9325c0e7ad7b27",
+    "src/ProposalSources.tsx": "27b3f10ef4327707418be69c59a27d2aa8de1c575c5cd349b5f54ee959100bd5",
+    "src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "src/Takeoff.tsx": "e50dc217e858186ee32c8dbd27b192c0201feaa2ee5d955395eaf546d50e1916",
+    "src/api/awards.generated.ts": "ccb0360035b11d10e29308c8f8b9f08da1aa271970180368a1001a6af1159999",
+    "src/api/awards.ts": "d459e10b188724bf939d0803287fd6f289b9616042d602724ca877aeadc81787",
+    "src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "src/api/commercial.generated.ts": "f0f2f06bba0a5d2454365e90f938f3276d94c99830c2db8717ffb20c2e0cc09b",
+    "src/api/commercial.ts": "556026976235ccae0e5306e7bf31d3063a3254b7f03c2dcca9708daa772f3f60",
+    "src/api/company-approvals.ts": "d16c0ae21218b6d221736b0235634c6ba8e2983c3c3a425ecc45d6e227c3c494",
+    "src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "src/api/company-estimating.generated.ts": "9c723903fbcf403c84ea9aa74f6345602e53d74b5092d666a3894d7b28288585",
+    "src/api/company-estimating.ts": "ccc19ab23b49dda97fb298a052e1bb23e3be1c1866071616a41f95b0755cd8bb",
+    "src/api/contracts.generated.ts": "cefa60dc477d78be98b9fa8ccf99259a5d13ba3ab19bfc6dde6e0e2bbf5e4f93",
+    "src/api/distribution.generated.ts": "2d57048085f61580a63ade03c51c5001bf5805b4926a4dc5570a9c1214e2a515",
+    "src/api/distribution.ts": "ca7cc3c48cbeee264f774900f194b84e8afb37ef200354ffb97424176877a6c0",
+    "src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "src/api/masters.ts": "f9d37a7ddf0869eaf7a185e2deeb06795e03653948f09d39f210ec706a528552",
+    "src/api/project-controls.generated.ts": "9a6b4d929a86478292b2d5d0ec86dc131ee3fc42261670cc6be938353be07250",
+    "src/api/project-controls.ts": "7df073df7700e6b3290237f87742e75cfe4178af28517097c7e915430b25e252",
+    "src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "src/award-contract.ts": "0768037169ea49fc7cd6a12e93a5ef1c1824f1192bc7dec426d4a4aff7843429",
+    "src/award-draft.ts": "69168ebabf00f9d6ab11e6736ef7988e2b33df8c4f0043a822d4bf352fb79cba",
+    "src/award-governance.ts": "dfc03c61b74a0b5cf8cc10395887700664fdb53cc26b917b5de84668c6a78d53",
+    "src/award-labels.ts": "c2d735de95e792228e2d6a4e86286ab741abd07dbe98042aff242f1e63a6cf1e",
+    "src/components.tsx": "f5c23b454489eeee7212e7c0efcbd7ca65624e0581c45ffe7d2fe1d256185126",
+    "src/distribution-contract.ts": "9d7cbe3c5966d361418036734140603defdda9ccf480289e9cb3d93708b39f02",
+    "src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "src/local-ui5-fonts.ts": "98230f89eb6f5043dac1cc5a662272b2c1b7c7b2d8cdd086748462e8bcf68435",
+    "src/main.tsx": "b731a02c9ba2aead561d6ea63a989a2c0742fb67f68480939a751691ff2a5a9e",
+    "src/styles.css": "8741370a321375b628a60765d9ee2cecd1daa61cda893d3c13ab1c3cda61489e",
+    "src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "tests/award-effect-fixture.ts": "8913626dcd9d6ad7c6057cac473e041018a79e1dac49953dc46b95710b80ea72",
+    "tests/award-effect.spec.ts": "345f7b5871caa083c6328bd01d198756749933741af571618cd74b8a735b5235",
+    "tests/award-fixture.ts": "b8307d1b040d54fd49c4a7fbad7977f4ddfc51bbbce2b1559342f2f0bb00ffe9",
+    "tests/awards.spec.ts": "db35b7084ebbba63f197315663923549f3a2f0b96fd3d836f0c875f56ee0a086",
+    "tests/commercial-fixture.ts": "715ecd9ed2dbd2d667a5bbd06fe558adac9fc1626e498eeab732e0f0f2cc4ddf",
+    "tests/commercial.spec.ts": "5964bd2e816e84669367ea0778ff37db854e5cbcc753d6d542b6ae332c153ff4",
+    "tests/company-approvals.spec.ts": "f4c38896c4110165f4a33b5cfa0f0088d3aec77014ac91e8b951f656540b310f",
+    "tests/company-context.spec.ts": "2236c014cc499685573f5cb03cb99be6055cb1216277c27827fc3b9489e8edc1",
+    "tests/company-fixture.ts": "1c61c509629d0698b113ca9dde214ea1a1225db2e5581249b6a2929a601dba5e",
+    "tests/company.spec.ts": "e5e141afc71fb15c75aac83cacd4c3e5164d370f72cde9f244b45bf138f344c3",
+    "tests/cost-masters-fixture.ts": "426f8f8667322091b66d73779fa2b2655547083ccf2d486b07f81fefdd2dd83a",
+    "tests/cost-masters.spec.ts": "301bea99d95abfda1cf1396628d09bbd86cc94f927e3371aa7183dc2641e0928",
+    "tests/cost-permission-harness.tsx": "f3360497440c633752548c970984b86b0c9e1f7a78b4cde8055ecb444e966e13",
+    "tests/cost-permission.html": "a18e7058e119a491d85da15905b74f8eddfccb470680cf2a4c3135954164d54e",
+    "tests/cost-presentation.spec.ts": "2895736d9d510eaecf0ce6d49ec050f1cc4c7688b66b2ce80474d965d42481ea",
+    "tests/distribution-fixture.ts": "92955100b3ca69f9030ba7ffcc05159e852df8dadc5b4430db1fc6a97bafec1b",
+    "tests/distribution.spec.ts": "62f82feac5d336310fd9ec0d8472a95a10e31c6604de78c10a7a288952e15e1d",
+    "tests/estimating-fixture.ts": "11a7bd0fa636b69d05d1f281b534d8d99852fbace9fdfb15039e2597191fb4c1",
+    "tests/estimating.spec.ts": "b4610914b85f0ebe44df4d9183d477a1a085ef48f39f5f1d16b711c31d597b46",
+    "tests/fixture.ts": "19ab35ae705f2eb3ba818b07aa596b930f95146261bf0e61585eca1034d302e9",
+    "tests/pdf-fixture.ts": "700f675f580b2ae368be6f3ddf55099028fce972b393f4f386c8177bae45f708",
+    "tests/product.spec.ts": "09276f4b9be58b5a3e3da7b078fbf84cac15625e899e438854151424fe5685ec",
+    "tests/proposal-output-fixture.ts": "4d1e79836b0caba53e56683f373da7ca5e282bccba4467cbb82595e941c5a34c",
+    "tests/proposal-output.spec.ts": "8fbcfe33c4a416afa8eb190a5bf618178784849227b23e5e75ff5be219c39ab1",
+    "tests/takeoff-binding-fixture.ts": "f10f8efc794f1d2b49e6cf38bf35d7e95c036c9078c09443a8d43d9a6b7814cd",
+    "tests/takeoff-binding.spec.ts": "0eb0c4561ccf9308b064781fdc8ee614b4cf9c572e8240d77a9be3e419fc1c4a",
+    "tests/takeoff.spec.ts": "967544349f65743f3e8bc11947b79cf7c5faf4b9278c616c7aecf81888cc18de",
+    "tsconfig.json": "06bd70c5ca25dd0d23064b0a708da8437e61ce28c3f389cfea30076992ed808f",
+    "vite.config.ts": "eb133da0959fb5665952c903df94aff97df001f223d467c83ce9554a7ace451e"
+  },
+  "source_before_after_equal": true,
+  "mounted_recovery_only": true,
+  "completed_at": "2026-10-16T00:16:32.266Z"
+}

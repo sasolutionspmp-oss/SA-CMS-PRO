@@ -1,0 +1,200 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/workspace/cipher-framework-draft/apps/cipher/product/node_modules/.bin/playwright",
+      "test",
+      "--config=/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+      "--grep",
+      "acknowledgment cannot",
+      "--output=/tmp/cipher-completion/prj02-ui/cost-ack-red-results",
+      "--workers=1",
+      "--reporter=json"
+    ],
+    "configFile": "/tmp/cipher-completion/prj02-ui/cost.config.mjs",
+    "rootDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-ack-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "cost-masters.spec.ts"
+        ],
+        "timeout": 40000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/tmp/cipher-completion/prj02-ui/cost-ack-red-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "snapshotDir": "/workspace/cipher-framework-draft/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": "cost-masters.spec.ts",
+        "timeout": 40000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5190",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": {
+      "command": "npm run dev -- --port 5190",
+      "cwd": "/workspace/cipher-framework-draft/apps/cipher/product",
+      "url": "http://127.0.0.1:5190",
+      "reuseExistingServer": false
+    }
+  },
+  "suites": [
+    {
+      "title": "cost-masters.spec.ts",
+      "file": "cost-masters.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 40000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13060,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Use reviewed cost master version', exact: true })\nExpected: disabled\nReceived: enabled\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Use reviewed cost master version', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Use reviewed cost master version', exact: true })\u001b[22m\n\u001b[2m    24 × locator resolved to <button tabindex=\"0\" type=\"button\" part=\"button\" role=\"button\" class=\"ui5-button-root\" data-sap-focus-ref=\"true\" aria-label=\"Use reviewed cost master version\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Use reviewed cost master version', exact: true })\nExpected: disabled\nReceived: enabled\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Use reviewed cost master version', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Use reviewed cost master version', exact: true })\u001b[22m\n\u001b[2m    24 × locator resolved to <button tabindex=\"0\" type=\"button\" part=\"button\" role=\"button\" class=\"ui5-button-root\" data-sap-focus-ref=\"true\" aria-label=\"Use reviewed cost master version\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:40:945",
+                    "location": {
+                      "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                      "column": 945,
+                      "line": 40
+                    },
+                    "snippet": "  38 |\n  39 | test('cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head', async ({ page }) => {\n> 40 |   const fixture = await mockCostMasters(page, { stale: true, holdLatest: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click(); await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Current head revision 2', exact: true })).toBeVisible(); await page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true }).check(); fixture.releaseLatest(); await expect(page.getByRole('heading', { name: 'Current head revision 3', exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed cost master version', exact: true })).toBeDisabled(); await expect(page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true })).not.toBeChecked(); expect(fixture.writes).toHaveLength(1);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^\n  41 | });\n  42 | test('mounted unknown cost recovery remains reachable after current write permission is lost', async ({ page }) => {\n  43 |   const fixture = await mockCostMasters(page, { lost: true, denyRecovery: true });"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                        "column": 945,
+                        "line": 40
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeDisabled\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator:  getByRole('button', { name: 'Use reviewed cost master version', exact: true })\nExpected: disabled\nReceived: enabled\nTimeout:  10000ms\n\nCall log:\n\u001b[2m  - Expect \"toBeDisabled\" getByRole('button', { name: 'Use reviewed cost master version', exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Use reviewed cost master version', exact: true })\u001b[22m\n\u001b[2m    24 × locator resolved to <button tabindex=\"0\" type=\"button\" part=\"button\" role=\"button\" class=\"ui5-button-root\" data-sap-focus-ref=\"true\" aria-label=\"Use reviewed cost master version\">…</button>\u001b[22m\n\u001b[2m       - unexpected value \"enabled\"\u001b[22m\n\n\n  38 |\n  39 | test('cost rebase acknowledgment cannot transfer from the old head to a delayed newer register head', async ({ page }) => {\n> 40 |   const fixture = await mockCostMasters(page, { stale: true, holdLatest: true }); await page.goto(path()); await page.getByRole('button', { name: 'Review or revise cost master', exact: true }).click(); await page.getByRole('textbox', { name: 'Cost revision effective from', exact: true }).fill('2032-01-01'); await page.getByRole('button', { name: 'Save successor cost revision', exact: true }).click(); await page.getByRole('button', { name: 'Load latest cost head for review', exact: true }).click(); await expect(page.getByRole('heading', { name: 'Current head revision 2', exact: true })).toBeVisible(); await page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true }).check(); fixture.releaseLatest(); await expect(page.getByRole('heading', { name: 'Current head revision 3', exact: true })).toBeVisible(); await expect(page.getByRole('button', { name: 'Use reviewed cost master version', exact: true })).toBeDisabled(); await expect(page.getByRole('checkbox', { name: 'I reviewed the current cost master head', exact: true })).not.toBeChecked(); expect(fixture.writes).toHaveLength(1);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^\n  41 | });\n  42 | test('mounted unknown cost recovery remains reachable after current write permission is lost', async ({ page }) => {\n  43 |   const fixture = await mockCostMasters(page, { lost: true, denyRecovery: true });\n    at /workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts:40:945"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T22:44:48.713Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-ack-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-ack-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/tmp/cipher-completion/prj02-ui/cost-ack-red-results/cost-masters-cost-rebase-a-552a9-delayed-newer-register-head/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/workspace/cipher-framework-draft/apps/cipher/product/tests/cost-masters.spec.ts",
+                    "column": 945,
+                    "line": 40
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "c0b6886aed1f8a48f8c0-3994045bbe63d060470d",
+          "file": "cost-masters.spec.ts",
+          "line": 39,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T22:44:47.237Z",
+    "duration": 14973.965999999999,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

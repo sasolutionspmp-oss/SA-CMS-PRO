@@ -1,0 +1,31 @@
+{
+  "schema": "cipher.company-history-read-root-wiring.v1",
+  "captured_at": "2026-10-15T19:51:20.084030+00:00",
+  "status": "passed",
+  "runtime_python": "3.14.8",
+  "tests": 5,
+  "elapsed_seconds": 0.004,
+  "scope": "Explicit Company history orchestration wiring only; source-node memo behavior separately owned by DOC",
+  "checks": [
+    "Current actor/Company/authority and real signed cursor validated before entering graph",
+    "One explicit graph surrounds the entire one-pass authorized scan",
+    "Ineligible new read after prior writes uses original slow reader",
+    "Wrong Company/user/person/authority cursors refuse before graph or subject listing",
+    "Source integrity exception exits graph before propagation"
+  ],
+  "sources": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/company.py": "a416580fec29b9c3b7520c8aacebfcee762bb3533761a867241f82026d9ca385",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_listing.py": "a84d7af78a733118b9808323964f7466ae21bd30a51d634f628796cd30962f2e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_company_history_read_graph.py": "06efdcff637524b5552b63a703f4d18d1987c915d343aa388e7a22dc38a5ba21"
+  },
+  "log": "Starting test run with parameters: site=cipher.localhost, app=cipher_aec, module=cipher_aec.tests.test_company_history_read_graph, verbose=False, tests=(), force=False, profile=False, failfast=False, skip_before_tests=True, debug=False, selected_categories=[]\nView detailed logs (using --verbose): /home/frappe/frappe-bench/logs/frappe.testing.log\n\nRunning 5 unspecified-category tests for cipher_aec\n\ncipher_aec.tests.test_company_history_read_graph.CompanyHistoryReadGraphTests\n   \u001b[32m \u2714 \u001b[0m test_denied_scope_never_enters_graph_or_subject_scan\n   \u001b[32m \u2714 \u001b[0m test_ineligible_read_after_write_uses_original_slow_reader\n   \u001b[32m \u2714 \u001b[0m test_one_root_wraps_whole_scan_after_current_scope_and_signed_cursor\n   \u001b[32m \u2714 \u001b[0m test_subject_integrity_failure_closes_read_root_before_propagating\n   \u001b[32m \u2714 \u001b[0m test_wrong_company_actor_or_authority_cursor_refuses_before_graph\n----------------------------------------------------------------------\nRan 5 tests in 0.004s\n\nOK\n\n\n",
+  "pending": [
+    "Final shared provenance coherence review",
+    "Actual full-history timing and current source-rights qualification after coordinated reload"
+  ],
+  "unchanged": [
+    "Project history entry point",
+    "Stored event payloads/hash chains",
+    "Cursor scope and SQL keyset predicate"
+  ]
+}

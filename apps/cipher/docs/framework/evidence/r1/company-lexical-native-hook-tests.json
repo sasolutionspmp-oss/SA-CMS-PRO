@@ -1,0 +1,29 @@
+{
+  "actual_db_identity": "Binds frappe.local.db, not stable frappe.db LocalProxy. A focused test changes the actual local DB while preserving the proxy identity and proves fresh hook SQL.",
+  "company_authority_test_count": 24,
+  "contract": "Only a single nonlocking require_company native permission call can consume its freshly checked exact actor/person/company company.read SQL result once. Native permission engine still runs. Exact object/name/doctype/user/ptype/day/DB/write-counter mismatch rechecks SQL; nested guards mask outer token; finally expires token. Direct hooks, independent calls and lockTrue unchanged. No RR or read_graph authority claim.",
+  "external_provider_qualified": false,
+  "generated_public_gate_enabled": false,
+  "live_model_qualified": false,
+  "modules": [
+    "test_company_authority_sql",
+    "test_documents_source_scope",
+    "test_documents_company",
+    "test_estimating_citation_groups"
+  ],
+  "qualification": "Actual runtime Python unittest; exact authority SQL evaluated against explicit in-memory SQLite fixtures, native-engine boundary explicitly mocked. No site DB/native business-call or HTTP/performance qualification.",
+  "runtime_seconds": 0.237,
+  "schema": "cipher.company.lexical-native-hook.tests.v1",
+  "source_hash_capture": "Post-run source hashes; no before/after epoch claim for these unit tests.",
+  "source_sha256": {
+    "documents/core.py": "9c583eacd30930b6ac1e6b40b99d0cdb0e5c45fd19b5c22641b0be0fc5bf9b6a",
+    "governance/context.py": "6dc80fa28f5c54e78060eac7ee945cccf1efde729c2ce566d0f28b916fb1ce68",
+    "governance/permissions.py": "fa20dad7c692fa3bfb33ce65e0bce9a3baca89f30121b6b8a6c268c13978f654",
+    "tests/test_company_authority_sql.py": "fc286128c48d5cb5ba8b7023409d998a1892e4cd62692444bc115240b1121cb1",
+    "tests/test_documents_company.py": "089e1a46f07d8d3c4859ece93b3aef2d32404121a74ae80b57f87b335e683ca2",
+    "tests/test_documents_source_scope.py": "70f27de5a68d6f14bb39baf233e35a63dcf7879b0c447d6dc5fbecca4bb44c58",
+    "tests/test_estimating_citation_groups.py": "5e5d5e5f45a81debb1dd16479b09b7f7287e48ac570a857d206551952560a450"
+  },
+  "status": "passed",
+  "test_count": 62
+}

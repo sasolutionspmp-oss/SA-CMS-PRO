@@ -1,0 +1,8 @@
+{
+  "returncode": 0,
+  "seconds": 1.168258,
+  "started_at": "2026-10-15T23:04:10.564897+00:00",
+  "completed_at": "2026-10-15T23:04:11.733322+00:00",
+  "log_sha256": "cd68094ca82bcdcae817ae448e7cd7a239660543dae806c71ff7a12c83151e61",
+  "log_path": "/tmp/cipher-award-native-20261015/qa-native-preservation.log"
+}

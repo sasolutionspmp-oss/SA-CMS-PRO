@@ -1,0 +1,45 @@
+{
+  "schema": "cipher.browser.artifact-inventory.v1",
+  "artifacts": {
+    "actual-drawing-change-impact-preserves-estimate.png": {
+      "sha256": "c5fd9789d396cb541019fe68adceb174ee215403fe4c4d644393b29a0f6432c8",
+      "bytes": 215021
+    },
+    "actual-historical-drawing-revision.png": {
+      "sha256": "c5fd9789d396cb541019fe68adceb174ee215403fe4c4d644393b29a0f6432c8",
+      "bytes": 215021
+    },
+    "actual-independent-calibration-review.png": {
+      "sha256": "f0b0b13666b988858311d55169281170b040eafb1a25e197ad1c5a18698a4424",
+      "bytes": 92831
+    },
+    "actual-pdf-measurement-and-estimate-binding.png": {
+      "sha256": "943a34f9e92394bbd12b9fdc54a170805821409ad3abcbbeb71dd65f3eeb54fd",
+      "bytes": 361397
+    },
+    "actual-pdf-takeoff-phone.png": {
+      "sha256": "92e06e7b64c1984e25eb7b3352a0b74c353e1b53f945c1a1a620db3fce0c67b9",
+      "bytes": 92605
+    },
+    "actual-pdf-takeoff-tablet.png": {
+      "sha256": "55fb9ab859bfadcf50209132c60151a8991a44e51d89075a979181c031a6d40d",
+      "bytes": 278589
+    },
+    "blocked-preflight-attempt.json": {
+      "sha256": "d8ea19214316ad5fc85171ebe369cca511f02a5ab0bee31ca746d1c431987d7e",
+      "bytes": 765
+    },
+    "blocked-worker-mime-attempt.json": {
+      "sha256": "05dc56a4e8a89076e7316c1c6e051318ba7c260a2211d0ad9a163d5626c4d9b0",
+      "bytes": 617
+    },
+    "provenance.json": {
+      "sha256": "d7249a69c40505a9097b0f61437913cd54f9708ead24202c03a451c947dc4bd7",
+      "bytes": 62762
+    },
+    "verification.json": {
+      "sha256": "ceb1c31194e89b65d5ba8ada30117f05586218564496c24e4fe797c0700dc6c9",
+      "bytes": 19739
+    }
+  }
+}

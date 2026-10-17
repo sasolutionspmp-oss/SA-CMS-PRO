@@ -1,0 +1,24 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.project_controls.company_api.create_master",
+  "prepared_at": "2026-10-15T23:11:18.575348+00:00",
+  "role": "author",
+  "values": {
+    "code": "AWARD-LABOR",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "component",
+      "cost_category": "labor",
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit labor accounting target"
+    },
+    "kind": "type",
+    "operation_id": "472ae7bd-d760-46e3-a4bf-bcd96618d921"
+  }
+}

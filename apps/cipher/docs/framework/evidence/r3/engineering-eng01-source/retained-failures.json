@@ -1,0 +1,59 @@
+{
+  "schema": "cipher.eng01.retained-failures.v1",
+  "backend": {
+    "01-original-replay-failing-first.log": {
+      "category": "expected failing-first regression",
+      "sha256": "cf4bb8e029b1db0dadeaac5302b6296b5fd41352b662a2fe17bfd6786c7aefbd"
+    },
+    "06-contract-host-first.log": {
+      "category": "host fixture setup corrected; original report retained",
+      "sha256": "7b26003bb90c8d73a4daa6a7ae606fc901214b87d704c09b8dd0aaae6318023f"
+    },
+    "09-host-contracts.log": {
+      "category": "host fixture setup corrected; original report retained",
+      "sha256": "45621c529835d7d056db9a640c140ceddf8ded329b16398dee4383c5a4fdc0a6"
+    },
+    "17-history-failing-first.log": {
+      "category": "host fixture setup corrected; original report retained",
+      "sha256": "5fa60f3bba0d1450d8c977ab26afe15e35c2559378977294ced3304707df84af"
+    },
+    "18-history-failing-first.log": {
+      "category": "expected failing-first regression",
+      "sha256": "7026d6efd16ced6f5e561e4108be0ed40f9f031e525ebde20fcfcfe5bcc3a042"
+    },
+    "21-ability-compat-failing-first.log": {
+      "category": "compatibility guard awaiting explicit approved additions",
+      "sha256": "4e859acf14125d87bcc10c69f0529df9d2dcc02da60397c5f07a9c098ae2740c"
+    },
+    "27-official-envelope-failing-first.log": {
+      "category": "expected failing-first canonical official response/disposition envelope regressions",
+      "sha256": "6a02743514c491d02fbbc5c187283d9cf946097b08e651985b3510d725ebba62"
+    }
+  },
+  "browser_initial": {
+    "status": "failed",
+    "passed": 17,
+    "failed": 2,
+    "causes": [
+      "Official response/disposition envelope oneOf ambiguity corrected by the backend anyOf union; route-specific closed record validation remains.",
+      "A separate Chromium page crash during the submittal scenario; final production-build rerun passed."
+    ],
+    "report_sha256": "bdb3f12b670dd48182c9b44acd8faa76afa3c5d595e9a23319e55b915628c6ca"
+  },
+  "compatibility_initial": {
+    "status": "interrupted",
+    "cause": "A development-only /tests/*.html harness was incorrectly sent to a production SPA preview. The run was stopped; corrected development-server checks are separate.",
+    "log_sha256": "03eee0b7e89245cbb911d7347ecfea41f7e75c8b8c6fe2d09be22ba8013b059b"
+  },
+  "compatibility_custom_build_path": {
+    "status": "failed",
+    "passed": 35,
+    "failed": 1,
+    "cause": "The asset test used its default dist/ path; the build was intentionally stored in a separate shared-memory directory. Only the failed asset test was rerun with its existing CIPHER_BUILT_PRODUCT_DIST setting, and passed. No source change.",
+    "report_sha256": "1c557ef645578ca74d81b0bfc3f540f1fdbc001b5c89205449ef2a30704f7592"
+  },
+  "publication_prepare": {
+    "status": "failed_before_first_copy",
+    "cause": "Publication source files were read-only from the prior verified freeze. The separate continuation made only intended publication delta files writable before copying; no frozen source or native runtime was altered."
+  }
+}

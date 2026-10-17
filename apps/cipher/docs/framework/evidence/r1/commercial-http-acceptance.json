@@ -1,0 +1,244 @@
+{
+  "schema": "cipher.com01.http-acceptance.v1",
+  "status": "passed",
+  "company": "COM-01 isolated company fd89ca080f",
+  "user": "commercial.fixture.fd89ca080f@cipher.example",
+  "alias": "commercial.alias.fd89ca080f@cipher.example",
+  "project": null,
+  "origin": "http://127.0.0.1:18880",
+  "credentials_recorded": false,
+  "checks": [
+    {
+      "route": "cipher_aec.commercial.api.create_pursuit",
+      "method": "POST",
+      "http_status": 400,
+      "error_code": "request_rejected",
+      "response_schema_validated": false,
+      "csrf_header_sent": false
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_pursuit",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_pursuit",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.pursuit",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.update_pursuit",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_proposal",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_proposal",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.save_proposal_revision",
+      "method": "POST",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.save_proposal_revision",
+      "method": "POST",
+      "http_status": 412,
+      "error_code": "stale_commercial",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.save_proposal_revision",
+      "method": "POST",
+      "http_status": 412,
+      "error_code": "stale_native_source",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.compare_revisions",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.proposal_revision",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.proposal",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.pursuits",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.proposals",
+      "method": "GET",
+      "http_status": 200,
+      "error_code": null,
+      "response_schema_validated": true,
+      "csrf_header_sent": true
+    },
+    {
+      "check": "native_or_immutable_generic_route_denied",
+      "doctype": "Quotation",
+      "http_status": 403
+    },
+    {
+      "check": "native_or_immutable_generic_route_denied",
+      "doctype": "Cipher Proposal Revision",
+      "http_status": 403
+    },
+    {
+      "check": "current_native_party_revocation_hides_company_history_items_counts_cursor",
+      "http_status": 200
+    },
+    {
+      "route": "cipher_aec.commercial.api.proposal",
+      "method": "GET",
+      "http_status": 404,
+      "error_code": "not_found",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_proposal",
+      "method": "POST",
+      "http_status": 404,
+      "error_code": "not_found",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "check": "current_native_party_revocation_receipt_denied",
+      "http_status": 404
+    },
+    {
+      "route": "cipher_aec.commercial.api.proposal",
+      "method": "GET",
+      "http_status": 403,
+      "error_code": "capability_denied",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.commercial.api.create_proposal",
+      "method": "POST",
+      "http_status": 403,
+      "error_code": "capability_denied",
+      "response_schema_validated": false,
+      "csrf_header_sent": true
+    },
+    {
+      "check": "current_company_duty_revocation_receipt_denied",
+      "http_status": 403
+    }
+  ],
+  "company_only_session_without_project": true,
+  "pursuit_id": "8bcb50cb-3676-4f96-8d12-250929b6ba3a",
+  "proposal_id": "6c15bab6-14a6-47e0-9157-b07f410a7faf",
+  "current_revision": "e5147500-5770-4747-abc8-7978bcdf935f",
+  "alias_replay_same_effect": true,
+  "scope_alternates_terms_preserved": true,
+  "captured_at": "2026-10-15T16:16:25.682851+00:00",
+  "qualification_limits": [
+    "Draft only; no issued output, send, award, posting or external provider effect.",
+    "Only isolated synthetic fixture roles/duties changed and restored.",
+    "Company document/estimate references remain typed unavailable pending their canonical extension."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/api.py": "0f9b519a8368be5ad32e16c25dc93495c180a198c70287af462f37972e3041b5",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/contracts.py": "1bd71f1f5bb61b05833da5ba4d9e5b4c53b0fe0d3e5d5c0b7b13206956823c4c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/guards.py": "7717d020089a41cf9e20724176f2c9dbd0cde630ae5599c3e82c18cb07054678",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/install.py": "2278aae65c1c04ed38b40b34b66eb9f2a3e01d7379654d954696339189f2ded6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py": "4ee2474f7e6d5081ea59e344ca1338b13304b9556a7bfabe459f9448da7e812a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/permissions.py": "77fe01d3266ea34b5e6b5543a084c6450f5075f5469235283d2160371562a6b3",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/records.py": "97d2d62255d46656ec2921f10c9be1b2b2fa0a7949ff00761b37529d346f24de",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/service.py": "a7b3e3dec037ab1d8c43ab1fd91ba65df0a9850fa3434381f5c7098b5491e96f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/schemas/api-v1.schema.json": "8cc4304e83e9294ddb2960f58e6c8f4e911d07974454961b99ce8875e3db8433",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/cipher_proposal.py": "4ecc777c10f64a1d2dbfb9d08dc28c73351abb957c5ba14e8766bf79bf3abc49",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.py": "411e55d2f2eb253b9451ab06b12fe29901ddc8a59ba3cfff8750a2c8e82f37c1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.py": "6c6c115e1ece3f696e2fbe037031e046065d52f26822c8706dce4983ba2f5c36",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.py": "90d27c1584ac63932d10966cb3958a41437f245c04602aab8abcb294b553b839",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.py": "ccdaa6fdd6af5cc42d3656b92e8def98398bff0b756149b441dc6925dffe3f0e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal/cipher_proposal.json": "8d979b78bbf0d36474c42106ae5c74a305677f868e875b267ec9f4748154a77e",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_price_line/cipher_proposal_price_line.json": "d1944b44755929738db0a7c7de0b4fd3a1ffc90043764f3796466bea126a0491",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_revision/cipher_proposal_revision.json": "9ba9e3a4f3ca0c3babfbadbb0ce85b2ff982c6fda8d9b4e452e7578e8caf1124",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_proposal_section/cipher_proposal_section.json": "b7f4664e22ae97027385a8d57ddf8bbd9be0582fd98424842035183c312ff92d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_commercial/doctype/cipher_pursuit/cipher_pursuit.json": "728ce64b21433b0a1947f3a94cf84117245caa29a53acd25139f71dad9556bee",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial.py": "4f5e6cf97f0c08dbfd1d90205da69bb5d28544b37fe020654f93577b6a3f6e29",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_acceptance.py": "3a542005635b256e0a42680e716b8ba1d685594f2715db8d0ec988980b823c6c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_commercial_http_acceptance.py": "ed5560504bdc8289a4d7923a159200de1be5ce7137a846605ff51a8c511840eb"
+  },
+  "native_acceptance_sha256": "e7fbd7d1d83e9f90d7180927825a201bcedab81a876d5a44b10d8b3af748ae55",
+  "checks_recorded": 24,
+  "published_rpc_positive_coverage": [
+    "cipher_aec.commercial.api.compare_revisions",
+    "cipher_aec.commercial.api.create_proposal",
+    "cipher_aec.commercial.api.create_pursuit",
+    "cipher_aec.commercial.api.proposal",
+    "cipher_aec.commercial.api.proposal_revision",
+    "cipher_aec.commercial.api.proposals",
+    "cipher_aec.commercial.api.pursuit",
+    "cipher_aec.commercial.api.pursuits",
+    "cipher_aec.commercial.api.save_proposal_revision",
+    "cipher_aec.commercial.api.update_pursuit"
+  ]
+}

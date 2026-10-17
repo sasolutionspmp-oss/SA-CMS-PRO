@@ -1,0 +1,25 @@
+{
+  "schema": "cipher.r1.distribution-ui-operator-lifecycle.v1",
+  "recorded_at": "2026-10-15T20:37:52.960295+00:00",
+  "provenance": "Root operator forwarded exact start/stop stdout captured in exec-tool history; no standalone original raw receipt file was saved. Values below transcribe those messages, not a lifecycle rerun.",
+  "start": {
+    "action": "start",
+    "process": {
+      "pid": 15788,
+      "start_ticks": "11617657",
+      "source_sha256": "04f0bd7cf98202cd8d29fee8c0a002bdbc7f0a0824eb987021b6ce3b18148f16",
+      "started_at": 1792096501.0538127
+    },
+    "outer_restart": "operator-managed"
+  },
+  "stop": {
+    "action": "stop",
+    "pid": 15788,
+    "child_sessions": [
+      15789,
+      15790
+    ],
+    "remaining_active_processes": 0
+  },
+  "independent_process_readback": "distribution-ui-subset-native-preservation.json"
+}

@@ -1,0 +1,24 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.project_controls.company_api.create_master",
+  "prepared_at": "2026-10-15T23:11:18.618580+00:00",
+  "role": "author",
+  "values": {
+    "code": "AWARD-EQUIPMENT",
+    "company": "Company chain A c3c3b742a8fd",
+    "definition": {
+      "allocation_class": "component",
+      "cost_category": "equipment",
+      "effective_from": "2026-10-15",
+      "effective_until": null,
+      "enabled": true,
+      "native_target": {
+        "doctype": "Account",
+        "name": "Administrative Expenses - Q0c3c3b7"
+      },
+      "title": "Explicit equipment accounting target"
+    },
+    "kind": "type",
+    "operation_id": "87a41225-5d55-426c-aa9b-1f13d97bde32"
+  }
+}

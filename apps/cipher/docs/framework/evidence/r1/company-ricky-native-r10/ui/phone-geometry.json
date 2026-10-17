@@ -1,0 +1,16 @@
+{
+  "heading": {
+    "x": 16,
+    "y": 113,
+    "width": 238.84375,
+    "height": 62.375
+  },
+  "header": {
+    "width": 390,
+    "height": 111.375
+  },
+  "computed": {
+    "fontFamily": "\"72Black\", \"72Blackfull\", \"72\", \"72full\", Arial, Helvetica, sans-serif",
+    "fontSize": "24px"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "cipher.award.connected-ui-settled-read.v1",
+  "recorded_at": "2026-10-16T00:01:48.180066+00:00",
+  "qualification": "Actual same-record read-only cost-type register and selection at1440/900/390. Main writer remains disabled; no cost save, award plan successor, approval or execution is qualified by this capture.",
+  "backend_source_count": 496,
+  "ui_source_count": 118,
+  "build_file_count": 907,
+  "served_asset_count": 25,
+  "original_journal_sha256": "984fbdd64fe36fa5a20b903331b9d9a9dd3e4797e9e9e6a867171360a213a9c6",
+  "business_posts_forwarded": 0,
+  "original_three_command_journal_unchanged": true,
+  "helper_sha256": "daffefd2f778686a01ce406d7adc63b3cd195a16ff15e926bdd668237843a6c8",
+  "visual_review": "Root and sole Astra inspected desktop/phone. Immediate phone navigation geometry showed overlap; settled host right edge0 and heading/context/actions hit-tests pass before and after keyboard focus. No product patch was needed for the earlier transition capture.",
+  "historical_session_503_cause": "Unconfirmed. This normal App bootstrap observed initial401 then200 without503.",
+  "credential_scan_matches": 0,
+  "private_raw_console_and_session_bodies_omitted": true,
+  "artifacts_sha256": {
+    "verification.json": "b1d0892d697136088df4d56312cf43df6a9617a2bc0c69e11b47e99178ad0570",
+    "actual-read-only-cost-register-desktop.png": "8e167d91adb13ab2c97897c339b530b246d77ffb2e01382155e9f022b15d4d83",
+    "actual-read-only-cost-register-tablet.png": "1c967ce1d36535972f6ae59b08fe5c7b295b51cb913052d80216ed978ba6c528",
+    "actual-read-only-cost-register-phone.png": "e96321886fdf1bc1abdd4c710fea1b7234c41875cb182570de3596c9157bee85",
+    "actual-read-only-cost-select-phone.png": "2dc2a50680a6cf9140c99b88c64e72df251790b2ff636ccb7bd22b400f28bd63",
+    "ui-epoch.json": "34eae1f207ddbdcf9fe80868b90fa92db486a30c8d8758373cc1d40e1ba6aa88",
+    "ui-source-hashes.json": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8"
+  }
+}

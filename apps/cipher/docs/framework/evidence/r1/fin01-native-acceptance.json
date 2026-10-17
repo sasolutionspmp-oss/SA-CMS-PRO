@@ -1,0 +1,126 @@
+{
+  "actual_native_acceptance": {
+    "accepted_revision": "9af021dc-202c-4f8e-b154-b6fa5bfa966b",
+    "certification": false,
+    "checks": [
+      "native_party_contract_origin_and_exact_single_create_replay",
+      "immutable_exact_terms_policy_sov_and_stable_line_replay",
+      "independent_human_grant_and_one_atomic_baseline_consumption",
+      "sorted_shared_master_locks_and_disabled_unit_historical_readback",
+      "accepted_cap_reduction_blocked_increase_preserves_historical_policy_and_line",
+      "stale_manifest_cannot_advance_draft_or_accepted_predecessor",
+      "current_source_rights_rechecked_on_records_receipts_and_consumed_packets",
+      "disabled_party_preserves_history_and_current_native_read_revocation_denies",
+      "unqualified_native_financial_drafts_and_generic_snapshot_reads_denied",
+      "native_supplier_contract_and_off_page_party_denial_before_pagination_counts",
+      "historical_receipt_prelocks_old_and_current_uom_union_before_party"
+    ],
+    "company": "Cipher Synthetic Company",
+    "contract_id": "b5119429-4d10-48d1-b688-ce6f1ee11283",
+    "current_draft_revision": "d6089b41-fe56-48fa-89c4-1106d7f26a6b",
+    "external_provider_qualified": false,
+    "financial_posting": false,
+    "floor_provider_qualified": false,
+    "label": "explicit-synthetic-fin01-with-real-native-storage-and-governance",
+    "legal_execution": false,
+    "live_model_qualified": false,
+    "native_customer": "FIN01 native customer 289e8348151a",
+    "native_supplier": "FIN01 native supplier 289e8348151a",
+    "project": "PROJ-0028",
+    "schema": "cipher.finance.acceptance.v1",
+    "shared_native_master_first_lock_order": [
+      "UOM",
+      "Currency",
+      "Customer",
+      "Supplier"
+    ],
+    "status": "passed"
+  },
+  "actual_response_schema_validation": {
+    "certification": false,
+    "definitions": [
+      "AuthorContractRevisionRequest",
+      "AuthorContractRevisionResponse",
+      "CreateContractRequest",
+      "CreateContractResponse",
+      "GetContractRecordResponse",
+      "ListContractsRequest",
+      "ListContractsResponse"
+    ],
+    "financial_posting": false,
+    "input_qualification": "Reconstructed request shapes; expected_version uses an explicit schema-only placeholder, not a claimed captured HTTP request.",
+    "label": "read-only-actual-native-fixture-response-schema-validation",
+    "project": "PROJ-0028",
+    "schema": "cipher.finance.schema-acceptance.v1",
+    "status": "passed",
+    "validated_samples": 41
+  },
+  "captured_at": "2026-10-15T16:05:46.354272+00:00",
+  "historical_attempts": [
+    {
+      "attempt": 1,
+      "cause": "Repository insert positional kind parameter collided with native contract kind field. Renamed repository parameter record_kind.",
+      "log_sha256": "63e374ea5e546bda23ca3f61936a8a59a3e104b25ca20ae230fcadf1f8f6e073",
+      "status": "failed"
+    },
+    {
+      "attempt": 2,
+      "cause": "Acceptance harness assumed a has_more result field; canonical pagination exposes next_cursor. Product behavior was correct.",
+      "log_sha256": "96ce443693033bd5d69e301261295b349d439f16b5fd5e0985f624974d70b169",
+      "status": "failed"
+    }
+  ],
+  "limits": [
+    "Native acceptance uses explicit synthetic users and interactive Session fixtures, not browser login.",
+    "No financial transaction, certification, legal execution, provider connection or floor qualification occurred.",
+    "Typed injected floors qualify validator behavior only; production reader remains unavailable.",
+    "Runtime Python/domain source was unchanged during passing native acceptance; schema and read-only schema helper were added afterward and validated separately.",
+    "Full combined fresh gate and actual HTTP endpoint proof are separate pending checks."
+  ],
+  "native_log_sha256": "ec5cfa52ba96a7c2d7a53a5e3c69629908faa161fa8448f380a89dd589d3b0ef",
+  "pure_validator_tests": {
+    "collected": 10,
+    "errors": 0,
+    "failures": 0,
+    "log_sha256": "86d0c96a786a4767a4b7388630b81ec6da1459b63b9a31ddc6380f66e9b04327",
+    "private_log": "/tmp/cipher-fin01-core-final.log",
+    "status": "passed"
+  },
+  "schema": "cipher.fin01.evidence.v1",
+  "schema_log_sha256": "8d5f772ffdbd3ea060fd91ded245b2a403f59a77dc98c8b7e7afe24546afe8ac",
+  "scope": "FIN01 foundation only",
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_construction_contract/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_construction_contract/cipher_construction_contract.json": "429447389b058903540a6c954a05460d59bafebd235aeb99de74571cde9cec7c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_construction_contract/cipher_construction_contract.py": "4ad2b5643f08e5ff1338d86401df9a6354556c51db5185c44afa67a49eff3dac",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_contract_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_contract_revision/cipher_contract_revision.json": "3ab5e2fccd4e7ec7821fb4b02580a0c857001f84a1d3184b2481d75174cdb5f8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_contract_revision/cipher_contract_revision.py": "2e1912f3f7834914e743f6854f1cc6861e60297534da4af0a4b0ce5e8a9ced30",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_retainage_policy_revision/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_retainage_policy_revision/cipher_retainage_policy_revision.json": "324a8f68b711e509e21848e6ca7fa531c798c271b0eb516eb732d524a605a610",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_retainage_policy_revision/cipher_retainage_policy_revision.py": "bd4532584a9fcc8f91ef2a70a95481e70c17a7713269da1957272cd90623704a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_line/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_line/cipher_sov_line.json": "3a2e8be565104afbda5ae9b3fe15e7b37bf25d9592fe35989ed45c9d3e83ffbe",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_line/cipher_sov_line.py": "89c244a333d6e38a8b79a83491724124eeab2fc7353d17beb6afedba4666d005",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_version/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_version/cipher_sov_version.json": "04b3c7c0deb95ddb7fe988560a630fea86293dc9f246e973135bbe16cfd25a55",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_finance/doctype/cipher_sov_version/cipher_sov_version.py": "7663d555808aad65eeb01f6de23e55093a7bbd47b2807fda064bb178c9b8a1a2",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/README.md": "4883301db2cf96a6971ee89e747c9b31e8cfac8e6217df066b262166548d78c9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/api.py": "1f645ad8435d582b053d5287601013b12fe685f8df94a1f6c223f34bfdc9b164",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/core.py": "34e5a733ae980cd6436e4d9051d5ab6a553e034ac7be959011d66c5e934050e0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/governance.py": "da53f71f2cee25f34cc9569d116d2200e1016f565b553d2674814251a0dbf3b0",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/install.py": "ee4198228bd3d1c97584cb6e9f05ada255ddb764ff1aa2f961a763102330dca9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/permissions.py": "a6aa8c782c76631925a20f445bec050793341817a62040959d05f1cd17593b28",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/records.py": "a129da16046d7a23530ee0cf13244c9735214a18a5f086324cb0ff6e2b9d0602",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/repository.py": "c155fd333d6a3a8efc2678c61072c9730be34d1f833117885dc5302a9e284668",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/schemas/api-v1.schema.json": "97fd74f072d49df1089f5301e62e4d83bc8c10ab26383f9ff89af86dd0f584b4",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/service.py": "ab02a8d3e32a43c02f9c9bb3903a13b0b67ee0818939ff191027f37d7b4fc357",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/construction_finance/sources.py": "5f6b251ac48722fdc0e560c5223911e638b3d97da5582e40ee3b172ac3718fa6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_acceptance.py": "7f9bf0bba3d6933cf957d56c49c3d926e8d5998594577581fe16d093ff92fecd",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_construction_finance_core.py": "c427ccd1b8517679dec8b17e7f6dce86c8457a80e0b80ca78af95d5424d63dc1"
+  },
+  "status": "passed"
+}

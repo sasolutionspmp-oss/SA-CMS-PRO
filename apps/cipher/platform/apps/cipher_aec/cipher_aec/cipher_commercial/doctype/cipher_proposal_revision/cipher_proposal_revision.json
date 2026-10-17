@@ -1,0 +1,107 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposal Revision",
+  "module": "Cipher Commercial",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "company",
+    "author_person",
+    "record_digest",
+    "data_json",
+    "proposal",
+    "revision_number",
+    "predecessor",
+    "native_fingerprint",
+    "sections",
+    "price_lines"
+  ],
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company",
+      "search_index": 1
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "proposal",
+      "label": "Proposal",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Proposal"
+    },
+    {
+      "fieldname": "revision_number",
+      "label": "Revision Number",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "predecessor",
+      "label": "Predecessor",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Cipher Proposal Revision"
+    },
+    {
+      "fieldname": "native_fingerprint",
+      "label": "Native Fingerprint",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 64
+    },
+    {
+      "fieldname": "sections",
+      "label": "Sections",
+      "fieldtype": "Table",
+      "reqd": 0,
+      "options": "Cipher Proposal Section"
+    },
+    {
+      "fieldname": "price_lines",
+      "label": "Price Lines",
+      "fieldtype": "Table",
+      "reqd": 0,
+      "options": "Cipher Proposal Price Line"
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher User",
+      "read": 1
+    },
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

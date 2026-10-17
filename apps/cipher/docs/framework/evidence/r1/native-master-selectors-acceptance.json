@@ -1,0 +1,53 @@
+{
+  "recorded_at": "2026-10-15T17:10:08.582910+00:00",
+  "scope": "Fixed read-only authorized native master selectors for explicit Company workflows",
+  "checkpoint_base": "e21ed89f",
+  "runtime": {
+    "frappe": "16.52.0",
+    "erpnext": "16.51.0",
+    "python": "3.14.8"
+  },
+  "suite": {
+    "name": "cipher_aec.tests.test_master_selectors",
+    "tests": 6,
+    "passed": 6,
+    "elapsed_seconds": 4.831,
+    "log": "container:/tmp/cipher-master-selectors-final.log"
+  },
+  "checks": [
+    "Native Currency fraction_units yields exact exponent and Company base-currency context",
+    "Private qualified UOM filter is denied before querying even zero matching Items",
+    "Native-inaccessible candidates do not contribute items, exact count or cursor",
+    "Authorized choices page by stable native ID; count and next cursor match only visible records",
+    "Signed cursor rejects changed effective Company currency, query, dimension and count_mode",
+    "Project-only duties never authorize Company master choices",
+    "Price-list filter cannot imply unsupported foreign exchange",
+    "Malformed Company base Currency fails explicitly even when no native Price List matches"
+  ],
+  "limits": [
+    "Actual Frappe/MariaDB service tests; not yet HTTP acceptance for these new routes.",
+    "Isolated users, roles, qualified UOMs and fixture Project rolled back. No whole-site seed/password/session reset.",
+    "No native master writes exposed through selectors; host administration/raw SQL is outside application guarantees."
+  ],
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/masters.py": "e1d08f6a0bbba8652d5340b345ef448846591ec3d4e1f9481ad7fc74a3285d58",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_master_selectors.py": "70acb5183a6e83cbf11e1250e8ce459166a12ace87e8fe3813caae2bee1b4a6b",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py": "922c0ed0802f20caf8fee810b6fbf8f3a917e797a1225ef4f0655a8c9845b90a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py": "4ee2474f7e6d5081ea59e344ca1338b13304b9556a7bfabe459f9448da7e812a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/estimating/units.py": "45f21184f6f9a7059d090424f5b2d01882b12b33111d7d613c1c1c8748a0d9a7",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/paging.py": "4d8c4699e3089726d2387a8700d7f9c17746ef9f89291ce2ffa716aed5252082"
+  },
+  "prior_run": {
+    "tests": 6,
+    "passed": 6,
+    "elapsed_seconds": 4.957,
+    "log": "container:/tmp/cipher-master-selectors.log",
+    "qualification": "Before adding explicit no-match base-currency setup precondition test"
+  },
+  "openapi": {
+    "paths": 103,
+    "validator": "openapi-spec-validator0.7.2",
+    "contract_tests": 14,
+    "status": "passed"
+  }
+}

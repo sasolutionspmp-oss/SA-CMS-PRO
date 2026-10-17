@@ -1,0 +1,26 @@
+{
+  "attempts": [
+    {
+      "artifact_private_path": "/tmp/cipher-r0-runtime/fin-native-rights-first.json",
+      "artifact_sha256": "808e32064ddb1ffaedc1acd653ba132f71999202d3c5f75f948f18cf0131badf",
+      "reason": "Fixture identity marker extraction included email domain; failed before mutations.",
+      "status": "failed"
+    },
+    {
+      "artifact_private_path": "/tmp/cipher-r0-runtime/fin-native-rights-second.json",
+      "artifact_sha256": "547c1c67c4cb1620d21b93f5bee1aea849bc1cfca4edb148e59f4591799af3b9",
+      "reason": "Retained CI lacked the new DOC scope_type column; supported isolated-site migrate was required.",
+      "status": "failed"
+    },
+    {
+      "artifact_private_path": "/tmp/cipher-r0-runtime/fin-native-rights-third.json",
+      "artifact_sha256": "d45fde62008c2c342c6e6d875103f2c76d68b0e9b10c08171c9242687dee5dd4",
+      "reason": "Retained old draft correctly failed stale_currency_policy after earlier Currency changes; fixture now authors a new contract through supported service with current native policy.",
+      "status": "failed"
+    }
+  ],
+  "qualification": "Fixture/environment prerequisites only. No application bypass or domain fix made to accept stale native currency authority.",
+  "schema": "cipher.r1.fin-native-rights-initial-attempts.v1",
+  "site": "cipher-ci-20261015163655-377137.localhost",
+  "status": "initial_attempts_preserved"
+}

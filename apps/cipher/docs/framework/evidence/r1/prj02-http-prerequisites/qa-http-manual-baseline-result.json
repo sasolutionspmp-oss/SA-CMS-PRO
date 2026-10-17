@@ -1,0 +1,1356 @@
+{
+  "company": "Company chain A c3c3b742a8fd",
+  "fixture_id": "company-chain-c3c3b742a8fd",
+  "pursuit": {
+    "id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+    "company": "Company chain A c3c3b742a8fd",
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "opportunity": "CRM-OPP-2026-00002",
+    "native_version": "2026-10-16 04:40:45.606491",
+    "party_type": "Customer",
+    "party_id": "Company chain customer a c3c3b742a8fd",
+    "title": "Award manual pursuit company-chain-c3c3b742a8fd",
+    "fields": {
+      "title": "Award manual pursuit company-chain-c3c3b742a8fd",
+      "sector": "Synthetic infrastructure",
+      "delivery_method": "",
+      "geography": "",
+      "bid_due_at": "",
+      "bid_timezone": "",
+      "procurement_reference": "",
+      "probability_basis": ""
+    },
+    "stage": "identified",
+    "revision_number": 1
+  },
+  "acceptance": {
+    "scope_type": "Company",
+    "id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+    "company": "Company chain A c3c3b742a8fd",
+    "project": null,
+    "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+    "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+    "created_at": "2026-10-15T23:10:47.541518+00:00",
+    "status": "accepted",
+    "estimate": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+    "estimate_revision": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+    "calculation_snapshot": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+    "baseline_number": 1,
+    "predecessor": null,
+    "packet_id": "9l0hbkcbe8",
+    "decision_id": "9l68gkcji4",
+    "accepted_by_person": "CHAIN-REVIEWER-c3c3b742a8fd",
+    "manifest": {
+      "effect": {
+        "action": "estimate.accept.v1",
+        "facts": {
+          "bindings": [],
+          "currency_policy": {
+            "currency": "USD",
+            "currency_exponent": 2,
+            "fraction_units": 100,
+            "native_currency_version": "2026-10-16 04:33:08.505734"
+          },
+          "drawing_calibration_policy": "current-working-head-v1",
+          "estimate": {
+            "current_revision": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+            "digest": "b0ba407a7db9a54348e276b6040f263c28a507c36878e57a0ccef37f92c851fb",
+            "id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4"
+          },
+          "native_references": [
+            {
+              "doctype": "Customer",
+              "name": "Company chain customer a c3c3b742a8fd",
+              "version": "2026-10-16 04:33:18.562029"
+            },
+            {
+              "doctype": "Item",
+              "name": "CHAIN-a-c3c3b742a8fd",
+              "version": "2026-10-16 04:33:18.847100"
+            },
+            {
+              "doctype": "Opportunity",
+              "name": "CRM-OPP-2026-00002",
+              "version": "2026-10-16 04:40:45.606491"
+            }
+          ],
+          "pinned_records": [
+            {
+              "digest": "3eaac3ab5cfa64833c1443427b190b68fa2a544cee0a5f5d6aabe923894cb224",
+              "id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+              "kind": "rate"
+            },
+            {
+              "digest": "7ccb0b04dac1bcaf07bc937318772aa74601081b06962f64823669d6428b494c",
+              "id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+              "kind": "rate"
+            },
+            {
+              "digest": "39692485042ad31cc34463263441e05028ee3785d32e60f8d058ae457671b0da",
+              "id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+              "kind": "rate"
+            },
+            {
+              "digest": "ff615b75801e87499a905013b7006cd4ca2d981bc040dbd0529fa9e109778e4e",
+              "id": "ceebabaf-eefa-40a0-b3b4-c8ca04e9c99e",
+              "kind": "assembly"
+            }
+          ],
+          "policy": "cipher.estimate.acceptance-facts.v1",
+          "pricing_sources_policy": "pinned-revision-at-pricing-date",
+          "pursuit": {
+            "company": "Company chain A c3c3b742a8fd",
+            "native_refs": [
+              {
+                "doctype": "Customer",
+                "name": "Company chain customer a c3c3b742a8fd"
+              },
+              {
+                "doctype": "Opportunity",
+                "name": "CRM-OPP-2026-00002"
+              }
+            ],
+            "party_id": "Company chain customer a c3c3b742a8fd",
+            "party_type": "Customer",
+            "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+            "record_digest": "73010f9e62bf6a6d49e6b87621ab3f46d2b51c96966f627c65092303c3f22ff8",
+            "revision_number": 1
+          },
+          "qualified_units": [
+            {
+              "fields": {
+                "dimension": "equipment_time",
+                "precision": 6,
+                "symbol": "equipment_time-company-chain-c3c3b742a8fd"
+              },
+              "id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Award equipment_time company-chain-c3c3b742a8fd"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "labor_time",
+                "precision": 6,
+                "symbol": "labor_time-company-chain-c3c3b742a8fd"
+              },
+              "id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Award labor_time company-chain-c3c3b742a8fd"
+              }
+            },
+            {
+              "fields": {
+                "dimension": "count",
+                "precision": 6,
+                "symbol": "chainc3c3b742a8fd"
+              },
+              "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "kind": "uom",
+              "revision": 1,
+              "target": {
+                "doctype": "UOM",
+                "name": "Company chain quantity c3c3b742a8fd"
+              }
+            }
+          ],
+          "revision": {
+            "digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+            "id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084"
+          },
+          "rounding_policy": "cipher.estimate.line-half-up.v1",
+          "scope": {
+            "company": "Company chain A c3c3b742a8fd",
+            "project": null,
+            "scope_type": "Company"
+          },
+          "snapshot": {
+            "digest": "157c099a80605bcf44aa650bc42d157e2259f73a52b8093682af65f27854669a",
+            "id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+            "input_digest": "02cce5814db8e79000e3e8be82cc87cd4405201eadd5e87928be25d2a068910d",
+            "output_digest": "28ceef3a6fc79f33f622ceda40d53ef0c907f66061acd4a65c98dda0a1f04fc3"
+          }
+        },
+        "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084"
+      },
+      "sources": [
+        {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "subject": {
+        "doctype": "Cipher Estimate Revision",
+        "label": "Estimate revision 1",
+        "name": "8b2e32e8-ae31-45b1-bb7d-d771e3251084"
+      },
+      "summary": {
+        "binding_count": 0,
+        "currency": "USD",
+        "independent_acceptance_required": true,
+        "rounding_policy": "cipher.estimate.line-half-up.v1",
+        "total": {
+          "amount": "15.00",
+          "currency": "USD"
+        }
+      }
+    },
+    "manifest_digest": "dfe7b18d30202050705fe3f6d98616a27ac4292d674fa61e56e0797f7b702710",
+    "accepted_result": {
+      "adjustments": [
+        {
+          "amount": {
+            "amount": "1.33",
+            "currency": "USD"
+          },
+          "basis_description": "10percent of rounded direct",
+          "kind": "indirect",
+          "label": "Authored indirect",
+          "line_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+          "method": "fraction_of_direct",
+          "unrounded_amount": {
+            "denominator": "40",
+            "numerator": "53"
+          },
+          "value": "0.10"
+        },
+        {
+          "amount": {
+            "amount": "0.42",
+            "currency": "USD"
+          },
+          "basis_description": "Exact fixed allowance",
+          "kind": "contingency",
+          "label": "Authored contingency",
+          "line_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+          "method": "fixed",
+          "unrounded_amount": {
+            "denominator": "50",
+            "numerator": "21"
+          },
+          "value": "0.42"
+        }
+      ],
+      "contingency": {
+        "amount": "0.42",
+        "currency": "USD"
+      },
+      "conversion_references": [],
+      "direct": {
+        "amount": "13.25",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "1.33",
+        "currency": "USD"
+      },
+      "input_digest": "02cce5814db8e79000e3e8be82cc87cd4405201eadd5e87928be25d2a068910d",
+      "lines": [
+        {
+          "alternate": "",
+          "components": [
+            {
+              "allocated_amount": {
+                "amount": "5.00",
+                "currency": "USD"
+              },
+              "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+              "cost_type": "material",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "4"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "4"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "5"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            },
+            {
+              "allocated_amount": {
+                "amount": "4.00",
+                "currency": "USD"
+              },
+              "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+              "cost_type": "labor",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "2"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "2"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "4"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            },
+            {
+              "allocated_amount": {
+                "amount": "3.00",
+                "currency": "USD"
+              },
+              "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+              "cost_type": "equipment",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "3"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            }
+          ],
+          "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+          "description": "Mixed assembly",
+          "extension": {
+            "amount": "12.00",
+            "currency": "USD"
+          },
+          "included": true,
+          "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8",
+          "quantity": {
+            "amount": "2",
+            "precision": 6,
+            "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          },
+          "quantity_method": "authored",
+          "unrounded_extension": {
+            "denominator": "1",
+            "numerator": "12"
+          }
+        },
+        {
+          "alternate": "",
+          "components": [
+            {
+              "allocated_amount": {
+                "amount": "1.25",
+                "currency": "USD"
+              },
+              "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+              "cost_type": "material",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "unrounded_cost": {
+                "denominator": "4",
+                "numerator": "5"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            }
+          ],
+          "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+          "description": "Separate material",
+          "extension": {
+            "amount": "1.25",
+            "currency": "USD"
+          },
+          "included": true,
+          "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+          "quantity": {
+            "amount": "1",
+            "precision": 6,
+            "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          },
+          "quantity_method": "authored",
+          "unrounded_extension": {
+            "denominator": "4",
+            "numerator": "5"
+          }
+        },
+        {
+          "alternate": "Excluded alternative",
+          "components": [
+            {
+              "allocated_amount": {
+                "amount": "5.00",
+                "currency": "USD"
+              },
+              "component_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+              "cost_type": "material",
+              "material_factor": {
+                "denominator": "1",
+                "numerator": "1"
+              },
+              "priced_quantity_exact": {
+                "denominator": "1",
+                "numerator": "4"
+              },
+              "rate_revision": 1,
+              "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+              "resource_quantity_exact": {
+                "denominator": "1",
+                "numerator": "4"
+              },
+              "rounding_increment": {
+                "amount": "0.00",
+                "currency": "USD"
+              },
+              "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "unrounded_cost": {
+                "denominator": "1",
+                "numerator": "5"
+              },
+              "waste_fraction": {
+                "denominator": "1",
+                "numerator": "0"
+              }
+            }
+          ],
+          "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+          "description": "Unfunded alternative",
+          "extension": {
+            "amount": "5.00",
+            "currency": "USD"
+          },
+          "included": false,
+          "line_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+          "quantity": {
+            "amount": "4",
+            "precision": 6,
+            "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          },
+          "quantity_method": "authored",
+          "unrounded_extension": {
+            "denominator": "1",
+            "numerator": "5"
+          }
+        }
+      ],
+      "output_digest": "28ceef3a6fc79f33f622ceda40d53ef0c907f66061acd4a65c98dda0a1f04fc3",
+      "policy": {
+        "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+        "currency_exponent": 2,
+        "header_rounding": "sum-rounded-lines",
+        "intermediate": "exact-rational",
+        "line_rounding": "sum-exact-components-then-round",
+        "rounding_mode": "ROUND_HALF_UP",
+        "version": "cipher.estimate.line-half-up.v1"
+      },
+      "schema": "cipher.estimate.result.v1",
+      "total": {
+        "amount": "15.00",
+        "currency": "USD"
+      }
+    },
+    "currency": "USD",
+    "total": {
+      "amount": "15.00",
+      "currency": "USD"
+    },
+    "source_citations": [
+      {
+        "company": "Company chain A c3c3b742a8fd",
+        "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+        "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+        "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+        "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+        "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+        "page": 1,
+        "page_label": "1",
+        "project": null,
+        "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+        "revision_number": 1,
+        "scope_type": "Company",
+        "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+      }
+    ]
+  },
+  "calculated": {
+    "estimate": {
+      "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+      "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+      "company": "Company chain A c3c3b742a8fd",
+      "created_at": "2026-10-15T23:10:46.041665+00:00",
+      "currency": "USD",
+      "current_revision": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+      "id": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+      "pricing_date": "2026-10-15",
+      "project": null,
+      "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+      "revision_number": 1,
+      "scope_type": "Company",
+      "status": "draft",
+      "title": "Award manual accepted cost company-chain-c3c3b742a8fd"
+    },
+    "revision": {
+      "scope_type": "Company",
+      "id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+      "company": "Company chain A c3c3b742a8fd",
+      "project": null,
+      "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+      "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+      "created_at": "2026-10-15T23:10:46.206325+00:00",
+      "status": "draft-calculated",
+      "estimate": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+      "revision_number": 1,
+      "predecessor": null,
+      "calculation_snapshot": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+      "currency": "USD",
+      "pricing_date": "2026-10-15",
+      "policy_version": "cipher.estimate.line-half-up.v1",
+      "line_record_ids": [
+        "a1c23fe3-df09-44bb-9b6c-d7e2749a9986",
+        "6a3f2e5d-1589-43c4-bda8-e5c6f76102d5",
+        "b794c106-4893-45ab-8605-06a8f88a4267"
+      ],
+      "source_citations": [
+        {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "basis_description": "Authored raw manual inputs, no generated provenance/calibration",
+      "direct": {
+        "amount": "13.25",
+        "currency": "USD"
+      },
+      "indirect": {
+        "amount": "1.33",
+        "currency": "USD"
+      },
+      "contingency": {
+        "amount": "0.42",
+        "currency": "USD"
+      },
+      "total": {
+        "amount": "15.00",
+        "currency": "USD"
+      }
+    },
+    "calculation": {
+      "scope_type": "Company",
+      "id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+      "company": "Company chain A c3c3b742a8fd",
+      "project": null,
+      "author_person": "CHAIN-AUTHOR-c3c3b742a8fd",
+      "author_user": "company.chain.author.c3c3b742a8fd@cipher.example",
+      "created_at": "2026-10-15T23:10:46.166157+00:00",
+      "status": "calculated",
+      "subject_type": "Cipher Estimate Revision",
+      "subject_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+      "inputs": {
+        "schema": "cipher.estimate.inputs.v2",
+        "unit_manifest": {
+          "schema": "cipher.canonical.v2",
+          "dataset_id": "0018e09b-28a4-446f-ab60-6ea0f06e9141",
+          "scope": {
+            "scope_type": "Company",
+            "company": "Company chain A c3c3b742a8fd",
+            "project": null
+          },
+          "records": [
+            {
+              "id": "9a9c8094-7002-557a-a12c-30147a9d618a",
+              "kind": "company",
+              "revision": 1,
+              "fields": {
+                "name": "Company chain A c3c3b742a8fd",
+                "currency": "USD",
+                "timezone": "Asia/Kolkata"
+              },
+              "target": {
+                "doctype": "Company",
+                "name": "Company chain A c3c3b742a8fd"
+              }
+            },
+            {
+              "id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "equipment_time-company-chain-c3c3b742a8fd",
+                "dimension": "equipment_time",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "Award equipment_time company-chain-c3c3b742a8fd"
+              }
+            },
+            {
+              "id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "labor_time-company-chain-c3c3b742a8fd",
+                "dimension": "labor_time",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "Award labor_time company-chain-c3c3b742a8fd"
+              }
+            },
+            {
+              "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "kind": "uom",
+              "revision": 1,
+              "fields": {
+                "symbol": "chainc3c3b742a8fd",
+                "dimension": "count",
+                "precision": 6
+              },
+              "target": {
+                "doctype": "UOM",
+                "name": "Company chain quantity c3c3b742a8fd"
+              }
+            }
+          ],
+          "unit_conversions": []
+        },
+        "currency": "USD",
+        "currency_exponent": 2,
+        "pricing_date": "2026-10-15",
+        "policy_version": "cipher.estimate.line-half-up.v1",
+        "basis_description": "Authored raw manual inputs, no generated provenance/calibration",
+        "basis_citations": [
+          {
+            "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+            "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+            "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+            "revision_number": 1,
+            "page": 1,
+            "page_label": "1",
+            "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+            "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+            "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+            "scope_type": "Company",
+            "company": "Company chain A c3c3b742a8fd",
+            "project": null,
+            "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde"
+          }
+        ],
+        "rates": {
+          "845aace3-dde2-430f-abf9-20b4d6ddb011": {
+            "cost_type": "equipment",
+            "currency": "USD",
+            "exclusions": "No taxes or freight",
+            "expiry_date": null,
+            "freight_tax_assumptions": "None",
+            "geography": "Synthetic",
+            "id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+            "inclusions": "Explicit authored fixture",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Owned synthetic fixture source",
+            "predecessor": null,
+            "quote_date": "2026-10-15",
+            "quote_reference": "Authored isolated manual fixture",
+            "rate_amount": "3.00",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "company": "Company chain A c3c3b742a8fd",
+                "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+                "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+                "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+                "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+                "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+                "page": 1,
+                "page_label": "1",
+                "project": null,
+                "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+                "revision_number": 1,
+                "scope_type": "Company",
+                "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+              }
+            ],
+            "source_id": "f349463d-1c8d-4ee9-99c2-0eed48c0fb48",
+            "title": "Award equipment company-chain-c3c3b742a8fd",
+            "unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+          },
+          "8f9476d8-57d6-42f9-b24b-714c36c4f159": {
+            "cost_type": "labor",
+            "currency": "USD",
+            "exclusions": "No taxes or freight",
+            "expiry_date": null,
+            "freight_tax_assumptions": "None",
+            "geography": "Synthetic",
+            "id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+            "inclusions": "Explicit authored fixture",
+            "item": null,
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Owned synthetic fixture source",
+            "predecessor": null,
+            "quote_date": "2026-10-15",
+            "quote_reference": "Authored isolated manual fixture",
+            "rate_amount": "2.00",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "company": "Company chain A c3c3b742a8fd",
+                "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+                "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+                "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+                "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+                "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+                "page": 1,
+                "page_label": "1",
+                "project": null,
+                "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+                "revision_number": 1,
+                "scope_type": "Company",
+                "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+              }
+            ],
+            "source_id": "e7370ea7-3f04-44a5-b6ac-83a460996950",
+            "title": "Award labor company-chain-c3c3b742a8fd",
+            "unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095"
+          },
+          "bca518b3-c7f4-4113-89ac-8f932036f82e": {
+            "cost_type": "material",
+            "currency": "USD",
+            "exclusions": "No taxes or freight",
+            "expiry_date": null,
+            "freight_tax_assumptions": "None",
+            "geography": "Synthetic",
+            "id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+            "inclusions": "Explicit authored fixture",
+            "item": "CHAIN-a-c3c3b742a8fd",
+            "party": null,
+            "party_type": null,
+            "permission_basis": "Owned synthetic fixture source",
+            "predecessor": null,
+            "quote_date": "2026-10-15",
+            "quote_reference": "Authored isolated manual fixture",
+            "rate_amount": "1.25",
+            "rate_precision": 6,
+            "revision": 1,
+            "source_citations": [
+              {
+                "company": "Company chain A c3c3b742a8fd",
+                "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+                "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+                "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+                "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+                "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+                "page": 1,
+                "page_label": "1",
+                "project": null,
+                "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+                "revision_number": 1,
+                "scope_type": "Company",
+                "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+              }
+            ],
+            "source_id": "1d03ed75-f78f-460f-b812-76f89b647372",
+            "title": "Award material company-chain-c3c3b742a8fd",
+            "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+          }
+        },
+        "assemblies": {
+          "ceebabaf-eefa-40a0-b3b4-c8ca04e9c99e": {
+            "assembly_id": "d590fbf1-2ae6-4071-a35d-197e900a7917",
+            "author_basis": "Exact source quantities; no generated evidence",
+            "basis_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+            "components": [
+              {
+                "kind": "material",
+                "line_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+                "material_factor": "1",
+                "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+                "resource_quantity": {
+                  "amount": "2",
+                  "precision": 6,
+                  "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+                },
+                "waste_fraction": "0",
+                "work_quantity": {
+                  "amount": "1",
+                  "precision": 6,
+                  "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+                }
+              },
+              {
+                "kind": "labor",
+                "line_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+                "material_factor": "1",
+                "rate_source_id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+                "resource_quantity": {
+                  "amount": "1",
+                  "precision": 6,
+                  "unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095"
+                },
+                "waste_fraction": "0",
+                "work_quantity": {
+                  "amount": "1",
+                  "precision": 6,
+                  "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+                }
+              },
+              {
+                "kind": "equipment",
+                "line_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+                "material_factor": "1",
+                "rate_source_id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+                "resource_quantity": {
+                  "amount": "0.5",
+                  "precision": 6,
+                  "unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+                },
+                "waste_fraction": "0",
+                "work_quantity": {
+                  "amount": "1",
+                  "precision": 6,
+                  "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24"
+                }
+              }
+            ],
+            "id": "ceebabaf-eefa-40a0-b3b4-c8ca04e9c99e",
+            "predecessor": null,
+            "revision": 1,
+            "title": "Manual mixed assembly company-chain-c3c3b742a8fd"
+          }
+        },
+        "lines": [
+          {
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "notes": "Explicit manual fixture",
+            "alternate": "",
+            "included": true,
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8",
+            "description": "Mixed assembly",
+            "quantity": {
+              "amount": "2",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "assembly_revision_id": "ceebabaf-eefa-40a0-b3b4-c8ca04e9c99e"
+          },
+          {
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "notes": "Explicit manual fixture",
+            "alternate": "",
+            "included": true,
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "description": "Separate material",
+            "quantity": {
+              "amount": "1",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+            "material_factor": "1",
+            "waste_fraction": "0"
+          },
+          {
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "notes": "Explicit manual fixture",
+            "alternate": "Excluded alternative",
+            "included": false,
+            "line_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+            "description": "Unfunded alternative",
+            "quantity": {
+              "amount": "4",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+            "material_factor": "1",
+            "waste_fraction": "0"
+          }
+        ],
+        "adjustments": [
+          {
+            "line_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "indirect",
+            "label": "Authored indirect",
+            "method": "fraction_of_direct",
+            "value": "0.10",
+            "basis_description": "10percent of rounded direct"
+          },
+          {
+            "line_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "contingency",
+            "label": "Authored contingency",
+            "method": "fixed",
+            "value": "0.42",
+            "basis_description": "Exact fixed allowance"
+          }
+        ]
+      },
+      "result": {
+        "schema": "cipher.estimate.result.v1",
+        "policy": {
+          "version": "cipher.estimate.line-half-up.v1",
+          "rounding_mode": "ROUND_HALF_UP",
+          "currency_exponent": 2,
+          "intermediate": "exact-rational",
+          "line_rounding": "sum-exact-components-then-round",
+          "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+          "header_rounding": "sum-rounded-lines"
+        },
+        "lines": [
+          {
+            "line_id": "877be058-cf19-4d65-bcff-cf86a1773ef8",
+            "description": "Mixed assembly",
+            "quantity": {
+              "amount": "2",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "components": [
+              {
+                "component_id": "7c98adb6-9c2d-4631-b5f9-6f837435bff4",
+                "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+                "resource_quantity_exact": {
+                  "numerator": "4",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "4",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "5",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "5.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              },
+              {
+                "component_id": "fca0b3b8-bdeb-4afa-95af-c71984134ae0",
+                "rate_source_id": "8f9476d8-57d6-42f9-b24b-714c36c4f159",
+                "rate_revision": 1,
+                "cost_type": "labor",
+                "source_unit_id": "b746d363-9219-4d6b-9b83-ab57ab560095",
+                "resource_quantity_exact": {
+                  "numerator": "2",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "2",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "4",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "4.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              },
+              {
+                "component_id": "6b858508-0ef7-478c-990d-259d69424ef0",
+                "rate_source_id": "845aace3-dde2-430f-abf9-20b4d6ddb011",
+                "rate_revision": 1,
+                "cost_type": "equipment",
+                "source_unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb",
+                "resource_quantity_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "3",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "3.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "12",
+              "denominator": "1"
+            },
+            "extension": {
+              "amount": "12.00",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+            "description": "Separate material",
+            "quantity": {
+              "amount": "1",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": true,
+            "alternate": "",
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "components": [
+              {
+                "component_id": "2c15dc71-7e66-40ab-becb-c64cc175fe67",
+                "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+                "resource_quantity_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "5",
+                  "denominator": "4"
+                },
+                "allocated_amount": {
+                  "amount": "1.25",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "5",
+              "denominator": "4"
+            },
+            "extension": {
+              "amount": "1.25",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+            "description": "Unfunded alternative",
+            "quantity": {
+              "amount": "4",
+              "unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+              "precision": 6
+            },
+            "quantity_method": "authored",
+            "included": false,
+            "alternate": "Excluded alternative",
+            "cost_code": "DESCRIPTIVE-NOT-AUTHORITY",
+            "components": [
+              {
+                "component_id": "e4d62c81-ab2f-405e-b2a3-f0040b1d19e4",
+                "rate_source_id": "bca518b3-c7f4-4113-89ac-8f932036f82e",
+                "rate_revision": 1,
+                "cost_type": "material",
+                "source_unit_id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+                "resource_quantity_exact": {
+                  "numerator": "4",
+                  "denominator": "1"
+                },
+                "priced_quantity_exact": {
+                  "numerator": "4",
+                  "denominator": "1"
+                },
+                "material_factor": {
+                  "numerator": "1",
+                  "denominator": "1"
+                },
+                "waste_fraction": {
+                  "numerator": "0",
+                  "denominator": "1"
+                },
+                "unrounded_cost": {
+                  "numerator": "5",
+                  "denominator": "1"
+                },
+                "allocated_amount": {
+                  "amount": "5.00",
+                  "currency": "USD"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "unrounded_extension": {
+              "numerator": "5",
+              "denominator": "1"
+            },
+            "extension": {
+              "amount": "5.00",
+              "currency": "USD"
+            }
+          }
+        ],
+        "adjustments": [
+          {
+            "line_id": "050fbe75-8e16-4b11-9cd7-207ce5c7fa47",
+            "kind": "indirect",
+            "label": "Authored indirect",
+            "method": "fraction_of_direct",
+            "value": "0.10",
+            "basis_description": "10percent of rounded direct",
+            "unrounded_amount": {
+              "numerator": "53",
+              "denominator": "40"
+            },
+            "amount": {
+              "amount": "1.33",
+              "currency": "USD"
+            }
+          },
+          {
+            "line_id": "76d81db4-4aa3-477e-aa96-00e04aeebe56",
+            "kind": "contingency",
+            "label": "Authored contingency",
+            "method": "fixed",
+            "value": "0.42",
+            "basis_description": "Exact fixed allowance",
+            "unrounded_amount": {
+              "numerator": "21",
+              "denominator": "50"
+            },
+            "amount": {
+              "amount": "0.42",
+              "currency": "USD"
+            }
+          }
+        ],
+        "direct": {
+          "amount": "13.25",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "1.33",
+          "currency": "USD"
+        },
+        "contingency": {
+          "amount": "0.42",
+          "currency": "USD"
+        },
+        "total": {
+          "amount": "15.00",
+          "currency": "USD"
+        },
+        "conversion_references": [],
+        "input_digest": "02cce5814db8e79000e3e8be82cc87cd4405201eadd5e87928be25d2a068910d",
+        "output_digest": "28ceef3a6fc79f33f622ceda40d53ef0c907f66061acd4a65c98dda0a1f04fc3"
+      },
+      "estimate": "f68c41d9-72c1-4592-bb2a-e41b4308cbf4",
+      "currency_policy": {
+        "currency": "USD",
+        "currency_exponent": 2,
+        "fraction_units": 100,
+        "native_currency_version": "2026-10-16 04:33:08.505734"
+      },
+      "input_digest": "02cce5814db8e79000e3e8be82cc87cd4405201eadd5e87928be25d2a068910d",
+      "output_digest": "28ceef3a6fc79f33f622ceda40d53ef0c907f66061acd4a65c98dda0a1f04fc3",
+      "source_citations": [
+        {
+          "company": "Company chain A c3c3b742a8fd",
+          "document_id": "DOC-20010c2cb2174fed9ae6675cb37fea03",
+          "document_title": "Award explicit manual source company-chain-c3c3b742a8fd",
+          "excerpt": "Synthetic award manual source company-chain-c3c3b742a8fd\nMaterial rateUSD1.25/count; laborUSD2.00/labor-hour; equipmentUSD3.00/equipment-hour.\nAssembly work1count needs2material-count,1labor-hour,0.5equipment-hour. Manual assembly quantity2count; extra material1count; excluded alternative4count.\nIndirect10percent of direct; contingencyUSD0.42. Commercial selling rateUSD12.34/count separately authored. No generated/calibrated/model/provider claim.",
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "id": "d6cf5fd8619bc31d4afb764cdfa8252cb6ea311665666cfd32191e814bd33dde",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ]
+    },
+    "history_id": "9kvbnvfi1p",
+    "operation": {
+      "id": "ec502022-d98f-4164-bc50-a0baf9386e0c",
+      "status": "succeeded",
+      "replayed": false
+    }
+  },
+  "source_reference": {
+    "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+    "page": 1,
+    "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+    "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+  },
+  "qualified_unit": {
+    "fields": {
+      "dimension": "count",
+      "precision": 6,
+      "symbol": "chainc3c3b742a8fd"
+    },
+    "id": "f7ba5751-7675-497c-9a16-563fb29a7e24",
+    "kind": "uom",
+    "revision": 1,
+    "target": {
+      "doctype": "UOM",
+      "name": "Company chain quantity c3c3b742a8fd"
+    }
+  },
+  "native": {
+    "customer": "Company chain customer a c3c3b742a8fd",
+    "item": "CHAIN-a-c3c3b742a8fd",
+    "price_list": "Company chain selling a c3c3b742a8fd",
+    "supplier": "Company chain supplier a c3c3b742a8fd"
+  },
+  "acceptance_id": "a39e12fc-65e5-4d29-a544-34a798c539ad",
+  "acceptance_digest": "aef0c66706dc7b9a978049733ec7fdf9491ae119837c7d3772f61d8450eb22a5",
+  "revision_id": "8b2e32e8-ae31-45b1-bb7d-d771e3251084",
+  "revision_digest": "813554f5266e2ec6e1b240ecbc76de0029106b943d56fff6ee6aa98ad8db4f7e",
+  "pursuit_id": "49566662-499a-47db-be4b-b3bc80dc5cd7",
+  "qualification": "Actual manual mixed baseline only; no calibrated/generated input."
+}

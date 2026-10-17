@@ -1,0 +1,58 @@
+{
+  "schema": "cipher.buy01.unregistered-review-source-tests.v1",
+  "captured_at": "2026-10-15T23:25:12.557457+00:00",
+  "standing": "unregistered-nonpersistent-review-composition-only",
+  "tests": {
+    "count": 25,
+    "elapsed_seconds": 0.062,
+    "exit_code": 0,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "modules": [
+      "test_procurement_contracts",
+      "test_procurement_normalization",
+      "test_procurement_drafts"
+    ],
+    "command": "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_procurement_contracts cipher_aec.tests.test_procurement_normalization cipher_aec.tests.test_procurement_drafts -q"
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/__init__.py": "fd307d0fac516e7b76e5aee569409b7dab961043f276be6207f4dae7a7a2a2e8",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/contracts.py": "e12af6ee5fa71ffff1fccacab51f9c281a8921e4c0106215ee0144fcbeb62a37",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/drafts.py": "5bc352f72a0872f2f458fbd7472ca023134cab34c549eb2e837a81facdcb9bbf",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/procurement/normalization.py": "fcb273179505218af58bf66a2938807f2c7636e781d37fabf64fedaa9c4c477a",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_contracts.py": "be99b35f33702c7e3f3ae40fb36ae39079238fb2ae775a88f8e73575ba97147c",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_drafts.py": "cf527d06f81c01059bbde97091e36a61bcaee81a3a6eb0195720e279fc3f0ffe",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_procurement_normalization.py": "9151d40423122eaaf4e000fd2cd603ccdcdcefc06a19c46fb088dc938ae3ae19"
+  },
+  "pure_dependency_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/contracts.py": "06ceec63f29611d342f6f295df9a1051872dda782bf1c77a396bebf50a3b2d62",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/validation.py": "da60282eb1ad6e3258fe96b5811043ae81819f130913083c24b7c552578ea0c6",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/migrations/fixtures/canonical-masters-v1.json": "559dd8de01651929487543bb0dee07b10fa78e967557eee5195910cd6fae53ba"
+  },
+  "corrections": [
+    "Canonical Actor Person names use bounded exact native text, including native hash IDs, not a UUID assumption. The trusted origin port must freshly resolve that exact user/person/scope.",
+    "Complete package/response source snapshots compare canonical JSON digests, distinguishing bool/integer/float/text aliases."
+  ],
+  "covered": [
+    "Vendor original authored text and decimal scale retained; exact rational reciprocal units and explicit no-FX/expiry/dimension/coverage/math blockers.",
+    "Exact proposed UUID references and unit revisions; native-hash Actor propagation and changed-person denial before source details.",
+    "Default concrete adapter refuses unavailable qualified awarded-Project origin dependency.",
+    "Nonpersistent review values cannot select/award/create native or canonical records.",
+    "Every original/predecessor/comparison source is reauthorized through the trusted internal port; private source refuses entire result; complete citation DTO comparison is type-sensitive."
+  ],
+  "frozen_award": {
+    "catalog_sha256": "1c5d8fa4686b6e575e3fc706e586fc3707beee05983be53435681dd5728c6fa5",
+    "fixed_cipher_pins": 69,
+    "body_drift": []
+  },
+  "activation_dependencies": [
+    "Locally qualified PRJ-02 and a Project-authorized exact adopted-origin reader.",
+    "Concrete fresh authorization/source adapter, explicit procurement duties, registered persistence/controller/API/schema/receipt contracts.",
+    "Actual native MR/RFQ/Supplier Quotation guarded controller and no-send/no-identity-side-effect qualification."
+  ],
+  "limits": [
+    "Disconnected test port proves pure composition and denial ordering only; no native permissions/source bytes/runtime adoption qualification.",
+    "No metadata, shared registration, API, adapter, native procurement writer, communication/portal/user, commitment, stock or ledger effects.",
+    "Review candidates and proposed IDs do not establish persisted record/revision/approval standing.",
+    "No BUY-01 completion or connected provider claim."
+  ]
+}

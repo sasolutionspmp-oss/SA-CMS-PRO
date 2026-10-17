@@ -1,0 +1,177 @@
+{
+  "schema": "cipher.r1.com02-migration-preservation.v1",
+  "status": "passed",
+  "control": "All pre-existing SQL columns and row hashes in the listed canonical tables, plus original Project/Task fields. Additive new columns intentionally excluded; this is not a file-byte backup proof.",
+  "before_sha256": "c4fb45df5a7afc821bda5f8ec31ae20d90107a25d119c3e9839a47185cb3845c",
+  "counts": {
+    "Cipher Approval Consumption": {
+      "original_rows": 18,
+      "unchanged": 18,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Decision": {
+      "original_rows": 25,
+      "unchanged": 25,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Packet": {
+      "original_rows": 25,
+      "unchanged": 25,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Approval Policy Revision": {
+      "original_rows": 6,
+      "unchanged": 6,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Assembly Revision": {
+      "original_rows": 12,
+      "unchanged": 12,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calculation Snapshot": {
+      "original_rows": 34,
+      "unchanged": 34,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calibration": {
+      "original_rows": 5,
+      "unchanged": 5,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Calibration Verification": {
+      "original_rows": 5,
+      "unchanged": 5,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Command Receipt": {
+      "original_rows": 390,
+      "unchanged": 390,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Document": {
+      "original_rows": 44,
+      "unchanged": 44,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Document Revision": {
+      "original_rows": 48,
+      "unchanged": 48,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate": {
+      "original_rows": 20,
+      "unchanged": 20,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Acceptance": {
+      "original_rows": 7,
+      "unchanged": 7,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Line": {
+      "original_rows": 39,
+      "unchanged": 39,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Estimate Revision": {
+      "original_rows": 34,
+      "unchanged": 34,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher History Event": {
+      "original_rows": 335,
+      "unchanged": 335,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal": {
+      "original_rows": 4,
+      "unchanged": 4,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Price Line": {
+      "original_rows": 16,
+      "unchanged": 16,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Revision": {
+      "original_rows": 8,
+      "unchanged": 8,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Proposal Section": {
+      "original_rows": 10,
+      "unchanged": 10,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Pursuit": {
+      "original_rows": 9,
+      "unchanged": 9,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Rate Source": {
+      "original_rows": 47,
+      "unchanged": 47,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Line Binding": {
+      "original_rows": 5,
+      "unchanged": 5,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Measurement": {
+      "original_rows": 11,
+      "unchanged": 11,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Takeoff Set": {
+      "original_rows": 4,
+      "unchanged": 4,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "Cipher Unit Conversion": {
+      "original_rows": 10,
+      "unchanged": 10,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "original_project": {
+      "original_rows": 1,
+      "unchanged": 1,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    },
+    "original_tasks": {
+      "original_rows": 14,
+      "unchanged": 14,
+      "changed_or_missing": 0,
+      "new_rows": 0
+    }
+  },
+  "changed_ids": []
+}

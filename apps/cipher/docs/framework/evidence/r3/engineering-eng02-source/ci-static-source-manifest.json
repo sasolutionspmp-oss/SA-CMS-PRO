@@ -1,0 +1,32 @@
+{
+  "MAIN_changed": false,
+  "at": "2026-10-17T05:12:10.457102+00:00",
+  "base_frozen_source_sha256": "5e26cb24a5ad50d9e41901d157eb450e2237054e3673b856e12b3ab436d907ba",
+  "base_publication": "e8b692a9ae83884caf77f92fe30fe9478de14161",
+  "files": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_packages_native.py": "d2ebff87a187787b4234bdc5d03b158975a2e4be94d17f77953b097f4859f201",
+    "apps/cipher/platform/operations/tests/test_stage_failure_metadata.py": "61b7c07621fc97a9e53eb9e53ae62351c2ea75467751bec469634371e5f519da",
+    "apps/cipher/platform/operations/validate_new_stack.py": "7ed86bc7773be79091c46b7770f43d6ce7f21fdec010331a496175450777aaac",
+    "apps/cipher/product/playwright.config.ts": "82d42a105cc8dde109276cd955cfe8c226a1479cb5966f97c981c9c2bc0c768f",
+    "apps/cipher/product/scripts/build-browser-fixtures.mjs": "a6098a6f7785201b3cf9a56455f2fe770b728c1d36c21ac4db0360a82f33f3b2",
+    "apps/cipher/product/scripts/preview-browser-fixtures.mjs": "989ef41125c38552d9f85fb105156e9178d75754eb84d4566ed0b0666d3ea8c0"
+  },
+  "full_frontend_qualification": "pending_current_513_case_run",
+  "native_executed_locally": false,
+  "native_fixture_changed": true,
+  "private_browser_build_files": 381,
+  "private_browser_inventory_sha256": "1b08e47638a061cd1a3374c76f900cae65b453db3bbb33740f3d686b399c3f09",
+  "production_business_services_changed": false,
+  "schema": "cipher.eng02.ci-static-source.v1",
+  "shipped_dist_rebuilt": false,
+  "source_delta": [
+    "apps/cipher/product/scripts/build-browser-fixtures.mjs",
+    "apps/cipher/product/scripts/preview-browser-fixtures.mjs",
+    "apps/cipher/product/playwright.config.ts",
+    "apps/cipher/platform/operations/validate_new_stack.py",
+    "apps/cipher/platform/operations/tests/test_stage_failure_metadata.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_packages_native.py"
+  ],
+  "source_files": 834,
+  "source_inventory_sha256": "67082f91bcad0d3f7e882cfecdc21b8f7a4f3b54eab71cb1ad5a66a540b8709c"
+}

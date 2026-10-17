@@ -1,0 +1,20 @@
+{
+  "schema": "cipher.r1.installed-duty-capability-parity.v1",
+  "status": "passed",
+  "recorded_at": "2026-10-15T18:50:23.919275+00:00",
+  "site": "cipher.localhost",
+  "supported_entry": "bench --site cipher.localhost execute cipher_aec.tests.test_capability_metadata.run_native_acceptance",
+  "exit_code": 0,
+  "actual_observation": {
+    "installed_select_count": 17,
+    "accepted_scope_pairs": 24,
+    "denied_cross_scope_pairs": 10,
+    "persisted_rows": 0
+  },
+  "source_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_capability_metadata.py": "0a944a2f5a086dc18034bb9eac22ac43e4539adfe240f8b53a38c0a13d9f1746",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json": "015b396252123c6a4e5d4b827513979ca7a4326e84cb7a0a2d136cf6f46c403d",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_governance/doctype/cipher_project_duty/cipher_project_duty.py": "30fe48a65929c89e412a26c849904df534240ca02633295ac03d4d3953bffe14"
+  },
+  "qualification": "Actual installed Frappe Select and Cipher Project Duty controller validation after supported narrow metadata reload. Counts are scope/ability validation pairs, not independent full-workflow tests. No rows inserted. Native commercial.distribute is admitted only in Company scope."
+}

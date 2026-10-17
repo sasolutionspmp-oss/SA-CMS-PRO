@@ -1,0 +1,12 @@
+{
+  "registered_queue_names": [
+    "default",
+    "long",
+    "short"
+  ],
+  "distribution_queue_registered": false,
+  "warning_counts": {
+    "/home/frappe/frappe-bench/logs/cipher_outbox.log": 0,
+    "cipher.localhost/logs/cipher_outbox.log": 0
+  }
+}

@@ -1,0 +1,9 @@
+# Reopen saved quantity evidence
+
+Open **Company drawing takeoff**, then **Browse Company evidence attachments**. This register spans the signed-in Company's authorized stored attachments and pages in groups of 25; it does not imply that every row belongs to a selected takeoff set. Choose **View attachment** to read the actual original set, measurement, estimate revision/line and calculation snapshot. Historical estimates and superseded measurements retain their original facts; current eligibility is shown separately.
+
+To compare stored quantity revisions, open a manual successor in Saved measurements and choose **Compare with predecessor**. The interface reads the actual predecessor and selected successor, validates their family/revision/source/quantity/digests and reads the canonical comparison. Navigation or reload does not require repeating the earlier create command. The user selects the stored record again; no cross-reload mutation journal or remembered selection is claimed.
+
+Lists are bounded and selected details load lazily. Known Company/User/Person/capability changes reset cursors and source-bearing details. A denial or malformed/wrong-scope join cannot display an earlier cached result. Current authorized readers can inspect historical authorship without assuming they are the recorded author. Reading evidence grants no new quantity, pricing, binding, acceptance or financial authority.
+
+[Qualification](evidence/r1/company-takeoff-history-r20/README.md) and [fifteen actual current-build screens](evidence/r1/company-takeoff-history-r20/ui/README.md) include the corrected phone form. The actual capture reopened existing stored facts and staged a new form without submitting any command. [Original native successor evidence](evidence/r1/company-takeoff-successor-r19/README.md) remains distinct from that read-only follow-up.

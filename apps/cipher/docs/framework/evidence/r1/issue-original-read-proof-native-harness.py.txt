@@ -1,0 +1,77 @@
+import json,time,uuid,hashlib,traceback
+from pathlib import Path
+from unittest.mock import patch
+import frappe
+frappe.init(site='cipher.localhost');frappe.connect()
+from cipher_aec.api.contracts import digest
+from cipher_aec.api.errors import DomainError
+from cipher_aec.documents import provenance,storage
+from cipher_aec.commercial import service,outputs
+from cipher_aec.governance.context import current_actor,require_company
+from cipher_aec.tests.test_company_chain_acceptance import _load_fixture,set_fixture_reviewer_native_permission
+private=str(Path(frappe.get_site_path('private','cipher-fixtures','company-chain-20b85fd4edd2.secret.json')).resolve())
+f=_load_fixture(private);company=f['company'];reviewer=f['users']['reviewer']['user'];issue_id='6c200369-c843-424d-9faf-bcdf0acb7f20'
+journal=Path(frappe.get_site_path('private','cipher-fixtures','issue-original-read-proof-'+uuid.uuid4().hex+'.jsonl'))
+def record(stage,**facts):
+    with journal.open('a') as out:out.write(json.dumps({'stage':stage,'utc':frappe.utils.now_datetime().isoformat(),**facts},default=str)+'\n')
+    journal.chmod(0o600)
+def snapshot():
+    issue=frappe.get_doc('Cipher Proposal Issue',issue_id);body=json.loads(issue.data_json);pdf=body['prepared_output']
+    revision=frappe.get_doc('Cipher Document Revision',pdf['revision_id'])
+    return {'issue_digest':issue.record_digest,'issue_json_sha256':hashlib.sha256(issue.data_json.encode()).hexdigest(),
+            'prepared_revision':pdf['revision_id'],'expected_pdf_sha256':pdf['source_sha256'],
+            'canonical_revision':hashlib.sha256(json.dumps(revision.as_dict(),sort_keys=True,default=str).encode()).hexdigest()}
+before=snapshot();original_perm=frappe.db.get_value('Custom DocPerm',{'parent':'Customer','role':f['reviewer_native_role'],'permlevel':0},['read','select'],as_dict=True)
+assert original_perm and original_perm['read']==1 and original_perm['select']==1,original_perm
+record('start',company=company,issue_id=issue_id,before=before,original_customer_role_permission=dict(original_perm))
+result={'status':'running','qualification':'Native bounded existing-graph delta only; no HTTP, renderer, approval effect, or transport qualification.','company':company,'issue_id':issue_id,'before':before,'journal':str(journal)}
+def check(stage,allowed):
+    frappe.db.rollback();frappe.set_user(reviewer);actor=current_actor()
+    require_company(company,ability='commercial.read',actor=actor);require_company(company,ability='document.read',actor=actor)
+    actual=bool(frappe.has_permission('Customer','read',doc=f['native']['a']['customer'],user=reviewer));assert actual==allowed
+    start=time.perf_counter();seen={'storage_reads':0,'sha_length_checks':0,'target_pdf_checks':0}
+    real_read=storage.FrappeFileStorage.read;real_verify=storage.verify_bytes
+    def read(self,*args,**kwargs):seen['storage_reads']+=1;return real_read(self,*args,**kwargs)
+    def verify(data,sha,size):
+        value=real_verify(data,sha,size);seen['sha_length_checks']+=1
+        if sha==before['expected_pdf_sha256']:seen['target_pdf_checks']+=1
+        return value
+    with patch.object(storage.FrappeFileStorage,'read',read),patch.object(storage,'verify_bytes',verify):
+        with provenance.read_graph(actor,company):
+            if allowed:
+                one=service._read('issue',issue_id,company,actor)[1];two=service._read('issue',issue_id,company,actor)[1];assert one==two
+                prior=seen['target_pdf_checks'];ref=outputs.issue_source_reference(company,issue_id,actor)
+                assert seen['target_pdf_checks']>prior,'Requested canonical PDF was not actually verified'
+                assert ref['source']['source_sha256']==before['expected_pdf_sha256']
+                stats=provenance.read_graph_stats();assert stats['original_proof_hits']>=2 and stats['original_proof_authorized']>=1,stats
+            else:
+                errors=[]
+                for name,call in [('issue',lambda:service._read('issue',issue_id,company,actor)),('bytes',lambda:outputs.issue_source_reference(company,issue_id,actor))]:
+                    try:call()
+                    except DomainError as exc:errors.append({'reader':name,'code':exc.code})
+                    else:raise AssertionError('Current native source denial did not reject '+name)
+                stats=provenance.read_graph_stats();assert stats.get('original_proof_authorized',0)==0
+                assert seen['target_pdf_checks']==0
+    assert not provenance.has_read_graph(actor,company)
+    observed={'seconds':time.perf_counter()-start,'customer_read':actual,'commercial_read_retained':True,'document_read_retained':True,'proof':stats,**seen}
+    if not allowed:observed['denials']=errors
+    record(stage,**observed);frappe.db.rollback();return observed
+try:
+    result['first_root']=check('first-root',True)
+    frappe.set_user('Administrator');result['revocation']=set_fixture_reviewer_native_permission(private,'Customer',0);record('revoked',**result['revocation'])
+    result['next_root_denial']=check('next-root-denied',False)
+except BaseException as exc:
+    result['failure']={'type':type(exc).__name__,'message':str(exc)};record('failure',**result['failure'])
+finally:
+    frappe.db.rollback();frappe.set_user('Administrator')
+    result['restoration']=set_fixture_reviewer_native_permission(private,'Customer',1);record('restored',**result['restoration'])
+    old_connection=frappe.db.sql('SELECT CONNECTION_ID()')[0][0];frappe.destroy();frappe.init(site='cipher.localhost');frappe.connect()
+    new_connection=frappe.db.sql('SELECT CONNECTION_ID()')[0][0];assert old_connection!=new_connection
+    restored=frappe.db.get_value('Custom DocPerm',{'parent':'Customer','role':f['reviewer_native_role'],'permlevel':0},['read','select'],as_dict=True)
+    assert dict(restored)==dict(original_perm)
+    result['independent_restored_root']=check('independent-restored-root',True)
+    frappe.set_user('Administrator');after=snapshot();assert after==before
+    result['after']=after;result['independent_connection_changed']=True;result['no_project']=frappe.db.count('Project',{'company':company})==0
+    result['status']='failed' if 'failure' in result else 'passed';record('complete',status=result['status'],unchanged_immutable_snapshot=True)
+    frappe.db.rollback();frappe.destroy()
+print(json.dumps(result,default=str))

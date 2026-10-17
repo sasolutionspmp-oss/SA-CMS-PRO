@@ -1,0 +1,29 @@
+{
+  "schema": "cipher.browser.artifact-inventory.v1",
+  "artifacts": {
+    "actual-measurement-binding-desktop.png": {
+      "sha256": "64269f270d3e54bb0d9b839771c6a0fcc20b5de9c54cd12ace4db7fdffe9b58e",
+      "bytes": 150978
+    },
+    "actual-measurement-binding-phone.png": {
+      "sha256": "0e09628c9138ec975136788e2f6f8d9c42c57fd6916f318b6a3789d5d881160e",
+      "bytes": 75724
+    },
+    "actual-measurement-binding-tablet.png": {
+      "sha256": "b6ab7cbd5da8e14f7e7fe6d1caea3ee032bd5a90aba4221988ce5c8a4c33f272",
+      "bytes": 126442
+    },
+    "actual-readable-drawing-impact.png": {
+      "sha256": "a788b0d54a747c05c628a69d9ee2801e9f2987ecb9f009dc6b9025db37f2c45e",
+      "bytes": 141466
+    },
+    "provenance.json": {
+      "sha256": "692c9cfcfd98e39da8cc7087eca387e5bb0eb4e583e67a9d13353f1a8781b3be",
+      "bytes": 7178
+    },
+    "verification.json": {
+      "sha256": "33a9b68828f20f5335a1ba2cc2ad30630acb7556bbff0f0fc4142c8ed75dbbc8",
+      "bytes": 9351
+    }
+  }
+}

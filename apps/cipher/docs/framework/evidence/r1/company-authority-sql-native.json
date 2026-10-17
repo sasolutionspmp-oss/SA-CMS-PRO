@@ -1,0 +1,521 @@
+{
+  "schema": "cipher.company-authority-sql-native.v1",
+  "status": "passed",
+  "cases": [
+    {
+      "case": "author",
+      "old": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "new": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "matched": true
+    },
+    {
+      "case": "alias",
+      "old": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "new": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "matched": true
+    },
+    {
+      "case": "reviewer",
+      "old": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "new": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "matched": true
+    },
+    {
+      "case": "outsider",
+      "old": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "new": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "matched": true
+    },
+    {
+      "case": "project_only",
+      "old": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "new": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "matched": true
+    },
+    {
+      "case": "author-commercial",
+      "old": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "new": {
+        "allowed": true,
+        "company": "Company chain A 20b85fd4edd2"
+      },
+      "matched": true
+    },
+    {
+      "case": "reviewer-write",
+      "old": {
+        "allowed": false,
+        "code": "capability_denied",
+        "status": 403,
+        "message": "Your current Company duties do not allow this action."
+      },
+      "new": {
+        "allowed": false,
+        "code": "capability_denied",
+        "status": 403,
+        "message": "Your current Company duties do not allow this action."
+      },
+      "matched": true
+    },
+    {
+      "case": "other-company",
+      "old": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "new": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-company",
+      "old": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "new": {
+        "allowed": false,
+        "code": "not_found",
+        "status": 404,
+        "message": "This Company is not available."
+      },
+      "matched": true
+    },
+    {
+      "case": "wrong-person",
+      "old": {
+        "allowed": false,
+        "code": "identity_changed",
+        "status": 403,
+        "message": "Your identity changed. Sign in again."
+      },
+      "new": {
+        "allowed": false,
+        "code": "identity_changed",
+        "status": 403,
+        "message": "Your identity changed. Sign in again."
+      },
+      "matched": true
+    },
+    {
+      "case": "missing-identity",
+      "old": {
+        "allowed": false,
+        "code": "identity_unavailable",
+        "status": 403,
+        "message": "Your active Cipher identity is not configured."
+      },
+      "new": {
+        "allowed": false,
+        "code": "identity_unavailable",
+        "status": 403,
+        "message": "Your active Cipher identity is not configured."
+      },
+      "matched": true
+    },
+    {
+      "case": "guest",
+      "old": {
+        "allowed": false,
+        "code": "authentication_required",
+        "status": 401,
+        "message": "Sign in to Cipher to continue."
+      },
+      "new": {
+        "allowed": false,
+        "code": "authentication_required",
+        "status": 401,
+        "message": "Sign in to Cipher to continue."
+      },
+      "matched": true
+    },
+    {
+      "case": "unknown-capability",
+      "old": {
+        "allowed": false,
+        "code": "unknown_capability",
+        "status": 403,
+        "message": "This Company capability is not available."
+      },
+      "new": {
+        "allowed": false,
+        "code": "unknown_capability",
+        "status": 403,
+        "message": "This Company capability is not available."
+      },
+      "matched": true
+    }
+  ],
+  "direct_hook_cases": [
+    {
+      "user_hash": "96516062663131c44ab7407d120cc160422de69c000f2f6505bc52f2debbdca2",
+      "matched": true,
+      "allowed": true
+    },
+    {
+      "user_hash": "d283181ace3fa6ea22171f1f10b0b36c66240be32a9d253cc7244ac56546785e",
+      "matched": true,
+      "allowed": true
+    },
+    {
+      "user_hash": "e1ae76bf4e7df0229e08e3575d41cd52e5aaf43844c6ef795fbe4b6377198d20",
+      "matched": true,
+      "allowed": false
+    },
+    {
+      "user_hash": "7073c4a0295896ccdf634095df1e5c1e8a48f3a7b5ba50398058c92a01564b00",
+      "matched": true,
+      "allowed": false
+    },
+    {
+      "user_hash": "b35d3257be417a87f0c10194353824bbdbdfb27857d64329c86b14f2807f7a41",
+      "matched": true,
+      "allowed": true
+    }
+  ],
+  "current_author_native_company_read": true,
+  "query_plan": [
+    {
+      "id": 1,
+      "select_type": "PRIMARY",
+      "table": "b",
+      "type": "const",
+      "possible_keys": "user",
+      "key": "user",
+      "key_len": "563",
+      "ref": "const",
+      "rows": "1",
+      "Extra": ""
+    },
+    {
+      "id": 1,
+      "select_type": "PRIMARY",
+      "table": "p",
+      "type": "const",
+      "possible_keys": "PRIMARY",
+      "key": "PRIMARY",
+      "key_len": "562",
+      "ref": "const",
+      "rows": "1",
+      "Extra": ""
+    },
+    {
+      "id": 1,
+      "select_type": "PRIMARY",
+      "table": "u",
+      "type": "const",
+      "possible_keys": "PRIMARY",
+      "key": "PRIMARY",
+      "key_len": "562",
+      "ref": "const",
+      "rows": "1",
+      "Extra": ""
+    },
+    {
+      "id": 3,
+      "select_type": "SUBQUERY",
+      "table": "d",
+      "type": "ref_or_null",
+      "possible_keys": "cipher_duty_scope_unique,cipher_duty_actor_scope,cipher_company_duty_scope",
+      "key": "cipher_duty_scope_unique",
+      "key_len": "2252",
+      "ref": "const,const,const,const",
+      "rows": "2",
+      "Extra": "Using index condition; Using where"
+    },
+    {
+      "id": 2,
+      "select_type": "SUBQUERY",
+      "table": "d",
+      "type": "ref_or_null",
+      "possible_keys": "cipher_duty_scope_unique,cipher_duty_actor_scope,cipher_company_duty_scope",
+      "key": "cipher_duty_scope_unique",
+      "key_len": "2252",
+      "ref": "const,const,const,const",
+      "rows": "2",
+      "Extra": "Using index condition; Using where"
+    }
+  ],
+  "indexes": {
+    "Cipher Identity Binding": [
+      {
+        "Key_name": "PRIMARY",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "name",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "user",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "user",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "creation",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "creation",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "modified",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "modified",
+        "Index_type": "BTREE"
+      }
+    ],
+    "Cipher Person": [
+      {
+        "Key_name": "PRIMARY",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "name",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "creation",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "creation",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "modified",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "modified",
+        "Index_type": "BTREE"
+      }
+    ],
+    "User": [
+      {
+        "Key_name": "PRIMARY",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "name",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "username",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "username",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "mobile_no",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "mobile_no",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "api_key",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "api_key",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "last_active",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "last_active",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "creation",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "creation",
+        "Index_type": "BTREE"
+      }
+    ],
+    "Cipher Project Duty": [
+      {
+        "Key_name": "PRIMARY",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "name",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_scope_unique",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "person",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_scope_unique",
+        "Non_unique": 0,
+        "Seq_in_index": 2,
+        "Column_name": "company",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_scope_unique",
+        "Non_unique": 0,
+        "Seq_in_index": 3,
+        "Column_name": "project",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_scope_unique",
+        "Non_unique": 0,
+        "Seq_in_index": 4,
+        "Column_name": "ability",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "scope_key",
+        "Non_unique": 0,
+        "Seq_in_index": 1,
+        "Column_name": "scope_key",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "creation",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "creation",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "modified",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "modified",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_actor_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "person",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_actor_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 2,
+        "Column_name": "company",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_actor_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 3,
+        "Column_name": "project",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_duty_actor_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 4,
+        "Column_name": "active",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_company_duty_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 1,
+        "Column_name": "person",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_company_duty_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 2,
+        "Column_name": "scope_type",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_company_duty_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 3,
+        "Column_name": "company",
+        "Index_type": "BTREE"
+      },
+      {
+        "Key_name": "cipher_company_duty_scope",
+        "Non_unique": 1,
+        "Seq_in_index": 4,
+        "Column_name": "active",
+        "Index_type": "BTREE"
+      }
+    ]
+  },
+  "new_query_calls": 24,
+  "for_update_statements": 0,
+  "transaction_writes": 0,
+  "source_hashes": {
+    "context.py": "5cd5feb5c7a40b0f17542aa4f814307f1520ffd095e08e686310dd3aa020b76c",
+    "permissions.py": "9c1ceff163cc27ce7eab1cbbaa7ce28d211bbcb27f604614126a7e9a4edb858f"
+  },
+  "source_changed": [],
+  "reference_context_sha256": "1c31cf34a51174f0a6aa6a76062db7b8ca70b90515ec41be8f13bb6f51b2226b",
+  "seconds": 0.7082866390119307,
+  "qualification": "Current native/error/query-plan parity only. Nonlocking old-require reference uses the installed native hook; direct old/new hook semantics are compared separately. No workload or endpoint latency claim.",
+  "recorded_at": "2026-10-15T21:34:01.080554+00:00",
+  "unit_tests": {
+    "cases": 12,
+    "seconds": 0.01,
+    "status": "passed",
+    "no_site": true
+  },
+  "test_sha256": "56eb739bdd6355aac7a87f20243c5f39c3996395d0f558a8fd7a4778b408c40f",
+  "query_plan_decision": "Existing indexes serve this fixed current fixture query. No index migration introduced; not a workload latency guarantee."
+}

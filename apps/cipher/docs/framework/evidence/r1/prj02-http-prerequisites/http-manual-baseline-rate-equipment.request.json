@@ -1,0 +1,35 @@
+{
+  "expected_codes": [],
+  "method": "cipher_aec.estimating.company_api.create_rate",
+  "prepared_at": "2026-10-15T23:10:45.871906+00:00",
+  "role": "author",
+  "values": {
+    "company": "Company chain A c3c3b742a8fd",
+    "operation_id": "e4273233-b064-493b-a8e1-39a72b319d00",
+    "rate": {
+      "cost_type": "equipment",
+      "currency": "USD",
+      "exclusions": "No taxes or freight",
+      "expiry_date": null,
+      "freight_tax_assumptions": "None",
+      "geography": "Synthetic",
+      "inclusions": "Explicit authored fixture",
+      "item": null,
+      "permission_basis": "Owned synthetic fixture source",
+      "quote_date": "2026-10-15",
+      "quote_reference": "Authored isolated manual fixture",
+      "rate_amount": "3.00",
+      "rate_precision": 6,
+      "source_citations": [
+        {
+          "excerpt_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296",
+          "page": 1,
+          "revision_id": "REV-d1027337ca144fffb2faa2798625e69d",
+          "source_sha256": "dc4c623884b88d2f5f5dbc63cabba370e06c59196dec846abd302bc27f52a296"
+        }
+      ],
+      "title": "Award equipment company-chain-c3c3b742a8fd",
+      "unit_id": "67e4a9b1-4593-4fb2-bb9b-8368d69a57fb"
+    }
+  }
+}

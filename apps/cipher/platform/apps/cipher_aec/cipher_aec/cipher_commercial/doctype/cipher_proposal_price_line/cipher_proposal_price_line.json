@@ -1,0 +1,81 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Proposal Price Line",
+  "module": "Cipher Commercial",
+  "custom": 0,
+  "istable": 1,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "field_order": [
+    "stable_id",
+    "description",
+    "quantity",
+    "unit_id",
+    "unit_revision",
+    "rate",
+    "amount",
+    "alternate_group",
+    "selected"
+  ],
+  "fields": [
+    {
+      "fieldname": "stable_id",
+      "label": "Stable Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "description",
+      "label": "Description",
+      "fieldtype": "Small Text",
+      "reqd": 1
+    },
+    {
+      "fieldname": "quantity",
+      "label": "Quantity",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "unit_id",
+      "label": "Unit Id",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "unit_revision",
+      "label": "Unit Revision",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "rate",
+      "label": "Rate",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "amount",
+      "label": "Amount",
+      "fieldtype": "Data",
+      "reqd": 1
+    },
+    {
+      "fieldname": "alternate_group",
+      "label": "Alternate Group",
+      "fieldtype": "Data",
+      "reqd": 0
+    },
+    {
+      "fieldname": "selected",
+      "label": "Selected",
+      "fieldtype": "Check",
+      "reqd": 0
+    }
+  ],
+  "permissions": [],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}

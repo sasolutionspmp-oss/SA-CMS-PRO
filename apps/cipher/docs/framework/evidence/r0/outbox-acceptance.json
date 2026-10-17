@@ -1,0 +1,322 @@
+{
+  "schema": "cipher.r0.outbox-acceptance.v1",
+  "status": "passed",
+  "captured_at": "2026-10-15T14:46:50.420525+00:00",
+  "label": "explicit-local-task-outbox-real-mariadb-redis-workers",
+  "command": "bench --site cipher.localhost execute cipher_aec.tests.test_outbox_acceptance.run_acceptance",
+  "external_provider_qualified": false,
+  "project": "PROJ-0010",
+  "user": "outbox.fixture.0b68800027f9@cipher.example",
+  "checks": [
+    {
+      "name": "durable_enqueue_actual_redis_worker",
+      "status": "passed",
+      "operation": "1gdhmrpsf8",
+      "job_id": "cipher.localhost||cipher-outbox-1gdhmrpsf8",
+      "task": "TASK-2026-00013",
+      "task_count": 1,
+      "delivery_attempts": 1
+    },
+    {
+      "name": "repeated_delivery_preserves_one_effect",
+      "status": "passed",
+      "operation": "1gdhmrpsf8",
+      "task_count": 1,
+      "delivery_attempts": 1
+    },
+    {
+      "name": "queue_publication_interruption_database_recovery",
+      "status": "passed",
+      "operation": "1gu9tggns5",
+      "dispatcher_selected": 1,
+      "final_state": "Succeeded",
+      "task_count": 1
+    },
+    {
+      "name": "crash-after-claim_recovered_once",
+      "status": "passed",
+      "operation": "1h6i1tq5rl",
+      "fault_job": "outbox-explicit-093f3a32cba84725bb5b3d684d3dbb13",
+      "pre_recovery_task_count": 0,
+      "final_task_count": 1,
+      "final_fence": 2,
+      "final_claim_count": 2,
+      "effect_receipts": 1,
+      "history_events": 1
+    },
+    {
+      "name": "crash-after-uncommitted-task_recovered_once",
+      "status": "passed",
+      "operation": "1hkoc2ino1",
+      "fault_job": "outbox-explicit-ec94eb96efc94e3ebe04675902ff09e0",
+      "pre_recovery_task_count": 0,
+      "final_task_count": 1,
+      "final_fence": 2,
+      "final_claim_count": 2,
+      "effect_receipts": 1,
+      "history_events": 1
+    },
+    {
+      "name": "late_worker_rejected_by_actual_fence",
+      "status": "passed",
+      "operation": "1i07bq6rmo",
+      "old_worker_result": {
+        "state": "superseded"
+      },
+      "final_fence": 2,
+      "task_count": 1
+    },
+    {
+      "name": "current_permission_revocation_prevents_worker_effect",
+      "status": "passed",
+      "operation": "1iec89btpj",
+      "final_state": "Failed",
+      "code": "capability_denied",
+      "task_count": 0,
+      "effect_receipts": 0
+    },
+    {
+      "name": "restore_quarantine_blocks_dispatch_publication_and_claim",
+      "status": "passed",
+      "operation": "1iljuol093",
+      "final_state": "Queued",
+      "redis_job_created": false,
+      "task_count": 0,
+      "scope": "Actual site process configuration guard; no global site toggle or provider reconciliation claim."
+    },
+    {
+      "name": "explicit_local_resume_after_quarantine_guard",
+      "status": "passed",
+      "operation": "1iljuol093",
+      "task_count": 1
+    }
+  ],
+  "operations": [
+    {
+      "name": "1gdhmrpsf8",
+      "label": "normal",
+      "logical_id": "outbox-acceptance-06ec9809dc94484890ae8f3aa585edc8",
+      "subject": "Explicit outbox normal 0b68800027f9"
+    },
+    {
+      "name": "1gu9tggns5",
+      "label": "queue-publication-recovery",
+      "logical_id": "outbox-acceptance-c7cfa1ec09054184ab4dfe1ecf262d0c",
+      "subject": "Explicit outbox queue-publication-recovery 0b68800027f9"
+    },
+    {
+      "name": "1h6i1tq5rl",
+      "label": "crash-after-claim",
+      "logical_id": "outbox-acceptance-b8308faa24b8453eaa5402041dbb63da",
+      "subject": "Explicit outbox crash-after-claim 0b68800027f9"
+    },
+    {
+      "name": "1hkoc2ino1",
+      "label": "crash-after-uncommitted-task",
+      "logical_id": "outbox-acceptance-7b49b7c4ba224e4f94201324d97f7b4f",
+      "subject": "Explicit outbox crash-after-uncommitted-task 0b68800027f9"
+    },
+    {
+      "name": "1i07bq6rmo",
+      "label": "old-worker-fencing",
+      "logical_id": "outbox-acceptance-84b41096e1d946b2a22225b595eb5ba4",
+      "subject": "Explicit outbox old-worker-fencing 0b68800027f9"
+    },
+    {
+      "name": "1iec89btpj",
+      "label": "revoked-current-duty",
+      "logical_id": "outbox-acceptance-a54e58acab754eab9d1538e6996bd4c6",
+      "subject": "Explicit outbox revoked-current-duty 0b68800027f9"
+    },
+    {
+      "name": "1iljuol093",
+      "label": "restore-quarantine",
+      "logical_id": "outbox-acceptance-ad089382295e416fa4a6ab7b6b2ee87b",
+      "subject": "Explicit outbox restore-quarantine 0b68800027f9"
+    }
+  ],
+  "fault_injection": "Test-only RQ workhorse exits and Redis barriers; production delivery code unchanged. Test-only enqueue routing uses dedicated Redis queues and unchanged Frappe execute_job/outbox.deliver.",
+  "isolated_workers": [
+    {
+      "pid": 362,
+      "name": "cipher-outbox-fixture-0b68800027f9-a",
+      "queue": "cipher-explicit-outbox-0b68800027f9-a"
+    },
+    {
+      "pid": 363,
+      "name": "cipher-outbox-fixture-0b68800027f9-b",
+      "queue": "cipher-explicit-outbox-0b68800027f9-b"
+    }
+  ],
+  "workhorse_processes": [
+    {
+      "workhorse_pid": "377",
+      "parent_pid": "363",
+      "function": "interrupt_after_claim",
+      "operation": "1h6i1tq5rl"
+    },
+    {
+      "workhorse_pid": "385",
+      "parent_pid": "363",
+      "function": "pause_after_claim",
+      "operation": "1i07bq6rmo"
+    },
+    {
+      "workhorse_pid": "381",
+      "parent_pid": "363",
+      "function": "interrupt_after_local_effect",
+      "operation": "1hkoc2ino1"
+    }
+  ],
+  "isolated_workers_stopped": true,
+  "final_task_count": 6,
+  "qualified": {
+    "database": "MariaDB canonical rows",
+    "dispatch": "Redis RQ dedicated test workers using Frappe execute_job and unchanged outbox handler",
+    "effect": "one local ERPNext Task per logical effect",
+    "external_provider": false,
+    "restore_policy": "guard only; real restored-volume reconciliation remains a separate operational gate"
+  },
+  "source_sha256": {
+    "integrations/outbox.py": "9448c8758fad0dad44e2949de02e743da553b4995d102bcf893abe6f584030d5",
+    "tests/test_outbox_acceptance.py": "dd091ed806873447584b53eee84477a109a031d569ba1c629626b74b218efff3"
+  },
+  "independent_process_readback": {
+    "project": "PROJ-0010",
+    "task_count": 6,
+    "operations": [
+      {
+        "id": "1gdhmrpsf8",
+        "state": "Succeeded",
+        "fencing_token": 1,
+        "claim_count": 1,
+        "last_error_code": null,
+        "effect_operation_id": "3245ddec-236f-4c69-b3a5-d9856bc06133",
+        "task": "TASK-2026-00013",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 1,
+            "outcome": "Succeeded"
+          }
+        ]
+      },
+      {
+        "id": "1gu9tggns5",
+        "state": "Succeeded",
+        "fencing_token": 1,
+        "claim_count": 1,
+        "last_error_code": null,
+        "effect_operation_id": "07622d24-e461-4591-8040-480d57cc5fa0",
+        "task": "TASK-2026-00014",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 1,
+            "outcome": "Succeeded"
+          }
+        ]
+      },
+      {
+        "id": "1h6i1tq5rl",
+        "state": "Succeeded",
+        "fencing_token": 2,
+        "claim_count": 2,
+        "last_error_code": null,
+        "effect_operation_id": "27a027d1-86c7-4bf6-90f0-aa320ec79fa6",
+        "task": "TASK-2026-00015",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 2,
+            "outcome": "Succeeded"
+          }
+        ]
+      },
+      {
+        "id": "1hkoc2ino1",
+        "state": "Succeeded",
+        "fencing_token": 2,
+        "claim_count": 2,
+        "last_error_code": null,
+        "effect_operation_id": "b2663e3d-5c6b-4703-83d9-8d7069f940d3",
+        "task": "TASK-2026-00016",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 2,
+            "outcome": "Succeeded"
+          }
+        ]
+      },
+      {
+        "id": "1i07bq6rmo",
+        "state": "Succeeded",
+        "fencing_token": 2,
+        "claim_count": 2,
+        "last_error_code": null,
+        "effect_operation_id": "a364ed36-446d-41e8-969b-705947c0a94c",
+        "task": "TASK-2026-00017",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 2,
+            "outcome": "Succeeded"
+          }
+        ]
+      },
+      {
+        "id": "1iec89btpj",
+        "state": "Failed",
+        "fencing_token": 1,
+        "claim_count": 1,
+        "last_error_code": "capability_denied",
+        "effect_operation_id": "ebd5c9b9-8376-4b96-a8cd-8593440c5a9e",
+        "task": null,
+        "command_receipts": 0,
+        "history_events": 0,
+        "delivery_attempts": [
+          {
+            "fencing_token": 1,
+            "outcome": "Failed"
+          }
+        ]
+      },
+      {
+        "id": "1iljuol093",
+        "state": "Succeeded",
+        "fencing_token": 1,
+        "claim_count": 1,
+        "last_error_code": null,
+        "effect_operation_id": "d7f4a3c9-9b7c-4139-b401-2d33bf01139b",
+        "task": "TASK-2026-00018",
+        "command_receipts": 1,
+        "history_events": 1,
+        "delivery_attempts": [
+          {
+            "fencing_token": 1,
+            "outcome": "Succeeded"
+          }
+        ]
+      }
+    ],
+    "versions": {
+      "frappe": "16.52.0",
+      "erpnext": "16.51.0",
+      "mariadb": "11.8.9-MariaDB-ubu2404",
+      "redis": "6.2.24"
+    }
+  },
+  "executed_acceptance_source_sha256": "a9b9a97bdf1be66226e24f3c800bf988fd4afc5c58438a70cc91d1f552b5cf13",
+  "provenance_note": "The read-only independent-process readback helper was appended after worker acceptance; the executed acceptance runner body is unchanged.",
+  "qualification_limits": [
+    "Only local project.task.create effects are qualified; no external provider delivery or network exactly-once claim.",
+    "The local outbox rechecks active user/person and Project duty but does not persist an originating browser session-authority reference; original-session expiry/revocation was not qualified. No ordinary UI enqueue route is currently registered.",
+    "Restore quarantine is a real process configuration guard test; restored-volume and external-state reconciliation are separate operational gates."
+  ]
+}

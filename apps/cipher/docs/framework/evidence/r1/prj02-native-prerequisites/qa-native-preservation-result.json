@@ -1,0 +1,3384 @@
+{
+  "schema": "cipher.award.setup-preservation.v1",
+  "status": "unresolved",
+  "company": "Company chain A c3c3b742a8fd",
+  "original_account_rows": 388,
+  "original_account_deltas": {
+    "Accounts Payable - C6740305": {
+      "lft": {
+        "before": 603,
+        "after": 903
+      },
+      "rgt": {
+        "before": 608,
+        "after": 908
+      }
+    },
+    "Accounts Payable - Cc7e0d6c": {
+      "lft": {
+        "before": 647,
+        "after": 947
+      },
+      "rgt": {
+        "before": 652,
+        "after": 952
+      }
+    },
+    "Accounts Payable - CSA": {
+      "lft": {
+        "before": 691,
+        "after": 991
+      },
+      "rgt": {
+        "before": 696,
+        "after": 996
+      }
+    },
+    "Accounts Payable - Ecc749da": {
+      "lft": {
+        "before": 735,
+        "after": 1035
+      },
+      "rgt": {
+        "before": 740,
+        "after": 1040
+      }
+    },
+    "Accrued Expenses - C6740305": {
+      "lft": {
+        "before": 609,
+        "after": 909
+      },
+      "rgt": {
+        "before": 610,
+        "after": 910
+      }
+    },
+    "Accrued Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 653,
+        "after": 953
+      },
+      "rgt": {
+        "before": 654,
+        "after": 954
+      }
+    },
+    "Accrued Expenses - CSA": {
+      "lft": {
+        "before": 697,
+        "after": 997
+      },
+      "rgt": {
+        "before": 698,
+        "after": 998
+      }
+    },
+    "Accrued Expenses - Ecc749da": {
+      "lft": {
+        "before": 741,
+        "after": 1041
+      },
+      "rgt": {
+        "before": 742,
+        "after": 1042
+      }
+    },
+    "Administrative Expenses - C6740305": {
+      "lft": {
+        "before": 295,
+        "after": 435
+      },
+      "rgt": {
+        "before": 296,
+        "after": 436
+      }
+    },
+    "Administrative Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 361,
+        "after": 501
+      },
+      "rgt": {
+        "before": 362,
+        "after": 502
+      }
+    },
+    "Administrative Expenses - CSA": {
+      "lft": {
+        "before": 427,
+        "after": 567
+      },
+      "rgt": {
+        "before": 428,
+        "after": 568
+      }
+    },
+    "Administrative Expenses - Ecc749da": {
+      "lft": {
+        "before": 493,
+        "after": 633
+      },
+      "rgt": {
+        "before": 494,
+        "after": 634
+      }
+    },
+    "Asset Received But Not Billed - C6740305": {
+      "lft": {
+        "before": 632,
+        "after": 932
+      },
+      "rgt": {
+        "before": 633,
+        "after": 933
+      }
+    },
+    "Asset Received But Not Billed - Cc7e0d6c": {
+      "lft": {
+        "before": 676,
+        "after": 976
+      },
+      "rgt": {
+        "before": 677,
+        "after": 977
+      }
+    },
+    "Asset Received But Not Billed - CSA": {
+      "lft": {
+        "before": 720,
+        "after": 1020
+      },
+      "rgt": {
+        "before": 721,
+        "after": 1021
+      }
+    },
+    "Asset Received But Not Billed - Ecc749da": {
+      "lft": {
+        "before": 764,
+        "after": 1064
+      },
+      "rgt": {
+        "before": 765,
+        "after": 1065
+      }
+    },
+    "Bank Charges - C6740305": {
+      "lft": {
+        "before": 297,
+        "after": 437
+      },
+      "rgt": {
+        "before": 298,
+        "after": 438
+      }
+    },
+    "Bank Charges - Cc7e0d6c": {
+      "lft": {
+        "before": 363,
+        "after": 503
+      },
+      "rgt": {
+        "before": 364,
+        "after": 504
+      }
+    },
+    "Bank Charges - CSA": {
+      "lft": {
+        "before": 429,
+        "after": 569
+      },
+      "rgt": {
+        "before": 430,
+        "after": 570
+      }
+    },
+    "Bank Charges - Ecc749da": {
+      "lft": {
+        "before": 495,
+        "after": 635
+      },
+      "rgt": {
+        "before": 496,
+        "after": 636
+      }
+    },
+    "Bank Overdraft Account - C6740305": {
+      "lft": {
+        "before": 622,
+        "after": 922
+      },
+      "rgt": {
+        "before": 623,
+        "after": 923
+      }
+    },
+    "Bank Overdraft Account - Cc7e0d6c": {
+      "lft": {
+        "before": 666,
+        "after": 966
+      },
+      "rgt": {
+        "before": 667,
+        "after": 967
+      }
+    },
+    "Bank Overdraft Account - CSA": {
+      "lft": {
+        "before": 710,
+        "after": 1010
+      },
+      "rgt": {
+        "before": 711,
+        "after": 1011
+      }
+    },
+    "Bank Overdraft Account - Ecc749da": {
+      "lft": {
+        "before": 754,
+        "after": 1054
+      },
+      "rgt": {
+        "before": 755,
+        "after": 1055
+      }
+    },
+    "Capital Stock - C6740305": {
+      "lft": {
+        "before": 234,
+        "after": 350
+      },
+      "rgt": {
+        "before": 235,
+        "after": 351
+      }
+    },
+    "Capital Stock - Cc7e0d6c": {
+      "lft": {
+        "before": 246,
+        "after": 362
+      },
+      "rgt": {
+        "before": 247,
+        "after": 363
+      }
+    },
+    "Capital Stock - CSA": {
+      "lft": {
+        "before": 258,
+        "after": 374
+      },
+      "rgt": {
+        "before": 259,
+        "after": 375
+      }
+    },
+    "Capital Stock - Ecc749da": {
+      "lft": {
+        "before": 270,
+        "after": 386
+      },
+      "rgt": {
+        "before": 271,
+        "after": 387
+      }
+    },
+    "Commission on Sales - C6740305": {
+      "lft": {
+        "before": 299,
+        "after": 439
+      },
+      "rgt": {
+        "before": 300,
+        "after": 440
+      }
+    },
+    "Commission on Sales - Cc7e0d6c": {
+      "lft": {
+        "before": 365,
+        "after": 505
+      },
+      "rgt": {
+        "before": 366,
+        "after": 506
+      }
+    },
+    "Commission on Sales - CSA": {
+      "lft": {
+        "before": 431,
+        "after": 571
+      },
+      "rgt": {
+        "before": 432,
+        "after": 572
+      }
+    },
+    "Commission on Sales - Ecc749da": {
+      "lft": {
+        "before": 497,
+        "after": 637
+      },
+      "rgt": {
+        "before": 498,
+        "after": 638
+      }
+    },
+    "Cost of Goods Sold - C6740305": {
+      "lft": {
+        "before": 284,
+        "after": 424
+      },
+      "rgt": {
+        "before": 285,
+        "after": 425
+      }
+    },
+    "Cost of Goods Sold - Cc7e0d6c": {
+      "lft": {
+        "before": 350,
+        "after": 490
+      },
+      "rgt": {
+        "before": 351,
+        "after": 491
+      }
+    },
+    "Cost of Goods Sold - CSA": {
+      "lft": {
+        "before": 416,
+        "after": 556
+      },
+      "rgt": {
+        "before": 417,
+        "after": 557
+      }
+    },
+    "Cost of Goods Sold - Ecc749da": {
+      "lft": {
+        "before": 482,
+        "after": 622
+      },
+      "rgt": {
+        "before": 483,
+        "after": 623
+      }
+    },
+    "Creditors - C6740305": {
+      "lft": {
+        "before": 604,
+        "after": 904
+      },
+      "rgt": {
+        "before": 605,
+        "after": 905
+      }
+    },
+    "Creditors - Cc7e0d6c": {
+      "lft": {
+        "before": 648,
+        "after": 948
+      },
+      "rgt": {
+        "before": 649,
+        "after": 949
+      }
+    },
+    "Creditors - CSA": {
+      "lft": {
+        "before": 692,
+        "after": 992
+      },
+      "rgt": {
+        "before": 693,
+        "after": 993
+      }
+    },
+    "Creditors - Ecc749da": {
+      "lft": {
+        "before": 736,
+        "after": 1036
+      },
+      "rgt": {
+        "before": 737,
+        "after": 1037
+      }
+    },
+    "Current Liabilities - C6740305": {
+      "lft": {
+        "before": 602,
+        "after": 902
+      },
+      "rgt": {
+        "before": 637,
+        "after": 937
+      }
+    },
+    "Current Liabilities - Cc7e0d6c": {
+      "lft": {
+        "before": 646,
+        "after": 946
+      },
+      "rgt": {
+        "before": 681,
+        "after": 981
+      }
+    },
+    "Current Liabilities - CSA": {
+      "lft": {
+        "before": 690,
+        "after": 990
+      },
+      "rgt": {
+        "before": 725,
+        "after": 1025
+      }
+    },
+    "Current Liabilities - Ecc749da": {
+      "lft": {
+        "before": 734,
+        "after": 1034
+      },
+      "rgt": {
+        "before": 769,
+        "after": 1069
+      }
+    },
+    "Customer Advances - C6740305": {
+      "lft": {
+        "before": 611,
+        "after": 911
+      },
+      "rgt": {
+        "before": 612,
+        "after": 912
+      }
+    },
+    "Customer Advances - Cc7e0d6c": {
+      "lft": {
+        "before": 655,
+        "after": 955
+      },
+      "rgt": {
+        "before": 656,
+        "after": 956
+      }
+    },
+    "Customer Advances - CSA": {
+      "lft": {
+        "before": 699,
+        "after": 999
+      },
+      "rgt": {
+        "before": 700,
+        "after": 1000
+      }
+    },
+    "Customer Advances - Ecc749da": {
+      "lft": {
+        "before": 743,
+        "after": 1043
+      },
+      "rgt": {
+        "before": 744,
+        "after": 1044
+      }
+    },
+    "Depreciation - C6740305": {
+      "lft": {
+        "before": 301,
+        "after": 441
+      },
+      "rgt": {
+        "before": 302,
+        "after": 442
+      }
+    },
+    "Depreciation - Cc7e0d6c": {
+      "lft": {
+        "before": 367,
+        "after": 507
+      },
+      "rgt": {
+        "before": 368,
+        "after": 508
+      }
+    },
+    "Depreciation - CSA": {
+      "lft": {
+        "before": 433,
+        "after": 573
+      },
+      "rgt": {
+        "before": 434,
+        "after": 574
+      }
+    },
+    "Depreciation - Ecc749da": {
+      "lft": {
+        "before": 499,
+        "after": 639
+      },
+      "rgt": {
+        "before": 500,
+        "after": 640
+      }
+    },
+    "Direct Expenses - C6740305": {
+      "lft": {
+        "before": 282,
+        "after": 422
+      },
+      "rgt": {
+        "before": 293,
+        "after": 433
+      }
+    },
+    "Direct Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 348,
+        "after": 488
+      },
+      "rgt": {
+        "before": 359,
+        "after": 499
+      }
+    },
+    "Direct Expenses - CSA": {
+      "lft": {
+        "before": 414,
+        "after": 554
+      },
+      "rgt": {
+        "before": 425,
+        "after": 565
+      }
+    },
+    "Direct Expenses - Ecc749da": {
+      "lft": {
+        "before": 480,
+        "after": 620
+      },
+      "rgt": {
+        "before": 491,
+        "after": 631
+      }
+    },
+    "Direct Income - C6740305": {
+      "lft": {
+        "before": 546,
+        "after": 818
+      },
+      "rgt": {
+        "before": 551,
+        "after": 823
+      }
+    },
+    "Direct Income - Cc7e0d6c": {
+      "lft": {
+        "before": 560,
+        "after": 832
+      },
+      "rgt": {
+        "before": 565,
+        "after": 837
+      }
+    },
+    "Direct Income - CSA": {
+      "lft": {
+        "before": 574,
+        "after": 846
+      },
+      "rgt": {
+        "before": 579,
+        "after": 851
+      }
+    },
+    "Direct Income - Ecc749da": {
+      "lft": {
+        "before": 588,
+        "after": 860
+      },
+      "rgt": {
+        "before": 593,
+        "after": 865
+      }
+    },
+    "Dividends Paid - C6740305": {
+      "lft": {
+        "before": 236,
+        "after": 352
+      },
+      "rgt": {
+        "before": 237,
+        "after": 353
+      }
+    },
+    "Dividends Paid - Cc7e0d6c": {
+      "lft": {
+        "before": 248,
+        "after": 364
+      },
+      "rgt": {
+        "before": 249,
+        "after": 365
+      }
+    },
+    "Dividends Paid - CSA": {
+      "lft": {
+        "before": 260,
+        "after": 376
+      },
+      "rgt": {
+        "before": 261,
+        "after": 377
+      }
+    },
+    "Dividends Paid - Ecc749da": {
+      "lft": {
+        "before": 272,
+        "after": 388
+      },
+      "rgt": {
+        "before": 273,
+        "after": 389
+      }
+    },
+    "Duties and Taxes - C6740305": {
+      "lft": {
+        "before": 613,
+        "after": 913
+      },
+      "rgt": {
+        "before": 620,
+        "after": 920
+      }
+    },
+    "Duties and Taxes - Cc7e0d6c": {
+      "lft": {
+        "before": 657,
+        "after": 957
+      },
+      "rgt": {
+        "before": 664,
+        "after": 964
+      }
+    },
+    "Duties and Taxes - CSA": {
+      "lft": {
+        "before": 701,
+        "after": 1001
+      },
+      "rgt": {
+        "before": 708,
+        "after": 1008
+      }
+    },
+    "Duties and Taxes - Ecc749da": {
+      "lft": {
+        "before": 745,
+        "after": 1045
+      },
+      "rgt": {
+        "before": 752,
+        "after": 1052
+      }
+    },
+    "Employee Benefits Obligation - C6740305": {
+      "lft": {
+        "before": 639,
+        "after": 939
+      },
+      "rgt": {
+        "before": 640,
+        "after": 940
+      }
+    },
+    "Employee Benefits Obligation - Cc7e0d6c": {
+      "lft": {
+        "before": 683,
+        "after": 983
+      },
+      "rgt": {
+        "before": 684,
+        "after": 984
+      }
+    },
+    "Employee Benefits Obligation - CSA": {
+      "lft": {
+        "before": 727,
+        "after": 1027
+      },
+      "rgt": {
+        "before": 728,
+        "after": 1028
+      }
+    },
+    "Employee Benefits Obligation - Ecc749da": {
+      "lft": {
+        "before": 771,
+        "after": 1071
+      },
+      "rgt": {
+        "before": 772,
+        "after": 1072
+      }
+    },
+    "Entertainment Expenses - C6740305": {
+      "lft": {
+        "before": 303,
+        "after": 443
+      },
+      "rgt": {
+        "before": 304,
+        "after": 444
+      }
+    },
+    "Entertainment Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 369,
+        "after": 509
+      },
+      "rgt": {
+        "before": 370,
+        "after": 510
+      }
+    },
+    "Entertainment Expenses - CSA": {
+      "lft": {
+        "before": 435,
+        "after": 575
+      },
+      "rgt": {
+        "before": 436,
+        "after": 576
+      }
+    },
+    "Entertainment Expenses - Ecc749da": {
+      "lft": {
+        "before": 501,
+        "after": 641
+      },
+      "rgt": {
+        "before": 502,
+        "after": 642
+      }
+    },
+    "Equity - C6740305": {
+      "lft": {
+        "before": 233,
+        "after": 349
+      },
+      "rgt": {
+        "before": 244,
+        "after": 360
+      }
+    },
+    "Equity - Cc7e0d6c": {
+      "lft": {
+        "before": 245,
+        "after": 361
+      },
+      "rgt": {
+        "before": 256,
+        "after": 372
+      }
+    },
+    "Equity - CSA": {
+      "lft": {
+        "before": 257,
+        "after": 373
+      },
+      "rgt": {
+        "before": 268,
+        "after": 384
+      }
+    },
+    "Equity - Ecc749da": {
+      "lft": {
+        "before": 269,
+        "after": 385
+      },
+      "rgt": {
+        "before": 280,
+        "after": 396
+      }
+    },
+    "Exchange Gain/Loss - C6740305": {
+      "lft": {
+        "before": 305,
+        "after": 445
+      },
+      "rgt": {
+        "before": 306,
+        "after": 446
+      }
+    },
+    "Exchange Gain/Loss - Cc7e0d6c": {
+      "lft": {
+        "before": 371,
+        "after": 511
+      },
+      "rgt": {
+        "before": 372,
+        "after": 512
+      }
+    },
+    "Exchange Gain/Loss - CSA": {
+      "lft": {
+        "before": 437,
+        "after": 577
+      },
+      "rgt": {
+        "before": 438,
+        "after": 578
+      }
+    },
+    "Exchange Gain/Loss - Ecc749da": {
+      "lft": {
+        "before": 503,
+        "after": 643
+      },
+      "rgt": {
+        "before": 504,
+        "after": 644
+      }
+    },
+    "Expenses - C6740305": {
+      "lft": {
+        "before": 281,
+        "after": 421
+      },
+      "rgt": {
+        "before": 346,
+        "after": 486
+      }
+    },
+    "Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 347,
+        "after": 487
+      },
+      "rgt": {
+        "before": 412,
+        "after": 552
+      }
+    },
+    "Expenses - CSA": {
+      "lft": {
+        "before": 413,
+        "after": 553
+      },
+      "rgt": {
+        "before": 478,
+        "after": 618
+      }
+    },
+    "Expenses - Ecc749da": {
+      "lft": {
+        "before": 479,
+        "after": 619
+      },
+      "rgt": {
+        "before": 544,
+        "after": 684
+      }
+    },
+    "Expenses Included In Asset Valuation - C6740305": {
+      "lft": {
+        "before": 286,
+        "after": 426
+      },
+      "rgt": {
+        "before": 287,
+        "after": 427
+      }
+    },
+    "Expenses Included In Asset Valuation - Cc7e0d6c": {
+      "lft": {
+        "before": 352,
+        "after": 492
+      },
+      "rgt": {
+        "before": 353,
+        "after": 493
+      }
+    },
+    "Expenses Included In Asset Valuation - CSA": {
+      "lft": {
+        "before": 418,
+        "after": 558
+      },
+      "rgt": {
+        "before": 419,
+        "after": 559
+      }
+    },
+    "Expenses Included In Asset Valuation - Ecc749da": {
+      "lft": {
+        "before": 484,
+        "after": 624
+      },
+      "rgt": {
+        "before": 485,
+        "after": 625
+      }
+    },
+    "Expenses Included In Valuation - C6740305": {
+      "lft": {
+        "before": 288,
+        "after": 428
+      },
+      "rgt": {
+        "before": 289,
+        "after": 429
+      }
+    },
+    "Expenses Included In Valuation - Cc7e0d6c": {
+      "lft": {
+        "before": 354,
+        "after": 494
+      },
+      "rgt": {
+        "before": 355,
+        "after": 495
+      }
+    },
+    "Expenses Included In Valuation - CSA": {
+      "lft": {
+        "before": 420,
+        "after": 560
+      },
+      "rgt": {
+        "before": 421,
+        "after": 561
+      }
+    },
+    "Expenses Included In Valuation - Ecc749da": {
+      "lft": {
+        "before": 486,
+        "after": 626
+      },
+      "rgt": {
+        "before": 487,
+        "after": 627
+      }
+    },
+    "Freight and Forwarding Charges - C6740305": {
+      "lft": {
+        "before": 307,
+        "after": 447
+      },
+      "rgt": {
+        "before": 308,
+        "after": 448
+      }
+    },
+    "Freight and Forwarding Charges - Cc7e0d6c": {
+      "lft": {
+        "before": 373,
+        "after": 513
+      },
+      "rgt": {
+        "before": 374,
+        "after": 514
+      }
+    },
+    "Freight and Forwarding Charges - CSA": {
+      "lft": {
+        "before": 439,
+        "after": 579
+      },
+      "rgt": {
+        "before": 440,
+        "after": 580
+      }
+    },
+    "Freight and Forwarding Charges - Ecc749da": {
+      "lft": {
+        "before": 505,
+        "after": 645
+      },
+      "rgt": {
+        "before": 506,
+        "after": 646
+      }
+    },
+    "Gain/Loss on Asset Disposal - C6740305": {
+      "lft": {
+        "before": 309,
+        "after": 449
+      },
+      "rgt": {
+        "before": 310,
+        "after": 450
+      }
+    },
+    "Gain/Loss on Asset Disposal - Cc7e0d6c": {
+      "lft": {
+        "before": 375,
+        "after": 515
+      },
+      "rgt": {
+        "before": 376,
+        "after": 516
+      }
+    },
+    "Gain/Loss on Asset Disposal - CSA": {
+      "lft": {
+        "before": 441,
+        "after": 581
+      },
+      "rgt": {
+        "before": 442,
+        "after": 582
+      }
+    },
+    "Gain/Loss on Asset Disposal - Ecc749da": {
+      "lft": {
+        "before": 507,
+        "after": 647
+      },
+      "rgt": {
+        "before": 508,
+        "after": 648
+      }
+    },
+    "Impairment - C6740305": {
+      "lft": {
+        "before": 311,
+        "after": 451
+      },
+      "rgt": {
+        "before": 312,
+        "after": 452
+      }
+    },
+    "Impairment - Cc7e0d6c": {
+      "lft": {
+        "before": 377,
+        "after": 517
+      },
+      "rgt": {
+        "before": 378,
+        "after": 518
+      }
+    },
+    "Impairment - CSA": {
+      "lft": {
+        "before": 443,
+        "after": 583
+      },
+      "rgt": {
+        "before": 444,
+        "after": 584
+      }
+    },
+    "Impairment - Ecc749da": {
+      "lft": {
+        "before": 509,
+        "after": 649
+      },
+      "rgt": {
+        "before": 510,
+        "after": 650
+      }
+    },
+    "Income - C6740305": {
+      "lft": {
+        "before": 545,
+        "after": 817
+      },
+      "rgt": {
+        "before": 558,
+        "after": 830
+      }
+    },
+    "Income - Cc7e0d6c": {
+      "lft": {
+        "before": 559,
+        "after": 831
+      },
+      "rgt": {
+        "before": 572,
+        "after": 844
+      }
+    },
+    "Income - CSA": {
+      "lft": {
+        "before": 573,
+        "after": 845
+      },
+      "rgt": {
+        "before": 586,
+        "after": 858
+      }
+    },
+    "Income - Ecc749da": {
+      "lft": {
+        "before": 587,
+        "after": 859
+      },
+      "rgt": {
+        "before": 600,
+        "after": 872
+      }
+    },
+    "Indirect Expenses - C6740305": {
+      "lft": {
+        "before": 294,
+        "after": 434
+      },
+      "rgt": {
+        "before": 345,
+        "after": 485
+      }
+    },
+    "Indirect Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 360,
+        "after": 500
+      },
+      "rgt": {
+        "before": 411,
+        "after": 551
+      }
+    },
+    "Indirect Expenses - CSA": {
+      "lft": {
+        "before": 426,
+        "after": 566
+      },
+      "rgt": {
+        "before": 477,
+        "after": 617
+      }
+    },
+    "Indirect Expenses - Ecc749da": {
+      "lft": {
+        "before": 492,
+        "after": 632
+      },
+      "rgt": {
+        "before": 543,
+        "after": 683
+      }
+    },
+    "Indirect Income - C6740305": {
+      "lft": {
+        "before": 552,
+        "after": 824
+      },
+      "rgt": {
+        "before": 557,
+        "after": 829
+      }
+    },
+    "Indirect Income - Cc7e0d6c": {
+      "lft": {
+        "before": 566,
+        "after": 838
+      },
+      "rgt": {
+        "before": 571,
+        "after": 843
+      }
+    },
+    "Indirect Income - CSA": {
+      "lft": {
+        "before": 580,
+        "after": 852
+      },
+      "rgt": {
+        "before": 585,
+        "after": 857
+      }
+    },
+    "Indirect Income - Ecc749da": {
+      "lft": {
+        "before": 594,
+        "after": 866
+      },
+      "rgt": {
+        "before": 599,
+        "after": 871
+      }
+    },
+    "Interest Expense - C6740305": {
+      "lft": {
+        "before": 313,
+        "after": 453
+      },
+      "rgt": {
+        "before": 314,
+        "after": 454
+      }
+    },
+    "Interest Expense - Cc7e0d6c": {
+      "lft": {
+        "before": 379,
+        "after": 519
+      },
+      "rgt": {
+        "before": 380,
+        "after": 520
+      }
+    },
+    "Interest Expense - CSA": {
+      "lft": {
+        "before": 445,
+        "after": 585
+      },
+      "rgt": {
+        "before": 446,
+        "after": 586
+      }
+    },
+    "Interest Expense - Ecc749da": {
+      "lft": {
+        "before": 511,
+        "after": 651
+      },
+      "rgt": {
+        "before": 512,
+        "after": 652
+      }
+    },
+    "Interest Income - C6740305": {
+      "lft": {
+        "before": 553,
+        "after": 825
+      },
+      "rgt": {
+        "before": 554,
+        "after": 826
+      }
+    },
+    "Interest Income - Cc7e0d6c": {
+      "lft": {
+        "before": 567,
+        "after": 839
+      },
+      "rgt": {
+        "before": 568,
+        "after": 840
+      }
+    },
+    "Interest Income - CSA": {
+      "lft": {
+        "before": 581,
+        "after": 853
+      },
+      "rgt": {
+        "before": 582,
+        "after": 854
+      }
+    },
+    "Interest Income - Ecc749da": {
+      "lft": {
+        "before": 595,
+        "after": 867
+      },
+      "rgt": {
+        "before": 596,
+        "after": 868
+      }
+    },
+    "Interest on Fixed Deposits - C6740305": {
+      "lft": {
+        "before": 555,
+        "after": 827
+      },
+      "rgt": {
+        "before": 556,
+        "after": 828
+      }
+    },
+    "Interest on Fixed Deposits - Cc7e0d6c": {
+      "lft": {
+        "before": 569,
+        "after": 841
+      },
+      "rgt": {
+        "before": 570,
+        "after": 842
+      }
+    },
+    "Interest on Fixed Deposits - CSA": {
+      "lft": {
+        "before": 583,
+        "after": 855
+      },
+      "rgt": {
+        "before": 584,
+        "after": 856
+      }
+    },
+    "Interest on Fixed Deposits - Ecc749da": {
+      "lft": {
+        "before": 597,
+        "after": 869
+      },
+      "rgt": {
+        "before": 598,
+        "after": 870
+      }
+    },
+    "Legal Expenses - C6740305": {
+      "lft": {
+        "before": 315,
+        "after": 455
+      },
+      "rgt": {
+        "before": 316,
+        "after": 456
+      }
+    },
+    "Legal Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 381,
+        "after": 521
+      },
+      "rgt": {
+        "before": 382,
+        "after": 522
+      }
+    },
+    "Legal Expenses - CSA": {
+      "lft": {
+        "before": 447,
+        "after": 587
+      },
+      "rgt": {
+        "before": 448,
+        "after": 588
+      }
+    },
+    "Legal Expenses - Ecc749da": {
+      "lft": {
+        "before": 513,
+        "after": 653
+      },
+      "rgt": {
+        "before": 514,
+        "after": 654
+      }
+    },
+    "Loans (Liabilities) - C6740305": {
+      "lft": {
+        "before": 621,
+        "after": 921
+      },
+      "rgt": {
+        "before": 628,
+        "after": 928
+      }
+    },
+    "Loans (Liabilities) - Cc7e0d6c": {
+      "lft": {
+        "before": 665,
+        "after": 965
+      },
+      "rgt": {
+        "before": 672,
+        "after": 972
+      }
+    },
+    "Loans (Liabilities) - CSA": {
+      "lft": {
+        "before": 709,
+        "after": 1009
+      },
+      "rgt": {
+        "before": 716,
+        "after": 1016
+      }
+    },
+    "Loans (Liabilities) - Ecc749da": {
+      "lft": {
+        "before": 753,
+        "after": 1053
+      },
+      "rgt": {
+        "before": 760,
+        "after": 1060
+      }
+    },
+    "Long-term Provisions - C6740305": {
+      "lft": {
+        "before": 641,
+        "after": 941
+      },
+      "rgt": {
+        "before": 642,
+        "after": 942
+      }
+    },
+    "Long-term Provisions - Cc7e0d6c": {
+      "lft": {
+        "before": 685,
+        "after": 985
+      },
+      "rgt": {
+        "before": 686,
+        "after": 986
+      }
+    },
+    "Long-term Provisions - CSA": {
+      "lft": {
+        "before": 729,
+        "after": 1029
+      },
+      "rgt": {
+        "before": 730,
+        "after": 1030
+      }
+    },
+    "Long-term Provisions - Ecc749da": {
+      "lft": {
+        "before": 773,
+        "after": 1073
+      },
+      "rgt": {
+        "before": 774,
+        "after": 1074
+      }
+    },
+    "Marketing Expenses - C6740305": {
+      "lft": {
+        "before": 317,
+        "after": 457
+      },
+      "rgt": {
+        "before": 318,
+        "after": 458
+      }
+    },
+    "Marketing Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 383,
+        "after": 523
+      },
+      "rgt": {
+        "before": 384,
+        "after": 524
+      }
+    },
+    "Marketing Expenses - CSA": {
+      "lft": {
+        "before": 449,
+        "after": 589
+      },
+      "rgt": {
+        "before": 450,
+        "after": 590
+      }
+    },
+    "Marketing Expenses - Ecc749da": {
+      "lft": {
+        "before": 515,
+        "after": 655
+      },
+      "rgt": {
+        "before": 516,
+        "after": 656
+      }
+    },
+    "Miscellaneous Expenses - C6740305": {
+      "lft": {
+        "before": 319,
+        "after": 459
+      },
+      "rgt": {
+        "before": 320,
+        "after": 460
+      }
+    },
+    "Miscellaneous Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 385,
+        "after": 525
+      },
+      "rgt": {
+        "before": 386,
+        "after": 526
+      }
+    },
+    "Miscellaneous Expenses - CSA": {
+      "lft": {
+        "before": 451,
+        "after": 591
+      },
+      "rgt": {
+        "before": 452,
+        "after": 592
+      }
+    },
+    "Miscellaneous Expenses - Ecc749da": {
+      "lft": {
+        "before": 517,
+        "after": 657
+      },
+      "rgt": {
+        "before": 518,
+        "after": 658
+      }
+    },
+    "Non-Current Liabilities - C6740305": {
+      "lft": {
+        "before": 638,
+        "after": 938
+      },
+      "rgt": {
+        "before": 643,
+        "after": 943
+      }
+    },
+    "Non-Current Liabilities - Cc7e0d6c": {
+      "lft": {
+        "before": 682,
+        "after": 982
+      },
+      "rgt": {
+        "before": 687,
+        "after": 987
+      }
+    },
+    "Non-Current Liabilities - CSA": {
+      "lft": {
+        "before": 726,
+        "after": 1026
+      },
+      "rgt": {
+        "before": 731,
+        "after": 1031
+      }
+    },
+    "Non-Current Liabilities - Ecc749da": {
+      "lft": {
+        "before": 770,
+        "after": 1070
+      },
+      "rgt": {
+        "before": 775,
+        "after": 1075
+      }
+    },
+    "Office Maintenance Expenses - C6740305": {
+      "lft": {
+        "before": 321,
+        "after": 461
+      },
+      "rgt": {
+        "before": 322,
+        "after": 462
+      }
+    },
+    "Office Maintenance Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 387,
+        "after": 527
+      },
+      "rgt": {
+        "before": 388,
+        "after": 528
+      }
+    },
+    "Office Maintenance Expenses - CSA": {
+      "lft": {
+        "before": 453,
+        "after": 593
+      },
+      "rgt": {
+        "before": 454,
+        "after": 594
+      }
+    },
+    "Office Maintenance Expenses - Ecc749da": {
+      "lft": {
+        "before": 519,
+        "after": 659
+      },
+      "rgt": {
+        "before": 520,
+        "after": 660
+      }
+    },
+    "Office Rent - C6740305": {
+      "lft": {
+        "before": 323,
+        "after": 463
+      },
+      "rgt": {
+        "before": 324,
+        "after": 464
+      }
+    },
+    "Office Rent - Cc7e0d6c": {
+      "lft": {
+        "before": 389,
+        "after": 529
+      },
+      "rgt": {
+        "before": 390,
+        "after": 530
+      }
+    },
+    "Office Rent - CSA": {
+      "lft": {
+        "before": 455,
+        "after": 595
+      },
+      "rgt": {
+        "before": 456,
+        "after": 596
+      }
+    },
+    "Office Rent - Ecc749da": {
+      "lft": {
+        "before": 521,
+        "after": 661
+      },
+      "rgt": {
+        "before": 522,
+        "after": 662
+      }
+    },
+    "Opening Balance Equity - C6740305": {
+      "lft": {
+        "before": 238,
+        "after": 354
+      },
+      "rgt": {
+        "before": 239,
+        "after": 355
+      }
+    },
+    "Opening Balance Equity - Cc7e0d6c": {
+      "lft": {
+        "before": 250,
+        "after": 366
+      },
+      "rgt": {
+        "before": 251,
+        "after": 367
+      }
+    },
+    "Opening Balance Equity - CSA": {
+      "lft": {
+        "before": 262,
+        "after": 378
+      },
+      "rgt": {
+        "before": 263,
+        "after": 379
+      }
+    },
+    "Opening Balance Equity - Ecc749da": {
+      "lft": {
+        "before": 274,
+        "after": 390
+      },
+      "rgt": {
+        "before": 275,
+        "after": 391
+      }
+    },
+    "Payroll Payable - C6740305": {
+      "lft": {
+        "before": 606,
+        "after": 906
+      },
+      "rgt": {
+        "before": 607,
+        "after": 907
+      }
+    },
+    "Payroll Payable - Cc7e0d6c": {
+      "lft": {
+        "before": 650,
+        "after": 950
+      },
+      "rgt": {
+        "before": 651,
+        "after": 951
+      }
+    },
+    "Payroll Payable - CSA": {
+      "lft": {
+        "before": 694,
+        "after": 994
+      },
+      "rgt": {
+        "before": 695,
+        "after": 995
+      }
+    },
+    "Payroll Payable - Ecc749da": {
+      "lft": {
+        "before": 738,
+        "after": 1038
+      },
+      "rgt": {
+        "before": 739,
+        "after": 1039
+      }
+    },
+    "Postal Expenses - C6740305": {
+      "lft": {
+        "before": 325,
+        "after": 465
+      },
+      "rgt": {
+        "before": 326,
+        "after": 466
+      }
+    },
+    "Postal Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 391,
+        "after": 531
+      },
+      "rgt": {
+        "before": 392,
+        "after": 532
+      }
+    },
+    "Postal Expenses - CSA": {
+      "lft": {
+        "before": 457,
+        "after": 597
+      },
+      "rgt": {
+        "before": 458,
+        "after": 598
+      }
+    },
+    "Postal Expenses - Ecc749da": {
+      "lft": {
+        "before": 523,
+        "after": 663
+      },
+      "rgt": {
+        "before": 524,
+        "after": 664
+      }
+    },
+    "Print and Stationery - C6740305": {
+      "lft": {
+        "before": 327,
+        "after": 467
+      },
+      "rgt": {
+        "before": 328,
+        "after": 468
+      }
+    },
+    "Print and Stationery - Cc7e0d6c": {
+      "lft": {
+        "before": 393,
+        "after": 533
+      },
+      "rgt": {
+        "before": 394,
+        "after": 534
+      }
+    },
+    "Print and Stationery - CSA": {
+      "lft": {
+        "before": 459,
+        "after": 599
+      },
+      "rgt": {
+        "before": 460,
+        "after": 600
+      }
+    },
+    "Print and Stationery - Ecc749da": {
+      "lft": {
+        "before": 525,
+        "after": 665
+      },
+      "rgt": {
+        "before": 526,
+        "after": 666
+      }
+    },
+    "Retained Earnings - C6740305": {
+      "lft": {
+        "before": 240,
+        "after": 356
+      },
+      "rgt": {
+        "before": 241,
+        "after": 357
+      }
+    },
+    "Retained Earnings - Cc7e0d6c": {
+      "lft": {
+        "before": 252,
+        "after": 368
+      },
+      "rgt": {
+        "before": 253,
+        "after": 369
+      }
+    },
+    "Retained Earnings - CSA": {
+      "lft": {
+        "before": 264,
+        "after": 380
+      },
+      "rgt": {
+        "before": 265,
+        "after": 381
+      }
+    },
+    "Retained Earnings - Ecc749da": {
+      "lft": {
+        "before": 276,
+        "after": 392
+      },
+      "rgt": {
+        "before": 277,
+        "after": 393
+      }
+    },
+    "Revaluation Surplus - C6740305": {
+      "lft": {
+        "before": 242,
+        "after": 358
+      },
+      "rgt": {
+        "before": 243,
+        "after": 359
+      }
+    },
+    "Revaluation Surplus - Cc7e0d6c": {
+      "lft": {
+        "before": 254,
+        "after": 370
+      },
+      "rgt": {
+        "before": 255,
+        "after": 371
+      }
+    },
+    "Revaluation Surplus - CSA": {
+      "lft": {
+        "before": 266,
+        "after": 382
+      },
+      "rgt": {
+        "before": 267,
+        "after": 383
+      }
+    },
+    "Revaluation Surplus - Ecc749da": {
+      "lft": {
+        "before": 278,
+        "after": 394
+      },
+      "rgt": {
+        "before": 279,
+        "after": 395
+      }
+    },
+    "Round Off - C6740305": {
+      "lft": {
+        "before": 329,
+        "after": 469
+      },
+      "rgt": {
+        "before": 330,
+        "after": 470
+      }
+    },
+    "Round Off - Cc7e0d6c": {
+      "lft": {
+        "before": 395,
+        "after": 535
+      },
+      "rgt": {
+        "before": 396,
+        "after": 536
+      }
+    },
+    "Round Off - CSA": {
+      "lft": {
+        "before": 461,
+        "after": 601
+      },
+      "rgt": {
+        "before": 462,
+        "after": 602
+      }
+    },
+    "Round Off - Ecc749da": {
+      "lft": {
+        "before": 527,
+        "after": 667
+      },
+      "rgt": {
+        "before": 528,
+        "after": 668
+      }
+    },
+    "Salary - C6740305": {
+      "lft": {
+        "before": 331,
+        "after": 471
+      },
+      "rgt": {
+        "before": 332,
+        "after": 472
+      }
+    },
+    "Salary - Cc7e0d6c": {
+      "lft": {
+        "before": 397,
+        "after": 537
+      },
+      "rgt": {
+        "before": 398,
+        "after": 538
+      }
+    },
+    "Salary - CSA": {
+      "lft": {
+        "before": 463,
+        "after": 603
+      },
+      "rgt": {
+        "before": 464,
+        "after": 604
+      }
+    },
+    "Salary - Ecc749da": {
+      "lft": {
+        "before": 529,
+        "after": 669
+      },
+      "rgt": {
+        "before": 530,
+        "after": 670
+      }
+    },
+    "Sales - C6740305": {
+      "lft": {
+        "before": 547,
+        "after": 819
+      },
+      "rgt": {
+        "before": 548,
+        "after": 820
+      }
+    },
+    "Sales - Cc7e0d6c": {
+      "lft": {
+        "before": 561,
+        "after": 833
+      },
+      "rgt": {
+        "before": 562,
+        "after": 834
+      }
+    },
+    "Sales - CSA": {
+      "lft": {
+        "before": 575,
+        "after": 847
+      },
+      "rgt": {
+        "before": 576,
+        "after": 848
+      }
+    },
+    "Sales - Ecc749da": {
+      "lft": {
+        "before": 589,
+        "after": 861
+      },
+      "rgt": {
+        "before": 590,
+        "after": 862
+      }
+    },
+    "Sales Expenses - C6740305": {
+      "lft": {
+        "before": 333,
+        "after": 473
+      },
+      "rgt": {
+        "before": 334,
+        "after": 474
+      }
+    },
+    "Sales Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 399,
+        "after": 539
+      },
+      "rgt": {
+        "before": 400,
+        "after": 540
+      }
+    },
+    "Sales Expenses - CSA": {
+      "lft": {
+        "before": 465,
+        "after": 605
+      },
+      "rgt": {
+        "before": 466,
+        "after": 606
+      }
+    },
+    "Sales Expenses - Ecc749da": {
+      "lft": {
+        "before": 531,
+        "after": 671
+      },
+      "rgt": {
+        "before": 532,
+        "after": 672
+      }
+    },
+    "Secured Loans - C6740305": {
+      "lft": {
+        "before": 624,
+        "after": 924
+      },
+      "rgt": {
+        "before": 625,
+        "after": 925
+      }
+    },
+    "Secured Loans - Cc7e0d6c": {
+      "lft": {
+        "before": 668,
+        "after": 968
+      },
+      "rgt": {
+        "before": 669,
+        "after": 969
+      }
+    },
+    "Secured Loans - CSA": {
+      "lft": {
+        "before": 712,
+        "after": 1012
+      },
+      "rgt": {
+        "before": 713,
+        "after": 1013
+      }
+    },
+    "Secured Loans - Ecc749da": {
+      "lft": {
+        "before": 756,
+        "after": 1056
+      },
+      "rgt": {
+        "before": 757,
+        "after": 1057
+      }
+    },
+    "Service - C6740305": {
+      "lft": {
+        "before": 549,
+        "after": 821
+      },
+      "rgt": {
+        "before": 550,
+        "after": 822
+      }
+    },
+    "Service - Cc7e0d6c": {
+      "lft": {
+        "before": 563,
+        "after": 835
+      },
+      "rgt": {
+        "before": 564,
+        "after": 836
+      }
+    },
+    "Service - CSA": {
+      "lft": {
+        "before": 577,
+        "after": 849
+      },
+      "rgt": {
+        "before": 578,
+        "after": 850
+      }
+    },
+    "Service - Ecc749da": {
+      "lft": {
+        "before": 591,
+        "after": 863
+      },
+      "rgt": {
+        "before": 592,
+        "after": 864
+      }
+    },
+    "Short-term Provisions - C6740305": {
+      "lft": {
+        "before": 629,
+        "after": 929
+      },
+      "rgt": {
+        "before": 630,
+        "after": 930
+      }
+    },
+    "Short-term Provisions - Cc7e0d6c": {
+      "lft": {
+        "before": 673,
+        "after": 973
+      },
+      "rgt": {
+        "before": 674,
+        "after": 974
+      }
+    },
+    "Short-term Provisions - CSA": {
+      "lft": {
+        "before": 717,
+        "after": 1017
+      },
+      "rgt": {
+        "before": 718,
+        "after": 1018
+      }
+    },
+    "Short-term Provisions - Ecc749da": {
+      "lft": {
+        "before": 761,
+        "after": 1061
+      },
+      "rgt": {
+        "before": 762,
+        "after": 1062
+      }
+    },
+    "Source of Funds (Liabilities) - C6740305": {
+      "lft": {
+        "before": 601,
+        "after": 901
+      },
+      "rgt": {
+        "before": 644,
+        "after": 944
+      }
+    },
+    "Source of Funds (Liabilities) - Cc7e0d6c": {
+      "lft": {
+        "before": 645,
+        "after": 945
+      },
+      "rgt": {
+        "before": 688,
+        "after": 988
+      }
+    },
+    "Source of Funds (Liabilities) - CSA": {
+      "lft": {
+        "before": 689,
+        "after": 989
+      },
+      "rgt": {
+        "before": 732,
+        "after": 1032
+      }
+    },
+    "Source of Funds (Liabilities) - Ecc749da": {
+      "lft": {
+        "before": 733,
+        "after": 1033
+      },
+      "rgt": {
+        "before": 776,
+        "after": 1076
+      }
+    },
+    "ST 4% - C6740305": {
+      "lft": {
+        "before": 616,
+        "after": 914
+      },
+      "rgt": {
+        "before": 617,
+        "after": 915
+      }
+    },
+    "ST 4% - Cc7e0d6c": {
+      "lft": {
+        "before": 658,
+        "after": 958
+      },
+      "rgt": {
+        "before": 659,
+        "after": 959
+      }
+    },
+    "ST 4% - CSA": {
+      "lft": {
+        "before": 702,
+        "after": 1002
+      },
+      "rgt": {
+        "before": 703,
+        "after": 1003
+      }
+    },
+    "ST 4% - Ecc749da": {
+      "lft": {
+        "before": 746,
+        "after": 1046
+      },
+      "rgt": {
+        "before": 747,
+        "after": 1047
+      }
+    },
+    "ST 6.25% - C6740305": {
+      "lft": {
+        "before": 618,
+        "after": 916
+      },
+      "rgt": {
+        "before": 619,
+        "after": 917
+      }
+    },
+    "ST 6.25% - Cc7e0d6c": {
+      "lft": {
+        "before": 660,
+        "after": 960
+      },
+      "rgt": {
+        "before": 661,
+        "after": 961
+      }
+    },
+    "ST 6.25% - CSA": {
+      "lft": {
+        "before": 704,
+        "after": 1004
+      },
+      "rgt": {
+        "before": 705,
+        "after": 1005
+      }
+    },
+    "ST 6.25% - Ecc749da": {
+      "lft": {
+        "before": 748,
+        "after": 1048
+      },
+      "rgt": {
+        "before": 749,
+        "after": 1049
+      }
+    },
+    "ST 6% - C6740305": {
+      "lft": {
+        "before": 614,
+        "after": 918
+      },
+      "rgt": {
+        "before": 615,
+        "after": 919
+      }
+    },
+    "ST 6% - Cc7e0d6c": {
+      "lft": {
+        "before": 662,
+        "after": 962
+      },
+      "rgt": {
+        "before": 663,
+        "after": 963
+      }
+    },
+    "ST 6% - CSA": {
+      "lft": {
+        "before": 706,
+        "after": 1006
+      },
+      "rgt": {
+        "before": 707,
+        "after": 1007
+      }
+    },
+    "ST 6% - Ecc749da": {
+      "lft": {
+        "before": 750,
+        "after": 1050
+      },
+      "rgt": {
+        "before": 751,
+        "after": 1051
+      }
+    },
+    "Stock Adjustment - C6740305": {
+      "lft": {
+        "before": 290,
+        "after": 430
+      },
+      "rgt": {
+        "before": 291,
+        "after": 431
+      }
+    },
+    "Stock Adjustment - Cc7e0d6c": {
+      "lft": {
+        "before": 356,
+        "after": 496
+      },
+      "rgt": {
+        "before": 357,
+        "after": 497
+      }
+    },
+    "Stock Adjustment - CSA": {
+      "lft": {
+        "before": 422,
+        "after": 562
+      },
+      "rgt": {
+        "before": 423,
+        "after": 563
+      }
+    },
+    "Stock Adjustment - Ecc749da": {
+      "lft": {
+        "before": 488,
+        "after": 628
+      },
+      "rgt": {
+        "before": 489,
+        "after": 629
+      }
+    },
+    "Stock Expenses - C6740305": {
+      "lft": {
+        "before": 283,
+        "after": 423
+      },
+      "rgt": {
+        "before": 292,
+        "after": 432
+      }
+    },
+    "Stock Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 349,
+        "after": 489
+      },
+      "rgt": {
+        "before": 358,
+        "after": 498
+      }
+    },
+    "Stock Expenses - CSA": {
+      "lft": {
+        "before": 415,
+        "after": 555
+      },
+      "rgt": {
+        "before": 424,
+        "after": 564
+      }
+    },
+    "Stock Expenses - Ecc749da": {
+      "lft": {
+        "before": 481,
+        "after": 621
+      },
+      "rgt": {
+        "before": 490,
+        "after": 630
+      }
+    },
+    "Stock Liabilities - C6740305": {
+      "lft": {
+        "before": 631,
+        "after": 931
+      },
+      "rgt": {
+        "before": 636,
+        "after": 936
+      }
+    },
+    "Stock Liabilities - Cc7e0d6c": {
+      "lft": {
+        "before": 675,
+        "after": 975
+      },
+      "rgt": {
+        "before": 680,
+        "after": 980
+      }
+    },
+    "Stock Liabilities - CSA": {
+      "lft": {
+        "before": 719,
+        "after": 1019
+      },
+      "rgt": {
+        "before": 724,
+        "after": 1024
+      }
+    },
+    "Stock Liabilities - Ecc749da": {
+      "lft": {
+        "before": 763,
+        "after": 1063
+      },
+      "rgt": {
+        "before": 768,
+        "after": 1068
+      }
+    },
+    "Stock Received But Not Billed - C6740305": {
+      "lft": {
+        "before": 634,
+        "after": 934
+      },
+      "rgt": {
+        "before": 635,
+        "after": 935
+      }
+    },
+    "Stock Received But Not Billed - Cc7e0d6c": {
+      "lft": {
+        "before": 678,
+        "after": 978
+      },
+      "rgt": {
+        "before": 679,
+        "after": 979
+      }
+    },
+    "Stock Received But Not Billed - CSA": {
+      "lft": {
+        "before": 722,
+        "after": 1022
+      },
+      "rgt": {
+        "before": 723,
+        "after": 1023
+      }
+    },
+    "Stock Received But Not Billed - Ecc749da": {
+      "lft": {
+        "before": 766,
+        "after": 1066
+      },
+      "rgt": {
+        "before": 767,
+        "after": 1067
+      }
+    },
+    "Tax Expense - C6740305": {
+      "lft": {
+        "before": 335,
+        "after": 475
+      },
+      "rgt": {
+        "before": 336,
+        "after": 476
+      }
+    },
+    "Tax Expense - Cc7e0d6c": {
+      "lft": {
+        "before": 401,
+        "after": 541
+      },
+      "rgt": {
+        "before": 402,
+        "after": 542
+      }
+    },
+    "Tax Expense - CSA": {
+      "lft": {
+        "before": 467,
+        "after": 607
+      },
+      "rgt": {
+        "before": 468,
+        "after": 608
+      }
+    },
+    "Tax Expense - Ecc749da": {
+      "lft": {
+        "before": 533,
+        "after": 673
+      },
+      "rgt": {
+        "before": 534,
+        "after": 674
+      }
+    },
+    "Telephone Expenses - C6740305": {
+      "lft": {
+        "before": 337,
+        "after": 477
+      },
+      "rgt": {
+        "before": 338,
+        "after": 478
+      }
+    },
+    "Telephone Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 403,
+        "after": 543
+      },
+      "rgt": {
+        "before": 404,
+        "after": 544
+      }
+    },
+    "Telephone Expenses - CSA": {
+      "lft": {
+        "before": 469,
+        "after": 609
+      },
+      "rgt": {
+        "before": 470,
+        "after": 610
+      }
+    },
+    "Telephone Expenses - Ecc749da": {
+      "lft": {
+        "before": 535,
+        "after": 675
+      },
+      "rgt": {
+        "before": 536,
+        "after": 676
+      }
+    },
+    "Travel Expenses - C6740305": {
+      "lft": {
+        "before": 339,
+        "after": 479
+      },
+      "rgt": {
+        "before": 340,
+        "after": 480
+      }
+    },
+    "Travel Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 405,
+        "after": 545
+      },
+      "rgt": {
+        "before": 406,
+        "after": 546
+      }
+    },
+    "Travel Expenses - CSA": {
+      "lft": {
+        "before": 471,
+        "after": 611
+      },
+      "rgt": {
+        "before": 472,
+        "after": 612
+      }
+    },
+    "Travel Expenses - Ecc749da": {
+      "lft": {
+        "before": 537,
+        "after": 677
+      },
+      "rgt": {
+        "before": 538,
+        "after": 678
+      }
+    },
+    "Unsecured Loans - C6740305": {
+      "lft": {
+        "before": 626,
+        "after": 926
+      },
+      "rgt": {
+        "before": 627,
+        "after": 927
+      }
+    },
+    "Unsecured Loans - Cc7e0d6c": {
+      "lft": {
+        "before": 670,
+        "after": 970
+      },
+      "rgt": {
+        "before": 671,
+        "after": 971
+      }
+    },
+    "Unsecured Loans - CSA": {
+      "lft": {
+        "before": 714,
+        "after": 1014
+      },
+      "rgt": {
+        "before": 715,
+        "after": 1015
+      }
+    },
+    "Unsecured Loans - Ecc749da": {
+      "lft": {
+        "before": 758,
+        "after": 1058
+      },
+      "rgt": {
+        "before": 759,
+        "after": 1059
+      }
+    },
+    "Utility Expenses - C6740305": {
+      "lft": {
+        "before": 341,
+        "after": 481
+      },
+      "rgt": {
+        "before": 342,
+        "after": 482
+      }
+    },
+    "Utility Expenses - Cc7e0d6c": {
+      "lft": {
+        "before": 407,
+        "after": 547
+      },
+      "rgt": {
+        "before": 408,
+        "after": 548
+      }
+    },
+    "Utility Expenses - CSA": {
+      "lft": {
+        "before": 473,
+        "after": 613
+      },
+      "rgt": {
+        "before": 474,
+        "after": 614
+      }
+    },
+    "Utility Expenses - Ecc749da": {
+      "lft": {
+        "before": 539,
+        "after": 679
+      },
+      "rgt": {
+        "before": 540,
+        "after": 680
+      }
+    },
+    "Write Off - C6740305": {
+      "lft": {
+        "before": 343,
+        "after": 483
+      },
+      "rgt": {
+        "before": 344,
+        "after": 484
+      }
+    },
+    "Write Off - Cc7e0d6c": {
+      "lft": {
+        "before": 409,
+        "after": 549
+      },
+      "rgt": {
+        "before": 410,
+        "after": 550
+      }
+    },
+    "Write Off - CSA": {
+      "lft": {
+        "before": 475,
+        "after": 615
+      },
+      "rgt": {
+        "before": 476,
+        "after": 616
+      }
+    },
+    "Write Off - Ecc749da": {
+      "lft": {
+        "before": 541,
+        "after": 681
+      },
+      "rgt": {
+        "before": 542,
+        "after": 682
+      }
+    }
+  },
+  "full_original_account_rows_unchanged": false,
+  "non_tree_original_columns_unchanged": true,
+  "original_ancestor_relations_unchanged": true,
+  "original_ancestor_pairs": 752,
+  "new_account_companies": [
+    "Company chain A c3c3b742a8fd",
+    "Company chain B c3c3b742a8fd"
+  ],
+  "all_business_inventory_comparison": {
+    "unchanged": false,
+    "delta": {
+      "Account": {
+        "inserted": [
+          "Accounts Payable - Q0c3c3b7",
+          "Accounts Payable - Q1c3c3b7",
+          "Accounts Receivable - Q0c3c3b7",
+          "Accounts Receivable - Q1c3c3b7",
+          "Accrued Expenses - Q0c3c3b7",
+          "Accrued Expenses - Q1c3c3b7",
+          "Accumulated Depreciation - Q0c3c3b7",
+          "Accumulated Depreciation - Q1c3c3b7",
+          "Administrative Expenses - Q0c3c3b7",
+          "Administrative Expenses - Q1c3c3b7",
+          "Application of Funds (Assets) - Q0c3c3b7",
+          "Application of Funds (Assets) - Q1c3c3b7",
+          "Asset Received But Not Billed - Q0c3c3b7",
+          "Asset Received But Not Billed - Q1c3c3b7",
+          "Bank Accounts - Q0c3c3b7",
+          "Bank Accounts - Q1c3c3b7",
+          "Bank Charges - Q0c3c3b7",
+          "Bank Charges - Q1c3c3b7",
+          "Bank Overdraft Account - Q0c3c3b7",
+          "Bank Overdraft Account - Q1c3c3b7",
+          "Buildings - Q0c3c3b7",
+          "Buildings - Q1c3c3b7",
+          "CWIP Account - Q0c3c3b7",
+          "CWIP Account - Q1c3c3b7",
+          "Capital Equipment - Q0c3c3b7",
+          "Capital Equipment - Q1c3c3b7",
+          "Capital Stock - Q0c3c3b7",
+          "Capital Stock - Q1c3c3b7",
+          "Cash - Q0c3c3b7",
+          "Cash - Q1c3c3b7",
+          "Cash In Hand - Q0c3c3b7",
+          "Cash In Hand - Q1c3c3b7",
+          "Commission on Sales - Q0c3c3b7",
+          "Commission on Sales - Q1c3c3b7",
+          "Cost of Goods Sold - Q0c3c3b7",
+          "Cost of Goods Sold - Q1c3c3b7",
+          "Creditors - Q0c3c3b7",
+          "Creditors - Q1c3c3b7",
+          "Current Assets - Q0c3c3b7",
+          "Current Assets - Q1c3c3b7",
+          "Current Liabilities - Q0c3c3b7",
+          "Current Liabilities - Q1c3c3b7",
+          "Customer Advances - Q0c3c3b7",
+          "Customer Advances - Q1c3c3b7",
+          "Debtors - Q0c3c3b7",
+          "Debtors - Q1c3c3b7",
+          "Depreciation - Q0c3c3b7",
+          "Depreciation - Q1c3c3b7",
+          "Direct Expenses - Q0c3c3b7",
+          "Direct Expenses - Q1c3c3b7",
+          "Direct Income - Q0c3c3b7",
+          "Direct Income - Q1c3c3b7",
+          "Dividends Paid - Q0c3c3b7",
+          "Dividends Paid - Q1c3c3b7",
+          "Duties and Taxes - Q0c3c3b7",
+          "Duties and Taxes - Q1c3c3b7",
+          "Earnest Money - Q0c3c3b7",
+          "Earnest Money - Q1c3c3b7",
+          "Electronic Equipment - Q0c3c3b7",
+          "Electronic Equipment - Q1c3c3b7",
+          "Employee Advances - Q0c3c3b7",
+          "Employee Advances - Q1c3c3b7",
+          "Employee Benefits Obligation - Q0c3c3b7",
+          "Employee Benefits Obligation - Q1c3c3b7",
+          "Entertainment Expenses - Q0c3c3b7",
+          "Entertainment Expenses - Q1c3c3b7",
+          "Equity - Q0c3c3b7",
+          "Equity - Q1c3c3b7",
+          "Exchange Gain/Loss - Q0c3c3b7",
+          "Exchange Gain/Loss - Q1c3c3b7",
+          "Expenses - Q0c3c3b7",
+          "Expenses - Q1c3c3b7",
+          "Expenses Included In Asset Valuation - Q0c3c3b7",
+          "Expenses Included In Asset Valuation - Q1c3c3b7",
+          "Expenses Included In Valuation - Q0c3c3b7",
+          "Expenses Included In Valuation - Q1c3c3b7",
+          "Fixed Assets - Q0c3c3b7",
+          "Fixed Assets - Q1c3c3b7",
+          "Freight and Forwarding Charges - Q0c3c3b7",
+          "Freight and Forwarding Charges - Q1c3c3b7",
+          "Furniture and Fixtures - Q0c3c3b7",
+          "Furniture and Fixtures - Q1c3c3b7",
+          "Gain/Loss on Asset Disposal - Q0c3c3b7",
+          "Gain/Loss on Asset Disposal - Q1c3c3b7",
+          "Impairment - Q0c3c3b7",
+          "Impairment - Q1c3c3b7",
+          "Income - Q0c3c3b7",
+          "Income - Q1c3c3b7",
+          "Indirect Expenses - Q0c3c3b7",
+          "Indirect Expenses - Q1c3c3b7",
+          "Indirect Income - Q0c3c3b7",
+          "Indirect Income - Q1c3c3b7",
+          "Interest Expense - Q0c3c3b7",
+          "Interest Expense - Q1c3c3b7",
+          "Interest Income - Q0c3c3b7",
+          "Interest Income - Q1c3c3b7",
+          "Interest on Fixed Deposits - Q0c3c3b7",
+          "Interest on Fixed Deposits - Q1c3c3b7",
+          "Investments - Q0c3c3b7",
+          "Investments - Q1c3c3b7",
+          "Legal Expenses - Q0c3c3b7",
+          "Legal Expenses - Q1c3c3b7",
+          "Loans (Liabilities) - Q0c3c3b7",
+          "Loans (Liabilities) - Q1c3c3b7",
+          "Loans and Advances (Assets) - Q0c3c3b7",
+          "Loans and Advances (Assets) - Q1c3c3b7",
+          "Long-term Provisions - Q0c3c3b7",
+          "Long-term Provisions - Q1c3c3b7",
+          "Marketing Expenses - Q0c3c3b7",
+          "Marketing Expenses - Q1c3c3b7",
+          "Miscellaneous Expenses - Q0c3c3b7",
+          "Miscellaneous Expenses - Q1c3c3b7",
+          "Non-Current Liabilities - Q0c3c3b7",
+          "Non-Current Liabilities - Q1c3c3b7",
+          "Office Equipment - Q0c3c3b7",
+          "Office Equipment - Q1c3c3b7",
+          "Office Maintenance Expenses - Q0c3c3b7",
+          "Office Maintenance Expenses - Q1c3c3b7",
+          "Office Rent - Q0c3c3b7",
+          "Office Rent - Q1c3c3b7",
+          "Opening Balance Equity - Q0c3c3b7",
+          "Opening Balance Equity - Q1c3c3b7",
+          "Payroll Payable - Q0c3c3b7",
+          "Payroll Payable - Q1c3c3b7",
+          "Plants and Machineries - Q0c3c3b7",
+          "Plants and Machineries - Q1c3c3b7",
+          "Postal Expenses - Q0c3c3b7",
+          "Postal Expenses - Q1c3c3b7",
+          "Prepaid Expenses - Q0c3c3b7",
+          "Prepaid Expenses - Q1c3c3b7",
+          "Print and Stationery - Q0c3c3b7",
+          "Print and Stationery - Q1c3c3b7",
+          "Retained Earnings - Q0c3c3b7",
+          "Retained Earnings - Q1c3c3b7",
+          "Revaluation Surplus - Q0c3c3b7",
+          "Revaluation Surplus - Q1c3c3b7",
+          "Round Off - Q0c3c3b7",
+          "Round Off - Q1c3c3b7",
+          "ST 4% - Q0c3c3b7",
+          "ST 4% - Q1c3c3b7",
+          "ST 6% - Q0c3c3b7",
+          "ST 6% - Q1c3c3b7",
+          "ST 6.25% - Q0c3c3b7",
+          "ST 6.25% - Q1c3c3b7",
+          "Salary - Q0c3c3b7",
+          "Salary - Q1c3c3b7",
+          "Sales - Q0c3c3b7",
+          "Sales - Q1c3c3b7",
+          "Sales Expenses - Q0c3c3b7",
+          "Sales Expenses - Q1c3c3b7",
+          "Secured Loans - Q0c3c3b7",
+          "Secured Loans - Q1c3c3b7",
+          "Securities and Deposits - Q0c3c3b7",
+          "Securities and Deposits - Q1c3c3b7",
+          "Service - Q0c3c3b7",
+          "Service - Q1c3c3b7",
+          "Short-term Investments - Q0c3c3b7",
+          "Short-term Investments - Q1c3c3b7",
+          "Short-term Provisions - Q0c3c3b7",
+          "Short-term Provisions - Q1c3c3b7",
+          "Software - Q0c3c3b7",
+          "Software - Q1c3c3b7",
+          "Source of Funds (Liabilities) - Q0c3c3b7",
+          "Source of Funds (Liabilities) - Q1c3c3b7",
+          "Stock Adjustment - Q0c3c3b7",
+          "Stock Adjustment - Q1c3c3b7",
+          "Stock Assets - Q0c3c3b7",
+          "Stock Assets - Q1c3c3b7",
+          "Stock Expenses - Q0c3c3b7",
+          "Stock Expenses - Q1c3c3b7",
+          "Stock In Hand - Q0c3c3b7",
+          "Stock In Hand - Q1c3c3b7",
+          "Stock Liabilities - Q0c3c3b7",
+          "Stock Liabilities - Q1c3c3b7",
+          "Stock Received But Not Billed - Q0c3c3b7",
+          "Stock Received But Not Billed - Q1c3c3b7",
+          "Tax Assets - Q0c3c3b7",
+          "Tax Assets - Q1c3c3b7",
+          "Tax Expense - Q0c3c3b7",
+          "Tax Expense - Q1c3c3b7",
+          "Telephone Expenses - Q0c3c3b7",
+          "Telephone Expenses - Q1c3c3b7",
+          "Temporary Accounts - Q0c3c3b7",
+          "Temporary Accounts - Q1c3c3b7",
+          "Temporary Opening - Q0c3c3b7",
+          "Temporary Opening - Q1c3c3b7",
+          "Travel Expenses - Q0c3c3b7",
+          "Travel Expenses - Q1c3c3b7",
+          "Unsecured Loans - Q0c3c3b7",
+          "Unsecured Loans - Q1c3c3b7",
+          "Utility Expenses - Q0c3c3b7",
+          "Utility Expenses - Q1c3c3b7",
+          "Write Off - Q0c3c3b7",
+          "Write Off - Q1c3c3b7"
+        ],
+        "deleted": [],
+        "changed": [
+          "Accounts Payable - C6740305",
+          "Accounts Payable - CSA",
+          "Accounts Payable - Cc7e0d6c",
+          "Accounts Payable - Ecc749da",
+          "Accrued Expenses - C6740305",
+          "Accrued Expenses - CSA",
+          "Accrued Expenses - Cc7e0d6c",
+          "Accrued Expenses - Ecc749da",
+          "Administrative Expenses - C6740305",
+          "Administrative Expenses - CSA",
+          "Administrative Expenses - Cc7e0d6c",
+          "Administrative Expenses - Ecc749da",
+          "Asset Received But Not Billed - C6740305",
+          "Asset Received But Not Billed - CSA",
+          "Asset Received But Not Billed - Cc7e0d6c",
+          "Asset Received But Not Billed - Ecc749da",
+          "Bank Charges - C6740305",
+          "Bank Charges - CSA",
+          "Bank Charges - Cc7e0d6c",
+          "Bank Charges - Ecc749da",
+          "Bank Overdraft Account - C6740305",
+          "Bank Overdraft Account - CSA",
+          "Bank Overdraft Account - Cc7e0d6c",
+          "Bank Overdraft Account - Ecc749da",
+          "Capital Stock - C6740305",
+          "Capital Stock - CSA",
+          "Capital Stock - Cc7e0d6c",
+          "Capital Stock - Ecc749da",
+          "Commission on Sales - C6740305",
+          "Commission on Sales - CSA",
+          "Commission on Sales - Cc7e0d6c",
+          "Commission on Sales - Ecc749da",
+          "Cost of Goods Sold - C6740305",
+          "Cost of Goods Sold - CSA",
+          "Cost of Goods Sold - Cc7e0d6c",
+          "Cost of Goods Sold - Ecc749da",
+          "Creditors - C6740305",
+          "Creditors - CSA",
+          "Creditors - Cc7e0d6c",
+          "Creditors - Ecc749da",
+          "Current Liabilities - C6740305",
+          "Current Liabilities - CSA",
+          "Current Liabilities - Cc7e0d6c",
+          "Current Liabilities - Ecc749da",
+          "Customer Advances - C6740305",
+          "Customer Advances - CSA",
+          "Customer Advances - Cc7e0d6c",
+          "Customer Advances - Ecc749da",
+          "Depreciation - C6740305",
+          "Depreciation - CSA",
+          "Depreciation - Cc7e0d6c",
+          "Depreciation - Ecc749da",
+          "Direct Expenses - C6740305",
+          "Direct Expenses - CSA",
+          "Direct Expenses - Cc7e0d6c",
+          "Direct Expenses - Ecc749da",
+          "Direct Income - C6740305",
+          "Direct Income - CSA",
+          "Direct Income - Cc7e0d6c",
+          "Direct Income - Ecc749da",
+          "Dividends Paid - C6740305",
+          "Dividends Paid - CSA",
+          "Dividends Paid - Cc7e0d6c",
+          "Dividends Paid - Ecc749da",
+          "Duties and Taxes - C6740305",
+          "Duties and Taxes - CSA",
+          "Duties and Taxes - Cc7e0d6c",
+          "Duties and Taxes - Ecc749da",
+          "Employee Benefits Obligation - C6740305",
+          "Employee Benefits Obligation - CSA",
+          "Employee Benefits Obligation - Cc7e0d6c",
+          "Employee Benefits Obligation - Ecc749da",
+          "Entertainment Expenses - C6740305",
+          "Entertainment Expenses - CSA",
+          "Entertainment Expenses - Cc7e0d6c",
+          "Entertainment Expenses - Ecc749da",
+          "Equity - C6740305",
+          "Equity - CSA",
+          "Equity - Cc7e0d6c",
+          "Equity - Ecc749da",
+          "Exchange Gain/Loss - C6740305",
+          "Exchange Gain/Loss - CSA",
+          "Exchange Gain/Loss - Cc7e0d6c",
+          "Exchange Gain/Loss - Ecc749da",
+          "Expenses - C6740305",
+          "Expenses - CSA",
+          "Expenses - Cc7e0d6c",
+          "Expenses - Ecc749da",
+          "Expenses Included In Asset Valuation - C6740305",
+          "Expenses Included In Asset Valuation - CSA",
+          "Expenses Included In Asset Valuation - Cc7e0d6c",
+          "Expenses Included In Asset Valuation - Ecc749da",
+          "Expenses Included In Valuation - C6740305",
+          "Expenses Included In Valuation - CSA",
+          "Expenses Included In Valuation - Cc7e0d6c",
+          "Expenses Included In Valuation - Ecc749da",
+          "Freight and Forwarding Charges - C6740305",
+          "Freight and Forwarding Charges - CSA",
+          "Freight and Forwarding Charges - Cc7e0d6c",
+          "Freight and Forwarding Charges - Ecc749da",
+          "Gain/Loss on Asset Disposal - C6740305",
+          "Gain/Loss on Asset Disposal - CSA",
+          "Gain/Loss on Asset Disposal - Cc7e0d6c",
+          "Gain/Loss on Asset Disposal - Ecc749da",
+          "Impairment - C6740305",
+          "Impairment - CSA",
+          "Impairment - Cc7e0d6c",
+          "Impairment - Ecc749da",
+          "Income - C6740305",
+          "Income - CSA",
+          "Income - Cc7e0d6c",
+          "Income - Ecc749da",
+          "Indirect Expenses - C6740305",
+          "Indirect Expenses - CSA",
+          "Indirect Expenses - Cc7e0d6c",
+          "Indirect Expenses - Ecc749da",
+          "Indirect Income - C6740305",
+          "Indirect Income - CSA",
+          "Indirect Income - Cc7e0d6c",
+          "Indirect Income - Ecc749da",
+          "Interest Expense - C6740305",
+          "Interest Expense - CSA",
+          "Interest Expense - Cc7e0d6c",
+          "Interest Expense - Ecc749da",
+          "Interest Income - C6740305",
+          "Interest Income - CSA",
+          "Interest Income - Cc7e0d6c",
+          "Interest Income - Ecc749da",
+          "Interest on Fixed Deposits - C6740305",
+          "Interest on Fixed Deposits - CSA",
+          "Interest on Fixed Deposits - Cc7e0d6c",
+          "Interest on Fixed Deposits - Ecc749da",
+          "Legal Expenses - C6740305",
+          "Legal Expenses - CSA",
+          "Legal Expenses - Cc7e0d6c",
+          "Legal Expenses - Ecc749da",
+          "Loans (Liabilities) - C6740305",
+          "Loans (Liabilities) - CSA",
+          "Loans (Liabilities) - Cc7e0d6c",
+          "Loans (Liabilities) - Ecc749da",
+          "Long-term Provisions - C6740305",
+          "Long-term Provisions - CSA",
+          "Long-term Provisions - Cc7e0d6c",
+          "Long-term Provisions - Ecc749da",
+          "Marketing Expenses - C6740305",
+          "Marketing Expenses - CSA",
+          "Marketing Expenses - Cc7e0d6c",
+          "Marketing Expenses - Ecc749da",
+          "Miscellaneous Expenses - C6740305",
+          "Miscellaneous Expenses - CSA",
+          "Miscellaneous Expenses - Cc7e0d6c",
+          "Miscellaneous Expenses - Ecc749da",
+          "Non-Current Liabilities - C6740305",
+          "Non-Current Liabilities - CSA",
+          "Non-Current Liabilities - Cc7e0d6c",
+          "Non-Current Liabilities - Ecc749da",
+          "Office Maintenance Expenses - C6740305",
+          "Office Maintenance Expenses - CSA",
+          "Office Maintenance Expenses - Cc7e0d6c",
+          "Office Maintenance Expenses - Ecc749da",
+          "Office Rent - C6740305",
+          "Office Rent - CSA",
+          "Office Rent - Cc7e0d6c",
+          "Office Rent - Ecc749da",
+          "Opening Balance Equity - C6740305",
+          "Opening Balance Equity - CSA",
+          "Opening Balance Equity - Cc7e0d6c",
+          "Opening Balance Equity - Ecc749da",
+          "Payroll Payable - C6740305",
+          "Payroll Payable - CSA",
+          "Payroll Payable - Cc7e0d6c",
+          "Payroll Payable - Ecc749da",
+          "Postal Expenses - C6740305",
+          "Postal Expenses - CSA",
+          "Postal Expenses - Cc7e0d6c",
+          "Postal Expenses - Ecc749da",
+          "Print and Stationery - C6740305",
+          "Print and Stationery - CSA",
+          "Print and Stationery - Cc7e0d6c",
+          "Print and Stationery - Ecc749da",
+          "Retained Earnings - C6740305",
+          "Retained Earnings - CSA",
+          "Retained Earnings - Cc7e0d6c",
+          "Retained Earnings - Ecc749da",
+          "Revaluation Surplus - C6740305",
+          "Revaluation Surplus - CSA",
+          "Revaluation Surplus - Cc7e0d6c",
+          "Revaluation Surplus - Ecc749da",
+          "Round Off - C6740305",
+          "Round Off - CSA",
+          "Round Off - Cc7e0d6c",
+          "Round Off - Ecc749da",
+          "ST 4% - C6740305",
+          "ST 4% - CSA",
+          "ST 4% - Cc7e0d6c",
+          "ST 4% - Ecc749da",
+          "ST 6% - C6740305",
+          "ST 6% - CSA",
+          "ST 6% - Cc7e0d6c",
+          "ST 6% - Ecc749da",
+          "ST 6.25% - C6740305",
+          "ST 6.25% - CSA",
+          "ST 6.25% - Cc7e0d6c",
+          "ST 6.25% - Ecc749da",
+          "Salary - C6740305",
+          "Salary - CSA",
+          "Salary - Cc7e0d6c",
+          "Salary - Ecc749da",
+          "Sales - C6740305",
+          "Sales - CSA",
+          "Sales - Cc7e0d6c",
+          "Sales - Ecc749da",
+          "Sales Expenses - C6740305",
+          "Sales Expenses - CSA",
+          "Sales Expenses - Cc7e0d6c",
+          "Sales Expenses - Ecc749da",
+          "Secured Loans - C6740305",
+          "Secured Loans - CSA",
+          "Secured Loans - Cc7e0d6c",
+          "Secured Loans - Ecc749da",
+          "Service - C6740305",
+          "Service - CSA",
+          "Service - Cc7e0d6c",
+          "Service - Ecc749da",
+          "Short-term Provisions - C6740305",
+          "Short-term Provisions - CSA",
+          "Short-term Provisions - Cc7e0d6c",
+          "Short-term Provisions - Ecc749da",
+          "Source of Funds (Liabilities) - C6740305",
+          "Source of Funds (Liabilities) - CSA",
+          "Source of Funds (Liabilities) - Cc7e0d6c",
+          "Source of Funds (Liabilities) - Ecc749da",
+          "Stock Adjustment - C6740305",
+          "Stock Adjustment - CSA",
+          "Stock Adjustment - Cc7e0d6c",
+          "Stock Adjustment - Ecc749da",
+          "Stock Expenses - C6740305",
+          "Stock Expenses - CSA",
+          "Stock Expenses - Cc7e0d6c",
+          "Stock Expenses - Ecc749da",
+          "Stock Liabilities - C6740305",
+          "Stock Liabilities - CSA",
+          "Stock Liabilities - Cc7e0d6c",
+          "Stock Liabilities - Ecc749da",
+          "Stock Received But Not Billed - C6740305",
+          "Stock Received But Not Billed - CSA",
+          "Stock Received But Not Billed - Cc7e0d6c",
+          "Stock Received But Not Billed - Ecc749da",
+          "Tax Expense - C6740305",
+          "Tax Expense - CSA",
+          "Tax Expense - Cc7e0d6c",
+          "Tax Expense - Ecc749da",
+          "Telephone Expenses - C6740305",
+          "Telephone Expenses - CSA",
+          "Telephone Expenses - Cc7e0d6c",
+          "Telephone Expenses - Ecc749da",
+          "Travel Expenses - C6740305",
+          "Travel Expenses - CSA",
+          "Travel Expenses - Cc7e0d6c",
+          "Travel Expenses - Ecc749da",
+          "Unsecured Loans - C6740305",
+          "Unsecured Loans - CSA",
+          "Unsecured Loans - Cc7e0d6c",
+          "Unsecured Loans - Ecc749da",
+          "Utility Expenses - C6740305",
+          "Utility Expenses - CSA",
+          "Utility Expenses - Cc7e0d6c",
+          "Utility Expenses - Ecc749da",
+          "Write Off - C6740305",
+          "Write Off - CSA",
+          "Write Off - Cc7e0d6c",
+          "Write Off - Ecc749da"
+        ]
+      },
+      "Cipher Command Receipt": {
+        "inserted": [
+          "07d5afa099f1d74cf5e310b54ccb72bac427a0adca4b6b5be95dbb77b49fd50d",
+          "783f57f1924f83b28a08e4d75e645430f0a102f121c2969a535ef318a376c371",
+          "d16f6f5d670663f79d7339c95026a6d31b12c5f8dc949b600df595a38b85f406",
+          "f0fc81c6234f53a2e35e276574be41f114902e4911c5e5c5136ebe97b78c1fa7"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Cipher History Event": {
+        "inserted": [
+          "59up2vsf4a"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Cipher Project Duty": {
+        "inserted": [
+          "566290135t",
+          "5662tt6sp6",
+          "5662vg6tkm",
+          "5663u4o0ab",
+          "56644o2r1j",
+          "56649gjbv4",
+          "5664ip8k2q",
+          "566646c3bu",
+          "56671e0lk9",
+          "5667ojuo9v",
+          "56682bq4u2",
+          "5668k8ltf4",
+          "5668og1e8n",
+          "566994nc0o",
+          "566aedcsno",
+          "566ajpolce",
+          "566ba6dtdq",
+          "566bl0ckp2",
+          "566bu8r384",
+          "566ci25rsv",
+          "566d8c334m",
+          "566dchc6an",
+          "566dl60vgm",
+          "566e2e9ig9",
+          "566gafar6l",
+          "566govnne8",
+          "566ha1nua8",
+          "566i6omamm",
+          "566it2g0n0",
+          "566kvkbbl4",
+          "566lmdksd4",
+          "566mc8q0e6",
+          "566mdutih3",
+          "566mj3ranh",
+          "566opgb3el",
+          "566pm3m7q1",
+          "566qb9fto5",
+          "566qf6bs4t",
+          "566rjsctb5",
+          "566rurcb3r",
+          "566u2dqn52",
+          "566vik1c47",
+          "56717fsopi",
+          "5671uf0lo4",
+          "5674fsr9gf",
+          "56763qr8u5",
+          "5676vtrt4u",
+          "5677ln484m",
+          "5679g8anvp",
+          "567b7g5ib5",
+          "567dt8uuoq",
+          "567e1i0fc1",
+          "567f0cpr3p",
+          "567g09grsa",
+          "567gn17daf",
+          "567i6fu8u4",
+          "567jarp3a4",
+          "567jfqf7f5",
+          "567ni3fie3",
+          "567p8aeue9",
+          "567qcrnqij",
+          "567qmt3ke7",
+          "567rulllp3",
+          "567ubi33k4",
+          "567vgc900i",
+          "5935vqf3i0",
+          "593cgc907o",
+          "593n3sn56m",
+          "593tlvuc9q",
+          "5hpsln6q69",
+          "5hq8ndbp5a"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Cost Center": {
+        "inserted": [
+          "Company chain A c3c3b742a8fd - Q0c3c3b7",
+          "Company chain B c3c3b742a8fd - Q1c3c3b7",
+          "Main - Q0c3c3b7",
+          "Main - Q1c3c3b7"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Currency": {
+        "inserted": [],
+        "deleted": [],
+        "changed": [
+          "USD"
+        ]
+      },
+      "DocShare": {
+        "inserted": [
+          "562evmv26r",
+          "56419ls6a6",
+          "564fvcqh69",
+          "5652muhlpe",
+          "565kh0hlk4"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Project": {
+        "inserted": [
+          "PROJ-0009"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Task": {
+        "inserted": [
+          "TASK-2026-00008"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "UOM": {
+        "inserted": [
+          "Award equipment_time company-chain-c3c3b742a8fd",
+          "Award labor_time company-chain-c3c3b742a8fd",
+          "Company chain quantity c3c3b742a8fd"
+        ],
+        "deleted": [],
+        "changed": []
+      },
+      "Version": {
+        "inserted": [
+          "55hn2pau8j",
+          "55vfb1cmlq",
+          "58ukr1gv73",
+          "58vjqc5u9q",
+          "58vlakf23e",
+          "58vm53ia8e",
+          "58vomnrgd9"
+        ],
+        "deleted": [],
+        "changed": []
+      }
+    },
+    "tables_compared": 51
+  },
+  "unresolved": [
+    {
+      "table": "Currency",
+      "reason": "unexpected_original_row_difference",
+      "deleted": [],
+      "changed": [
+        "USD"
+      ]
+    }
+  ],
+  "attribution": "Only verified native Company/chart setup lft/rgt maintenance may be attributed; no original authoritative field repair performed."
+}

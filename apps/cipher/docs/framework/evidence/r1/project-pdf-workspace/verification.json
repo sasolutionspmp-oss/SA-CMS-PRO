@@ -1,0 +1,443 @@
+{
+  "mode": "actual-frappe-project-pdf-takeoff",
+  "captured_at": "2026-10-15T17:41:23.976Z",
+  "attempt_id": "c54b3f2f-9c0f-4f61-b23d-26740ca2db35",
+  "source_hashes": {
+    "../src/App.tsx": "6284f95edb2078d26e64c234fb782d6f5e350e75a1a70e4663c3fc3e376868ab",
+    "../src/Approvals.tsx": "009b2e90be8dad17ec21ac7127b9e5984a6d277418f211a6f0a52e247e07f969",
+    "../src/Commercial.tsx": "ca5b4961cad87dbfd28cedc4ab2160a1fc342634ca3bcaf62c2ea0a72c9ae3c5",
+    "../src/CompanyApprovals.tsx": "d08482666427096810c3713833c8006f037a6be52c8f1cdd7ba303ee1092547c",
+    "../src/CompanyDocuments.tsx": "15adfbd8a64b805e0f05bf8abb4488516d18267cb45aea6db28a1bcae57060fc",
+    "../src/CompanyEstimates.tsx": "11c4202044cd053f201ab7ec19007699e1084012035970da6e0b033a6a4964db",
+    "../src/Documents.tsx": "0df4821fcade795933adf54f4ae0a050e6a72c2484aa9271b3eb68782118a9bb",
+    "../src/EstimateComparison.tsx": "be1ddeafc9ac475a3dba94175d70014c9051d24699fdce7178e3d494c0aeb4f1",
+    "../src/EstimateLineEditor.tsx": "0efac362afa312787e196e3f3c2ccbc308e6fa0c300f68ceef281966b67e3f7b",
+    "../src/EstimateSources.tsx": "0d0c344a4991952ff10fee4b464e3311bbf77f5b77aaa33903cd7b89523e2ec0",
+    "../src/Estimates.tsx": "be2647842b7ee37bba79012eb3c39cb3579018caf91c5db3d96adb59668ef9e6",
+    "../src/NativeChoice.tsx": "bfe60d9e4f0672b091b6c502b5fa3502097b5fdf171e3bc3cade0d40a0d1fb7c",
+    "../src/PdfDrawing.tsx": "81a3ac0a0a9a9905e9a4f7fdf48db429a95ce3c6935f23160e9666c0b5b1c948",
+    "../src/ProjectDetail.tsx": "1492ceb913ea0a339b2c0968da36f77a580ab64b1b561f164057ac04612ace48",
+    "../src/ProjectRegister.tsx": "64df146e550ddde13f9b3a2bb9ac0e624a287fb65cf03b951c961db1264c88ab",
+    "../src/RickyPanel.tsx": "46143f4ba00ac2d236d8420fe1ce02dc922b6a438ad190d8f2ee2b08122a5a0d",
+    "../src/SignIn.tsx": "93888120a7bb600e455f098dabdbeaedb6508d5eef968c4588f449d01972ba7a",
+    "../src/SourceUpload.tsx": "5e4ffa2785393db244716c33a832a016f5d988c655f818772cf68f09f1b9f967",
+    "../src/Takeoff.tsx": "e16cd958e4416e079fc812aa7f55596dfed142377a10bd7fd5eea5975a156742",
+    "../src/api/client.ts": "3acca3ea910053c7fb949955947829651f049d8cb1681be6e4bdbe9cad1ecbe6",
+    "../src/api/commercial.generated.ts": "35b5e70136e618f09150b376f94aaf4176fda824d0ee5ce46ff57472ca2fc0e5",
+    "../src/api/commercial.ts": "c3ddd09c6009bf6692988a565c45036b285475570d22f0c5c7edaa76856e2172",
+    "../src/api/company-approvals.ts": "bbd454e179641c8b8ce6915b14cb01c373e425570d06bb46ab236a7fdb10edd6",
+    "../src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "../src/api/company-estimating.generated.ts": "b96ad2e9f43d484e3c7a229b332758064969b33dc75cac295a4d11a743af47e2",
+    "../src/api/company-estimating.ts": "400de8e6954c57ced96e180524409e4ae69981a7ccd18560980797413cc17241",
+    "../src/api/contracts.generated.ts": "51fb251ef909daaafa64e9a36164267fb0d01c94be8f04cb1c7a09fe11a59590",
+    "../src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "../src/api/estimating.ts": "a02801b1cdfd22f72792a3cec314eff6bd5c16b7fde8256c4933d999716ec994",
+    "../src/api/masters.ts": "1d8ad7f5e3add764ad1631734acd2eca900494127f4f39d4be592e3984257a00",
+    "../src/api/sources.ts": "18996a622c32c0a20681c4f7f4bdd7b7c88daf2a9e6963d6b193a2441b27b691",
+    "../src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6",
+    "../src/api/takeoff.ts": "207a4d256a898345e132771d9ba1297223c15acac12294e422c99ae4d3958020",
+    "../src/api/types.ts": "6ae966ca32d5168c8c6e100eb17f16495cd85a20f2f0a93371e41de6ba068d23",
+    "../src/components.tsx": "cf04a64eaa058ffe94e1282b5b9df51a330ef390fa46d561da61538aef5fd08e",
+    "../src/estimate-editing.ts": "1380571d9bb751435a1e5d65f82e9e9f775046fcd31a15a0109435967fa6f299",
+    "../src/hooks.ts": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+    "../src/main.tsx": "1dd45d45d97474eadb18976d33fcee2cfe1628ac3e6e9782fa1c4a7126debaa7",
+    "../src/styles.css": "cb7f1627242b39f273fd9e6e1cf5bb7335426b794c6c4a08f331c835b6b024f1",
+    "../src/useMutation.ts": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+    "../scripts/connected-access-state.mjs": "ad5a996616e87c308af1b8e6ee347f6a51363097fbeeff1844035fe6ccda3f9a",
+    "../scripts/connected-approvals.mjs": "20d25cba5ac64485a6e9cf1a8c4125a564af60c336f85dbfd7774290f6dbf452",
+    "../scripts/connected-company.mjs": "5d1701000610dfb66c907f5240c9914ae341803bd61c9a4f21ab8c484dc7e906",
+    "../scripts/connected-estimating-layout.mjs": "9cd7b1a9f60d1a33426a49db3a64e27a7a42bbc9833eb4879bee1048d87abec9",
+    "../scripts/connected-estimating-recovery.mjs": "9a55996da901674c83c7dd74b29a40fb2e932c51cea84867660dba6a90519282",
+    "../scripts/connected-estimating.mjs": "8e8c472483ce53e6419acc1802c4e62a677713b688358fb8bd20b67c452d777f",
+    "../scripts/connected-readonly.mjs": "ed99113514827c04edf3a1472279bf3b19becaef3b5cbfc606018e7877e8f393",
+    "../scripts/connected-takeoff.mjs": "507351d0d74d684ca235143bade979826b663a08ca2b5da74e4c5f153678809a",
+    "../scripts/copy-pdf-assets.mjs": "504fe147b03ede97528ec782416b2ab974bf422b1cab404ec623b907bc3cba67",
+    "../scripts/generate-api.mjs": "e0fc5fe25beb8689965037d9e0e1f2f3d9e821e2d0ed29ffc57822ff337c4701",
+    "../package.json": "da049761001530552192eb95a6df4a4cedafda084ac0a22cbd0a4b03292ecb5a",
+    "../package-lock.json": "fd89c56a85d0d5f16fee82d0acb4671b7064385f4a4a87b709d51a86c2f85a64"
+  },
+  "mutations": [
+    {
+      "at": "2026-10-15T17:41:07.303Z",
+      "stage": "upload a uniquely owned drawing through the app",
+      "path": "/api/method/cipher_aec.documents.api.upload_document",
+      "operation_id": "f5a288c3-d695-4fe6-a6a2-b320dde9b549",
+      "idempotency_key": "f5a288c3-d695-4fe6-a6a2-b320dde9b549",
+      "raw_payload_sha256": "dbf3ea6146fdcfea1e3c93e150e5fa9d5f1178f9581abc7c9d52f2df9f62b0f2",
+      "title": "Synthetic UI drawing 0cb1b9cf",
+      "filename": "synthetic-ui-drawing.pdf",
+      "byte_length": 797,
+      "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae"
+    },
+    {
+      "at": "2026-10-15T17:41:08.749Z",
+      "stage": "create a takeoff set through the app",
+      "path": "/api/method/cipher_aec.takeoff.api.create_set",
+      "operation_id": "5f6644e6-0da9-4578-97ed-90a19c4e8983",
+      "idempotency_key": "5f6644e6-0da9-4578-97ed-90a19c4e8983",
+      "raw_payload_sha256": "a045add04a05e7d3783d39e9593cb7fc5a2e7a254b5317a7c6b7e1fbccf64180",
+      "title": "Synthetic UI drawing 0cb1b9cf measurements"
+    },
+    {
+      "at": "2026-10-15T17:41:09.937Z",
+      "stage": "actual PDF pointer anchors and explicit scale relation",
+      "path": "/api/method/cipher_aec.takeoff.api.create_calibration",
+      "operation_id": "5dce07c6-64ac-48da-8d09-d033d3b519ba",
+      "idempotency_key": "5dce07c6-64ac-48da-8d09-d033d3b519ba",
+      "raw_payload_sha256": "8bc1940ac70333b1bf36e35773dc333651b3fc56308441c23ce68b5e589da5fc"
+    },
+    {
+      "at": "2026-10-15T17:41:10.491Z",
+      "stage": "independent calibration approval request",
+      "path": "/api/method/cipher_aec.api.approvals.request_action",
+      "operation_id": "7290dca2-6cbd-47d7-bf2d-845b661b0928",
+      "idempotency_key": "7290dca2-6cbd-47d7-bf2d-845b661b0928",
+      "raw_payload_sha256": "1ebe57e74506728420990e50bacbbfee84b7d1600f4017a4a9734c7c5a35fc09"
+    },
+    {
+      "at": "2026-10-15T17:41:12.414Z",
+      "stage": "independent calibration approval request",
+      "path": "/api/method/cipher_aec.api.approvals.decide_packet",
+      "operation_id": "a077837d-da25-4893-85e1-11ffa6ba4bfc",
+      "idempotency_key": "a077837d-da25-4893-85e1-11ffa6ba4bfc",
+      "raw_payload_sha256": "9c94e95076180d3af3da81cf95424102f8d545217f5b9773bf9adb56ec4eab0e"
+    },
+    {
+      "at": "2026-10-15T17:41:14.133Z",
+      "stage": "separately authorized calibration execution",
+      "path": "/api/method/cipher_aec.api.approvals.execute_packet",
+      "operation_id": "cc6d57dd-e396-4324-be86-2f1ea666d3b3",
+      "idempotency_key": "cc6d57dd-e396-4324-be86-2f1ea666d3b3",
+      "raw_payload_sha256": "fcfa8bb9f6425c4d112d6454ad87a10e7f7e1e0f1570ac9d4ce3d6b73220f677"
+    },
+    {
+      "at": "2026-10-15T17:41:16.512Z",
+      "stage": "server measurement and stored numeric bounds",
+      "path": "/api/method/cipher_aec.takeoff.api.create_measurement",
+      "operation_id": "3959797a-ea06-41a4-85d1-d7cbfacde992",
+      "idempotency_key": "3959797a-ea06-41a4-85d1-d7cbfacde992",
+      "raw_payload_sha256": "7529bf43734c11d00d9ce3914c0075c6a759e871772d751f628c4570eab9879d"
+    },
+    {
+      "at": "2026-10-15T17:41:17.465Z",
+      "stage": "separate authored estimate with matching exact quantity",
+      "path": "/api/method/cipher_aec.estimating.api.create_estimate",
+      "operation_id": "6b1ccaf2-03b8-40da-8b4c-ec2c22584873",
+      "idempotency_key": "6b1ccaf2-03b8-40da-8b4c-ec2c22584873",
+      "raw_payload_sha256": "a6439adfb4e410a8813041759c9279c644c14d7611f1a1e8ed473be9dbcd5516",
+      "title": "Synthetic UI drawing 0cb1b9cf estimate"
+    },
+    {
+      "at": "2026-10-15T17:41:17.976Z",
+      "stage": "separate authored estimate with matching exact quantity",
+      "path": "/api/method/cipher_aec.estimating.api.calculate_revision",
+      "operation_id": "59de9e14-bd9a-4bcd-872e-fe6b1f826a6d",
+      "idempotency_key": "59de9e14-bd9a-4bcd-872e-fe6b1f826a6d",
+      "raw_payload_sha256": "396b55ae8bf56e3158dc36658a496d71b249e7c28cc45de16369a510843efe26"
+    },
+    {
+      "at": "2026-10-15T17:41:19.754Z",
+      "stage": "actual stable line evidence binding",
+      "path": "/api/method/cipher_aec.takeoff.api.bind_line",
+      "operation_id": "172e714b-153a-4243-b610-0f177e23f989",
+      "idempotency_key": "172e714b-153a-4243-b610-0f177e23f989",
+      "raw_payload_sha256": "22c12ba97c75db59a6307812e66ab01125b85f17331debfd92b48cc36fc397d1"
+    },
+    {
+      "at": "2026-10-15T17:41:21.482Z",
+      "stage": "replace only the owned drawing working revision",
+      "path": "/api/method/cipher_aec.documents.api.upload_document",
+      "operation_id": "ccb46ff9-02df-4aef-8bf7-a379d040cdbd",
+      "idempotency_key": "ccb46ff9-02df-4aef-8bf7-a379d040cdbd",
+      "raw_payload_sha256": "5e0b7d8542b2381b6d77172f0f57fcdd8a4916e1294793745f9dff06775f4a6c",
+      "title": "Synthetic UI drawing 0cb1b9cf",
+      "filename": "synthetic-ui-successor.pdf",
+      "byte_length": 797,
+      "source_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594"
+    }
+  ],
+  "served_html_sha256": "9294659417347263811e45e2a2e9683efe3a2c7fc9daecdbc453682a8939e270",
+  "company": "Cipher Synthetic Company",
+  "project": "PROJ-0031",
+  "created": {
+    "document": "DOC-16841755d9ce46e7985e72addf0d351a",
+    "original_revision": "REV-7ff335f5471b4130945c89d5b26a40cc",
+    "takeoff_set": "6e5b466f-bc7c-41c1-b9ac-d648efb68aa8",
+    "calibration": "51515535-1489-4520-956c-7a019ac2aa05",
+    "packet": "8h1iejkei3",
+    "measurement": "b32e1a2e-55e9-4920-a05b-349cbf2d8577",
+    "estimate": "8cfbc380-b3da-4197-9247-8f0372c414c2",
+    "estimate_revision": "2e9b269d-7877-4cd1-8e9e-6752eb9f8fca",
+    "snapshot": "c5925595-5b76-45d5-bb4d-5c3617fbe7cc",
+    "binding": "ec77b521-add1-4b6e-9256-65bba6ae98a2",
+    "successor_revision": "REV-b1d5bfb004da494eb9f313b73d29f35a"
+  },
+  "mocked_requests": false,
+  "source_original_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+  "source_successor_sha256": "1ee862530ccd0fd343847f11d8f3774a4e2e2a5246c2bdb9eb6fc7e810a37594",
+  "pointer_picks": [
+    {
+      "desired_pdf_coordinates": [
+        "100",
+        "100"
+      ],
+      "picked_pdf_coordinates": [
+        "100",
+        "100.078125"
+      ],
+      "native_rotation": 0,
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "exact_coordinates_explicitly_entered_after_pick": true
+    },
+    {
+      "desired_pdf_coordinates": [
+        "200",
+        "100"
+      ],
+      "picked_pdf_coordinates": [
+        "200",
+        "100.078125"
+      ],
+      "native_rotation": 0,
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "exact_coordinates_explicitly_entered_after_pick": true
+    },
+    {
+      "desired_pdf_coordinates": [
+        "100",
+        "100"
+      ],
+      "picked_pdf_coordinates": [
+        "100",
+        "100.078125"
+      ],
+      "native_rotation": 0,
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "exact_coordinates_explicitly_entered_after_pick": true
+    },
+    {
+      "desired_pdf_coordinates": [
+        "300",
+        "200"
+      ],
+      "picked_pdf_coordinates": [
+        "300",
+        "200.078125"
+      ],
+      "native_rotation": 0,
+      "crop_box": [
+        "0",
+        "0",
+        "612",
+        "792"
+      ],
+      "exact_coordinates_explicitly_entered_after_pick": true
+    }
+  ],
+  "pointer_pdf_bound": "one PDF point before explicit exact entry",
+  "device_pixel_ratio": 2,
+  "calibration_independent_review": true,
+  "server_quantity": {
+    "amount": "200.000000",
+    "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba",
+    "precision": 6
+  },
+  "server_bounds": {
+    "lower": {
+      "numerator": "200",
+      "denominator": "1"
+    },
+    "upper": {
+      "numerator": "200",
+      "denominator": "1"
+    }
+  },
+  "binding": {
+    "id": "ec77b521-add1-4b6e-9256-65bba6ae98a2",
+    "company": "Cipher Synthetic Company",
+    "project": "PROJ-0031",
+    "author_person": "CIPHER-PERSON-PM",
+    "author_user": "morgan@cipher.example",
+    "created_at": "2026-10-15T17:41:19.855416+00:00",
+    "status": "authored",
+    "measurement_id": "b32e1a2e-55e9-4920-a05b-349cbf2d8577",
+    "measurement_digest": "fb2cb93d85bd3dbe4644c2dbd070c6a8f1cc52ac175022383f4688039bbe1bf1",
+    "estimate_line_record": "354e007f-9291-4604-830f-29381f2a6e22",
+    "estimate": "8cfbc380-b3da-4197-9247-8f0372c414c2",
+    "estimate_revision": "2e9b269d-7877-4cd1-8e9e-6752eb9f8fca",
+    "line_id": "70f3b492-3dc0-44c4-8f77-ffdd1e49e133",
+    "estimate_line_digest": "2946b37fdb70b947af594f39b5a73cdde82d93ed815dfdc46db124d7fcafabae",
+    "quantity": {
+      "amount": "200.000000",
+      "precision": 6,
+      "unit_id": "240054e0-74dd-4704-9e72-e7587153f1ba"
+    },
+    "reason": "Subsequently attached independently verified source evidence; preserve original authored snapshot.",
+    "quantity_basis": "net-quantity-v1",
+    "waste_policy": "net-takeoff-estimate-component-waste-v1",
+    "provenance": "subsequently-attached-takeoff-evidence-v1",
+    "original_snapshot_claim": "authored-quantity-not-recomputed"
+  },
+  "estimate_result_before_and_after_identical": true,
+  "measurement_result_before_and_after_identical": true,
+  "old_measurement_current_use": {
+    "eligible": false,
+    "reasons": [
+      "drawing_working_revision_changed"
+    ],
+    "current_working_revision": "REV-b1d5bfb004da494eb9f313b73d29f35a",
+    "head_policy": "current-working-revision-v1",
+    "original_record_preserved": true,
+    "verification": {
+      "id": "405a8e14-120b-465b-99f9-0aa73f1c3230",
+      "verified_by_person": "CIPHER-PERSON-REVIEWER"
+    }
+  },
+  "impact": {
+    "source": {
+      "document_id": "DOC-16841755d9ce46e7985e72addf0d351a",
+      "revision_id": "REV-7ff335f5471b4130945c89d5b26a40cc",
+      "revision_number": 1,
+      "current_revision": "REV-b1d5bfb004da494eb9f313b73d29f35a",
+      "current_revision_number": 2,
+      "is_current": false,
+      "page": 1,
+      "page_count": 1,
+      "mime_type": "application/pdf",
+      "source_sha256": "5b0db7738af2e1e0903e241d4a3a1dd6b8efcf62e8e13873406cc40ddad4adae",
+      "byte_length": 797,
+      "extraction_status": "ready"
+    },
+    "measurements": [
+      {
+        "measurement_id": "b32e1a2e-55e9-4920-a05b-349cbf2d8577",
+        "measurement_digest": "fb2cb93d85bd3dbe4644c2dbd070c6a8f1cc52ac175022383f4688039bbe1bf1",
+        "current_use": {
+          "eligible": false,
+          "reasons": [
+            "drawing_working_revision_changed"
+          ],
+          "current_working_revision": "REV-b1d5bfb004da494eb9f313b73d29f35a",
+          "head_policy": "current-working-revision-v1",
+          "original_record_preserved": true,
+          "verification": {
+            "id": "405a8e14-120b-465b-99f9-0aa73f1c3230",
+            "verified_by_person": "CIPHER-PERSON-REVIEWER"
+          }
+        },
+        "bound_lines": [
+          {
+            "id": "ec77b521-add1-4b6e-9256-65bba6ae98a2",
+            "estimate": "8cfbc380-b3da-4197-9247-8f0372c414c2",
+            "estimate_revision": "2e9b269d-7877-4cd1-8e9e-6752eb9f8fca",
+            "line_id": "70f3b492-3dc0-44c4-8f77-ffdd1e49e133",
+            "estimate_line_record": "354e007f-9291-4604-830f-29381f2a6e22"
+          }
+        ]
+      }
+    ],
+    "new_use_requires_explicit_successor": true,
+    "historical_results_changed": false,
+    "head_policy": "current-working-revision-v1"
+  },
+  "original_control_records_read_only": true,
+  "viewports": [
+    1440,
+    900,
+    390
+  ],
+  "browser_errors": [],
+  "unexpected_console_errors": [],
+  "unexpected_http_errors": [],
+  "expected_initial_authentication_responses": [
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    },
+    {
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "status": 401
+    }
+  ],
+  "served_assets": [
+    {
+      "path": "/assets/index-Bjd2HKAT.js",
+      "sha256": "764ec052f18abc0dc6cc432f98b38a075ed2d94dbbf309441ad215176fe00b31"
+    },
+    {
+      "path": "/assets/ResponsivePopover-ENj9Xw2H.js",
+      "sha256": "4c9205d14d38b7b6178626baf44e86fba61d4cbc1a002459af69fec41971bb53"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-YBpNm_ni.js",
+      "sha256": "48113973171dc7fc0b6fbe6541ad4ccf28d82aee84e9fc9a19fc326caa8bcb39"
+    },
+    {
+      "path": "/assets/components-DP82IPLA.js",
+      "sha256": "0b18271a02abaf523d06f2730f873300b4834ccb3fa47f1facadb975a2dd25c7"
+    },
+    {
+      "path": "/assets/TextArea-SzPm31lO.js",
+      "sha256": "ac9a5da78283d5f2bdbd1c507830c06105ef94f701790bd00182e283507dd93c"
+    },
+    {
+      "path": "/assets/Input-BJakfZ5M.js",
+      "sha256": "e9c08d15d93703ca9ce9776a9b7dd74062bc5e67f7a1ebb2879ad853347de940"
+    },
+    {
+      "path": "/assets/Link-D8-bJBNv.js",
+      "sha256": "be373275af7190513a8bbe626304f4908ac874c220c184035672b637b928a964"
+    },
+    {
+      "path": "/assets/Link-CQ5hQPT1.js",
+      "sha256": "6c8093d6ddc6850ffa24c0031895f93fd39cdc7537b585368d399566e3e0897d"
+    },
+    {
+      "path": "/assets/useMutation-Dt9feF1o.js",
+      "sha256": "e4b17f117772f07f15a4e6f9f15b304e29e8de2e0e6ce521c12398d597b9cc2c"
+    },
+    {
+      "path": "/assets/estimating-Cum2OZ-t.js",
+      "sha256": "e97163a72551f4666cd334b3dbdc0a6ff8b74918b187c24b7c96443807568215"
+    },
+    {
+      "path": "/assets/index-DRXGNCUl.css",
+      "sha256": "afdf0a30efd5eeccc5c9928161602a92c884f06e7b19ccd4a1fa59b68cd48725"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/Takeoff-CCYSXtDS.js",
+      "sha256": "7c33093ae3a7eb41e79f12a9a85bcd65530908d5f9490dea601c856d4a535a75"
+    },
+    {
+      "path": "/assets/PdfDrawing-Cl-vlfwJ.js",
+      "sha256": "0ef0ff9f6c76e862dff48528ab62f08b5131a4ca84e60f603c41b3ec470bb147"
+    },
+    {
+      "path": "/assets/pdf.worker.min-CjEcRF4W.mjs",
+      "sha256": "9536359f1b8367850d485731ca1d5e45c159a7b7a0912325e539937aa21ceb18"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-BYNal6i6.js",
+      "sha256": "599f26f1deff29ba8baf9a5a689554ac0087da46e430966d10dbe695b89f1c50"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "cipher.r18.original-idempotency-rejection-audit.v3",
+  "status": "passed",
+  "original_attempt_failed": true,
+  "original_journal_status_preserved": "entered",
+  "original_run_result_status_preserved": "entered",
+  "original_operation_id": "fc5ed563-41a1-4c40-92d9-f74b46b8cc3e",
+  "http_status": 428,
+  "error_code": "idempotency_key_required",
+  "new_business_rows": 0,
+  "receipts_created": 0,
+  "all_existing_business_source_config_indexes_closed_evidence_exact": true,
+  "auth": {
+    "status": "passed",
+    "bounded_user_heartbeat_changes": 1,
+    "bounded_session_changes": 1,
+    "exact_original_author_transport_ip_change": "known loopback to inspected Docker gateway; User and full Session JSON reconstructed and hash-verified",
+    "all_other_User_Session_facts_exact": true,
+    "observer_business_writes": 0
+  },
+  "original_journal_sha256": "6aa0922a39c066b9904cc528ed1ad0a96598782c9990764e40c33d88b6419cb2",
+  "before_sha256": "efed14d2d36c0a1657dc7d5399dcf856952e6b46c0fabc7a6c0cf850f48a40a0",
+  "after_sha256": "f8261f46f036e4c4866c2feb03130d6096df0d036bed89b71a5b234852a65acf",
+  "first_two_heartbeat_only_verifier_failures_retained": true,
+  "continuation_policy": "same original predeclared UUID and byte-identical JSON inputs; add Idempotency-Key header and use actual preview proxy; no reset or new target UUID"
+}

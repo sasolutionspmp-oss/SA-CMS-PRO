@@ -1,0 +1,283 @@
+{
+  "schema": "cipher.company.live-ui.saved-suggestions.v1",
+  "status": "passed",
+  "fixture_id": "ricky-company-1cc066dc8ba8",
+  "frontend": "Exact 905-file production build from source-snapshot.json",
+  "backend_origin": "Isolated native ERPNext 16.51 / Frappe 16.52 site",
+  "synthetic_business_data": true,
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "model_invoked": false,
+  "reused_existing_authenticated_session": true,
+  "login_requests": 0,
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuit"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.proposals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_run"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.run_events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_citation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_run"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.run_events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_citation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    }
+  ],
+  "console": [],
+  "failures": [],
+  "blocked_requests": [],
+  "captures": [
+    {
+      "name": "01-scope-selection",
+      "width": 1440,
+      "path": "01-scope-selection-1440.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "14d7e487a2913aa3ee6440af5e15c1b9dcd38dc3ecf4a38886685dd384c6c630"
+    },
+    {
+      "name": "01-scope-selection",
+      "width": 900,
+      "path": "01-scope-selection-900.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "4999b35cf3ccf95b4734fb92bc1bdf56aac1401bab08fb15c6f36b0a8b414476"
+    },
+    {
+      "name": "01-scope-selection",
+      "width": 390,
+      "path": "01-scope-selection-390.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "d3757fb468dcd1d2b341b907ccc5a42070930b9c4782c5c6c7721e2e1c542f35"
+    },
+    {
+      "name": "02-saved-scope",
+      "width": 1440,
+      "path": "02-saved-scope-1440.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "125e6e6dcee4b843234ecf89752838c76d90ca34559e8c83328fb0d130c8d126"
+    },
+    {
+      "name": "02-saved-scope",
+      "width": 900,
+      "path": "02-saved-scope-900.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "0eca71912d5bb00bca5d9f9a0aa72c6fd45cb3412654046f4961933f758446fa"
+    },
+    {
+      "name": "02-saved-scope",
+      "width": 390,
+      "path": "02-saved-scope-390.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "fac393a07dc607e04e9d097fdf2c7f9076d89add9287d02066d0d7bcfa990980"
+    },
+    {
+      "name": "03-saved-estimate",
+      "width": 1440,
+      "path": "03-saved-estimate-1440.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "bba0ed52dfb8375600724c451ff46d02df00ae256d17bc480fba98fca62d98b3"
+    },
+    {
+      "name": "03-saved-estimate",
+      "width": 900,
+      "path": "03-saved-estimate-900.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "a6ec93df15d317f4d2abfd674eae77df2feaa1ccdf9f8805a9499ef062c516d6"
+    },
+    {
+      "name": "03-saved-estimate",
+      "width": 390,
+      "path": "03-saved-estimate-390.png",
+      "url": "http://127.0.0.1:5199/commercial/pursuits?company=Cipher%20Synthetic%20Company",
+      "sha256": "72c1bda30776706b8d10a8c99520c86603d90590f6347333c4d3542927be168d"
+    }
+  ],
+  "saved_reviews": [
+    {
+      "kind": "scope",
+      "run_id": "2168de63-936b-4e40-9c99-aadef933939f",
+      "actual_review_loaded": true
+    },
+    {
+      "kind": "estimate",
+      "run_id": "43c4a478-d561-42af-a425-074bd7cc8db0",
+      "actual_review_loaded": true
+    }
+  ],
+  "font_status": {
+    "status": "loaded",
+    "fonts": [
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-Bold",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-SemiboldDuplex",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      }
+    ]
+  },
+  "business_writes": 0,
+  "ricky_commands": 0,
+  "capture_note": "Actual saved suggestions and source review from the isolated ERPNext backend; read-only browser session.",
+  "private_original_sha256": "f7f9b5373fa4cd6a67802601ab323fd6b2d0ca067805eff27b50c8ed82b8d9c0",
+  "visual_review": "All nine original screenshots inspected at their recorded viewport widths; scrollable assistant content is shown at its initial scroll position."
+}

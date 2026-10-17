@@ -1,0 +1,127 @@
+{
+  "build": {
+    "files": 915,
+    "modules": 2046,
+    "path": "/dev/shm/cipher-company-calibration-ui-r21/v2/dist",
+    "status": "passed"
+  },
+  "calibration_browser_cases": 25,
+  "calibration_composed_distinct_cases": 51,
+  "calibration_node_contract_cases": 26,
+  "classification": "synthetic_interception_host_qualification",
+  "composed_distinct_cases": 118,
+  "composition": "27 fresh confirmation cases +24 unchanged successful browser cases from retained51 run +67 inherited compatibility cases; no fresh full118 run claimed",
+  "configuration_sha256": {
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/BASELINE.json": "378b7a4b63f8ab5b5cf69155d0058e398ec6aab711d24c814fc787ab6ce9763e",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/playwright-r21.config.mjs": "2f1e2349bb895c7c984d597817e114ada2a5194284c70158030956421139b0ef",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/vite-r21.config.mjs": "5d08032822d0e22d6c4e6ea407f1ee4d195f686b383b54eb7a02ecfa59199027"
+  },
+  "failure_history": {
+    "failing_first": "3 failures: canonical Company+UOM rejected in either order, missingCompany accepted",
+    "focused51": "50 passed/1 failed Chromium Page crashed at initial goto in success/reload/register case; full trace retained; exact case subsequently passed",
+    "setup": "first process rejected nonexistent workdir before command execution, retained setup-attempt-01.log",
+    "typing": "two test-only nonempty tuple narrowing errors retained in typecheck-qualified.log; corrected with erased assertions; all26 validators rerun and final typecheck passed"
+  },
+  "fresh_browser_cases": 1,
+  "fresh_distinct_cases": 27,
+  "fresh_node_contract_cases": 26,
+  "generated_contracts_verified": 13,
+  "integrity": {
+    "CompanyTakeoff_command_form_unknown_recovery_App_PdfDrawing_styles_backend_all13generated_ProjectTakeoff": "byte-identical to frozen R21v1",
+    "R21_v1_build_verified": 915,
+    "R21_v1_frozen_delta_verified": 6,
+    "R21_v1_source_verified": 734,
+    "changed_paths": 3,
+    "dist_files": 915,
+    "production_paths": 1,
+    "source_files": 734,
+    "test_paths": 2,
+    "untouched_R22_base_verified": 734
+  },
+  "logs_sha256": {
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/attempt-01-failing-first.log": "1a867a3d15f23ea54f465d90c2a42dd1548924db86d4908f5f43018f96d63120",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/build-qualified.log": "e8fb1139122c1e6788a0d57db226957421eebb922b6ad46666346ca7b2499213",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-confirmation.log": "1c4ca12ea2b8b086e86e74deee022e84503f9f26b8dc792bc0f5385280941130",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-final.log": "6dc1add18b34f57ab259b238ea9393cd70ef1165d3551279ff6a6682cd9bb4c3",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/generated-qualified.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/setup-attempt-01.log": "8ff286725e6784e9afab12869f4a082a0392f385480957903ad565a90bf57fb1",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/typecheck-final.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-calibration-ui-r21/v2/typecheck-qualified.log": "0244b24ca39d93750ddf174ec2455e719b7ca5b4e18132723c9eec26174f888b"
+  },
+  "native_qualification": "Original root-owned HTTP200 created exactly one calibration/receipt/history and was independently reconciled; original UI/native run remains failed. This correction made zero native calls or recovery/POSTs. Corrected root continuation must only GET the existing calibration.",
+  "preserved_compatibility_cases": 67,
+  "reports": {
+    "attempt-01-failing-first": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/v2/attempt-01-failing-first/report.json",
+      "sha256": "5b9541839ec06be849783f50c31d0c680a24bd6dd41dc0cf375736185660c6d9",
+      "stats": {
+        "duration": 2214.711,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:39:41.404Z",
+        "unexpected": 3
+      }
+    },
+    "focused-confirmation": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-confirmation/report.json",
+      "sha256": "781628dcabf30a8a7938d800da8ad2e654a7cbc6cdd3db2da8056efcf5367c90",
+      "stats": {
+        "duration": 7159.478,
+        "expected": 27,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:42:17.633Z",
+        "unexpected": 0
+      }
+    },
+    "focused-final": {
+      "path": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-final/report.json",
+      "sha256": "5b988872e1dbbc2582be10971aab2a26ddd283be226af2ca8849f79b79969405",
+      "stats": {
+        "duration": 74840.01699999999,
+        "expected": 50,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T03:40:24.182Z",
+        "unexpected": 1
+      }
+    }
+  },
+  "retained_attempt_artifacts": {
+    "attempt-01-failing-first": {
+      "files": {
+        "report.json": "5b9541839ec06be849783f50c31d0c680a24bd6dd41dc0cf375736185660c6d9",
+        "test-results/.last-run.json": "75ea8a4c2448da819c504a77af31d48003accc54c877864c7ffd6b8ea86e126e",
+        "test-results/company-calibration-valida-5e3c5-d-independent-of-order-true/error-context.md": "e29e476b44a9e2a8d0d1d9c5fd336d1248bd31c04ced1eb612bde9bfd373597f",
+        "test-results/company-calibration-valida-5e3c5-d-independent-of-order-true/trace.zip": "43ac8cc3b325e1eefd92c704b02c104d1ce0af4f71a8564005f35526536892c1",
+        "test-results/company-calibration-valida-c1bdd--independent-of-order-false/error-context.md": "6a670ddc25e18f1ce83e1a8357f37ad231eafe38bddac29874aff378ed979287",
+        "test-results/company-calibration-valida-c1bdd--independent-of-order-false/trace.zip": "54ec7ec3e0d3f7ce309df81652039d387bc662f749f12677fb44c8eaac16224c",
+        "test-results/company-calibration-valida-ec428-ical-Company-context-record/error-context.md": "2d9a178cbc45440b771e70277e03ea20c5caa3ab31b63463af3063920bde2f0f",
+        "test-results/company-calibration-valida-ec428-ical-Company-context-record/trace.zip": "2b79b06c14580189da1c76c9df566c6ae45178215224d30a9c485f85de1ad7a1"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/v2/attempt-01-failing-first"
+    },
+    "focused-confirmation": {
+      "files": {
+        "report.json": "781628dcabf30a8a7938d800da8ad2e654a7cbc6cdd3db2da8056efcf5367c90",
+        "test-results/.last-run.json": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-confirmation"
+    },
+    "focused-final": {
+      "files": {
+        "report.json": "5b988872e1dbbc2582be10971aab2a26ddd283be226af2ca8849f79b79969405",
+        "test-results/.last-run.json": "5159ce52af1f51577c1bcc6fddd9d0e107dad6b3959d2724aeb3191dd083b425",
+        "test-results/company-calibration-human--58039-ads-it-without-text-preview/error-context.md": "af2f73a11a8c68eb0f2a308f6421f54281c6ea9f60412317fe13cf2dda9f2569",
+        "test-results/company-calibration-human--58039-ads-it-without-text-preview/trace.zip": "2d46b34a5407b1eccd9c69d7a95fb3205c2a20228e255321815e5cc1461332aa"
+      },
+      "root": "/dev/shm/cipher-company-calibration-ui-r21/v2/focused-final"
+    }
+  },
+  "retries": 0,
+  "schema": "cipher.company-calibration.ui-qualification.v2",
+  "screenshots": "disabled",
+  "typecheck": "passed",
+  "workers": 1
+}

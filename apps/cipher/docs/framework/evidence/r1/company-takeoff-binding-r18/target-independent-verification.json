@@ -1,0 +1,33 @@
+{
+  "schema": "cipher.r18.target-independent-verification.v1",
+  "status": "passed",
+  "business_commands": 2,
+  "new_rows": {
+    "Cipher Estimate": 1,
+    "Cipher Estimate Revision": 1,
+    "Cipher Calculation Snapshot": 1,
+    "Cipher Estimate Line": 1,
+    "Cipher Command Receipt": 2,
+    "Cipher History Event": 2
+  },
+  "existing_tables": 77,
+  "inventory_entries": 78,
+  "all_original_rows_source_config_indexes_projects_financial_records_unchanged": true,
+  "request_receipt_result_history_hashes_verified": true,
+  "canonical_core_matches_actual_HTTP": true,
+  "unit_quantity_source_exact": true,
+  "auth_calculation": {
+    "status": "passed",
+    "bounded_user_changes": 0,
+    "bounded_session_changes": 0,
+    "canonical_calculator_recomputed_snapshot_exactly": true,
+    "observer_business_writes": 0
+  },
+  "before_sha256": "1ed13130b513c5fa19e853f97936e83d40fd59da905ec1cd2e04d065167fff40",
+  "after_sha256": "68085e171f55e540beedbba8eb5bf2c45897c81562634f92d6ca2862b1c54786",
+  "journal_sha256": "a7d60d7e6167532ac980773862508c58222cfac9c5460cc8e69e4c770044797e",
+  "estimate_id": "be392b8d-160b-456e-93c8-3c1474287352",
+  "revision_id": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+  "snapshot_id": "d3b37702-e0d0-41f9-b4be-c3f80fdea122",
+  "line_record_id": "034c4d79-ec08-4bcc-a8f2-d91c798daf4f"
+}

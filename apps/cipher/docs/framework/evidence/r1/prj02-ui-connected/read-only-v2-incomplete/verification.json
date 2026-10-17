@@ -1,0 +1,225 @@
+{
+  "schema": "cipher.award.cost-read-only-diagnostic.v1",
+  "runtime_epoch": "cipher-award-enabled-20261015-496-a73d9a9a",
+  "stage": "completed",
+  "business_posts_forwarded": 0,
+  "blocked_requests": [],
+  "external_asset_requests": [],
+  "session_responses": [
+    {
+      "transport": "page",
+      "status": 401,
+      "expected_initial_401": true,
+      "at": "2026-10-15T23:53:32.495Z",
+      "retry_after": null,
+      "body_sha256": "413f3ef986826e2d351368f672890222803e0f9cd1594878b5f31728fc7da32f",
+      "byte_length": 331,
+      "code": "authentication_required",
+      "request_id": "01c14713-3662-4011-b5cb-add15f1e088f"
+    },
+    {
+      "transport": "page",
+      "status": 200,
+      "expected_initial_401": false,
+      "at": "2026-10-15T23:53:32.762Z",
+      "retry_after": null,
+      "body_sha256": "27a955f957663b67c8b8c2601781f17d897fc5ad4fd20af257b25b4d1fffc7b3",
+      "byte_length": 1239,
+      "code": null,
+      "request_id": "993ccaa6-3a32-48a5-8940-1ab344230954"
+    }
+  ],
+  "console_errors": [
+    {
+      "message_sha256": "b5eab622ac59315df4bb253a634e9a302f372a466b17b5e263196abeca5a5c69",
+      "location_path": "/api/method/cipher_aec.api.v1.session",
+      "expected_initial_401": true
+    }
+  ],
+  "page_errors": [],
+  "selection_states": [
+    {
+      "label": "original saved canonical target",
+      "disabled": true,
+      "selected_value": "Administrative Expenses - Q0c3c3b7",
+      "selected_text": "Administrative Expenses - Q0c3c3b7 · Current selection",
+      "options": [
+        {
+          "value": "",
+          "text": "Loading permitted choices…",
+          "selected": false
+        },
+        {
+          "value": "Administrative Expenses - Q0c3c3b7",
+          "text": "Administrative Expenses - Q0c3c3b7 · Current selection",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "label": "search response received",
+      "disabled": false,
+      "selected_value": "Administrative Expenses - Q0c3c3b7",
+      "selected_text": "Administrative Expenses · USD",
+      "options": [
+        {
+          "value": "",
+          "text": "Choose expense account",
+          "selected": false
+        },
+        {
+          "value": "Administrative Expenses - Q0c3c3b7",
+          "text": "Administrative Expenses · USD",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "label": "official dropdown open",
+      "disabled": false,
+      "selected_value": "Administrative Expenses - Q0c3c3b7",
+      "selected_text": "Administrative Expenses · USD",
+      "options": [
+        {
+          "value": "",
+          "text": "Choose expense account",
+          "selected": false
+        },
+        {
+          "value": "Administrative Expenses - Q0c3c3b7",
+          "text": "Administrative Expenses · USD",
+          "selected": true
+        }
+      ]
+    }
+  ],
+  "ui_epoch": {
+    "variant": "prj02-cost-presentation-v2",
+    "marker_sha256": "34eae1f207ddbdcf9fe80868b90fa92db486a30c8d8758373cc1d40e1ba6aa88",
+    "source_inventory_sha256": "73a247eaa9dcccaae3ce9be8405c80b60888d0fe0c1d246f30d2d8c1a3ebf6e8",
+    "build_inventory_sha256": "4650804545336d450aeb36c30d0e0c1f7820ab62fdb2fc36a9b37593565ee71a"
+  },
+  "expected_original_journal_sha256": "984fbdd64fe36fa5a20b903331b9d9a9dd3e4797e9e9e6a867171360a213a9c6",
+  "source_count": 118,
+  "read_only_visual_checks": [
+    {
+      "width": 1440,
+      "keyboard": true,
+      "target_status_gap": 8
+    },
+    {
+      "width": 900,
+      "keyboard": true,
+      "target_status_gap": 8
+    },
+    {
+      "width": 390,
+      "keyboard": true,
+      "target_status_gap": 8
+    }
+  ],
+  "served_assets": [
+    {
+      "path": "/assets/index-QNbHAC_C.js",
+      "sha256": "d080c7c83864602e9e1fbffab5dea579c6be7a924fb4da7a635d72652f0313b0"
+    },
+    {
+      "path": "/assets/ResponsivePopover-BVnwonhY.js",
+      "sha256": "f7d1924aad1d589490173de1df51fb42e7137d1c0b9e7daffb71cbd0f4517121"
+    },
+    {
+      "path": "/assets/ListItemBaseTemplate-0lEzI6Zz.js",
+      "sha256": "c216ff10a8f403e401a950eb07cdcc722e541429fc9c382f3fd5c0098a76a9d1"
+    },
+    {
+      "path": "/assets/components-XIOErgwN.js",
+      "sha256": "46097830b33280b7290d07bdb2e4b37edab0d5271a6d6b70658c5b6f0d56c7a1"
+    },
+    {
+      "path": "/assets/CheckBox-BHL6SDmT.js",
+      "sha256": "03c553f234301443d5ae98b7f0bf2a500b7ff43ceb3a18332978ec251f145271"
+    },
+    {
+      "path": "/assets/Input-k1UkyJZe.js",
+      "sha256": "17f982ded9890b91a2f29651d735b6a2f85ca253e3feae495a894d3737c2d537"
+    },
+    {
+      "path": "/assets/Input-upL_Z3R6.js",
+      "sha256": "268f7c53e4014795c3a26766fbb1070391553c6399d48a2d94bfc7b74fb15860"
+    },
+    {
+      "path": "/assets/useMutation-_Fgj-XMl.js",
+      "sha256": "5218e8e9477336efe7d832fc59a5a555c5b6f21a1be12db877d7f9e1a6972dc8"
+    },
+    {
+      "path": "/assets/Text-BnIKGMtC.js",
+      "sha256": "8465928c09de7f12fffe8a27dfbb20bddaaeccffb4602808309165da29bc849a"
+    },
+    {
+      "path": "/assets/ToolbarSpacer-BgZZNVXw.js",
+      "sha256": "a1a9d16db049b35fb67cbb66ddf562dfdc8347d0a4ee9f7d14ccbd6f897527b5"
+    },
+    {
+      "path": "/assets/Link-iBEFqMvR.js",
+      "sha256": "5976f766dd038bf0ae467ebcb0688ef06a50672310143b223d4d1e7932f69159"
+    },
+    {
+      "path": "/assets/Link-CuxjuDJ_.js",
+      "sha256": "39f626438462d7afd10b1ee2dd33c245dabfef7df5183977d5fe342ec230c632"
+    },
+    {
+      "path": "/assets/Approvals-B3St2cBx.js",
+      "sha256": "9204e81f070e9f017de2ee83da23a0f193c1fe93a51f51f40e62c7d8c3184343"
+    },
+    {
+      "path": "/assets/estimating-CsTGW64y.js",
+      "sha256": "29aff13398dde4599ea0ff3f60f143ba6a5aa2a3b377f6f04bf3264b2d398ae7"
+    },
+    {
+      "path": "/assets/index-DPYr16Sp.css",
+      "sha256": "152b36ef5c5390e13de9e003568942bb20ab6771c7ed63e4dc7f2ec607703aa6"
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "/assets/InputComposition-DStib4IT.js",
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "/assets/CostMasters-DvS8rUgz.js",
+      "sha256": "dc2dca5d64aee292e1a0eb4ef4add9820c65967d32fe8b2b98486ced3b1ecbf6"
+    },
+    {
+      "path": "/assets/NativeChoice-jo06P7Np.js",
+      "sha256": "7735ad71d73ad6343065a472be23c8b8ececfc7b363de56f5bd29d7f8e80bb07"
+    },
+    {
+      "path": "/assets/award-draft-BIkr6qzb.js",
+      "sha256": "c7efb4f53c70dfede584381a7bc05d7005da770e2716d764890a24e36daedf91"
+    },
+    {
+      "path": "/assets/project-controls-vCw9fJ3-.js",
+      "sha256": "1cd98f2c2505e4c730ae628f80af27129f67d3388035719e5bb4c97c6b5c25d6"
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "/assets/ListItemStandardExpandableTextTemplate-B9BaCY7U.js",
+      "sha256": "0575e38508668380165b6b577ce45e328e8b4c6fdd20a0676ea9814540633fcb"
+    }
+  ],
+  "qualification": "Read-only control/session diagnosis completed; observed console/session findings remain explicit.",
+  "original_journal_unchanged": true
+}

@@ -1,0 +1,44 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Identity Binding",
+  "module": "Cipher Governance",
+  "autoname": "hash",
+  "engine": "InnoDB",
+  "field_order": [
+    "user",
+    "person",
+    "active"
+  ],
+  "fields": [
+    {
+      "fieldname": "user",
+      "label": "User",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "User",
+      "unique": 1
+    },
+    {
+      "fieldname": "person",
+      "label": "Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "active",
+      "label": "Active",
+      "fieldtype": "Check",
+      "reqd": 0
+    }
+  ],
+  "permissions": [
+    {
+      "role": "Cipher Administrator",
+      "read": 1
+    }
+  ],
+  "track_changes": 0,
+  "sort_field": "modified",
+  "sort_order": "DESC"
+}

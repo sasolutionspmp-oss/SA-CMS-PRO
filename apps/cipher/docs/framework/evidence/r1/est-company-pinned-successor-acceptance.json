@@ -1,0 +1,403 @@
+{
+  "external_provider_qualified": false,
+  "live_model_qualified": false,
+  "qualification": "Real Frappe storage under explicitly synthetic Sessions; separate from cookie/CSRF HTTP. Manual successor has no calibrated evidence claim.",
+  "recorded_at": "2026-10-15T17:31:31.189054+00:00",
+  "result": {
+    "after_manifest_digest": "5355a4ac1403811bd184d23ad1a2823f879e94a87b22a20592358478deef321c",
+    "before_manifest_digest": "5355a4ac1403811bd184d23ad1a2823f879e94a87b22a20592358478deef321c",
+    "calls": [
+      {
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "role": "reviewer",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.create_rate",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.read_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "role": "author",
+        "status": "passed"
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.get_record",
+        "role": "author",
+        "status": "passed"
+      }
+    ],
+    "execute_payload": {
+      "company": "Company chain A 20b85fd4edd2",
+      "manifest_hash": "c76d72f9410014134e2b7519b62dc03577423f8c2b7de653304087256ea0941a",
+      "operation_id": "eb375a11-14be-453a-b190-d3c644382e38",
+      "packet_id": "1j2gsj8ga8"
+    },
+    "external_provider_qualified": false,
+    "journal": [
+      {
+        "method": "cipher_aec.estimating.company_api.calculate_revision",
+        "payload": {
+          "adjustments": [],
+          "basis_citations": [
+            {
+              "excerpt_sha256": "08f472a926e2da62b7c11bf5d8a8efdbb5961193f3c480eb21749889919a9eff",
+              "page": 1,
+              "revision_id": "REV-51876cf8a9c945708ce01d4cc192082e",
+              "source_sha256": "cc6aca6d4c9ee1d91d2d20142b8e72010378bb47a5555d61b5a564b86dae43f4"
+            }
+          ],
+          "basis_description": "Explicit manually authored historical quantity for pinned-rate policy proof; no current calibrated evidence claimed or attached",
+          "company": "Company chain A 20b85fd4edd2",
+          "conversion_ids": [],
+          "estimate_id": "15d942c3-f354-4afd-9210-2e5f84304018",
+          "expected_revision": "bba33c21-7bd9-476c-8ce9-648d126eb1a3",
+          "lines": [
+            {
+              "alternate": "",
+              "cost_code": "GEOM-01",
+              "description": "Known Company rectangle",
+              "included": true,
+              "line_id": "6d240ad0-f054-4205-ba25-57ed35a7deac",
+              "material_factor": "1",
+              "notes": "Subsequent takeoff evidence will be explicitly attached",
+              "quantity": {
+                "amount": "200.000000",
+                "precision": 6,
+                "unit_id": "ccb82438-4677-4ff2-9d0e-3e2cc8514a77"
+              },
+              "rate_source_id": "0bb73626-4733-4889-8276-bd180e8727da",
+              "waste_fraction": "0"
+            }
+          ],
+          "operation_id": "cf706908-1677-45ca-a9c4-94ec0484505e"
+        }
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.request_action",
+        "payload": {
+          "action": "estimate.accept.v1",
+          "company": "Company chain A 20b85fd4edd2",
+          "expected_version": "2ae89c94328ee17d8021d1e4eaf51c60760ba639437cf5a647cff083a62da737",
+          "operation_id": "f1ba162b-5d19-417a-9b5b-aaba17f22bc8",
+          "subject_id": "2caf4546-0353-4668-b397-cd19c842b404"
+        }
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.decide_packet",
+        "payload": {
+          "company": "Company chain A 20b85fd4edd2",
+          "decision": "Grant",
+          "manifest_hash": "c76d72f9410014134e2b7519b62dc03577423f8c2b7de653304087256ea0941a",
+          "operation_id": "bc297cc5-4ffd-4756-b4d0-a71d1e24e16a",
+          "packet_id": "1j2gsj8ga8",
+          "reason": "Independent exact pinned pricing review; explicitly manual quantity"
+        }
+      },
+      {
+        "method": "cipher_aec.estimating.company_api.create_rate",
+        "payload": {
+          "company": "Company chain A 20b85fd4edd2",
+          "operation_id": "51f41412-6619-4596-adca-c741a2accaff",
+          "predecessor": "0bb73626-4733-4889-8276-bd180e8727da",
+          "rate": {
+            "cost_type": "material",
+            "currency": "USD",
+            "exclusions": "",
+            "expiry_date": "2026-10-31",
+            "freight_tax_assumptions": "None in synthetic fixture",
+            "geography": "Explicit synthetic",
+            "inclusions": "Known synthetic material",
+            "permission_basis": "Authored synthetic PDF test content",
+            "quote_date": "2026-10-01",
+            "quote_reference": "EXPLICIT-COMPANY-PDF-eb10433371af-UNSELECTED-SUCCESSOR",
+            "rate_amount": "1.50",
+            "rate_precision": 2,
+            "source_citations": [
+              {
+                "excerpt_sha256": "08f472a926e2da62b7c11bf5d8a8efdbb5961193f3c480eb21749889919a9eff",
+                "page": 1,
+                "revision_id": "REV-51876cf8a9c945708ce01d4cc192082e",
+                "source_sha256": "cc6aca6d4c9ee1d91d2d20142b8e72010378bb47a5555d61b5a564b86dae43f4"
+              }
+            ],
+            "title": "Company geometric material eb10433371af",
+            "unit_id": "ccb82438-4677-4ff2-9d0e-3e2cc8514a77"
+          }
+        }
+      },
+      {
+        "method": "cipher_aec.api.company_approvals.execute_packet",
+        "payload": {
+          "company": "Company chain A 20b85fd4edd2",
+          "manifest_hash": "c76d72f9410014134e2b7519b62dc03577423f8c2b7de653304087256ea0941a",
+          "operation_id": "eb375a11-14be-453a-b190-d3c644382e38",
+          "packet_id": "1j2gsj8ga8"
+        }
+      }
+    ],
+    "live_model_qualified": false,
+    "manifest_unchanged_after_unused_same_rate_family_successor": true,
+    "manual_successor_has_no_calibrated_evidence_claim": true,
+    "new_manual_baseline": {
+      "accepted_by_person": "CHAIN-REVIEWER-20b85fd4edd2",
+      "accepted_result": {
+        "adjustments": [],
+        "contingency": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "conversion_references": [],
+        "direct": {
+          "amount": "250.00",
+          "currency": "USD"
+        },
+        "indirect": {
+          "amount": "0.00",
+          "currency": "USD"
+        },
+        "input_digest": "b66915025a139595eced72efdfe351a4e5d259a045b39a43464e8386d1e3d163",
+        "lines": [
+          {
+            "alternate": "",
+            "components": [
+              {
+                "allocated_amount": {
+                  "amount": "250.00",
+                  "currency": "USD"
+                },
+                "component_id": "6d240ad0-f054-4205-ba25-57ed35a7deac",
+                "cost_type": "material",
+                "material_factor": {
+                  "denominator": "1",
+                  "numerator": "1"
+                },
+                "priced_quantity_exact": {
+                  "denominator": "1",
+                  "numerator": "200"
+                },
+                "rate_revision": 1,
+                "rate_source_id": "0bb73626-4733-4889-8276-bd180e8727da",
+                "resource_quantity_exact": {
+                  "denominator": "1",
+                  "numerator": "200"
+                },
+                "rounding_increment": {
+                  "amount": "0.00",
+                  "currency": "USD"
+                },
+                "source_unit_id": "ccb82438-4677-4ff2-9d0e-3e2cc8514a77",
+                "unrounded_cost": {
+                  "denominator": "1",
+                  "numerator": "250"
+                },
+                "waste_fraction": {
+                  "denominator": "1",
+                  "numerator": "0"
+                }
+              }
+            ],
+            "cost_code": "GEOM-01",
+            "description": "Known Company rectangle",
+            "extension": {
+              "amount": "250.00",
+              "currency": "USD"
+            },
+            "included": true,
+            "line_id": "6d240ad0-f054-4205-ba25-57ed35a7deac",
+            "quantity": {
+              "amount": "200.000000",
+              "precision": 6,
+              "unit_id": "ccb82438-4677-4ff2-9d0e-3e2cc8514a77"
+            },
+            "quantity_method": "authored",
+            "unrounded_extension": {
+              "denominator": "1",
+              "numerator": "250"
+            }
+          }
+        ],
+        "output_digest": "1e36b28b7bfc40e731dc9846480a97fc69b0eb1ea5a6f0dc83fc2adcc4db009c",
+        "policy": {
+          "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+          "currency_exponent": 2,
+          "header_rounding": "sum-rounded-lines",
+          "intermediate": "exact-rational",
+          "line_rounding": "sum-exact-components-then-round",
+          "rounding_mode": "ROUND_HALF_UP",
+          "version": "cipher.estimate.line-half-up.v1"
+        },
+        "schema": "cipher.estimate.result.v1",
+        "total": {
+          "amount": "250.00",
+          "currency": "USD"
+        }
+      },
+      "author_person": "CHAIN-AUTHOR-20b85fd4edd2",
+      "author_user": "company.chain.author.20b85fd4edd2@cipher.example",
+      "baseline_number": 2,
+      "calculation_snapshot": "92e25c33-8a9b-480a-81e8-dfb36c4cdb2b",
+      "company": "Company chain A 20b85fd4edd2",
+      "created_at": "2026-10-15T17:29:21.145005+00:00",
+      "currency": "USD",
+      "decision_id": "1j4r0niqv1",
+      "estimate": "15d942c3-f354-4afd-9210-2e5f84304018",
+      "estimate_revision": "2caf4546-0353-4668-b397-cd19c842b404",
+      "id": "91e448c7-8070-4a90-8d37-14f58b917a67",
+      "manifest": {
+        "effect": {
+          "action": "estimate.accept.v1",
+          "facts": {
+            "bindings": [],
+            "currency_policy": {
+              "currency": "USD",
+              "currency_exponent": 2,
+              "fraction_units": 100,
+              "native_currency_version": "2026-10-15 22:37:40.135587"
+            },
+            "drawing_calibration_policy": "current-working-head-v1",
+            "estimate": {
+              "current_revision": "2caf4546-0353-4668-b397-cd19c842b404",
+              "digest": "a1fb957a4ace489b89367a0c4017118e09078efaee4e0a93c9bf4771d9e3f6d3",
+              "id": "15d942c3-f354-4afd-9210-2e5f84304018"
+            },
+            "native_references": [],
+            "pinned_records": [
+              {
+                "digest": "2d5cce27ba83be753f972828139ed4d2802f69a01d38b6d927f696874c3164e3",
+                "id": "0bb73626-4733-4889-8276-bd180e8727da",
+                "kind": "rate"
+              }
+            ],
+            "policy": "cipher.estimate.acceptance-facts.v1",
+            "pricing_sources_policy": "pinned-revision-at-pricing-date",
+            "pursuit": null,
+            "qualified_units": [
+              {
+                "fields": {
+                  "dimension": "area",
+                  "precision": 6,
+                  "symbol": "sf1039f07e6715"
+                },
+                "id": "ccb82438-4677-4ff2-9d0e-3e2cc8514a77",
+                "kind": "uom",
+                "revision": 1,
+                "target": {
+                  "doctype": "UOM",
+                  "name": "Company takeoff 1039f07e6715 sf"
+                }
+              }
+            ],
+            "revision": {
+              "digest": "2ae89c94328ee17d8021d1e4eaf51c60760ba639437cf5a647cff083a62da737",
+              "id": "2caf4546-0353-4668-b397-cd19c842b404"
+            },
+            "rounding_policy": "cipher.estimate.line-half-up.v1",
+            "scope": {
+              "company": "Company chain A 20b85fd4edd2",
+              "project": null,
+              "scope_type": "Company"
+            },
+            "snapshot": {
+              "digest": "56302d6244bf52714bbae4a57938931ada5b291213fdf03346c772d7231033d9",
+              "id": "92e25c33-8a9b-480a-81e8-dfb36c4cdb2b",
+              "input_digest": "b66915025a139595eced72efdfe351a4e5d259a045b39a43464e8386d1e3d163",
+              "output_digest": "1e36b28b7bfc40e731dc9846480a97fc69b0eb1ea5a6f0dc83fc2adcc4db009c"
+            }
+          },
+          "revision_id": "2caf4546-0353-4668-b397-cd19c842b404"
+        },
+        "sources": [
+          {
+            "company": "Company chain A 20b85fd4edd2",
+            "document_id": "DOC-e081ab6f38164fab869eab185a459cdf",
+            "document_title": "Company known PDF eb10433371af",
+            "excerpt": "Company actual stored known vector geometry eb10433371af\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+            "excerpt_sha256": "08f472a926e2da62b7c11bf5d8a8efdbb5961193f3c480eb21749889919a9eff",
+            "id": "c5ff4d46db715398bd1357e6186b7c6213bc6a2af3ffa4b6783366db0ed401e3",
+            "page": 1,
+            "page_label": "1",
+            "project": null,
+            "revision_id": "REV-51876cf8a9c945708ce01d4cc192082e",
+            "revision_number": 1,
+            "scope_type": "Company",
+            "source_sha256": "cc6aca6d4c9ee1d91d2d20142b8e72010378bb47a5555d61b5a564b86dae43f4"
+          }
+        ],
+        "subject": {
+          "doctype": "Cipher Estimate Revision",
+          "label": "Estimate revision 3",
+          "name": "2caf4546-0353-4668-b397-cd19c842b404"
+        },
+        "summary": {
+          "binding_count": 0,
+          "currency": "USD",
+          "independent_acceptance_required": true,
+          "rounding_policy": "cipher.estimate.line-half-up.v1",
+          "total": {
+            "amount": "250.00",
+            "currency": "USD"
+          }
+        }
+      },
+      "manifest_digest": "5355a4ac1403811bd184d23ad1a2823f879e94a87b22a20592358478deef321c",
+      "packet_id": "1j2gsj8ga8",
+      "predecessor": "4e210b44-444b-45ee-88e7-de99319584c4",
+      "project": null,
+      "scope_type": "Company",
+      "source_citations": [
+        {
+          "company": "Company chain A 20b85fd4edd2",
+          "document_id": "DOC-e081ab6f38164fab869eab185a459cdf",
+          "document_title": "Company known PDF eb10433371af",
+          "excerpt": "Company actual stored known vector geometry eb10433371af\nKnown reference:100 PDF user units equal10 feet.\nOne squared/cubed foot maps to one square/cubic foot output.",
+          "excerpt_sha256": "08f472a926e2da62b7c11bf5d8a8efdbb5961193f3c480eb21749889919a9eff",
+          "id": "c5ff4d46db715398bd1357e6186b7c6213bc6a2af3ffa4b6783366db0ed401e3",
+          "page": 1,
+          "page_label": "1",
+          "project": null,
+          "revision_id": "REV-51876cf8a9c945708ce01d4cc192082e",
+          "revision_number": 1,
+          "scope_type": "Company",
+          "source_sha256": "cc6aca6d4c9ee1d91d2d20142b8e72010378bb47a5555d61b5a564b86dae43f4"
+        }
+      ],
+      "status": "accepted",
+      "total": {
+        "amount": "250.00",
+        "currency": "USD"
+      }
+    },
+    "new_unused_rate": "1.50",
+    "original_baseline_digest": "40d97e60ed19f9ce1e3d83138ee4dec455c5d2d1080388c222aaf0b189e57d2c",
+    "original_geometry_baseline_preserved": true,
+    "pinned_accepted_total": "250.00",
+    "qualification": "real-Frappe-pinned-rate-successor-fixture-explicit-synthetic-Sessions-not-HTTP",
+    "selected_rate": "1.25",
+    "selected_rate_id": "0bb73626-4733-4889-8276-bd180e8727da",
+    "status": "passed",
+    "unselected_rate_successor_id": "0af5a748-b7d2-4445-9035-4a3b80e100f3"
+  },
+  "schema": "cipher.r1.company-est-pinned-successor.v1",
+  "schema_validation": {
+    "actual_baseline_records": 1,
+    "status": "passed"
+  },
+  "status": "passed"
+}

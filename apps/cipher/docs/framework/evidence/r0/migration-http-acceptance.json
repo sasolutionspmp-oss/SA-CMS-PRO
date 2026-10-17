@@ -1,0 +1,111 @@
+{
+  "schema": "cipher.r0.migration-http-acceptance.v1",
+  "status": "passed",
+  "label": "actual-same-origin-session-http-read-only-canonical-tools",
+  "project": "PROJ-0018",
+  "user": "migration.fixture.fdb713f1d7@cipher.example",
+  "origin": "http://127.0.0.1:18880",
+  "checks": [
+    {
+      "route": "cipher_aec.migrations.api.validate_manifest",
+      "http_status": 400,
+      "envelope": "cipher.api.v1",
+      "error_code": "request_rejected",
+      "csrf_header_sent": false
+    },
+    {
+      "route": "cipher_aec.migrations.api.validate_manifest",
+      "http_status": 200,
+      "envelope": "cipher.api.v1",
+      "error_code": null,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.preview_manifest",
+      "http_status": 200,
+      "envelope": "cipher.api.v1",
+      "error_code": null,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.export_records",
+      "http_status": 404,
+      "envelope": "cipher.api.v1",
+      "error_code": "target_unavailable",
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.export_records",
+      "http_status": 200,
+      "envelope": "cipher.api.v1",
+      "error_code": null,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.preview_manifest",
+      "http_status": 200,
+      "envelope": "cipher.api.v1",
+      "error_code": null,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.preview_manifest",
+      "http_status": 200,
+      "envelope": "cipher.api.v1",
+      "error_code": null,
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.export_records",
+      "http_status": 404,
+      "envelope": "cipher.api.v1",
+      "error_code": "target_unavailable",
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.validate_manifest",
+      "http_status": 404,
+      "envelope": "cipher.api.v1",
+      "error_code": "not_found",
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.preview_manifest",
+      "http_status": 404,
+      "envelope": "cipher.api.v1",
+      "error_code": "not_found",
+      "csrf_header_sent": true
+    },
+    {
+      "route": "cipher_aec.migrations.api.export_records",
+      "http_status": 404,
+      "envelope": "cipher.api.v1",
+      "error_code": "not_found",
+      "csrf_header_sent": true
+    }
+  ],
+  "credentials_recorded": false,
+  "authenticated_fixture_session": true,
+  "native_read_without_export_denied": true,
+  "successful_native_export_after_own_role_grant": true,
+  "export_manifest_sha256": "e9d05ebd790a570776628fca19f61165516a2868fb8b8299cbe87ceb08e05404",
+  "private_target_existence_indistinguishable": true,
+  "native_export_revocation_rechecked_in_same_session": true,
+  "current_project_duty_revocation_denies_all_three_routes": true,
+  "response_json_schemas_validated": true,
+  "selected_native_records_unchanged": true,
+  "captured_at": "2026-10-15T15:20:32.719472+00:00",
+  "qualification_limits": [
+    "Read-only contract routes only; no applied import/cutover.",
+    "Export grants/revocations changed only this isolated fixture role; no ordinary product role or main fixture changed."
+  ],
+  "command": "PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m cipher_aec.tests.test_migrations_http_acceptance",
+  "source_sha256": {
+    "migrations/export.py": "25f83828d90f1775e716437d76cc76650c05efbcd62ff15e43af7eeb3600559c",
+    "migrations/api.py": "d09fb8cbb421ea9e100b2395a4f5eb2ad29a3d6685e4cb87ad425f9d5affef41",
+    "migrations/preview.py": "d7acc20ad8fb32f59262afcd0ada90ec08be9e5826febc278bf18f569394139f",
+    "migrations/validation.py": "39ba1841d2530d59041d81e322c8cc352c109ba4e4a70b586407b99d1346a440",
+    "tests/test_migrations_acceptance.py": "30de59baf8f98549765a25e7a0f4e0da4ba4c330a64a5d86e042fcbdd1ad48fe",
+    "tests/test_migrations_http_acceptance.py": "03887551685d79923a3322385a6361a686d69f4982e8e5fb0fa28e2b5b135e6a"
+  }
+}

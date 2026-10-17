@@ -1,0 +1,85 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Cost Type Revision",
+  "module": "Cipher Project Controls",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "fields": [
+    {
+      "fieldname": "company",
+      "label": "Company",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Company"
+    },
+    {
+      "fieldname": "project",
+      "label": "Project",
+      "fieldtype": "Link",
+      "reqd": 0,
+      "options": "Project"
+    },
+    {
+      "fieldname": "author_person",
+      "label": "Author Person",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Person"
+    },
+    {
+      "fieldname": "record_digest",
+      "label": "Record Digest",
+      "fieldtype": "Data",
+      "reqd": 1,
+      "length": 140
+    },
+    {
+      "fieldname": "data_json",
+      "label": "Data Json",
+      "fieldtype": "Long Text",
+      "reqd": 1,
+      "hidden": 1
+    },
+    {
+      "fieldname": "master",
+      "label": "Master",
+      "fieldtype": "Link",
+      "reqd": 1,
+      "options": "Cipher Cost Type"
+    },
+    {
+      "fieldname": "revision_number",
+      "label": "Revision Number",
+      "fieldtype": "Int",
+      "reqd": 1
+    },
+    {
+      "fieldname": "effective_from",
+      "label": "Effective From",
+      "fieldtype": "Date",
+      "reqd": 1
+    }
+  ],
+  "field_order": [
+    "company",
+    "project",
+    "author_person",
+    "record_digest",
+    "data_json",
+    "master",
+    "revision_number",
+    "effective_from"
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ],
+  "sort_field": "creation",
+  "sort_order": "DESC"
+}
