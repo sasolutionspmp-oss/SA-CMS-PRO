@@ -1,0 +1,11 @@
+# DOC03 lifecycle backend handoff
+
+Owned source is frozen in files/; the composed 914-source baseline and all prior freezes remain unchanged. Seven paths included: four updated services, the new host test, and unchanged repository/contracts for exact boundary reference. Root owns APIs/schema/DocTypes/generated/native fixture, original-receipt context selection and other tests.
+
+The existing request_lifecycle definition/fact fields remain stable. Independently authorized lifecycle facts append to the document sequence; initial issue stays pinned, working source heads never promote issued standing, supersession pins a distinct exact issued replacement, and withdrawal stays withdrawn. No reissue transition, commercial writer, external delivery, electronic signature or seal is added. Project-issued standing applies to documents owned by that Project; Company/shared-origin artifacts remain exact rights-controlled references.
+
+Lifecycle reads verify a bounded historical prefix iteratively, including literal request/effect/consumption joins, rather than recursively re-entering current standing. New transmittals refuse noncurrent/withdrawn Project content. New issue authorization rejects multiple revisions of one document. Current source/evidence rights still govern historical reads and replay.
+
+Lock discovery includes current standing for new operations and exact historical predecessors for replay, all original issue/replacement/source/rights evidence scopes before masters and documents. Recipient Person/Identity participants come from the same server-captured plan as the canonical command; origin duties precede masters. Fresh nonlocking recipient reads occur only inside the admitted union for locking operations and never borrow or replace the preparer provenance token.
+
+Qualification: 13 focused host tests pass in lifecycle-06-final.log, including actual generated closed-wire request/fact/standing/approval examples with opaque full manifest hash. These use explicit persistence/permission/session doubles; no native locking/persistence/concurrency claim. lifecycle-01 records two actual pre-correction failures; lifecycle-04 retains three test-double setup errors corrected in lifecycle-05. Parent performs one combined affected gate. Native integration workflow source is parent-owned and remains declared/unexecuted here.

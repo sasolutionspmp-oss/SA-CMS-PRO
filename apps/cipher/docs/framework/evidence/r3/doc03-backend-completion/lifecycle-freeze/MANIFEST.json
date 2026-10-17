@@ -1,0 +1,51 @@
+{
+  "artifact_sha256": {
+    "HANDOFF.md": {
+      "bytes": 2352,
+      "sha256": "9356750c033f936f15d4b20efd378ad8701ca503a7d0da75c0f1798dc12a0743"
+    },
+    "lifecycle-01-failing-first.log": {
+      "bytes": 2616,
+      "sha256": "de1d08eba0f196d6f775b399dc724683aed2908cbaf825b2a5344a83db6b2234"
+    },
+    "lifecycle-02-corrected.log": {
+      "bytes": 468,
+      "sha256": "41c97e4c5c13dd1a963461071a3d8009c1b0b63641b2e6ddc3357449f62ce185"
+    },
+    "lifecycle-03-workflows.log": {
+      "bytes": 1770,
+      "sha256": "6c8b12c82963d008dafa8de3a0e4bdd9042f0f6ae7859fed7837deb0a19a9b89"
+    },
+    "lifecycle-04-locks.log": {
+      "bytes": 9052,
+      "sha256": "f060d7ed189589e30505bb3d6b3f2c4e578b80e5673cce2194965095c6bbcc79"
+    },
+    "lifecycle-05-fixtures-corrected.log": {
+      "bytes": 2693,
+      "sha256": "69742b389d1943c092d5821e471ef75a00cfa18423e41a07e41c90b0b5468a2f"
+    },
+    "lifecycle-06-final.log": {
+      "bytes": 2931,
+      "sha256": "ee795d3d982aa287ab722b45bf42891c4c071a207caaac76cb875918ebd1791f"
+    }
+  },
+  "owned_paths": [
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/contracts.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py"
+  ],
+  "qualification": {
+    "combined_affected_gate": "parent pending",
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_document_control_lifecycle -v",
+    "fresh_host_tests": 13,
+    "native": "not executed",
+    "result": "passed"
+  },
+  "source_inventory": "SOURCE_INVENTORY.json",
+  "source_inventory_sha256": "bc1cfd9d10301a42c398487ea307aeca83107b6995cabae8abec25e5d197ab3f",
+  "workspace": "/dev/shm/cipher-doc03-backend-finish-20261017/workspace"
+}

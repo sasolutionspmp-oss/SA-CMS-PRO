@@ -26,9 +26,9 @@ def retained_module_attributes():
 @contextmanager
 def fixture():
     with retained_module_attributes(),fixtures() as (state,*_):
-        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance')];old={n:sys.modules.pop(n) for n in names if n in sys.modules}
+        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance','clauses','locking','scopes','shared','lifecycle','command_context')];old={n:sys.modules.pop(n) for n in names if n in sys.modules}
         try:
-            rules,repo,rights,service,gov=[importlib.import_module(n) for n in names];state.duties[state.actor.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};state.locks=[];state.plans=[]
+            rules,repo,rights,service,gov=[importlib.import_module(n) for n in names[:5]];state.duties[state.actor.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};state.locks=[];state.plans=[]
             def raw(kind,name,lock=False):
                 if (kind,name) not in state.rows:raise DomainError('not_found','missing',404)
                 return deepcopy(state.rows[kind,name])
@@ -36,6 +36,16 @@ def fixture():
                 if old is not None and raw(kind,value['id'])!=old:raise DomainError('stale','changed',412)
                 state.rows[kind,value['id']]=deepcopy(value);return value
             def latest(kind,parent,lock=False):return next(iter(sorted([deepcopy(v) for (k,_),v in state.rows.items() if k==kind and v.get('parent_id')==parent],key=lambda v:v['revision_number'],reverse=True)),None)
+            def issue_candidates(company,project,document_id,lock=False):
+                # Native creation order is modeled by insertion order; authored
+                # fixture timestamps are intentionally fixed and are not DB creation.
+                rows=[v['id'] for (kind,_),v in state.rows.items() if kind=='issue' and v['company']==company and v['project']==project and any(a['document_id']==document_id for a in v['artifacts'])]
+                if len(rows)>200:raise DomainError('document_issue_limit','projection bound',409)
+                return rows
+            def lifecycle_chain(document_id,lock=False):
+                rows=sorted([deepcopy(v) for (kind,_),v in state.rows.items() if kind=='lifecycle' and v['parent_id']==document_id],key=lambda v:v['revision_number'])
+                if len(rows)>64:raise DomainError('document_lifecycle_limit','lifecycle bound',409)
+                return rows
             def document(name,company,project,actor,lock=False):
                 service.require_project(company,project,ability='document.read',actor=actor,lock=lock)
                 if name not in {v['document_id'] for v in state.documents.values()}:raise DomainError('not_found','source',404)
@@ -58,12 +68,21 @@ def fixture():
                     state.receipts[key]=(request,deepcopy(result));return {**result,'operation':{'id':key[1],'status':'succeeded','replayed':False}}
                 except Exception:state.rows,state.events,state.receipts=before;raise
             with ExitStack() as stack:
-                for target,name,value in [(repo,'raw',raw),(repo,'write',write),(repo,'latest',latest),(repo,'official',lambda kind,subject_id,lock=False:next((deepcopy(v) for (k,_),v in state.rows.items() if k==kind and v.get('subject_id')==subject_id),None)),(rights,'current',lambda name,lock=False:latest('rights',name,lock)),(service,'_document',document),(service.FrappeDocumentRepository,'revision_scope',lambda self,name:locator(name)),(service,'run_command',command)]:stack.enter_context(patch.object(target,name,value))
+                # These host command doubles model rollback/identity, not native
+                # source locks. Strict union admission has separate instrumentation.
+                from functools import wraps
+                locking=importlib.import_module('cipher_aec.document_control.locking')
+                original_recipient_read=locking.recipient_read
+                @wraps(original_recipient_read)
+                def fixture_recipient_read(value,declared,actor,*,lock=False):
+                    return original_recipient_read(value,declared,actor,lock=lock and locking._active.get() is not None)
+                stack.enter_context(patch.object(locking,'recipient_read',fixture_recipient_read))
+                for target,name,value in [(repo,'issue_candidates',issue_candidates),(repo,'lifecycle_chain',lifecycle_chain),(repo,'raw',raw),(repo,'write',write),(repo,'latest',latest),(repo,'official',lambda kind,subject_id,lock=False:next((deepcopy(v) for (k,_),v in state.rows.items() if k==kind and v.get('subject_id')==subject_id),None)),(rights,'current',lambda name,lock=False:latest('rights',name,lock)),(service,'_document',document),(service.FrappeDocumentRepository,'revision_scope',lambda self,name:locator(name)),(service,'run_command',command)]:stack.enter_context(patch.object(target,name,value))
                 yield state,rules,repo,rights,service,gov
         finally:
             for n in names:
                 removed=sys.modules.pop(n,None);parentname,attribute=n.rsplit('.',1);parent=sys.modules.get(parentname)
-                if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                if removed is not None and parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
             sys.modules.update(old)
             for n,value in old.items():setattr(sys.modules[n.rsplit('.',1)[0]],n.rsplit('.',1)[1],value)
 
@@ -212,7 +231,7 @@ class CentralDocumentRightsTests(unittest.TestCase):
             self.assertEqual(repo.raw('rights',old['id'])['evidence_artifact'],evidence)
     def test_native_long_text_query_admission_rechecks_original_evidence_and_bounds_scan(self):
         with fixture() as (s,r,repo,rights,service,gov):
-            ref=source(s,service);doc=s.documents[ref['revision_id']]['document_id'];policy=rights.current(doc);row=SimpleNamespace(parent_id=doc,company='C',project='P')
+            ref=source(s,service);doc=s.documents[ref['revision_id']]['document_id'];policy=rights.current(doc);row=SimpleNamespace(parent_id=doc,company='C',project='P',scope_type='Project')
             with patch.object(rights.frappe.db,'exists',create=True,return_value=True),patch.object(rights.frappe.db,'escape',create=True,side_effect=lambda name:repr(name)),patch.object(rights.frappe.db,'sql',return_value=[row]):
                 self.assertEqual(rights.query('Cipher Document Revision'),'1=1');s.denied.add(policy['evidence_artifact']['revision_id']);self.assertIn(doc,rights.query('Cipher Document Revision'))
             with patch.object(rights.frappe.db,'exists',create=True,return_value=True),patch.object(rights.frappe.db,'sql',return_value=[row]*501):self.assertEqual(rights.query('Cipher Document Revision'),'1=0')

@@ -1,11 +1,11 @@
 """DOC-03 closed exact-source records; manual evidence never executes a contract."""
 from cipher_aec.engineering.contracts import closed,text,identifier,checksum,sequence,users,fail,NO_EFFECTS,artifacts,day
-KINDS={'rights':'Cipher Source Rights Revision','library':'Cipher Library Entry','library_revision':'Cipher Library Revision','adoption_request':'Cipher Adoption Request','adoption':'Cipher Project Adoption','issue_set':'Cipher Document Issue Set','issue':'Cipher Document Issue','transmittal':'Cipher Transmittal','distribution':'Cipher Document Distribution','evidence':'Cipher Documentary Evidence'}
+KINDS={'rights':'Cipher Source Rights Revision','library':'Cipher Library Entry','library_revision':'Cipher Library Revision','adoption_request':'Cipher Adoption Request','adoption':'Cipher Project Adoption','issue_set':'Cipher Document Issue Set','issue':'Cipher Document Issue','transmittal':'Cipher Transmittal','distribution':'Cipher Document Distribution','evidence':'Cipher Documentary Evidence','clause_use':'Cipher Clause Use','redline':'Cipher Redline Revision','clause_application':'Cipher Clause Application','lifecycle_request':'Cipher Document Lifecycle Request','lifecycle':'Cipher Document Lifecycle Event'}
 READ='document.control.read';WRITE='document.control.write';MANAGE='document.rights.manage';ISSUE='document.issue';ADOPT='document.adopt';DISTRIBUTE='document.distribute';REVIEW='document.control.review'
 ABILITIES=frozenset((READ,WRITE,MANAGE,ISSUE,ADOPT,DISTRIBUTE,REVIEW))
-ACTIONS={'issue_set':'document.issue.v1','adoption_request':'document.library.adopt.v1','transmittal':'document.transmit.v1'}
-FACTS={'issue_set':'issue','adoption_request':'adoption','transmittal':'distribution'}
-ACTION_ABILITY={'issue_set':ISSUE,'adoption_request':ADOPT,'transmittal':DISTRIBUTE}
+ACTIONS={'issue_set':'document.issue.v1','adoption_request':'document.library.adopt.v1','transmittal':'document.transmit.v1','redline':'document.clause.apply.v1','lifecycle_request':'document.lifecycle.v1'}
+FACTS={'issue_set':'issue','adoption_request':'adoption','transmittal':'distribution','redline':'clause_application','lifecycle_request':'lifecycle'}
+ACTION_ABILITY={'issue_set':ISSUE,'adoption_request':ADOPT,'transmittal':DISTRIBUTE,'redline':ADOPT,'lifecycle_request':ISSUE}
 
 def rights(value):
     closed(value,{'ingest_allowed','read_allowed','distribute_allowed','rights_basis','rights_holder','allowed_purpose','restriction','valid_from','valid_until','evidence_artifact'})
@@ -39,3 +39,15 @@ def exact_ref(value):
 def package_digest(value):
     from cipher_aec.api.contracts import digest
     return digest({key:value[key] for key in ('artifacts','adoptions','definition')})
+
+
+def clause_source(value):
+    closed(value,{'revision_id','source_sha256','page','excerpt_sha256','start','end'})
+    identifier(value['revision_id']);checksum(value['source_sha256']);checksum(value['excerpt_sha256'])
+    if type(value['page']) is not int or not 1<=value['page']<=10000:fail('Choose an exact source page.','page')
+    if type(value['start']) is not int or type(value['end']) is not int or not 0<=value['start']<value['end']<=1000000:fail('Choose a nonempty exact text range.','source_clause')
+
+def clause_target(value):
+    closed(value,{'kind','id','record_digest','locator'})
+    if value['kind'] not in ('proposal_revision','contract_revision','document_revision'):fail('Choose an immutable proposal, contract or document revision.','target.kind')
+    identifier(value['id']);checksum(value['record_digest']);text(value['locator'],'target.locator',2000)

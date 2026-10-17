@@ -1,0 +1,6 @@
+test_shared_clause_retains_original_revision_and_unicode_codepoint_range (cipher_aec.tests.test_document_control_lineage.OriginalProjectCitationTests.test_shared_clause_retains_original_revision_and_unicode_codepoint_range) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.025s
+
+OK

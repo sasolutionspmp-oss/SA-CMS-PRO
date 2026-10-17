@@ -1,0 +1,18 @@
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py
+@@ -15,6 +15,15 @@
+         except frappe.DoesNotExistError:
+             from cipher_aec.api.errors import DomainError
+             raise DomainError("not_found", "Document was not found.", 404) from None
++
++    def document_scope(self, name):
++        """Internal metadata discovery only; never grants content authority."""
++        import frappe
++        from cipher_aec.api.errors import DomainError
++        row = frappe.db.get_value("Cipher Document", name, ["name", "company", "project", "scope_type"], as_dict=True)
++        if not row:
++            raise DomainError("not_found", "Document was not found.", 404)
++        return row
+ 
+     def revision_scope(self, name):
+         import frappe

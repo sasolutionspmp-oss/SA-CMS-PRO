@@ -1,0 +1,6 @@
+test_cursor_binds_company_duties_instead_of_unrelated_project_duties (cipher_aec.tests.test_document_control_shared.CompanyPagingAuthorityTests.test_cursor_binds_company_duties_instead_of_unrelated_project_duties) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.026s
+
+OK

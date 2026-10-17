@@ -1,0 +1,594 @@
+test_absent_project_is_never_implicit_company_and_invalid_scope_fails_closed (cipher_aec.tests.test_documents_company.CompanyDocuments.test_absent_project_is_never_implicit_company_and_invalid_scope_fails_closed) ... ok
+test_company_pdf_and_text_use_same_bytes_citations_and_page_preview (cipher_aec.tests.test_documents_company.CompanyDocuments.test_company_pdf_and_text_use_same_bytes_citations_and_page_preview) ... ok
+test_company_read_revocation_preserves_project_access_and_blocks_original_bytes (cipher_aec.tests.test_documents_company.CompanyDocuments.test_company_read_revocation_preserves_project_access_and_blocks_original_bytes) ... ok
+test_retained_citations_current_head_and_actual_integrity (cipher_aec.tests.test_documents_company.CompanyDocuments.test_retained_citations_current_head_and_actual_integrity) ... ok
+test_scopes_are_mutually_exclusive_even_with_both_duties (cipher_aec.tests.test_documents_company.CompanyDocuments.test_scopes_are_mutually_exclusive_even_with_both_duties) ... ok
+test_a_different_actor_bound_service_cannot_reuse_previous_company_authority (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_a_different_actor_bound_service_cannot_reuse_previous_company_authority) ... ok
+test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) ... 
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_kind') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_kind') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_reference') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_reference') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_input_digest') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_input_digest') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_binding_json') ... ERROR
+  test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_binding_json') ... ERROR
+test_every_locator_parent_and_revision_scope_is_checked (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_every_locator_parent_and_revision_scope_is_checked) ... ok
+test_every_requested_identity_and_parent_mapping_is_checked (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_every_requested_identity_and_parent_mapping_is_checked) ... ok
+test_generated_binding_digest_denial_precedes_full_revision (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_generated_binding_digest_denial_precedes_full_revision) ... ERROR
+test_later_call_rechecks_original_producer_rights_before_long_text (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_later_call_rechecks_original_producer_rights_before_long_text) ... ERROR
+test_later_reader_rechecks_revocation_and_never_loads_long_text_or_bytes (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_later_reader_rechecks_revocation_and_never_loads_long_text_or_bytes) ... ok
+test_one_fresh_company_guard_per_citation_or_source_read (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_one_fresh_company_guard_per_citation_or_source_read) ... ok
+test_parent_and_revision_producer_checks_both_run_and_preserve_lock_mode (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_parent_and_revision_producer_checks_both_run_and_preserve_lock_mode) ... ERROR
+test_parent_producer_denial_precedes_full_revision_and_bytes_on_every_reader (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_parent_producer_denial_precedes_full_revision_and_bytes_on_every_reader) ... ERROR
+test_project_and_direct_revision_paths_retain_existing_guards (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_project_and_direct_revision_paths_retain_existing_guards) ... ok
+test_retained_heads_citations_quarantine_and_real_byte_integrity_remain_fresh (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_retained_heads_citations_quarantine_and_real_byte_integrity_remain_fresh) ... ok
+test_active_ancestry_cycle_and_depth_limit_fail_closed (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_active_ancestry_cycle_and_depth_limit_fail_closed) ... ERROR
+test_active_read_graph_eligibility_never_silently_falls_back (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_active_read_graph_eligibility_never_silently_falls_back) ... ok
+test_aggregate_node_bound_covers_independent_branches_and_deduplicates_shared_sources (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_aggregate_node_bound_covers_independent_branches_and_deduplicates_shared_sources) ... ok
+test_complete_resource_admission_is_scoped_subset_and_preserved_when_nested (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_complete_resource_admission_is_scoped_subset_and_preserved_when_nested) ... ok
+test_literal_original_proof_is_success_only_per_read_snapshot_and_not_a_dto (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_literal_original_proof_is_success_only_per_read_snapshot_and_not_a_dto) ... ok
+test_locked_memo_never_caches_failure_or_skips_fresh_binding_and_cycle (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locked_memo_never_caches_failure_or_skips_fresh_binding_and_cycle) ... ERROR
+test_locked_original_memo_is_scoped_and_read_checks_never_reuse_it (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locked_original_memo_is_scoped_and_read_checks_never_reuse_it) ... ERROR
+test_locking_requires_explicit_complete_plan_admission (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locking_requires_explicit_complete_plan_admission) ... ERROR
+test_logical_lifetime_rejects_nested_other_operation_and_resets_exception (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_lifetime_rejects_nested_other_operation_and_resets_exception) ... ok
+test_logical_memo_requires_identical_complete_token_not_a_previous_subset (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_memo_requires_identical_complete_token_not_a_previous_subset) ... ERROR
+test_logical_operation_reuses_only_after_each_complete_callback_admission (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_operation_reuses_only_after_each_complete_callback_admission) ... ERROR
+test_logical_transaction_invalidation_cannot_be_replaced_by_new_callback (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_transaction_invalidation_cannot_be_replaced_by_new_callback) ... ok
+test_memo_never_survives_request_or_different_actor (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_memo_never_survives_request_or_different_actor) ... ERROR
+test_optional_memo_saturation_never_rejects_a_valid_second_actor_graph (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_optional_memo_saturation_never_rejects_a_valid_second_actor_graph) ... ERROR
+test_original_proof_ancestry_uses_kind_and_id_before_digest_and_capacity_is_optional (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_original_proof_ancestry_uses_kind_and_id_before_digest_and_capacity_is_optional) ... ok
+test_original_proof_checks_current_read_identity_and_invalidates_on_writes (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_original_proof_checks_current_read_identity_and_invalidates_on_writes) ... ok
+test_read_graph_capacity_is_optional_and_requested_bytes_are_never_cached (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_capacity_is_optional_and_requested_bytes_are_never_cached) ... ERROR
+test_read_graph_checks_binding_and_active_ancestry_even_on_hits (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_checks_binding_and_active_ancestry_even_on_hits) ... ERROR
+test_read_graph_is_one_snapshot_success_only_and_never_admits_locking (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_is_one_snapshot_success_only_and_never_admits_locking) ... ERROR
+test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) ... 
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='write') ... ERROR
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='database') ... ERROR
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='actor') ... ERROR
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='company') ... ERROR
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='commit') ... ERROR
+  test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='rollback') ... ERROR
+test_repeated_independent_source_branch_is_allowed_and_memoized (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_repeated_independent_source_branch_is_allowed_and_memoized) ... ERROR
+test_transaction_boundary_revokes_existing_locked_scope (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_transaction_boundary_revokes_existing_locked_scope) ... ERROR
+test_unknown_malformed_and_mismatched_binding_rejected (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_unknown_malformed_and_mismatched_binding_rejected) ... ok
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_kind')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_kind')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 50, in <lambda>
+    lambda: self.company.source_reference("Company A", None, rid, 1, lock=lock))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 148, in source_reference
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_reference')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_reference')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 50, in <lambda>
+    lambda: self.company.source_reference("Company A", None, rid, 1, lock=lock))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 148, in source_reference
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_input_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_input_digest')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 50, in <lambda>
+    lambda: self.company.source_reference("Company A", None, rid, 1, lock=lock))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 148, in source_reference
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_binding_json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_each_revision_producer_field_must_match_authorized_parent (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_each_revision_producer_field_must_match_authorized_parent) (field='producer_binding_json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 187, in test_each_revision_producer_field_must_match_authorized_parent
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 50, in <lambda>
+    lambda: self.company.source_reference("Company A", None, rid, 1, lock=lock))
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 148, in source_reference
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_generated_binding_digest_denial_precedes_full_revision (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_generated_binding_digest_denial_precedes_full_revision)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 130, in test_generated_binding_digest_denial_precedes_full_revision
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_later_call_rechecks_original_producer_rights_before_long_text (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_later_call_rechecks_original_producer_rights_before_long_text)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 103, in test_later_call_rechecks_original_producer_rights_before_long_text
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_parent_and_revision_producer_checks_both_run_and_preserve_lock_mode (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_parent_and_revision_producer_checks_both_run_and_preserve_lock_mode)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 152, in test_parent_and_revision_producer_checks_both_run_and_preserve_lock_mode
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 144, in producer
+    return callback(row, lock=lock)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_parent_producer_denial_precedes_full_revision_and_bytes_on_every_reader (cipher_aec.tests.test_documents_source_scope.CanonicalCompanySourceScope.test_parent_producer_denial_precedes_full_revision_and_bytes_on_every_reader)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 119, in test_parent_producer_denial_precedes_full_revision_and_bytes_on_every_reader
+    read()
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 49, in <lambda>
+    return (lambda: self.company.citation("Company A", rid, 1, lock=lock),
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py", line 57, in <lambda>
+    self.company.source_authorize = lambda row, lock=False: provenance.authorize(row, ACTOR, lock=lock)
+                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_active_ancestry_cycle_and_depth_limit_fail_closed (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_active_ancestry_cycle_and_depth_limit_fail_closed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 44, in test_active_ancestry_cycle_and_depth_limit_fail_closed
+    with self.assertRaises(DomainError) as error:p.authorize(root,ACTOR)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_locked_memo_never_caches_failure_or_skips_fresh_binding_and_cycle (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locked_memo_never_caches_failure_or_skips_fresh_binding_and_cycle)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 133, in test_locked_memo_never_caches_failure_or_skips_fresh_binding_and_cycle
+    with self.assertRaises(DomainError):p.authorize(row,ACTOR,lock=True)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_locked_original_memo_is_scoped_and_read_checks_never_reuse_it (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locked_original_memo_is_scoped_and_read_checks_never_reuse_it)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 111, in test_locked_original_memo_is_scoped_and_read_checks_never_reuse_it
+    p.authorize(row,ACTOR,lock=True)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_locking_requires_explicit_complete_plan_admission (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_locking_requires_explicit_complete_plan_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 56, in test_locking_requires_explicit_complete_plan_admission
+    with self.assertRaises(DomainError) as error:p.authorize(row,ACTOR,lock=True)
+                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_logical_memo_requires_identical_complete_token_not_a_previous_subset (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_memo_requires_identical_complete_token_not_a_previous_subset)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 215, in test_logical_memo_requires_identical_complete_token_not_a_previous_subset
+    p.authorize(row,ACTOR,lock=True)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_logical_operation_reuses_only_after_each_complete_callback_admission (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_logical_operation_reuses_only_after_each_complete_callback_admission)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 165, in test_logical_operation_reuses_only_after_each_complete_callback_admission
+    with self.assertRaises(DomainError):p.authorize(row,ACTOR,lock=True)
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_memo_never_survives_request_or_different_actor (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_memo_never_survives_request_or_different_actor)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 70, in test_memo_never_survives_request_or_different_actor
+    p.authorize(row,ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_optional_memo_saturation_never_rejects_a_valid_second_actor_graph (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_optional_memo_saturation_never_rejects_a_valid_second_actor_graph)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 228, in test_optional_memo_saturation_never_rejects_a_valid_second_actor_graph
+    with p.prelocked(plan,ACTOR,"Company A"):p.authorize(row,ACTOR,lock=True)
+                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_read_graph_capacity_is_optional_and_requested_bytes_are_never_cached (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_capacity_is_optional_and_requested_bytes_are_never_cached)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 312, in test_read_graph_capacity_is_optional_and_requested_bytes_are_never_cached
+    service.citation("Company A",uploaded["revision"]["id"],1)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 177, in citation
+    document, revision = self._company_revision_source(company, revision_id, lock=lock)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/core.py", line 111, in _company_revision_source
+    self.source_authorize(document, lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 310, in <lambda>
+    service.source_authorize=lambda row,lock=False:p.authorize(parent,ACTOR,lock=lock)
+                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_read_graph_checks_binding_and_active_ancestry_even_on_hits (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_checks_binding_and_active_ancestry_even_on_hits)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 265, in test_read_graph_checks_binding_and_active_ancestry_even_on_hits
+    p.authorize(row,ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_read_graph_is_one_snapshot_success_only_and_never_admits_locking (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_is_one_snapshot_success_only_and_never_admits_locking)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 245, in test_read_graph_is_one_snapshot_success_only_and_never_admits_locking
+    p.authorize(row,ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='write')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='database')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='actor')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='company')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate) (change='rollback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 281, in test_read_graph_write_counter_db_switch_identity_and_transactions_invalidate
+    p.authorize(document("root"),ACTOR)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+======================================================================
+ERROR: test_repeated_independent_source_branch_is_allowed_and_memoized (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_repeated_independent_source_branch_is_allowed_and_memoized)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 38, in test_repeated_independent_source_branch_is_allowed_and_memoized
+    with self.adapter(authorize): p.authorize(root,ACTOR)
+                                  ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 4, in <module>
+    import frappe
+ModuleNotFoundError: No module named 'frappe'
+
+======================================================================
+ERROR: test_transaction_boundary_revokes_existing_locked_scope (cipher_aec.tests.test_documents_provenance.ProvenanceAuthority.test_transaction_boundary_revokes_existing_locked_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py", line 152, in test_transaction_boundary_revokes_existing_locked_scope
+    p.authorize(row,ACTOR,lock=True)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 89, in authorize
+    from cipher_aec.document_control.rights import authorize as authorize_rights
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 6, in <module>
+    from cipher_aec.governance.context import current_actor,require_project
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py", line 7, in <module>
+    from frappe.utils import getdate, nowdate
+ModuleNotFoundError: No module named 'frappe.utils'; 'frappe' is not a package
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.191s
+
+FAILED (errors=31)

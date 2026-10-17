@@ -1,0 +1,30 @@
+{
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/contracts.py": {
+    "bytes": 4661,
+    "sha256": "dd11abf075c8deda922629deab8245e571e6fd26bb8e36e3a5fb82607dd84619"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py": {
+    "bytes": 10371,
+    "sha256": "5724adccaddfd45febdbc4aa39edad56021cdc3a4f4897b5169993015ff76bd0"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py": {
+    "bytes": 12150,
+    "sha256": "851c53721bdcc1a505fe8b32b993f416775524be6d457884d1aa502b10ded149"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py": {
+    "bytes": 18131,
+    "sha256": "56ed70b9ebae77bf2888cd9d738881da03b8c46b10e8d7a730d05929725495ea"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py": {
+    "bytes": 4889,
+    "sha256": "5d30a08aa61a454914d7a96b72ffc5561ddf8c598ecd20bfcd082bd8e59b92ac"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py": {
+    "bytes": 29254,
+    "sha256": "8f6e9378aa68931eef76c8cfde197954591cee06ee5c834cae324f287581fe4e"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py": {
+    "bytes": 23147,
+    "sha256": "ddc5183dcd3307b03f1e68d09dd50cc050ca42ef97e2e208321c2349e1fb1bb3"
+  }
+}

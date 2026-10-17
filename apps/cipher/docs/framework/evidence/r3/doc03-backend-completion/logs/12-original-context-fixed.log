@@ -1,0 +1,6 @@
+test_real_command_replay_selects_original_context_before_prospective_source_locks (cipher_aec.tests.test_document_control_command_recovery.OriginalReceiptContextTests.test_real_command_replay_selects_original_context_before_prospective_source_locks) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.029s
+
+OK

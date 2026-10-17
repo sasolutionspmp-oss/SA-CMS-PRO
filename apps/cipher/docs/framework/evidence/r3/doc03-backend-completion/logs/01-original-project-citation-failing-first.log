@@ -1,0 +1,18 @@
+test_cross_project_clause_uses_original_project_and_unicode_codepoint_range (cipher_aec.tests.test_document_control_lineage.OriginalProjectCitationTests.test_cross_project_clause_uses_original_project_and_unicode_codepoint_range) ... ERROR
+
+======================================================================
+ERROR: test_cross_project_clause_uses_original_project_and_unicode_codepoint_range (cipher_aec.tests.test_document_control_lineage.OriginalProjectCitationTests.test_cross_project_clause_uses_original_project_and_unicode_codepoint_range)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lineage.py", line 134, in test_cross_project_clause_uses_original_project_and_unicode_codepoint_range
+    result=c.quoted_source('C','P',ref,[{'revision_id':ref['revision_id'],'source_sha256':'1'*64}],s.actor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/clauses.py", line 57, in quoted_source
+    citation=get_citation(company,reference['revision_id'],reference['page'],reference['excerpt_sha256'],actor=actor)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: OriginalProjectCitationTests.test_cross_project_clause_uses_original_project_and_unicode_codepoint_range.<locals>.citation() missing 1 required positional argument: 'checksum'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.027s
+
+FAILED (errors=1)

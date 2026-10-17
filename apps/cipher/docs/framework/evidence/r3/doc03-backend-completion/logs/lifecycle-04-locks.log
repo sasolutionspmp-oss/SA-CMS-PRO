@@ -1,0 +1,74 @@
+test_ambiguous_same_document_issue_is_refused_before_fact (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_ambiguous_same_document_issue_is_refused_before_fact) ... ok
+test_event_cycle_and_self_consistent_wrong_manifest_are_refused (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_event_cycle_and_self_consistent_wrong_manifest_are_refused) ... ok
+test_event_is_verified_without_recursive_lifecycle_reads (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_event_is_verified_without_recursive_lifecycle_reads) ... ok
+test_old_receipt_prefix_ignores_unavailable_later_sources_but_checks_original_rights (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_old_receipt_prefix_ignores_unavailable_later_sources_but_checks_original_rights) ... ok
+test_request_late_receipt_failure_restores_rows_and_history (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_request_late_receipt_failure_restores_rows_and_history) ... ok
+test_stale_competing_request_independence_and_closed_project (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_stale_competing_request_independence_and_closed_project) ... ok
+test_supersede_then_withdraw_does_not_move_working_head_or_rewrite_originals (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_supersede_then_withdraw_does_not_move_working_head_or_rewrite_originals) ... ok
+test_unanchored_original_standing_is_rejected (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_unanchored_original_standing_is_rejected) ... ok
+test_all_scope_and_recipient_duties_precede_master_and_document_locks (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_all_scope_and_recipient_duties_precede_master_and_document_locks) ... ERROR
+test_current_union_includes_whole_prefix_but_original_receipt_excludes_later_event (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_current_union_includes_whole_prefix_but_original_receipt_excludes_later_event) ... ok
+test_dependency_growth_is_refused_before_first_master (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_dependency_growth_is_refused_before_first_master) ... ERROR
+test_distinct_recipient_generated_source_is_fresh_nonlocking_and_denial_is_not_cached (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_distinct_recipient_generated_source_is_fresh_nonlocking_and_denial_is_not_cached) ... ERROR
+
+======================================================================
+ERROR: test_all_scope_and_recipient_duties_precede_master_and_document_locks (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_all_scope_and_recipient_duties_precede_master_and_document_locks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 170, in test_all_scope_and_recipient_duties_precede_master_and_document_locks
+    ctx=locking.DocumentContext('C','P',artifacts=[ref,{k:company_ref[k] for k in ('revision_id','source_sha256')}],recipients=[declared]);ctx.prelock(s.actor)
+                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 135, in prelock
+    planned=self.discover(actor)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 119, in discover
+    generated=binding(FrappeDocumentRepository('Company').document(locator.document))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py", line 14, in document
+    return frappe.get_doc("Cipher Document", name, for_update=lock).as_dict()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering.py", line 44, in get_doc
+    return {'Cipher Approval Packet':state.packets,'Cipher Approval Decision':state.decisions}[doctype][name]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'Cipher Document'
+
+======================================================================
+ERROR: test_dependency_growth_is_refused_before_first_master (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_dependency_growth_is_refused_before_first_master)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 185, in test_dependency_growth_is_refused_before_first_master
+    with context.hold(s.actor):self.fail('No effect before stable union')
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 161, in hold
+    from cipher_aec.commercial.native import require_native
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/commercial/native.py", line 6, in <module>
+    from cipher_aec.estimating.units import qualified, currency_policy
+ImportError: cannot import name 'currency_policy' from 'units' (unknown location)
+
+======================================================================
+ERROR: test_distinct_recipient_generated_source_is_fresh_nonlocking_and_denial_is_not_cached (cipher_aec.tests.test_document_control_lifecycle.LifecycleLockClosureTests.test_distinct_recipient_generated_source_is_fresh_nonlocking_and_denial_is_not_cached)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 197, in test_distinct_recipient_generated_source_is_fresh_nonlocking_and_denial_is_not_cached
+    with patch('cipher_aec.document_control.shared.artifact_scope',return_value=('Company',None)),patch.object(scopes,'require',lambda *a,**kw:None),patch.object(rights,'authorize',lambda *a,**kw:None),patch.object(provenance,'_document',return_value=row),patch.object(provenance,'binding',return_value={'exact':'producer'}),patch.object(outputs,'authorize_binding',producer),patch.object(service,'verify_artifacts',verify),patch.object(service,'read',lambda *a,**kw:None),provenance.prelocked({},s.actor,'C'):
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 241, in prelocked
+    state = operation if operation is not None else _new_original_store()
+                                                    ^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 260, in _new_original_store
+    _watch_transaction(state)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py", line 440, in _watch_transaction
+    db.before_commit.add(invalidate)
+    ^^^^^^^^^^^^^^^^
+AttributeError: 'types.SimpleNamespace' object has no attribute 'before_commit'
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.537s
+
+FAILED (errors=3)

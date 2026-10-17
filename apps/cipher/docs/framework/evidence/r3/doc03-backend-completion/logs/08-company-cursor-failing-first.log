@@ -1,0 +1,15 @@
+test_cursor_binds_company_duties_instead_of_unrelated_project_duties (cipher_aec.tests.test_document_control_shared.CompanyPagingAuthorityTests.test_cursor_binds_company_duties_instead_of_unrelated_project_duties) ... FAIL
+
+======================================================================
+FAIL: test_cursor_binds_company_duties_instead_of_unrelated_project_duties (cipher_aec.tests.test_document_control_shared.CompanyPagingAuthorityTests.test_cursor_binds_company_duties_instead_of_unrelated_project_duties)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 141, in test_cursor_binds_company_duties_instead_of_unrelated_project_duties
+    with self.assertRaises(DomainError) as error:shared.list_records('C','library',limit=1,cursor=first['next_cursor'])
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.043s
+
+FAILED (failures=1)

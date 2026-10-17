@@ -1,0 +1,38 @@
+test_company_create_receipt_replays_exact_original_after_successor_and_revocation_denies (cipher_aec.tests.test_document_control_shared.SharedLibraryRecoveryTests.test_company_create_receipt_replays_exact_original_after_successor_and_revocation_denies) ... ok
+test_project_owned_library_reuse_requires_both_original_and_target_scope (cipher_aec.tests.test_document_control_shared.SharedLibraryRecoveryTests.test_project_owned_library_reuse_requires_both_original_and_target_scope) ... ERROR
+
+======================================================================
+ERROR: test_project_owned_library_reuse_requires_both_original_and_target_scope (cipher_aec.tests.test_document_control_shared.SharedLibraryRecoveryTests.test_project_owned_library_reuse_requires_both_original_and_target_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 113, in test_project_owned_library_reuse_requires_both_original_and_target_scope
+    request=shared.create_adoption('C','P',op,{'scope_type':'Project','project':'SOURCE'},revision['id'],digest(revision),definition)['adoption_request'];self.assertEqual(request['library_scope']['project'],'SOURCE');self.assertEqual(request['artifacts'],revision['artifacts'])
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 118, in create_adoption
+    return service.command(company,project,operation_id,'shared.adoption.prepare',{'library_scope':library_scope,'library_revision':library_revision,'library_digest':library_digest,'definition':definition},effect,ability=rules.ADOPT)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 43, in command
+    return run_command(company=company,project=project,operation_id=operation_id,command='document.control.'+name+'.v1',payload=payload,ability=ability,guard=guard,effect=effect,participant_people=tuple(sorted(set(plan.values()))),**options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 56, in command
+    project=service.require_project('C','P',actor=state.actor);kw['guard'](state.actor,project);result=kw['effect'](state.actor,project)
+                                                                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 115, in effect
+    verify_artifacts(original['artifacts'],company,actor,operation='ingest',lock=True)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 36, in verify_artifacts
+    if artifact(company,scope,project,{k:row[k] for k in ('revision_id','source_sha256')},actor,lock=lock)!=row:raise DomainError('document_control_integrity','The exact retained original source differs.',409)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 20, in artifact
+    actual=(company_source_reference(company,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Company' and project is None else source_reference(company,project,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Project' and project else None)
+                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering.py", line 49, in source_reference
+    require(company,project,'document.read',actor or state.actor)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering.py", line 28, in require
+    if company!='C' or project!='P':raise DomainError('not_found','scope',404)
+                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: scope
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.052s
+
+FAILED (errors=1)

@@ -4,26 +4,26 @@ from frappe.model.document import Document
 from cipher_aec.api.contracts import digest
 from cipher_aec.api.errors import DomainError
 from cipher_aec.governance.context import current_actor,require_project
-from . import contracts as rules,repository as repo
+from . import contracts as rules,repository as repo,scopes
 BASE={'id','company','project','scope_type','author_person','author_user','created_at','status','no_effects'}
 FACT={'parent_id','subject_id','subject_digest','packet_id','decision_id','checked_by_person','effect_digest','artifacts','electronic_signature','professional_seal','external_delivery','commercial_execution'}
 RIGHTS_FIELDS={'ingest_allowed','read_allowed','distribute_allowed','rights_basis','rights_holder','allowed_purpose','restriction','valid_from','valid_until','evidence_artifact'}
-EXTRA={'rights':{'parent_id','revision_number','predecessor'}|RIGHTS_FIELDS,'library':{'current_revision','revision_number'},'library_revision':{'parent_id','predecessor','revision_number','definition','artifacts'},'adoption_request':{'parent_id','library_revision','library_digest','definition','artifacts'},'issue_set':{'definition','artifacts','adoptions','package_digest'},'issue':FACT|{'package_digest'},'adoption':FACT,'transmittal':{'parent_id','issue_id','issue_digest','artifacts','recipients','purpose','required_response','channel','package_digest'},'distribution':FACT|{'package_digest','recipients','channel'},'evidence':{'parent_id','subject_kind','subject_id','subject_digest','statement','artifacts','commercial_execution','electronic_signature'}}
+EXTRA={'rights':{'parent_id','revision_number','predecessor'}|RIGHTS_FIELDS,'library':{'current_revision','revision_number'},'library_revision':{'parent_id','predecessor','revision_number','definition','artifacts'},'adoption_request':{'parent_id','library_revision','library_digest','definition','artifacts'},'issue_set':{'definition','artifacts','adoptions','package_digest'},'issue':FACT|{'package_digest'},'adoption':FACT,'transmittal':{'parent_id','issue_id','issue_digest','artifacts','recipients','purpose','required_response','channel','package_digest'},'distribution':FACT|{'package_digest','recipients','channel'},'lifecycle_request':{'parent_id','expected_version','before','definition','replacement','artifacts'},'lifecycle':FACT|{'revision_number','predecessor','document_id','action','reason','replacement','before'},'clause_use':{'parent_id','adoption_id','adoption_digest','source_clause','target','target_snapshot','purpose','artifacts','target_changed'},'redline':{'parent_id','clause_use_id','clause_use_digest','predecessor','revision_number','original_text','proposed_text','proposed_sha256','reason','target','target_snapshot','artifacts','target_changed'},'clause_application':FACT|{'target','target_snapshot','original_text','proposed_text','proposed_sha256','target_changed'},'evidence':{'parent_id','subject_kind','subject_id','subject_digest','statement','artifacts','commercial_execution','electronic_signature'}}
 
 class DocumentaryRecord(Document):
     def validate(self):
         kind=next(k for k,v in rules.KINDS.items() if v==self.doctype)
         try:value=json.loads(self.data_json)
         except (TypeError,ValueError):raise DomainError('document_control_integrity','Supply exact documentary JSON.',422) from None
-        rules.closed(value,BASE|EXTRA[kind])
+        rules.closed(value,BASE|EXTRA[kind]|({'library_scope'} if kind=='adoption_request' and 'library_scope' in value else set()))
         repo.require_write(self,kind,value)
-        if value['id']!=self.name or digest(value)!=self.record_digest or value['scope_type']!='Project' or value['no_effects']!=rules.NO_EFFECTS:raise DomainError('document_control_integrity','The exact native documentary scope/record differs.',409)
+        if value['id']!=self.name or digest(value)!=self.record_digest or (value['scope_type']!='Project' and not(kind in ('rights','library','library_revision') and value['scope_type']=='Company' and value['project'] is None)) or value['no_effects']!=rules.NO_EFFECTS:raise DomainError('document_control_integrity','The exact native documentary scope/record differs.',409)
         for key in ('company','project','scope_type','author_person','status',*repo.INDEXES):
             a,b=self.get(key),value.get(key)
             if key=='read_allowed' and b is None:a=None if a in (None,'',0) else a
             if a!=b and not(a in (None,'') and b is None):raise DomainError('document_control_integrity','The native documentary indexes differ.',409)
-        actor=current_actor();ability=rules.MANAGE if kind=='rights' else rules.ACTION_ABILITY[kind] if kind in rules.ACTIONS else rules.ACTION_ABILITY[{'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal'}[kind]] if kind in rules.FACTS.values() else rules.WRITE
-        require_project(self.company,self.project,ability=ability,actor=actor,lock=True);require_project(self.company,self.project,ability=rules.READ,actor=actor,lock=True)
+        actor=current_actor();ability=rules.MANAGE if kind=='rights' else rules.ACTION_ABILITY[kind] if kind in rules.ACTIONS else rules.ACTION_ABILITY[{'issue':'issue_set','adoption':'adoption_request','distribution':'transmittal','clause_application':'redline','lifecycle':'lifecycle_request'}[kind]] if kind in rules.FACTS.values() else rules.WRITE
+        scopes.require(self.company,value['scope_type'],value['project'],actor,ability,lock=True);scopes.require(self.company,value['scope_type'],value['project'],actor,rules.READ,lock=True)
         if self.is_new():
             if value['author_person']!=actor.person_id or value['author_user']!=actor.user:raise DomainError('forged_authority','Documentary authorship comes from the current canonical person.',403)
         elif kind=='library':

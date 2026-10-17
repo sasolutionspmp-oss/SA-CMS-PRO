@@ -1,0 +1,23 @@
+test_real_command_replay_selects_original_context_before_prospective_source_locks (cipher_aec.tests.test_document_control_command_recovery.OriginalReceiptContextTests.test_real_command_replay_selects_original_context_before_prospective_source_locks) ... ERROR
+
+======================================================================
+ERROR: test_real_command_replay_selects_original_context_before_prospective_source_locks (cipher_aec.tests.test_document_control_command_recovery.OriginalReceiptContextTests.test_real_command_replay_selects_original_context_before_prospective_source_locks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_command_recovery.py", line 33, in test_real_command_replay_selects_original_context_before_prospective_source_locks
+    replay=commands.run_command(company='C',project='P',operation_id=operation,command=command,payload=payload,ability=r.WRITE,effect=lambda *a:self.fail('Replay must not execute a new effect'),document_context=ProbeContext('future'))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py", line 18, in run_command
+    return _run_scoped_command(company=company, project=project, scope_type="Project", operation_id=operation_id,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py", line 78, in _run_scoped_command
+    document_context.prelock(actor)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_command_recovery.py", line 22, in prelock
+    if self.label=='future':raise DomainError('not_found','An unrelated newer source is unavailable.',404)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: An unrelated newer source is unavailable.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.031s
+
+FAILED (errors=1)

@@ -1,0 +1,30 @@
+test_event_is_verified_without_recursive_lifecycle_reads (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_event_is_verified_without_recursive_lifecycle_reads) ... FAIL
+test_unanchored_original_standing_is_rejected (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_unanchored_original_standing_is_rejected) ... FAIL
+
+======================================================================
+FAIL: test_event_is_verified_without_recursive_lifecycle_reads (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_event_is_verified_without_recursive_lifecycle_reads)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 63, in test_event_is_verified_without_recursive_lifecycle_reads
+    self.assertEqual(life.standing('C','P',doc,s.actor)['status'],'withdrawn')
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py", line 39, in standing
+    service.read('lifecycle',value['id'],company,project,actor,lock=lock)
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 60, in no_recursive
+    if kind=='lifecycle':raise AssertionError('Lifecycle prefix verification must be iterative')
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lifecycle prefix verification must be iterative
+
+======================================================================
+FAIL: test_unanchored_original_standing_is_rejected (cipher_aec.tests.test_document_control_lifecycle.LifecycleIntegrityTests.test_unanchored_original_standing_is_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc03-backend-finish-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lifecycle.py", line 53, in test_unanchored_original_standing_is_rejected
+    with self.assertRaises(DomainError):life.verify_request(value,s.actor)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.066s
+
+FAILED (failures=2)

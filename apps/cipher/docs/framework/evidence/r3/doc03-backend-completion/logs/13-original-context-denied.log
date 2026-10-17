@@ -1,0 +1,7 @@
+test_conflicting_or_corrupt_receipt_never_selects_a_private_source_plan (cipher_aec.tests.test_document_control_command_recovery.OriginalReceiptContextTests.test_conflicting_or_corrupt_receipt_never_selects_a_private_source_plan) ... ok
+test_real_command_replay_selects_original_context_before_prospective_source_locks (cipher_aec.tests.test_document_control_command_recovery.OriginalReceiptContextTests.test_real_command_replay_selects_original_context_before_prospective_source_locks) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.054s
+
+OK

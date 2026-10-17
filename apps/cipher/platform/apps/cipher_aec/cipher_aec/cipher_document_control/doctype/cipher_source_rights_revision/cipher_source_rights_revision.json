@@ -29,7 +29,7 @@
       "fieldname": "scope_type",
       "fieldtype": "Select",
       "label": "Scope Type",
-      "options": "Project",
+      "options": "Project\nCompany",
       "default": "Project",
       "reqd": 1
     },
@@ -45,7 +45,7 @@
       "fieldtype": "Link",
       "label": "Project",
       "options": "Project",
-      "reqd": 1
+      "reqd": 0
     },
     {
       "fieldname": "author_person",

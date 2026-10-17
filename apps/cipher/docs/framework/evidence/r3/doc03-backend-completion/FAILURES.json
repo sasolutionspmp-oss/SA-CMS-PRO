@@ -1,0 +1,21 @@
+{
+  "actual_failing_first_regressions": [
+    "08-company-cursor-failing-first.log",
+    "11-original-context-failing-first.log",
+    "lifecycle-01-failing-first.log"
+  ],
+  "notes": [
+    "The citation suspicion was withdrawn: get_citation derives original revision scope; no clauses.py bug fix was made.",
+    "07-shared-wire-failing-first.log passed on its first run despite its historical filename.",
+    "Company/provenance compatibility tests now declare no-policy doubles; real policy denial remains covered separately.",
+    "All original failures stay failed historical runs, not relabeled as passes."
+  ],
+  "retained_all_attempt_logs": true,
+  "test_authoring_or_fixture_failures": [
+    "01-original-project-citation-failing-first.log",
+    "03-shared-recovery.log",
+    "lifecycle-04-locks.log",
+    "14-combined-affected.log",
+    "17-company-source-compatibility.log"
+  ]
+}

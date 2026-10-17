@@ -1,0 +1,118 @@
+{
+  "Task_API_and_product_UI_unchanged": true,
+  "actual_shared_paths_changed_in_this_ref": false,
+  "base": "d03bce8d0116ad39a505f4bb3a57cdec672b9e47",
+  "generated_outputs": [
+    {
+      "action": "regenerate locally after composition; do not copy over Task outputs",
+      "base_sha256": "19a3f15af7fd476c3d1050e214cbff69075a1ee231b850641e40cf93c53c6d6d",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.json",
+      "qualified_sha256": "3c177b135d8dc7d2c4bb96396a212ee82853842c8dfd7eac165e05a0b552a62d"
+    },
+    {
+      "action": "regenerate locally after composition; do not copy over Task outputs",
+      "base_sha256": "a1781f3653b59587a51a9120a5402a55972ce48fc84e54a9f474d271f3da229e",
+      "path": "apps/cipher/product/src/api/contracts.generated.ts",
+      "qualified_sha256": "a4a4c9134d39d7a8707595a30f4bd8faab457a31ce301367ee7871131b379b95"
+    },
+    {
+      "action": "regenerate locally after composition; do not copy over Task outputs",
+      "base_sha256": "c89f4ea5640adc329eb0eb90d6442012b76efb312d438562ce6cf0d6f1e1973d",
+      "path": "apps/cipher/product/src/api/document-control.generated.ts",
+      "qualified_sha256": "7bf6d83d81c3bbe8560dca9c531a7702c86592b7076c0bb128530d9cde360088"
+    }
+  ],
+  "shared_changes": [
+    {
+      "base_sha256": "760a3f799c582e3a88c7fc3ceac2b467db833fb1fc16cbd6cb07d74863955d24",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__api__catalog.py.patch",
+      "qualified_sha256": "59aaa57b8d4d02fa02da7dc37c891fee9c7cc24181d2beb01df76aa659b4d250",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py"
+    },
+    {
+      "base_sha256": "3a1a5bf6ed47bbdadffa1b57c5315bc5a365c5cd362955023dce3f508961b861",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__api__openapi.py.patch",
+      "qualified_sha256": "57287f3049cd0c5f4f24d09195ea3f024d0dfbbe7a37c2b26afcfeaf3bb17524",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.py"
+    },
+    {
+      "base_sha256": "d542d9ec06d54c774fb935ff471c6c5c5ea253a26848e852a88271eb692a43af",
+      "definitions": 82,
+      "fragment": "core-schema-definitions.json",
+      "qualified_sha256": "71d751d7e69eaa8eff900f1e879a7ffa1cab25e4e8f849d3aababeccbac6d14f",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/schema.json"
+    },
+    {
+      "base_sha256": "4cdb19e89ec2ccb79284288423a63c7d3988107c6c9782376790eed466666e9c",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__documents__provenance.py.patch",
+      "qualified_sha256": "eeb2eace0e7d3499ad56128bb82f9c153933abb8132649bcaa2e209a58a0f1d0",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py"
+    },
+    {
+      "base_sha256": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__documents__repository.py.patch",
+      "qualified_sha256": "9313b8481aed93cc17e3c8c9b2e99e1f2598873629f8a3933a6a97c34de3dc4d",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py"
+    },
+    {
+      "base_sha256": "e90030585406e4e41fc57f8989b9c6cba15add9620bf2527e063abf1a90b512f",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__documents__service.py.patch",
+      "qualified_sha256": "89a30636733351f1313e7584fb078fee852e45f07aefddc3deaf977e580f98bc",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py"
+    },
+    {
+      "base_sha256": "e5b087dda81a82c8154a9b046aaede11eb9ffd1f0a746a8a255dc7ecf56b092f",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__governance__approvals.py.patch",
+      "qualified_sha256": "79a8fdfdc9aeda358c340c61f620065e5177826b66a21210bb911ea6762315f7",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py"
+    },
+    {
+      "base_sha256": "a749b43d6bf960c28b7bd87a53f40dc498a0274114e7d9ddd10045bfaf9d27ab",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__governance__commands.py.patch",
+      "qualified_sha256": "9797a54fc5037f19a0e274beecf1a410ffd6da74a992d20cd9d867ec74b5538c",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py"
+    },
+    {
+      "base_sha256": "ad542376e317de04e97d21fa4f7749e062058296c28650b6448d3759dcf4d0ff",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__governance__context.py.patch",
+      "qualified_sha256": "c51a7c968501b5d06e6246c2bd8b3e7c20042e9c3d5a1e5a1704120ec2bc9bf7",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py"
+    },
+    {
+      "base_sha256": "6072623ed6977e3f5295beef2d4c3938268dfa9040cd0ca156df6299cbafcdb7",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__governance__domain_approvals.py.patch",
+      "qualified_sha256": "1bdc70f74fcca0cc2bbeead275426bc6897592927ee4f0adf86547a2e8aadded",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py"
+    },
+    {
+      "base_sha256": "f46c166620d266e169855e0b5705e1952e11915b9bbebc1ea91c47a9b51f46eb",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__governance__history_access.py.patch",
+      "qualified_sha256": "73deef66c02100fffec25eee78d3fa16078352b1cc254b398dc9338b98cc71f6",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py"
+    },
+    {
+      "base_sha256": "656dad37aa206a4f41ed96bd2b85a970ba27e85e5a2e8a0135ac6622d0435bfd",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__hooks.py.patch",
+      "qualified_sha256": "23fbfadaf520d1348a104dcd2c594a33f4d5f5bab30fb513faa3d2d464027318",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py"
+    },
+    {
+      "base_sha256": "23fc4c83ac9be517683db1736977ac017168b6ad9d54de07bfa053f40606fc3e",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__install.py.patch",
+      "qualified_sha256": "07dbbb1bc8e2dfa8b3e88ce8a9381cbc8f0fa967fb18a3c3fdff1d2e1c8a11a6",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py"
+    },
+    {
+      "base_sha256": "31cb2ad04bd56b98224c89818aede727ae353dbae9d54e57bd6826ec6ef04abb",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__tests__test_documents_provenance.py.patch",
+      "qualified_sha256": "69dd5c3e181d96c79114f6c153484eb1990f799d8ad04d85ab29806210afe6bf",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_provenance.py"
+    },
+    {
+      "base_sha256": "70f27de5a68d6f14bb39baf233e35a63dcf7879b0c447d6dc5fbecca4bb44c58",
+      "fragment": "platform__apps__cipher_aec__cipher_aec__tests__test_documents_source_scope.py.patch",
+      "qualified_sha256": "9bcbcd25077c44f6c48fde4a63add728299ac557ff7e398571173819837bb4e7",
+      "target": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_documents_source_scope.py"
+    }
+  ]
+}
