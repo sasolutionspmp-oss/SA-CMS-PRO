@@ -487,7 +487,7 @@ The [complete cost/planning checkpoint](evidence/r1/cost-planning-fresh-gate-v4-
 
 ### ENG-02 — Engineering work packages, design basis, calculations, checking and deliverables
 
-- Release: R3. Status: planned.
+- Release: R3. Status: active.
 - Required locally verified contracts: ENG-01.
 - Implement: Engineering work packages, design basis, calculations, checking and deliverables.
 - Required acceptance evidence: Author/checker and source units enforced; completed calculation is not automatically issued.
@@ -503,7 +503,7 @@ The [complete cost/planning checkpoint](evidence/r1/cost-planning-fresh-gate-v4-
 
 ### DOC-03 — Issued sets/transmittals, specifications/contracts library and adopted revisions
 
-- Release: R3. Status: planned.
+- Release: R3. Status: active.
 - Required locally verified contracts: DOC-02, ENG-01.
 - Implement: Issued sets/transmittals, specifications/contracts library and adopted revisions.
 - Required acceptance evidence: Source update does not overwrite adopted/executed text; current rights enforced.

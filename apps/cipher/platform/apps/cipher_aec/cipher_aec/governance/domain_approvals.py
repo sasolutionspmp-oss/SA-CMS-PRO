@@ -16,6 +16,10 @@ class Action:
     enabled: bool = True
 
 ACTIONS = {
+    'engineering.basis.check.v1': Action('engineering.basis.check.v1', 'Cipher Design Basis Revision', 'Independent exact basis checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-BASIS-CHECK-POLICY-V1'),
+    'engineering.calculation.check.v1': Action('engineering.calculation.check.v1', 'Cipher Calculation Revision', 'Independent exact calculation checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-CALCULATION-CHECK-POLICY-V1'),
+    'engineering.deliverable.check.v1': Action('engineering.deliverable.check.v1', 'Cipher Deliverable Revision', 'Independent exact deliverable checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-DELIVERABLE-CHECK-POLICY-V1'),
+
     "engineering.rfi.authorize.v1": Action("engineering.rfi.authorize.v1", "Cipher RFI Response Revision", "Independent official RFI response", "engineering.read", "engineering.write", "CIPHER-ENGINEERING-RFI-POLICY-V1"),
     "engineering.submittal.authorize.v1": Action("engineering.submittal.authorize.v1", "Cipher Submittal Disposition Revision", "Independent official submittal disposition", "engineering.read", "engineering.write", "CIPHER-ENGINEERING-SUBMITTAL-POLICY-V1"),
     "engineering.distribute.v1": Action("engineering.distribute.v1", "Cipher Engineering Transmittal", "Independent internal engineering distribution", "engineering.read", "engineering.distribute", "CIPHER-ENGINEERING-DISTRIBUTION-POLICY-V1"),
@@ -45,6 +49,9 @@ def definition(action, scope_type="Project"):
 
 def callbacks(action, scope_type="Project"):
     spec_for(action, scope_type)
+    if action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"}:
+        from cipher_aec.engineering_packages.governance import CALLBACKS
+        return CALLBACKS[action]
     if action in {"engineering.rfi.authorize.v1", "engineering.submittal.authorize.v1", "engineering.distribute.v1"}:
         from cipher_aec.engineering.governance import CALLBACKS
         return CALLBACKS[action]

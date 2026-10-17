@@ -567,6 +567,9 @@
         },
         {
           "$ref": "#/$defs/EngineeringApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageApprovalPacket"
         }
       ]
     },
@@ -640,6 +643,9 @@
         },
         {
           "$ref": "#/$defs/EngineeringApprovalExecutionResponse"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageApprovalExecutionResponse"
         }
       ]
     },
@@ -3361,6 +3367,2088 @@
         "recipients",
         "channel",
         "external_delivery"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageBasisApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.basis.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Design Basis Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Design Basis Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.basis.check.v1"
+                },
+                "subject_kind": {
+                  "const": "basis"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpBasisDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageCalculationApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.calculation.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Calculation Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Calculation Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.calculation.check.v1"
+                },
+                "subject_kind": {
+                  "const": "calculation"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpCalculationDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageDeliverableApprovalPacket": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "action": {
+          "const": "engineering.deliverable.check.v1"
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "const": "Cipher Deliverable Revision"
+            },
+            "label": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        "requester": {
+          "$ref": "#/$defs/Person"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "manifest_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_version": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "synthetic": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "synthetic"
+          ],
+          "additionalProperties": false
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "Pending",
+            "Granted",
+            "Rejected",
+            "Withdrawn",
+            "Expired",
+            "Stale",
+            "Consumed"
+          ]
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ApprovalDecision"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "properties": {
+            "can_decide": {
+              "type": "boolean"
+            },
+            "can_execute": {
+              "type": "boolean"
+            },
+            "can_withdraw": {
+              "type": "boolean"
+            },
+            "disabled_reason": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "can_decide",
+            "can_execute",
+            "can_withdraw",
+            "disabled_reason"
+          ],
+          "additionalProperties": false
+        },
+        "review_manifest": {
+          "type": "object",
+          "properties": {
+            "subject": {
+              "type": "object",
+              "properties": {
+                "doctype": {
+                  "const": "Cipher Deliverable Revision"
+                },
+                "name": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "label": {
+                  "type": "string",
+                  "maxLength": 2200
+                }
+              },
+              "required": [
+                "doctype",
+                "name",
+                "label"
+              ],
+              "additionalProperties": false
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source_citations": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpCitation"
+                    },
+                    "maxItems": 64,
+                    "minItems": 0
+                  },
+                  "drawing_references": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpDrawingReference"
+                    },
+                    "maxItems": 16,
+                    "minItems": 0
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/$defs/EpArtifact"
+                    },
+                    "maxItems": 8,
+                    "minItems": 0
+                  },
+                  "unit_manifest": {
+                    "anyOf": [
+                      {
+                        "$ref": "#/$defs/EpUnitManifest"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "source_citations",
+                  "drawing_references",
+                  "artifacts",
+                  "unit_manifest"
+                ],
+                "additionalProperties": false
+              },
+              "maxItems": 1,
+              "minItems": 1
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "schema": {
+                  "const": "cipher.engineering.package-check.v1"
+                },
+                "action": {
+                  "const": "engineering.deliverable.check.v1"
+                },
+                "subject_kind": {
+                  "const": "deliverable"
+                },
+                "subject_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "subject_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "parent_id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_revision": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "package_digest": {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                },
+                "preparer_person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "checker": {
+                  "$ref": "#/$defs/EpPerson"
+                },
+                "outcome": {
+                  "const": "checked"
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "schema",
+                "action",
+                "subject_kind",
+                "subject_id",
+                "subject_digest",
+                "parent_id",
+                "package_revision",
+                "package_digest",
+                "preparer_person",
+                "checker",
+                "outcome",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "properties": {
+                "definition": {
+                  "$ref": "#/$defs/EpDeliverableDefinition"
+                },
+                "inputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "outputs": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpQuantityRow"
+                  },
+                  "maxItems": 32,
+                  "minItems": 0
+                },
+                "calculations": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/$defs/EpCalculationReference"
+                  },
+                  "maxItems": 8,
+                  "minItems": 0
+                },
+                "no_effects": {
+                  "$ref": "#/$defs/EpNoEffects"
+                },
+                "solver_executed": {
+                  "const": false
+                },
+                "issue_authorized": {
+                  "const": false
+                },
+                "sealed": {
+                  "const": false
+                }
+              },
+              "required": [
+                "definition",
+                "inputs",
+                "outputs",
+                "calculations",
+                "no_effects",
+                "solver_executed",
+                "issue_authorized",
+                "sealed"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "subject",
+            "sources",
+            "effect",
+            "summary"
+          ],
+          "additionalProperties": false
+        },
+        "schema": {
+          "const": "cipher.engineering.package-approval.v1"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "action",
+        "subject",
+        "requester",
+        "created_at",
+        "expires_at",
+        "manifest_hash",
+        "source_version",
+        "policy",
+        "state",
+        "decisions",
+        "actions",
+        "review_manifest",
+        "schema"
+      ],
+      "additionalProperties": false
+    },
+    "EngineeringPackageApprovalPacket": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/EngineeringPackageBasisApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageCalculationApprovalPacket"
+        },
+        {
+          "$ref": "#/$defs/EngineeringPackageDeliverableApprovalPacket"
+        }
+      ]
+    },
+    "EngineeringPackageApprovalExecutionResponse": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageBasisApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageCalculationApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "packet": {
+              "$ref": "#/$defs/EngineeringPackageDeliverableApprovalPacket"
+            },
+            "effect": {
+              "type": "object",
+              "properties": {
+                "check": {
+                  "$ref": "#/$defs/EpCheck"
+                }
+              },
+              "required": [
+                "check"
+              ],
+              "additionalProperties": false
+            },
+            "operation": {
+              "$ref": "#/$defs/Operation"
+            }
+          },
+          "required": [
+            "packet",
+            "effect",
+            "operation"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "EpCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitManifest": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.v1"
+        },
+        "dataset_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "records": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "company"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "timezone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "currency",
+                      "timezone"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Company"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "uom"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "dimension": {
+                        "enum": [
+                          "area",
+                          "count",
+                          "equipment_time",
+                          "labor_time",
+                          "length",
+                          "mass",
+                          "time",
+                          "volume"
+                        ]
+                      },
+                      "precision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 12
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "dimension",
+                      "precision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "UOM"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalconversion"
+          }
+        },
+        "quantities": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalquantity"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "dataset_id",
+        "scope",
+        "records",
+        "unit_conversions"
+      ],
+      "additionalProperties": false,
+      "title": "Cipher independent canonical master/dimension manifest v1",
+      "$comment": "Structural interchange schema. Server validator additionally enforces exact references, scoped company, reduced rational factors, conversion consistency, precision and current authorization."
+    },
+    "EpCanonicaluuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "EpCanonicalconversion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "from_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "dimension": {
+          "enum": [
+            "area",
+            "count",
+            "equipment_time",
+            "labor_time",
+            "length",
+            "mass",
+            "time",
+            "volume"
+          ]
+        },
+        "numerator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "from_unit_id",
+        "to_unit_id",
+        "dimension",
+        "numerator",
+        "denominator",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpCanonicalquantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+          "maxLength": 50
+        },
+        "unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "convert_to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        }
+      },
+      "required": [
+        "id",
+        "amount",
+        "unit_id"
+      ],
+      "additionalProperties": false
+    },
+    "EpPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EpBasisDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "criteria": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "criteria",
+        "assumptions",
+        "design_codes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "edition": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "clause": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "code",
+        "edition",
+        "clause"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantityRow": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "quantity": {
+          "$ref": "#/$defs/EpQuantity"
+        },
+        "source": {
+          "$ref": "#/$defs/EpDrawingInput"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "quantity",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantity": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "amount",
+        "unit_id",
+        "precision"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EpNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "method": {
+          "const": "human-authored-results-v1"
+        },
+        "algorithm_reference": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_name": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_version": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "model_version": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "method",
+        "algorithm_reference",
+        "tool_name",
+        "tool_version",
+        "model_version",
+        "design_codes",
+        "explanation",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpDeliverableDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "deliverable_type": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "checking_notes": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "deliverable_type",
+        "description",
+        "checking_notes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCheck": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "checked"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_kind": {
+          "enum": [
+            "basis",
+            "calculation",
+            "deliverable"
+          ]
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "preparer_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "outcome": {
+          "const": "checked"
+        },
+        "issue_authorized": {
+          "const": false
+        },
+        "sealed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "preparer_person",
+        "packet_id",
+        "decision_id",
+        "comments",
+        "outcome",
+        "issue_authorized",
+        "sealed"
       ],
       "additionalProperties": false
     }

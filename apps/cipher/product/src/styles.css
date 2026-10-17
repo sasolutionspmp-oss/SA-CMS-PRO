@@ -266,3 +266,10 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
   .engineering-inline-actions > ui5-button { max-width: 100%; }
   .engineering-source-picker { padding: .75rem; }
 }
+.engineering-package-record { display: grid; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); min-width: 0; }
+.engineering-package-record-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; }
+.engineering-package-codes { display: grid; gap: .75rem; }
+.engineering-code-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: .5rem; }
+.engineering-package-quantities { display: grid; gap: .75rem; min-width: 0; }
+.engineering-history-row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); }
+@media (max-width: 599px) { .engineering-code-row { grid-template-columns: 1fr; } }

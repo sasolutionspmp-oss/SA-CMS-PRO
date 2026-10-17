@@ -4,15 +4,23 @@
 
 Owner authorized execution of the framework. Current source worktree: `/tmp/cipher-company-publication-r10`, local branch `cipher/company-ricky-native`, publishing to `cipher/framework-final-draft` in PR #28. The running main site still mounts `/workspace/cipher-framework-draft` at its separately qualified `7248171c` release. New product design is independent of all prior Cipher/Odoo implementations.
 
-Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
+## Current checkpoint: original ENG-02 implementation
 
-## Current checkpoint: original ENG-01 implementation
+[Engineering work packages](ENGINEERING_ENG02.md) now connect Project assignments, exact source/unit design basis, human-authored calculation records, deliverables and designated independent checking in the unified SAP UI5 workspace. The frozen source contains 831 files and the production build 925 files. Local qualification, original failures and remaining native boundaries are recorded with the package evidence. Neither ENG-01 nor ENG-02 is marked complete merely from browser fixtures.
+
+The original DOC-03 issued-set/specification/contract-library backend has started in a separate source workspace. It is not yet published or qualified. Closed estimating/calibration work stays closed. MAIN and the preserved isolated runtime remain unchanged; live Ricky and QuickBooks remain unconnected.
+
+## Prior source checkpoint: original ENG-01 implementation
 
 [The Engineering workspace](ENGINEERING_ENG01.md) adds original RFI/submittal revisions, source selection, designated reviews, independent official technical facts and separately controlled exact-recipient internal transmittals. The shared SAP UI5 shell includes project registers, ObjectPages, approval review, immutable history and mounted original-UUID recovery. The combined source binds 789 files and the production build 921 files. Backend host verification and the focused browser flows passed; actual Frappe integration and native UI evidence remain pending, so ENG-01/C18 are not marked complete.
 
 MAIN source/runtime and the preserved isolated runtime remain unchanged. No new default duties, external delivery, model/accounting connection, professional certification or commercial effect was introduced. The previous published calibration commit `be9e1140` passed its full hosted CI gate: [all 25 stages](evidence/r3/engineering-eng01-source/previous-source-hosted-ci.json). That prior result does not qualify the new engineering source.
 
 The first new engineering CI run passed fresh installation but failed its integration stage. The [retained failure](evidence/r3/engineering-eng01-source/native-ci-first-failure.json) includes the exact stage and retrieval limit. Native failure reporting now has bounded test/type/source diagnostics; the original result remains failed while the next run is pending.
+
+## Earlier Company/commercial checkpoint
+
+Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
 ## Prior checkpoint: working calibration and return to original milestones
 

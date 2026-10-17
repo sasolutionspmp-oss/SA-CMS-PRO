@@ -198,6 +198,18 @@ _module("cipher_aec.engineering.api", {
     'list_records': ('GET', 'EgListResponse'),
 })
 
+_module("cipher_aec.engineering_packages.api", {
+    'create_package': ('POST', 'EpCreatePackageResponse', True),
+    'revise_package': ('POST', 'EpRevisePackageResponse', True),
+    'create_basis': ('POST', 'EpCreateBasisResponse', True),
+    'create_calculation': ('POST', 'EpCreateCalculationResponse', True),
+    'create_deliverable': ('POST', 'EpCreateDeliverableResponse', True),
+    'get_record': ('GET', 'EpGetResponse'),
+    'list_records': ('GET', 'EpListResponse'),
+    'list_people': ('GET', 'EpPeopleResponse'),
+    'list_units': ('GET', 'EpUnitsResponse'),
+})
+
 
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

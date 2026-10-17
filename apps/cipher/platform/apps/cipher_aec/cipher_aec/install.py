@@ -49,6 +49,8 @@ def after_migrate():
     awards_migrate()
     from cipher_aec.engineering.install import after_migrate as engineering_migrate
     engineering_migrate()
+    from cipher_aec.engineering_packages.install import after_migrate as package_migrate
+    package_migrate()
     from cipher_aec.governance.approvals import install_policy
     for doctype in ("Cipher Approval Policy Revision", "Cipher Approval Packet", "Cipher Approval Decision", "Cipher Approval Consumption"):
         frappe.db.sql("UPDATE `tab" + doctype + "` SET scope_type='Project' WHERE scope_type IS NULL OR scope_type=''")

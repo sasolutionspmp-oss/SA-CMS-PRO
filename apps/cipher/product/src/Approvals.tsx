@@ -70,7 +70,8 @@ export function ReviewPacket({ project, packetId, onClose, onChanged, navigate }
     finally { setSaving(false); }
   };
   if (packet?.action.startsWith('engineering.')) {
-    const target = `/projects/${encodeURIComponent(project.id)}/engineering/approvals/${encodeURIComponent(packet.id)}`;
+    const packageCheck = ['engineering.basis.check.v1', 'engineering.calculation.check.v1', 'engineering.deliverable.check.v1'].includes(packet.action);
+    const target = `/projects/${encodeURIComponent(project.id)}/engineering/${packageCheck ? 'packages/approvals' : 'approvals'}/${encodeURIComponent(packet.id)}`;
     return <Dialog open headerText="Engineering authorization" onClose={onClose} footer={<Bar endContent={<Button onClick={onClose}>Close review</Button>} />}><div className="dialog-form"><Title level="H3">{actionLabel(packet.action)}</Title><p>{packet.subject.label}</p>{navigate ? <Button design="Emphasized" onClick={() => navigate(target)}>Open engineering authorization</Button> : <a href={target}>Open engineering authorization</a>}</div></Dialog>;
   }
   return <Dialog open headerText="Review approval packet" className="approval-dialog" onClose={() => { if (!saving) onClose(); }} footer={<Bar design="Footer" endContent={<Button disabled={saving} onClick={onClose}>Close review</Button>} />}>
@@ -91,7 +92,7 @@ export function ReviewPacket({ project, packetId, onClose, onChanged, navigate }
   </Dialog>;
 }
 
-function actionLabel(action: ApprovalPacket['action']) { return action === 'engineering.rfi.authorize.v1' ? 'Authorize RFI response' : action === 'engineering.submittal.authorize.v1' ? 'Authorize submittal disposition' : action === 'engineering.distribute.v1' ? 'Authorize internal transmittal' : action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
+function actionLabel(action: ApprovalPacket['action']) { return action === 'engineering.basis.check.v1' ? 'Check design basis' : action === 'engineering.calculation.check.v1' ? 'Check calculation' : action === 'engineering.deliverable.check.v1' ? 'Check deliverable' : action === 'engineering.rfi.authorize.v1' ? 'Authorize RFI response' : action === 'engineering.submittal.authorize.v1' ? 'Authorize submittal disposition' : action === 'engineering.distribute.v1' ? 'Authorize internal transmittal' : action === 'calibration.verify.v1' ? 'Verify calibration' : action === 'contract.baseline.activate.v1' ? 'Activate contract baseline' : 'Project status change'; }
 export function ReviewFacts({ value }: { value: unknown }) {
   if (Array.isArray(value)) return <ol className="domain-review-list">{value.map((item, index) => <li key={index}><ReviewFacts value={item} /></li>)}</ol>;
   if (value && typeof value === 'object') return <dl className="approval-metadata">{Object.entries(value).map(([key, item]) => <div className="domain-review-field" key={key}><dt>{human(key)}</dt><dd><ReviewFacts value={item} /></dd></div>)}</dl>;

@@ -22,6 +22,7 @@ const CostMasters = lazy(() => import('./CostMasters'));
 const CompanyActivity = lazy(() => import('./CompanyActivity'));
 const CompanyTakeoff = lazy(() => import('./CompanyTakeoff'));
 const Engineering = lazy(() => import('./Engineering'));
+const EngineeringWorkPackages = lazy(() => import('./EngineeringWorkPackages'));
 
 export default function App() {
   const { path, navigate: navigateRoute } = useRoute();
@@ -32,16 +33,17 @@ export default function App() {
   const [suggestionLocked, setSuggestionLocked] = useState(false);
   const [takeoffLocked, setTakeoffLocked] = useState(false);
   const [engineeringLocked, setEngineeringLocked] = useState(false);
-  const workspaceLocked = suggestionLocked || takeoffLocked || engineeringLocked;
+  const [packageLocked, setPackageLocked] = useState(false);
+  const workspaceLocked = suggestionLocked || takeoffLocked || engineeringLocked || packageLocked;
   const navigate = useCallback((next: string) => { if (!workspaceLocked) navigateRoute(next); }, [workspaceLocked, navigateRoute]);
   useEffect(() => {
-    if (!takeoffLocked && !engineeringLocked) return;
+    if (!takeoffLocked && !engineeringLocked && !packageLocked) return;
     const pinned = window.location.pathname + window.location.search;
     const historyChange = (event: PopStateEvent) => { event.stopImmediatePropagation(); window.history.pushState({}, '', pinned); };
     const unload = (event: BeforeUnloadEvent) => { event.preventDefault(); };
     window.addEventListener('popstate', historyChange, true); window.addEventListener('beforeunload', unload);
     return () => { window.removeEventListener('popstate', historyChange, true); window.removeEventListener('beforeunload', unload); };
-  }, [takeoffLocked, engineeringLocked]);
+  }, [takeoffLocked, engineeringLocked, packageLocked]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [mode, setMode] = useState<NavigationLayoutMode>(NavigationLayoutMode.Auto);
   const [phoneLayout, setPhoneLayout] = useState(() => window.matchMedia('(max-width: 599px)').matches);
@@ -116,7 +118,7 @@ export default function App() {
         {shellSession?.company_scopes.some(scope => scope.company === company && scope.capabilities.includes('estimate.read') && scope.capabilities.includes('document.read')) && <SideNavigationItem text="Company drawing takeoff" icon="measure" selected={navKey === 'company-takeoff'} data-path="/company/takeoff" />}
         <SideNavigationItem text="Project work" icon="task" selected={navKey === 'work'} data-path="/work" />
         <SideNavigationItem text="Estimates" icon="simulate" selected={navKey === 'estimates'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/estimates` : '/estimates'} />
-        <SideNavigationItem text="Engineering" icon="document-text" selected={navKey === 'engineering'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/engineering/rfis` : '/engineering'} />
+        <SideNavigationItem text="Engineering" icon="document-text" selected={navKey === 'engineering'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/engineering/${selectedProject.capabilities?.includes('engineering.package.read') && !selectedProject.capabilities?.includes('engineering.read') ? 'packages' : 'rfis'}` : '/engineering'} />
         <SideNavigationItem text="Drawing takeoff" icon="measure" selected={navKey === 'takeoff'} data-path={selectedProject ? `/projects/${encodeURIComponent(selectedProject.id)}/takeoff` : '/takeoff'} />
         <SideNavigationItem text="Documents" icon="documents" selected={navKey === 'documents'} data-path={documentsPath} />
         <SideNavigationItem text="Ricky" icon="da" design="Action" unselectable onClick={() => { setRickyOpen(true); if (window.matchMedia('(max-width: 599px)').matches) setMode(NavigationLayoutMode.Collapsed); }} />
@@ -136,8 +138,9 @@ export default function App() {
                 : <ProjectRegister company={companyLabel(session.data, company)} projects={projects.data?.items ?? []} total={projects.data?.total ?? undefined} search={search} setSearch={setSearch} navigate={navigate} refresh={projects.refresh} pagination={{ next: projects.data?.next_cursor, page: projectPages.length + 1, previous: Boolean(projectPages.length), onNext: () => { if (projects.data?.next_cursor) { setProjectPages([...projectPages, projectCursor]); setProjectCursor(projects.data.next_cursor); } }, onPrevious: () => { setProjectCursor(projectPages[projectPages.length - 1]); setProjectPages(projectPages.slice(0, -1)); } }} />}
             </>}
           </>}
-          <Suspense fallback={route[0] === 'company' && route[1] === 'takeoff' ? <Loading label="Opening Company takeoff…" /> : null}><CompanyTakeoff navigationLocked={suggestionLocked || engineeringLocked} active={Boolean(route[0] === 'company' && route[1] === 'takeoff' && company && shellSession && !requestedCompanyDenied)} company={company} user={shellSession?.user || ''} personId={shellSession?.person.id || ''} capabilities={shellSession?.company_scopes.find(scope => scope.company === company)?.capabilities || []} setId={route[2]} navigate={navigate} onLockedChange={setTakeoffLocked} /></Suspense>
-          <Suspense fallback={route[0] === 'engineering' || route[2] === 'engineering' ? <Loading label="Opening engineering…" /> : null}><Engineering active={Boolean((route[0] === 'engineering' || route[2] === 'engineering') && company && shellSession && !requestedCompanyDenied)} company={company} user={shellSession?.user || ''} personId={shellSession?.person.id || ''} project={shellSession && !requestedCompanyDenied ? contextProject.data : undefined} contextLoading={contextProject.loading} contextError={contextProject.error} section={route[2] === 'engineering' ? route[3] : undefined} recordId={route[2] === 'engineering' ? route[4] : undefined} navigationLocked={suggestionLocked || takeoffLocked} navigate={navigate} onLockedChange={setEngineeringLocked} /></Suspense>
+          <Suspense fallback={route[0] === 'company' && route[1] === 'takeoff' ? <Loading label="Opening Company takeoff…" /> : null}><CompanyTakeoff navigationLocked={suggestionLocked || engineeringLocked || packageLocked} active={Boolean(route[0] === 'company' && route[1] === 'takeoff' && company && shellSession && !requestedCompanyDenied)} company={company} user={shellSession?.user || ''} personId={shellSession?.person.id || ''} capabilities={shellSession?.company_scopes.find(scope => scope.company === company)?.capabilities || []} setId={route[2]} navigate={navigate} onLockedChange={setTakeoffLocked} /></Suspense>
+          <Suspense fallback={route[0] === 'engineering' || route[2] === 'engineering' ? <Loading label="Opening engineering…" /> : null}><Engineering active={Boolean((route[0] === 'engineering' || route[2] === 'engineering') && route[3] !== 'packages' && company && shellSession && !requestedCompanyDenied)} company={company} user={shellSession?.user || ''} personId={shellSession?.person.id || ''} project={shellSession && !requestedCompanyDenied ? contextProject.data : undefined} contextLoading={contextProject.loading} contextError={contextProject.error} section={route[2] === 'engineering' ? route[3] : undefined} recordId={route[2] === 'engineering' ? route[4] : undefined} navigationLocked={suggestionLocked || takeoffLocked || packageLocked} navigate={navigate} onLockedChange={setEngineeringLocked} /></Suspense>
+          <Suspense fallback={route[2] === 'engineering' && route[3] === 'packages' ? <Loading label="Opening engineering work packages…" /> : null}><EngineeringWorkPackages active={Boolean(route[2] === 'engineering' && route[3] === 'packages' && company && shellSession && !requestedCompanyDenied)} company={company} user={shellSession?.user || ''} personId={shellSession?.person.id || ''} project={shellSession && !requestedCompanyDenied ? contextProject.data : undefined} contextLoading={contextProject.loading} contextError={contextProject.error} tail={route.slice(4)} navigationLocked={suggestionLocked || takeoffLocked || engineeringLocked} navigate={navigate} onLockedChange={setPackageLocked} /></Suspense>
         </div>
         {rickyOpen && !requestedCompanyDenied && Boolean(company) && !session.loading && !authRequested && session.data?.authenticated && <RickyPanel key={`${session.data.user}/${session.data.person.id}/${companyWorkspace ? "Company" : "Project"}/${company}/${selectedProject?.id ?? ''}`} user={session.data.user} companyScope={companyWorkspace} companyCapabilities={session.data.company_scopes.find(scope => scope.company === company)?.capabilities || []} company={company} person={session.data.person.id} project={selectedProject} navigate={navigate} onClose={() => setRickyOpen(false)} onSuggestionLockedChange={setSuggestionLocked} onSaved={refresh} />}
       </div>

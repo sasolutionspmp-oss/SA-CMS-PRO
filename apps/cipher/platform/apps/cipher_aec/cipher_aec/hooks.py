@@ -113,3 +113,8 @@ from cipher_aec.engineering.contracts import KINDS as _ENGINEERING_KINDS
 for _engineering_type in _ENGINEERING_KINDS.values():
     permission_query_conditions[_engineering_type] = "cipher_aec.engineering.install.query_denied"
     has_permission[_engineering_type] = "cipher_aec.engineering.install.permission_denied"
+
+from cipher_aec.engineering_packages.contracts import KINDS as _PACKAGE_KINDS
+for _package_type in _PACKAGE_KINDS.values():
+    permission_query_conditions[_package_type] = "cipher_aec.engineering_packages.install.query_denied"
+    has_permission[_package_type] = "cipher_aec.engineering_packages.install.permission_denied"

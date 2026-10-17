@@ -1,0 +1,49 @@
+{
+  "schema": "cipher.eng02.local-verification.v1",
+  "at": "2026-10-17T05:00:18.285440+00:00",
+  "source_manifest_sha256": "5e26cb24a5ad50d9e41901d157eb450e2237054e3673b856e12b3ab436d907ba",
+  "backend_host_checks": 124,
+  "backend_host_breakdown": {
+    "new_ENG02": 22,
+    "prior_engineering_and_compatibility": 84,
+    "diagnostic_reporter": 18
+  },
+  "generated_contracts": 15,
+  "OpenAPI": "passed_backend_freeze",
+  "final_typecheck": "passed",
+  "production_build": "passed_dist-v4_925_files",
+  "focused_checks": {
+    "distinct_passed": 38,
+    "Node_adapter": 27,
+    "browser": 11,
+    "composition": "37 passing cases in corrected run plus the single affected journey passing after test-only source-label/accessible-selector correction; product dist-v4 unchanged. Not a fresh38-case all-pass run.",
+    "product_defect_corrected": "Duplicate routed checking dialog after decision; final source guard prevents additional overlay."
+  },
+  "shared_compatibility": {
+    "distinct_passed": 59,
+    "composition": "41 completed passing cases in dev-harness run +18 remaining/failed cases on the unchanged production build after memory-heavy dev server stopped. Not a fresh59-case all-pass run.",
+    "prior_ENG01_checks": 23,
+    "shared_product_navigation_takeoff_checks": 36,
+    "source_unchanged_during_composition": true
+  },
+  "report_sha256": {
+    "browser-corrected-report.json": "52d70c9ac682bb63caa75af897d55cb731399845d2f85db2427d237f1d5e53f5",
+    "browser-journey-confirmation-v2-report.json": "b10fb0d2505b337559028880603c0adb04117d054fedab48bddf523d76faf856",
+    "compat-report-v2.json": "740b6b109c19cd04155a10170ef761b336172f849e6da084db80f655da5d2cc4",
+    "compat-report-v3.json": "50a1effc8cf77869bdcf1e06ccaf16755dd14dff3a12c1b2d945c8f192c3a55a"
+  },
+  "final_typecheck_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "final_build_log_sha256": "646266519508c3686ea1299e474eb3d2610bedffcc6ae3437dd53669e8c90e25",
+  "native_ENG02_tests_executed": false,
+  "native_ENG02_source_installed": false,
+  "actual_native_UI_captures": false,
+  "browser_API_contract_fixtures_only": true,
+  "native_ENG01_followup": {
+    "run_id": 39003208300,
+    "commit": "9029585b6b6d884119754c5f031260c3a74e9a93",
+    "status_at_recording": "in_progress",
+    "qualifies_ENG02": false
+  },
+  "private_raw_logs_published": false,
+  "original_failures": "retained-failures.json"
+}

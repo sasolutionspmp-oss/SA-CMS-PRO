@@ -98,7 +98,7 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         # A write grant does not permit reading or replaying revoked source data.
         require_project(company, project, ability="document.read", actor=actor, lock=True)
     if scope_type == "Project" and command.startswith("engineering."):
-        require_project(company, project, ability="engineering.read", actor=actor, lock=True)
+        require_project(company, project, ability="engineering.package.read" if command.startswith("engineering.package.") else "engineering.read", actor=actor, lock=True)
     request_hash = digest({"command": command, "company": company, "project": project, "payload": payload})
     if scope_type == "Company":
         request_hash = digest({"scope_type": "Company", "command": command, "company": company, "project": None, "payload": payload})
@@ -249,6 +249,9 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
         require_project(company, project, ability="estimate.read", actor=actor, lock=True)
         from cipher_aec.takeoff.service import authorize_receipt as authorize_takeoff
         authorize_takeoff(actor, company, project, result)
+    elif command.startswith("engineering.package."):
+        from cipher_aec.engineering_packages.service import authorize_receipt as authorize_package
+        authorize_package(actor, company, project, result, lock=True)
     elif command.startswith("engineering."):
         from cipher_aec.engineering.service import authorize_receipt as authorize_engineering
         authorize_engineering(actor, company, project, result, lock=True)

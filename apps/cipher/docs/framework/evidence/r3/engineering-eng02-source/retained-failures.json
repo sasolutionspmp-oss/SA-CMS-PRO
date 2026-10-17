@@ -1,0 +1,52 @@
+{
+  "schema": "cipher.eng02.retained-failures.v1",
+  "original_records_rewritten": false,
+  "backend": "backend-retained-failures.json",
+  "adapter_failing_first": {
+    "passed": 8,
+    "failed": 19,
+    "qualification": "adapter-qualification.json"
+  },
+  "exploratory_browser": {
+    "report_sha256": "75dd856343e1cc225e6df459f5c753b3d3fbdebcd6166bd150a44b5fe1fbccca",
+    "passed": 4,
+    "failed": 7,
+    "actual_product_defect": "Routed checking replies also opened a second overlay dialog; corrected in the final frozen UI.",
+    "harness_defects": [
+      "Denial assertion counted the unrelated always-mounted session dialog; now checks the package authoring dialogs.",
+      "The denial assertion was edited during this exploratory run, so this run is retained only as failure evidence, never final qualification."
+    ],
+    "infrastructure": "Two renderer crashes; container memory pressure and obsolete Vite processes retained in private process evidence."
+  },
+  "corrected_browser_first": {
+    "report_sha256": "52d70c9ac682bb63caa75af897d55cb731399845d2f85db2427d237f1d5e53f5",
+    "passed": 37,
+    "failed": 1,
+    "cause": "Journey test expected a new-source title for an inherited drawing; exact retained-source label differs."
+  },
+  "journey_confirmation_first": {
+    "report_sha256": "f1d83e3a006e27ed8b94d6c53c83b76bf8b0da3e02321b50be4192e9cc8689fb",
+    "passed": 0,
+    "failed": 1,
+    "cause": "Test selected a React ObjectPage section implementation ID; replaced with the unique accessible action in the independently checked journey."
+  },
+  "build_interruption": {
+    "log_sha256": "4a502519d908c9581e1385512e8ea592cfa4a8b7ba91bb8c163fd14390dedec0",
+    "exit_code": 137,
+    "retained": true,
+    "correction": "Stopped only obsolete owned preview/dev processes; built sequentially into a new dist-v4, preserving the original build path."
+  },
+  "compatibility_harness_preview": {
+    "retained_log_sha256": "1a771fe3fb84bb45248d7be1d21d92725fc412104aef33a739fc02eb08fc77a4",
+    "acceptance_evidence": false,
+    "cause": "Existing standalone HTML harness was pointed at production index fallback. Run interrupted; product source unchanged."
+  },
+  "compatibility_dev_memory": {
+    "report_sha256": "740b6b109c19cd04155a10170ef761b336172f849e6da084db80f655da5d2cc4",
+    "passed": 41,
+    "failed": 2,
+    "interrupted": 1,
+    "not_run": 15,
+    "cause": "Heavy dev harness plus Chromium reached cgroup memory limit. Two engineering cases crashed; other completed cases retained. Dev server stopped; only18 unfinished/failed main-app cases continued against the existing production build."
+  }
+}

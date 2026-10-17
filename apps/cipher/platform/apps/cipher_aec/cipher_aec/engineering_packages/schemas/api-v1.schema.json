@@ -1,0 +1,2789 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:cipher:engineering-packages:api:v1",
+  "$defs": {
+    "EpNoEffects": {
+      "type": "object",
+      "properties": {
+        "commercial_change": {
+          "const": false
+        },
+        "contract_change": {
+          "const": false
+        },
+        "budget_change": {
+          "const": false
+        },
+        "schedule_change": {
+          "const": false
+        },
+        "quality_acceptance": {
+          "const": false
+        },
+        "professional_certification": {
+          "const": false
+        },
+        "external_transmission": {
+          "const": false
+        }
+      },
+      "required": [
+        "commercial_change",
+        "contract_change",
+        "budget_change",
+        "schedule_change",
+        "quality_acceptance",
+        "professional_certification",
+        "external_transmission"
+      ],
+      "additionalProperties": false
+    },
+    "EpPerson": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "person": {
+          "type": "string",
+          "maxLength": 140
+        }
+      },
+      "required": [
+        "user",
+        "person"
+      ],
+      "additionalProperties": false
+    },
+    "EpCitationInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "page",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EpCitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "document_title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "page_label": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "excerpt": {
+          "type": "string",
+          "maxLength": 200000
+        },
+        "excerpt_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "document_id",
+        "revision_id",
+        "document_title",
+        "revision_number",
+        "page",
+        "page_label",
+        "excerpt",
+        "excerpt_sha256",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpDrawingReference": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "const": "application/pdf"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "locator": {
+          "type": "string",
+          "maxLength": 1000,
+          "minLength": 1
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count",
+        "page",
+        "locator"
+      ],
+      "additionalProperties": false
+    },
+    "EpArtifactInput": {
+      "type": "object",
+      "properties": {
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "revision_id",
+        "source_sha256"
+      ],
+      "additionalProperties": false
+    },
+    "EpArtifact": {
+      "type": "object",
+      "properties": {
+        "document_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "mime_type": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "document_id",
+        "revision_id",
+        "revision_number",
+        "source_sha256",
+        "byte_length",
+        "mime_type",
+        "page_count"
+      ],
+      "additionalProperties": false
+    },
+    "EpOperation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "const": "succeeded"
+        },
+        "replayed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "replayed"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitManifest": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "const": "cipher.canonical.v1"
+        },
+        "dataset_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "scope": {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "records": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 65,
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "company"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "currency": {
+                        "type": "string",
+                        "pattern": "^[A-Z]{3}$"
+                      },
+                      "timezone": {
+                        "type": [
+                          "string",
+                          "null"
+                        ],
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "currency",
+                      "timezone"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "Company"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "$ref": "#/$defs/EpCanonicaluuid"
+                  },
+                  "kind": {
+                    "const": "uom"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 2147483647
+                  },
+                  "fields": {
+                    "type": "object",
+                    "properties": {
+                      "symbol": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "dimension": {
+                        "enum": [
+                          "area",
+                          "count",
+                          "equipment_time",
+                          "labor_time",
+                          "length",
+                          "mass",
+                          "time",
+                          "volume"
+                        ]
+                      },
+                      "precision": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 12
+                      }
+                    },
+                    "required": [
+                      "symbol",
+                      "dimension",
+                      "precision"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "source": {
+                    "type": "object",
+                    "properties": {
+                      "system": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "record_id": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      },
+                      "revision": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "system",
+                      "record_id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "target": {
+                    "type": "object",
+                    "properties": {
+                      "doctype": {
+                        "const": "UOM"
+                      },
+                      "name": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      }
+                    },
+                    "required": [
+                      "doctype",
+                      "name"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "id",
+                  "kind",
+                  "revision",
+                  "fields"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        "unit_conversions": {
+          "type": "array",
+          "maxItems": 0,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalconversion"
+          }
+        },
+        "quantities": {
+          "type": "array",
+          "maxItems": 500,
+          "items": {
+            "$ref": "#/$defs/EpCanonicalquantity"
+          }
+        }
+      },
+      "required": [
+        "schema",
+        "dataset_id",
+        "scope",
+        "records",
+        "unit_conversions"
+      ],
+      "additionalProperties": false,
+      "title": "Cipher independent canonical master/dimension manifest v1",
+      "$comment": "Structural interchange schema. Server validator additionally enforces exact references, scoped company, reduced rational factors, conversion consistency, precision and current authorization."
+    },
+    "EpCanonicaluuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-[45][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "EpCanonicalconversion": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2147483647
+        },
+        "from_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "dimension": {
+          "enum": [
+            "area",
+            "count",
+            "equipment_time",
+            "labor_time",
+            "length",
+            "mass",
+            "time",
+            "volume"
+          ]
+        },
+        "numerator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "denominator": {
+          "type": "string",
+          "pattern": "^[1-9][0-9]{0,24}$"
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "from_unit_id",
+        "to_unit_id",
+        "dimension",
+        "numerator",
+        "denominator",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpCanonicalquantity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "amount": {
+          "type": "string",
+          "pattern": "^-?(0|[1-9][0-9]*)(\\.[0-9]+)?$",
+          "maxLength": 50
+        },
+        "unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        },
+        "convert_to_unit_id": {
+          "$ref": "#/$defs/EpCanonicaluuid"
+        }
+      },
+      "required": [
+        "id",
+        "amount",
+        "unit_id"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantity": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "string",
+          "pattern": "^(0|[1-9][0-9]*)(\\.[0-9]{1,12})?$",
+          "maxLength": 43
+        },
+        "unit_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 12
+        }
+      },
+      "required": [
+        "amount",
+        "unit_id",
+        "precision"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "const": "uom"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "dimension": {
+              "enum": [
+                "length",
+                "area",
+                "volume",
+                "mass",
+                "count",
+                "time",
+                "labor_time",
+                "equipment_time"
+              ]
+            },
+            "precision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          },
+          "required": [
+            "symbol",
+            "dimension",
+            "precision"
+          ],
+          "additionalProperties": false
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "doctype": {
+              "const": "UOM"
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "revision",
+        "fields",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitChoice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "kind": {
+          "const": "uom"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fields": {
+          "type": "object",
+          "properties": {
+            "symbol": {
+              "type": "string",
+              "maxLength": 200
+            },
+            "dimension": {
+              "enum": [
+                "length",
+                "area",
+                "volume",
+                "mass",
+                "count",
+                "time",
+                "labor_time",
+                "equipment_time"
+              ]
+            },
+            "precision": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 12
+            }
+          },
+          "required": [
+            "symbol",
+            "dimension",
+            "precision"
+          ],
+          "additionalProperties": false
+        },
+        "target": {
+          "type": "object",
+          "properties": {
+            "doctype": {
+              "const": "UOM"
+            },
+            "name": {
+              "type": "string",
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "doctype",
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "revision",
+        "fields",
+        "target"
+      ],
+      "additionalProperties": false
+    },
+    "EpCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "edition": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "clause": {
+          "type": "string",
+          "maxLength": 500
+        }
+      },
+      "required": [
+        "code",
+        "edition",
+        "clause"
+      ],
+      "additionalProperties": false
+    },
+    "EpQuantityRow": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "quantity": {
+          "$ref": "#/$defs/EpQuantity"
+        },
+        "source": {
+          "$ref": "#/$defs/EpDrawingInput"
+        }
+      },
+      "required": [
+        "key",
+        "label",
+        "quantity",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "EpPackageDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "discipline": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "responsible_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "checker_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "due_date": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "date"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "task_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "wbs_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "maxItems": 8,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "title",
+        "discipline",
+        "scope",
+        "responsible_user",
+        "checker_user",
+        "due_date",
+        "task_ids",
+        "wbs_ids"
+      ],
+      "additionalProperties": false
+    },
+    "EpBasisDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "criteria": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "assumptions": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "criteria",
+        "assumptions",
+        "design_codes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "method": {
+          "const": "human-authored-results-v1"
+        },
+        "algorithm_reference": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_name": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "tool_version": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "model_version": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "design_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCode"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "explanation": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "method",
+        "algorithm_reference",
+        "tool_name",
+        "tool_version",
+        "model_version",
+        "design_codes",
+        "explanation",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpDeliverableDefinition": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "deliverable_type": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "checking_notes": {
+          "type": "string",
+          "maxLength": 20000
+        },
+        "change_reason": {
+          "type": "string",
+          "maxLength": 2000
+        }
+      },
+      "required": [
+        "title",
+        "deliverable_type",
+        "description",
+        "checking_notes",
+        "change_reason"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculationReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "id",
+        "record_digest"
+      ],
+      "additionalProperties": false
+    },
+    "EpPackage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "number": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "current_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_head": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "calculation_heads": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 20,
+          "minItems": 0
+        },
+        "deliverable_heads": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "maxItems": 20,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "number",
+        "revision_number",
+        "current_revision",
+        "basis_head",
+        "calculation_heads",
+        "deliverable_heads"
+      ],
+      "additionalProperties": false
+    },
+    "EpPackageRevision": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "definition": {
+          "$ref": "#/$defs/EpPackageDefinition"
+        },
+        "responsible": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "revision_number",
+        "predecessor",
+        "definition",
+        "responsible",
+        "checker"
+      ],
+      "additionalProperties": false
+    },
+    "EpBasis": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "family_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCitation"
+          },
+          "maxItems": 64,
+          "minItems": 0
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpDrawingReference"
+          },
+          "maxItems": 16,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "definition": {
+          "$ref": "#/$defs/EpBasisDefinition"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpQuantityRow"
+          },
+          "maxItems": 32,
+          "minItems": 0
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EpUnitManifest"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "family_id",
+        "revision_number",
+        "predecessor",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "source_citations",
+        "drawing_references",
+        "artifacts",
+        "definition",
+        "quantities",
+        "unit_manifest"
+      ],
+      "additionalProperties": false
+    },
+    "EpCalculation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "family_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCitation"
+          },
+          "maxItems": 64,
+          "minItems": 0
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpDrawingReference"
+          },
+          "maxItems": 16,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "basis_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpCalculationDefinition"
+        },
+        "input_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpQuantityRow"
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpQuantityRow"
+          },
+          "maxItems": 32,
+          "minItems": 0
+        },
+        "unit_manifest": {
+          "$ref": "#/$defs/EpUnitManifest"
+        },
+        "execution": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "manual-record"
+            },
+            "executed_by_cipher": {
+              "const": false
+            },
+            "solver_qualified": {
+              "const": false
+            }
+          },
+          "required": [
+            "kind",
+            "executed_by_cipher",
+            "solver_qualified"
+          ],
+          "additionalProperties": false
+        },
+        "issue_readiness": {
+          "const": "not_authorized_for_issue"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "family_id",
+        "revision_number",
+        "predecessor",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "source_citations",
+        "drawing_references",
+        "artifacts",
+        "basis_revision",
+        "basis_digest",
+        "definition",
+        "input_keys",
+        "inputs",
+        "outputs",
+        "unit_manifest",
+        "execution",
+        "issue_readiness"
+      ],
+      "additionalProperties": false
+    },
+    "EpDeliverable": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "working"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "family_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "revision_number": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCitation"
+          },
+          "maxItems": 64,
+          "minItems": 0
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpDrawingReference"
+          },
+          "maxItems": 16,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifact"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "basis_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpDeliverableDefinition"
+        },
+        "calculations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCalculationReference"
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "issue_readiness": {
+          "const": "not_authorized_for_issue"
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "family_id",
+        "revision_number",
+        "predecessor",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "source_citations",
+        "drawing_references",
+        "artifacts",
+        "basis_revision",
+        "basis_digest",
+        "definition",
+        "calculations",
+        "issue_readiness"
+      ],
+      "additionalProperties": false
+    },
+    "EpCheck": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "scope_type": {
+          "const": "Project"
+        },
+        "author_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "author_user": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "const": "checked"
+        },
+        "no_effects": {
+          "$ref": "#/$defs/EpNoEffects"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_kind": {
+          "enum": [
+            "basis",
+            "calculation",
+            "deliverable"
+          ]
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "subject_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "package_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checker": {
+          "$ref": "#/$defs/EpPerson"
+        },
+        "preparer_person": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "packet_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "decision_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "outcome": {
+          "const": "checked"
+        },
+        "issue_authorized": {
+          "const": false
+        },
+        "sealed": {
+          "const": false
+        }
+      },
+      "required": [
+        "id",
+        "company",
+        "project",
+        "scope_type",
+        "author_person",
+        "author_user",
+        "created_at",
+        "status",
+        "no_effects",
+        "parent_id",
+        "subject_kind",
+        "subject_id",
+        "subject_digest",
+        "package_revision",
+        "package_digest",
+        "checker",
+        "preparer_person",
+        "packet_id",
+        "decision_id",
+        "comments",
+        "outcome",
+        "issue_authorized",
+        "sealed"
+      ],
+      "additionalProperties": false
+    },
+    "EpRecord": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EpPackage"
+        },
+        {
+          "$ref": "#/$defs/EpPackageRevision"
+        },
+        {
+          "$ref": "#/$defs/EpBasis"
+        },
+        {
+          "$ref": "#/$defs/EpCalculation"
+        },
+        {
+          "$ref": "#/$defs/EpDeliverable"
+        },
+        {
+          "$ref": "#/$defs/EpCheck"
+        }
+      ]
+    },
+    "EpReview": {
+      "type": "object",
+      "properties": {
+        "state": {
+          "enum": [
+            "working",
+            "in_check",
+            "grant_awaiting_record",
+            "returned",
+            "checked"
+          ]
+        },
+        "check_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "packet_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "issue_authorized": {
+          "const": false
+        }
+      },
+      "required": [
+        "state",
+        "check_id",
+        "packet_id",
+        "issue_authorized"
+      ],
+      "additionalProperties": false
+    },
+    "EpGetResponse": {
+      "type": "object",
+      "properties": {
+        "record": {
+          "$ref": "#/$defs/EpRecord"
+        },
+        "record_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EpReview"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "record",
+        "record_digest",
+        "review"
+      ],
+      "additionalProperties": false
+    },
+    "EpListResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpGetResponse"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EpPeopleResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "user": {
+                "type": "string",
+                "maxLength": 140
+              },
+              "person": {
+                "type": "string",
+                "maxLength": 140
+              },
+              "display_name": {
+                "type": "string",
+                "maxLength": 140
+              }
+            },
+            "required": [
+              "user",
+              "person",
+              "display_name"
+            ],
+            "additionalProperties": false
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EpUnitsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpUnitChoice"
+          },
+          "maxItems": 100,
+          "minItems": 0
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "count_mode": {
+          "const": "none"
+        },
+        "total": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "items",
+        "next_cursor",
+        "limit",
+        "count_mode",
+        "total"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreatePackageRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpPackageDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "definition"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreatePackageResponse": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/EpPackage"
+        },
+        "revision": {
+          "$ref": "#/$defs/EpPackageRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EpOperation"
+        }
+      },
+      "required": [
+        "package",
+        "revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EpRevisePackageRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpPackageDefinition"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "package_id",
+        "expected_version",
+        "definition"
+      ],
+      "additionalProperties": false
+    },
+    "EpRevisePackageResponse": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/EpPackage"
+        },
+        "revision": {
+          "$ref": "#/$defs/EpPackageRevision"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EpOperation"
+        }
+      },
+      "required": [
+        "package",
+        "revision",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateBasisRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpBasisDefinition"
+        },
+        "quantities": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpQuantityRow"
+          },
+          "maxItems": 32,
+          "minItems": 0
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCitationInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpDrawingInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifactInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "package_id",
+        "expected_version",
+        "definition",
+        "quantities",
+        "source_citations",
+        "drawing_references",
+        "artifacts"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateBasisResponse": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/EpPackage"
+        },
+        "basis": {
+          "$ref": "#/$defs/EpBasis"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EpOperation"
+        }
+      },
+      "required": [
+        "package",
+        "basis",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateCalculationRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "basis_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpCalculationDefinition"
+        },
+        "input_keys": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "maxItems": 32,
+          "minItems": 1
+        },
+        "outputs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpQuantityRow"
+          },
+          "maxItems": 32,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifactInput"
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "package_id",
+        "expected_version",
+        "basis_revision",
+        "basis_digest",
+        "definition",
+        "input_keys",
+        "outputs",
+        "artifacts",
+        "predecessor"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateCalculationResponse": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/EpPackage"
+        },
+        "calculation": {
+          "$ref": "#/$defs/EpCalculation"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EpOperation"
+        }
+      },
+      "required": [
+        "package",
+        "calculation",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateDeliverableRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "package_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "expected_version": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "basis_revision": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "basis_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "definition": {
+          "$ref": "#/$defs/EpDeliverableDefinition"
+        },
+        "calculations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCalculationReference"
+          },
+          "maxItems": 8,
+          "minItems": 1
+        },
+        "source_citations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpCitationInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "drawing_references": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpDrawingInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/EpArtifactInput"
+          },
+          "maxItems": 8,
+          "minItems": 0
+        },
+        "predecessor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "operation_id",
+        "package_id",
+        "expected_version",
+        "basis_revision",
+        "basis_digest",
+        "definition",
+        "calculations",
+        "source_citations",
+        "drawing_references",
+        "artifacts",
+        "predecessor"
+      ],
+      "additionalProperties": false
+    },
+    "EpCreateDeliverableResponse": {
+      "type": "object",
+      "properties": {
+        "package": {
+          "$ref": "#/$defs/EpPackage"
+        },
+        "deliverable": {
+          "$ref": "#/$defs/EpDeliverable"
+        },
+        "history_id": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "operation": {
+          "$ref": "#/$defs/EpOperation"
+        }
+      },
+      "required": [
+        "package",
+        "deliverable",
+        "history_id",
+        "operation"
+      ],
+      "additionalProperties": false
+    },
+    "EpGetRecordRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "package",
+            "package_revision",
+            "basis",
+            "calculation",
+            "deliverable",
+            "check"
+          ]
+        },
+        "record_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind",
+        "record_id"
+      ],
+      "additionalProperties": false
+    },
+    "EpListRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "kind": {
+          "enum": [
+            "package",
+            "package_revision",
+            "basis",
+            "calculation",
+            "deliverable",
+            "check"
+          ]
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uuid"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "kind"
+      ],
+      "additionalProperties": false
+    },
+    "EpListPeopleRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "role": {
+          "enum": [
+            "engineer",
+            "checker"
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project",
+        "role"
+      ],
+      "additionalProperties": false
+    },
+    "EpListUnitsRequest": {
+      "type": "object",
+      "properties": {
+        "company": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "project": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "type": "string",
+              "maxLength": 4096
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "count_mode": {
+          "const": "none"
+        }
+      },
+      "required": [
+        "company",
+        "project"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/$defs/EpCreatePackageRequest"
+    },
+    {
+      "$ref": "#/$defs/EpRevisePackageRequest"
+    },
+    {
+      "$ref": "#/$defs/EpCreateBasisRequest"
+    },
+    {
+      "$ref": "#/$defs/EpCreateCalculationRequest"
+    },
+    {
+      "$ref": "#/$defs/EpCreateDeliverableRequest"
+    },
+    {
+      "$ref": "#/$defs/EpGetRecordRequest"
+    },
+    {
+      "$ref": "#/$defs/EpListRecordsRequest"
+    },
+    {
+      "$ref": "#/$defs/EpListPeopleRequest"
+    },
+    {
+      "$ref": "#/$defs/EpListUnitsRequest"
+    },
+    {
+      "$ref": "#/$defs/EpCreatePackageResponse"
+    },
+    {
+      "$ref": "#/$defs/EpRevisePackageResponse"
+    },
+    {
+      "$ref": "#/$defs/EpCreateBasisResponse"
+    },
+    {
+      "$ref": "#/$defs/EpCreateCalculationResponse"
+    },
+    {
+      "$ref": "#/$defs/EpCreateDeliverableResponse"
+    },
+    {
+      "$ref": "#/$defs/EpGetResponse"
+    },
+    {
+      "$ref": "#/$defs/EpListResponse"
+    },
+    {
+      "$ref": "#/$defs/EpPeopleResponse"
+    },
+    {
+      "$ref": "#/$defs/EpUnitsResponse"
+    }
+  ]
+}

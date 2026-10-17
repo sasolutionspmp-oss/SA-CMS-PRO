@@ -69,6 +69,12 @@ def readable(event, actor, company, project):
             with activate("Project" if project is not None else "Company", company, project):
                 _read(TAKEOFF_SUBJECTS[subject], identifier, company, project, actor, new_use=False)
             return True
+        from cipher_aec.engineering_packages.contracts import KINDS as PACKAGE_KINDS
+        if subject in PACKAGE_KINDS.values():
+            if project is None:return False
+            from cipher_aec.engineering_packages.service import read
+            read(next(k for k,v in PACKAGE_KINDS.items() if v==subject),identifier,company,project,actor)
+            return True
         from cipher_aec.engineering.contracts import KINDS as ENGINEERING_KINDS
         if subject in ENGINEERING_KINDS.values():
             if project is None:return False

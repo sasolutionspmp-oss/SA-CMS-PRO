@@ -925,9 +925,11 @@
       ],
       "scope": "Engineering work packages, design basis, calculations, checking and deliverables",
       "evidence": "Author/checker and source units enforced; completed calculation is not automatically issued",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "active",
+      "local_contract_status": "implemented_host_and_browser_contracts_verified_native_pending",
+      "external_qualification_status": "not_evaluated",
+      "qualification_limit": "Original work packages, exact source/unit design basis, human-authored calculation records, deliverables and designated independent checking implemented in backend and SAP UI5. Native fresh-site integration and actual native UI qualification remain pending. No solver/tool execution, professional seal, issue/distribution authority or commercial effect.",
+      "implementation_evidence": "ENGINEERING_ENG02.md"
     },
     {
       "id": "ENG-03",
@@ -951,9 +953,11 @@
       ],
       "scope": "Issued sets/transmittals, specifications/contracts library and adopted revisions",
       "evidence": "Source update does not overwrite adopted/executed text; current rights enforced",
-      "status": "planned",
-      "local_contract_status": "planned",
-      "external_qualification_status": "not_evaluated"
+      "status": "active",
+      "local_contract_status": "backend_implementation_in_progress_unpublished",
+      "external_qualification_status": "not_evaluated",
+      "qualification_limit": "Original issued sets/transmittals and specification/contract library backend work started in a separate source workspace. No completed implementation or native qualification claimed.",
+      "implementation_evidence": "EXECUTION_BACKLOG.md#doc-03--issued-setstransmittals-specificationscontracts-library-and-adopted-revisions"
     },
     {
       "id": "DOC-04",

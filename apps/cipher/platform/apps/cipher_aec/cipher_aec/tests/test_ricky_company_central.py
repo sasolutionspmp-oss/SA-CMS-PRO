@@ -33,8 +33,8 @@ class CompanyRickyMetadataTests(unittest.TestCase):
     def test_company_catalog_exact_and_project_only_engineering_addition(self):
         current=abilities(ROOT/'governance/context.py');old={'PROJECT_ABILITIES': {'ricky.run', 'task.create', 'wbs.read', 'document.write', 'approval.request', 'approval.execute', 'document.read', 'approval.decide', 'estimate.write', 'budget.read', 'project.read', 'estimate.read', 'project.write', 'contract.write', 'contract.read'}, 'COMPANY_ABILITIES': {'project.cost.write', 'project.team.delegate', 'document.write', 'approval.request', 'approval.execute', 'commercial.read', 'document.read', 'estimate.write', 'approval.decide', 'commercial.distribute', 'company.read', 'estimate.read', 'commercial.write', 'project.cost.read', 'commercial.award'}}
         self.assertIn('ricky.run',current['COMPANY_ABILITIES'])
-        self.assertEqual(current['PROJECT_ABILITIES'],old['PROJECT_ABILITIES']|{'engineering.read','engineering.write','engineering.distribute'})
-        self.assertFalse({'engineering.read','engineering.write','engineering.distribute'} & current['COMPANY_ABILITIES'])
+        self.assertEqual(current['PROJECT_ABILITIES'],old['PROJECT_ABILITIES']|{'engineering.read','engineering.write','engineering.distribute','engineering.package.read','engineering.package.write','engineering.package.check'})
+        self.assertFalse({'engineering.read','engineering.write','engineering.distribute','engineering.package.read','engineering.package.write','engineering.package.check'} & current['COMPANY_ABILITIES'])
         self.assertEqual(current['COMPANY_ABILITIES'],old['COMPANY_ABILITIES']|{'ricky.run'})
         metadata=json.loads((ROOT/'cipher_governance/doctype/cipher_project_duty/cipher_project_duty.json').read_text())
         options=set(next(f for f in metadata['fields'] if f['fieldname']=='ability')['options'].splitlines())
@@ -211,7 +211,7 @@ class ProjectCompatibilityTests(unittest.TestCase):
         after=LegacyProjectShape().visit(after)
         # This later ENG-01 epoch adds only a separate Project pre-replay read
         # guard. Validate its literal body, then retain the original hash below.
-        engineering_guard=ast.parse("if scope_type == 'Project' and command.startswith('engineering.'):\n    require_project(company, project, ability='engineering.read', actor=actor, lock=True)").body[0]
+        engineering_guard=ast.parse("if scope_type == 'Project' and command.startswith('engineering.'):\n    require_project(company, project, ability='engineering.package.read' if command.startswith('engineering.package.') else 'engineering.read', actor=actor, lock=True)").body[0]
         additions=[n for n in after.body if isinstance(n,ast.If) and ast.dump(n.test)==ast.dump(engineering_guard.test)]
         self.assertEqual(len(additions),1);self.assertEqual(ast.dump(additions[0]),ast.dump(engineering_guard))
         after.body=[n for n in after.body if n is not additions[0]]
@@ -219,14 +219,19 @@ class ProjectCompatibilityTests(unittest.TestCase):
         # Original Project receipt branches follow the Company branch's return.
         after=get(new,'authorize_receipt')
         engineering_receipt=ast.parse("if command.startswith('engineering.'):\n    from cipher_aec.engineering.service import authorize_receipt as authorize_engineering\n    authorize_engineering(actor, company, project, result, lock=True)").body[0]
+        package_receipt=ast.parse("if command.startswith('engineering.package.'):\n    from cipher_aec.engineering_packages.service import authorize_receipt as authorize_package\n    authorize_package(actor, company, project, result, lock=True)").body[0]
         additions=[]
         class OriginalProjectReceipts(ast.NodeTransformer):
             def visit_If(self,node):
-                if ast.dump(node.test)==ast.dump(engineering_receipt.test):
-                    case.assertEqual([ast.dump(n) for n in node.body],[ast.dump(n) for n in engineering_receipt.body]);additions.append(node)
-                    return [self.visit(n) for n in node.orelse]
+                for literal in (engineering_receipt,package_receipt):
+                    if ast.dump(node.test)==ast.dump(literal.test):
+                        case.assertEqual([ast.dump(n) for n in node.body],[ast.dump(n) for n in literal.body]);additions.append(node)
+                        restored=[]
+                        for child in node.orelse:
+                            value=self.visit(child);restored.extend(value if isinstance(value,list) else [value])
+                        return restored
                 return self.generic_visit(node)
-        after=OriginalProjectReceipts().visit(after);self.assertEqual(len(additions),1)
+        after=OriginalProjectReceipts().visit(after);self.assertEqual(len(additions),2)
         self.assertEqual(canonical_sha(ast_value(ast.Module(body=after.body[2:],type_ignores=[]))),expected['project_receipt_branches'])
 
 
@@ -362,9 +367,12 @@ class CompanyRickyRegistrationTests(unittest.TestCase):
         engineering_prefix='/api/method/cipher_aec.engineering.api.'
         engineering={'create_rfi','revise_rfi','create_response','create_submittal','revise_submission','create_disposition','create_transmittal','close_rfi','get_record','list_records','list_people'}
         self.assertEqual({key for key in generated['paths'] if key.startswith(engineering_prefix)},{engineering_prefix+name for name in engineering})
-        old_paths=json.loads(json.dumps({key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals|draft_saves and not key.startswith(engineering_prefix)}))
+        package_prefix='/api/method/cipher_aec.engineering_packages.api.'
+        package_routes={'create_package','revise_package','create_basis','create_calculation','create_deliverable','get_record','list_records','list_people','list_units'}
+        self.assertEqual({key for key in generated['paths'] if key.startswith(package_prefix)},{package_prefix+name for name in package_routes})
+        old_paths=json.loads(json.dumps({key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals|draft_saves and not key.startswith(engineering_prefix) and not key.startswith(package_prefix)}))
         actions=old_paths['/api/method/cipher_aec.api.approvals.request_action']['post']['requestBody']['content']['application/json']['schema']['properties']['action']['enum']
-        engineering_actions={'engineering.rfi.authorize.v1','engineering.submittal.authorize.v1','engineering.distribute.v1'}
+        engineering_actions={'engineering.rfi.authorize.v1','engineering.submittal.authorize.v1','engineering.distribute.v1','engineering.basis.check.v1','engineering.calculation.check.v1','engineering.deliverable.check.v1'}
         self.assertTrue(engineering_actions<=set(actions));actions[:]=[a for a in actions if a not in engineering_actions]
         self.assertEqual(canonical_sha(old_paths),'8c755c2d712b51177683a8bed770428405d9342db1f879cedd5f7aace895a04c')
         self.assertEqual(json.loads((ROOT/'api/openapi.json').read_text()),generated)

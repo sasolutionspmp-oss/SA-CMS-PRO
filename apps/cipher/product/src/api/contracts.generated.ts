@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: 0f81545b9196849b7d8f13c3cdfd517e3e7fd26bb80433b8473e1dc4c29003a6
+ * Source SHA-256: e49930f667391713994d967d6e936206cba90a3b4c5a9835c38819f39d26a8d8
  * Regenerate: npm run generate:api
  */
 
@@ -20,7 +20,8 @@ export type CipherAPIV1 = {
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalPacket".
  */
-export type ApprovalPacket = ProjectStatusApprovalPacket | DomainApprovalPacket | EngineeringApprovalPacket;
+export type ApprovalPacket =
+  ProjectStatusApprovalPacket | DomainApprovalPacket | EngineeringApprovalPacket | EngineeringPackageApprovalPacket;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "EngineeringApprovalPacket".
@@ -29,10 +30,26 @@ export type EngineeringApprovalPacket =
   EngineeringResponseApprovalPacket | EngineeringDispositionApprovalPacket | EngineeringTransmittalApprovalPacket;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringPackageApprovalPacket".
+ */
+export type EngineeringPackageApprovalPacket =
+  | EngineeringPackageBasisApprovalPacket
+  | EngineeringPackageCalculationApprovalPacket
+  | EngineeringPackageDeliverableApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCanonicaluuid".
+ */
+export type EpCanonicaluuid = string;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalExecutionResponse".
  */
 export type ApprovalExecutionResponse =
-  ProjectStatusApprovalExecutionResponse | DomainApprovalExecutionResponse | EngineeringApprovalExecutionResponse;
+  | ProjectStatusApprovalExecutionResponse
+  | DomainApprovalExecutionResponse
+  | EngineeringApprovalExecutionResponse
+  | EngineeringPackageApprovalExecutionResponse;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "EngineeringApprovalExecutionResponse".
@@ -56,6 +73,32 @@ export type EngineeringApprovalExecutionResponse =
       packet: EngineeringTransmittalApprovalPacket;
       effect: {
         distribution: EgDistribution;
+      };
+      operation: Operation;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringPackageApprovalExecutionResponse".
+ */
+export type EngineeringPackageApprovalExecutionResponse =
+  | {
+      packet: EngineeringPackageBasisApprovalPacket;
+      effect: {
+        check: EpCheck;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: EngineeringPackageCalculationApprovalPacket;
+      effect: {
+        check: EpCheck;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: EngineeringPackageDeliverableApprovalPacket;
+      effect: {
+        check: EpCheck;
       };
       operation: Operation;
     };
@@ -1154,6 +1197,1198 @@ export interface EgPerson {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringPackageBasisApprovalPacket".
+ */
+export interface EngineeringPackageBasisApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.basis.check.v1";
+  subject: {
+    id: string;
+    type: "Cipher Design Basis Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Design Basis Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EpCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EpArtifact]
+          | [EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact];
+        unit_manifest: CipherIndependentCanonicalMasterDimensionManifestV1 | null;
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.package-check.v1";
+      action: "engineering.basis.check.v1";
+      subject_kind: "basis";
+      subject_id: string;
+      subject_digest: string;
+      parent_id: string;
+      package_revision: string;
+      package_digest: string;
+      preparer_person: string;
+      checker: EpPerson;
+      outcome: "checked";
+      issue_authorized: false;
+      sealed: false;
+    };
+    summary: {
+      definition: EpBasisDefinition;
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      inputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      outputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      calculations:
+        | []
+        | [EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ];
+      no_effects: EpNoEffects;
+      solver_executed: false;
+      issue_authorized: false;
+      sealed: false;
+    };
+  };
+  schema: "cipher.engineering.package-approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCitation".
+ */
+export interface EpCitation {
+  id: string;
+  document_id: string;
+  revision_id: string;
+  document_title: string;
+  revision_number: number;
+  page: number;
+  page_label: string;
+  excerpt: string;
+  excerpt_sha256: string;
+  source_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpDrawingReference".
+ */
+export interface EpDrawingReference {
+  document_id: string;
+  revision_id: string;
+  revision_number: number;
+  source_sha256: string;
+  byte_length: number;
+  mime_type: "application/pdf";
+  page_count: number;
+  page: number;
+  locator: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpArtifact".
+ */
+export interface EpArtifact {
+  document_id: string;
+  revision_id: string;
+  revision_number: number;
+  source_sha256: string;
+  byte_length: number;
+  mime_type: string;
+  page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpUnitManifest".
+ */
+export interface CipherIndependentCanonicalMasterDimensionManifestV1 {
+  schema: "cipher.canonical.v1";
+  dataset_id: EpCanonicaluuid;
+  scope: {
+    company: string;
+    project: string;
+  };
+  label?: string;
+  /**
+   * @minItems 1
+   * @maxItems 65
+   */
+  records: [
+    (
+      | {
+          id: EpCanonicaluuid;
+          kind: "company";
+          revision: number;
+          fields: {
+            name: string;
+            currency: string;
+            timezone: string | null;
+          };
+          source?: {
+            system: string;
+            record_id: string;
+            revision?: string;
+          };
+          target?: {
+            doctype: "Company";
+            name: string;
+            version?: string;
+          };
+        }
+      | {
+          id: EpCanonicaluuid;
+          kind: "uom";
+          revision: number;
+          fields: {
+            symbol: string;
+            dimension: "area" | "count" | "equipment_time" | "labor_time" | "length" | "mass" | "time" | "volume";
+            precision: number;
+          };
+          source?: {
+            system: string;
+            record_id: string;
+            revision?: string;
+          };
+          target?: {
+            doctype: "UOM";
+            name: string;
+            version?: string;
+          };
+        }
+    ),
+    ...(
+      | {
+          id: EpCanonicaluuid;
+          kind: "company";
+          revision: number;
+          fields: {
+            name: string;
+            currency: string;
+            timezone: string | null;
+          };
+          source?: {
+            system: string;
+            record_id: string;
+            revision?: string;
+          };
+          target?: {
+            doctype: "Company";
+            name: string;
+            version?: string;
+          };
+        }
+      | {
+          id: EpCanonicaluuid;
+          kind: "uom";
+          revision: number;
+          fields: {
+            symbol: string;
+            dimension: "area" | "count" | "equipment_time" | "labor_time" | "length" | "mass" | "time" | "volume";
+            precision: number;
+          };
+          source?: {
+            system: string;
+            record_id: string;
+            revision?: string;
+          };
+          target?: {
+            doctype: "UOM";
+            name: string;
+            version?: string;
+          };
+        }
+    )[]
+  ];
+  /**
+   * @maxItems 0
+   */
+  unit_conversions: [];
+  /**
+   * @maxItems 500
+   */
+  quantities?: EpCanonicalquantity[];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCanonicalquantity".
+ */
+export interface EpCanonicalquantity {
+  id: EpCanonicaluuid;
+  amount: string;
+  unit_id: EpCanonicaluuid;
+  convert_to_unit_id?: EpCanonicaluuid;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpPerson".
+ */
+export interface EpPerson {
+  user: string;
+  person: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpBasisDefinition".
+ */
+export interface EpBasisDefinition {
+  title: string;
+  criteria: string;
+  assumptions: string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  design_codes:
+    | []
+    | [EpCode]
+    | [EpCode, EpCode]
+    | [EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode];
+  change_reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCode".
+ */
+export interface EpCode {
+  code: string;
+  edition: string;
+  clause: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpQuantityRow".
+ */
+export interface EpQuantityRow {
+  key: string;
+  label: string;
+  quantity: EpQuantity;
+  source: EpDrawingInput;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpQuantity".
+ */
+export interface EpQuantity {
+  amount: string;
+  unit_id: string;
+  precision: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpDrawingInput".
+ */
+export interface EpDrawingInput {
+  revision_id: string;
+  source_sha256: string;
+  page: number;
+  locator: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCalculationReference".
+ */
+export interface EpCalculationReference {
+  id: string;
+  record_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpNoEffects".
+ */
+export interface EpNoEffects {
+  commercial_change: false;
+  contract_change: false;
+  budget_change: false;
+  schedule_change: false;
+  quality_acceptance: false;
+  professional_certification: false;
+  external_transmission: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringPackageCalculationApprovalPacket".
+ */
+export interface EngineeringPackageCalculationApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.calculation.check.v1";
+  subject: {
+    id: string;
+    type: "Cipher Calculation Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Calculation Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EpCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EpArtifact]
+          | [EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact];
+        unit_manifest: CipherIndependentCanonicalMasterDimensionManifestV1 | null;
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.package-check.v1";
+      action: "engineering.calculation.check.v1";
+      subject_kind: "calculation";
+      subject_id: string;
+      subject_digest: string;
+      parent_id: string;
+      package_revision: string;
+      package_digest: string;
+      preparer_person: string;
+      checker: EpPerson;
+      outcome: "checked";
+      issue_authorized: false;
+      sealed: false;
+    };
+    summary: {
+      definition: EpCalculationDefinition;
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      inputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      outputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      calculations:
+        | []
+        | [EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ];
+      no_effects: EpNoEffects;
+      solver_executed: false;
+      issue_authorized: false;
+      sealed: false;
+    };
+  };
+  schema: "cipher.engineering.package-approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCalculationDefinition".
+ */
+export interface EpCalculationDefinition {
+  title: string;
+  method: "human-authored-results-v1";
+  algorithm_reference: string;
+  tool_name: string;
+  tool_version: string;
+  model_version: string;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  design_codes:
+    | []
+    | [EpCode]
+    | [EpCode, EpCode]
+    | [EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode]
+    | [EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode, EpCode];
+  explanation: string;
+  change_reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EngineeringPackageDeliverableApprovalPacket".
+ */
+export interface EngineeringPackageDeliverableApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "engineering.deliverable.check.v1";
+  subject: {
+    id: string;
+    type: "Cipher Deliverable Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Deliverable Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 0
+         * @maxItems 64
+         */
+        source_citations: EpCitation[];
+        /**
+         * @minItems 0
+         * @maxItems 16
+         */
+        drawing_references:
+          | []
+          | [EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference, EpDrawingReference]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ]
+          | [
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference,
+              EpDrawingReference
+            ];
+        /**
+         * @minItems 0
+         * @maxItems 8
+         */
+        artifacts:
+          | []
+          | [EpArtifact]
+          | [EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact]
+          | [EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact, EpArtifact];
+        unit_manifest: CipherIndependentCanonicalMasterDimensionManifestV1 | null;
+      }
+    ];
+    effect: {
+      schema: "cipher.engineering.package-check.v1";
+      action: "engineering.deliverable.check.v1";
+      subject_kind: "deliverable";
+      subject_id: string;
+      subject_digest: string;
+      parent_id: string;
+      package_revision: string;
+      package_digest: string;
+      preparer_person: string;
+      checker: EpPerson;
+      outcome: "checked";
+      issue_authorized: false;
+      sealed: false;
+    };
+    summary: {
+      definition: EpDeliverableDefinition;
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      inputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 32
+       */
+      outputs: EpQuantityRow[];
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      calculations:
+        | []
+        | [EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [EpCalculationReference, EpCalculationReference, EpCalculationReference, EpCalculationReference]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ]
+        | [
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference,
+            EpCalculationReference
+          ];
+      no_effects: EpNoEffects;
+      solver_executed: false;
+      issue_authorized: false;
+      sealed: false;
+    };
+  };
+  schema: "cipher.engineering.package-approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpDeliverableDefinition".
+ */
+export interface EpDeliverableDefinition {
+  title: string;
+  deliverable_type: string;
+  description: string;
+  checking_notes: string;
+  change_reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalList".
  */
 export interface ApprovalList {
@@ -1269,6 +2504,35 @@ export interface EgDistribution {
   recipients: [EgPerson, ...EgPerson[]];
   channel: "internal";
   external_delivery: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCheck".
+ */
+export interface EpCheck {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "checked";
+  no_effects: EpNoEffects;
+  parent_id: string;
+  subject_kind: "basis" | "calculation" | "deliverable";
+  subject_id: string;
+  subject_digest: string;
+  package_revision: string;
+  package_digest: string;
+  checker: EpPerson;
+  preparer_person: string;
+  packet_id: string;
+  decision_id: string;
+  comments: string;
+  outcome: "checked";
+  issue_authorized: false;
+  sealed: false;
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -1482,4 +2746,18 @@ export interface NativeAwardItemsRequest {
   cursor?: string | null;
   count_mode?: "none" | "exact";
   unit_id?: string | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "EpCanonicalconversion".
+ */
+export interface EpCanonicalconversion {
+  id: EpCanonicaluuid;
+  revision: number;
+  from_unit_id: EpCanonicaluuid;
+  to_unit_id: EpCanonicaluuid;
+  dimension: "area" | "count" | "equipment_time" | "labor_time" | "length" | "mass" | "time" | "volume";
+  numerator: string;
+  denominator: string;
+  source: string;
 }

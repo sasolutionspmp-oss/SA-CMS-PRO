@@ -11,8 +11,8 @@ from cipher_aec.api.errors import DomainError
 
 _trusted = ContextVar("cipher_trusted_write", default=False)
 _company_native_read = ContextVar("cipher_company_native_read_call", default=None)
-ENGINEERING_ABILITIES = frozenset({"engineering.read", "engineering.write", "engineering.distribute"})
-PROJECT_ABILITIES = frozenset({"engineering.read", "engineering.write", "engineering.distribute", "project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write", "wbs.read", "budget.read"})
+ENGINEERING_ABILITIES = frozenset({"engineering.package.read", "engineering.package.write", "engineering.package.check", "engineering.read", "engineering.write", "engineering.distribute"})
+PROJECT_ABILITIES = frozenset({"engineering.package.read", "engineering.package.write", "engineering.package.check", "engineering.read", "engineering.write", "engineering.distribute", "project.read", "project.write", "task.create", "document.read", "document.write", "ricky.run", "approval.request", "approval.decide", "approval.execute", "estimate.read", "estimate.write", "contract.read", "contract.write", "wbs.read", "budget.read"})
 COMPANY_ABILITIES = frozenset({"ricky.run", "commercial.award", "project.team.delegate", "project.cost.read", "project.cost.write", "company.read", "commercial.read", "commercial.write", "commercial.distribute", "document.read", "document.write", "estimate.read", "estimate.write", "approval.request", "approval.decide", "approval.execute"})
 ABILITIES = PROJECT_ABILITIES | COMPANY_ABILITIES
 
