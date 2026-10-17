@@ -40,6 +40,11 @@ def upload_document(*, company, project, title, filename, content, byte_length, 
     payload = {"title": title, "filename": filename, "byte_length": byte_length, "sha256": sha256.lower(),
                "document_id": document_id, "expected_revision": expected_revision}
     def effect(actor, project_doc):
+        if document_id:
+            from cipher_aec.document_control.rights import require as require_rights
+            from cipher_aec.document_control.rights import prelock as prelock_rights
+            prelock_rights([document_id],company,project,actor)
+            require_rights(document_id,company,project,'ingest',actor,lock=True,required=False)
         result = _call(lambda: _service(actor).upload(company=company, project=project, title=title,
                     filename=filename, content=content, byte_length=byte_length, sha256=sha256,
                     document_id=document_id, expected_revision=expected_revision))

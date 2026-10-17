@@ -86,6 +86,10 @@ def _document(row, *, lock=False):
 
 def authorize(row, actor, *, lock=False):
     """Current producer-source authorization; never follows its output document."""
+    if (row.get('scope_type') or 'Project') == 'Project':
+        from cipher_aec.document_control.rights import authorize as authorize_rights
+        authorize_rights(row,actor,lock=lock)
+        return
     reading = _reading.get()
     if lock and reading is not None:
         raise DomainError("source_prelock_required", "A read graph cannot authorize a locking source operation.", 409)

@@ -34,6 +34,8 @@ def _new_eligible(kind,value,actor,*,lock):
         current,head,officialkey=('current_revision','response_head','official_response') if draftkind=='response' else ('current_submission','disposition_head','official_disposition')
         if header[current]!=draft['source_revision'] or header[head]!=draft['id'] or header[officialkey]!=official['id']:
             raise DomainError('stale_engineering','New internal distribution requires the current exact official technical revision.',412)
+        from cipher_aec.document_control.rights import distribution as require_content_distribution
+        require_content_distribution(value,company,project,actor,lock=lock)
         for person in value['recipients']:
             # Literal immutable people were included before the command's first
             # Person/Project locks. Never lock a newly rebound recipient here.

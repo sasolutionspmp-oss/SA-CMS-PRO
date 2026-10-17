@@ -1,0 +1,15 @@
+test_library_header_and_receipt_cannot_adopt_another_entry_revision (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_library_header_and_receipt_cannot_adopt_another_entry_revision) ... FAIL
+
+======================================================================
+FAIL: test_library_header_and_receipt_cannot_adopt_another_entry_revision (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_library_header_and_receipt_cannot_adopt_another_entry_revision)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 175, in test_library_header_and_receipt_cannot_adopt_another_entry_revision
+    with self.assertRaises(DomainError):call()
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (failures=1)

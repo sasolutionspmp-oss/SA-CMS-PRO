@@ -5,6 +5,7 @@ import { compile } from 'json-schema-to-typescript';
 const check = process.argv.includes('--check');
 
 for (const [sourcePath, destination, title] of [
+  ['document_control/schemas/api-v1.schema.json', 'document-control.generated.ts', 'CipherDocumentControlContract'],
   ['engineering/schemas/api-v1.schema.json', 'engineering.generated.ts', 'CipherEngineeringContract'],
   ['engineering_packages/schemas/api-v1.schema.json', 'engineering-packages.generated.ts', 'CipherEngineeringPackagesContract'],
   ['api/schema.json', 'contracts.generated.ts', 'CipherApiEnvelope'],
@@ -59,7 +60,7 @@ for (const [sourcePath, destination, title] of [
   const hash = createHash('sha256').update(sourceTexts.length === 1 ? source : JSON.stringify(sourceTexts)).digest('hex');
   let generated = await compile(schema, title, {
     unreachableDefinitions: true,
-    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
+    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts', 'engineering-packages.generated.ts', 'document-control.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
     bannerComment: `/* Generated from cipher_aec/${sourcePath}. Do not edit.\n * Source SHA-256: ${hash}\n * Regenerate: npm run generate:api\n */`,
   });
   if (destination === 'company-ricky-proposals.generated.ts') generated += `\n// Published closed runtime shapes, generated from the same source as these types.\nexport const companyRickyProposalSchema = ${source.trim()} as const;\n`;

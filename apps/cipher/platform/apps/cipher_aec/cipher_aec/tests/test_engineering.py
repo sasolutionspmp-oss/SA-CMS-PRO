@@ -60,13 +60,13 @@ def fixtures():
     def approval_effect(**kwargs):
         if state.approval_effect!=(kwargs['action'],kwargs['subject_id'],kwargs['packet_id']):raise DomainError('approval_effect_required','effect',403)
     mocks={
-      'frappe':module('frappe',get_doc=get_doc,db=SimpleNamespace(sql=sql),conf={'encryption_key':'x'*32},DoesNotExistError=type('Missing',(Exception,),{})),
+      'frappe':module('frappe',get_doc=get_doc,db=SimpleNamespace(sql=sql,exists=lambda *args:False),conf={'encryption_key':'x'*32},DoesNotExistError=type('Missing',(Exception,),{})),
       'cipher_aec.governance.context':module('context',current_actor=current,require_project=require,require_company=lambda *a,**kw:None,authority_fingerprint=lambda *a:'duties',trusted_write=trusted,require_trusted_write=lambda:None),
       'cipher_aec.governance.commands':module('commands',run_command=lambda **kwargs:None),
       'cipher_aec.governance.history':module('history',append_event=lambda **kwargs:state.events.append(kwargs) or uid()),
       'cipher_aec.governance.approvals':module('approvals',require_approval_effect=approval_effect),
       'cipher_aec.documents.service':module('documents',source_reference=source_reference,get_citation=citation)}
-    names=['cipher_aec.engineering.'+n for n in ('contracts','repository','sources','service','governance')]
+    names=['cipher_aec.engineering.'+n for n in ('contracts','repository','sources','service','governance')]+['cipher_aec.document_control.'+n for n in ('contracts','repository','rights')]
     old={n:sys.modules.pop(n) for n in names if n in sys.modules}
     with patch.dict(sys.modules,mocks):
         rules=importlib.import_module(names[0]);repo=importlib.import_module(names[1]);sources=importlib.import_module(names[2]);service=importlib.import_module(names[3]);gov=importlib.import_module(names[4])

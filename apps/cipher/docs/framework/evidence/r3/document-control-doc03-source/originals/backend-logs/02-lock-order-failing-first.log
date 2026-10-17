@@ -1,0 +1,25 @@
+test_locking_central_admission_locks_document_before_current_policy (cipher_aec.tests.test_document_control.CentralDocumentRightsTests.test_locking_central_admission_locks_document_before_current_policy) ... FAIL
+
+======================================================================
+FAIL: test_locking_central_admission_locks_document_before_current_policy (cipher_aec.tests.test_document_control.CentralDocumentRightsTests.test_locking_central_admission_locks_document_before_current_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 155, in test_locking_central_admission_locks_document_before_current_policy
+    self.assertEqual(observed,['document','policy'])
+AssertionError: Lists differ: ['policy'] != ['document', 'policy']
+
+First differing element 0:
+'policy'
+'document'
+
+Second list contains 1 additional elements.
+First extra element 1:
+'policy'
+
+- ['policy']
++ ['document', 'policy']
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

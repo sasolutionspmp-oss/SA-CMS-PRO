@@ -18,12 +18,12 @@ export function DocumentRegister({ items, navigate, accessibleName = 'Project do
     : <Empty title="No source documents yet" icon="documents">Add a project document to keep the source connected to your work.</Empty>;
 }
 
-export function DocumentsPage({ company, projectId, projectName, navigate, canUpload }: { company: string; projectId?: string; projectName?: string; navigate: (path: string) => void; canUpload: boolean }) {
+export function DocumentsPage({ company, projectId, projectName, navigate, canUpload, canControl = false }: { company: string; projectId?: string; projectName?: string; navigate: (path: string) => void; canUpload: boolean; canControl?: boolean }) {
   const documents = useResource(projectId ? `${company}/${projectId}/documents` : null, signal => api.documents(company, projectId!, signal));
   const [uploadOpen, setUploadOpen] = useState(false);
   const [notice, setNotice] = useState('');
   return <div className="page">
-    <PageHeading eyebrow="PROJECT SOURCES" title="Documents" description={projectName ? `${projectName} · Working sources and their exact revisions.` : 'Choose a project to work with its documents.'} actions={projectId ? <><Button icon="refresh" onClick={documents.refresh}>Refresh</Button>{canUpload && <Button icon="upload" design="Emphasized" onClick={() => setUploadOpen(true)}>Add document</Button>}</> : undefined} />
+    <PageHeading eyebrow="PROJECT SOURCES" title="Documents" description={projectName ? `${projectName} · Working sources and their exact revisions.` : 'Choose a project to work with its documents.'} actions={projectId ? <><Button icon="refresh" onClick={documents.refresh}>Refresh</Button>{canControl && <Button onClick={() => navigate(`/projects/${encodeURIComponent(projectId)}/document-control`)}>Open document control</Button>}{canUpload && <Button icon="upload" design="Emphasized" onClick={() => setUploadOpen(true)}>Add document</Button>}</> : undefined} />
     {!projectId ? <div className="surface"><Empty title="Choose a project" icon="folder" action={<Button design="Emphasized" onClick={() => navigate('/projects')}>Open projects</Button>}>Documents are scoped to a project and your current permissions.</Empty></div> : <>
       {notice && <MessageStrip design="Positive" onClose={() => setNotice('')}>{notice}</MessageStrip>}
       <section className="surface"><Toolbar design="Transparent"><Title level="H2">Document register</Title><ToolbarSpacer /><span className="caption">{documents.data?.items.length ?? '—'} documents · PDF and plain text</span></Toolbar>

@@ -221,6 +221,8 @@ def present(packet, record, actor, lock=False):
             native_completion=manifest["native_completion"], task_effects={"count": len(manifest["tasks"]), "changes": []})
     else:
         result["review_manifest"] = manifest["domain"]
+    if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1"}:
+        result["schema"] = "cipher.document.approval.v1"
     if packet.action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"}:
         result["schema"] = "cipher.engineering.package-approval.v1"
     if packet.action in {"engineering.rfi.authorize.v1", "engineering.submittal.authorize.v1", "engineering.distribute.v1"}:
@@ -580,6 +582,9 @@ def authorize_receipt(actor, company, project, result, *, scope_type="Project"):
     packet = _load(company, project, identifier, True, scope_type=scope_type)
     if packet.action != ACTION:
         domain_approvals.authorize(packet, actor, phase="receipt", lock=True)
+        if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1"} and "effect" in result:
+            from cipher_aec.document_control.service import authorize_receipt as authorize_documentary
+            authorize_documentary(actor,company,project,result["effect"],lock=True)
         if packet.action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"} and "effect" in result:
             from cipher_aec.engineering_packages.service import authorize_receipt as authorize_package
             authorize_package(actor,company,project,result["effect"],lock=True)

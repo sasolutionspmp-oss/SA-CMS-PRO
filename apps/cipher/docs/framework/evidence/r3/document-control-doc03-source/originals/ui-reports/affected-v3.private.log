@@ -1,0 +1,51 @@
+
+Running 2 tests using 1 worker
+
+(node:2988725) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact (26.5s)
+(node:2989365) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 tests/document-control.spec.ts:33:1 › current access denial removes previously loaded record and authoring controls (2.2s)
+
+
+  1) tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })
+    Expected: visible
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true }) with timeout 10000ms
+      - waiting for getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })
+
+
+      24 |   const distribution = [...fixture.records.get('distribution')!.values()][0]; fixture.setActor(2); await page.goto(recordPath('distribution', distribution.id)); await recordAction(page, 'Report receipt evidence'); await page.getByRole('textbox', { name: 'Reported observation', exact: true }).fill('I received and opened the retained document set.'); await source(page, 'Supporting evidence', true); await reviewedSave(page); await saved(page);
+      25 |   expect([...fixture.records.get('evidence')!.values()][0]).toMatchObject({ author_person: people[2].person, status: 'reported_received', commercial_execution: false, electronic_signature: false, subject_id: distribution.id }); expect(fixture.writes.every(row => row.key === row.body.operation_id)).toBe(true); expect([...fixture.packets.values()].every(row => row.manifest_hash !== hash(row.review_manifest))).toBe(true);
+    > 26 |   const library = [...fixture.records.get('library')!.values()][0], original = structuredClone(adoption); fixture.setActor(0); await page.goto(recordPath('library', library.id)); await libraryForm(page, true); await reviewedSave(page); await page.goto(recordPath('adoption', adoption.id)); await expect(page.getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })).toBeVisible(); expect(fixture.get('adoption', adoption.id)).toEqual(original);
+         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^
+      27 | });
+      28 | test('content permission retains holder, purpose, dates and a separate evidence revision', async ({ page }) => {
+      29 |   const fixture = await mockDocumentControl(page, { noRights: true }); await page.goto(`${controlPath}/register/rights`); await page.getByRole('button', { name: 'Record content permission', exact: true }).click(); await source(page, 'Governed document'); await page.getByRole('textbox', { name: 'Rights holder', exact: true }).fill('Project source author'); await page.getByRole('textbox', { name: 'Permission basis', exact: true }).fill('Permission evidence retained for this exact original'); await page.getByRole('textbox', { name: 'Permitted purpose', exact: true }).fill('Internal Project specification use'); await page.getByRole('textbox', { name: 'Effective from (YYYY-MM-DD, UTC)', exact: true }).fill('2026-10-16'); await page.getByRole('textbox', { name: 'Effective through (YYYY-MM-DD, UTC)', exact: true }).fill('2027-10-16'); for (const name of ['Ingest allowed', 'Read allowed', 'Distribute allowed']) await checkUi5Checkbox(page.getByRole('checkbox', { name, exact: true })); await source(page, 'Permission evidence', true); await reviewedSave(page); await saved(page);
+        at /dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:26:452
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact 
+  1 passed (31.0s)

@@ -234,7 +234,10 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             from cipher_aec.integrations.distribution import authorize_receipt as authorize_distribution
             authorize_distribution(actor, company, result, lock=True)
         return
-    if command.startswith("document."):
+    if command.startswith("document.control."):
+        from cipher_aec.document_control.service import authorize_receipt as authorize_documentary
+        authorize_documentary(actor,company,project,result,lock=True)
+    elif command.startswith("document."):
         require_project(company, project, ability="document.read", actor=actor)
         from cipher_aec.documents.service import get_document
         document = result.get("document", {})

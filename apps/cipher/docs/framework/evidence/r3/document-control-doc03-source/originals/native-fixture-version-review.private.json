@@ -1,0 +1,8 @@
+{
+  "earlier_root_finding_withdrawn": true,
+  "reason": "Read upload_document effect: current ingest rights guard runs before native expected_revision check. Original expected_revision1 therefore does not mask intended rights denial. No product concern confirmed.",
+  "candidate_fixture_change_discarded": true,
+  "candidate_restored_exact_frozen_backend_sha256": "86f3befe38970455aea91b545080f35059f7be4c5337bdae871b6cd9b23108ab",
+  "original_review_record_retained": "native-fixture-version-correction.private.json",
+  "native_calls": 0
+}

@@ -1,0 +1,4 @@
+src/DocumentControl.tsx(79,292): error TS2322: Type 'Element | undefined' is not assignable to type 'ObjectPageSectionType'.
+  Type 'undefined' is not assignable to type 'ObjectPageSectionType'.
+src/DocumentControlChoices.tsx(27,70): error TS2339: Property 'scope_type' does not exist on type 'DocumentRecord'.
+  Property 'scope_type' does not exist on type 'ProjectDocumentRecord'.

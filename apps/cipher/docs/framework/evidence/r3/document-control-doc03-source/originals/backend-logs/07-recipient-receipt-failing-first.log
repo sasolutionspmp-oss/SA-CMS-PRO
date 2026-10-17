@@ -1,0 +1,15 @@
+test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty) ... FAIL
+
+======================================================================
+FAIL: test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 155, in test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty
+    with self.assertRaises(DomainError):service.read('distribution',distributed['id'],'C','P',other)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.006s
+
+FAILED (failures=1)

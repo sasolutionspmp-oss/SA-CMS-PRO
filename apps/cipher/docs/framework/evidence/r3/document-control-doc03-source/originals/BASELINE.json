@@ -1,0 +1,8 @@
+{
+  "inventory": "/dev/shm/cipher-engineering-eng02/frozen-combined-v1/SOURCE_INVENTORY.json",
+  "inventory_sha256": "e1ef90275886c7af81cd50a007ebbac885b192f6d5e4e509ae573b46d3adf4e2",
+  "manifest_sha256": "5e26cb24a5ad50d9e41901d157eb450e2237054e3673b856e12b3ab436d907ba",
+  "source": "/dev/shm/cipher-engineering-eng02/workspace",
+  "count": 831,
+  "verified": true
+}

@@ -42,7 +42,7 @@
       "label": "Ability",
       "fieldtype": "Select",
       "reqd": 1,
-      "options": "approval.decide\napproval.execute\napproval.request\ndocument.read\ndocument.write\nestimate.read\nestimate.write\nproject.read\nproject.write\nricky.run\ntask.create\ncompany.read\ncommercial.read\ncommercial.write\ncontract.read\ncontract.write\ncommercial.distribute\ncommercial.award\nproject.team.delegate\nproject.cost.read\nproject.cost.write\nwbs.read\nbudget.read\nengineering.read\nengineering.write\nengineering.distribute\nengineering.package.read\nengineering.package.write\nengineering.package.check"
+      "options": "approval.decide\napproval.execute\napproval.request\ndocument.read\ndocument.write\nestimate.read\nestimate.write\nproject.read\nproject.write\nricky.run\ntask.create\ncompany.read\ncommercial.read\ncommercial.write\ncontract.read\ncontract.write\ncommercial.distribute\ncommercial.award\nproject.team.delegate\nproject.cost.read\nproject.cost.write\nwbs.read\nbudget.read\nengineering.read\nengineering.write\nengineering.distribute\nengineering.package.read\nengineering.package.write\nengineering.package.check\ndocument.control.read\ndocument.control.write\ndocument.rights.manage\ndocument.issue\ndocument.adopt\ndocument.distribute\ndocument.control.review"
     },
     {
       "fieldname": "active",

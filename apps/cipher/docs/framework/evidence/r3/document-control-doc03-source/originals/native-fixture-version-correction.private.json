@@ -1,0 +1,10 @@
+{
+  "native_fixture_only": true,
+  "reason": "Final ingestion refusal now uses actual current native revision2 so it cannot pass solely from obsolete expected_revision1.",
+  "before_sha256": "86f3befe38970455aea91b545080f35059f7be4c5337bdae871b6cd9b23108ab",
+  "after_sha256": "8613c7b1d42d3c820f183048dd365560ed97f4212c5d0ee6cf7b9565c02466e1",
+  "syntax": "passed",
+  "native_executed": false,
+  "services_changed": false,
+  "original_frozen_backend_unchanged": true
+}

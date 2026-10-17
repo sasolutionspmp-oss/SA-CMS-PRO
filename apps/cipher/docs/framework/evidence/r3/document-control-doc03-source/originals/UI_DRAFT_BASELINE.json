@@ -1,0 +1,13 @@
+{
+  "base_source_files": 834,
+  "root_base": "250991b889f38dd8b8ddd0ddda8187192c3c6f78",
+  "workspace": "/dev/shm/cipher-documents-doc03/ui-workspace",
+  "provisional_type_schema_paths": [
+    "apps/cipher/product/src/api/document-control.generated.ts",
+    "apps/cipher/product/src/api/contracts.generated.ts",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/schema.json",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/schemas/api-v1.schema.json"
+  ],
+  "qualification": false,
+  "final_backend_freeze_required": true
+}

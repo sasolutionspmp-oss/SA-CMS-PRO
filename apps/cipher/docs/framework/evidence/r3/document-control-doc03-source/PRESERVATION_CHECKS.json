@@ -1,0 +1,18 @@
+{
+  "schema": "cipher.cloud-preservation-checks.v1",
+  "source_files_verified": 890,
+  "candidate_source_changes": 82,
+  "actual_private_values_checked": 16,
+  "files_or_archive_members_scanned": 7013,
+  "private_credential_matches": 0,
+  "private_values_emitted": false,
+  "legacy_files_unchanged": 395,
+  "legacy_suite": "2703 earlier cases reused; legacy source unchanged; not new-ERP qualification",
+  "MAIN_HEAD_and_runtime_ID_start_unchanged": true,
+  "isolated_runtime_ID_start_unchanged": true,
+  "no_install_deploy_award_restart": true,
+  "source_scope_verified": true,
+  "relative_links_verified": 171,
+  "current_WIP_test_pass_claimed": false,
+  "heavy_unchanged_suites_rerun": false
+}

@@ -86,7 +86,7 @@ class EngineeringContractsTests(unittest.TestCase):
     def test_explicit_engineering_duties_are_not_default_fixture_grants(self):
         import ast
         tree=ast.parse((ROOT/'install.py').read_text());seed=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='seed_synthetic');expressions=[ast.unparse(n.iter) for n in ast.walk(seed) if isinstance(n,ast.For)]
-        self.assertIn('sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES)',expressions)
+        self.assertIn('sorted(PROJECT_ABILITIES - ENGINEERING_ABILITIES - DOCUMENT_CONTROL_ABILITIES)',expressions)
         self.assertNotIn('sorted(PROJECT_ABILITIES)',expressions)
     def test_bounded_keyset_page_and_scope_cursor_denial(self):
         from cipher_aec.api import paging

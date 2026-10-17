@@ -1,0 +1,15 @@
+test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated) ... FAIL
+
+======================================================================
+FAIL: test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 102, in test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated
+    self.assertFalse(service.get_record('C','P','adoption',adoption['id'])['library_current']);self.assertEqual(service.read('adoption',adoption['id'],'C','P',s.actor),adoption)
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (failures=1)

@@ -1,0 +1,6 @@
+{
+  "source_preserved_exactly": true,
+  "git_diff_check_original_diagnostic": "api/catalog.py:218 new blank line at EOF",
+  "qualification": "formatting only; retained reviewed source bytes rather than change candidate during preservation",
+  "source_whitespace_check_except_blank_EOF": "passed"
+}

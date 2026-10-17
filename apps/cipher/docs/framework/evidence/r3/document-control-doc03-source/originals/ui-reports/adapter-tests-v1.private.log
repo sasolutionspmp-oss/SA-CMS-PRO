@@ -1,0 +1,29 @@
+
+Running 22 tests using 1 worker
+
+(node:2979500) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/document-control-validation.spec.ts:17:79 › native-shaped issue_set packet accepts its opaque full envelope hash (9ms)
+  ✓   2 tests/document-control-validation.spec.ts:17:79 › native-shaped adoption_request packet accepts its opaque full envelope hash (8ms)
+  ✓   3 tests/document-control-validation.spec.ts:17:79 › native-shaped transmittal packet accepts its opaque full envelope hash (2ms)
+  ✓   4 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed scope against original subject (3ms)
+  ✓   5 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed source-bytes against original subject (7ms)
+  ✓   6 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed rights-owner against original subject (2ms)
+  ✓   7 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed effect against original subject (2ms)
+  ✓   8 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed summary against original subject (8ms)
+  ✓   9 tests/document-control-validation.spec.ts:20:108 › approval refuses self-consistent changed requester against original subject (1ms)
+  ✓  10 tests/document-control-validation.spec.ts:31:1 › record digest alone cannot authorize a self-consistent different Project record (1ms)
+  ✓  11 tests/document-control-validation.spec.ts:32:1 › rights save pins reviewed original policy and distinct immutable evidence (5ms)
+  ✓  12 tests/document-control-validation.spec.ts:40:1 › library successor retains header authorship and exact predecessor (2ms)
+  ✓  13 tests/document-control-validation.spec.ts:52:1 › exact internal distribution consumes the original grant and full opaque hash (3ms)
+  ✓  14 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed requester (2ms)
+  ✓  15 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed grant-person (2ms)
+  ✓  16 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed grant-reason (2ms)
+  ✓  17 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed grant-time (2ms)
+  ✓  18 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed removed-grant (1ms)
+  ✓  19 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed recipient-person (2ms)
+  ✓  20 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed effect-digest (2ms)
+  ✓  21 tests/document-control-validation.spec.ts:53:162 › distribution reply refuses changed author-person (1ms)
+  ✓  22 tests/document-control-validation.spec.ts:65:1 › current display label change preserves original canonical grant authority (2ms)
+
+  22 passed (1.0s)

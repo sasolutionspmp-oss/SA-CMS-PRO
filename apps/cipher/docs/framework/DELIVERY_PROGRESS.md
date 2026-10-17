@@ -15,9 +15,9 @@ Foundation services, the official SAP UI5/Horizon shell, persistent Project/Task
 
 Current engineering work follows the original package sequence:
 
-- **[ENG-01: RFIs/submittals](ENGINEERING_ENG01.md)** has implemented backend and unified SAP UI5 journeys for independent official technical decisions and separately authorized internal transmittals. Host/browser contract checks pass. Corrected 9029585b CI passed native backend integration and workflows, then timed out in its browser stage; actual native UI and full CI qualification remain open.
-- **[ENG-02: engineering work packages](ENGINEERING_ENG02.md)** adds assignments, design basis, exact authored quantities/units, recorded calculations, deliverables and designated independent checks. Backend and UI source are implemented and locally verified; native qualification remains open. A completed manual calculation record does not mean a solver executed or a document was issued.
-- **DOC-03: issued sets and specifications/contracts library** now has a frozen Project backend for retained rights evidence, library revisions, adoptions, issued sets and internal transmittals. SAP UI5 integration is next. The increment is not published/native-qualified; Company/global and clause/redline scope remains open.
+- **[ENG-01: RFIs/submittals](ENGINEERING_ENG01.md)** and **[ENG-02: engineering work packages](ENGINEERING_ENG02.md)** have implemented backend and unified SAP UI5 workflows. The latest engineering source `f79df23af5bdb1c8cccf538241452bef2c459672` passed all 26 hosted stages, including native backend and fixture browser checks. Actual native UI walkthroughs remain open; neither package is marked complete by fixture screenshots.
+- **[DOC-03: issued sets and specifications/contracts library](DOCUMENT_CONTROL_DOC03.md)** now has the combined Project backend/UI candidate and its source-bound evidence preserved for local integration. Host/generated/type/build checks and 30 distinct composed adapter/browser fixture cases pass. Native DOC-03 qualification remains open. Company/global, Clause Use/Redline and lifecycle work is preserved separately as incomplete WIP.
+
 
 The existing backlog rule permits downstream implementation after required local schema/service/API contracts are implemented and verified. Native, model/provider and operational evidence stay separately tracked. The estimating correction remains closed; the optional Company drawing-impact panel remains deferred.
 

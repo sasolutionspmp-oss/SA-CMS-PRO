@@ -118,3 +118,8 @@ from cipher_aec.engineering_packages.contracts import KINDS as _PACKAGE_KINDS
 for _package_type in _PACKAGE_KINDS.values():
     permission_query_conditions[_package_type] = "cipher_aec.engineering_packages.install.query_denied"
     has_permission[_package_type] = "cipher_aec.engineering_packages.install.permission_denied"
+
+from cipher_aec.document_control.contracts import KINDS as _DOCUMENTARY_KINDS
+for _documentary_type in _DOCUMENTARY_KINDS.values():
+    permission_query_conditions[_documentary_type] = "cipher_aec.document_control.install.query_denied"
+    has_permission[_documentary_type] = "cipher_aec.document_control.install.permission_denied"

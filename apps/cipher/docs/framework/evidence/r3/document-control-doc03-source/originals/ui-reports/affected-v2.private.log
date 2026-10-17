@@ -1,0 +1,85 @@
+
+Running 4 tests using 1 worker
+
+(node:2985366) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact (1.5m)
+(node:2987116) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 tests/document-control.spec.ts:32:58 › document request preserves original actor and UUID after loseFirst (1.8s)
+  ✓  3 tests/document-control.spec.ts:32:58 › document request preserves original actor and UUID after wrongFirst (1.7s)
+  ✘  4 tests/document-control.spec.ts:33:1 › current access denial removes previously loaded record and authoring controls (45.3s)
+
+
+  1) tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact 
+
+    Test timeout of 90000ms exceeded.
+
+    Error: locator.click: Test timeout of 90000ms exceeded.
+    Call log:
+      - waiting for locator('.engineering-object-page').getByRole('button', { name: 'Additional Options', exact: true })
+
+
+       5 | const recordPath = (kind: string, id: string) => `${controlPath}/record/${kind}/${id}`;
+       6 | async function choose(page: Page, label: string, value: string) { await page.getByRole('combobox', { name: label, exact: true }).click(); await page.getByRole('option', { name: value, exact: true }).click(); }
+    >  7 | async function recordAction(page: Page, name: string) { const button = page.getByRole('button', { name, exact: true }); if (!await button.isVisible()) await page.locator('.engineering-object-page').getByRole('button', { name: 'Additional Options', exact: true }).click(); await page.getByRole('button', { name, exact: true }).click(); }
+         |                                                                                                                                                                                                                                                                        ^
+       8 | async function source(page: Page, label: string, evidence = false) { const selected = evidence ? evidenceDocument : document; await choose(page, label, `${selected.title} · Rev. 1`); await page.getByRole('button', { name: `Select ${label.toLowerCase()}`, exact: true }).click(); }
+       9 | async function reviewedSave(page: Page) { await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the document record', exact: true })); await page.getByRole('button', { name: 'Save document record', exact: true }).click(); }
+      10 | async function libraryForm(page: Page, successor = false) { if (successor) await recordAction(page, 'Author library successor'); else await page.getByRole('button', { name: 'New library entry', exact: true }).click(); await page.getByRole('textbox', { name: 'Library title', exact: true }).fill(successor ? 'Concrete workmanship specification v2' : 'Concrete workmanship specification'); await page.getByRole('textbox', { name: 'Discipline', exact: true }).fill('Structural'); await page.getByRole('textbox', { name: 'Ownership', exact: true }).fill('Company authored specification'); await page.getByRole('textbox', { name: 'Library change reason', exact: true }).fill(successor ? 'Reviewed successor wording retained separately' : 'Initial exact original registration'); await source(page, 'Library source'); }
+        at recordAction (/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:7:264)
+        at /dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:23:154
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../affected-v2/document-control-library-a-5cd54-ipient-evidence-stays-exact/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../affected-v2/document-control-library-a-5cd54-ipient-evidence-stays-exact/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../affected-v2/document-control-library-a-5cd54-ipient-evidence-stays-exact/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../affected-v2/document-control-library-a-5cd54-ipient-evidence-stays-exact/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/document-control.spec.ts:33:1 › current access denial removes previously loaded record and authoring controls 
+
+    Test timeout of 45000ms exceeded.
+
+    Error: locator.click: Test timeout of 45000ms exceeded.
+    Call log:
+      - waiting for getByRole('button', { name: 'Refresh retained record', exact: true })
+        - locator resolved to <button tabindex="0" type="button" part="button" role="button" class="ui5-button-root" data-sap-focus-ref="true" aria-label="Refresh retained record">…</button>
+      - attempting click action
+        - waiting for element to be visible, enabled and stable
+      - element was detached from the DOM, retrying
+
+
+      31 | });
+      32 | for (const loss of ['loseFirst', 'wrongFirst'] as const) test(`document request preserves original actor and UUID after ${loss}`, async ({ page }) => { const fixture = await mockDocumentControl(page, { [loss]: true }); await page.goto(controlPath); await libraryForm(page); await reviewedSave(page); const dialog = page.locator('ui5-dialog[header-text="New library entry"]'); await expect(dialog.getByRole('button', { name: 'Recover original document request', exact: true })).toBeVisible(); await expect(page.getByRole('combobox', { name: 'Company', exact: true, includeHidden: true })).toBeDisabled(); await dialog.getByRole('button', { name: 'Recover original document request', exact: true }).click(); await expect(dialog).not.toBeVisible(); expect(fixture.writes).toHaveLength(2); expect(fixture.writes[1].body).toEqual(fixture.writes[0].body); expect(fixture.records.get('library')!.size).toBe(1); });
+    > 33 | test('current access denial removes previously loaded record and authoring controls', async ({ page }) => { const fixture = await mockDocumentControl(page); await page.goto(controlPath); await libraryForm(page); await reviewedSave(page); await saved(page); await expect(page.getByRole('grid', { name: 'Library revision records', exact: true })).toBeVisible(); fixture.setDenied(true); await page.getByRole('button', { name: 'Refresh retained record', exact: true }).click(); await expect(page.getByRole('button', { name: 'Recheck document-control access', exact: true })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Concrete workmanship specification', exact: true })).toHaveCount(0); await expect(page.getByRole('button', { name: 'Author library successor', exact: true })).toHaveCount(0); });
+         |                                                                                                                                                                                                                                                                                                                                                                            ^
+      34 | for (const width of [1440, 900, 390]) test(`document authoring footer remains usable at ${width}px`, async ({ page }) => { await page.setViewportSize({ width, height: 1000 }); const fixture = await mockDocumentControl(page); await page.goto(controlPath); await libraryForm(page); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the document record', exact: true })); const save = page.getByRole('button', { name: 'Save document record', exact: true }); await expect(save).toBeInViewport(); const bounds = await save.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width); await save.click(); await expect(page.getByRole('button', { name: 'Open saved document record', exact: true })).toBeEnabled(); expect(fixture.records.get('library')!.size).toBe(1); });
+      35 |
+        at /dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:33:364
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../../affected-v2/document-control-current-a-b422e-cord-and-authoring-controls/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../../affected-v2/document-control-current-a-b422e-cord-and-authoring-controls/error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../../affected-v2/document-control-current-a-b422e-cord-and-authoring-controls/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../../affected-v2/document-control-current-a-b422e-cord-and-authoring-controls/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    tests/document-control.spec.ts:18:1 › library adoption to issued set, internal distribution and recipient evidence stays exact 
+    tests/document-control.spec.ts:33:1 › current access denial removes previously loaded record and authoring controls 
+  2 passed (2.4m)

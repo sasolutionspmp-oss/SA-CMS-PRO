@@ -1,0 +1,235 @@
+{
+  "config": {
+    "argv": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/node_modules/@playwright/test/cli.js",
+      "test",
+      "--config",
+      "playwright.document-control.config.ts",
+      "document-control.spec.ts",
+      "--grep",
+      "library adoption|current access denial"
+    ],
+    "configFile": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/playwright.document-control.config.ts",
+    "rootDir": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "/dev/shm/cipher-documents-doc03/affected-v3",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "/document-control(?:-validation)?\\.spec\\.ts/"
+        ],
+        "timeout": 45000
+      }
+    ],
+    "filteredProjects": [
+      {
+        "grep": {},
+        "grepInvert": null,
+        "outputDir": "/dev/shm/cipher-documents-doc03/affected-v3",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "name": "",
+        "testDir": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests",
+        "snapshotDir": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests",
+        "testIgnore": [],
+        "testMatch": {},
+        "timeout": 45000,
+        "use": {
+          "baseURL": "http://127.0.0.1:5250",
+          "viewport": {
+            "width": 1440,
+            "height": 1000
+          },
+          "trace": "retain-on-failure",
+          "screenshot": "only-on-failure",
+          "launchOptions": {
+            "executablePath": "/usr/bin/chromium",
+            "args": [
+              "--no-sandbox",
+              "--disable-dev-shm-usage"
+            ]
+          }
+        },
+        "dependencies": [],
+        "ignoreSnapshots": false,
+        "__projectId": ""
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "/dev/shm/cipher-documents-doc03/affected-v3-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "default",
+    "updateSourceMethod": "patch",
+    "version": "1.64.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "document-control.spec.ts",
+      "file": "document-control.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "library adoption to issued set, internal distribution and recipient evidence stays exact",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 26471,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\u001b[22m\n\n    at /dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:26:452",
+                    "location": {
+                      "file": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts",
+                      "column": 452,
+                      "line": 26
+                    },
+                    "snippet": "  24 |   const distribution = [...fixture.records.get('distribution')!.values()][0]; fixture.setActor(2); await page.goto(recordPath('distribution', distribution.id)); await recordAction(page, 'Report receipt evidence'); await page.getByRole('textbox', { name: 'Reported observation', exact: true }).fill('I received and opened the retained document set.'); await source(page, 'Supporting evidence', true); await reviewedSave(page); await saved(page);\n  25 |   expect([...fixture.records.get('evidence')!.values()][0]).toMatchObject({ author_person: people[2].person, status: 'reported_received', commercial_execution: false, electronic_signature: false, subject_id: distribution.id }); expect(fixture.writes.every(row => row.key === row.body.operation_id)).toBe(true); expect([...fixture.packets.values()].every(row => row.manifest_hash !== hash(row.review_manifest))).toBe(true);\n> 26 |   const library = [...fixture.records.get('library')!.values()][0], original = structuredClone(adoption); fixture.setActor(0); await page.goto(recordPath('library', library.id)); await libraryForm(page, true); await reviewedSave(page); await page.goto(recordPath('adoption', adoption.id)); await expect(page.getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })).toBeVisible(); expect(fixture.get('adoption', adoption.id)).toEqual(original);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  27 | });\n  28 | test('content permission retains holder, purpose, dates and a separate evidence revision', async ({ page }) => {\n  29 |   const fixture = await mockDocumentControl(page, { noRights: true }); await page.goto(`${controlPath}/register/rights`); await page.getByRole('button', { name: 'Record content permission', exact: true }).click(); await source(page, 'Governed document'); await page.getByRole('textbox', { name: 'Rights holder', exact: true }).fill('Project source author'); await page.getByRole('textbox', { name: 'Permission basis', exact: true }).fill('Permission evidence retained for this exact original'); await page.getByRole('textbox', { name: 'Permitted purpose', exact: true }).fill('Internal Project specification use'); await page.getByRole('textbox', { name: 'Effective from (YYYY-MM-DD, UTC)', exact: true }).fill('2026-10-16'); await page.getByRole('textbox', { name: 'Effective through (YYYY-MM-DD, UTC)', exact: true }).fill('2027-10-16'); for (const name of ['Ingest allowed', 'Read allowed', 'Distribute allowed']) await checkUi5Checkbox(page.getByRole('checkbox', { name, exact: true })); await source(page, 'Permission evidence', true); await reviewedSave(page); await saved(page);"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts",
+                        "column": 452,
+                        "line": 26
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\nExpected: visible\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true }) with timeout 10000ms\u001b[22m\n\u001b[2m  - waiting for getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })\u001b[22m\n\n\n  24 |   const distribution = [...fixture.records.get('distribution')!.values()][0]; fixture.setActor(2); await page.goto(recordPath('distribution', distribution.id)); await recordAction(page, 'Report receipt evidence'); await page.getByRole('textbox', { name: 'Reported observation', exact: true }).fill('I received and opened the retained document set.'); await source(page, 'Supporting evidence', true); await reviewedSave(page); await saved(page);\n  25 |   expect([...fixture.records.get('evidence')!.values()][0]).toMatchObject({ author_person: people[2].person, status: 'reported_received', commercial_execution: false, electronic_signature: false, subject_id: distribution.id }); expect(fixture.writes.every(row => row.key === row.body.operation_id)).toBe(true); expect([...fixture.packets.values()].every(row => row.manifest_hash !== hash(row.review_manifest))).toBe(true);\n> 26 |   const library = [...fixture.records.get('library')!.values()][0], original = structuredClone(adoption); fixture.setActor(0); await page.goto(recordPath('library', library.id)); await libraryForm(page, true); await reviewedSave(page); await page.goto(recordPath('adoption', adoption.id)); await expect(page.getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })).toBeVisible(); expect(fixture.get('adoption', adoption.id)).toEqual(original);\n     |                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ^\n  27 | });\n  28 | test('content permission retains holder, purpose, dates and a separate evidence revision', async ({ page }) => {\n  29 |   const fixture = await mockDocumentControl(page, { noRights: true }); await page.goto(`${controlPath}/register/rights`); await page.getByRole('button', { name: 'Record content permission', exact: true }).click(); await source(page, 'Governed document'); await page.getByRole('textbox', { name: 'Rights holder', exact: true }).fill('Project source author'); await page.getByRole('textbox', { name: 'Permission basis', exact: true }).fill('Permission evidence retained for this exact original'); await page.getByRole('textbox', { name: 'Permitted purpose', exact: true }).fill('Internal Project specification use'); await page.getByRole('textbox', { name: 'Effective from (YYYY-MM-DD, UTC)', exact: true }).fill('2026-10-16'); await page.getByRole('textbox', { name: 'Effective through (YYYY-MM-DD, UTC)', exact: true }).fill('2027-10-16'); for (const name of ['Ingest allowed', 'Read allowed', 'Distribute allowed']) await checkUi5Checkbox(page.getByRole('checkbox', { name, exact: true })); await source(page, 'Permission evidence', true); await reviewedSave(page); await saved(page);\n    at /dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts:26:452"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:46:57.628Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "/dev/shm/cipher-documents-doc03/affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/dev/shm/cipher-documents-doc03/affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "/dev/shm/cipher-documents-doc03/affected-v3/document-control-library-a-5cd54-ipient-evidence-stays-exact/trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/dev/shm/cipher-documents-doc03/ui-workspace/apps/cipher/product/tests/document-control.spec.ts",
+                    "column": 452,
+                    "line": 26
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "de14d01291a90a288719-f82e7e3ecf80a507962f",
+          "file": "document-control.spec.ts",
+          "line": 18,
+          "column": 1
+        },
+        {
+          "title": "current access denial removes previously loaded record and authoring controls",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 45000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 2231,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-17T05:47:25.608Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "de14d01291a90a288719-9f15fc37ab75eae2956f",
+          "file": "document-control.spec.ts",
+          "line": 33,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-17T05:46:57.150Z",
+    "duration": 30950.987,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

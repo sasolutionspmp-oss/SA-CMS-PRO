@@ -211,5 +211,8 @@ _module("cipher_aec.engineering_packages.api", {
 })
 
 
+_module("cipher_aec.document_control.api", {'set_rights': ('POST', 'DcSetRightsResponse', True), 'create_library': ('POST', 'DcCreateLibraryResponse', True), 'revise_library': ('POST', 'DcReviseLibraryResponse', True), 'create_adoption': ('POST', 'DcCreateAdoptionResponse', True), 'create_issue_set': ('POST', 'DcCreateIssueSetResponse', True), 'create_transmittal': ('POST', 'DcCreateTransmittalResponse', True), 'record_evidence': ('POST', 'DcRecordEvidenceResponse', True), 'get_record': ('GET', 'DcGetResponse'), 'list_records': ('GET', 'DcListResponse'), 'list_people': ('GET', 'DcPeopleResponse')})
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC
+

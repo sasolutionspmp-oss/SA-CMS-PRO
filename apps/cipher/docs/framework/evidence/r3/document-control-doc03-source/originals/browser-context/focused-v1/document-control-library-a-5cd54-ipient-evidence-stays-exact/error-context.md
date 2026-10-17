@@ -1,0 +1,241 @@
+# Instructions
+
+- Following Playwright test failed.
+- Explain why, be concise, respect Playwright best practices.
+- Provide a snippet of code with the fix, if possible.
+
+# Test info
+
+- Name: document-control.spec.ts >> library adoption to issued set, internal distribution and recipient evidence stays exact
+- Location: tests/document-control.spec.ts:17:1
+
+# Error details
+
+```
+Test timeout of 90000ms exceeded.
+```
+
+```
+Error: locator.click: Test timeout of 90000ms exceeded.
+Call log:
+  - waiting for getByRole('button', { name: 'Prepare Project adoption', exact: true })
+
+```
+
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - alert
+    - alert
+  - generic:
+    - link "Skip to content" [ref=e1] [cursor=pointer]:
+      - /url: "#main-content"
+    - generic [ref=e3]:
+      - banner [ref=e4]:
+        - banner "Shell Bar" [ref=e6]:
+          - button "Toggle navigation" [ref=e9] [cursor=pointer]
+          - button "Cipher" [ref=e15] [cursor=pointer]:
+            - generic [ref=e17]: Cipher The AEC/CMS Pro
+          - generic [ref=e19]:
+            - group "Additional Info" [ref=e20]:
+              - generic [ref=e24] [cursor=pointer]:
+                - combobox "Company" [ref=e26]: Document control fixture Company
+                - generic: Document control fixture Company
+              - generic [ref=e34]:
+                - generic: Tag
+                - generic: Synthetic workspace
+            - search [ref=e40]:
+              - generic [ref=e41]:
+                - searchbox "Search projects" [ref=e42]
+                - generic [ref=e43] [cursor=pointer]
+            - button "Toggle Ricky assistant" [ref=e48] [cursor=pointer]
+            - button [ref=e53] [cursor=pointer]:
+              - img "Alex Author" [ref=e57]:
+                - generic [ref=e58]: AA
+      - generic [ref=e59]:
+        - complementary [ref=e60]:
+          - navigation "Cipher workspace navigation" [ref=e62]:
+            - tree "Primary Navigation Menu" [ref=e63]:
+              - generic:
+                - treeitem "Projects" [ref=e65] [cursor=pointer]
+                - treeitem "Project work" [ref=e71] [cursor=pointer]
+                - treeitem "Estimates" [ref=e77] [cursor=pointer]
+                - treeitem "Engineering" [ref=e83] [cursor=pointer]
+                - treeitem "Drawing takeoff" [ref=e89] [cursor=pointer]
+                - treeitem "Documents" [ref=e95] [cursor=pointer]
+                - treeitem "Document control" [ref=e101] [cursor=pointer]
+                - treeitem "Ricky" [ref=e107] [cursor=pointer]
+            - separator [ref=e112]
+            - tree "Footer Navigation Menu" [ref=e113]:
+              - treeitem "Connections" [ref=e115] [cursor=pointer]
+        - generic [active] [ref=e122]:
+          - generic [ref=e123]:
+            - generic [ref=e124]:
+              - generic [ref=e128]: Document control fixture Company
+              - generic [ref=e129]: /
+              - strong [ref=e130]: Cedar Valley Engineering
+            - generic [ref=e131] [cursor=pointer]:
+              - combobox "Project context" [ref=e133]: Cedar Valley Engineering
+              - generic: All projects
+              - generic: Cedar Valley Engineering
+          - generic [ref=e138]:
+            - note [ref=e140]:
+              - generic: Success Message Strip
+              - generic [ref=e145]: Saved with the exact original revisions and operation receipt.
+            - button "Open saved document record" [ref=e147] [cursor=pointer]
+          - generic [ref=e150]:
+            - toolbar "Document control navigation" [ref=e152]:
+              - button "Library" [ref=e156] [cursor=pointer]
+              - button "Issue sets" [ref=e162] [cursor=pointer]
+              - button "Transmittals" [ref=e168] [cursor=pointer]
+              - button "Adoptions" [ref=e174] [cursor=pointer]
+              - button "Issued records" [ref=e180] [cursor=pointer]
+              - button "Distributions" [ref=e186] [cursor=pointer]
+              - button "Content permissions" [ref=e192] [cursor=pointer]
+              - button "Receipt evidence" [ref=e198] [cursor=pointer]
+              - button "Project documents" [ref=e204] [cursor=pointer]
+            - generic [ref=e210]:
+              - banner [ref=e211] [cursor=pointer]:
+                - generic [ref=e213]:
+                  - navigation "Breadcrumb Trail" [ref=e218]:
+                    - list [ref=e219]:
+                      - text: ...
+                      - listitem [ref=e220]:
+                        - link "Document control 1 of 2" [ref=e222]:
+                          - generic [ref=e223]: Document control
+                        - generic [aria-hidden] [ref=e224]: /
+                      - listitem [ref=e225]:
+                        - generic "Library entry 2 of 2": Library entry
+                  - generic [ref=e231]:
+                    - generic [ref=e232]:
+                      - generic [ref=e233]:
+                        - heading "Concrete workmanship specification" [level=1] [ref=e235]
+                        - group [ref=e237]:
+                          - generic: Object Status
+                          - generic [ref=e238]: Working
+                          - generic: Informative entry
+                      - generic [ref=e239]: Library entry
+                    - generic [ref=e241]:
+                      - toolbar [ref=e242]:
+                        - button "Refresh retained record" [ref=e246]
+                        - button "Author library successor" [ref=e255]
+                        - button "Additional Options" [ref=e259]
+                      - generic: Prepare Project adoption
+              - generic [ref=e266]:
+                - generic [ref=e267]:
+                  - generic [ref=e268]: Recorded by
+                  - generic [ref=e269]: fixture.author@example.invalid
+                - generic [ref=e270]:
+                  - generic [ref=e271]: Recorded on
+                  - generic [ref=e272]: Oct 17, 2026
+                - generic [ref=e273]:
+                  - generic [ref=e274]: Source standing
+                  - generic [ref=e275]: Current library and working source
+              - generic:
+                - generic:
+                  - button "Collapse Header" [expanded] [ref=e277] [cursor=pointer]
+                  - button "Pin Header" [ref=e282] [cursor=pointer]
+              - tablist [ref=e291]:
+                - tab "Recorded details" [selected] [ref=e292] [cursor=pointer]
+                - tab "Exact original documents" [ref=e295] [cursor=pointer]
+                - tab "Retained related records" [ref=e298] [cursor=pointer]
+              - generic [ref=e301]:
+                - region [ref=e302]:
+                  - heading "Recorded details" [level=3] [ref=e304]
+                  - generic [ref=e309]:
+                    - generic [ref=e310]:
+                      - term [ref=e311]: Title
+                      - definition [ref=e312]: Concrete workmanship specification
+                    - generic [ref=e313]:
+                      - term [ref=e314]: Discipline
+                      - definition [ref=e315]: Structural
+                    - generic [ref=e316]:
+                      - term [ref=e317]: Ownership
+                      - definition [ref=e318]: Company authored specification
+                    - generic [ref=e319]:
+                      - term [ref=e320]: Category
+                      - definition [ref=e321]: specification
+                    - generic [ref=e322]:
+                      - term [ref=e323]: Change reason
+                      - definition [ref=e324]: Initial exact original registration
+                    - generic [ref=e325]:
+                      - term [ref=e326]: Tags
+                      - definition [ref=e327]:
+                        - list
+                - region [ref=e329]:
+                  - heading "Exact original documents" [level=3] [ref=e331]
+                  - list [ref=e336]:
+                    - listitem [ref=e337]:
+                      - link "Original document · Revision 1" [ref=e339] [cursor=pointer]
+                      - generic [ref=e341]: application/pdf · 523 bytes
+                      - group [ref=e342]:
+                        - generic "Original integrity" [ref=e343]
+                - region [ref=e345]:
+                  - heading "Retained related records" [level=3] [ref=e347]
+                  - generic [ref=e352]:
+                    - generic [ref=e354]:
+                      - heading "Related retained records" [level=2] [ref=e357]
+                      - button "Refresh document records" [ref=e361] [cursor=pointer]
+                    - grid "Library revision records" [ref=e368]:
+                      - row [ref=e369]:
+                        - columnheader "Record" [ref=e370]
+                        - columnheader "Standing" [ref=e371]
+                        - columnheader "Recorded by" [ref=e372]
+                        - columnheader "Date" [ref=e373]
+                      - row [ref=e376]:
+                        - gridcell "Concrete workmanship specification Library revision" [ref=e377]:
+                          - generic [ref=e378]:
+                            - link "Concrete workmanship specification" [ref=e380] [cursor=pointer]
+                            - generic [ref=e382]: Library revision
+                        - gridcell "Current library/source" [ref=e383]:
+                          - generic:
+                            - group [ref=e384]:
+                              - generic: Object Status
+                              - generic [ref=e385]: Working
+                              - generic: Informative entry
+                            - generic [ref=e386]: Current library/source
+                        - gridcell "fixture.author@example.invalid" [ref=e387]
+                        - gridcell "Oct 17, 2026" [ref=e388]
+```
+
+# Test source
+
+```ts
+  1  | import { expect, test, type Page } from '@playwright/test';
+  2  | import { checkUi5Checkbox } from './ui5-controls';
+  3  | import { controlPath, document, evidenceDocument, hash, mockDocumentControl, people, scope } from './document-control-fixture';
+  4  | type Fixture = Awaited<ReturnType<typeof mockDocumentControl>>;
+  5  | const recordPath = (kind: string, id: string) => `${controlPath}/record/${kind}/${id}`;
+  6  | async function choose(page: Page, label: string, value: string) { await page.getByRole('combobox', { name: label, exact: true }).click(); await page.getByRole('option', { name: value, exact: true }).click(); }
+  7  | async function source(page: Page, label: string, evidence = false) { const selected = evidence ? evidenceDocument : document; await choose(page, label, `${selected.title} · Rev. 1`); await page.getByRole('button', { name: `Select ${label.toLowerCase()}`, exact: true }).click(); }
+  8  | async function reviewedSave(page: Page) { await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the document record', exact: true })); await page.getByRole('button', { name: 'Save document record', exact: true }).click(); }
+  9  | async function libraryForm(page: Page, successor = false) { await page.getByRole('button', { name: successor ? 'Author library successor' : 'New library entry', exact: true }).click(); await page.getByRole('textbox', { name: 'Library title', exact: true }).fill(successor ? 'Concrete workmanship specification v2' : 'Concrete workmanship specification'); await page.getByRole('textbox', { name: 'Discipline', exact: true }).fill('Structural'); await page.getByRole('textbox', { name: 'Ownership', exact: true }).fill('Company authored specification'); await page.getByRole('textbox', { name: 'Library change reason', exact: true }).fill(successor ? 'Reviewed successor wording retained separately' : 'Initial exact original registration'); await source(page, 'Library source'); }
+  10 | async function saved(page: Page) { const button = page.getByRole('button', { name: 'Open saved document record', exact: true }); await expect(button).toBeEnabled(); await button.click(); }
+  11 | async function authorize(page: Page, fixture: Fixture) {
+  12 |   await page.getByRole('button', { name: 'Request independent document authorization', exact: true }).click(); await expect(page.getByRole('dialog', { name: 'Independent document authorization', exact: true })).toBeVisible(); const id = [...fixture.packets.keys()].at(-1)!;
+  13 |   fixture.setActor(1); await page.goto(`${controlPath}/approvals/${id}`); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed this original document authorization', exact: true })); await page.getByRole('button', { name: 'Grant document authorization', exact: true }).click(); await expect.poll(() => fixture.packets.get(id).state).toBe('Granted'); await expect(page.getByRole('button', { name: 'Close document authorization', exact: true })).toBeEnabled();
+  14 |   fixture.setActor(0); await page.reload(); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed this original document authorization', exact: true })); await page.getByRole('button', { name: 'Record authorized document effect', exact: true }).click(); await expect.poll(() => fixture.packets.get(id).state).toBe('Consumed'); await expect(page.getByRole('button', { name: 'Close document authorization', exact: true })).toBeEnabled();
+  15 | }
+  16 | test.beforeEach(({ page }) => page.on('pageerror', error => { throw error; }));
+  17 | test('library adoption to issued set, internal distribution and recipient evidence stays exact', async ({ page }) => {
+  18 |   test.setTimeout(90000); const fixture = await mockDocumentControl(page); await page.goto(controlPath); await libraryForm(page); await reviewedSave(page); await saved(page); await expect(page.getByRole('heading', { name: 'Concrete workmanship specification', exact: true })).toBeVisible();
+> 19 |   await page.getByRole('button', { name: 'Prepare Project adoption', exact: true }).click(); await page.getByRole('textbox', { name: 'Adoption purpose', exact: true }).fill('Apply the retained concrete specification to this Project'); await page.getByRole('textbox', { name: 'Target Project / contract locator', exact: true }).fill('Concrete package section 3'); await page.getByRole('textbox', { name: 'Adoption change reason', exact: true }).fill('Independent Project selection'); await reviewedSave(page); await saved(page); await authorize(page, fixture);
+     |                                                                                     ^ Error: locator.click: Test timeout of 90000ms exceeded.
+  20 |   const adoption = [...fixture.records.get('adoption')!.values()][0];
+  21 |   await page.goto(`${controlPath}/register/issue_set`); await page.getByRole('button', { name: 'Prepare issue set', exact: true }).click(); await page.getByRole('textbox', { name: 'Issue set title', exact: true }).fill('Concrete coordination issue'); await page.getByRole('textbox', { name: 'Issue purpose', exact: true }).fill('Internal construction coordination'); await source(page, 'Issue documents'); await checkUi5Checkbox(page.getByRole('checkbox', { name: `Adopted library sources ${adoption.id}`, exact: true })); await reviewedSave(page); await saved(page); await authorize(page, fixture);
+  22 |   const issue = [...fixture.records.get('issue')!.values()][0]; expect(issue.artifacts).toHaveLength(1); await page.goto(recordPath('issue', issue.id)); await page.getByRole('button', { name: 'Prepare internal transmittal', exact: true }).click(); await page.getByRole('textbox', { name: 'Transmittal purpose', exact: true }).fill('Review the original concrete coordination issue'); await choose(page, 'Internal recipient', `${people[2].display_name} · ${people[2].user}`); await reviewedSave(page); await saved(page); await authorize(page, fixture);
+  23 |   const distribution = [...fixture.records.get('distribution')!.values()][0]; fixture.setActor(2); await page.goto(recordPath('distribution', distribution.id)); await page.getByRole('button', { name: 'Report receipt evidence', exact: true }).click(); await page.getByRole('textbox', { name: 'Reported observation', exact: true }).fill('I received and opened the retained document set.'); await source(page, 'Supporting evidence', true); await reviewedSave(page); await saved(page);
+  24 |   expect([...fixture.records.get('evidence')!.values()][0]).toMatchObject({ author_person: people[2].person, status: 'reported_received', commercial_execution: false, electronic_signature: false, subject_id: distribution.id }); expect(fixture.writes.every(row => row.key === row.body.operation_id)).toBe(true); expect([...fixture.packets.values()].every(row => row.manifest_hash !== hash(row.review_manifest))).toBe(true);
+  25 |   const library = [...fixture.records.get('library')!.values()][0], original = structuredClone(adoption); fixture.setActor(0); await page.goto(recordPath('library', library.id)); await libraryForm(page, true); await reviewedSave(page); await page.goto(recordPath('adoption', adoption.id)); await expect(page.getByText('The library or working source has a newer revision. This record retains the original adopted wording and bytes.', { exact: true })).toBeVisible(); expect(fixture.get('adoption', adoption.id)).toEqual(original);
+  26 | });
+  27 | test('content permission retains holder, purpose, dates and a separate evidence revision', async ({ page }) => {
+  28 |   const fixture = await mockDocumentControl(page, { noRights: true }); await page.goto(`${controlPath}/register/rights`); await page.getByRole('button', { name: 'Record content permission', exact: true }).click(); await source(page, 'Governed document'); await page.getByRole('textbox', { name: 'Rights holder', exact: true }).fill('Project source author'); await page.getByRole('textbox', { name: 'Permission basis', exact: true }).fill('Permission evidence retained for this exact original'); await page.getByRole('textbox', { name: 'Permitted purpose', exact: true }).fill('Internal Project specification use'); await page.getByRole('textbox', { name: 'Effective from (YYYY-MM-DD, UTC)', exact: true }).fill('2026-10-16'); await page.getByRole('textbox', { name: 'Effective through (YYYY-MM-DD, UTC)', exact: true }).fill('2027-10-16'); for (const name of ['Ingest allowed', 'Read allowed', 'Distribute allowed']) await checkUi5Checkbox(page.getByRole('checkbox', { name, exact: true })); await source(page, 'Permission evidence', true); await reviewedSave(page); await saved(page);
+  29 |   const rights = [...fixture.records.get('rights')!.values()][0]; expect(rights).toMatchObject({ rights_holder: 'Project source author', valid_from: '2026-10-16', valid_until: '2027-10-16', evidence_artifact: { revision_id: evidenceDocument.current_revision } }); expect(rights.evidence_artifact.document_id).not.toBe(rights.parent_id);
+  30 | });
+  31 | for (const loss of ['loseFirst', 'wrongFirst'] as const) test(`document request preserves original actor and UUID after ${loss}`, async ({ page }) => { const fixture = await mockDocumentControl(page, { [loss]: true }); await page.goto(controlPath); await libraryForm(page); await reviewedSave(page); const dialog = page.getByRole('dialog', { name: 'New library entry', exact: true }); await expect(dialog.getByRole('button', { name: 'Recover original document request', exact: true })).toBeVisible(); await expect(page.getByRole('combobox', { name: 'Company', exact: true })).toBeDisabled(); await dialog.getByRole('button', { name: 'Recover original document request', exact: true }).click(); await expect(dialog).not.toBeVisible(); expect(fixture.writes).toHaveLength(2); expect(fixture.writes[1].body).toEqual(fixture.writes[0].body); expect(fixture.records.get('library')!.size).toBe(1); });
+  32 | test('current access denial removes previously loaded record and authoring controls', async ({ page }) => { const fixture = await mockDocumentControl(page); await page.goto(controlPath); await libraryForm(page); await reviewedSave(page); await saved(page); fixture.setDenied(true); await page.getByRole('button', { name: 'Refresh retained record', exact: true }).click(); await expect(page.getByRole('button', { name: 'Recheck document-control access', exact: true })).toBeVisible(); await expect(page.getByRole('heading', { name: 'Concrete workmanship specification', exact: true })).toHaveCount(0); await expect(page.getByRole('button', { name: 'Author library successor', exact: true })).toHaveCount(0); });
+  33 | for (const width of [1440, 900, 390]) test(`document authoring footer remains usable at ${width}px`, async ({ page }) => { await page.setViewportSize({ width, height: 1000 }); const fixture = await mockDocumentControl(page); await page.goto(controlPath); await libraryForm(page); await checkUi5Checkbox(page.getByRole('checkbox', { name: 'I reviewed the document record', exact: true })); const save = page.getByRole('button', { name: 'Save document record', exact: true }); await expect(save).toBeInViewport(); const bounds = await save.boundingBox(); expect(bounds!.x).toBeGreaterThanOrEqual(0); expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width); await save.click(); await expect(page.getByRole('button', { name: 'Open saved document record', exact: true })).toBeEnabled(); expect(fixture.records.get('library')!.size).toBe(1); });
+  34 | 
+```

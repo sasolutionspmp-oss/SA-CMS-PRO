@@ -273,3 +273,10 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .engineering-package-quantities { display: grid; gap: .75rem; min-width: 0; }
 .engineering-history-row { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid var(--sapGroup_ContentBorderColor); }
 @media (max-width: 599px) { .engineering-code-row { grid-template-columns: 1fr; } }
+
+.document-control-choice { display: grid; gap: .75rem; padding: 1rem; border: 1px solid var(--sapGroup_ContentBorderColor); border-radius: var(--sapGroup_BorderCornerRadius); min-width: 0; }
+.document-control-choice > ui5-select { width: 100%; }
+.document-control-artifacts { display: grid; gap: 1rem; padding-inline-start: 1.5rem; overflow-wrap: anywhere; }
+.document-control-artifacts li { min-width: 0; }
+.document-control-artifacts .caption { display: block; }
+.document-control-workspace .engineering-source-chip > span { overflow-wrap: anywhere; min-width: 0; }

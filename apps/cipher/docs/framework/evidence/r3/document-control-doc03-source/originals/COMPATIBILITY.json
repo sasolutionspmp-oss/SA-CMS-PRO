@@ -1,0 +1,29 @@
+{
+  "original_831_baseline_sha256": "e1ef90275886c7af81cd50a007ebbac885b192f6d5e4e509ae573b46d3adf4e2",
+  "all_original_handwritten_product_files_unchanged": true,
+  "old_core_definition_count": 76,
+  "old_core_definition_changes_only_additive_unions": [
+    "ApprovalPacket",
+    "ApprovalExecutionResponse"
+  ],
+  "old_domain_generated_count_unchanged": 14,
+  "old_domain_generated": {
+    "apps/cipher/product/src/api/awards.generated.ts": "ccb0360035b11d10e29308c8f8b9f08da1aa271970180368a1001a6af1159999",
+    "apps/cipher/product/src/api/commercial.generated.ts": "f0f2f06bba0a5d2454365e90f938f3276d94c99830c2db8717ffb20c2e0cc09b",
+    "apps/cipher/product/src/api/company-documents.generated.ts": "2f86421530b74b0cf082ca3fea11a954f5a3f76e84d056860300d7c0b596f4cf",
+    "apps/cipher/product/src/api/company-draft-saves.generated.ts": "f56661584ac2ff9ae4f6efecba59900dd636a052ead923064997268d2cac2472",
+    "apps/cipher/product/src/api/company-estimating.generated.ts": "9c723903fbcf403c84ea9aa74f6345602e53d74b5092d666a3894d7b28288585",
+    "apps/cipher/product/src/api/company-ricky-proposals.generated.ts": "f513fe734bc8612afd7b85ac9e5c5a4909a96dba89dea7ff34f93d974c4d40b2",
+    "apps/cipher/product/src/api/company-ricky.generated.ts": "3f79f177b13c5c74344f5cef96283a2e888d3dcf519a88f52ac051ac36a64bb5",
+    "apps/cipher/product/src/api/company-takeoff.generated.ts": "30dc01355d993e2c8fc14953e98e85a5068a0652c43b3e987aafdedd9b623667",
+    "apps/cipher/product/src/api/distribution.generated.ts": "2d57048085f61580a63ade03c51c5001bf5805b4926a4dc5570a9c1214e2a515",
+    "apps/cipher/product/src/api/engineering-packages.generated.ts": "02f9645be4d44154699ba8d936089da5179592d6bda8342fdf35829b366f3f59",
+    "apps/cipher/product/src/api/engineering.generated.ts": "784db0b2efff3cb9b11222429fc80d8a5a1611575a232b0dcdb2758b0cd14488",
+    "apps/cipher/product/src/api/estimating.generated.ts": "14c65316bd7157a172facee2c7daf6acf4a6a552a0e8cd90bb3e1977c1fd0f3e",
+    "apps/cipher/product/src/api/project-controls.generated.ts": "9a6b4d929a86478292b2d5d0ec86dc131ee3fc42261670cc6be938353be07250",
+    "apps/cipher/product/src/api/takeoff.generated.ts": "1a23f98d090a1e94a243049c224bf6a5b43f734b4c738739b797b0ae268d57b6"
+  },
+  "unrelated_old_source_files_unchanged": true,
+  "typecheck": "pending_root_integrated_UI_gate",
+  "native_integration": "declared_not_executed"
+}

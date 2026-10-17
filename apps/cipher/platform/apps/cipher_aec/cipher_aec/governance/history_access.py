@@ -3,6 +3,7 @@ import frappe
 import json
 
 from cipher_aec.api.errors import DomainError
+from cipher_aec.api.contracts import digest
 from cipher_aec.governance.context import require_company, require_project
 
 EST_SUBJECTS = {"Cipher Unit Conversion":"conversion", "Cipher Rate Source":"rate", "Cipher Assembly Revision":"assembly",
@@ -21,6 +22,13 @@ def readable(event, actor, company, project):
     """
     subject, identifier = event.subject_type, event.subject_id
     try:
+        from cipher_aec.document_control.contracts import KINDS as DOCUMENTARY_KINDS
+        if subject in DOCUMENTARY_KINDS.values():
+            if project is None:return False
+            from cipher_aec.document_control.service import read
+            value=read(next(k for k,v in DOCUMENTARY_KINDS.items() if v==subject),identifier,company,project,actor)
+            if digest(value)!=json.loads(event.details_json).get("record_digest"):raise DomainError("history_integrity","The exact documentary history source differs.",409)
+            return True
         if subject == "Company":
             return identifier == company and bool(require_company(company, actor=actor))
         if subject == "Project":

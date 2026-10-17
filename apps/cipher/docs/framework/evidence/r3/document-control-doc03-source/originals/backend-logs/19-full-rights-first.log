@@ -1,0 +1,60 @@
+test_locking_central_admission_locks_document_before_current_policy (cipher_aec.tests.test_document_control.CentralDocumentRightsTests.test_locking_central_admission_locks_document_before_current_policy) ... ERROR
+test_real_original_utf8_bytes_preview_search_and_no_policy_compatibility (cipher_aec.tests.test_document_control.CentralDocumentRightsTests.test_real_original_utf8_bytes_preview_search_and_no_policy_compatibility) ... ok
+test_alias_and_source_author_cannot_independently_review_adoption (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_alias_and_source_author_cannot_independently_review_adoption) ... ok
+test_artifact_hash_corruption_and_wrong_project_fail_closed (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_artifact_hash_corruption_and_wrong_project_fail_closed) ... ok
+test_authorization_fact_requires_exact_consumption_and_cannot_claim_external_effects (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_authorization_fact_requires_exact_consumption_and_cannot_claim_external_effects) ... ok
+test_current_original_document_permission_is_required_in_addition_to_policy (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_current_original_document_permission_is_required_in_addition_to_policy) ... ok
+test_current_rights_revoke_old_adoption_and_receipt_but_do_not_rewrite_originals (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_current_rights_revoke_old_adoption_and_receipt_but_do_not_rewrite_originals) ... ok
+test_ingestion_retrieval_distribution_flags_are_independent (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_ingestion_retrieval_distribution_flags_are_independent) ... ok
+test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_internal_delivery_receipt_requires_recipient_preparer_or_distribution_duty) ... ok
+test_late_receipt_failure_rolls_back_revision_and_history (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_late_receipt_failure_rolls_back_revision_and_history) ... ok
+test_library_adoption_issue_internal_distribution_and_recipient_report (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_library_adoption_issue_internal_distribution_and_recipient_report) ... ok
+test_library_header_and_receipt_cannot_adopt_another_entry_revision (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_library_header_and_receipt_cannot_adopt_another_entry_revision) ... ok
+test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_native_source_successor_marks_adoption_out_of_date_before_library_is_updated) ... ok
+test_no_policy_is_not_a_doc03_ingestion_entitlement (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_no_policy_is_not_a_doc03_ingestion_entitlement) ... ok
+test_project_closure_blocks_new_approval_phases_and_preserves_original_reads (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_project_closure_blocks_new_approval_phases_and_preserves_original_reads) ... ok
+test_recipient_rights_rechecked_and_identity_rebinding_refused (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_recipient_rights_rechecked_and_identity_rebinding_refused) ... ok
+test_rights_manager_can_revoke_retained_sources_after_project_closure (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_rights_manager_can_revoke_retained_sources_after_project_closure) ... ok
+test_same_uuid_replays_original_source_after_successor_and_conflicts_on_changed_input (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_same_uuid_replays_original_source_after_successor_and_conflicts_on_changed_input) ... ok
+test_source_and_library_successors_preserve_adoption_and_documentary_execution_evidence (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_source_and_library_successors_preserve_adoption_and_documentary_execution_evidence) ... ok
+test_source_rights_management_is_separate_and_not_implied_by_authoring (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_source_rights_management_is_separate_and_not_implied_by_authoring) ... ok
+test_vector_source_without_text_can_be_adopted_without_invented_excerpt (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_vector_source_without_text_can_be_adopted_without_invented_excerpt) ... ok
+test_changed_authored_rights_basis_changes_new_manifest_without_rewriting_subject (cipher_aec.tests.test_document_control_contracts.DocumentaryContractTests.test_changed_authored_rights_basis_changes_new_manifest_without_rewriting_subject) ... ok
+test_every_persisted_kind_matches_exact_published_read_shape (cipher_aec.tests.test_document_control_contracts.DocumentaryContractTests.test_every_persisted_kind_matches_exact_published_read_shape) ... ok
+test_explicit_new_project_abilities_are_not_seeded_or_added_to_company (cipher_aec.tests.test_document_control_contracts.DocumentaryContractTests.test_explicit_new_project_abilities_are_not_seeded_or_added_to_company) ... ok
+test_native_write_requires_private_exact_plan_even_with_trusted_flag (cipher_aec.tests.test_document_control_contracts.DocumentaryContractTests.test_native_write_requires_private_exact_plan_even_with_trusted_flag) ... ok
+test_three_literal_approval_pairings_and_authorized_effects_validate (cipher_aec.tests.test_document_control_contracts.DocumentaryContractTests.test_three_literal_approval_pairings_and_authorized_effects_validate) ... ok
+
+======================================================================
+ERROR: test_locking_central_admission_locks_document_before_current_policy (cipher_aec.tests.test_document_control.CentralDocumentRightsTests.test_locking_central_admission_locks_document_before_current_policy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 189, in test_locking_central_admission_locks_document_before_current_policy
+    rights.authorize({'name':ref['revision_id'],'document':doc,'company':'C','project':'P','scope_type':'Project'},s.actor,lock=True)
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 63, in authorize
+    if document_id:require(document_id,row['company'],row['project'],'read',actor,lock=lock,required=False)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 48, in require
+    if lock:prelock([document_id],company,project,actor)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 32, in prelock
+    planned=document_plan(document_ids)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 27, in document_plan
+    for name in sorted(set(document_ids)):visit(name)
+                                          ^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 25, in visit
+    if policy:visit(policy['evidence_artifact']['document_id'],depth+1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 25, in visit
+    if policy:visit(policy['evidence_artifact']['document_id'],depth+1)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py", line 20, in visit
+    if name in active or depth>8:raise DomainError('source_rights_cycle','The bounded source-rights evidence graph is cyclic or too deep.',409)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: The bounded source-rights evidence graph is cyclic or too deep.
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.540s
+
+FAILED (errors=1)

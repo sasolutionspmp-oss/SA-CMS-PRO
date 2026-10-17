@@ -1,0 +1,15 @@
+{
+  "preserved_all_logs": true,
+  "expected_failing_first": [
+    "02-lock-order-failing-first.log",
+    "07-recipient-receipt-failing-first.log",
+    "10-native-source-head-failing-first.log",
+    "12-library-join-failing-first.log",
+    "17-closed-rights-failing-first.log"
+  ],
+  "other_failed_attempts": {
+    "05-affected-initial.log": "initial catalog/compatibility registration plus mistakenly selected native-only test and host fixture context availability; no native test executed",
+    "19-full-rights-first.log": "old lock instrumentation returned one policy for every document, creating an artificial cycle; corrected fixture",
+    "21-rights-affected.log": "two stale OpenAPI artifact checks before regeneration of the expanded rights schema"
+  }
+}

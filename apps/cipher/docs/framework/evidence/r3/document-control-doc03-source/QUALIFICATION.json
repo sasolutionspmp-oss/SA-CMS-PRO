@@ -1,0 +1,78 @@
+{
+  "backend_host_cases": 183,
+  "base_commit": "f79df23af5bdb1c8cccf538241452bef2c459672",
+  "browser_mode": "explicit RPC contract fixtures; not native UI evidence",
+  "build": "passed retained dist-v1 build; 931 files",
+  "compatibility_backend_cases": 152,
+  "focused_checks": {
+    "composition": "26 initial + 2 recovery continuation + 1 access-denial continuation + 1 final complete journey",
+    "distinct_passed": 30,
+    "fresh_all_pass_run": false,
+    "runs": {
+      "affected-v2": {
+        "report": "originals/ui-reports/affected-v2-report.json",
+        "sha256": "ff866e569c0c81deee3b6860ddeddd80cb993dcb6393c4f5f6c58cf387ef02f2",
+        "stats": {
+          "duration": 141487.965,
+          "expected": 2,
+          "flaky": 0,
+          "skipped": 0,
+          "startTime": "2026-10-17T05:44:09.017Z",
+          "unexpected": 2
+        }
+      },
+      "affected-v3": {
+        "report": "originals/ui-reports/affected-v3-report.json",
+        "sha256": "bcb33a8ddd32dc63edc7067d4c86d2b7cee9c8093eca0b710265897509afafee",
+        "stats": {
+          "duration": 30950.987,
+          "expected": 1,
+          "flaky": 0,
+          "skipped": 0,
+          "startTime": "2026-10-17T05:46:57.150Z",
+          "unexpected": 1
+        }
+      },
+      "focused-v1": {
+        "report": "originals/ui-reports/focused-v1-report.json",
+        "sha256": "16202406f636a39da55a669c4d23a764c94a2fb0fdc92dbef72c39ec65b07c03",
+        "stats": {
+          "duration": 170706.697,
+          "expected": 26,
+          "flaky": 0,
+          "skipped": 0,
+          "startTime": "2026-10-17T05:40:54.154Z",
+          "unexpected": 4
+        }
+      },
+      "journey-v4": {
+        "report": "originals/ui-reports/journey-v4-report.json",
+        "sha256": "b08e8d4c317313160a6a8b191b17e7529f48bbdda7fdb07176cd90e7f24e5210",
+        "stats": {
+          "duration": 16592.421,
+          "expected": 1,
+          "flaky": 0,
+          "skipped": 0,
+          "startTime": "2026-10-17T05:48:14.267Z",
+          "unexpected": 0
+        }
+      }
+    }
+  },
+  "full_DOC03_C20_complete": false,
+  "generated_contracts": 16,
+  "native_DOC03": "declared workflow; not executed locally; hosted candidate pending",
+  "new_backend_cases": 31,
+  "no_award_action": true,
+  "no_runtime_restarts": true,
+  "remaining_original_scope": [
+    "Company/global library",
+    "Clause Use/Redline",
+    "withdrawal/supersession lifecycle",
+    "native UI and runtime qualification"
+  ],
+  "schema": "cipher.doc03.project-candidate-qualification.v1",
+  "source_changed_after_build": "only browser test helpers/assertions; application source unchanged",
+  "typecheck": "passed retained integrated v4 log",
+  "withdrawn_observation": "native fixture expected_revision detour withdrawn after service read; original native fixture restored byte-for-byte"
+}

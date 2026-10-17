@@ -1,0 +1,26 @@
+{
+  "requests": {
+    "set_rights": "DcSetRightsRequest",
+    "create_library": "DcCreateLibraryRequest",
+    "revise_library": "DcReviseLibraryRequest",
+    "create_adoption": "DcCreateAdoptionRequest",
+    "create_issue_set": "DcCreateIssueSetRequest",
+    "create_transmittal": "DcCreateTransmittalRequest",
+    "record_evidence": "DcRecordEvidenceRequest",
+    "get_record": "DcGetRecordRequest",
+    "list_records": "DcListRecordsRequest",
+    "list_people": "DcListPeopleRequest"
+  },
+  "responses": {
+    "set_rights": "DcSetRightsResponse",
+    "create_library": "DcCreateLibraryResponse",
+    "revise_library": "DcReviseLibraryResponse",
+    "create_adoption": "DcCreateAdoptionResponse",
+    "create_issue_set": "DcCreateIssueSetResponse",
+    "create_transmittal": "DcCreateTransmittalResponse",
+    "record_evidence": "DcRecordEvidenceResponse",
+    "get_record": "DcGetResponse",
+    "list_records": "DcListResponse",
+    "list_people": "DcPeopleResponse"
+  }
+}

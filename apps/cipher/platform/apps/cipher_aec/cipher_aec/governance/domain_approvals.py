@@ -16,6 +16,10 @@ class Action:
     enabled: bool = True
 
 ACTIONS = {
+    **{name: Action(name,doctype,label,"document.control.read",ability,policy) for name,doctype,label,ability,policy in (
+      ("document.issue.v1","Cipher Document Issue Set","Independent exact documentary issue","document.issue","CIPHER-DOCUMENT-ISSUE-POLICY-V1"),
+      ("document.library.adopt.v1","Cipher Adoption Request","Independent exact library adoption","document.adopt","CIPHER-LIBRARY-ADOPTION-POLICY-V1"),
+      ("document.transmit.v1","Cipher Transmittal","Independent exact internal documentary distribution","document.distribute","CIPHER-DOCUMENT-TRANSMIT-POLICY-V1"))},
     'engineering.basis.check.v1': Action('engineering.basis.check.v1', 'Cipher Design Basis Revision', 'Independent exact basis checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-BASIS-CHECK-POLICY-V1'),
     'engineering.calculation.check.v1': Action('engineering.calculation.check.v1', 'Cipher Calculation Revision', 'Independent exact calculation checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-CALCULATION-CHECK-POLICY-V1'),
     'engineering.deliverable.check.v1': Action('engineering.deliverable.check.v1', 'Cipher Deliverable Revision', 'Independent exact deliverable checking', "engineering.package.read", "engineering.package.write", 'CIPHER-ENGINEERING-DELIVERABLE-CHECK-POLICY-V1'),
@@ -49,6 +53,9 @@ def definition(action, scope_type="Project"):
 
 def callbacks(action, scope_type="Project"):
     spec_for(action, scope_type)
+    if action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1"}:
+        from cipher_aec.document_control.governance import CALLBACKS
+        return CALLBACKS[action]
     if action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"}:
         from cipher_aec.engineering_packages.governance import CALLBACKS
         return CALLBACKS[action]
@@ -126,6 +133,10 @@ def request_action(company, project, action, subject_id, expected_version, opera
 
 def participant_people(action, company, subject_id, *, scope_type="Project", lock=False):
     """Literal immutable metadata discovery, never source/delegation authority."""
+    if action == "document.transmit.v1":
+        spec_for(action,scope_type)
+        from cipher_aec.document_control.governance import participants
+        return participants(action,company,subject_id,lock=lock)
     if action == "engineering.distribute.v1":
         spec_for(action,scope_type)
         from cipher_aec.engineering.governance import participants
@@ -137,6 +148,8 @@ def participant_people(action, company, subject_id, *, scope_type="Project", loc
 
 
 def require_participants(action,company,subject_id,known,*,scope_type="Project"):
+    if action == "document.transmit.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):
+        raise DomainError("document_participants_changed","The original internal documentary recipient plan changed.",409)
     if action == "engineering.distribute.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):
         raise DomainError("engineering_participants_changed", "The exact internal recipient plan changed.", 409)
     if action == "award.project.create.v1" and tuple(sorted(set(known))) != participant_people(action,company,subject_id,scope_type=scope_type,lock=True):

@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: e49930f667391713994d967d6e936206cba90a3b4c5a9835c38819f39d26a8d8
+ * Source SHA-256: d542d9ec06d54c774fb935ff471c6c5c5ea253a26848e852a88271eb692a43af
  * Regenerate: npm run generate:api
  */
 
@@ -21,7 +21,11 @@ export type CipherAPIV1 = {
  * via the `definition` "ApprovalPacket".
  */
 export type ApprovalPacket =
-  ProjectStatusApprovalPacket | DomainApprovalPacket | EngineeringApprovalPacket | EngineeringPackageApprovalPacket;
+  | ProjectStatusApprovalPacket
+  | DomainApprovalPacket
+  | EngineeringApprovalPacket
+  | EngineeringPackageApprovalPacket
+  | DocumentApprovalPacket;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "EngineeringApprovalPacket".
@@ -43,13 +47,20 @@ export type EngineeringPackageApprovalPacket =
 export type EpCanonicaluuid = string;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentApprovalPacket".
+ */
+export type DocumentApprovalPacket =
+  DocumentIssueSetApprovalPacket | DocumentAdoptionRequestApprovalPacket | DocumentTransmittalApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalExecutionResponse".
  */
 export type ApprovalExecutionResponse =
   | ProjectStatusApprovalExecutionResponse
   | DomainApprovalExecutionResponse
   | EngineeringApprovalExecutionResponse
-  | EngineeringPackageApprovalExecutionResponse;
+  | EngineeringPackageApprovalExecutionResponse
+  | DocumentApprovalExecutionResponse;
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "EngineeringApprovalExecutionResponse".
@@ -99,6 +110,32 @@ export type EngineeringPackageApprovalExecutionResponse =
       packet: EngineeringPackageDeliverableApprovalPacket;
       effect: {
         check: EpCheck;
+      };
+      operation: Operation;
+    };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentApprovalExecutionResponse".
+ */
+export type DocumentApprovalExecutionResponse =
+  | {
+      packet: DocumentIssueSetApprovalPacket;
+      effect: {
+        issue: DcIssue;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: DocumentAdoptionRequestApprovalPacket;
+      effect: {
+        adoption: DcAdoption;
+      };
+      operation: Operation;
+    }
+  | {
+      packet: DocumentTransmittalApprovalPacket;
+      effect: {
+        distribution: DcDistribution;
       };
       operation: Operation;
     };
@@ -2389,6 +2426,463 @@ export interface EpDeliverableDefinition {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentIssueSetApprovalPacket".
+ */
+export interface DocumentIssueSetApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "document.issue.v1";
+  subject: {
+    id: string;
+    type: "Cipher Document Issue Set";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Document Issue Set";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights]
+          | [DcRights, DcRights]
+          | [DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+      }
+    ];
+    effect: {
+      schema: "cipher.document.authorization.v1";
+      action: "document.issue.v1";
+      subject_kind: "issue_set";
+      subject_id: string;
+      subject_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      no_effects: DcNoEffects;
+      electronic_signature: false;
+      professional_seal: false;
+      external_delivery: false;
+      commercial_execution: false;
+      package_digest: string;
+      /**
+       * @minItems 0
+       * @maxItems 8
+       */
+      adoptions:
+        | []
+        | [DcExactReference]
+        | [DcExactReference, DcExactReference]
+        | [DcExactReference, DcExactReference, DcExactReference]
+        | [DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+        | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+        | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+        | [
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference
+          ]
+        | [
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference,
+            DcExactReference
+          ];
+    };
+    summary: {
+      definition: DcIssueDefinition;
+      purpose: null;
+      required_response: null;
+      no_effects: DcNoEffects;
+      rights_basis: "authored-declaration";
+      external_delivery: false;
+      commercial_execution: false;
+    };
+  };
+  schema: "cipher.document.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcArtifact".
+ */
+export interface DcArtifact {
+  document_id: string;
+  revision_id: string;
+  revision_number: number;
+  source_sha256: string;
+  byte_length: number;
+  mime_type: string;
+  page_count: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRights".
+ */
+export interface DcRights {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "authored_rights_basis";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  predecessor: string | null;
+  revision_number: number;
+  ingest_allowed: boolean;
+  read_allowed: boolean;
+  distribute_allowed: boolean;
+  rights_basis: string;
+  rights_holder: string;
+  allowed_purpose: string;
+  restriction: string;
+  valid_from: string | null;
+  valid_until: string | null;
+  evidence_artifact: DcArtifact;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcNoEffects".
+ */
+export interface DcNoEffects {
+  commercial_change: false;
+  contract_change: false;
+  budget_change: false;
+  schedule_change: false;
+  quality_acceptance: false;
+  professional_certification: false;
+  external_transmission: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcExactReference".
+ */
+export interface DcExactReference {
+  id: string;
+  record_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssueDefinition".
+ */
+export interface DcIssueDefinition {
+  title: string;
+  purpose: string;
+  issue_purpose: "coordination" | "information" | "review" | "contract_reference";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentAdoptionRequestApprovalPacket".
+ */
+export interface DocumentAdoptionRequestApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "document.library.adopt.v1";
+  subject: {
+    id: string;
+    type: "Cipher Adoption Request";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Adoption Request";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights]
+          | [DcRights, DcRights]
+          | [DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+      }
+    ];
+    effect: {
+      schema: "cipher.document.authorization.v1";
+      action: "document.library.adopt.v1";
+      subject_kind: "adoption_request";
+      subject_id: string;
+      subject_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      no_effects: DcNoEffects;
+      electronic_signature: false;
+      professional_seal: false;
+      external_delivery: false;
+      commercial_execution: false;
+      library_revision: string;
+      library_digest: string;
+      target_locator: string;
+    };
+    summary: {
+      definition: DcAdoptionDefinition;
+      purpose: null;
+      required_response: null;
+      no_effects: DcNoEffects;
+      rights_basis: "authored-declaration";
+      external_delivery: false;
+      commercial_execution: false;
+    };
+  };
+  schema: "cipher.document.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcAdoptionDefinition".
+ */
+export interface DcAdoptionDefinition {
+  purpose: string;
+  target_locator: string;
+  change_reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentTransmittalApprovalPacket".
+ */
+export interface DocumentTransmittalApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "document.transmit.v1";
+  subject: {
+    id: string;
+    type: "Cipher Transmittal";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Transmittal";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights]
+          | [DcRights, DcRights]
+          | [DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+      }
+    ];
+    effect: {
+      schema: "cipher.document.authorization.v1";
+      action: "document.transmit.v1";
+      subject_kind: "transmittal";
+      subject_id: string;
+      subject_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      no_effects: DcNoEffects;
+      electronic_signature: false;
+      professional_seal: false;
+      external_delivery: false;
+      commercial_execution: false;
+      package_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 30
+       */
+      recipients: [DcPerson, ...DcPerson[]];
+      channel: "internal";
+    };
+    summary: {
+      definition: null;
+      purpose: string;
+      required_response: string;
+      no_effects: DcNoEffects;
+      rights_basis: "authored-declaration";
+      external_delivery: false;
+      commercial_execution: false;
+    };
+  };
+  schema: "cipher.document.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcPerson".
+ */
+export interface DcPerson {
+  user: string;
+  person: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalList".
  */
 export interface ApprovalList {
@@ -2533,6 +3027,123 @@ export interface EpCheck {
   outcome: "checked";
   issue_authorized: false;
   sealed: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssue".
+ */
+export interface DcIssue {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "issued";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  effect_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  electronic_signature: false;
+  professional_seal: false;
+  external_delivery: false;
+  commercial_execution: false;
+  package_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcAdoption".
+ */
+export interface DcAdoption {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "adopted";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  effect_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  electronic_signature: false;
+  professional_seal: false;
+  external_delivery: false;
+  commercial_execution: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcDistribution".
+ */
+export interface DcDistribution {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "recorded_internally";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  effect_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  electronic_signature: false;
+  professional_seal: false;
+  external_delivery: false;
+  commercial_execution: false;
+  package_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [DcPerson, ...DcPerson[]];
+  channel: "internal";
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema

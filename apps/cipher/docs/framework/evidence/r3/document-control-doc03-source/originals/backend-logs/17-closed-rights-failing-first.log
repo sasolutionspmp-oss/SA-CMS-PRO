@@ -1,0 +1,27 @@
+test_rights_manager_can_revoke_retained_sources_after_project_closure (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_rights_manager_can_revoke_retained_sources_after_project_closure) ... ERROR
+
+======================================================================
+ERROR: test_rights_manager_can_revoke_retained_sources_after_project_closure (cipher_aec.tests.test_document_control.DocumentaryWorkflowTests.test_rights_manager_can_revoke_retained_sources_after_project_closure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 127, in test_rights_manager_can_revoke_retained_sources_after_project_closure
+    created,ref=library(s,service);doc=s.documents[ref['revision_id']]['document_id'];old=rights.current(doc);s.project_status='Completed';service.set_rights('C','P',uid(),doc,digest(old),{'ingest_allowed':False,'read_allowed':False,'distribute_allowed':False,'rights_basis':'Post-close source rights revoked'})
+                                                                                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 74, in set_rights
+    return command(company,project,operation_id,'rights.record',{'document_id':document_id,'expected_version':expected_version,'definition':definition},effect,ability=rules.MANAGE)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 39, in command
+    try:return run_command(company=company,project=project,operation_id=operation_id,command='document.control.'+name+'.v1',payload=payload,ability=ability,guard=guard,effect=effect,participant_people=tuple(sorted(set(plan.values()))))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 56, in command
+    project=service.require_project('C','P',actor=state.actor);kw['guard'](state.actor,project);result=kw['effect'](state.actor,project)
+                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 36, in guard
+    if project_doc.status in ('Completed','Cancelled'):raise DomainError('project_closed','This Project is closed for new documentary work.',409)
+                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: This Project is closed for new documentary work.
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+FAILED (errors=1)
