@@ -34,6 +34,11 @@ def _eligible(kind,value,actor,*,lock=False):
         for declared in value['recipients']:recipient_read(value,declared,actor,lock=lock)
 
 def authorize_subject(*,kind,actor,company,project,subject_id,phase,lock=False,manifest=None):
+    if phase=='review' and lock:
+        from .locking import reviewer_read
+        with reviewer_read(company,project,kind,subject_id,actor) as locking_read:
+            if not locking_read:
+                return authorize_subject(kind=kind,actor=actor,company=company,project=project,subject_id=subject_id,phase=phase,lock=False,manifest=manifest)
     value=service.read(kind,subject_id,company,project,actor,lock=lock)
     if manifest is not None:
         effect=manifest.get('effect',{})

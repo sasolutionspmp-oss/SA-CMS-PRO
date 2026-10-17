@@ -67,7 +67,7 @@ def _scope(company, project, scope_type, actor=None, ability=None, lock=False):
 def _command(*, scope_type="Project", company, project, **kwargs):
     if scope_type == "Project":
         from cipher_aec.document_control.locking import for_approval
-        context=for_approval(company,project,kwargs.get('payload',{}))
+        context=for_approval(company,project,kwargs.get('payload',{}),review_people=kwargs.get('participant_people',()) if kwargs.get('command')=='approval.execute' else ())
         if context is not None:kwargs['document_context']=context
         return run_command(company=company, project=project, **kwargs)
     if scope_type == "Company" and project is None:

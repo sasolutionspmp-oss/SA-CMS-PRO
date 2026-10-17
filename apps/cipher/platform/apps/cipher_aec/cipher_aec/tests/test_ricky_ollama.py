@@ -129,7 +129,7 @@ class OllamaContractTests(unittest.TestCase):
         self.assertIn("format", chats[1])
         self.assertNotIn("tools", chats[1])
         self.assertNotIn(provisional, json.dumps(chats[1]))
-        self.assertEqual("native-selection-then-schema-v1", result.sampling["response_protocol"])
+        self.assertEqual("native-selection-then-schema-v2", result.sampling["response_protocol"])
         self.assertEqual(2, result.sampling["model_requests"])
         self.assertEqual("cipher-ollama-prompt-2", result.sampling["adapter_prompt_version"])
         self.assertEqual(["native-tool-selection", "schema-final-answer"], result.sampling["phases"])
@@ -236,7 +236,43 @@ class OllamaContractTests(unittest.TestCase):
     def test_answer_and_native_tool_cannot_be_mixed(self):
         raw = response()
         raw["message"]["tool_calls"] = [{"function": {"name": "project.lookup", "arguments": {}}}]
-        self.assertCode("invalid_model_output", lambda: self.adapter({"/api/chat": raw}).generate(request()))
+        self.assertCode("invalid_model_output", lambda: self.adapter({"/api/chat": raw}).generate(request(tools=())))
+
+    def test_valid_native_proposal_discards_provisional_content_before_answer_parser(self):
+        arguments = {"subject": "Review the synthetic rate", "description": "Review the exact cited source.", "citation_ids": ["fixture-citation"]}
+        for content in ("I will prepare the requested draft.", '{"answer":"A Task was saved and approved","citations":[]}'):
+            with self.subTest(content=content):
+                raw = response(message={"role": "assistant", "content": content, "tool_calls": [{"function": {"name": "task.propose", "arguments": arguments}}]})
+                adapter = self.adapter({"/api/chat": raw})
+                result = adapter.generate(request())
+                self.assertEqual("", result.answer)
+                self.assertEqual((), result.citations)
+                self.assertEqual(({"name": "task.propose", "arguments": arguments},), result.tool_requests)
+                self.assertEqual(1, result.sampling["model_requests"])
+                self.assertEqual(["native-tool-selection"], result.sampling["phases"])
+                self.assertEqual("native-selection-then-schema-v2", result.sampling["response_protocol"])
+                self.assertEqual("confirmed", adapter.status()["capabilities"]["native_tools"]["status"])
+                self.assertEqual("unverified", adapter.status()["capabilities"]["structured_output"]["status"])
+
+    def test_native_preface_does_not_make_malformed_or_extra_tool_arguments_acceptable(self):
+        for arguments in ('{"subject":"unparsed"}', {"subject": "Draft", "description": "Fixture", "citation_ids": [], "company": "other"}):
+            raw = response(message={"role": "assistant", "content": "I will prepare a draft.", "tool_calls": [{"function": {"name": "task.propose", "arguments": arguments}}]})
+            adapter = self.adapter({"/api/chat": raw})
+            self.assertCode("invalid_model_output", lambda: adapter.generate(request()))
+            self.assertEqual(1, sum(path == "/api/chat" for path, _ in adapter.transport.calls))
+
+    def test_tool_looking_content_without_native_call_never_becomes_a_tool(self):
+        text = '{"name":"task.propose","arguments":{"subject":"Untrusted text"}}'
+        def chat(transport):
+            count = sum(path == "/api/chat" for path, _ in transport.calls)
+            return response(message={"role": "assistant", "content": text}) if count == 1 else response()
+        adapter = self.adapter({"/api/chat": chat})
+        result = adapter.generate(request())
+        self.assertEqual((), result.tool_requests)
+        self.assertEqual("The synthetic review is Thursday.", result.answer)
+        chats = [body for path, body in adapter.transport.calls if path == "/api/chat"]
+        self.assertEqual(2, len(chats))
+        self.assertNotIn(text, json.dumps(chats[1]))
 
     def test_expired_deadline_and_oversize_context_do_not_touch_transport(self):
         adapter = self.adapter()

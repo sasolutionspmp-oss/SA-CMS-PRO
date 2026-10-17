@@ -25,7 +25,7 @@ MAX_RESPONSE_BYTES = 262144
 MAX_REQUEST_BYTES = 196608
 GENERATION_WALL_SECONDS = 150  # Below the orchestration's 180-second lease.
 SAMPLING = {"temperature": 0, "num_ctx": 8192, "num_predict": 1024, "num_thread": 4}
-PROTOCOL_VERSION = "native-selection-then-schema-v1"
+PROTOCOL_VERSION = "native-selection-then-schema-v2"
 ADAPTER_PROMPT_VERSION = "cipher-ollama-prompt-2"
 ANSWER_SCHEMA = object_schema({
     "answer": {"type": "string", "maxLength": 12000},
@@ -324,8 +324,14 @@ class OllamaAdapter:
                 # are separate Ollama modes. Plain content in this phase is
                 # provisional: do not deliver it, parse it into tool intents,
                 # or include it in the next prompt as evidence.
-                _, calls = self._message(result)
-                if not calls:
+                message, calls = self._message(result)
+                if calls:
+                    # Native-phase content is provisional even beside genuine
+                    # calls. Discard it at this boundary; the unchanged strict
+                    # parser below still validates every native call/argument.
+                    # Final synthesis never enters this branch or gains tools.
+                    result = {**result, "message": {**message, "content": ""}}
+                else:
                     self._identity(budget)
                     body, schemas = self._request(request, final=True)
                     result = self.transport.request("/api/chat", body, budget)

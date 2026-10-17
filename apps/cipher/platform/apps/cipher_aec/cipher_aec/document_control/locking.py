@@ -44,9 +44,9 @@ def proposal_revisions(company,name,actor):
     return revisions
 
 class DocumentContext:
-    def __init__(self,company,project,roots=(),targets=(),artifacts=(),documents=(),scope_type='Project',standing_documents=(),recipients=()):
+    def __init__(self,company,project,roots=(),targets=(),artifacts=(),documents=(),scope_type='Project',standing_documents=(),recipients=(),review_people=()):
         self.company,self.project,self.scope_type=company,project,scope_type
-        self.roots=tuple(roots);self.targets=deepcopy(list(targets));self.artifacts=deepcopy(list(artifacts));self.documents=set(documents);self.standing_documents=set(standing_documents);self.recipients=deepcopy(list(recipients));self.initial=None
+        self.roots=tuple(roots);self.targets=deepcopy(list(targets));self.artifacts=deepcopy(list(artifacts));self.documents=set(documents);self.standing_documents=set(standing_documents);self.recipients=deepcopy(list(recipients));self.initial=None;self.review_people=tuple(sorted(set(review_people)));self.review_identities=frozenset()
     def discover(self,actor):
         from cipher_aec.documents.repository import FrappeDocumentRepository
         from cipher_aec.documents.provenance import source_plan
@@ -139,6 +139,26 @@ class DocumentContext:
         for kind,name in planned['scopes']:
             if kind=='Company':require_company(self.company,ability='document.read',actor=actor,lock=True)
             else:require_project(self.company,name,ability='document.read',actor=actor,lock=True)
+        # Approval execution passes only its already locked canonical participants.
+        # Admit current reviewer read duties before any master/source lock. A
+        # failed alias is not authority; consumption still rechecks the reviewer.
+        import frappe
+        admitted=set()
+        for person in self.review_people:
+            if person==actor.person_id:continue
+            users=frappe.db.sql('SELECT user FROM `tabCipher Identity Binding` WHERE person=%s AND active=1 ORDER BY name',(person,),as_dict=True)
+            for row in users:
+                try:
+                    reviewer=current_actor(row.user)
+                    if reviewer.person_id!=person:continue
+                    for kind,name in planned['scopes']:
+                        if kind=='Company':require_company(self.company,ability='document.read',actor=reviewer,lock=True)
+                        else:require_project(self.company,name,ability='document.read',actor=reviewer,lock=True)
+                    require_project(self.company,self.project,ability=rules.READ,actor=reviewer,lock=True)
+                    require_project(self.company,self.project,ability=rules.REVIEW,actor=reviewer,lock=True)
+                except DomainError:continue
+                admitted.add((reviewer.user,reviewer.person_id))
+        self.review_identities=frozenset(admitted)
         # Participating Person/Identity rows precede this context in the
         # canonical command. Recheck each exact recipient and acquire every
         # origin duty before master/source locks, under the ordered scopes.
@@ -176,10 +196,50 @@ class DocumentContext:
         for row in native.get('native_refs',[]):require_native(row['doctype'],row['name'],actor,lock=True)
         for name,(scope,project) in sorted(plan['documents'].items()):scopes.document(name,self.company,scope,project,actor,lock=True)
         if self.discover(actor)!=plan:raise DomainError('document_sources_changed','Original source dependencies changed concurrently. Retry the original operation.',503)
-        token=_active.set({'company':self.company,'identity':(actor.user,actor.person_id),'plan':plan})
+        token=_active.set({'company':self.company,'project':self.project,'identity':(actor.user,actor.person_id),'plan':plan,'roots':self.roots,'review_identities':self.review_identities})
         try:
             with prelocked(native,actor,self.company):yield
         finally:_active.reset(token)
+
+def _current_review_reads():
+    import frappe
+    try:rows=frappe.db.sql('SELECT @@session.tx_isolation')
+    except Exception:raise DomainError('document_review_unavailable','Current documentary review reads cannot be verified.',503) from None
+    if (not isinstance(rows,(list,tuple)) or len(rows)!=1 or not isinstance(rows[0],(list,tuple)) or len(rows[0])!=1 or
+            str(rows[0][0]).upper().replace('_','-').replace(' ','-')!='READ-COMMITTED'):
+        raise DomainError('document_review_unavailable','Documentary reviewer validation requires current committed reads.',503)
+
+
+@contextmanager
+def reviewer_read(company,project,kind,subject_id,actor):
+    """Fresh DOC03 review reads within the owner's already held exact union.
+
+    This does not replace either identity-bound lock/provenance context. The
+    caller reauthorizes all original reviewer permissions without a success memo.
+    """
+    current=_active.get()
+    if current is None or current['identity']==(actor.user,actor.person_id):
+        yield True;return
+    from cipher_aec.documents.provenance import is_prelocked
+    def live():
+        owner=current_actor(current['identity'][0]);reviewer=current_actor(actor.user)
+        return ((owner.user,owner.person_id)==current['identity'] and (reviewer.user,reviewer.person_id)==(actor.user,actor.person_id) and
+                _active.get() is current and is_prelocked(current['plan']['native'],owner,company))
+    if (current['company']!=company or current.get('project')!=project or
+            (kind,subject_id) not in current.get('roots',()) or
+            (actor.user,actor.person_id) not in current.get('review_identities',()) or not live()):
+        raise DomainError('document_prelock_required','This reviewer requires its exact prelocked documentary read scope.',409)
+    _current_review_reads()
+    observed=DocumentContext(company,project,[(kind,subject_id)]).discover(actor)
+    plan=current['plan']
+    if (not set(map(tuple,observed['scopes']))<=set(map(tuple,plan['scopes'])) or
+            any(plan['documents'].get(name)!=scope for name,scope in observed['documents'].items()) or
+            _merge(observed['native'],plan['native'])!=plan['native']):
+        raise DomainError('document_prelock_required','The reviewer sources differ from the complete prelocked union.',409)
+    yield False
+    if not live():raise DomainError('document_prelock_required','The documentary read admission changed during review.',409)
+    _current_review_reads()
+
 
 def for_payload(company,project,name,payload,*,recipient_people=None):
     if name=='clause.reference':return DocumentContext(company,project,[('adoption',payload['adoption_id'])],[payload['target']])
@@ -199,7 +259,7 @@ def for_payload(company,project,name,payload,*,recipient_people=None):
     if name in ('library.create','library.revise'):return DocumentContext(company,project,[('library',payload['library_id'])] if payload.get('library_id') else (),artifacts=[payload['artifact']])
     return None
 
-def for_approval(company,project,payload):
+def for_approval(company,project,payload,*,review_people=()):
     import frappe
     action=payload.get('action');subject=payload.get('subject_id')
     if payload.get('packet_id'):
@@ -209,7 +269,7 @@ def for_approval(company,project,payload):
     if action in rules.ACTIONS.values():
         kind=next(k for k,v in rules.ACTIONS.items() if v==action);value=repo.raw(kind,subject)
         documents=[value['parent_id']] if kind=='lifecycle_request' else _issued_documents(company,project,value) if kind=='transmittal' else ()
-        return DocumentContext(company,project,[(kind,subject)],standing_documents=documents,recipients=value['recipients'] if kind=='transmittal' else ())
+        return DocumentContext(company,project,[(kind,subject)],standing_documents=documents,recipients=value['recipients'] if kind=='transmittal' else (),review_people=review_people)
     return None
 
 def for_result(company,project,result,*,scope_type='Project'):
