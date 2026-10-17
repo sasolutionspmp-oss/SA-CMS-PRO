@@ -577,7 +577,7 @@
       "scope": "Ricky scope/estimate assistance and deterministic calculation tools",
       "evidence": "Cited suggestions produce reviewable drafts; fabricated quantities never become accepted facts",
       "status": "in_progress",
-      "local_contract_status": "company_reads_recovery_history_suggestions_and_reviewed_draft_saves_native_ui_verified",
+      "local_contract_status": "company_reads_suggestions_reviewed_draft_saves_and_activity_native_ui_verified",
       "external_qualification_status": "live_model_not_connected",
       "evidence_paths": [
         "docs/framework/evidence/r1/ai04-isolated-tools-tests.json",
@@ -591,9 +591,12 @@
         "docs/framework/evidence/r1/company-ricky-native-r14/ui/README.md",
         "docs/framework/AI04_COMPANY_DRAFT_SAVES.md",
         "docs/framework/evidence/r1/company-ricky-native-r15/README.md",
-        "docs/framework/evidence/r1/company-ricky-native-r15/ui/README.md"
+        "docs/framework/evidence/r1/company-ricky-native-r15/ui/README.md",
+        "docs/framework/COMPANY_ACTIVITY.md",
+        "docs/framework/evidence/r1/company-activity-r16/README.md",
+        "docs/framework/evidence/r1/company-activity-r16/ui/README.md"
       ],
-      "qualification_limit": "R15 passed 942 fresh backend and 239 distinct composed browser cases, 13 generated contracts and a 905-file build. Actual HTTP/RQ scope/estimate saves, successors/natural-expiry replay and eight refusal/rollback cases passed. The final read-only audit verified the retained one-winner 200/503 competition plus a same-loser-UUID 409 expired refusal, without resetting failed expectations. All inventoried original rows and 53 positive-epoch additions were preserved with three explicit restoration audit deltas and 141 bounded authentication observations. Thirteen connected screenshots used 48 actual GETs, no mocked responses, business commands or model call. Original failures remain retained. Company activity/history UI, live model/QuickBooks, broader operational recovery and main deployment remain unfinished. Working-draft saves confer no baseline/issue/award/accounting authority."
+      "qualification_limit": "R15 passed 942 fresh backend and 239 distinct composed browser cases, 13 generated contracts and a 905-file build. Actual HTTP/RQ scope/estimate saves, successors/natural-expiry replay and eight refusal/rollback cases passed. The final read-only audit verified the retained one-winner 200/503 competition plus a same-loser-UUID 409 expired refusal, without resetting failed expectations. All inventoried original rows and 53 positive-epoch additions were preserved with three explicit restoration audit deltas and 141 bounded authentication observations. Thirteen connected screenshots used 48 actual GETs, no mocked responses, business commands or model call. Original failures remain retained. R16 Company Activity passed 262 composed browser cases and nine real screens using three GETs, preserving 78 inventoried tables and closed R15 evidence. Live model/QuickBooks, broader operational recovery and main deployment remain unfinished. Working-draft saves confer no baseline/issue/award/accounting authority."
     },
     {
       "id": "UX-03",
@@ -630,7 +633,10 @@
         "docs/framework/evidence/r1/prj02-ui-connected/saved-plan-v2/qualification.json",
         "docs/framework/evidence/r1/cost-planning-fresh-gate-v4-passed.json",
         "docs/framework/evidence/r1/cost-planning-main-deployment-v4.json",
-        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json"
+        "docs/framework/evidence/r1/cost-planning-main-ui-v4/verification.json",
+        "docs/framework/COMPANY_ACTIVITY.md",
+        "docs/framework/evidence/r1/company-activity-r16/README.md",
+        "docs/framework/evidence/r1/company-activity-r16/ui/README.md"
       ]
     },
     {

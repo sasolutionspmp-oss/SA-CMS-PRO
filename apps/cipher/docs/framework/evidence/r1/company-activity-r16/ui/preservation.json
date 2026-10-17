@@ -1,0 +1,23 @@
+{
+  "schema": "cipher.r16.read-only-browser-preservation.v1",
+  "status": "passed",
+  "before_sha256": "871a40687b4e2907d2b7d1f331648bd617581e03a454a185b34ac67fdfb2efeb",
+  "after_sha256": "a991d5cfdbacb157447e44942e0fa30a8e03117371cacd74e001e20bf1c8ec61",
+  "capture_report_sha256": "81f2e53c71224a0df970b4f6952ddf858eceaeae1785fdf8ba82ce5c15565422",
+  "inventoried_tables_preserved": 78,
+  "closed_R15_trees_unchanged": true,
+  "config_source_indexes_unchanged": true,
+  "all_inventoried_business_rows_unchanged": true,
+  "native_observers_business_writes": 0,
+  "auth_transitions": {
+    "status": "passed",
+    "bounded_user_changes": 1,
+    "bounded_session_changes": 1,
+    "database_rows_modified_by_observer": false
+  },
+  "start": "2026-10-17T01:31:45.198315+00:00",
+  "end": "2026-10-17T01:31:55.348193+00:00",
+  "actual_api_GETs": 3,
+  "captures": 9,
+  "main_changed": false
+}

@@ -236,3 +236,7 @@ preserved. No new actual award result is claimed by this checkpoint.
 ### Exact saved award plan successor, before approval
 
 [Saved plan variant 2](evidence/r1/prj02-ui-connected/saved-plan-v2/README.md) records one normal UI save on the original handoff and independent exact readback. Only the Project name changed; frozen selling USD30.85, accepted cost USD15.00, original Issue/PDF/team/WBS/allocations and explicit dates remain unchanged. Three actual images show scrolled saved-plan/keyboard interaction; original PDF byte parity is separately qualified, and no full-visible-PDF-page image claim is made. The initial zero-command overflow attempt remains separate. No award request, Grant, Execute, Project creation or financial effect ran.
+
+## Company Activity and reviewed draft saves
+
+[Reviewed draft saves](evidence/r1/company-ricky-native-r15/ui/README.md) show selecting original suggestions, saved scope/estimate revisions, acknowledged eligible review and natural expiry. [Company Activity](evidence/r1/company-activity-r16/ui/README.md) shows those recorded changes, expanded details and the next authorized page at desktop, tablet and phone widths. These are actual container captures using explicitly synthetic business records and the real isolated ERPNext backend.

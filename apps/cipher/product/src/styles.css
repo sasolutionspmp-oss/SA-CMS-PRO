@@ -188,6 +188,26 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .cost-accounting-facts { gap: 0.5rem; align-items: flex-start; }
 .cost-accounting-target { overflow-wrap: anywhere; }
 
+.company-activity-heading { padding: 1.25rem 1.5rem .75rem; border-bottom: 1px solid var(--sapList_BorderColor); }
+.company-activity-heading p { margin: .375rem 0 0; }
+.company-activity-list { margin: 0; padding: .75rem 1.5rem; }
+.company-activity-event { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+.company-activity-record { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; }
+.company-activity-event details { margin-top: .65rem; font-size: .75rem; }
+.company-activity-event summary { cursor: pointer; width: fit-content; }
+.company-activity-event dl { display: grid; gap: .5rem; }
+.company-activity-event dl > div { display: grid; grid-template-columns: 6.5rem minmax(0, 1fr); gap: .5rem; }
+.company-activity-event dd { margin: 0; }
+.company-activity-event pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: .75rem; }
+.company-activity-hint { padding: 0 1rem 1rem; font-size: .8125rem; }
+.company-activity-paging { flex-wrap: wrap; }
+@media (max-width: 599px) {
+  .company-activity-page .page-heading { align-items: flex-start; flex-direction: column; }
+  .company-activity-heading { padding: 1rem; }
+  .company-activity-list { padding: .5rem 1rem; }
+  .company-activity-event dl > div { grid-template-columns: minmax(0, 1fr); gap: .125rem; }
+}
+
 /* Saved suggestion fields retain readable bounds inside the existing assistant. */
 .company-suggestions .dialog-form { min-width: 0; padding-inline: 0; }
 .company-suggestions ui5-select, .company-suggestions ui5-checkbox { width: 100%; min-width: 0; max-width: 100%; }

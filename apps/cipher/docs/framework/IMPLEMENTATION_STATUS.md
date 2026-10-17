@@ -4,7 +4,13 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
-## Current checkpoint: reviewed Company draft saves
+## Current checkpoint: Company Activity
+
+[Company Activity](COMPANY_ACTIVITY.md) now connects the existing authorized history API to the SAP UI5 Company workspace: recorded actors/times, expandable details, bounded Previous/Next and supported record links. Known Company/User/Person/capability changes clear old source-bearing rows and cursor state. The corrected UI passed 262 distinct composed browser cases, thirteen unchanged generated contracts and the 911-file build; the original static-path failure and four failing-first permission regressions remain retained.
+
+[Nine actual connected screens](evidence/r1/company-activity-r16/ui/README.md) used three real GETs and no mocked response, login, business command or model. Independent before/after comparison preserved 78 inventoried tables' business rows, source/config/indexes and closed R15 evidence, with only time-bounded original User/Session heartbeats. Backend source is unchanged from the 942-case R15 gate. Company-scoped pre-award takeoff UI is now the next independent business workflow under implementation; award-dependent procurement remains gated.
+
+## Prior checkpoint: reviewed Company draft saves
 
 [Stage C](AI04_COMPANY_DRAFT_SAVES.md) now saves an explicitly reviewed original suggestion as a canonical commercial proposal or Company estimate working revision. The binding-only command derives its payload on the server, rechecks original User/Person/session/source/native authority, and atomically stores the domain result, receipt, immutable application and linked history. Original suggestions remain unchanged and readable through authorized historical access after successors and natural expiry.
 
@@ -12,7 +18,7 @@ Frozen R15 passed 942 fresh backend cases (886 unit +56 actual Frappe integratio
 
 Both real HTTP/RQ saves and eight further native cancellation/refusal/rollback cases passed. The two-request competition retained its actual 200/503 concurrent_change pair; one reconciled same-loser-UUID retry returned 409 draft_save_expired after the original deadline. Both narrower helper expectations remain failed, with no third request, replacement UUID or rewritten case/batch/v4 proof. The [separate final read-only audit](evidence/r1/company-ricky-native-r15/native-final-audit.json) passed exact native winner/no-loser-effect reconciliation, all 53 positive-epoch rows, expected additions, original typed rows, source/config/index/cookies and continuous history. Three supported restoration audit deltas and 141 bounded User/Session observations are explicit. Original financial inventories/three Projects are unchanged, and no active Run/queue/worker remains.
 
-The isolated additive sync preserved all 820 old table definitions/indexes and 25,279 rows exactly. Backups were verified; restore was not rehearsed. Main remains on 7248171c with its unchanged runtime. Live Ricky/QuickBooks remain unconnected. Company activity/history UI is the next bounded item; broader enterprise and external-action qualification remain unfinished. [R15 source, evidence and retained failures](evidence/r1/company-ricky-native-r15/README.md) record this increment separately from earlier checkpoints.
+The isolated additive sync preserved all 820 old table definitions/indexes and 25,279 rows exactly. Backups were verified; restore was not rehearsed. Main remains on 7248171c with its unchanged runtime. Live Ricky/QuickBooks remain unconnected. Company Activity is qualified in R16 above; broader enterprise and external-action qualification remain unfinished. [R15 source, evidence and retained failures](evidence/r1/company-ricky-native-r15/README.md) record this increment separately from earlier checkpoints. [Hosted R15 CI](evidence/r1/company-ricky-native-r15/hosted-ci.json) subsequently passed all 25 stages, including complete backend/browser suites and eight workflow procedures.
 
 ## Prior checkpoint: Company saved suggestions
 
