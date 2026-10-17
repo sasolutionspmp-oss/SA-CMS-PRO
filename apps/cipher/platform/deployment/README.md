@@ -2,6 +2,11 @@
 
 The selected runtime is ERPNext 16.51.0/Frappe 16.52.0 with the new `cipher_aec` app, MariaDB and Redis. Exact image references and observed language versions are in `../versions.lock.json`. This is a synthetic development environment with no accounting, bank, email or model connection configured.
 
+For a normal local Docker installation, use the separate [portable trial profile](PORTABLE_TRIAL.md).
+It builds the backend and UI into an image and provides isolated trial/integration
+start, status, stop, backup and quarantined restore commands. The development
+profile below retains its original managed-cloud assumptions.
+
 ## Storage preparation
 
 The managed Docker daemon uses `vfs`. Upstream layer extraction exhausted its filesystem. `prepare-dev-image.py` streams the pinned upstream merged filesystem through crane into a single local image and preserves its user, working directory, environment, entrypoint and command. It neither changes daemon settings nor prunes other work. The imported image ID differs from the upstream digest; both are recorded. This development-only representation does not claim a vendor-built derivative image.

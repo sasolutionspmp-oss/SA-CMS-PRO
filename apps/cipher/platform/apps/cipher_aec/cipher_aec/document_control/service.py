@@ -169,7 +169,7 @@ def record_evidence(company,project,operation_id,subject_kind,subject_id,subject
     rules.identifier(subject_id);rules.checksum(subject_digest);rules.text(statement,'statement',4000);rules.artifacts(artifacts)
     def effect(actor,_):
         planned=raw(subject_kind,subject_id,company,project)
-        _prelock([*artifacts,*planned['artifacts']],company,project,actor,lock=True)
+        _prelock([*artifacts,*planned['artifacts']],company,project,actor,lock=True,allow_foreign=True)
         original=read(subject_kind,subject_id,company,project,actor,lock=True)
         if digest(original)!=subject_digest:raise DomainError('stale_documentary_subject','Select the exact original evidence subject.',412)
         if subject_kind=='distribution' and actor.person_id not in {p['person'] for p in original['recipients']}:raise DomainError('recipient_required','Only an intended canonical recipient may report their receipt.',403)

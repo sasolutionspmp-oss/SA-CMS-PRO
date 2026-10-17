@@ -1,0 +1,62 @@
+# Use cipher-local.py; each profile receives a distinct project/volume namespace.
+services:
+  db:
+    image: mariadb@sha256:6422478cb8e159f080fb1d8ccf65101e26fe51385787fde7d16c3b165a331f15
+    restart: unless-stopped
+    command: [--character-set-server=utf8mb4, --collation-server=utf8mb4_unicode_ci, --skip-character-set-client-handshake]
+    environment:
+      MARIADB_ROOT_PASSWORD: ${CIPHER_DB_ROOT_PASSWORD:?Initialize the private profile environment}
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [CMD, healthcheck.sh, --connect, --innodb_initialized]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  redis:
+    image: redis@sha256:b362b5dff9d14d961dc3352db4776aba6a8c53ca2661d7c74ad2c121f82cdaea
+    restart: unless-stopped
+    command: [redis-server, --appendonly, 'yes']
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  runtime:
+    image: ${CIPHER_IMAGE:?Initialize the private profile environment}
+    build:
+      context: ../..
+      dockerfile: platform/deployment/Dockerfile.portable
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      CIPHER_SITE: cipher.localhost
+      CIPHER_SYNTHETIC: '1'
+      CIPHER_DB_ROOT_PASSWORD: ${CIPHER_DB_ROOT_PASSWORD:?Initialize the private profile environment}
+      CIPHER_ADMIN_PASSWORD: ${CIPHER_ADMIN_PASSWORD:?Initialize the private profile environment}
+      CIPHER_FIXTURE_PASSWORD: ${CIPHER_FIXTURE_PASSWORD:?Initialize the private profile environment}
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+      - logs:/home/frappe/frappe-bench/logs
+    ports:
+      - '127.0.0.1:${CIPHER_HTTP_PORT:?Select the isolated profile port}:8080'
+      - '127.0.0.1:${CIPHER_BACKEND_PORT:?Select the isolated profile port}:8000'
+    healthcheck:
+      test: [CMD, /home/frappe/frappe-bench/env/bin/python, /opt/cipher/deployment/portable-health.py]
+      interval: 10s
+      timeout: 5s
+      start_period: 600s
+      retries: 6
+volumes:
+  db-data:
+  redis-data:
+  sites:
+  logs:

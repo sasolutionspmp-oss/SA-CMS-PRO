@@ -69,6 +69,9 @@ class DocumentContext:
             if value['company']!=self.company:raise DomainError('not_found','This original source is unavailable.',404)
             artifacts.extend(value.get('artifacts',[]))
             if kind=='rights':artifacts.append(value['evidence_artifact'])
+            if kind=='evidence':
+                if value.get('subject_kind') not in ('adoption','distribution'):raise DomainError('document_control_integrity','The original evidence subject is unavailable.',409)
+                todo.append((value['subject_kind'],value['subject_id']))
             if kind=='lifecycle_request':
                 todo.append(('issue',value['definition']['issue_id']))
                 if value['definition']['replacement_issue_id']:todo.append(('issue',value['definition']['replacement_issue_id']))

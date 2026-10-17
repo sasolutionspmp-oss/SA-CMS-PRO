@@ -1,0 +1,66 @@
+# Separate, explicitly selected lifecycle. This file never enables Cipher config.
+name: cipher-semantic-integration
+services:
+  qdrant:
+    profiles: [semantic]
+    image: qdrant/qdrant@sha256:53d8c371bc3ae99e4353897ee594bfcfab7f72c4925f74471ebb34d9f6103a3e
+    platform: linux/amd64
+    pull_policy: never
+    command: [./entrypoint.sh, --config-path, /qdrant/config/cipher-semantic.yaml, --disable-telemetry]
+    restart: 'no'
+    init: true
+    stop_grace_period: 30s
+    cpus: 1.0
+    mem_limit: 512m
+    memswap_limit: 512m
+    pids_limit: 128
+    volumes:
+      - qdrant-data:/qdrant/storage
+    configs:
+      - source: qdrant-local
+        target: /qdrant/config/cipher-semantic.yaml
+    networks:
+      integration:
+        aliases: [cipher-semantic-qdrant]
+    logging:
+      driver: json-file
+      options:
+        max-size: 5m
+        max-file: '2'
+configs:
+  qdrant-local:
+    content: |
+      log_level: WARN
+      telemetry_disabled: true
+      service:
+        host: 0.0.0.0
+        http_port: 6333
+        grpc_port: null
+        enable_cors: false
+        max_request_size_mb: 4
+        max_workers: 1
+      storage:
+        storage_path: /qdrant/storage
+        snapshots_path: /qdrant/storage/snapshots
+        update_concurrency: 1
+        max_collections: 1
+        wal:
+          wal_capacity_mb: 8
+          wal_segments_ahead: 0
+        performance:
+          max_search_threads: 1
+          optimizer_cpu_budget: 1
+        optimizers:
+          default_segment_number: 1
+          max_optimization_threads: 1
+        hnsw_index:
+          max_indexing_threads: 1
+      cluster:
+        enabled: false
+networks:
+  integration:
+    external: true
+    name: cipher-integration_default
+volumes:
+  qdrant-data:
+    name: cipher-semantic-integration-qdrant-v1155

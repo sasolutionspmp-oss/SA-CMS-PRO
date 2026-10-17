@@ -602,7 +602,8 @@ class Verifier:
         require("task.create" not in project.get("capabilities", []) and "project.read" in project.get("capabilities", []),
                 "Task read-only phase requires externally revoked task.create with project.read retained")
         task_path = "/api/resource/Task/" + quote(task["id"], safe="")
-        _, before, _, _ = client.request("GET", task_path, expected=(200,))
+        client.request("GET", task_path, expected=(403, 404))
+        before = client.api("task", {**self.scope, "task": task["id"]})
         todo_args = {"filters": json.dumps([["reference_type", "=", "Task"], ["reference_name", "=", task["id"]]]),
                      "fields": json.dumps(["name", "allocated_to", "status"]), "limit_page_length": 1000}
         client.request("GET", "/api/resource/ToDo", todo_args, expected=(403, 404))
@@ -611,10 +612,11 @@ class Verifier:
                         "notify": 0, "description": "SYNTHETIC forbidden native assignment"}, expected=(403, 404))
         client.request("GET", "/api/method/erpnext.projects.doctype.task.task.make_timesheet",
                        {"source_name": task["id"], "ignore_permissions": "true"}, expected=(403, 404))
-        _, after, _, _ = client.request("GET", task_path, expected=(200,))
+        after = client.api("task", {**self.scope, "task": task["id"]})
         client.request("GET", "/api/resource/ToDo", todo_args, expected=(403, 404))
-        require(before["data"].get("_assign") == after["data"].get("_assign") and
-                before["data"].get("modified") == after["data"].get("modified"),
+        require(before.get("assignees") == after.get("assignees") and
+                before.get("assignment_conflict") == after.get("assignment_conflict") and
+                before.get("version") == after.get("version"),
                 "Denied native assignment must not change Task assignments/version")
         operation = str(uuid.uuid4())
         client.api("create_task", {**self.scope, "operation_id": operation, "expected_version": project["version"],

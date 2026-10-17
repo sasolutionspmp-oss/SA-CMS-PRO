@@ -1,0 +1,37 @@
+ARG CIPHER_UPSTREAM_IMAGE=registry-1.docker.io/frappe/erpnext@sha256:772d0f84dd308632aa8cecd615564bd7597eb98e0a7d2208bd9aa04678ced1ee
+FROM ${CIPHER_UPSTREAM_IMAGE} AS product-build
+USER frappe
+WORKDIR /home/frappe/cipher-build/product
+COPY --chown=frappe:frappe product/package.json product/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY --chown=frappe:frappe product/ ./
+# Generated TypeScript imports canonical JSON contracts through ../platform.
+# Preserve that source relationship while compiling; never skip type checking.
+COPY --chown=frappe:frappe platform/apps/cipher_aec/ /home/frappe/cipher-build/platform/apps/cipher_aec/
+RUN npm run build
+
+FROM ${CIPHER_UPSTREAM_IMAGE} AS runtime
+ARG CIPHER_SOURCE_REVISION=unrecorded
+ARG CIPHER_BUILD_ID=unrecorded
+LABEL org.opencontainers.image.title="Cipher synthetic local trial" \
+      org.opencontainers.image.revision="${CIPHER_SOURCE_REVISION}" \
+      io.cipher.build-id="${CIPHER_BUILD_ID}"
+ENV CIPHER_BUILD_ID=${CIPHER_BUILD_ID} \
+    CIPHER_SYNTHETIC=1 \
+    CIPHER_SITE=cipher.localhost
+USER frappe
+WORKDIR /home/frappe/frappe-bench
+COPY --chown=frappe:frappe platform/apps/cipher_aec/ apps/cipher_aec/
+# The upstream runtime omits setuptools. Install exact build-tool versions rather
+# than resolving the app's open-ended build-system requirement during each build.
+# The app's two runtime dependencies are exact pins in pyproject.toml.
+RUN env/bin/pip install --no-cache-dir setuptools==80.9.0 wheel==0.45.1 \
+    && env/bin/pip install --no-cache-dir --no-build-isolation -e apps/cipher_aec
+COPY --chown=frappe:frappe platform/deployment/ /opt/cipher/deployment/
+COPY --chown=frappe:frappe platform/operations/backup-synthetic.sh platform/operations/restore-synthetic.sh /opt/cipher/operations/
+COPY --from=product-build --chown=frappe:frappe /home/frappe/cipher-build/product/dist/ /opt/cipher/product/dist/
+# Docker initializes a new named sites volume from this image directory. Existing
+# volumes are never replaced. Preserve upstream app metadata and assets.
+RUN env/bin/python -c "from pathlib import Path; p=Path('sites/apps.txt'); a=p.read_text().splitlines() if p.exists() else ['frappe','erpnext']; p.write_text('\n'.join(dict.fromkeys([*a,'cipher_aec']))+'\n')"
+ENTRYPOINT ["/home/frappe/frappe-bench/env/bin/python", "/opt/cipher/deployment/run-portable-services.py"]
+CMD []
