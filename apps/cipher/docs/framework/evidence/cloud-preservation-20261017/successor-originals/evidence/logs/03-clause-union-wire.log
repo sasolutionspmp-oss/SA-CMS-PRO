@@ -1,0 +1,35 @@
+test_current_original_rights_and_closed_project_block_new_work_but_not_immutable_history (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_current_original_rights_and_closed_project_block_new_work_but_not_immutable_history) ... ok
+test_exact_original_and_successor_redlines_and_independent_relationship_never_edit_target (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_exact_original_and_successor_redlines_and_independent_relationship_never_edit_target) ... ok
+test_exact_source_range_and_immutable_target_digest_required_before_effect (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_exact_source_range_and_immutable_target_digest_required_before_effect) ... ok
+test_independent_person_latest_proposal_and_original_target_authority_are_required (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_independent_person_latest_proposal_and_original_target_authority_are_required) ... ok
+test_late_receipt_failure_rolls_back_proposed_revision_and_history (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_late_receipt_failure_rolls_back_proposed_revision_and_history) ... ok
+test_source_update_and_newer_library_do_not_rewrite_referenced_text_or_old_redline_receipt (cipher_aec.tests.test_document_control_lineage.ClauseLineageTests.test_source_update_and_newer_library_do_not_rewrite_referenced_text_or_old_redline_receipt) ... ok
+test_dependency_growth_after_scope_discovery_fails_before_first_source_lock (cipher_aec.tests.test_document_control_lineage.ClauseLockAndWireTests.test_dependency_growth_after_scope_discovery_fails_before_first_source_lock) ... ok
+test_full_original_source_and_rights_evidence_union_precedes_first_master_and_locks (cipher_aec.tests.test_document_control_lineage.ClauseLockAndWireTests.test_full_original_source_and_rights_evidence_union_precedes_first_master_and_locks) ... ERROR
+test_literal_redline_packet_and_effect_are_valid_with_opaque_full_manifest_hash (cipher_aec.tests.test_document_control_lineage.ClauseLockAndWireTests.test_literal_redline_packet_and_effect_are_valid_with_opaque_full_manifest_hash) ... ok
+
+======================================================================
+ERROR: test_full_original_source_and_rights_evidence_union_precedes_first_master_and_locks (cipher_aec.tests.test_document_control_lineage.ClauseLockAndWireTests.test_full_original_source_and_rights_evidence_union_precedes_first_master_and_locks)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lineage.py", line 102, in test_full_original_source_and_rights_evidence_union_precedes_first_master_and_locks
+    context=locking.DocumentContext('C','P',[('clause_use',use['id'])],[target]);context.prelock(s.actor);plan=deepcopy(context.initial)
+                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 120, in prelock
+    planned=self.discover(actor)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 86, in discover
+    row=FrappeDocumentRepository().revision_scope(ref['revision_id'])
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 61, in <lambda>
+    for target,name,value in [(repo,'raw',raw),(repo,'write',write),(repo,'latest',latest),(repo,'official',lambda kind,subject_id,lock=False:next((deepcopy(v) for (k,_),v in state.rows.items() if k==kind and v.get('subject_id')==subject_id),None)),(rights,'current',lambda name,lock=False:latest('rights',name,lock)),(service,'_document',document),(service.FrappeDocumentRepository,'revision_scope',lambda self,name:locator(name)),(service,'run_command',command)]:stack.enter_context(patch.object(target,name,value))
+                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 45, in locator
+    v=state.documents[name];return SimpleNamespace(name=name,company='C',project='P',scope_type='Project',document=v['document_id'])
+      ~~~~~~~~~~~~~~~^^^^^^
+KeyError: '30c6723d-64d4-4850-abc5-768ed630d180'
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.321s
+
+FAILED (errors=1)

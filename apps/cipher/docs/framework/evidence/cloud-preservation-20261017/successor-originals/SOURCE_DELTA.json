@@ -1,0 +1,315 @@
+{
+  "added": [
+    {
+      "bytes": 0,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_application/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2563,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_application/cipher_clause_application.json",
+      "sha256": "45b5095147548bd7646dd1033061cb90b9e97d043cbc4989e4aa128023ffb8e2"
+    },
+    {
+      "bytes": 126,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_application/cipher_clause_application.py",
+      "sha256": "90978470066fc7b95e358ea4055a9cfc279b18d9f02dc8813c41cfb0acfd900a"
+    },
+    {
+      "bytes": 0,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_use/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2555,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_use/cipher_clause_use.json",
+      "sha256": "fbc10c02f855203e29f22383cc984acfa22236abf352bf582de97e85a649adc2"
+    },
+    {
+      "bytes": 118,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_clause_use/cipher_clause_use.py",
+      "sha256": "8e7e2f72ecac0e52ecfeb3df907c97e8639ff468e50234b6a7ab8e0a8ea9ce10"
+    },
+    {
+      "bytes": 0,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_event/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2569,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_event/cipher_document_lifecycle_event.json",
+      "sha256": "b420cf274da5f7162476e22c7078382a7ac0b8427a6337e7fd1b9f70c4b7479b"
+    },
+    {
+      "bytes": 131,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_event/cipher_document_lifecycle_event.py",
+      "sha256": "38eed1b8c676b87a51058ea3093246447dbb2bf7195f8ffaae41441e364e2f82"
+    },
+    {
+      "bytes": 0,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_request/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2571,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_request/cipher_document_lifecycle_request.json",
+      "sha256": "2b48a20b5c25348f53fb30748d4be5d6e7f16fa1f9270a0dd2c2a0412a0fd772"
+    },
+    {
+      "bytes": 133,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_document_lifecycle_request/cipher_document_lifecycle_request.py",
+      "sha256": "6188f9320110e7f94d52abb81ed6ec5443017a546d24a283b4495a7079cd124d"
+    },
+    {
+      "bytes": 0,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_redline_revision/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2561,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_redline_revision/cipher_redline_revision.json",
+      "sha256": "562fe67d4437a031177ecb8b078a1efeacf7eb3a05fb685f15310447e8051270"
+    },
+    {
+      "bytes": 124,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_redline_revision/cipher_redline_revision.py",
+      "sha256": "12f54f40a88b66dd8ad26aedac2bb5c3f5a3ab7324ee41486dd26c4928c99ad8"
+    },
+    {
+      "bytes": 9880,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/clauses.py",
+      "sha256": "9d3a78813f15dcb16e51e83be0c0dd25d16fe195836f3b4c9b9965d0153da4d5"
+    },
+    {
+      "bytes": 546,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/company-route-contracts.json",
+      "sha256": "ed1fbd7b48420fff1443adf1d38855e7744df85e02373c30da34ba9470477a7f"
+    },
+    {
+      "bytes": 1021,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/company_api.py",
+      "sha256": "48202b5cbda03d656ba203e3668d7aaecc7b511b01c192ed730923383b682872"
+    },
+    {
+      "bytes": 8993,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py",
+      "sha256": "8f2716fef4634eea4cc5a3769cb1b766b7ccc5acf78611261fcd267a38743b5a"
+    },
+    {
+      "bytes": 13039,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py",
+      "sha256": "1f412f5bcb0af5e5fb50e1b4d5991de7d77fd0980de845c53cc6fb399192fe16"
+    },
+    {
+      "bytes": 1069,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/scopes.py",
+      "sha256": "58646225269bbf58b5321361123c2bf70c0b213f915a83aff8494c55da2f132f"
+    },
+    {
+      "bytes": 13981,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py",
+      "sha256": "c7f3e447ef67edeb6b4a26b30235e72da46b61539f5b21d442b9cdd0a5058dbf"
+    },
+    {
+      "bytes": 13680,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lineage.py",
+      "sha256": "57c355ddc2b25dad434f92f731c24f2faa5d01994f5ccf6bbba048b8e3de7004"
+    },
+    {
+      "bytes": 12381,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py",
+      "sha256": "c4bba61276f3da485ff41bdb8a4c405f7b7e817df3820648f3a89af730b557f5"
+    }
+  ],
+  "baseline_count": 880,
+  "current_count": 904,
+  "deleted": [],
+  "modified": [
+    {
+      "baseline_sha256": "760a3f799c582e3a88c7fc3ceac2b467db833fb1fc16cbd6cb07d74863955d24",
+      "bytes": 12477,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/catalog.py",
+      "sha256": "8bb440c88f4c661b3629329253e6499912b0226b958a56c0e7f1bbb45fa0ce75"
+    },
+    {
+      "baseline_sha256": "19a3f15af7fd476c3d1050e214cbff69075a1ee231b850641e40cf93c53c6d6d",
+      "bytes": 4012750,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.json",
+      "sha256": "2c361a6504453c69fff64146c54127448100081fb679c25d3fe205e5266226d7"
+    },
+    {
+      "baseline_sha256": "3a1a5bf6ed47bbdadffa1b57c5315bc5a365c5cd362955023dce3f508961b861",
+      "bytes": 19744,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/openapi.py",
+      "sha256": "9fed6247f4b9335e7ba52757a594ffc05319b8b7cdc585bff65036e2e0c17ee7"
+    },
+    {
+      "baseline_sha256": "d542d9ec06d54c774fb935ff471c6c5c5ea253a26848e852a88271eb692a43af",
+      "bytes": 262268,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/api/schema.json",
+      "sha256": "5d04a69e8898b4afb910148ea9d117f9fae16b1289a589f5d9ec8fcab197d044"
+    },
+    {
+      "baseline_sha256": "612067f8cc1d8e1e3fdd010438b474e9ed05a7b1c96daf515df9588972609271",
+      "bytes": 2567,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_library_entry/cipher_library_entry.json",
+      "sha256": "ae8eb18df8dcc60faccfb6d592b19810bb38180ee9a06ed71b9b5c2f1379842f"
+    },
+    {
+      "baseline_sha256": "80437b8a06446754636d3f87915f2a3b8e5b4ac340a032aac5795093cddf8e9c",
+      "bytes": 2570,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_library_revision/cipher_library_revision.json",
+      "sha256": "37445fe5a37b36bfc712e59d172b0dc7f0d9a9442cc37e5c40f81d874a44a5e3"
+    },
+    {
+      "baseline_sha256": "50f3eb660e1d27e4e78dd77efba7460599bd42a285eeeb17c11429f2a54f461d",
+      "bytes": 2576,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/cipher_document_control/doctype/cipher_source_rights_revision/cipher_source_rights_revision.json",
+      "sha256": "e568391b030858b2ce8ad5dc4720550d79671f28597db4159bde7275f3f8c51a"
+    },
+    {
+      "baseline_sha256": "5eeaf9659060f6f2e3b888a1789aba2d8b93d77790fe32a56f8d54e685e17f58",
+      "bytes": 3359,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/api.py",
+      "sha256": "1ef9ecd79f7ebf73f935017c253506344a2be60c7353e372d489b31f2abf01ec"
+    },
+    {
+      "baseline_sha256": "dac7f48f66aa02b82be53271f7bf89e72161e4d7e6b9e78dd930f01115c70670",
+      "bytes": 4661,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/contracts.py",
+      "sha256": "dd11abf075c8deda922629deab8245e571e6fd26bb8e36e3a5fb82607dd84619"
+    },
+    {
+      "baseline_sha256": "78da4f5370fea3209c2026be1e0ae5a4390c6f4de0ca0bd1fa362badc30f59cb",
+      "bytes": 10519,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py",
+      "sha256": "d40fd8c219cdeffd56b005146718367f52aacf6502bc15de7ddb384b2add664b"
+    },
+    {
+      "baseline_sha256": "400af00ae1b5ba8cd62e92c2541037c27927ceff5659fa2a83a22c1521fd8cf2",
+      "bytes": 807,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/install.py",
+      "sha256": "661b197efba4552a96c11d01ca6ca290700af28c6ee3c0ddd4a0599eb29dabf3"
+    },
+    {
+      "baseline_sha256": "c33b1492c061e131f6a9c791b4dea20793409890425c7671720b13312e752409",
+      "bytes": 5692,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/records.py",
+      "sha256": "df4590ed864de63079a128b0d13d5eb66ffcdb4cef263cb7e7e0e962a09b7e81"
+    },
+    {
+      "baseline_sha256": "d02ce57449695641434ac1050d7b2992a7c578b2818afee90aa9d88bc10db1ca",
+      "bytes": 4889,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/repository.py",
+      "sha256": "5d30a08aa61a454914d7a96b72ffc5561ddf8c598ecd20bfcd082bd8e59b92ac"
+    },
+    {
+      "baseline_sha256": "1b398e69a2b111d176afa7609f20bc76e581f20dd17d9776dac3c999f6efd8dd",
+      "bytes": 5762,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/rights.py",
+      "sha256": "7b2652e58de6926ee8aefceb079edb3a3a388c6891e6ec7849c02142c2f8aafd"
+    },
+    {
+      "baseline_sha256": "87ae6ea82be84cc6148f2528a800649bf8ef387768a7b586293ac433ebfd1e3f",
+      "bytes": 1413,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/route-contracts.json",
+      "sha256": "a7228b19478c985343c2a81713c897f7d8baeb4daf0d19d0bb3835d7e1315f73"
+    },
+    {
+      "baseline_sha256": "8a1f1e9037f60ed0ff78a6fbcc0854026514cac4a1e3746548557ac578ec2a57",
+      "bytes": 82518,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/schemas/api-v1.schema.json",
+      "sha256": "55bb81d3ad334229e8bca4e55a3d816fa01ee48f4c655f7138f43cf87902cbe8"
+    },
+    {
+      "baseline_sha256": "04c1a1a62879abcd8d9ea51789aa70e9a8c5c5dbc3a793038a51e8263f48f462",
+      "bytes": 28935,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py",
+      "sha256": "b20712baab17a525666cb53ea1c02eafe1edc85dd6a1d5652ef533abf143fe8f"
+    },
+    {
+      "baseline_sha256": "4cdb19e89ec2ccb79284288423a63c7d3988107c6c9782376790eed466666e9c",
+      "bytes": 24882,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/provenance.py",
+      "sha256": "eeb2eace0e7d3499ad56128bb82f9c153933abb8132649bcaa2e209a58a0f1d0"
+    },
+    {
+      "baseline_sha256": "432c5cd1206cb659f0f659cbb030791500de9dc75aad22d3076c23b4cab3fa3d",
+      "bytes": 3953,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py",
+      "sha256": "9313b8481aed93cc17e3c8c9b2e99e1f2598873629f8a3933a6a97c34de3dc4d"
+    },
+    {
+      "baseline_sha256": "e90030585406e4e41fc57f8989b9c6cba15add9620bf2527e063abf1a90b512f",
+      "bytes": 11533,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/service.py",
+      "sha256": "89a30636733351f1313e7584fb078fee852e45f07aefddc3deaf977e580f98bc"
+    },
+    {
+      "baseline_sha256": "e5b087dda81a82c8154a9b046aaede11eb9ffd1f0a746a8a255dc7ecf56b092f",
+      "bytes": 41683,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/approvals.py",
+      "sha256": "79a8fdfdc9aeda358c340c61f620065e5177826b66a21210bb911ea6762315f7"
+    },
+    {
+      "baseline_sha256": "a749b43d6bf960c28b7bd87a53f40dc498a0274114e7d9ddd10045bfaf9d27ab",
+      "bytes": 21834,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/commands.py",
+      "sha256": "8cfbb735644997b342568160be60e05277e7d3976a72bf8f1a51f71bf2bab1cc"
+    },
+    {
+      "baseline_sha256": "ad542376e317de04e97d21fa4f7749e062058296c28650b6448d3759dcf4d0ff",
+      "bytes": 16076,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/context.py",
+      "sha256": "c51a7c968501b5d06e6246c2bd8b3e7c20042e9c3d5a1e5a1704120ec2bc9bf7"
+    },
+    {
+      "baseline_sha256": "6072623ed6977e3f5295beef2d4c3938268dfa9040cd0ca156df6299cbafcdb7",
+      "bytes": 12064,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/domain_approvals.py",
+      "sha256": "1bdc70f74fcca0cc2bbeead275426bc6897592927ee4f0adf86547a2e8aadded"
+    },
+    {
+      "baseline_sha256": "f46c166620d266e169855e0b5705e1952e11915b9bbebc1ea91c47a9b51f46eb",
+      "bytes": 8926,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/governance/history_access.py",
+      "sha256": "73deef66c02100fffec25eee78d3fa16078352b1cc254b398dc9338b98cc71f6"
+    },
+    {
+      "baseline_sha256": "656dad37aa206a4f41ed96bd2b85a970ba27e85e5a2e8a0135ac6622d0435bfd",
+      "bytes": 8760,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/hooks.py",
+      "sha256": "23fbfadaf520d1348a104dcd2c594a33f4d5f5bab30fb513faa3d2d464027318"
+    },
+    {
+      "baseline_sha256": "23fc4c83ac9be517683db1736977ac017168b6ad9d54de07bfa053f40606fc3e",
+      "bytes": 14217,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/install.py",
+      "sha256": "07dbbb1bc8e2dfa8b3e88ce8a9381cbc8f0fa967fb18a3c3fdff1d2e1c8a11a6"
+    },
+    {
+      "baseline_sha256": "545c29bfdfe8e9076c7ffef1fe620916d2358f17f54b5d41ec0839eed3175292",
+      "bytes": 30865,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py",
+      "sha256": "fff75b37bdb85be0633e5bad6704a08bea4e142b2f9a1565558a8e531bc729a0"
+    },
+    {
+      "baseline_sha256": "86f3befe38970455aea91b545080f35059f7be4c5337bdae871b6cd9b23108ab",
+      "bytes": 10630,
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native.py",
+      "sha256": "d6dd0163730b0b32ba0ff8b1c167615a3d43ed597b5f0233e1dcc741c259cef3"
+    },
+    {
+      "baseline_sha256": "a1781f3653b59587a51a9120a5402a55972ce48fc84e54a9f474d271f3da229e",
+      "bytes": 123526,
+      "path": "apps/cipher/product/src/api/contracts.generated.ts",
+      "sha256": "79b39b25ad31679b0117fc00c8df6da7de8bfc6c1c40d22de4c06315ce687602"
+    },
+    {
+      "baseline_sha256": "c89f4ea5640adc329eb0eb90d6442012b76efb312d438562ce6cf0d6f1e1973d",
+      "bytes": 14841,
+      "path": "apps/cipher/product/src/api/document-control.generated.ts",
+      "sha256": "31ecd1f03af79c7b88004afcdb336a5ca4564502a5041f055aaa77664e7a93db"
+    }
+  ]
+}

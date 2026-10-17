@@ -1,0 +1,15 @@
+{
+  "fresh_host_cases": 183,
+  "new_DOC03_cases": 31,
+  "compatibility_cases": 152,
+  "host_report": "/dev/shm/cipher-documents-doc03/logs/28-final-outer-manifest-affected.log",
+  "generated_count": 16,
+  "generated_report": "/dev/shm/cipher-documents-doc03/logs/27-expanded-generated-check.log",
+  "openapi": "passed",
+  "syntax": "passed",
+  "typecheck": "pending_root_integrated_UI_gate",
+  "browser": "not_run",
+  "build": "not_run",
+  "native": "declared_not_executed",
+  "full_DOC03_C20_complete": false
+}

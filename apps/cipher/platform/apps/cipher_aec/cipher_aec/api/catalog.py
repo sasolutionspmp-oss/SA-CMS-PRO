@@ -211,7 +211,19 @@ _module("cipher_aec.engineering_packages.api", {
 })
 
 
-_module("cipher_aec.document_control.api", {'set_rights': ('POST', 'DcSetRightsResponse', True), 'create_library': ('POST', 'DcCreateLibraryResponse', True), 'revise_library': ('POST', 'DcReviseLibraryResponse', True), 'create_adoption': ('POST', 'DcCreateAdoptionResponse', True), 'create_issue_set': ('POST', 'DcCreateIssueSetResponse', True), 'create_transmittal': ('POST', 'DcCreateTransmittalResponse', True), 'record_evidence': ('POST', 'DcRecordEvidenceResponse', True), 'get_record': ('GET', 'DcGetResponse'), 'list_records': ('GET', 'DcListResponse'), 'list_people': ('GET', 'DcPeopleResponse')})
+_module("cipher_aec.document_control.api", {
+    "create_shared_adoption": ("POST", "DcCreateSharedAdoptionResponse", True),
+    "create_clause_use": ("POST", "DcCreateClauseUseResponse", True),
+    "create_redline": ("POST", "DcCreateRedlineResponse", True),
+    "read_clause_target": ("GET", "DcClauseTargetResponse"),'set_rights': ('POST', 'DcSetRightsResponse', True), 'create_library': ('POST', 'DcCreateLibraryResponse', True), 'revise_library': ('POST', 'DcReviseLibraryResponse', True), 'create_adoption': ('POST', 'DcCreateAdoptionResponse', True), 'create_issue_set': ('POST', 'DcCreateIssueSetResponse', True), 'create_transmittal': ('POST', 'DcCreateTransmittalResponse', True), 'record_evidence': ('POST', 'DcRecordEvidenceResponse', True), 'get_record': ('GET', 'DcGetResponse'), 'list_records': ('GET', 'DcListResponse'), 'list_people': ('GET', 'DcPeopleResponse')})
+
+_module("cipher_aec.document_control.company_api", {
+    'set_rights': ('POST', 'DcCompanySetRightsResponse', True),
+    'create_library': ('POST', 'DcCompanyCreateLibraryResponse', True),
+    'revise_library': ('POST', 'DcCompanyReviseLibraryResponse', True),
+    'get_record': ('GET', 'DcCompanyGetResponse'),
+    'list_records': ('GET', 'DcCompanyListResponse'),
+})
 
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

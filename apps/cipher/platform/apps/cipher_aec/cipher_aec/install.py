@@ -219,7 +219,7 @@ def grant_synthetic_company_duties(user, company, abilities=None):
     assert_synthetic_site()
     if frappe.session.user != "Administrator":
         raise DomainError("administrator_required", "Only the synthetic administrator may grant fixture duties.", 403)
-    abilities = abilities or sorted(COMPANY_ABILITIES)
+    abilities = abilities or sorted(COMPANY_ABILITIES - DOCUMENT_CONTROL_ABILITIES)
     person = frappe.db.get_value("Cipher Identity Binding", {"user": user, "active": 1}, "person")
     if not person or not frappe.db.exists("Company", company):
         raise DomainError("not_found", "The explicit fixture identity or Company is unavailable.", 404)

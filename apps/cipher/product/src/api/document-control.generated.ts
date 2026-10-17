@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/document_control/schemas/api-v1.schema.json. Do not edit.
- * Source SHA-256: 8a1f1e9037f60ed0ff78a6fbcc0854026514cac4a1e3746548557ac578ec2a57
+ * Source SHA-256: 96a977e44e6576d4586243b5e131cdc1edc24d8c0ee1c0ad5b69565d088d9df1
  * Regenerate: npm run generate:api
  */
 
@@ -34,7 +34,39 @@ export type DcRecord =
   | DcIssue
   | DcTransmittal
   | DcDistribution
-  | DcEvidence;
+  | DcEvidence
+  | DcClauseUse
+  | DcRedline
+  | DcClauseApplication;
+export type DcClauseTargetKind = "proposal_revision" | "contract_revision" | "document_revision";
+export type DcClauseTargetSnapshot =
+  | {
+      kind: "proposal_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: null;
+      scope_type: "Company";
+    }
+  | {
+      kind: "contract_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: string;
+      scope_type: "Project";
+    }
+  | {
+      kind: "document_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: string;
+      scope_type: "Project";
+    };
 
 export interface DcSetRightsRequest {
   company: string;
@@ -167,7 +199,10 @@ export interface DcGetRecordRequest {
     | "issue"
     | "transmittal"
     | "distribution"
-    | "evidence";
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application";
   record_id: string;
 }
 export interface DcListRecordsRequest {
@@ -183,7 +218,10 @@ export interface DcListRecordsRequest {
     | "issue"
     | "transmittal"
     | "distribution"
-    | "evidence";
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application";
   parent_id?: string | null;
   limit?: number;
   cursor?: string | null;
@@ -504,6 +542,110 @@ export interface DcDistribution {
    */
   recipients: DcPerson[];
   channel: "internal";
+}
+export interface DcClauseUse {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "referenced";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  adoption_id: string;
+  adoption_digest: string;
+  source_clause: DcQuotedClause;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  purpose: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: DcArtifact[];
+  target_changed: false;
+}
+export interface DcQuotedClause {
+  reference: DcClauseSourceReference;
+  text: string;
+  text_sha256: string;
+}
+export interface DcClauseSourceReference {
+  revision_id: string;
+  source_sha256: string;
+  page: number;
+  excerpt_sha256: string;
+  start: number;
+  end: number;
+}
+export interface DcClauseTarget {
+  kind: DcClauseTargetKind;
+  id: string;
+  record_digest: string;
+  locator: string;
+}
+export interface DcRedline {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "proposed";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  clause_use_id: string;
+  clause_use_digest: string;
+  predecessor: string | null;
+  revision_number: number;
+  original_text: string;
+  proposed_text: string;
+  proposed_sha256: string;
+  reason: string;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: DcArtifact[];
+  target_changed: false;
+}
+export interface DcClauseApplication {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "approved_relationship";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  effect_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: DcArtifact[];
+  electronic_signature: false;
+  professional_seal: false;
+  external_delivery: false;
+  commercial_execution: false;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  original_text: string;
+  proposed_text: string;
+  proposed_sha256: string;
+  target_changed: false;
 }
 export interface DcListResponse {
   /**

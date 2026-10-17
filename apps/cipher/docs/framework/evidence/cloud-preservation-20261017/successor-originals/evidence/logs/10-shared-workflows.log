@@ -1,0 +1,11 @@
+test_company_library_adoption_issue_and_original_scope_are_exact (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_library_adoption_issue_and_original_scope_are_exact) ... ok
+test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head) ... ok
+test_current_origin_rights_and_original_evidence_revocation_hide_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_current_origin_rights_and_original_evidence_revocation_hide_adoption) ... ok
+test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back) ... ok
+test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption) ... ok
+test_origin_company_and_target_project_permissions_are_independent (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_origin_company_and_target_project_permissions_are_independent) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.160s
+
+OK

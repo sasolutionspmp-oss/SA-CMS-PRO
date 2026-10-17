@@ -66,6 +66,9 @@ def _scope(company, project, scope_type, actor=None, ability=None, lock=False):
 
 def _command(*, scope_type="Project", company, project, **kwargs):
     if scope_type == "Project":
+        from cipher_aec.document_control.locking import for_approval
+        context=for_approval(company,project,kwargs.get('payload',{}))
+        if context is not None:kwargs['document_context']=context
         return run_command(company=company, project=project, **kwargs)
     if scope_type == "Company" and project is None:
         return run_company_command(company=company, **kwargs)
@@ -221,7 +224,7 @@ def present(packet, record, actor, lock=False):
             native_completion=manifest["native_completion"], task_effects={"count": len(manifest["tasks"]), "changes": []})
     else:
         result["review_manifest"] = manifest["domain"]
-    if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1"}:
+    if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1","document.clause.apply.v1","document.lifecycle.v1"}:
         result["schema"] = "cipher.document.approval.v1"
     if packet.action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"}:
         result["schema"] = "cipher.engineering.package-approval.v1"
@@ -582,7 +585,7 @@ def authorize_receipt(actor, company, project, result, *, scope_type="Project"):
     packet = _load(company, project, identifier, True, scope_type=scope_type)
     if packet.action != ACTION:
         domain_approvals.authorize(packet, actor, phase="receipt", lock=True)
-        if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1"} and "effect" in result:
+        if packet.action in {"document.issue.v1","document.library.adopt.v1","document.transmit.v1","document.clause.apply.v1","document.lifecycle.v1"} and "effect" in result:
             from cipher_aec.document_control.service import authorize_receipt as authorize_documentary
             authorize_documentary(actor,company,project,result["effect"],lock=True)
         if packet.action in {"engineering.basis.check.v1", "engineering.calculation.check.v1", "engineering.deliverable.check.v1"} and "effect" in result:

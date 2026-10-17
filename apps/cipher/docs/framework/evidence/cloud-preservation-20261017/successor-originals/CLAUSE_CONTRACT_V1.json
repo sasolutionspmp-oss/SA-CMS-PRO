@@ -1,0 +1,33 @@
+{
+  "workspace": "/dev/shm/cipher-documents-doc03-successor/workspace",
+  "phase": "intermediate implemented contract, not final successor freeze",
+  "files_sha256": {
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/api.py": "0a5ae9f858edf0ce72bb7b67b5fcd0026ce9968f9a7c3b79af3dbf302c71d682",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/clauses.py": "7808873759acea0b1399f7b6f2e481ca4ebfc2da4cba78a6fa69e3266dcda2d9",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py": "d08885a46378b8172715810e3468d508dbf4de51546902b3ccab9020cd24d241",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/scopes.py": "58646225269bbf58b5321361123c2bf70c0b213f915a83aff8494c55da2f132f",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/contracts.py": "4a7d99e80674ab67f41403f1a1ecc93a67c95f958854d0d68911f1b76c841b11",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/schemas/api-v1.schema.json": "96a977e44e6576d4586243b5e131cdc1edc24d8c0ee1c0ad5b69565d088d9df1",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/route-contracts.json": "56c82808b85f576e8858583ea66ff5e94a33966b0aaae4776b613d034f3ae994",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lineage.py": "57c355ddc2b25dad434f92f731c24f2faa5d01994f5ccf6bbba048b8e3de7004",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native.py": "d6dd0163730b0b32ba0ff8b1c167615a3d43ed597b5f0233e1dcc741c259cef3",
+    "apps/cipher/product/src/api/document-control.generated.ts": "31ecd1f03af79c7b88004afcdb336a5ca4564502a5041f055aaa77664e7a93db"
+  },
+  "host_checks": {
+    "passed": 9,
+    "report": "/dev/shm/cipher-documents-doc03-successor/logs/05-clause-union-wire.log"
+  },
+  "source_clause_indices": "Unicode code points, start inclusive/end exclusive in exact canonical citation excerpt; not JavaScript UTF-16 offsets",
+  "actions": {
+    "document.clause.apply.v1": "Cipher Redline Revision"
+  },
+  "effects": "Approved documentary relationship only; target_changed=false; original/proposed wording retained; no target writer",
+  "remaining_successor_scope": [
+    "Company-owned shared library/current dual-scope rights",
+    "Append-only current-issued lifecycle"
+  ],
+  "not_executed": [
+    "native integration workflow declared only",
+    "typecheck/build/browser/native/runtime"
+  ]
+}

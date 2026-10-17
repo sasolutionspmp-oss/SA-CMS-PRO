@@ -1,0 +1,946 @@
+{
+  "schema": "cipher.active-work.v2",
+  "updated_at": "2026-10-17T05:18:22.163518+00:00",
+  "authorization": "Execute the approved fresh Cipher ERP/CMS framework autonomously; preserve current credit-conscious model steering.",
+  "models": {
+    "child": "gpt-6.1-sol",
+    "reasoning": "ultra",
+    "maximum_active_children": 1,
+    "Astra_active": false
+  },
+  "architecture": "SAP UI5 React/Horizon + ERPNext/Frappe16 custom AEC app; QuickBooks official accounting; independent of prior Cipher/Odoo designs",
+  "publication": {
+    "worktree": "/tmp/cipher-company-publication-r10",
+    "local_branch": "cipher/company-ricky-native",
+    "remote_branch": "cipher/framework-final-draft",
+    "PR": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28",
+    "commit": "947bab33d19fd7bc6fb2bba9b223034c2bc6121c",
+    "head": "d21a37a40cd57f93418a8b9e19cd2b80f49607e7",
+    "pr": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28"
+  },
+  "main": {
+    "worktree": "/workspace/cipher-framework-draft",
+    "commit": "7248171c14584deeaa308f850646ef5d7aeec891",
+    "container": "cipher-r0-runtime-1",
+    "site": "cipher.localhost",
+    "award_writer": "disabled",
+    "distribution_consumers": "off",
+    "scheduler": "disabled",
+    "new_Company_source_installed": false
+  },
+  "critical": [
+    "Never retry/rephrase/reconstruct the earlier platform-blocked award recovery driver. /tmp/cipher-award-native-20261015/execute-handoff/platform-block.json remains authoritative.",
+    "Do not restart main run-dev-services.py or its container; do not install newer source in its mounted checkout casually.",
+    "Preserve all original Run/operation UUIDs, receipts, source failures and evidence. Never reset a completed/failed fixture to make it pass.",
+    "Do not rerun closed R10/R11/R12 native gates. R12 quarantine and exact duty/config restoration passed.",
+    "No live Ricky model or QuickBooks connection is qualified."
+  ],
+  "isolated_runtime": {
+    "container": "cipher-ai04-stage-a-20261016-runtime-1",
+    "site": "cipher-ci-ai04-20261016.localhost",
+    "gate_site": "cipher-ci-ai04-gate-20261016.localhost",
+    "host_port": 18886,
+    "app_mount": "/workspace/.cipher-company-integration-20261016/native/runtime-app",
+    "queue": "cipher-ai04-stage-a-20261016:short",
+    "scheduler_paused": true,
+    "workers": 0,
+    "fixture_pointer": "/workspace/.cipher-company-integration-20261016/native/company-fixture-r5-pointer.private.json",
+    "source": "R15 qualified 528 app files + existing 5 installer files; additive DocType sync and isolated web reload passed; 3 applications independently verified; queue/workers/active Runs empty at final audit"
+  },
+  "R12": {
+    "status": "committed_and_pushed",
+    "source_snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r12.json",
+    "snapshot_sha256": "3995bc06cedb7996e5f9bba3cb18517102dc2c6abb2a2ec935627cc83f6aec0d",
+    "source_count": 653,
+    "fixture_only_backend_paths": 4,
+    "fixture_only_browser_paths": 1,
+    "unit_tests_passed": 760,
+    "backend_composed": 812,
+    "browser_composed": 190,
+    "browser_fresh_confirmation": "190_passed_no_failures_skips_retries",
+    "native_preflight": "passed",
+    "declared_native_cases": [
+      "interrupted-read-r12",
+      "recovery-authority-r12",
+      "quarantine-r12"
+    ],
+    "main_changed": false,
+    "production_changed": false,
+    "native_cases": {
+      "interrupted-read-r12": "passed",
+      "recovery-authority-r12": "passed",
+      "quarantine-r12": "passed"
+    },
+    "exact_site_config_restored": true,
+    "receipts_verified": 4,
+    "commit": "66d218e5dc9d11cdb33d5d8d12c426cda36a3708",
+    "secret_scan": "1446_files_56_known_secrets_zero_matches",
+    "hosted_CI": {
+      "run_id": 38859316748,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "R13": {
+    "status": "committed_and_pushed",
+    "draft": "/tmp/cipher-company-history-r13",
+    "agent": "/root/sol_company_ricky_integration",
+    "scope": "prospective canonical Company Ricky Start/Stop command history",
+    "production_paths": 1,
+    "host_tests_passed": 89,
+    "native_executed": true,
+    "source_snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r13.json",
+    "snapshot_sha256": "9fe493ca48277487ce4f1cd0bfd474abf3048d3ac132d70d5b4a767222e6c524",
+    "source_count": 656,
+    "native_production_source_installed": true,
+    "web_reloaded": true,
+    "unit_tests_passed": 782,
+    "backend_composed": 834,
+    "native_cases": "Start_RQ_success_source_free_Stop_current_history_filtering_receipt_replay_passed",
+    "run_id": "ad590765-f0ed-4c7b-99b9-055bc3c146f9",
+    "commit": "947bab33d19fd7bc6fb2bba9b223034c2bc6121c",
+    "secret_scan": "1454_files_56_known_credentials_zero_matches",
+    "hosted_CI": {
+      "run_id": 38861747382,
+      "job_id": 116845361629,
+      "status": "completed",
+      "conclusion": "failure",
+      "failure": "existing product.spec.ts:113 review checkbox .check; browser189passed1failed; backendchecks passed"
+    }
+  },
+  "hosted_CI": {
+    "run_id": 38882030414,
+    "status": "completed",
+    "commit": "0d0224ca529860cc88719cdfb8cb54b42b4ab451",
+    "conclusion": "success",
+    "evidence": "/tmp/cipher-company-publication-r10/apps/cipher/docs/framework/evidence/r1/company-ricky-native-r14/hosted-ci.json"
+  },
+  "screenshots": "apps/cipher/docs/framework/evidence/r1/company-activity-r16/ui/README.md and company-ricky-native-r15/ui/README.md;22 actual native captures across R15/R16",
+  "next": "Finish bounded ENG02 opaque approval-hash correction; integrate frozen original DOC03 Project backend/UI; remaining DOC03 scope stays open",
+  "immutable_prior_state": {
+    "path": "/tmp/cipher-completion/framework-history-through-r12-20261016.private.json",
+    "sha256": "ba51aac65210bfc2232eef26616b6760c8b5829824406d49aae2e775900d4b70"
+  },
+  "R14": {
+    "draft": "/tmp/cipher-company-proposals-r14",
+    "agent": "/root/sol_company_ricky_integration",
+    "status": "published_native_and_actual_browser_qualified_hosted_CI_passed",
+    "production_edits_authorized_in_child": true,
+    "contract_sha256": "a4b7786ac63df9b47587a69c9f9e2fb5bd235a8313533c893258f10b66f02108",
+    "contract_review": "Root approved closed Stage B backend first; native actions and UI deferred until source qualification.",
+    "maximum_backend_paths": 18,
+    "native_input_preflight": {
+      "status": "read_only_passed",
+      "estimate_inputs_available": true,
+      "commercial_prerequisites_missing": [
+        "proposal_revision",
+        "quotation_permission",
+        "selling_price_list",
+        "active_fiscal_year"
+      ],
+      "business_mutations": 0
+    },
+    "native_sequence": "/workspace/.cipher-company-integration-20261016/R14_NATIVE_SEQUENCE.md",
+    "review_findings_in_progress": [],
+    "browser_correction": {
+      "draft": "/tmp/cipher-review-checkbox-r14",
+      "production_changed": false,
+      "test_paths": 7,
+      "checkbox_actions": 11,
+      "original_local_case": "passed_once_trace_retained",
+      "typecheck": "passed_exit0",
+      "first_collection": "setup_error_zero_cases_retained",
+      "first_full_run": "infrastructure_disconnect_empty_report_no_surviving_browser",
+      "current_session": null,
+      "current_report": "dedicated-server-report.private.json",
+      "status": "passed_composed_with_retained_renderer_crash",
+      "second_run": "182 server/import failures and8passes; retained; old reusedVite exited; application files77 hash-equal",
+      "dedicated_port": 5198,
+      "qualification": "/tmp/cipher-review-checkbox-r14/qualification.private.json",
+      "qualification_sha256": "c18b1538f59aba13fbf1b4060cc49f2f29e39d91177c02f621ec873f96f985f2",
+      "unique_cases_passed": 190
+    },
+    "backend_host_tests_agent_reported": 210,
+    "capture_relocation": {
+      "record": "/tmp/cipher-completion/capture-relocation-r14.private.json",
+      "files_hash_verified": 400,
+      "bytes": 69011146,
+      "original_paths_preserved_by_symlink": true
+    },
+    "backend_manifest": "/tmp/cipher-company-proposals-r14/IMPLEMENTATION_MANIFEST.v2.json",
+    "backend_manifest_sha256": "4d4e3cc75065b4152a5592db7d3e86fac0ad4ac88fbcccc69ebb018a3c63b560",
+    "root_source_review": "/workspace/.cipher-company-integration-20261016/source-review-r14.json",
+    "review_findings_closed": [
+      "Exact ordered dependencies and citation references",
+      "Canonical original rational quantity reconstruction",
+      "Actual authorized citation objects required before invocation persistence, finalization and terminal reads"
+    ],
+    "composed_draft": "/tmp/cipher-company-integration-r14/workspace",
+    "backend_gate": {
+      "status": "passed",
+      "session_id": null,
+      "script": "/workspace/.cipher-company-integration-20261016/qualify_proposal_backend_r14.py",
+      "snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r14-backend-v2.json",
+      "snapshot_sha256": "7456eea98649eebe9c790048d225b8453eeeace8a30054df3e2642163faba4b5",
+      "candidate_container_path": "/tmp/cipher-r14-validation-app",
+      "web_source_overlaid": false,
+      "report": "/workspace/.cipher-company-integration-20261016/backend-r14-v2-qualification.json",
+      "report_sha256": "1f52a2cbdc829b6aad4287ef5a8358d6da2eb260189c3adc3237c174d592f18a",
+      "tests": 862,
+      "unit_tests": 810,
+      "integration_tests": 52,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "openapi": "passed",
+      "web_source_unchanged": true
+    },
+    "ui_boundary": "/tmp/cipher-company-proposals-r14/UI_IMPLEMENTATION_BOUNDARY.md",
+    "prerequisites": {
+      "source_v2": "/tmp/cipher-company-proposals-r14/native-draft/prerequisite-v2/MANIFEST.json",
+      "native_tests": 10,
+      "prepare": "passed",
+      "local_precheck": "raw SQL NULL vs accessor empty string expectation corrected; no native call",
+      "native_apply": "failed exact permission assertion; retained original",
+      "cause": "native Custom DocPerm export default1; supported helper did not explicitly deny it",
+      "first_reconcile": "failed original retained; old rows unchanged",
+      "independent_rollback": "exact full inventory restored, new masters and permissions absent, site config unchanged",
+      "rollback_proof": "/workspace/.cipher-company-integration-20261016/native/r14-prerequisites-rollback-and-defaults.private.json",
+      "failed_record_sha256": "b70abfac9dd015e0ded5fbee0ec8e68e7d815b53cb436aeaba7c962b71c21159",
+      "next": "review corrected exact flag setter and separately named, failure-linked preparation; do not reset old record",
+      "status": "audited_correction_committed_and_independently_verified",
+      "original_attempts": "Two failures permanently retained; both full rollbacks verified",
+      "audit_cause": "13 exact normal Property Setter deletion Comments",
+      "audit_diagnostic": "Rollback-only, original records unchanged, all inventory restored",
+      "committed_record_sha256": "d94ef26456bf1ef3517630fff1fec42f79ac691d026eddb673a36452808a602f",
+      "native_permission_grants": "exact2 fixture-role rows;21 supported original default copies",
+      "native_audit_comments": 13,
+      "proof": "/workspace/.cipher-company-integration-20261016/native/r14-prerequisites-independent-final.private.json"
+    },
+    "helper_manifest": "/tmp/cipher-company-proposals-r14/native-draft/frozen-v4/MANIFEST.json",
+    "helper_tests": 25,
+    "backend_composed": 887,
+    "snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r14-native-v4.json",
+    "native_production_source_installed": true,
+    "web_reloaded_once": true,
+    "ui": {
+      "agent": "/root/sol_company_ricky_integration",
+      "draft": "/tmp/cipher-company-proposal-ui-r14/workspace",
+      "status": "published_with_nine_actual_captures",
+      "native_actions_by_child": 0
+    },
+    "native_cases": {
+      "prepare": "passed",
+      "targets": "failed403 response-schema refusal; preserved original manual UUID f04af4cc-df9c-4b5b-a045-7bba2ade75b5; no receipt or business effect",
+      "reconcile": "failed old-row preservation because native session updated only author User.last_active",
+      "runs_started": 0,
+      "diagnosis": "ERPNext get_party_account requires Account select/read; quotation controller raised native_permission_denied. Rollback-only diagnostic preserved full before inventory and original journal."
+    },
+    "wire_fix": {
+      "draft": "/tmp/cipher-canonical-wire-r14",
+      "production_path": "api/boundary.py",
+      "actual_frappe_before": "4 cases;2 intended failures0errors",
+      "actual_frappe_after": "4 passed",
+      "full_gate": "running session6330",
+      "snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r14-wire.json",
+      "runtime_installed": false
+    },
+    "canonical_wire_current": {
+      "source_snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r14-wire.json",
+      "qualification": "/workspace/.cipher-company-integration-20261016/backend-r14-wire-storage-retry.json",
+      "status": "passed_composed",
+      "fresh_unit": 835,
+      "retained_integration": 56,
+      "total": 891,
+      "original_full_attempt": "failed_195_errors_192_explicit_ENOSPC_3_renderer_unavailable",
+      "failure_retained": "/tmp/cipher-new-stack-jf258rt8/frappe-unit-junit-failed.xml",
+      "all_units_pass_after_storage_relocation": true,
+      "installed_isolated_web": true,
+      "web_reload": "/workspace/.cipher-company-integration-20261016/native/web-r14-wire-reload.private.json"
+    },
+    "account_select_supplement": {
+      "status": "committed_and_reconciled",
+      "record": "/home/frappe/frappe-bench/sites/cipher-ci-ai04-20261016.localhost/private/cipher-fixtures/company-proposal-account-select-r14/permission.secret.json",
+      "sha256": "cb163555954515ddc50b40c912c9bfa8398aab19be15631d7dfa894fcbf2ebbb",
+      "all_old_rows_unchanged": true,
+      "account_select_only": true,
+      "new_custom_permissions": 18
+    },
+    "ui_current": {
+      "status": "passed_composed_220_and_nine_actual_captures",
+      "manifest": "/tmp/cipher-company-proposal-ui-r14/frozen-v1/MANIFEST.json",
+      "focused_passed": 30,
+      "build_log": "/tmp/cipher-company-ui-r14-qualification/build.log",
+      "full_report": "/tmp/cipher-company-ui-r14-qualification/browser-report.json",
+      "port": 5198,
+      "workers": 1,
+      "full_browser_session": null,
+      "first_full_attempt": {
+        "status": "aborted_after_font_serving_configuration_error",
+        "passed": 27,
+        "unexecuted": 193,
+        "report": "/tmp/cipher-company-ui-r14-qualification/first-vite-font-refusal/browser-report.json"
+      },
+      "correction": "Exact product/shared dependencies fs.allow, private cache /dev/shm/cipher-vite-r14-qualification; no product change",
+      "live_capture_prepared": "/tmp/cipher-company-live-ui-r14-20261016",
+      "production_build_files": 905,
+      "full_stats": {
+        "expected": 219,
+        "unexpected": 1,
+        "flaky": 0,
+        "skipped": 0
+      },
+      "failed_case": "proposal-output.spec.ts:29 prepared-PDF independent issue review; locator.click Target crashed",
+      "qualification": "/tmp/cipher-company-ui-r14-qualification/qualification.json",
+      "focused_failed_case_passed": true,
+      "actual_capture": "/tmp/cipher-company-live-ui-r14-20261016/verification.private.json",
+      "captures": 9,
+      "actual_api_gets": 23
+    },
+    "continuation_helper": {
+      "agent": "/root/sol_company_ricky_integration",
+      "status": "prepared_and_targets_ready",
+      "boundary": "new journal preserving failed original UUID/cookies/baseline; exact session heartbeat attribution; no runtime actions by child",
+      "new_tests": 16,
+      "existing_helper_tests": 25,
+      "effective_timezone": "Asia/Kolkata",
+      "raw_timezone_value": null,
+      "manifest": "/tmp/cipher-company-proposal-continuation-r14/frozen-v3/MANIFEST.json",
+      "source_snapshot": "/workspace/.cipher-company-integration-20261016/snapshot-r14-final.json",
+      "qualification": "/workspace/.cipher-company-integration-20261016/qualified-r14-continuation.json",
+      "composed_backend_tests": 907
+    },
+    "continuation_driver": "/workspace/.cipher-company-integration-20261016/run_company_proposals_r14_continuation.py",
+    "native_current": {
+      "runner": "/workspace/.cipher-company-integration-20261016/run_company_proposals_r14_continuation.py",
+      "native_manifest": "/home/frappe/frappe-bench/sites/cipher-ci-ai04-20261016.localhost/private/cipher-fixtures/company-proposals-r14-continuation/fixture.secret.json",
+      "status": "passed_four_cases_finish_reconcile_and_browser_preservation",
+      "active_session": null,
+      "scope_r14": "start_rq_verify_passed",
+      "estimate_r14": "start_rq_verify_passed",
+      "successors": "passed",
+      "checkpoint_rollback_r14": "recovered_by_ordinary_RQ_and_verified",
+      "cancel_after_preparation_r14": "stop_verified_cancelled_old_lease_refused_queue_hint_noop",
+      "wrapper_error": {
+        "phase": "verify cancel-after-preparation-r14",
+        "error": "Use the distinct cancellation verifier for its case.",
+        "state_changed": false,
+        "original_output_retained": true
+      }
+    },
+    "publication_current": {
+      "status": "pushed",
+      "worktree": "/tmp/cipher-company-publication-r10",
+      "source_paths": 44,
+      "source_files_verified": 679,
+      "gallery": "apps/cipher/docs/framework/evidence/r1/company-ricky-native-r14/ui/README.md",
+      "commit": "0d0224ca529860cc88719cdfb8cb54b42b4ab451",
+      "hosted_CI_run": 38882030414
+    }
+  },
+  "R15": {
+    "status": "committed_pushed_hosted_CI_passed",
+    "child": "/root/sol_r15_backend_review",
+    "directory": "/tmp/cipher-company-draft-save-r15",
+    "production_edits_authorized_to_child": true,
+    "runtime_actions_authorized_to_child": false,
+    "ui_workspace": "/tmp/cipher-company-draft-ui-r15/workspace",
+    "ui_navigation": "one failing-first regression; correction passed; initial post-correction fixture refusal preserved",
+    "prior_child_failure": "Usage limit; no source lost",
+    "ui_source_manifest": "/tmp/cipher-company-draft-ui-r15/frozen-ui-v1/MANIFEST.json",
+    "ui_qualification": "/tmp/cipher-company-draft-ui-r15/qualification/qualification.json",
+    "native_runtime_changed": true,
+    "integrated_workspace": "/tmp/cipher-company-integration-r15/workspace",
+    "source_snapshot": "/tmp/cipher-company-integration-r15/snapshot.json",
+    "backend_qualification": "/tmp/cipher-company-integration-r15/backend-qualification.private.json",
+    "backend_fresh_tests": 942,
+    "backup": "/tmp/cipher-company-integration-r15/backup-before-sync.private.json",
+    "native_migration": "single supported DocType reload; no full migration",
+    "native_source_installed": true,
+    "native_sync_preservation": "/tmp/cipher-company-integration-r15/sync-preservation.private.json",
+    "native_old_rows_preserved": 25279,
+    "native_old_tables_preserved": 820,
+    "new_metadata_rows": 15,
+    "isolated_web_reloaded": true,
+    "web_reload": "/tmp/cipher-company-integration-r15/isolated-web-reload.private.json",
+    "native_readonly_preflight": "/tmp/cipher-company-integration-r15/native-readonly-preflight.private.json",
+    "native_journal_created": true,
+    "ui_preview_port": 5202,
+    "native_prepare": "passed",
+    "native_targets": "passed",
+    "native_driver": "/tmp/cipher-company-integration-r15/run_native.py",
+    "native_positive_cases": {
+      "scope-r15": "save_and_independent_verify_passed",
+      "estimate-r15": "save_and_independent_verify_passed"
+    },
+    "actual_browser": {
+      "status": "passed",
+      "captures": 13,
+      "actual_api_gets": 48,
+      "mocked_api_responses": false,
+      "browser_errors": 0
+    },
+    "storage": {
+      "inactive_snapshots_relocated": "/tmp/cipher-completion/inactive-host-snapshots-relocation-r15.private.json",
+      "bytes_preserved": 24100972,
+      "root_reserved_free_before_relocation": 1692864512
+    },
+    "positive_native_audit": "/tmp/cipher-company-integration-r15/native-audit-original.private.output.json",
+    "positive_native_audit_passed": true,
+    "historical_checks": "both_successor_and_natural_expiry_read_and_same_uuid_replay_passed",
+    "native_boundary_cases": "eight passed; concurrency independently reconciled; original failed expectations retained",
+    "native_boundary_driver": "/tmp/cipher-company-integration-r15/run_boundaries.py",
+    "native_boundary_manifest": "/dev/shm/cipher-r15-boundaries/fixture.secret.json",
+    "native_boundary_helper_qualification": "/tmp/cipher-company-integration-r15/native-helper-v3-qualification.private.json",
+    "positive_manifest_preserved": true,
+    "storage_continuation": "/tmp/cipher-company-integration-r15/storage-continuation-prepare.private.json",
+    "native_boundary_results": {
+      "cancel-before-finalization-r15": "passed",
+      "source-outage-r15": "passed",
+      "native-write-outage-r15": "passed",
+      "duty-outage-r15": "passed",
+      "stale-target-r15": "passed",
+      "identity-refusal-r15": "passed",
+      "two-operation-r15": "one winner; original 503concurrent_change and same-loserUUID 409draft_save_expired retained; no further retry",
+      "rollback-r15": "passed_genuine_authenticated_loopback_instance_rollback",
+      "unsaved-expiry-r15": "passed_original_natural_expiry"
+    },
+    "race_reconciliation": "/tmp/cipher-company-integration-r15/race-original-independent-reconciliation.private.json",
+    "native_listener_qualification": "/tmp/cipher-company-integration-r15/native-rollback-listener-qualification.private.json",
+    "native_rollback": "passed_separate_genuine_authenticated_fixture_listener",
+    "native_rollback_evidence": "/tmp/cipher-company-integration-r15/native-rollback-listener-original.private.output.json",
+    "native_v4_qualification": "/tmp/cipher-company-integration-r15/native-helper-v4-qualification.private.json",
+    "native_adjudication_driver": "/tmp/cipher-company-integration-r15/run_adjudication.py",
+    "unsaved_expiry_case": "reviewed; original deadline 2026-10-17T01:03:45.476596+00:00",
+    "additional_browser_capture": {
+      "eligible": "passed_2captures_9realGET",
+      "expired": "passed_2captures_9realGET",
+      "directory": "/tmp/cipher-company-live-ui-r15-expiry-20261017"
+    },
+    "native_final_audit": "/tmp/cipher-company-integration-r15/final-native-root-audit-original.private.json",
+    "native_final_audit_status": "passed_with_retained_concurrency_expectation_failures",
+    "credential_scan": "/tmp/cipher-company-integration-r15/credential-scan-actual-only.private.json",
+    "legacy_precommit": "2703 passed; unchanged legacy separate from new ERP acceptance",
+    "commit": "6a4bb0abd97a1bef943208e495364d76c924d46e",
+    "hosted_CI": {
+      "run_id": 38990518195,
+      "job_id": 117271678234,
+      "status": "completed",
+      "commit": "6a4bb0abd97a1bef943208e495364d76c924d46e",
+      "conclusion": "success",
+      "stages_passed": 25,
+      "evidence": "apps/cipher/docs/framework/evidence/r1/company-ricky-native-r15/hosted-ci.json"
+    }
+  },
+  "R16": {
+    "status": "committed_pushed_hosted_CI_passed",
+    "agent": "/root/sol_r15_backend_review",
+    "workspace": "/tmp/cipher-company-history-ui-r16/v2/workspace",
+    "scope": "OfficialSAPUI5CompanyActivity usingexistingcanonicalpagedhistoryGET count_mode=none; no backend/newAPI/nativeactions/MAIN changes",
+    "source_base_snapshot": "/tmp/cipher-company-integration-r15/snapshot.json",
+    "capture_prepared": "/dev/shm/cipher-company-live-ui-r16-20261017",
+    "commit": "d21a37a40cd57f93418a8b9e19cd2b80f49607e7",
+    "manifest": "/tmp/cipher-company-history-ui-r16/frozen-ui-v2/MANIFEST.json",
+    "manifest_sha256": "b8875bfcee53681bf6b44bcb10ff714e39b1007eae595731bd13eab4971c9b54",
+    "browser_composed": 262,
+    "backend_changed": false,
+    "build_files": 911,
+    "actual_screenshots": 9,
+    "actual_api_GETs": 3,
+    "native_capture": "/dev/shm/cipher-company-live-ui-r16-20261017/observation-verification.private.json",
+    "inventoried_tables_preserved": 78,
+    "closed_R15_trees_unchanged": true,
+    "retained_full_failure": "256pass1static_dist_path_failure; exact unchanged case passed with correct dist; latest33 focused passed after failing-first4capability cases",
+    "hosted_CI": {
+      "run_id": 38991544819,
+      "status": "completed",
+      "job_id": 117274811851,
+      "conclusion": "success",
+      "stages_passed": 25,
+      "private_log": "/dev/shm/cipher-r16-hosted-job.private.log"
+    }
+  },
+  "R17": {
+    "status": "committed_pushed_actual_native_and_responsive_verified_hosted_CI_pending",
+    "agent": "/root/sol_r15_backend_review",
+    "workspace": "/dev/shm/cipher-company-takeoff-ui-r17/v3/workspace",
+    "source_base_manifest": "/tmp/cipher-company-history-ui-r16/frozen-ui-v2/MANIFEST.json",
+    "scope": "Company pre-award takeoff register, actual raw source PDF, set creation and explicitly manual measurement through unchanged canonical Company contracts; no fake Project/pursuit ownership, backend/native/MAIN/provider changes by child",
+    "port": 5207,
+    "native_sequence": "/dev/shm/cipher-company-live-ui-r17-20261017/NATIVE_SEQUENCE.md",
+    "native_executed": true,
+    "root_review_findings": [
+      "Saved measurement detail must abort/hide when current listing loads/denies or drops membership; failing-first requested",
+      "Ancestor cursor cycles must fail in resource read with hidden old content, not throw from React click handler; failing-first requested"
+    ],
+    "agent_additional_checks": [
+      "Existing global mutation lock disables new takeoff controls",
+      "Denied recovery hides source/form while retaining original command UUID"
+    ],
+    "manifest": "/dev/shm/cipher-company-takeoff-ui-r17/frozen-ui-v3/MANIFEST.json",
+    "manifest_sha256": "9c173151250835f1a57c7b0c75e29b0c8df9a88140c636c76d1ae7fa761c909d",
+    "focused_checks": 72,
+    "source_files": 714,
+    "build_files": 915,
+    "original_native_capture": "/dev/shm/cipher-company-live-ui-r17-20261017/verification.private.json",
+    "original_business_commands": 2,
+    "original_result": "upload_and_set_succeeded; preview422OCRunavailable; no measurementattempt",
+    "original_independent_audit": "passed_exact8newrows_nootherbusinesschanges",
+    "raw_pdf_continuation_prepared": "/dev/shm/cipher-company-live-ui-r17-raw-pdf-continuation-20261017",
+    "continuation_executed": true,
+    "commit": "3c2ed2b66b7a29128b2820f2d4a2ecaf94d5e4de",
+    "continuation_result": "passed_exact1manual_measurement_receipt_history_addition",
+    "actual_screenshots": 12,
+    "final_readonly_GETs": 9,
+    "final_static_byte_checks": 32,
+    "existing_tables_preserved": 77,
+    "inventory_entries": 78,
+    "original_native_failed_status_preserved": true,
+    "final_readonly_capture": "/dev/shm/cipher-company-live-ui-r17-responsive-v3-20261017",
+    "hosted_CI": {
+      "status": "in_progress",
+      "run_id": 38994836151,
+      "job_id": 117284993887
+    }
+  },
+  "R18": {
+    "status": "UI_adapter_and_review_panel_implemented_under_review",
+    "agent": "/root/sol_r15_backend_review",
+    "workspace": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/workspace",
+    "scope": "Attach saved manual Company measurement to an exact saved Company estimate line through canonical bind_line; no repricing/acceptance/calibration/backend/native/MAIN/provider changes",
+    "base_update_requested": "R17v3twoUIlayoutpaths_and_one_regression_test_threewaymerge",
+    "native_target_plan": "/dev/shm/cipher-company-live-ui-r18-20261017/target-plan.private.json",
+    "native_executed": false,
+    "baseline": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/BASELINE_R17_V3.json",
+    "new_source": [
+      "apps/cipher/product/src/CompanyTakeoffBinding.tsx",
+      "apps/cipher/product/src/api/company-takeoff-binding.ts"
+    ],
+    "native_prepare_driver": "/dev/shm/cipher-company-live-ui-r18-20261017/prepare_targets.py",
+    "native_verify_driver": "/dev/shm/cipher-company-live-ui-r18-20261017/verify_targets.py"
+  },
+  "r18_freeze": {
+    "manifest": "/dev/shm/cipher-company-takeoff-binding-ui-r18/frozen-ui-v1/MANIFEST.json",
+    "sha256": "dc70a9acc5c4fd264e5a05319e266c79c1222f1416ed0696ebf3d3edc9fb54d0",
+    "source_count": 719,
+    "focused_checks": 105,
+    "root_reviewed": true,
+    "native_executed": false,
+    "next": "start reviewed production preview then one-shot root native sequence"
+  },
+  "r18_native": {
+    "status": "passed_with_original_setup_and_capture_failures_preserved",
+    "original_setup_error": "HTTP428 idempotency_key_required; zero business effects; corrected header same UUID and payload",
+    "targets": "/dev/shm/cipher-company-live-ui-r18-idempotency-continuation-20261017",
+    "binding": "/dev/shm/cipher-company-live-ui-r18-keyboard-continuation-20261017",
+    "target_commands": 2,
+    "actual_browser_binding_commands": 1,
+    "actual_screenshots": 12,
+    "source_files": 719,
+    "focused_checks": 105,
+    "main_and_runtimes_unchanged": true
+  },
+  "r17_hosted_ci": {
+    "status": "success",
+    "all_25_stages": true,
+    "run_id": 38994836151
+  },
+  "latest_publication": {
+    "commit": "250991b889f38dd8b8ddd0ddda8187192c3c6f78",
+    "worktree": "/tmp/cipher-company-publication-r10",
+    "pr": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28"
+  },
+  "r19_native_preparation": {
+    "plan": "/dev/shm/cipher-company-live-ui-r19-20261017/native-plan.private.json",
+    "verifier_prepared": true,
+    "api_calls_made": 0,
+    "native_executed": false,
+    "capture_driver_prepared": true,
+    "one_shot_driver_prepared": true,
+    "frozen_source_required_before_execution": true,
+    "planned_preview_port": 5216
+  },
+  "next_after_r19": {
+    "slice": "Reopen persisted takeoff evidence and predecessor comparison",
+    "reason": "Saved bindings and immediate successor comparison currently depend on save-view state; users must be able to inspect authoritative stored records after navigation/reload.",
+    "scope": [
+      "bounded Company binding register/detail from canonical existing contracts",
+      "selected successor comparison to explicit stored predecessor",
+      "truthful historical/current eligibility and original estimate/measurement/source lineage"
+    ],
+    "backend_changes_planned": false,
+    "native_qualification": "read-only actual browser flow over R18 binding and R19 successor, every POST blocked"
+  },
+  "r19_freeze": {
+    "manifest": "/dev/shm/cipher-company-takeoff-successor-ui-r19/frozen-ui-v1/MANIFEST.json",
+    "sha256": "dab2809341a3e9fe3f17ae9cdde23d2043a45c79cecadb3d7a245639c03e074d",
+    "source_count": 724,
+    "focused_checks": 107,
+    "root_reviewed": true,
+    "native_executed": false,
+    "next": "start production preview5216, then execute original one-shot native driver"
+  },
+  "r19_native_result": {
+    "status": "native_business_passed_post_capture_phone_visual_defect_retained",
+    "directory": "/dev/shm/cipher-company-live-ui-r19-20261017",
+    "business_commands": 1,
+    "new_rows": 3,
+    "screenshots": 12,
+    "new_measurement": "0daf4160-b144-4619-81e2-f011f6d95840",
+    "original_binding_pricing_preserved": true
+  },
+  "r19_layout_correction": {
+    "directory": "/dev/shm/cipher-company-takeoff-successor-ui-r19/v2",
+    "failing_first_report": "/dev/shm/cipher-company-takeoff-successor-ui-r19/v2/failing-first/report.json",
+    "corrected_report": "/dev/shm/cipher-company-takeoff-successor-ui-r19/v2/corrected/report.json",
+    "targeted_compatibility_passes": 4,
+    "new_distinct_regression": 1,
+    "CSS_only_production_delta": true,
+    "new_business_commands": 0,
+    "final_qualification": "composed into R20 before combined publication"
+  },
+  "r18_hosted_ci": {
+    "status": "success",
+    "stages_passed": 25,
+    "run_id": 38996646360,
+    "job_id": 117290568466
+  },
+  "r20_native_preparation": {
+    "directory": "/dev/shm/cipher-company-live-ui-r20-20261017",
+    "api_calls_made": 0,
+    "business_writes": 0,
+    "preview_port": 5218,
+    "business_commands_permitted": 0,
+    "all_POST_blocked": true,
+    "planned_screens": 15,
+    "includes_corrected_unsaved4_250000_form": true
+  },
+  "r20_contract_scope": {
+    "binding_register": "Company-wide bounded list; frozen API rejects takeoff_set for binding catalogs",
+    "selected_detail": "lazy actual measurement/set/historical estimate graph; no eager filtering or invented scope",
+    "read_identity": "current authorized reader is separate from stored author"
+  },
+  "r20_current_review": {
+    "R19_createMeasurement_mutation_byte_identical": true,
+    "note": "Pre-freeze observation; root will reverify final frozen source before actual capture"
+  },
+  "r20_freeze": {
+    "manifest": "/dev/shm/cipher-company-takeoff-history-ui-r20/frozen-ui-v1/MANIFEST.json",
+    "sha256": "e273627e5153006c79619b368ed4e0190bb21e7394f46dd8823b14ea14a5b5ac",
+    "source_count": 729,
+    "focused_checks": 105,
+    "root_reviewed": true,
+    "native_executed": false,
+    "next": "start production preview5218, then execute original one-shot native driver"
+  },
+  "r21": {
+    "status": "source_reviewed_final_focused_gate_running_native_prepared_not_executed",
+    "workspace": "/dev/shm/cipher-company-calibration-ui-r21/workspace",
+    "source_files": 734,
+    "production_paths": 3,
+    "new_test_paths": 3,
+    "final_focused_cases_planned": 110,
+    "typecheck_build_all13_generated": "passed_child_reported",
+    "native_directory": "/dev/shm/cipher-company-live-ui-r21-20261017",
+    "native_preview_port": 5220,
+    "native_commands_planned": 1,
+    "native_commands_executed": 0,
+    "scope": "first-family unverified length-only working calibration; exact source PDF/page/frame, two anchors, explicit known physical distance/unit/tolerance/basis; no approval/verification/geometric use"
+  },
+  "next_after_r21": {
+    "slice": "original ENG-01 backend then unifiedUI",
+    "optional_R22_Company_impact_panel": "deferred/unstarted0sourceedits",
+    "owner_steering": "Stay original66packageplan, avoid microfeature/verificationloops; reuse unchanged evidence, focus usable workflows"
+  },
+  "r21_freeze": {
+    "manifest": "/dev/shm/cipher-company-calibration-ui-r21/frozen-ui-v1/MANIFEST.json",
+    "sha256": "4e2c794b259e6fa09aebfe26f36dc7ff26b60966392f7300cd20175ff187e611",
+    "source_count": 734,
+    "focused_checks": 43,
+    "root_reviewed": true,
+    "native_executed": false,
+    "next": "start production preview5220, then execute original one-shot calibration driver"
+  },
+  "r20_hosted_ci": {
+    "schema": "cipher.hosted-ci.r20.v1",
+    "commit": "b81d65e3b309824bf40eabc2c3434031b8f076c2",
+    "run_id": 38998431726,
+    "job_id": 117296020445,
+    "url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/actions/runs/38998431726",
+    "conclusion": "success",
+    "stages_passed": [
+      "validation-reporter-tests",
+      "deployment-process-lifecycle",
+      "fresh-site-install",
+      "runtime-matrix",
+      "runtime-image",
+      "frappe-integration-tests",
+      "collect-integration-junit",
+      "frappe-unit-tests",
+      "collect-unit-junit",
+      "test_commercial_acceptance",
+      "test_construction_finance_acceptance",
+      "test_estimating_acceptance",
+      "test_migrations_acceptance",
+      "test_outbox_acceptance",
+      "test_project_controls_acceptance",
+      "test_ricky_acceptance",
+      "test_takeoff_acceptance",
+      "frontend-runtime",
+      "frontend-npm",
+      "frontend-clean-install",
+      "generate-api-client",
+      "frontend-typecheck-build",
+      "install-browser",
+      "browser-path",
+      "frontend-browser-contracts"
+    ],
+    "log_sha256": "9e0a5dcf3d96ce829998a8bf487ddcf7d5b658d876842decae13894ab30f6f1c",
+    "artifact_downloaded": false,
+    "qualification": "Fresh hosted install, full backend integration/unit and browser suites, eight workflow procedures, generated contracts and production build passed. Original native/source/visual/helper failure records remain unchanged."
+  },
+  "r21_original_native": {
+    "status": "native_save_succeeded_UI_rejected_valid_manifest_failed_capture_retained",
+    "directory": "/dev/shm/cipher-company-live-ui-r21-20261017",
+    "operation_id": "a0d25321-2c8d-4baa-aa5e-c7fbf17328e7",
+    "calibration_id": "158a9d63-c823-4dd4-81b9-cd7282d9ae49",
+    "commands": 1,
+    "new_rows": {
+      "Cipher Calibration": 1,
+      "Cipher Command Receipt": 1,
+      "Cipher History Event": 1
+    },
+    "original_capture_status": "failed",
+    "original_screens": 6,
+    "reason": "client expected1UOMrecord but canonicalmanifest includes Companycontext + UOM; HTTP200 exact savedrecord",
+    "independent_native_audit": "/dev/shm/cipher-company-live-ui-r21-native-audit-v3-20261017/independent-verification.private.json",
+    "independent_native_audit_status": "passed",
+    "retained_root_helper_failures": [
+      "native-audit wrongDocType KeyError",
+      "native-audit-v2 File.get_content text/bytes assumption"
+    ],
+    "repeat_or_recover_POST_permitted": false
+  },
+  "r21_correction": {
+    "status": "committed_pushed_closed_with_explicit_composed_native_limits",
+    "workspace": "/dev/shm/cipher-company-calibration-ui-r21/v2/workspace",
+    "source_handler_changes": false,
+    "next": "no_more_R21_product_or_optional_capture_work",
+    "frozen_manifest": "/dev/shm/cipher-company-calibration-ui-r21/frozen-ui-v2/MANIFEST.json",
+    "frozen_manifest_sha256": "3ec9ec6a7f0a7b0c56cea43135174b6b9899145062d093c208f810fae8c0b1fc",
+    "actual_original_reply_validator": "passed_without_HTTP",
+    "corrected_read_capture": "/dev/shm/cipher-company-live-ui-r21-readonly-continuation-20261017",
+    "corrected_read_capture_overall_status": "failed_optional_repeated_pointer_helper_after_completed_read",
+    "bounded_saved_read_audit": "/dev/shm/cipher-company-live-ui-r21-corrected-read-audit-20261017/independent-verification.private.json",
+    "bounded_saved_read_audit_status": "passed",
+    "new_commands": 0
+  },
+  "ENG-01": {
+    "status": "backend_implementation_in_progress",
+    "agent": "/root/sol_r15_backend_review",
+    "workspace": "/dev/shm/cipher-engineering-eng01/workspace",
+    "approved_scope": "original RFI/submittal revisions, independent official response/disposition and controlled internal transmittal; unifiedUI followsbackend",
+    "dependencies": "existing Project DOC-02/GOV-03 locallyqualified; no award/liveprovider dependency",
+    "native_installation_or_commands_executed": false,
+    "source_implementation": "repository/contracts/source-readers/authoring/revision/close/transmittal commands drafted; governance/controllers/schema/tests pending",
+    "root_review_findings": [
+      "Authorize original immutable receipt sources without demanding current successor sources through a header read; child notified for main package test."
+    ]
+  },
+  "capacity_maintenance": {
+    "status": "host pip-cache relocation verified",
+    "proof": "/dev/shm/cipher-capacity-pip-cache-relocation-20261017.private.json",
+    "cache_bytes_preserved": true,
+    "original_path_preserved_by_symlink": true,
+    "root_free_bytes_after": 18923520,
+    "MAIN_source_runtime_mounts_changed": false,
+    "installs_or_Docker_prune": false,
+    "ENG01_native_installation_requires_capacity_check": true
+  },
+  "ENG01": {
+    "status": "backend and SAP UI5 source implemented; native persistence/walkthrough pending",
+    "workspace": "/dev/shm/cipher-engineering-eng01/workspace",
+    "frozen_combined": "/dev/shm/cipher-engineering-eng01/frozen-combined-v1/MANIFEST.json",
+    "manifest_sha256": "7cc0eaa3069a4a2a38cbc5df3952ee3386e9fc1534c22bdcb90e1ad21789bd67",
+    "source_files": 789,
+    "build_files": 921,
+    "backend_host_checks": 84,
+    "focused_UI_contract_checks": 23,
+    "distinct_composed_shared_UI_checks": 36,
+    "hosted_CI": {
+      "run_id": 39003208300,
+      "job_id": 117310282040,
+      "commit": "9029585b6b6d884119754c5f031260c3a74e9a93",
+      "status": "completed",
+      "prior_attempts": [
+        {
+          "run_id": 39002419414,
+          "conclusion": "failure",
+          "exception_unavailable": true,
+          "artifact_proxy_denied_no_retry": true
+        },
+        {
+          "run_id": 39002906657,
+          "conclusion": "failure",
+          "exception": "frappe.exceptions.TimestampMismatchError",
+          "path": "tests/test_engineering_native.py:72",
+          "correction": "Reload same original Document between intentionally denied saves; no production guard changes"
+        }
+      ],
+      "conclusion": "failure",
+      "native_backend_and_eight_workflow_procedures": "passed",
+      "browser": "920-second stage ceiling without final JSON report",
+      "log_sha256": "2494c18d148a6a4c5941d6a53589a6fce0576bf502c07c9e789958de8fa58d86"
+    },
+    "actual_native_UI_claim": false,
+    "preview": {
+      "port": 5234,
+      "session": 92651,
+      "contract_fixture_API_only": true
+    },
+    "previous_source_CI": {
+      "commit": "be9e11400ed945cd7f79879384f35d2cb04007f6",
+      "status": "passed_all25",
+      "log_sha256": "30c410a1a83c9912a0cb6382f26799e7acd07733c00af753d1110400344732f1"
+    }
+  },
+  "active_next_original_package": {
+    "id": "DOC-03",
+    "child": "/root/sol_r15_backend_review",
+    "workspace": "/dev/shm/cipher-documents-doc03/workspace",
+    "status": "Project backend frozen; unified UI built/typechecked; focused initial26pass4helper failures retained; affected continuation running; original Clause/Redline successor backend has nine affected checks",
+    "authorization_basis": "Original EXECUTION_BACKLOG DOC-02 +ENG-01 locally implemented/verified contract dependency rule",
+    "frozen_manifest": "/dev/shm/cipher-documents-doc03/frozen-backend-v1/MANIFEST.json",
+    "manifest_sha256": "66cea07ac161aaa181360b3bd25be82a6c107289b11d3ebab624d136ced43ef8"
+  },
+  "ENG02": {
+    "status": "committed_pushed_source_native_qualification_pending",
+    "workspace": "/dev/shm/cipher-engineering-eng02/workspace",
+    "frozen_manifest": "/dev/shm/cipher-engineering-eng02/frozen-combined-v1/MANIFEST.json",
+    "manifest_sha256": "5e26cb24a5ad50d9e41901d157eb450e2237054e3673b856e12b3ab436d907ba",
+    "source_files": 831,
+    "source_delta": 61,
+    "build_files": 925,
+    "backend_host_checks": 124,
+    "focused_distinct_checks_composed": 38,
+    "focused_evidence": "37pass1fail corrected run + 1pass exact affected journey after test-only selector correction; product dist-v4 unchanged",
+    "final_typecheck": "passed",
+    "native_installed": false,
+    "native_executed": false,
+    "actual_native_UI_claim": false,
+    "compatibility": "41 completed passes retained; two renderer crashes +16interrupted/unexecuted cases continued on static production preview5242, 18cases total",
+    "preview": {
+      "port": 5242,
+      "session": 5986
+    },
+    "retained_failures": "/tmp/cipher-company-publication-r10/apps/cipher/docs/framework/evidence/r3/engineering-eng02-source/retained-failures.json",
+    "commit": "e8b692a9ae83884caf77f92fe30fe9478de14161",
+    "shared_compatibility_distinct_passed_composed": 59,
+    "hosted_CI": {
+      "run_id": 39004698263,
+      "job_id": 117314657948,
+      "status": "failed",
+      "failure": "native AssertionError at tests/test_engineering_packages_native.py:45 checker/unit selector assertions",
+      "log_sha256": "633607243d63ce79eb87fff14844cf714d1ff49db1e3bc2100e4d308d598c71c",
+      "correction_in_progress": "Isolated fixture native UOM read role and proper bounded paging; product permissions unchanged"
+    }
+  },
+  "CI_static_continuation": {
+    "workspace": "/dev/shm/cipher-engineering-eng02/ci-static-v1/workspace",
+    "status": "committed_pushed_513_frontend_checks_passed_native_pending",
+    "build": "/dev/shm/cipher-engineering-eng02/ci-static-v1/browser-dist",
+    "browser_session": 87461,
+    "port": 5246,
+    "native_executed_locally": false,
+    "original_frozen_ENG02_unchanged": true,
+    "commit": "250991b889f38dd8b8ddd0ddda8187192c3c6f78",
+    "manifest": "/dev/shm/cipher-engineering-eng02/ci-static-v1/frozen-source-v1/MANIFEST.json",
+    "manifest_sha256": "448173b7d7502322b2f492167f2a6262db0efa15451e1f8b6f132e9e858ffa01",
+    "source_files": 834,
+    "full_frontend_passed": 513,
+    "fresh_single_run": true,
+    "retries": 0,
+    "skips": 0,
+    "new_OOM_events": 0,
+    "reporter_distinct_passed": 20,
+    "hosted_CI": {
+      "run_id": 39005737305,
+      "status": "completed",
+      "commit": "250991b889f38dd8b8ddd0ddda8187192c3c6f78",
+      "conclusion": "success",
+      "job_id": 117317724938,
+      "stages_passed": 26,
+      "log_sha256": "b43a2e6c374252e695f088704c190fa986963074650b1efd630dfdbce8a2c284"
+    }
+  },
+  "ENG02_approval_wire_correction": {
+    "status": "published_38fresh_affected_checks_typecheck_build_passed_native_pending",
+    "workspace": "/dev/shm/cipher-engineering-eng02/approval-wire-v1/workspace",
+    "cause": "Published client hashed only review_manifest domain; GOV03 manifest_hash covers full authority envelope",
+    "correction": "Keep exact subject/effect/source/unit/checker/summary bindings; preserve opaque backend hash for decide/execute/recovery",
+    "backend_changed": false,
+    "prior513_source_proof_applies_to_changed_adapter": false,
+    "at": "2026-10-17T05:26:36.995913+00:00",
+    "commit": "f79df23af5bdb1c8cccf538241452bef2c459672",
+    "source_manifest_sha256": "96a1bc44c292d9ea2b8fd40216e988720ab811a750d1013eaa37bd8a576c7944",
+    "local_commit_retained": "7b254a512086136bcfb26b4f0064d3364d43b604",
+    "publication": "Plain git push lacked credentials; authenticated GitHub tree/commit/ref tools published exact same tree. Local commit preserved on named branch, clean publication branch aligned.",
+    "publication_helper_failure": "Initial HEAD^:. tree expression failed before any external write; corrected to HEAD^^{tree}.",
+    "hosted_CI": {
+      "run_id": 39006429125,
+      "job_id": 117319748622,
+      "commit": "f79df23af5bdb1c8cccf538241452bef2c459672",
+      "status": "completed",
+      "conclusion": "success",
+      "stages_passed": 26,
+      "log_sha256": "d4e74cfa9c07a76e49c52621efea3ba919c4bab0585c609aa4eca2f0a6ef20ca"
+    }
+  },
+  "latest_published_commit": "f79df23af5bdb1c8cccf538241452bef2c459672",
+  "DOC03_Project_UI": {
+    "status": "typecheck_build_and_30_distinct_composed_checks_passed_unpublished_native_UI_pending",
+    "workspace": "/dev/shm/cipher-documents-doc03/ui-workspace",
+    "build": "/dev/shm/cipher-documents-doc03/dist-v1",
+    "native_installed": false,
+    "native_UI_qualified": false,
+    "root_peer_review": "preserve original requester and canonical prior decision prefix; display labels remain current",
+    "shared_library_clause_redline_lifecycle_remaining": true,
+    "focused_original": {
+      "passed": 26,
+      "failed": 4,
+      "application_failures_confirmed": false,
+      "retained": "/dev/shm/cipher-documents-doc03/focused-v1-report.json",
+      "causes": [
+        "Official Toolbar action moved into Additional Options",
+        "Role locator scoped inside slotted UI5 dialog missed actual recovery button",
+        "Revocation preceded initial related read completion; denial correctly hid content before planned click"
+      ]
+    },
+    "focused_continuation": "/dev/shm/cipher-documents-doc03/affected-v2-report.json",
+    "final_journey": {
+      "report": "/dev/shm/cipher-documents-doc03/journey-v4-report.json",
+      "passed": 1,
+      "failed": 0,
+      "duration_ms": 16592.421
+    }
+  },
+  "DOC03_remaining_backend": {
+    "workspace": "/dev/shm/cipher-documents-doc03-successor/workspace",
+    "boundary": "/dev/shm/cipher-documents-doc03-successor/IMPLEMENTATION_BOUNDARY.md",
+    "approved_by_root": true,
+    "clause_intermediate": "/dev/shm/cipher-documents-doc03-successor/CLAUSE_CONTRACT_V1.json",
+    "new_clause_host_checks": 9,
+    "Company_global_and_lifecycle": "pending_successor_implementation",
+    "published": false
+  },
+  "acceleration_plan": {
+    "path": "/tmp/cipher-company-publication-r10/apps/cipher/docs/framework/SANDBOX_ACCELERATION_PLAN.md",
+    "status": "execution_plan_prepared_local_hardware_pending",
+    "architecture_changed": false,
+    "next_milestone": "portable real-backend human trial sandbox",
+    "child_successor": "paused safely; incomplete changes not qualified",
+    "cloud_memory_limit_gib": 16,
+    "cloud_cpu_quota": 4,
+    "local_connection_available": false
+  }
+}

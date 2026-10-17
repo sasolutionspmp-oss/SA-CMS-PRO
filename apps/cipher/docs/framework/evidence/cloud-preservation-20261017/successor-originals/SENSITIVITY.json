@@ -1,0 +1,23 @@
+{
+  "bounded_pattern_review": {
+    "findings": [
+      {
+        "path": "apps/cipher/platform/operations/tests/test_browser_failure_report.py",
+        "result": "Unchanged baseline synthetic diagnostic-redaction test; literal TITLE_BEARER_SECRET etc. are public fake sentinels, not operational credentials."
+      }
+    ],
+    "limitation": "Bounded scan and source review, not a security certification.",
+    "other_high_confidence_matches": 0
+  },
+  "credentials_copied": false,
+  "dependency_link": "Existing node_modules symlink deliberately not copied; no dependency installation.",
+  "evidence": "Host logs contain synthetic IDs/example.invalid identities and absolute paths; review before public distribution.",
+  "exclusions": [
+    {
+      "path": "apps/cipher/product/node_modules",
+      "reason": "dependency/cache/build/symlink"
+    }
+  ],
+  "private_runtime_cookie_backup_files_copied": false,
+  "scope": "Regular source plus enumerated host-only logs/helpers/boundary; no native runtime/capture directories accessed."
+}

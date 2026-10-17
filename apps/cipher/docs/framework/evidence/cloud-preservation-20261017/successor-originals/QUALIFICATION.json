@@ -1,0 +1,103 @@
+{
+  "current_wip_complete_pass": false,
+  "current_wip_native_executed": false,
+  "historical_checks": [
+    {
+      "passed": 9,
+      "phase": "Clause host lineage/union/wire checks",
+      "report": "evidence/logs/05-clause-union-wire.log",
+      "report_sha256": "2de8527510dc9ddaae6eabd4b3957addfd707c0893402d8dcba4225ca0ff4010",
+      "source_binding": "Partial contemporaneous hashes in CLAUSE_CONTRACT_V1.json; later Company/lifecycle edits followed. Not final-WIP evidence."
+    },
+    {
+      "passed": 6,
+      "phase": "Company reusable-library host workflows",
+      "report": "evidence/logs/10-shared-workflows.log",
+      "report_sha256": "d99f91ca1267ab5fcf1963b3cd727fa7b6bc42dbc84cea5676f3cb08ccd97ec2",
+      "source_binding": "Historical before later locking/schema/lifecycle edits; no full contemporaneous source inventory. Not final-WIP evidence."
+    }
+  ],
+  "historical_contract_vs_current": [
+    {
+      "current_sha256": "1ef9ecd79f7ebf73f935017c253506344a2be60c7353e372d489b31f2abf01ec",
+      "historical_sha256": "0a5ae9f858edf0ce72bb7b67b5fcd0026ce9968f9a7c3b79af3dbf302c71d682",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/api.py",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "9d3a78813f15dcb16e51e83be0c0dd25d16fe195836f3b4c9b9965d0153da4d5",
+      "historical_sha256": "7808873759acea0b1399f7b6f2e481ca4ebfc2da4cba78a6fa69e3266dcda2d9",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/clauses.py",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "1f412f5bcb0af5e5fb50e1b4d5991de7d77fd0980de845c53cc6fb399192fe16",
+      "historical_sha256": "d08885a46378b8172715810e3468d508dbf4de51546902b3ccab9020cd24d241",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "58646225269bbf58b5321361123c2bf70c0b213f915a83aff8494c55da2f132f",
+      "historical_sha256": "58646225269bbf58b5321361123c2bf70c0b213f915a83aff8494c55da2f132f",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/scopes.py",
+      "still_byte_identical": true
+    },
+    {
+      "current_sha256": "dd11abf075c8deda922629deab8245e571e6fd26bb8e36e3a5fb82607dd84619",
+      "historical_sha256": "4a7d99e80674ab67f41403f1a1ecc93a67c95f958854d0d68911f1b76c841b11",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/contracts.py",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "55bb81d3ad334229e8bca4e55a3d816fa01ee48f4c655f7138f43cf87902cbe8",
+      "historical_sha256": "96a977e44e6576d4586243b5e131cdc1edc24d8c0ee1c0ad5b69565d088d9df1",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/schemas/api-v1.schema.json",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "a7228b19478c985343c2a81713c897f7d8baeb4daf0d19d0bb3835d7e1315f73",
+      "historical_sha256": "56c82808b85f576e8858583ea66ff5e94a33966b0aaae4776b613d034f3ae994",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/route-contracts.json",
+      "still_byte_identical": false
+    },
+    {
+      "current_sha256": "57c355ddc2b25dad434f92f731c24f2faa5d01994f5ccf6bbba048b8e3de7004",
+      "historical_sha256": "57c355ddc2b25dad434f92f731c24f2faa5d01994f5ccf6bbba048b8e3de7004",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_lineage.py",
+      "still_byte_identical": true
+    },
+    {
+      "current_sha256": "d6dd0163730b0b32ba0ff8b1c167615a3d43ed597b5f0233e1dcc741c259cef3",
+      "historical_sha256": "d6dd0163730b0b32ba0ff8b1c167615a3d43ed597b5f0233e1dcc741c259cef3",
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_native.py",
+      "still_byte_identical": true
+    },
+    {
+      "current_sha256": "31ecd1f03af79c7b88004afcdb336a5ca4564502a5041f055aaa77664e7a93db",
+      "historical_sha256": "31ecd1f03af79c7b88004afcdb336a5ca4564502a5041f055aaa77664e7a93db",
+      "path": "apps/cipher/product/src/api/document-control.generated.ts",
+      "still_byte_identical": true
+    }
+  ],
+  "historical_generated_openapi_only": [
+    "evidence/logs/06-clause-openapi-generate.log",
+    "evidence/logs/07-clause-generated.log"
+  ],
+  "not_run_for_current_wip": [
+    "tests",
+    "typecheck",
+    "build",
+    "browser",
+    "OpenAPI/generator verification",
+    "native install/migration/integration",
+    "runtime/HTTP"
+  ],
+  "original_project_183": "Parent qualification only; not rerun or transferred to changed successor handlers.",
+  "retained_failed_reports": [
+    "evidence/logs/01-clause-host-initial.log",
+    "evidence/logs/03-clause-union-wire.log",
+    "evidence/logs/04-clause-union-wire.log",
+    "evidence/logs/08-shared-initial.log",
+    "evidence/logs/09-shared-original-head-failing-first.log"
+  ]
+}

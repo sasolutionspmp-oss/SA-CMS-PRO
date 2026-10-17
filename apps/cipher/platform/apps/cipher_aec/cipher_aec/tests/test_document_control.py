@@ -26,9 +26,9 @@ def retained_module_attributes():
 @contextmanager
 def fixture():
     with retained_module_attributes(),fixtures() as (state,*_):
-        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance')];old={n:sys.modules.pop(n) for n in names if n in sys.modules}
+        names=['cipher_aec.document_control.'+n for n in ('contracts','repository','rights','service','governance','clauses','locking','scopes','shared')];old={n:sys.modules.pop(n) for n in names if n in sys.modules}
         try:
-            rules,repo,rights,service,gov=[importlib.import_module(n) for n in names];state.duties[state.actor.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};state.locks=[];state.plans=[]
+            rules,repo,rights,service,gov=[importlib.import_module(n) for n in names[:5]];state.duties[state.actor.person_id]=set(rules.ABILITIES)|{'project.read','document.read','document.write'};state.locks=[];state.plans=[]
             def raw(kind,name,lock=False):
                 if (kind,name) not in state.rows:raise DomainError('not_found','missing',404)
                 return deepcopy(state.rows[kind,name])
@@ -63,7 +63,7 @@ def fixture():
         finally:
             for n in names:
                 removed=sys.modules.pop(n,None);parentname,attribute=n.rsplit('.',1);parent=sys.modules.get(parentname)
-                if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                if removed is not None and parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
             sys.modules.update(old)
             for n,value in old.items():setattr(sys.modules[n.rsplit('.',1)[0]],n.rsplit('.',1)[1],value)
 

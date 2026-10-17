@@ -1,5 +1,5 @@
 /* Generated from cipher_aec/api/schema.json. Do not edit.
- * Source SHA-256: d542d9ec06d54c774fb935ff471c6c5c5ea253a26848e852a88271eb692a43af
+ * Source SHA-256: a7bd990ce78b7a0a7a55184fcae4cbe96e3f031843c50e3b1f1b9298c2e4dcf5
  * Regenerate: npm run generate:api
  */
 
@@ -50,7 +50,47 @@ export type EpCanonicaluuid = string;
  * via the `definition` "DocumentApprovalPacket".
  */
 export type DocumentApprovalPacket =
-  DocumentIssueSetApprovalPacket | DocumentAdoptionRequestApprovalPacket | DocumentTransmittalApprovalPacket;
+  | DocumentIssueSetApprovalPacket
+  | DocumentAdoptionRequestApprovalPacket
+  | DocumentTransmittalApprovalPacket
+  | DocumentRedlineApprovalPacket;
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetKind".
+ */
+export type DcClauseTargetKind = "proposal_revision" | "contract_revision" | "document_revision";
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetSnapshot".
+ */
+export type DcClauseTargetSnapshot =
+  | {
+      kind: "proposal_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: null;
+      scope_type: "Company";
+    }
+  | {
+      kind: "contract_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: string;
+      scope_type: "Project";
+    }
+  | {
+      kind: "document_revision";
+      id: string;
+      record_digest: string;
+      parent_id: string;
+      company: string;
+      project: string;
+      scope_type: "Project";
+    };
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalExecutionResponse".
@@ -138,7 +178,32 @@ export type DocumentApprovalExecutionResponse =
         distribution: DcDistribution;
       };
       operation: Operation;
+    }
+  | {
+      packet: DocumentRedlineApprovalPacket;
+      effect: {
+        clause_application: DcClauseApplication;
+      };
+      operation: Operation;
     };
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecord".
+ */
+export type DcRecord =
+  | DcRights
+  | DcLibrary
+  | DcLibraryRevision
+  | DcAdoptionRequest
+  | DcAdoption
+  | DcIssueSet
+  | DcIssue
+  | DcTransmittal
+  | DcDistribution
+  | DcEvidence
+  | DcClauseUse
+  | DcRedline
+  | DcClauseApplication;
 
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
@@ -2883,6 +2948,131 @@ export interface DcPerson {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DocumentRedlineApprovalPacket".
+ */
+export interface DocumentRedlineApprovalPacket {
+  id: string;
+  company: string;
+  project: string;
+  action: "document.clause.apply.v1";
+  subject: {
+    id: string;
+    type: "Cipher Redline Revision";
+    label: string;
+  };
+  requester: Person;
+  created_at: string;
+  expires_at: string;
+  manifest_hash: string;
+  source_version: string;
+  policy: {
+    id: string;
+    label: string;
+    synthetic: true;
+  };
+  state: "Pending" | "Granted" | "Rejected" | "Withdrawn" | "Expired" | "Stale" | "Consumed";
+  decisions: ApprovalDecision[];
+  actions: {
+    can_decide: boolean;
+    can_execute: boolean;
+    can_withdraw: boolean;
+    disabled_reason: string | null;
+  };
+  review_manifest: {
+    subject: {
+      doctype: "Cipher Redline Revision";
+      name: string;
+      label: string;
+    };
+    /**
+     * @minItems 1
+     * @maxItems 1
+     */
+    sources: [
+      {
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        artifacts:
+          | [DcArtifact]
+          | [DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+          | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+        /**
+         * @minItems 1
+         * @maxItems 8
+         */
+        rights:
+          | [DcRights]
+          | [DcRights, DcRights]
+          | [DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights]
+          | [DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights, DcRights];
+      }
+    ];
+    effect: {
+      schema: "cipher.document.authorization.v1";
+      action: "document.clause.apply.v1";
+      subject_kind: "redline";
+      subject_id: string;
+      subject_digest: string;
+      /**
+       * @minItems 1
+       * @maxItems 8
+       */
+      artifacts:
+        | [DcArtifact]
+        | [DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+        | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+      no_effects: DcNoEffects;
+      electronic_signature: false;
+      professional_seal: false;
+      external_delivery: false;
+      commercial_execution: false;
+      target: DcClauseTarget;
+      target_snapshot: DcClauseTargetSnapshot;
+      original_text: string;
+      proposed_text: string;
+      proposed_sha256: string;
+      target_changed: false;
+    };
+    summary: {
+      definition: null;
+      purpose: null;
+      required_response: null;
+      no_effects: DcNoEffects;
+      rights_basis: "authored-declaration";
+      external_delivery: false;
+      commercial_execution: false;
+    };
+  };
+  schema: "cipher.document.approval.v1";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTarget".
+ */
+export interface DcClauseTarget {
+  kind: DcClauseTargetKind;
+  id: string;
+  record_digest: string;
+  locator: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "ApprovalList".
  */
 export interface ApprovalList {
@@ -3147,6 +3337,43 @@ export interface DcDistribution {
 }
 /**
  * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseApplication".
+ */
+export interface DcClauseApplication {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "approved_relationship";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_id: string;
+  subject_digest: string;
+  packet_id: string;
+  decision_id: string;
+  checked_by_person: string;
+  effect_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  electronic_signature: false;
+  professional_seal: false;
+  external_delivery: false;
+  commercial_execution: false;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  original_text: string;
+  proposed_text: string;
+  proposed_sha256: string;
+  target_changed: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
  * via the `definition` "CompanyApprovalPacket".
  */
 export interface CompanyApprovalPacket {
@@ -3371,4 +3598,879 @@ export interface EpCanonicalconversion {
   numerator: string;
   denominator: string;
   source: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcArtifactInput".
+ */
+export interface DcArtifactInput {
+  revision_id: string;
+  source_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcOperation".
+ */
+export interface DcOperation {
+  id: string;
+  status: "succeeded";
+  replayed: boolean;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRightsDefinition".
+ */
+export interface DcRightsDefinition {
+  ingest_allowed: boolean;
+  read_allowed: boolean;
+  distribute_allowed: boolean;
+  rights_basis: string;
+  rights_holder: string;
+  allowed_purpose: string;
+  restriction: string;
+  valid_from: string | null;
+  valid_until: string | null;
+  evidence_artifact: DcArtifactInput;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibraryDefinition".
+ */
+export interface DcLibraryDefinition {
+  title: string;
+  category: "specification" | "contract_clause" | "reference";
+  discipline: string;
+  ownership: string;
+  /**
+   * @minItems 0
+   * @maxItems 20
+   */
+  tags:
+    | []
+    | [string]
+    | [string, string]
+    | [string, string, string]
+    | [string, string, string, string]
+    | [string, string, string, string, string]
+    | [string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string, string]
+    | [string, string, string, string, string, string, string, string, string, string, string, string, string, string]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ]
+    | [
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string,
+        string
+      ];
+  change_reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibrary".
+ */
+export interface DcLibrary {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "working";
+  no_effects: DcNoEffects;
+  current_revision: string;
+  revision_number: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcLibraryRevision".
+ */
+export interface DcLibraryRevision {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "working";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  predecessor: string | null;
+  revision_number: number;
+  definition: DcLibraryDefinition;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcAdoptionRequest".
+ */
+export interface DcAdoptionRequest {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "working";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  library_revision: string;
+  library_digest: string;
+  definition: DcAdoptionDefinition;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcIssueSet".
+ */
+export interface DcIssueSet {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "working";
+  no_effects: DcNoEffects;
+  definition: DcIssueDefinition;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  adoptions:
+    | []
+    | [DcExactReference]
+    | [DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ];
+  package_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcTransmittal".
+ */
+export interface DcTransmittal {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "working";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  issue_id: string;
+  issue_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [DcPerson, ...DcPerson[]];
+  purpose: string;
+  required_response: string;
+  channel: "internal";
+  package_digest: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcEvidence".
+ */
+export interface DcEvidence {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "reported_received" | "reported_execution";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  subject_kind: "distribution" | "adoption";
+  subject_id: string;
+  subject_digest: string;
+  statement: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifact]
+    | [DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact]
+    | [DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact, DcArtifact];
+  commercial_execution: false;
+  electronic_signature: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseUse".
+ */
+export interface DcClauseUse {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "referenced";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  adoption_id: string;
+  adoption_digest: string;
+  source_clause: DcQuotedClause;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  purpose: string;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  target_changed: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcQuotedClause".
+ */
+export interface DcQuotedClause {
+  reference: DcClauseSourceReference;
+  text: string;
+  text_sha256: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseSourceReference".
+ */
+export interface DcClauseSourceReference {
+  revision_id: string;
+  source_sha256: string;
+  page: number;
+  excerpt_sha256: string;
+  start: number;
+  end: number;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRedline".
+ */
+export interface DcRedline {
+  id: string;
+  company: string;
+  project: string;
+  scope_type: "Project";
+  author_person: string;
+  author_user: string;
+  created_at: string;
+  status: "proposed";
+  no_effects: DcNoEffects;
+  parent_id: string;
+  clause_use_id: string;
+  clause_use_digest: string;
+  predecessor: string | null;
+  revision_number: number;
+  original_text: string;
+  proposed_text: string;
+  proposed_sha256: string;
+  reason: string;
+  target: DcClauseTarget;
+  target_snapshot: DcClauseTargetSnapshot;
+  /**
+   * @minItems 1
+   * @maxItems 1
+   */
+  artifacts: [DcArtifact];
+  target_changed: false;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcGetResponse".
+ */
+export interface DcGetResponse {
+  record: DcRecord;
+  record_digest: string;
+  library_current: boolean | null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListResponse".
+ */
+export interface DcListResponse {
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: DcGetResponse[];
+  next_cursor: string | null;
+  limit: number;
+  count_mode: "none";
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcPeopleResponse".
+ */
+export interface DcPeopleResponse {
+  /**
+   * @minItems 0
+   * @maxItems 100
+   */
+  items: {
+    user: string;
+    person: string;
+    display_name: string;
+  }[];
+  next_cursor: string | null;
+  limit: number;
+  count_mode: "none";
+  total: null;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcSetRightsRequest".
+ */
+export interface DcSetRightsRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  document_id: string;
+  expected_version: string | null;
+  definition: DcRightsDefinition;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcSetRightsResponse".
+ */
+export interface DcSetRightsResponse {
+  rights: DcRights;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateLibraryRequest".
+ */
+export interface DcCreateLibraryRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  definition: DcLibraryDefinition;
+  artifact: DcArtifactInput;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateLibraryResponse".
+ */
+export interface DcCreateLibraryResponse {
+  library: DcLibrary;
+  library_revision: DcLibraryRevision;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReviseLibraryRequest".
+ */
+export interface DcReviseLibraryRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  library_id: string;
+  expected_version: string;
+  definition: DcLibraryDefinition;
+  artifact: DcArtifactInput;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReviseLibraryResponse".
+ */
+export interface DcReviseLibraryResponse {
+  library: DcLibrary;
+  library_revision: DcLibraryRevision;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateAdoptionRequest".
+ */
+export interface DcCreateAdoptionRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  library_revision: string;
+  library_digest: string;
+  definition: DcAdoptionDefinition;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateAdoptionResponse".
+ */
+export interface DcCreateAdoptionResponse {
+  adoption_request: DcAdoptionRequest;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateIssueSetRequest".
+ */
+export interface DcCreateIssueSetRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  definition: DcIssueDefinition;
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  artifacts:
+    | []
+    | [DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ];
+  /**
+   * @minItems 0
+   * @maxItems 8
+   */
+  adoptions:
+    | []
+    | [DcExactReference]
+    | [DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference, DcExactReference]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ]
+    | [
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference,
+        DcExactReference
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateIssueSetResponse".
+ */
+export interface DcCreateIssueSetResponse {
+  issue_set: DcIssueSet;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateTransmittalRequest".
+ */
+export interface DcCreateTransmittalRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  issue_id: string;
+  issue_digest: string;
+  /**
+   * @minItems 1
+   * @maxItems 30
+   */
+  recipients: [string, ...string[]];
+  purpose: string;
+  required_response: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateTransmittalResponse".
+ */
+export interface DcCreateTransmittalResponse {
+  transmittal: DcTransmittal;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecordEvidenceRequest".
+ */
+export interface DcRecordEvidenceRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  subject_kind: "distribution" | "adoption";
+  subject_id: string;
+  subject_digest: string;
+  statement: string;
+  /**
+   * @minItems 1
+   * @maxItems 8
+   */
+  artifacts:
+    | [DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput, DcArtifactInput]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ]
+    | [
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput,
+        DcArtifactInput
+      ];
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcRecordEvidenceResponse".
+ */
+export interface DcRecordEvidenceResponse {
+  evidence: DcEvidence;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcGetRecordRequest".
+ */
+export interface DcGetRecordRequest {
+  company: string;
+  project: string;
+  kind:
+    | "rights"
+    | "library"
+    | "library_revision"
+    | "adoption_request"
+    | "adoption"
+    | "issue_set"
+    | "issue"
+    | "transmittal"
+    | "distribution"
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application";
+  record_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListRecordsRequest".
+ */
+export interface DcListRecordsRequest {
+  company: string;
+  project: string;
+  kind:
+    | "rights"
+    | "library"
+    | "library_revision"
+    | "adoption_request"
+    | "adoption"
+    | "issue_set"
+    | "issue"
+    | "transmittal"
+    | "distribution"
+    | "evidence"
+    | "clause_use"
+    | "redline"
+    | "clause_application";
+  parent_id?: string | null;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcListPeopleRequest".
+ */
+export interface DcListPeopleRequest {
+  company: string;
+  project: string;
+  limit?: number;
+  cursor?: string | null;
+  count_mode?: "none";
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateClauseUseRequest".
+ */
+export interface DcCreateClauseUseRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  adoption_id: string;
+  adoption_digest: string;
+  source_clause: DcClauseSourceReference;
+  target: DcClauseTarget;
+  purpose: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateRedlineRequest".
+ */
+export interface DcCreateRedlineRequest {
+  company: string;
+  project: string;
+  operation_id: string;
+  clause_use_id: string;
+  clause_use_digest: string;
+  expected_version: string | null;
+  proposed_text: string;
+  reason: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcReadClauseTargetRequest".
+ */
+export interface DcReadClauseTargetRequest {
+  company: string;
+  project: string;
+  kind: DcClauseTargetKind;
+  record_id: string;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateClauseUseResponse".
+ */
+export interface DcCreateClauseUseResponse {
+  clause_use: DcClauseUse;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcCreateRedlineResponse".
+ */
+export interface DcCreateRedlineResponse {
+  redline: DcRedline;
+  history_id: string;
+  operation: DcOperation;
+}
+/**
+ * This interface was referenced by `undefined`'s JSON-Schema
+ * via the `definition` "DcClauseTargetResponse".
+ */
+export interface DcClauseTargetResponse {
+  target: DcClauseTargetSnapshot;
 }

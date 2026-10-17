@@ -1,0 +1,184 @@
+{
+  "schema": "cipher.cloud-preservation-archives.v1",
+  "archives": [
+    {
+      "archive": "doc03-original-backend-source.tar.gz",
+      "bytes": 1587108,
+      "sha256": "da6bfd567e2b6fcbccdabb0019301b3969ffafe34e258c9bafafeaf6aa5444c5",
+      "parts": [
+        {
+          "name": "doc03-original-backend-source.tar.gz.part-000",
+          "bytes": 1587108,
+          "sha256": "da6bfd567e2b6fcbccdabb0019301b3969ffafe34e258c9bafafeaf6aa5444c5",
+          "git_blob": "8a6b2bee67068cd0152d88fa09bd42b05230fadd"
+        }
+      ]
+    },
+    {
+      "archive": "doc03-project-candidate-source.tar.gz",
+      "bytes": 1612550,
+      "sha256": "caa74b4d1fa2709c74a89f9af9a930b0518d20bf9dad6941ea9c5c061349ab96",
+      "parts": [
+        {
+          "name": "doc03-project-candidate-source.tar.gz.part-000",
+          "bytes": 1612550,
+          "sha256": "caa74b4d1fa2709c74a89f9af9a930b0518d20bf9dad6941ea9c5c061349ab96",
+          "git_blob": "f98d3d7d20d57b870773061638932f0890c733db"
+        }
+      ]
+    },
+    {
+      "archive": "doc03-project-dist.tar.gz",
+      "bytes": 11633913,
+      "sha256": "98657d8dcc4748effb17ea8cee3f533ce557c0e7669808074f71a82745f9591d",
+      "parts": [
+        {
+          "name": "doc03-project-dist.tar.gz.part-000",
+          "bytes": 2097152,
+          "sha256": "60d9e385ed48ff785c17a9bdafa0b1db506afbb76bb3a17cf31a10944ed8acdc",
+          "git_blob": "33fff1b6015b8ad1e85807032f0aebe0eefa650a"
+        },
+        {
+          "name": "doc03-project-dist.tar.gz.part-001",
+          "bytes": 2097152,
+          "sha256": "5397e068975fdf4d446347eff1d1bf87a81e05990b582cbf5312e9efbeb37603",
+          "git_blob": "4405979546c9888d6a6bee8230d715c83700e6a5"
+        },
+        {
+          "name": "doc03-project-dist.tar.gz.part-002",
+          "bytes": 2097152,
+          "sha256": "0ce3341d827233644a28380eb4910b88725d70bd9e18441de6e8c566e7f7490d",
+          "git_blob": "9226c80a568d82b434a9913172f2e87929dd496c"
+        },
+        {
+          "name": "doc03-project-dist.tar.gz.part-003",
+          "bytes": 2097152,
+          "sha256": "69eed4b8f2da581ee6768afeee00c882ef509b0baea29f107bb753c9cab69ca6",
+          "git_blob": "644c249ce7d7580cff9265a9577a93e237558dc6"
+        },
+        {
+          "name": "doc03-project-dist.tar.gz.part-004",
+          "bytes": 2097152,
+          "sha256": "94b2113d3bafdc451297b59c695a77ce99aa4a870dfdfe1973791437957fade3",
+          "git_blob": "e0a6b2db83dd78f882f5b316b94f40c87bc15776"
+        },
+        {
+          "name": "doc03-project-dist.tar.gz.part-005",
+          "bytes": 1148153,
+          "sha256": "f9999995d1fee48da72bd801cc674d32b5d486ddba7c8dea305d51fa04bcf254",
+          "git_blob": "351244695d4d7e39819b73fb477c2d4f758310e4"
+        }
+      ]
+    },
+    {
+      "archive": "doc03-reports-traces-and-handoff.tar.gz",
+      "bytes": 31108244,
+      "sha256": "1d6c98a3f973b36397fb4c3d15252ccc261e47a7347dea85c0eb6308bc834535",
+      "parts": [
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-000",
+          "bytes": 2097152,
+          "sha256": "a1c6a19fdb76879a21ef9784663083ca8bae5f8b19c66691a96f0de8900667c2",
+          "git_blob": "ede494ca9f4e30d326e2bd293ad7a57a967cb1b3"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-001",
+          "bytes": 2097152,
+          "sha256": "25fd2187a8d0607f657406e8248106d2b1fb1889edee581b0913e245097db868",
+          "git_blob": "9da15f5ed56cbc088ba929b3de6bfc2ac6b8af84"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-002",
+          "bytes": 2097152,
+          "sha256": "240fcf73c718be596a07bbdc7844e1e41d5ec1848a9e7a93993b9a0aceb6a52f",
+          "git_blob": "b2ca074dd490111d55e7183a3bd2af06ad1a22b9"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-003",
+          "bytes": 2097152,
+          "sha256": "74f1c41f1cd25489ce9be948bf8b713fb85968c24eca74a5fa0b0ef2f3254f5a",
+          "git_blob": "e0c5a423a640bd56de856741af2b8bd2b4e88a6a"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-004",
+          "bytes": 2097152,
+          "sha256": "0edfe158de3ae7e8d0794a7b9d077702cb35de7052f6bc608e68d691a14bd5fd",
+          "git_blob": "87252217305d57abf29231b19eb010b4c5fcdd43"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-005",
+          "bytes": 2097152,
+          "sha256": "a27a1906bd1e8dc9dcbae5c87fbba05b76d611340091f855beada3e67ba03eef",
+          "git_blob": "3b03d9b5a4e3f0136f0f5832d49cb692228ce2da"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-006",
+          "bytes": 2097152,
+          "sha256": "f1ab436cf903519db5f251eb18bce49c0fd2abc169e7aa5a92a97e2124994d64",
+          "git_blob": "143c58ae5fa1cf99595eb6871832d9c6d8c644f3"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-007",
+          "bytes": 2097152,
+          "sha256": "f10ba737f34d6c59466a85a121f80562fd2f87b7bb4b1725014fe0f690bb7e8d",
+          "git_blob": "5a87e3fb4cc106d492397080e7404e1fc44bc73c"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-008",
+          "bytes": 2097152,
+          "sha256": "421d35aaac9db2770abaa0f949ee0bc0c2b251f81a887a5764c30a9053ee3da9",
+          "git_blob": "7d703513b7d351eb45c8f7461abf15f1da9ee7dc"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-009",
+          "bytes": 2097152,
+          "sha256": "a9a8f8c03c81ec4d03143a1a462872a9c1c831943cfcb9c3baf49852de46b304",
+          "git_blob": "6ebf3ec4bd0a52c1c34f57395765c57fad5a411f"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-010",
+          "bytes": 2097152,
+          "sha256": "a01cd15e0f0e871d7f74e2fdd7cb4044d790802346853ce2e6f655fff65c526e",
+          "git_blob": "67e790ce3d8faa2b860f75dcdf3e9ef9a3cd4d93"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-011",
+          "bytes": 2097152,
+          "sha256": "6f384163e2c4f1c8b6cdefbfb65dae699427eda991b3ca6d9a5698df8a15c6f5",
+          "git_blob": "92671c2a404094c9f8b5b25efc4c275b7474fa6c"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-012",
+          "bytes": 2097152,
+          "sha256": "dd9ffc3d286708956c582e6c5e6b5310f86bb24941c6a1e1b2bcc4aa08fbb0f1",
+          "git_blob": "ac8b85ea897c4653116e118fbefca530432651c5"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-013",
+          "bytes": 2097152,
+          "sha256": "e47b82a521ec450b2bceb4e781991f5905c7c458a0ac0878da9cd5ff223ba668",
+          "git_blob": "80e4068deb3d3219f285a66aafdf0eb2d6d5ba5a"
+        },
+        {
+          "name": "doc03-reports-traces-and-handoff.tar.gz.part-014",
+          "bytes": 1748116,
+          "sha256": "4277abf918804dac14c6cb132f737c7a6318d70e0dab05a050d44c03b4384d25",
+          "git_blob": "723cdaa2204836713211084cac705c53e9853f1a"
+        }
+      ]
+    },
+    {
+      "archive": "doc03-successor-wip-source-and-handoff.tar.gz",
+      "bytes": 1770762,
+      "sha256": "6f1887a0e83b74904e29d74f36af1564e13ef1ee3410574d4ea8c78d749ca040",
+      "parts": [
+        {
+          "name": "doc03-successor-wip-source-and-handoff.tar.gz.part-000",
+          "bytes": 1770762,
+          "sha256": "6f1887a0e83b74904e29d74f36af1564e13ef1ee3410574d4ea8c78d749ca040",
+          "git_blob": "aa26bc9e1dbc94bcf8565ee2aa918265e3513432"
+        }
+      ]
+    }
+  ]
+}

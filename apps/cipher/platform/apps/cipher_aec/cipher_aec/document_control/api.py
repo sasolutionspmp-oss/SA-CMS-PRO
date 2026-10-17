@@ -41,3 +41,23 @@ def list_records(company, project, kind, parent_id=None, limit=25, cursor=None, 
 @endpoint()
 def list_people(company, project, limit=25, cursor=None, count_mode='none'):
     return service.list_people(company,project,limit,cursor,count_mode)
+
+@endpoint(methods=["POST"])
+def create_clause_use(company, project, operation_id, adoption_id, adoption_digest, source_clause, target, purpose):
+    from .clauses import create_clause_use as create
+    return create(company,project,operation_id,adoption_id,adoption_digest,source_clause,target,purpose)
+
+@endpoint(methods=["POST"])
+def create_redline(company, project, operation_id, clause_use_id, clause_use_digest, expected_version, proposed_text, reason):
+    from .clauses import create_redline as create
+    return create(company,project,operation_id,clause_use_id,clause_use_digest,expected_version,proposed_text,reason)
+
+@endpoint()
+def read_clause_target(company, project, kind, record_id):
+    from .clauses import read_target
+    return read_target(company,project,kind,record_id)
+
+@endpoint(methods=["POST"])
+def create_shared_adoption(company, project, operation_id, library_scope, library_revision, library_digest, definition):
+    from .shared import create_adoption
+    return create_adoption(company,project,operation_id,library_scope,library_revision,library_digest,definition)

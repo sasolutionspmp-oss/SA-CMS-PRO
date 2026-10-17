@@ -9,7 +9,11 @@
     "record_evidence": "DcRecordEvidenceRequest",
     "get_record": "DcGetRecordRequest",
     "list_records": "DcListRecordsRequest",
-    "list_people": "DcListPeopleRequest"
+    "list_people": "DcListPeopleRequest",
+    "create_clause_use": "DcCreateClauseUseRequest",
+    "create_redline": "DcCreateRedlineRequest",
+    "read_clause_target": "DcReadClauseTargetRequest",
+    "create_shared_adoption": "DcCreateSharedAdoptionRequest"
   },
   "responses": {
     "set_rights": "DcSetRightsResponse",
@@ -21,6 +25,10 @@
     "record_evidence": "DcRecordEvidenceResponse",
     "get_record": "DcGetResponse",
     "list_records": "DcListResponse",
-    "list_people": "DcPeopleResponse"
+    "list_people": "DcPeopleResponse",
+    "create_clause_use": "DcCreateClauseUseResponse",
+    "create_redline": "DcCreateRedlineResponse",
+    "read_clause_target": "DcClauseTargetResponse",
+    "create_shared_adoption": "DcCreateSharedAdoptionResponse"
   }
 }

@@ -1,0 +1,9 @@
+{
+  "source_manifest": "/dev/shm/cipher-documents-doc03/frozen-backend-v1/MANIFEST.json",
+  "source_manifest_sha256": "66cea07ac161aaa181360b3bd25be82a6c107289b11d3ebab624d136ced43ef8",
+  "source_inventory": "/dev/shm/cipher-documents-doc03/frozen-backend-v1/SOURCE_INVENTORY.json",
+  "source_inventory_sha256": "dcbfd57b1cc0fd154e501aedc6593f5809f952d483fc9d833ed154b6d4f43a98",
+  "source_count": 880,
+  "workspace": "/dev/shm/cipher-documents-doc03-successor/workspace",
+  "verification": "Every copied regular source file equals frozen Project DOC03 inventory; no business edits."
+}

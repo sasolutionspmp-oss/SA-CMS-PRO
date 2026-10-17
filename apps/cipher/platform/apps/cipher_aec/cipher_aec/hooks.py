@@ -32,6 +32,11 @@ doc_events = {
 }
 
 permission_query_conditions = {
+    "Cipher Document Lifecycle Request": "cipher_aec.document_control.install.query_denied",
+    "Cipher Document Lifecycle Event": "cipher_aec.document_control.install.query_denied",
+    "Cipher Clause Use": "cipher_aec.document_control.install.query_denied",
+    "Cipher Redline Revision": "cipher_aec.document_control.install.query_denied",
+    "Cipher Clause Application": "cipher_aec.document_control.install.query_denied",
     "File": "cipher_aec.documents.permissions.file_query",
     "Project": "cipher_aec.projects.permissions.project_query",
     "Task": "cipher_aec.projects.permissions.task_query",
@@ -40,6 +45,11 @@ permission_query_conditions = {
 }
 
 has_permission = {
+    "Cipher Document Lifecycle Request": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Document Lifecycle Event": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Clause Use": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Redline Revision": "cipher_aec.document_control.install.permission_denied",
+    "Cipher Clause Application": "cipher_aec.document_control.install.permission_denied",
     "File": "cipher_aec.documents.permissions.file_permission",
     "Project": "cipher_aec.projects.permissions.project_permission",
     "Task": "cipher_aec.projects.permissions.task_permission",

@@ -1,0 +1,38 @@
+test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption) ... ERROR
+
+======================================================================
+ERROR: test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 91, in test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption
+    self.assertEqual(service.get_record('C','P','adoption_request',request['id'])['record'],request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 245, in get_record
+    header=read_origin('library',revision['parent_id'],company,source['library_scope'],actor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 41, in read_origin
+    return read(kind,name,company,actor,lock=lock)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 54, in read
+    revision=read('library_revision',value['current_revision'],company,actor,lock=lock)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 59, in read
+    verify_artifacts(value['artifacts'],company,actor,lock=lock)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 36, in verify_artifacts
+    if artifact(company,scope,project,{k:row[k] for k in ('revision_id','source_sha256')},actor,lock=lock)!=row:raise DomainError('document_control_integrity','The exact retained original source differs.',409)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 20, in artifact
+    actual=(company_source_reference(company,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Company' and project is None else source_reference(company,project,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Project' and project else None)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 55, in <lambda>
+    for module,name,value in [(locking.DocumentContext,'hold',lambda *a,**kw:nullcontext()),(service,'require_project',require),(gov,'require_project',require),(shared,'require_project',require),(shared,'require_company',company),(scopes,'require_project',require),(scopes,'require_company',company),(scopes,'document',document),(service,'_document',lambda name,c,p,a,lock=False:document(name,c,'Project',p,a,lock)),(service.FrappeDocumentRepository,'revision_scope',lambda _,name:metadata(name)),(service.FrappeDocumentRepository,'document_scope',lambda _,name:next(SimpleNamespace(name=name,company='C',scope_type=v.get('scope_type','Project'),project=v.get('project','P')) for v in s.documents.values() if v['document_id']==name)),(documents,'company_source_reference',lambda c,rev,page,actor=None,lock=False:source_reference(c,None,rev,page,actor,lock,scope_type='Company')),(service.sources,'source_reference',source_reference),(commands,'run_company_command',company_command),(history,'append_company_event',lambda **kw:s.events.append(kw) or uid())]:stack.enter_context(patch.object(module,name,value,create=True))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 37, in source_reference
+    if row is None or revision in s.denied or row.get('scope_type','Project')!=scope_type or row.get('project','P')!=project:raise DomainError('not_found','Original source denied',404)
+                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: Original source denied
+
+----------------------------------------------------------------------
+Ran 1 test in 0.028s
+
+FAILED (errors=1)

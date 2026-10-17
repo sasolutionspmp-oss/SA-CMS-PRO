@@ -114,6 +114,10 @@ def upload_company_document(*, company, title, filename, content, byte_length, s
     payload = {"title": title, "filename": filename, "byte_length": byte_length, "sha256": sha256.lower(),
                "document_id": document_id, "expected_revision": expected_revision}
     def effect(actor, company_doc):
+        if document_id:
+            from cipher_aec.document_control.rights import require as require_rights,prelock as prelock_rights
+            prelock_rights([document_id],company,None,actor,scope_type='Company')
+            require_rights(document_id,company,None,'ingest',actor,lock=True,required=False,scope_type='Company')
         result = _company_call(lambda: _service(actor, scope_type="Company").upload(company=company, project=None, title=title,
                     filename=filename, content=content, byte_length=byte_length, sha256=sha256,
                     document_id=document_id, expected_revision=expected_revision))

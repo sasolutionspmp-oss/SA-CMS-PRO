@@ -2408,6 +2408,7 @@
                     "enum": [
                       "calibration.verify.v1",
                       "contract.baseline.activate.v1",
+                      "document.clause.apply.v1",
                       "document.issue.v1",
                       "document.library.adopt.v1",
                       "document.transmit.v1",
@@ -28928,6 +28929,516 @@
         "x-idempotency-scope": "canonical-person + UUIDv4; payload-bound, current rights checked before replay"
       }
     },
+    "/api/method/cipher_aec.document_control.api.create_clause_use": {
+      "post": {
+        "operationId": "cipher_aec.document_control.api.create_clause_use",
+        "tags": [
+          "api"
+        ],
+        "summary": "create clause use",
+        "security": [
+          {
+            "frappeSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result; Frappe message envelope is normalized once by the client.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/DcCreateClauseUseResponse"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current authority denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unavailable or out-of-scope resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation, lifecycle, manifest or grant conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale source version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Required version/idempotency precondition missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Retryable concurrency or quarantined/unavailable service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Present for retryable database concurrency conflicts."
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "project": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "operation_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "adoption_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "adoption_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "source_clause": {
+                    "$ref": "#/components/schemas/DcClauseSourceReference"
+                  },
+                  "target": {
+                    "$ref": "#/components/schemas/DcClauseTarget"
+                  },
+                  "purpose": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "company",
+                  "project",
+                  "operation_id",
+                  "adoption_id",
+                  "adoption_digest",
+                  "source_clause",
+                  "target",
+                  "purpose"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Frappe-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session token obtained from the authorized session endpoint."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-idempotency-scope": "canonical-person + UUIDv4; payload-bound, current rights checked before replay"
+      }
+    },
     "/api/method/cipher_aec.document_control.api.create_issue_set": {
       "post": {
         "operationId": "cipher_aec.document_control.api.create_issue_set",
@@ -29901,6 +30412,526 @@
                   "operation_id",
                   "definition",
                   "artifact"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Frappe-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session token obtained from the authorized session endpoint."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-idempotency-scope": "canonical-person + UUIDv4; payload-bound, current rights checked before replay"
+      }
+    },
+    "/api/method/cipher_aec.document_control.api.create_redline": {
+      "post": {
+        "operationId": "cipher_aec.document_control.api.create_redline",
+        "tags": [
+          "api"
+        ],
+        "summary": "create redline",
+        "security": [
+          {
+            "frappeSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result; Frappe message envelope is normalized once by the client.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/DcCreateRedlineResponse"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current authority denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unavailable or out-of-scope resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation, lifecycle, manifest or grant conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale source version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Required version/idempotency precondition missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Retryable concurrency or quarantined/unavailable service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Present for retryable database concurrency conflicts."
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "project": {
+                    "type": "string",
+                    "maxLength": 140
+                  },
+                  "operation_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "clause_use_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "clause_use_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "expected_version": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "pattern": "^[a-f0-9]{64}$"
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  },
+                  "proposed_text": {
+                    "type": "string",
+                    "maxLength": 12000,
+                    "minLength": 1
+                  },
+                  "reason": {
+                    "type": "string",
+                    "maxLength": 4000,
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "company",
+                  "project",
+                  "operation_id",
+                  "clause_use_id",
+                  "clause_use_digest",
+                  "expected_version",
+                  "proposed_text",
+                  "reason"
                 ],
                 "additionalProperties": false
               }
@@ -30913,7 +31944,10 @@
                 "issue",
                 "transmittal",
                 "distribution",
-                "evidence"
+                "evidence",
+                "clause_use",
+                "redline",
+                "clause_application"
               ]
             }
           },
@@ -31885,7 +32919,10 @@
                 "issue",
                 "transmittal",
                 "distribution",
-                "evidence"
+                "evidence",
+                "clause_use",
+                "redline",
+                "clause_application"
               ]
             }
           },
@@ -31937,6 +32974,480 @@
             "required": false,
             "schema": {
               "const": "none"
+            }
+          }
+        ]
+      }
+    },
+    "/api/method/cipher_aec.document_control.api.read_clause_target": {
+      "get": {
+        "operationId": "cipher_aec.document_control.api.read_clause_target",
+        "tags": [
+          "api"
+        ],
+        "summary": "read clause target",
+        "security": [
+          {
+            "frappeSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result; Frappe message envelope is normalized once by the client.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/DcClauseTargetResponse"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current authority denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unavailable or out-of-scope resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation, lifecycle, manifest or grant conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale source version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Required version/idempotency precondition missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Retryable concurrency or quarantined/unavailable service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Present for retryable database concurrency conflicts."
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            }
+          },
+          {
+            "name": "project",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 140,
+              "minLength": 1
+            }
+          },
+          {
+            "name": "kind",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/DcClauseTargetKind"
+            }
+          },
+          {
+            "name": "record_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
             }
           }
         ]
@@ -93117,6 +94628,9 @@
           },
           {
             "$ref": "#/components/schemas/DocumentTransmittalApprovalPacket"
+          },
+          {
+            "$ref": "#/components/schemas/DocumentRedlineApprovalPacket"
           }
         ]
       },
@@ -93195,6 +94709,35 @@
                 },
                 "required": [
                   "distribution"
+                ],
+                "additionalProperties": false
+              },
+              "operation": {
+                "$ref": "#/components/schemas/Operation"
+              }
+            },
+            "required": [
+              "packet",
+              "effect",
+              "operation"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "packet": {
+                "$ref": "#/components/schemas/DocumentRedlineApprovalPacket"
+              },
+              "effect": {
+                "type": "object",
+                "properties": {
+                  "clause_application": {
+                    "$ref": "#/components/schemas/DcClauseApplication"
+                  }
+                },
+                "required": [
+                  "clause_application"
                 ],
                 "additionalProperties": false
               },
@@ -93858,6 +95401,2553 @@
           "package_digest",
           "recipients",
           "channel"
+        ],
+        "additionalProperties": false
+      },
+      "DcArtifactInput": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "revision_id",
+          "source_sha256"
+        ],
+        "additionalProperties": false
+      },
+      "DcOperation": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "const": "succeeded"
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "replayed"
+        ],
+        "additionalProperties": false
+      },
+      "DcRightsDefinition": {
+        "type": "object",
+        "properties": {
+          "ingest_allowed": {
+            "type": "boolean"
+          },
+          "read_allowed": {
+            "type": "boolean"
+          },
+          "distribute_allowed": {
+            "type": "boolean"
+          },
+          "rights_basis": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "rights_holder": {
+            "type": "string",
+            "maxLength": 500
+          },
+          "allowed_purpose": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "restriction": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "valid_from": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "valid_until": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_artifact": {
+            "$ref": "#/components/schemas/DcArtifactInput"
+          }
+        },
+        "required": [
+          "ingest_allowed",
+          "read_allowed",
+          "distribute_allowed",
+          "rights_basis",
+          "rights_holder",
+          "allowed_purpose",
+          "restriction",
+          "valid_from",
+          "valid_until",
+          "evidence_artifact"
+        ],
+        "additionalProperties": false
+      },
+      "DcLibraryDefinition": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "category": {
+            "enum": [
+              "specification",
+              "contract_clause",
+              "reference"
+            ]
+          },
+          "discipline": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "ownership": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 80
+            },
+            "minItems": 0,
+            "maxItems": 20
+          },
+          "change_reason": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "title",
+          "category",
+          "discipline",
+          "ownership",
+          "tags",
+          "change_reason"
+        ],
+        "additionalProperties": false
+      },
+      "DcLibrary": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "working"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "current_revision": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "revision_number": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "current_revision",
+          "revision_number"
+        ],
+        "additionalProperties": false
+      },
+      "DcLibraryRevision": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "working"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "predecessor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision_number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcLibraryDefinition"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "predecessor",
+          "revision_number",
+          "definition",
+          "artifacts"
+        ],
+        "additionalProperties": false
+      },
+      "DcAdoptionRequest": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "working"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "library_revision": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "library_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcAdoptionDefinition"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "library_revision",
+          "library_digest",
+          "definition",
+          "artifacts"
+        ],
+        "additionalProperties": false
+      },
+      "DcIssueSet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "working"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcIssueDefinition"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "adoptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcExactReference"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "package_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "definition",
+          "artifacts",
+          "adoptions",
+          "package_digest"
+        ],
+        "additionalProperties": false
+      },
+      "DcTransmittal": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "working"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "issue_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "issue_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "recipients": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcPerson"
+            },
+            "minItems": 1,
+            "maxItems": 30
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "required_response": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "channel": {
+            "const": "internal"
+          },
+          "package_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "issue_id",
+          "issue_digest",
+          "artifacts",
+          "recipients",
+          "purpose",
+          "required_response",
+          "channel",
+          "package_digest"
+        ],
+        "additionalProperties": false
+      },
+      "DcEvidence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "enum": [
+              "reported_received",
+              "reported_execution"
+            ]
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_kind": {
+            "enum": [
+              "distribution",
+              "adoption"
+            ]
+          },
+          "subject_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "statement": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          },
+          "commercial_execution": {
+            "const": false
+          },
+          "electronic_signature": {
+            "const": false
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "subject_kind",
+          "subject_id",
+          "subject_digest",
+          "statement",
+          "artifacts",
+          "commercial_execution",
+          "electronic_signature"
+        ],
+        "additionalProperties": false
+      },
+      "DcRecord": {
+        "anyOf": [
+          {
+            "$ref": "#/components/schemas/DcRights"
+          },
+          {
+            "$ref": "#/components/schemas/DcLibrary"
+          },
+          {
+            "$ref": "#/components/schemas/DcLibraryRevision"
+          },
+          {
+            "$ref": "#/components/schemas/DcAdoptionRequest"
+          },
+          {
+            "$ref": "#/components/schemas/DcAdoption"
+          },
+          {
+            "$ref": "#/components/schemas/DcIssueSet"
+          },
+          {
+            "$ref": "#/components/schemas/DcIssue"
+          },
+          {
+            "$ref": "#/components/schemas/DcTransmittal"
+          },
+          {
+            "$ref": "#/components/schemas/DcDistribution"
+          },
+          {
+            "$ref": "#/components/schemas/DcEvidence"
+          },
+          {
+            "$ref": "#/components/schemas/DcClauseUse"
+          },
+          {
+            "$ref": "#/components/schemas/DcRedline"
+          },
+          {
+            "$ref": "#/components/schemas/DcClauseApplication"
+          }
+        ]
+      },
+      "DcGetResponse": {
+        "type": "object",
+        "properties": {
+          "record": {
+            "$ref": "#/components/schemas/DcRecord"
+          },
+          "record_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "library_current": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "record",
+          "record_digest",
+          "library_current"
+        ],
+        "additionalProperties": false
+      },
+      "DcListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcGetResponse"
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "count_mode": {
+            "const": "none"
+          },
+          "total": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "count_mode",
+          "total"
+        ],
+        "additionalProperties": false
+      },
+      "DcPeopleResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "person": {
+                  "type": "string",
+                  "maxLength": 140
+                },
+                "display_name": {
+                  "type": "string",
+                  "maxLength": 140
+                }
+              },
+              "required": [
+                "user",
+                "person",
+                "display_name"
+              ],
+              "additionalProperties": false
+            },
+            "minItems": 0,
+            "maxItems": 100
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "count_mode": {
+            "const": "none"
+          },
+          "total": {
+            "type": "null"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor",
+          "limit",
+          "count_mode",
+          "total"
+        ],
+        "additionalProperties": false
+      },
+      "DcSetRightsRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "document_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcRightsDefinition"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "document_id",
+          "expected_version",
+          "definition"
+        ],
+        "additionalProperties": false
+      },
+      "DcSetRightsResponse": {
+        "type": "object",
+        "properties": {
+          "rights": {
+            "$ref": "#/components/schemas/DcRights"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "rights",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateLibraryRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcLibraryDefinition"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/DcArtifactInput"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "definition",
+          "artifact"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateLibraryResponse": {
+        "type": "object",
+        "properties": {
+          "library": {
+            "$ref": "#/components/schemas/DcLibrary"
+          },
+          "library_revision": {
+            "$ref": "#/components/schemas/DcLibraryRevision"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "library",
+          "library_revision",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcReviseLibraryRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "library_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_version": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcLibraryDefinition"
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/DcArtifactInput"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "library_id",
+          "expected_version",
+          "definition",
+          "artifact"
+        ],
+        "additionalProperties": false
+      },
+      "DcReviseLibraryResponse": {
+        "type": "object",
+        "properties": {
+          "library": {
+            "$ref": "#/components/schemas/DcLibrary"
+          },
+          "library_revision": {
+            "$ref": "#/components/schemas/DcLibraryRevision"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "library",
+          "library_revision",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateAdoptionRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "library_revision": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "library_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcAdoptionDefinition"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "library_revision",
+          "library_digest",
+          "definition"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateAdoptionResponse": {
+        "type": "object",
+        "properties": {
+          "adoption_request": {
+            "$ref": "#/components/schemas/DcAdoptionRequest"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "adoption_request",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateIssueSetRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/DcIssueDefinition"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifactInput"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          },
+          "adoptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcExactReference"
+            },
+            "minItems": 0,
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "definition",
+          "artifacts",
+          "adoptions"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateIssueSetResponse": {
+        "type": "object",
+        "properties": {
+          "issue_set": {
+            "$ref": "#/components/schemas/DcIssueSet"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "issue_set",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateTransmittalRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "issue_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "issue_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "recipients": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 140
+            },
+            "minItems": 1,
+            "maxItems": 30
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "required_response": {
+            "type": "string",
+            "maxLength": 4000
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "issue_id",
+          "issue_digest",
+          "recipients",
+          "purpose",
+          "required_response"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateTransmittalResponse": {
+        "type": "object",
+        "properties": {
+          "transmittal": {
+            "$ref": "#/components/schemas/DcTransmittal"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "transmittal",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcRecordEvidenceRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_kind": {
+            "enum": [
+              "distribution",
+              "adoption"
+            ]
+          },
+          "subject_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "statement": {
+            "type": "string",
+            "maxLength": 4000
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifactInput"
+            },
+            "minItems": 1,
+            "maxItems": 8
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "subject_kind",
+          "subject_id",
+          "subject_digest",
+          "statement",
+          "artifacts"
+        ],
+        "additionalProperties": false
+      },
+      "DcRecordEvidenceResponse": {
+        "type": "object",
+        "properties": {
+          "evidence": {
+            "$ref": "#/components/schemas/DcEvidence"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "evidence",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcGetRecordRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "kind": {
+            "enum": [
+              "rights",
+              "library",
+              "library_revision",
+              "adoption_request",
+              "adoption",
+              "issue_set",
+              "issue",
+              "transmittal",
+              "distribution",
+              "evidence",
+              "clause_use",
+              "redline",
+              "clause_application"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "kind",
+          "record_id"
+        ],
+        "additionalProperties": false
+      },
+      "DcListRecordsRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "kind": {
+            "enum": [
+              "rights",
+              "library",
+              "library_revision",
+              "adoption_request",
+              "adoption",
+              "issue_set",
+              "issue",
+              "transmittal",
+              "distribution",
+              "evidence",
+              "clause_use",
+              "redline",
+              "clause_application"
+            ]
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 140
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "count_mode": {
+            "const": "none"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "kind"
+        ],
+        "additionalProperties": false
+      },
+      "DcListPeopleRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 4096
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "count_mode": {
+            "const": "none"
+          }
+        },
+        "required": [
+          "company",
+          "project"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseSourceReference": {
+        "type": "object",
+        "properties": {
+          "revision_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "source_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "excerpt_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "start": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1000000
+          },
+          "end": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000000
+          }
+        },
+        "required": [
+          "revision_id",
+          "source_sha256",
+          "page",
+          "excerpt_sha256",
+          "start",
+          "end"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseTargetKind": {
+        "enum": [
+          "proposal_revision",
+          "contract_revision",
+          "document_revision"
+        ]
+      },
+      "DcClauseTarget": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/DcClauseTargetKind"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "record_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "locator": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "kind",
+          "id",
+          "record_digest",
+          "locator"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseTargetSnapshot": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "proposal_revision"
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "record_digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "company": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "project": {
+                "type": "null"
+              },
+              "scope_type": {
+                "const": "Company"
+              }
+            },
+            "required": [
+              "kind",
+              "id",
+              "record_digest",
+              "parent_id",
+              "company",
+              "project",
+              "scope_type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "contract_revision"
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "record_digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "company": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "project": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "scope_type": {
+                "const": "Project"
+              }
+            },
+            "required": [
+              "kind",
+              "id",
+              "record_digest",
+              "parent_id",
+              "company",
+              "project",
+              "scope_type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kind": {
+                "const": "document_revision"
+              },
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "record_digest": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "parent_id": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "company": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "project": {
+                "type": "string",
+                "maxLength": 140,
+                "minLength": 1
+              },
+              "scope_type": {
+                "const": "Project"
+              }
+            },
+            "required": [
+              "kind",
+              "id",
+              "record_digest",
+              "parent_id",
+              "company",
+              "project",
+              "scope_type"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "DcQuotedClause": {
+        "type": "object",
+        "properties": {
+          "reference": {
+            "$ref": "#/components/schemas/DcClauseSourceReference"
+          },
+          "text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "text_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          }
+        },
+        "required": [
+          "reference",
+          "text",
+          "text_sha256"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseUse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "referenced"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "adoption_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "adoption_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_clause": {
+            "$ref": "#/components/schemas/DcQuotedClause"
+          },
+          "target": {
+            "$ref": "#/components/schemas/DcClauseTarget"
+          },
+          "target_snapshot": {
+            "$ref": "#/components/schemas/DcClauseTargetSnapshot"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "target_changed": {
+            "const": false
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "adoption_id",
+          "adoption_digest",
+          "source_clause",
+          "target",
+          "target_snapshot",
+          "purpose",
+          "artifacts",
+          "target_changed"
+        ],
+        "additionalProperties": false
+      },
+      "DcRedline": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "proposed"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clause_use_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clause_use_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "predecessor": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision_number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "original_text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "proposed_text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "proposed_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          },
+          "target": {
+            "$ref": "#/components/schemas/DcClauseTarget"
+          },
+          "target_snapshot": {
+            "$ref": "#/components/schemas/DcClauseTargetSnapshot"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "target_changed": {
+            "const": false
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "clause_use_id",
+          "clause_use_digest",
+          "predecessor",
+          "revision_number",
+          "original_text",
+          "proposed_text",
+          "proposed_sha256",
+          "reason",
+          "target",
+          "target_snapshot",
+          "artifacts",
+          "target_changed"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseApplication": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "scope_type": {
+            "const": "Project"
+          },
+          "author_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "author_user": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "const": "approved_relationship"
+          },
+          "no_effects": {
+            "$ref": "#/components/schemas/DcNoEffects"
+          },
+          "parent_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "subject_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "packet_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "decision_id": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "checked_by_person": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "effect_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DcArtifact"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "electronic_signature": {
+            "const": false
+          },
+          "professional_seal": {
+            "const": false
+          },
+          "external_delivery": {
+            "const": false
+          },
+          "commercial_execution": {
+            "const": false
+          },
+          "target": {
+            "$ref": "#/components/schemas/DcClauseTarget"
+          },
+          "target_snapshot": {
+            "$ref": "#/components/schemas/DcClauseTargetSnapshot"
+          },
+          "original_text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "proposed_text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "proposed_sha256": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "target_changed": {
+            "const": false
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "scope_type",
+          "author_person",
+          "author_user",
+          "created_at",
+          "status",
+          "no_effects",
+          "parent_id",
+          "subject_id",
+          "subject_digest",
+          "packet_id",
+          "decision_id",
+          "checked_by_person",
+          "effect_digest",
+          "artifacts",
+          "electronic_signature",
+          "professional_seal",
+          "external_delivery",
+          "commercial_execution",
+          "target",
+          "target_snapshot",
+          "original_text",
+          "proposed_text",
+          "proposed_sha256",
+          "target_changed"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateClauseUseRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "adoption_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "adoption_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_clause": {
+            "$ref": "#/components/schemas/DcClauseSourceReference"
+          },
+          "target": {
+            "$ref": "#/components/schemas/DcClauseTarget"
+          },
+          "purpose": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "adoption_id",
+          "adoption_digest",
+          "source_clause",
+          "target",
+          "purpose"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateRedlineRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clause_use_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clause_use_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expected_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proposed_text": {
+            "type": "string",
+            "maxLength": 12000,
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 4000,
+            "minLength": 1
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "operation_id",
+          "clause_use_id",
+          "clause_use_digest",
+          "expected_version",
+          "proposed_text",
+          "reason"
+        ],
+        "additionalProperties": false
+      },
+      "DcReadClauseTargetRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1
+          },
+          "project": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1
+          },
+          "kind": {
+            "$ref": "#/components/schemas/DcClauseTargetKind"
+          },
+          "record_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "company",
+          "project",
+          "kind",
+          "record_id"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateClauseUseResponse": {
+        "type": "object",
+        "properties": {
+          "clause_use": {
+            "$ref": "#/components/schemas/DcClauseUse"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "clause_use",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcCreateRedlineResponse": {
+        "type": "object",
+        "properties": {
+          "redline": {
+            "$ref": "#/components/schemas/DcRedline"
+          },
+          "history_id": {
+            "type": "string",
+            "maxLength": 140,
+            "minLength": 1
+          },
+          "operation": {
+            "$ref": "#/components/schemas/DcOperation"
+          }
+        },
+        "required": [
+          "redline",
+          "history_id",
+          "operation"
+        ],
+        "additionalProperties": false
+      },
+      "DcClauseTargetResponse": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "$ref": "#/components/schemas/DcClauseTargetSnapshot"
+          }
+        },
+        "required": [
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "DocumentRedlineApprovalPacket": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "company": {
+            "type": "string"
+          },
+          "project": {
+            "type": "string"
+          },
+          "action": {
+            "const": "document.clause.apply.v1"
+          },
+          "subject": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "const": "Cipher Redline Revision"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "label"
+            ],
+            "additionalProperties": false
+          },
+          "requester": {
+            "$ref": "#/components/schemas/Person"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "manifest_hash": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "source_version": {
+            "type": "string"
+          },
+          "policy": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "synthetic": {
+                "const": true
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "synthetic"
+            ],
+            "additionalProperties": false
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "Pending",
+              "Granted",
+              "Rejected",
+              "Withdrawn",
+              "Expired",
+              "Stale",
+              "Consumed"
+            ]
+          },
+          "decisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ApprovalDecision"
+            }
+          },
+          "actions": {
+            "type": "object",
+            "properties": {
+              "can_decide": {
+                "type": "boolean"
+              },
+              "can_execute": {
+                "type": "boolean"
+              },
+              "can_withdraw": {
+                "type": "boolean"
+              },
+              "disabled_reason": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            },
+            "required": [
+              "can_decide",
+              "can_execute",
+              "can_withdraw",
+              "disabled_reason"
+            ],
+            "additionalProperties": false
+          },
+          "review_manifest": {
+            "type": "object",
+            "properties": {
+              "subject": {
+                "type": "object",
+                "properties": {
+                  "doctype": {
+                    "const": "Cipher Redline Revision"
+                  },
+                  "name": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                },
+                "required": [
+                  "doctype",
+                  "name",
+                  "label"
+                ],
+                "additionalProperties": false
+              },
+              "sources": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "artifacts": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DcArtifact"
+                      },
+                      "minItems": 1,
+                      "maxItems": 8
+                    },
+                    "rights": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/DcRights"
+                      },
+                      "minItems": 1,
+                      "maxItems": 8
+                    }
+                  },
+                  "required": [
+                    "artifacts",
+                    "rights"
+                  ],
+                  "additionalProperties": false
+                },
+                "minItems": 1,
+                "maxItems": 1
+              },
+              "effect": {
+                "type": "object",
+                "properties": {
+                  "schema": {
+                    "const": "cipher.document.authorization.v1"
+                  },
+                  "action": {
+                    "const": "document.clause.apply.v1"
+                  },
+                  "subject_kind": {
+                    "const": "redline"
+                  },
+                  "subject_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "subject_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "artifacts": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/DcArtifact"
+                    },
+                    "minItems": 1,
+                    "maxItems": 8
+                  },
+                  "no_effects": {
+                    "$ref": "#/components/schemas/DcNoEffects"
+                  },
+                  "electronic_signature": {
+                    "const": false
+                  },
+                  "professional_seal": {
+                    "const": false
+                  },
+                  "external_delivery": {
+                    "const": false
+                  },
+                  "commercial_execution": {
+                    "const": false
+                  },
+                  "target": {
+                    "$ref": "#/components/schemas/DcClauseTarget"
+                  },
+                  "target_snapshot": {
+                    "$ref": "#/components/schemas/DcClauseTargetSnapshot"
+                  },
+                  "original_text": {
+                    "type": "string",
+                    "maxLength": 12000,
+                    "minLength": 1
+                  },
+                  "proposed_text": {
+                    "type": "string",
+                    "maxLength": 12000,
+                    "minLength": 1
+                  },
+                  "proposed_sha256": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "target_changed": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "schema",
+                  "action",
+                  "subject_kind",
+                  "subject_id",
+                  "subject_digest",
+                  "artifacts",
+                  "no_effects",
+                  "electronic_signature",
+                  "professional_seal",
+                  "external_delivery",
+                  "commercial_execution",
+                  "target",
+                  "target_snapshot",
+                  "original_text",
+                  "proposed_text",
+                  "proposed_sha256",
+                  "target_changed"
+                ],
+                "additionalProperties": false
+              },
+              "summary": {
+                "type": "object",
+                "properties": {
+                  "definition": {
+                    "type": "null"
+                  },
+                  "purpose": {
+                    "type": "null"
+                  },
+                  "required_response": {
+                    "type": "null"
+                  },
+                  "no_effects": {
+                    "$ref": "#/components/schemas/DcNoEffects"
+                  },
+                  "rights_basis": {
+                    "const": "authored-declaration"
+                  },
+                  "external_delivery": {
+                    "const": false
+                  },
+                  "commercial_execution": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "definition",
+                  "purpose",
+                  "required_response",
+                  "no_effects",
+                  "rights_basis",
+                  "external_delivery",
+                  "commercial_execution"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "required": [
+              "subject",
+              "sources",
+              "effect",
+              "summary"
+            ],
+            "additionalProperties": false
+          },
+          "schema": {
+            "const": "cipher.document.approval.v1"
+          }
+        },
+        "required": [
+          "id",
+          "company",
+          "project",
+          "action",
+          "subject",
+          "requester",
+          "created_at",
+          "expires_at",
+          "manifest_hash",
+          "source_version",
+          "policy",
+          "state",
+          "decisions",
+          "actions",
+          "review_manifest",
+          "schema"
         ],
         "additionalProperties": false
       },
@@ -100169,1424 +104259,6 @@
           "is_current",
           "current_revision",
           "accepted_baseline_id"
-        ],
-        "additionalProperties": false
-      },
-      "DcArtifactInput": {
-        "type": "object",
-        "properties": {
-          "revision_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "source_sha256": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          }
-        },
-        "required": [
-          "revision_id",
-          "source_sha256"
-        ],
-        "additionalProperties": false
-      },
-      "DcOperation": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "status": {
-            "const": "succeeded"
-          },
-          "replayed": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "id",
-          "status",
-          "replayed"
-        ],
-        "additionalProperties": false
-      },
-      "DcRightsDefinition": {
-        "type": "object",
-        "properties": {
-          "ingest_allowed": {
-            "type": "boolean"
-          },
-          "read_allowed": {
-            "type": "boolean"
-          },
-          "distribute_allowed": {
-            "type": "boolean"
-          },
-          "rights_basis": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "rights_holder": {
-            "type": "string",
-            "maxLength": 500
-          },
-          "allowed_purpose": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "restriction": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "valid_from": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "valid_until": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "date"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "evidence_artifact": {
-            "$ref": "#/components/schemas/DcArtifactInput"
-          }
-        },
-        "required": [
-          "ingest_allowed",
-          "read_allowed",
-          "distribute_allowed",
-          "rights_basis",
-          "rights_holder",
-          "allowed_purpose",
-          "restriction",
-          "valid_from",
-          "valid_until",
-          "evidence_artifact"
-        ],
-        "additionalProperties": false
-      },
-      "DcLibraryDefinition": {
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "maxLength": 240
-          },
-          "category": {
-            "enum": [
-              "specification",
-              "contract_clause",
-              "reference"
-            ]
-          },
-          "discipline": {
-            "type": "string",
-            "maxLength": 2000
-          },
-          "ownership": {
-            "type": "string",
-            "maxLength": 2000
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 80
-            },
-            "minItems": 0,
-            "maxItems": 20
-          },
-          "change_reason": {
-            "type": "string",
-            "maxLength": 2000
-          }
-        },
-        "required": [
-          "title",
-          "category",
-          "discipline",
-          "ownership",
-          "tags",
-          "change_reason"
-        ],
-        "additionalProperties": false
-      },
-      "DcLibrary": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "const": "working"
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "current_revision": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "revision_number": {
-            "type": "integer",
-            "minimum": 1
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "current_revision",
-          "revision_number"
-        ],
-        "additionalProperties": false
-      },
-      "DcLibraryRevision": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "const": "working"
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "predecessor": {
-            "anyOf": [
-              {
-                "type": "string",
-                "format": "uuid"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "revision_number": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcLibraryDefinition"
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifact"
-            },
-            "minItems": 1,
-            "maxItems": 1
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "parent_id",
-          "predecessor",
-          "revision_number",
-          "definition",
-          "artifacts"
-        ],
-        "additionalProperties": false
-      },
-      "DcAdoptionRequest": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "const": "working"
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "library_revision": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "library_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcAdoptionDefinition"
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifact"
-            },
-            "minItems": 1,
-            "maxItems": 1
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "parent_id",
-          "library_revision",
-          "library_digest",
-          "definition",
-          "artifacts"
-        ],
-        "additionalProperties": false
-      },
-      "DcIssueSet": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "const": "working"
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcIssueDefinition"
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifact"
-            },
-            "minItems": 1,
-            "maxItems": 8
-          },
-          "adoptions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcExactReference"
-            },
-            "minItems": 0,
-            "maxItems": 8
-          },
-          "package_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "definition",
-          "artifacts",
-          "adoptions",
-          "package_digest"
-        ],
-        "additionalProperties": false
-      },
-      "DcTransmittal": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "const": "working"
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "issue_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "issue_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifact"
-            },
-            "minItems": 1,
-            "maxItems": 8
-          },
-          "recipients": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcPerson"
-            },
-            "minItems": 1,
-            "maxItems": 30
-          },
-          "purpose": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "required_response": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "channel": {
-            "const": "internal"
-          },
-          "package_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "parent_id",
-          "issue_id",
-          "issue_digest",
-          "artifacts",
-          "recipients",
-          "purpose",
-          "required_response",
-          "channel",
-          "package_digest"
-        ],
-        "additionalProperties": false
-      },
-      "DcEvidence": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "scope_type": {
-            "const": "Project"
-          },
-          "author_person": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "author_user": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "enum": [
-              "reported_received",
-              "reported_execution"
-            ]
-          },
-          "no_effects": {
-            "$ref": "#/components/schemas/DcNoEffects"
-          },
-          "parent_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subject_kind": {
-            "enum": [
-              "distribution",
-              "adoption"
-            ]
-          },
-          "subject_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subject_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "statement": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifact"
-            },
-            "minItems": 1,
-            "maxItems": 8
-          },
-          "commercial_execution": {
-            "const": false
-          },
-          "electronic_signature": {
-            "const": false
-          }
-        },
-        "required": [
-          "id",
-          "company",
-          "project",
-          "scope_type",
-          "author_person",
-          "author_user",
-          "created_at",
-          "status",
-          "no_effects",
-          "parent_id",
-          "subject_kind",
-          "subject_id",
-          "subject_digest",
-          "statement",
-          "artifacts",
-          "commercial_execution",
-          "electronic_signature"
-        ],
-        "additionalProperties": false
-      },
-      "DcRecord": {
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/DcRights"
-          },
-          {
-            "$ref": "#/components/schemas/DcLibrary"
-          },
-          {
-            "$ref": "#/components/schemas/DcLibraryRevision"
-          },
-          {
-            "$ref": "#/components/schemas/DcAdoptionRequest"
-          },
-          {
-            "$ref": "#/components/schemas/DcAdoption"
-          },
-          {
-            "$ref": "#/components/schemas/DcIssueSet"
-          },
-          {
-            "$ref": "#/components/schemas/DcIssue"
-          },
-          {
-            "$ref": "#/components/schemas/DcTransmittal"
-          },
-          {
-            "$ref": "#/components/schemas/DcDistribution"
-          },
-          {
-            "$ref": "#/components/schemas/DcEvidence"
-          }
-        ]
-      },
-      "DcGetResponse": {
-        "type": "object",
-        "properties": {
-          "record": {
-            "$ref": "#/components/schemas/DcRecord"
-          },
-          "record_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "library_current": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "required": [
-          "record",
-          "record_digest",
-          "library_current"
-        ],
-        "additionalProperties": false
-      },
-      "DcListResponse": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcGetResponse"
-            },
-            "minItems": 0,
-            "maxItems": 100
-          },
-          "next_cursor": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 4096
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "limit": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "count_mode": {
-            "const": "none"
-          },
-          "total": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "items",
-          "next_cursor",
-          "limit",
-          "count_mode",
-          "total"
-        ],
-        "additionalProperties": false
-      },
-      "DcPeopleResponse": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "user": {
-                  "type": "string",
-                  "maxLength": 140
-                },
-                "person": {
-                  "type": "string",
-                  "maxLength": 140
-                },
-                "display_name": {
-                  "type": "string",
-                  "maxLength": 140
-                }
-              },
-              "required": [
-                "user",
-                "person",
-                "display_name"
-              ],
-              "additionalProperties": false
-            },
-            "minItems": 0,
-            "maxItems": 100
-          },
-          "next_cursor": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 4096
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "limit": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "count_mode": {
-            "const": "none"
-          },
-          "total": {
-            "type": "null"
-          }
-        },
-        "required": [
-          "items",
-          "next_cursor",
-          "limit",
-          "count_mode",
-          "total"
-        ],
-        "additionalProperties": false
-      },
-      "DcSetRightsRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "document_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "expected_version": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^[a-f0-9]{64}$"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcRightsDefinition"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "document_id",
-          "expected_version",
-          "definition"
-        ],
-        "additionalProperties": false
-      },
-      "DcSetRightsResponse": {
-        "type": "object",
-        "properties": {
-          "rights": {
-            "$ref": "#/components/schemas/DcRights"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "rights",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateLibraryRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcLibraryDefinition"
-          },
-          "artifact": {
-            "$ref": "#/components/schemas/DcArtifactInput"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "definition",
-          "artifact"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateLibraryResponse": {
-        "type": "object",
-        "properties": {
-          "library": {
-            "$ref": "#/components/schemas/DcLibrary"
-          },
-          "library_revision": {
-            "$ref": "#/components/schemas/DcLibraryRevision"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "library",
-          "library_revision",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcReviseLibraryRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "library_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "expected_version": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcLibraryDefinition"
-          },
-          "artifact": {
-            "$ref": "#/components/schemas/DcArtifactInput"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "library_id",
-          "expected_version",
-          "definition",
-          "artifact"
-        ],
-        "additionalProperties": false
-      },
-      "DcReviseLibraryResponse": {
-        "type": "object",
-        "properties": {
-          "library": {
-            "$ref": "#/components/schemas/DcLibrary"
-          },
-          "library_revision": {
-            "$ref": "#/components/schemas/DcLibraryRevision"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "library",
-          "library_revision",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateAdoptionRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "library_revision": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "library_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcAdoptionDefinition"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "library_revision",
-          "library_digest",
-          "definition"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateAdoptionResponse": {
-        "type": "object",
-        "properties": {
-          "adoption_request": {
-            "$ref": "#/components/schemas/DcAdoptionRequest"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "adoption_request",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateIssueSetRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "definition": {
-            "$ref": "#/components/schemas/DcIssueDefinition"
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifactInput"
-            },
-            "minItems": 0,
-            "maxItems": 8
-          },
-          "adoptions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcExactReference"
-            },
-            "minItems": 0,
-            "maxItems": 8
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "definition",
-          "artifacts",
-          "adoptions"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateIssueSetResponse": {
-        "type": "object",
-        "properties": {
-          "issue_set": {
-            "$ref": "#/components/schemas/DcIssueSet"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "issue_set",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateTransmittalRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "issue_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "issue_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "recipients": {
-            "type": "array",
-            "items": {
-              "type": "string",
-              "maxLength": 140
-            },
-            "minItems": 1,
-            "maxItems": 30
-          },
-          "purpose": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "required_response": {
-            "type": "string",
-            "maxLength": 4000
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "issue_id",
-          "issue_digest",
-          "recipients",
-          "purpose",
-          "required_response"
-        ],
-        "additionalProperties": false
-      },
-      "DcCreateTransmittalResponse": {
-        "type": "object",
-        "properties": {
-          "transmittal": {
-            "$ref": "#/components/schemas/DcTransmittal"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "transmittal",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcRecordEvidenceRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subject_kind": {
-            "enum": [
-              "distribution",
-              "adoption"
-            ]
-          },
-          "subject_id": {
-            "type": "string",
-            "format": "uuid"
-          },
-          "subject_digest": {
-            "type": "string",
-            "pattern": "^[a-f0-9]{64}$"
-          },
-          "statement": {
-            "type": "string",
-            "maxLength": 4000
-          },
-          "artifacts": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/DcArtifactInput"
-            },
-            "minItems": 1,
-            "maxItems": 8
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "operation_id",
-          "subject_kind",
-          "subject_id",
-          "subject_digest",
-          "statement",
-          "artifacts"
-        ],
-        "additionalProperties": false
-      },
-      "DcRecordEvidenceResponse": {
-        "type": "object",
-        "properties": {
-          "evidence": {
-            "$ref": "#/components/schemas/DcEvidence"
-          },
-          "history_id": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "operation": {
-            "$ref": "#/components/schemas/DcOperation"
-          }
-        },
-        "required": [
-          "evidence",
-          "history_id",
-          "operation"
-        ],
-        "additionalProperties": false
-      },
-      "DcGetRecordRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "kind": {
-            "enum": [
-              "rights",
-              "library",
-              "library_revision",
-              "adoption_request",
-              "adoption",
-              "issue_set",
-              "issue",
-              "transmittal",
-              "distribution",
-              "evidence"
-            ]
-          },
-          "record_id": {
-            "type": "string",
-            "format": "uuid"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "kind",
-          "record_id"
-        ],
-        "additionalProperties": false
-      },
-      "DcListRecordsRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "kind": {
-            "enum": [
-              "rights",
-              "library",
-              "library_revision",
-              "adoption_request",
-              "adoption",
-              "issue_set",
-              "issue",
-              "transmittal",
-              "distribution",
-              "evidence"
-            ]
-          },
-          "parent_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 140
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "limit": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "cursor": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 4096
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "count_mode": {
-            "const": "none"
-          }
-        },
-        "required": [
-          "company",
-          "project",
-          "kind"
-        ],
-        "additionalProperties": false
-      },
-      "DcListPeopleRequest": {
-        "type": "object",
-        "properties": {
-          "company": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "project": {
-            "type": "string",
-            "maxLength": 140
-          },
-          "limit": {
-            "type": "integer",
-            "minimum": 1,
-            "maximum": 100
-          },
-          "cursor": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 4096
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "count_mode": {
-            "const": "none"
-          }
-        },
-        "required": [
-          "company",
-          "project"
         ],
         "additionalProperties": false
       },

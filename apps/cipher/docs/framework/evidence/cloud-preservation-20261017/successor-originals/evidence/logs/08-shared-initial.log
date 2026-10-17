@@ -1,0 +1,205 @@
+test_company_library_adoption_issue_and_original_scope_are_exact (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_library_adoption_issue_and_original_scope_are_exact) ... ERROR
+test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head) ... ERROR
+test_current_origin_rights_and_original_evidence_revocation_hide_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_current_origin_rights_and_original_evidence_revocation_hide_adoption) ... ERROR
+test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back) ... ERROR
+test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption) ... ERROR
+test_origin_company_and_target_project_permissions_are_independent (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_origin_company_and_target_project_permissions_are_independent) ... ERROR
+
+======================================================================
+ERROR: test_company_library_adoption_issue_and_original_scope_are_exact (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_library_adoption_issue_and_original_scope_are_exact)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 62, in fixture
+    yield state,rules,repo,rights,service,gov
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 56, in shared_fixture
+    yield s,r,repo,rights,service,gov,shared
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 71, in test_company_library_adoption_issue_and_original_scope_are_exact
+    created,ref,definition,_=company_library(s,shared);original=created['library_revision'];request=shared.create_adoption('C','P',uid(),{'scope_type':'Company','project':None},original['id'],digest(original),{'purpose':'Reuse retained Company wording','target_locator':'Project clause 3','change_reason':'Independent adoption'})['adoption_request'];checker=person(s,r,'checker');s.company_duties[checker.person_id]={r.READ,'company.read','document.read'};adoption=authorize(s,r,gov,'adoption_request',request,checker)
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 82, in authorize
+    manifest=gov.approval_manifest(kind=kind,actor=state.actor,company='C',project='P',subject_id=value['id'],expected_version=digest(value),lock=True);packetid,decisionid=uid(),uid();outer={'action':rules.ACTIONS[kind],'action_version':1,'company':'C','project':'P','source_version':digest(value),'requester_person':state.actor.person_id,'policy_revision':'fixture-document-policy','policy_hash':digest({'fixture':True}),'domain':manifest}
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py", line 56, in approval_manifest
+    value=authorize_subject(kind=kind,actor=actor,company=company,project=project,subject_id=subject_id,phase='manifest',lock=lock)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/governance.py", line 33, in authorize_subject
+    value=service.read(kind,subject_id,company,project,actor,lock=lock)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 180, in read
+    if planned:_prelock(planned,company,project,actor,lock=lock,allow_foreign=True)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 58, in _prelock
+    with DocumentContext(company,project,artifacts=artifacts).hold(actor):pass
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 145, in hold
+    if self.initial is None:self.prelock(actor)
+                            ^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 124, in prelock
+    planned=self.discover(actor)
+            ^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/locking.py", line 100, in discover
+    generated=binding(FrappeDocumentRepository('Company').document(locator.document))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/documents/repository.py", line 14, in document
+    return frappe.get_doc("Cipher Document", name, for_update=lock).as_dict()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering.py", line 44, in get_doc
+    return {'Cipher Approval Packet':state.packets,'Cipher Approval Decision':state.decisions}[doctype][name]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+KeyError: 'Cipher Document'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 70, in test_company_library_adoption_issue_and_original_scope_are_exact
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+======================================================================
+ERROR: test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 85, in test_company_source_update_preserves_exact_original_and_receipt_after_new_library_head
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+======================================================================
+ERROR: test_current_origin_rights_and_original_evidence_revocation_hide_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_current_origin_rights_and_original_evidence_revocation_hide_adoption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 80, in test_current_origin_rights_and_original_evidence_revocation_hide_adoption
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+======================================================================
+ERROR: test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 93, in test_explicit_scope_and_same_owner_required_and_late_receipt_rolls_back
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+======================================================================
+ERROR: test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 62, in fixture
+    yield state,rules,repo,rights,service,gov
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 56, in shared_fixture
+    yield s,r,repo,rights,service,gov,shared
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 91, in test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption
+    self.assertEqual(service.get_record('C','P','adoption_request',request['id'])['record'],request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/service.py", line 245, in get_record
+    header=read_origin('library',revision['parent_id'],company,source['library_scope'],actor)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 41, in read_origin
+    return read(kind,name,company,actor,lock=lock)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 54, in read
+    revision=read('library_revision',value['current_revision'],company,actor,lock=lock)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 59, in read
+    verify_artifacts(value['artifacts'],company,actor,lock=lock)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 36, in verify_artifacts
+    if artifact(company,scope,project,{k:row[k] for k in ('revision_id','source_sha256')},actor,lock=lock)!=row:raise DomainError('document_control_integrity','The exact retained original source differs.',409)
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/shared.py", line 20, in artifact
+    actual=(company_source_reference(company,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Company' and project is None else source_reference(company,project,reference['revision_id'],1,actor=actor,lock=lock) if scope_type=='Project' and project else None)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 55, in <lambda>
+    for module,name,value in [(service,'require_project',require),(gov,'require_project',require),(shared,'require_project',require),(shared,'require_company',company),(scopes,'require_project',require),(scopes,'require_company',company),(scopes,'document',document),(service,'_document',lambda name,c,p,a,lock=False:document(name,c,'Project',p,a,lock)),(service.FrappeDocumentRepository,'revision_scope',lambda _,name:metadata(name)),(service.FrappeDocumentRepository,'document_scope',lambda _,name:next(SimpleNamespace(name=name,company='C',scope_type=v.get('scope_type','Project'),project=v.get('project','P')) for v in s.documents.values() if v['document_id']==name)),(documents,'company_source_reference',lambda c,rev,page,actor=None,lock=False:source_reference(c,None,rev,page,actor,lock,scope_type='Company')),(service.sources,'source_reference',source_reference),(commands,'run_company_command',company_command),(history,'append_company_event',lambda **kw:s.events.append(kw) or uid())]:stack.enter_context(patch.object(module,name,value,create=True))
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 37, in source_reference
+    if row is None or revision in s.denied or row.get('scope_type','Project')!=scope_type or row.get('project','P')!=project:raise DomainError('not_found','Original source denied',404)
+                                                                                                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+cipher_aec.api.errors.DomainError: Original source denied
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 89, in test_new_unavailable_library_head_must_not_deny_still_authorized_original_adoption
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+======================================================================
+ERROR: test_origin_company_and_target_project_permissions_are_independent (cipher_aec.tests.test_document_control_shared.SharedLibraryTests.test_origin_company_and_target_project_permissions_are_independent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 74, in test_origin_company_and_target_project_permissions_are_independent
+    with shared_fixture() as (s,r,repo,rights,service,gov,shared):
+         ^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control_shared.py", line 15, in shared_fixture
+    with fixture() as (s,r,repo,rights,service,gov):
+         ^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_document_control.py", line 66, in fixture
+    if parent is not None and getattr(parent,attribute,None) is removed:delattr(parent,attribute)
+                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'module' object has no attribute 'clauses'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.225s
+
+FAILED (errors=6)

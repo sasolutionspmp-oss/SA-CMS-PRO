@@ -1,0 +1,8 @@
+{
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "candidate_ref": "refs/heads/cipher/preserve-doc03-project-20261017",
+  "candidate_sha": "d03bce8d0116ad39a505f4bb3a57cdec672b9e47",
+  "candidate_tree": "46b0600d9fd5be24df5a79f9378ec1dc710a0e8c",
+  "base_sha": "f79df23af5bdb1c8cccf538241452bef2c459672",
+  "framework_branch_unchanged": true
+}

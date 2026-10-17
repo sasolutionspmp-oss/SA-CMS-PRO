@@ -1,5 +1,6 @@
 """Literal independent documentary authorization; internal records, no external sends."""
 from functools import partial
+from copy import deepcopy
 import frappe
 from cipher_aec.api.contracts import digest
 from cipher_aec.api.errors import DomainError
@@ -16,13 +17,22 @@ def participants(action,company,subject_id,*,lock=False):
 def _eligible(kind,value,actor,*,lock=False):
     if repo.official(rules.FACTS[kind],value['id'],lock=lock):raise DomainError('document_already_authorized','This exact immutable documentary subject already has its authorization fact.',409)
     company,project=value['company'],value['project']
-    service.verify_artifacts(value['artifacts'],company,project,actor,operation='ingest' if kind=='adoption_request' else 'distribute',lock=lock)
+    if kind=='lifecycle_request':
+        from .lifecycle import standing
+        if standing(company,project,value['parent_id'],actor,lock=lock)['version']!=value['expected_version']:raise DomainError('stale_issued_standing','The exact independently reviewed issued standing changed.',412)
+    if kind=='redline':
+        latest=repo.latest('redline',value['parent_id'],lock=lock)
+        if latest is None or latest['id']!=value['id']:raise DomainError('redline_superseded','Only the latest proposed redline may receive a new documentary authorization.',409)
+    service.verify_artifacts(value['artifacts'],company,project,actor,operation='ingest' if kind in ('adoption_request','redline') else 'distribute',lock=lock)
     if kind=='transmittal':
+        from .lifecycle import require_current_issue
+        require_current_issue(service.read('issue',value['issue_id'],company,project,actor,lock=lock),actor,lock=lock)
         for declared in value['recipients']:
             observed=current_actor(declared['user'])
             if observed.person_id!=declared['person']:raise DomainError('document_people_changed','An intended internal recipient identity changed.',412)
             recipient=current_actor(declared['user'],lock=lock);require_project(company,project,ability=rules.READ,actor=recipient,lock=lock)
             service.verify_artifacts(value['artifacts'],company,project,recipient,lock=lock)
+            service.read('issue',value['issue_id'],company,project,recipient,lock=lock)
 
 def authorize_subject(*,kind,actor,company,project,subject_id,phase,lock=False,manifest=None):
     value=service.read(kind,subject_id,company,project,actor,lock=lock)
@@ -34,7 +44,12 @@ def authorize_subject(*,kind,actor,company,project,subject_id,phase,lock=False,m
         if actor.person_id!=value['author_person']:raise DomainError('document_preparer_required','The original preparer requests and records the independently authorized documentary effect.',403)
     if phase=='review':
         require_project(company,project,ability=rules.REVIEW,actor=actor,lock=lock);authors={value['author_person']}
-        if kind=='adoption_request':authors.add(service.read('library_revision',value['library_revision'],company,project,actor,lock=lock)['author_person'])
+        if kind=='redline':authors.add(service.read('clause_use',value['clause_use_id'],company,project,actor,lock=lock)['author_person'])
+        if kind=='adoption_request':
+            if 'library_scope' in value:
+                from .shared import read_origin
+                authors.add(read_origin('library_revision',value['library_revision'],company,value['library_scope'],actor,lock=lock)['author_person'])
+            else:authors.add(service.read('library_revision',value['library_revision'],company,project,actor,lock=lock)['author_person'])
         if actor.person_id in authors:raise DomainError('independent_document_review','A distinct canonical person must independently authorize the exact documentary effect.',403)
     if phase in ('request','manifest','review','execute'):
         project_doc=require_project(company,project,ability=rules.READ,actor=actor,lock=lock)
@@ -45,12 +60,19 @@ def authorize_subject(*,kind,actor,company,project,subject_id,phase,lock=False,m
 def approval_manifest(*,kind,actor,company,project,subject_id,expected_version,lock=False):
     value=authorize_subject(kind=kind,actor=actor,company=company,project=project,subject_id=subject_id,phase='manifest',lock=lock)
     if digest(value)!=expected_version:raise DomainError('stale_documentary_subject','Review the exact immutable documentary subject.',412)
-    policies=[rights.require(name,company,project,'read',actor,lock=lock) for name in sorted({r['document_id'] for r in value['artifacts']})]
+    from .shared import artifact_scope
+    policies=[]
+    for row in sorted({r['document_id']:r for r in value['artifacts']}.values(),key=lambda r:r['document_id']):
+        scope,source_project=artifact_scope(company,row)
+        policies.append(rights.require(row['document_id'],company,source_project,'read',actor,lock=lock,scope_type=scope))
     effect={'schema':'cipher.document.authorization.v1','action':rules.ACTIONS[kind],'subject_kind':kind,'subject_id':subject_id,'subject_digest':digest(value),'artifacts':value['artifacts'],'no_effects':dict(rules.NO_EFFECTS),'electronic_signature':False,'professional_seal':False,'external_delivery':False,'commercial_execution':False}
     if kind=='transmittal':effect.update(package_digest=value['package_digest'],recipients=value['recipients'],channel='internal')
     elif kind=='issue_set':effect.update(package_digest=value['package_digest'],adoptions=value['adoptions'])
+    elif kind=='lifecycle_request':effect.update(document_id=value['parent_id'],before=value['before'],definition=value['definition'],replacement=value['replacement'],expected_version=value['expected_version'])
+    elif kind=='redline':effect.update(target=value['target'],target_snapshot=value['target_snapshot'],original_text=value['original_text'],proposed_text=value['proposed_text'],proposed_sha256=value['proposed_sha256'],target_changed=False)
     else:effect.update(library_revision=value['library_revision'],library_digest=value['library_digest'],target_locator=value['definition']['target_locator'])
-    return {'subject':{'doctype':rules.KINDS[kind],'name':subject_id,'label':value['purpose'] if kind=='transmittal' else value['definition'].get('title',value['definition'].get('purpose'))},'sources':[{'artifacts':value['artifacts'],'rights':policies}],'effect':effect,'summary':{'definition':value.get('definition'),'purpose':value.get('purpose'),'required_response':value.get('required_response'),'no_effects':dict(rules.NO_EFFECTS),'rights_basis':'authored-declaration','external_delivery':False,'commercial_execution':False}}
+    if kind=='adoption_request' and 'library_scope' in value:effect['library_scope']=value['library_scope']
+    return {'subject':{'doctype':rules.KINDS[kind],'name':subject_id,'label':value['purpose'] if kind=='transmittal' else value['reason'] if kind=='redline' else value['definition']['reason'] if kind=='lifecycle_request' else value['definition'].get('title',value['definition'].get('purpose'))},'sources':[{'artifacts':value['artifacts'],'rights':policies}],'effect':effect,'summary':{'definition':value.get('definition'),'purpose':value.get('purpose'),'required_response':value.get('required_response'),'no_effects':dict(rules.NO_EFFECTS),'rights_basis':'authored-declaration','external_delivery':False,'commercial_execution':False}}
 
 def apply_authorization(*,kind,actor,company,project,manifest,packet_id,decision_id,operation_id):
     action=rules.ACTIONS[kind];subject=manifest['effect']['subject_id'];require_approval_effect(action=action,subject_id=subject,packet_id=packet_id)
@@ -58,9 +80,13 @@ def apply_authorization(*,kind,actor,company,project,manifest,packet_id,decision
     if approval_manifest(kind=kind,actor=actor,company=company,project=project,subject_id=subject,expected_version=digest(original),lock=True)!=manifest:raise DomainError('stale_documentary_subject','The independently reviewed exact sources, recipients or rights changed.',412)
     decision=frappe.get_doc('Cipher Approval Decision',decision_id,for_update=True);packet=frappe.get_doc('Cipher Approval Packet',packet_id,for_update=True)
     if decision.packet!=packet_id or decision.decision!='Grant' or decision.actor_person==original['author_person'] or packet.company!=company or packet.project!=project or packet.action!=action or packet.subject_id!=subject or decision.manifest_hash!=packet.manifest_hash:raise DomainError('independent_document_review','The exact distinct-person documentary grant is required.',403)
-    factkind=rules.FACTS[kind];value=service.base(company,project,actor,parent_id=subject,subject_id=subject,subject_digest=digest(original),packet_id=packet_id,decision_id=decision_id,checked_by_person=decision.actor_person,effect_digest=digest(manifest['effect']),artifacts=original['artifacts'],status={'issue':'issued','adoption':'adopted','distribution':'recorded_internally'}[factkind],electronic_signature=False,professional_seal=False,external_delivery=False,commercial_execution=False)
+    factkind=rules.FACTS[kind];value=service.base(company,project,actor,parent_id=subject,subject_id=subject,subject_digest=digest(original),packet_id=packet_id,decision_id=decision_id,checked_by_person=decision.actor_person,effect_digest=digest(manifest['effect']),artifacts=original['artifacts'],status={'issue':'issued','adoption':'adopted','distribution':'recorded_internally','clause_application':'approved_relationship','lifecycle':original['definition']['action']+'ed' if kind=='lifecycle_request' else 'unused'}[factkind],electronic_signature=False,professional_seal=False,external_delivery=False,commercial_execution=False)
     if kind in ('issue_set','transmittal'):value['package_digest']=original['package_digest']
     if kind=='transmittal':value.update(recipients=original['recipients'],channel='internal')
+    if kind=='redline':value.update({k:deepcopy(original[k]) for k in ('target','target_snapshot','original_text','proposed_text','proposed_sha256','target_changed')})
+    if kind=='lifecycle_request':
+        previous=repo.latest('lifecycle',original['parent_id'],lock=True)
+        value.update(parent_id=original['parent_id'],document_id=original['parent_id'],revision_number=previous['revision_number']+1 if previous else 1,predecessor=previous['id'] if previous else None,action=original['definition']['action'],reason=original['definition']['reason'],replacement=deepcopy(original['replacement']),before=deepcopy(original['before']),status='withdrawn' if original['definition']['action']=='withdraw' else 'superseded')
     repo.write(factkind,value);service.event(actor,value,operation_id,factkind,factkind+'.recorded');return {factkind:value}
 
 CALLBACKS={action:(partial(approval_manifest,kind=kind),partial(authorize_subject,kind=kind),partial(apply_authorization,kind=kind)) for kind,action in rules.ACTIONS.items()}

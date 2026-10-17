@@ -1,0 +1,16 @@
+{
+  "requests": {
+    "set_rights": "DcCompanySetRightsRequest",
+    "create_library": "DcCompanyCreateLibraryRequest",
+    "revise_library": "DcCompanyReviseLibraryRequest",
+    "get_record": "DcCompanyGetRecordRequest",
+    "list_records": "DcCompanyListRecordsRequest"
+  },
+  "responses": {
+    "set_rights": "DcCompanySetRightsResponse",
+    "create_library": "DcCompanyCreateLibraryResponse",
+    "revise_library": "DcCompanyReviseLibraryResponse",
+    "get_record": "DcCompanyGetResponse",
+    "list_records": "DcCompanyListResponse"
+  }
+}

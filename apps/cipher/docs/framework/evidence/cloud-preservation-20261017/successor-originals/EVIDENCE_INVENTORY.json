@@ -1,0 +1,121 @@
+[
+  {
+    "bytes": 2828,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/01-clause-host-initial.log",
+    "path": "evidence/logs/01-clause-host-initial.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "3d9bcae90813a2dcd33663c2005899e440d4e05a23f924f36682e3360f7ffa75"
+  },
+  {
+    "bytes": 1538,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/02-clause-host.log",
+    "path": "evidence/logs/02-clause-host.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "de9068a800e41fffe5093f21d700a126aec8dbf0a1f0d04caaef526223cb9b94"
+  },
+  {
+    "bytes": 5193,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/03-clause-union-wire.log",
+    "path": "evidence/logs/03-clause-union-wire.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "b30f385ffe40038a2900918b2cc6231fe009970006db79978bcf08183d1f3723"
+  },
+  {
+    "bytes": 4120,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/04-clause-union-wire.log",
+    "path": "evidence/logs/04-clause-union-wire.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "e02d130ac04918d49fc7a607a17da3350f6095e14fb1fedda11b1727682e7bb0"
+  },
+  {
+    "bytes": 2255,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/05-clause-union-wire.log",
+    "path": "evidence/logs/05-clause-union-wire.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "2de8527510dc9ddaae6eabd4b3957addfd707c0893402d8dcba4225ca0ff4010"
+  },
+  {
+    "bytes": 123,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/06-clause-openapi-generate.log",
+    "path": "evidence/logs/06-clause-openapi-generate.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "628939181593045ffccad46e381b6737ab588e6749a053536ca3382fb6bee1f7"
+  },
+  {
+    "bytes": 862,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/07-clause-generated.log",
+    "path": "evidence/logs/07-clause-generated.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "c2db75da0ca3143730de34f5e9079252c026af6b4467e53ff1daac9b048e50e3"
+  },
+  {
+    "bytes": 22957,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/08-shared-initial.log",
+    "path": "evidence/logs/08-shared-initial.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "af0e670ab54807f6bc81a395871de73b16e6e745fc9e39d83d4bfd6fb9a190e5"
+  },
+  {
+    "bytes": 6147,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/09-shared-original-head-failing-first.log",
+    "path": "evidence/logs/09-shared-original-head-failing-first.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "6064338646f52448928523458eb0917ce09fc40165ad5ae0fb81a43ca7f4fb5c"
+  },
+  {
+    "bytes": 1438,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/logs/10-shared-workflows.log",
+    "path": "evidence/logs/10-shared-workflows.log",
+    "sensitivity": "Host-only synthetic UUIDs/example.invalid identities, absolute host paths and exception traces; no native sessions or credentials.",
+    "sha256": "d99f91ca1267ab5fcf1963b3cd727fa7b6bc42dbc84cea5676f3cb08ccd97ec2"
+  },
+  {
+    "bytes": 7300,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/clause_schema.py",
+    "path": "forensic-helpers/clause_schema.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "25361f840486c75d6f5563786f07deb2d59f65fa9c6562649fa7e850cb116f18"
+  },
+  {
+    "bytes": 16300,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/implement_clause.py",
+    "path": "forensic-helpers/implement_clause.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "8b514a3d8b39104381a559fd223713b2a821d7a6b2b9b32839945fb288749f8f"
+  },
+  {
+    "bytes": 6598,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/shared_context.py",
+    "path": "forensic-helpers/shared_context.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "7924c5e19655d16db7303d6a5cadac922f407d1cd41fe1b3f93b1ed88961aa48"
+  },
+  {
+    "bytes": 5927,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/shared_schema.py",
+    "path": "forensic-helpers/shared_schema.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "b47a2eced8689c20a2f85e08477434004ef6f665f1687477bb81b3d32b38ae11"
+  },
+  {
+    "bytes": 8923,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/wire_lifecycle.py",
+    "path": "forensic-helpers/wire_lifecycle.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "caf20b47bd3ff6b6c918b11f19b10482bc87ab4ffe0b4e7e3fb7f0bc423b03a3"
+  },
+  {
+    "bytes": 7228,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/wire_locking.py",
+    "path": "forensic-helpers/wire_locking.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "6989ec500bf3fd3ff815be7fb06ed53ff52962581cf3eeab69a35f8de32f18c5"
+  },
+  {
+    "bytes": 11832,
+    "original_path": "/dev/shm/cipher-documents-doc03-successor/wire_shared.py",
+    "path": "forensic-helpers/wire_shared.py",
+    "sensitivity": "Non-idempotent, partly applied source-edit helper with absolute paths. DO NOT execute blindly.",
+    "sha256": "35bf017ac22e04c7b54db4ca030c942026e618a67bc4bf12364c71db32157ed5"
+  }
+]

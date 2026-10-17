@@ -1,0 +1,44 @@
+from pathlib import Path
+from copy import deepcopy
+import json
+r=Path('/dev/shm/cipher-documents-doc03-successor/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec')
+p=r/'document_control/contracts.py';s=p.read_text().replace("'clause_application':'Cipher Clause Application'", "'clause_application':'Cipher Clause Application','lifecycle_request':'Cipher Document Lifecycle Request','lifecycle':'Cipher Document Lifecycle Event'").replace("'redline':'document.clause.apply.v1'", "'redline':'document.clause.apply.v1','lifecycle_request':'document.lifecycle.v1'").replace("'redline':'clause_application'", "'redline':'clause_application','lifecycle_request':'lifecycle'").replace("'redline':ADOPT}","'redline':ADOPT,'lifecycle_request':ISSUE}");p.write_text(s)
+p=r/'document_control/repository.py';s=p.read_text()+'''
+
+def issue_candidates(company,project,document_id,*,lock=False):
+    # Hard admission cap, not pagination, a total or a performance qualification.
+    rows=frappe.db.sql("SELECT name FROM `tabCipher Document Issue` WHERE company=%s AND project=%s AND scope_type='Project' AND JSON_CONTAINS(data_json,JSON_OBJECT('document_id',%s),'$.artifacts') ORDER BY creation,name LIMIT 201"+(' FOR UPDATE' if lock else ''),(company,project,document_id))
+    if len(rows)>200:raise DomainError('document_issue_limit','The issued-document projection exceeds its bounded admission limit.',409)
+    return [row[0] for row in rows]
+
+def lifecycle_chain(document_id,*,lock=False):
+    rows=frappe.db.sql('SELECT name FROM `tabCipher Document Lifecycle Event` WHERE parent_id=%s ORDER BY revision_number,name LIMIT 65'+(' FOR UPDATE' if lock else ''),(document_id,))
+    if len(rows)>64:raise DomainError('document_lifecycle_limit','The append-only document lifecycle exceeds its bounded admission limit.',409)
+    return [raw('lifecycle',row[0],lock=lock) for row in rows]
+''';p.write_text(s)
+p=r/'document_control/records.py';s=p.read_text().replace("'clause_use':{", "'lifecycle_request':{'parent_id','expected_version','before','definition','replacement','artifacts'},'lifecycle':FACT|{'revision_number','predecessor','document_id','action','reason','replacement','before'},'clause_use':{",1).replace("'clause_application':'redline'}[kind]", "'clause_application':'redline','lifecycle':'lifecycle_request'}[kind]");p.write_text(s)
+p=r/'document_control/service.py';s=p.read_text().replace("actual=sources.resolve_artifacts(company,project,[{k:row[k] for k in ('revision_id','source_sha256')} for row in artifacts],actor,lock=lock)","actual=[]\n    for offset in range(0,len(artifacts),8):actual.extend(sources.resolve_artifacts(company,project,[{k:row[k] for k in ('revision_id','source_sha256')} for row in artifacts[offset:offset+8]],actor,lock=lock))",1)
+s=s.replace("    elif kind in ('clause_use','redline'):", "    elif kind=='lifecycle_request':\n        from .lifecycle import verify_request\n        verify_request(value,actor,lock=lock)\n    elif kind in ('clause_use','redline'):")
+s=s.replace("('issue','adoption','distribution','clause_application')", "('issue','adoption','distribution','clause_application','lifecycle')").replace("'clause_application':'redline'}", "'clause_application':'redline','lifecycle':'lifecycle_request'}")
+s=s.replace("value['parent_id']!=original['id']:raise DomainError('document_control_integrity','The independently authorized original differs.'", "value['parent_id']!=(original['parent_id'] if kind=='lifecycle' else original['id']):raise DomainError('document_control_integrity','The independently authorized original differs.'")
+s=s.replace("        if kind=='clause_application' and", "        if kind=='lifecycle':\n            previous=raw('lifecycle',value['predecessor'],company,project,lock=lock) if value['predecessor'] else None\n            if value['document_id']!=original['parent_id'] or any(value[k]!=original['definition'][k] for k in ('action','reason')) or value['replacement']!=original['replacement'] or value['before']!=original['before'] or value['predecessor']!=(original['before']['last_event']['id'] if original['before']['last_event'] else None) or value['revision_number']!=(previous['revision_number']+1 if previous else 1):raise DomainError('issue_lifecycle_integrity','The exact lifecycle event differs from its independently approved request.',409)\n        if kind=='clause_application' and")
+s=s.replace("        if digest(original)!=issue_digest:raise DomainError('stale_issue','Select the exact independently issued set.',412)","        if digest(original)!=issue_digest:raise DomainError('stale_issue','Select the exact independently issued set.',412)\n        from .lifecycle import require_current_issue\n        require_current_issue(original,actor,lock=True)",1)
+p.write_text(s)
+p=r/'document_control/governance.py';s=p.read_text();s=s.replace("    if kind=='redline':\n        latest", "    if kind=='lifecycle_request':\n        from .lifecycle import standing\n        if standing(company,project,value['parent_id'],actor,lock=lock)['version']!=value['expected_version']:raise DomainError('stale_issued_standing','The exact independently reviewed issued standing changed.',412)\n    if kind=='redline':\n        latest",1)
+s=s.replace("    if kind=='transmittal':\n        for declared", "    if kind=='transmittal':\n        from .lifecycle import require_current_issue\n        require_current_issue(service.read('issue',value['issue_id'],company,project,actor,lock=lock),actor,lock=lock)\n        for declared",1)
+s=s.replace("    elif kind=='redline':effect.update", "    elif kind=='lifecycle_request':effect.update(document_id=value['parent_id'],before=value['before'],definition=value['definition'],replacement=value['replacement'],expected_version=value['expected_version'])\n    elif kind=='redline':effect.update",1)
+s=s.replace("value['reason'] if kind=='redline' else value['definition'].get('title',value['definition'].get('purpose'))", "value['reason'] if kind=='redline' else value['definition']['reason'] if kind=='lifecycle_request' else value['definition'].get('title',value['definition'].get('purpose'))")
+s=s.replace("'clause_application':'approved_relationship'", "'clause_application':'approved_relationship','lifecycle':original['definition']['action']+'ed' if kind=='lifecycle_request' else 'unused'")
+s=s.replace("    repo.write(factkind,value);service.event", "    if kind=='lifecycle_request':\n        previous=repo.latest('lifecycle',original['parent_id'],lock=True)\n        value.update(parent_id=original['parent_id'],document_id=original['parent_id'],revision_number=previous['revision_number']+1 if previous else 1,predecessor=previous['id'] if previous else None,action=original['definition']['action'],reason=original['definition']['reason'],replacement=deepcopy(original['replacement']),before=deepcopy(original['before']),status='withdrawn' if original['definition']['action']=='withdraw' else 'superseded')\n    repo.write(factkind,value);service.event",1)
+p.write_text(s)
+# A distinct exact literal lifecycle authorization, preserving existing static pairs.
+p=r/'governance/domain_approvals.py';s=p.read_text().replace('("document.clause.apply.v1",','("document.lifecycle.v1","Cipher Document Lifecycle Request","Independent issued-document lifecycle","document.issue","CIPHER-DOCUMENT-LIFECYCLE-POLICY-V1"),\n      ("document.clause.apply.v1",',1).replace('"document.clause.apply.v1"}', '"document.clause.apply.v1","document.lifecycle.v1"}');p.write_text(s)
+p=r/'governance/approvals.py';s=p.read_text().replace('"document.clause.apply.v1"}', '"document.clause.apply.v1","document.lifecycle.v1"}');p.write_text(s)
+p=r/'document_control/install.py';s=p.read_text().replace("('rights','library_revision','redline')", "('rights','library_revision','redline','lifecycle')").replace("('issue','adoption','distribution','clause_application')", "('issue','adoption','distribution','clause_application','lifecycle')");p.write_text(s)
+template=json.loads((r/'cipher_document_control/doctype/cipher_adoption_request/cipher_adoption_request.json').read_text())
+for name in ['Cipher Document Lifecycle Request','Cipher Document Lifecycle Event']:
+ slug=name.lower().replace(' ','_');p=r/'cipher_document_control/doctype'/slug;p.mkdir();(p/'__init__.py').write_text('');(p/(slug+'.py')).write_text('from cipher_aec.document_control.records import DocumentaryRecord\n\nclass '+name.replace(' ','')+'(DocumentaryRecord):\n    pass\n');v={**template,'name':name};(p/(slug+'.json')).write_text(json.dumps(v,indent=2)+'\n')
+p=r/'hooks.py';s=p.read_text()
+for needle,callback in [('permission_query_conditions = {','query_denied'),('has_permission = {','permission_denied')]:
+ i=s.index(needle)+len(needle);s=s[:i]+''.join('\n    "'+name+'": "cipher_aec.document_control.install.'+callback+'",' for name in ['Cipher Document Lifecycle Request','Cipher Document Lifecycle Event'])+s[i:]
+p.write_text(s)
