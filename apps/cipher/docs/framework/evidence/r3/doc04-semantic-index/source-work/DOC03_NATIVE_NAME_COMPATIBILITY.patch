@@ -1,0 +1,20 @@
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/document_control/lifecycle.py
+@@ -33,7 +33,7 @@
+ 
+ def _reference(value):
+     rules.closed(value,{'issue_id','issue_digest','revision_id','source_sha256'})
+-    rules.identifier(value['issue_id']);rules.identifier(value['revision_id'])
++    rules.identifier(value['issue_id']);rules.text(value['revision_id'],'revision_id',140)
+     rules.checksum(value['issue_digest']);rules.checksum(value['source_sha256'])
+ 
+ def _sources(value,actor,*,lock=False):
+@@ -100,7 +100,7 @@
+ def get_standing(company,project,document_id):return {'standing':standing(company,project,document_id,current_actor())}
+ 
+ def request(company,project,operation_id,document_id,expected_version,definition_value):
+-    rules.identifier(document_id);rules.checksum(expected_version);definition(definition_value)
++    rules.text(document_id,'document_id',140);rules.checksum(expected_version);definition(definition_value)
+     def effect(actor,_):
+         before=standing(company,project,document_id,actor,lock=True)
+         if before['version']!=expected_version:raise DomainError('stale_issued_standing','Review the exact current issued standing before changing it.',412)

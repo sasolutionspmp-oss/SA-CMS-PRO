@@ -1,0 +1,23 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/ollama/ollama/v0.12.6/api/types.go",
+    "file": "ollama-api-types-v0.12.6.go",
+    "bytes": 32362,
+    "sha256": "76284a08192880b4b50efd31afbecc5050a19df383870c49b974e57fff6983f0",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/ollama/ollama/v0.12.6/docs/api.md",
+    "file": "ollama-api-docs-v0.12.6.md",
+    "bytes": 54650,
+    "sha256": "8e88095b31e066c544e1db334c9ce444b53a74c9cccba528e0e33fe737ade483",
+    "status": "retrieved"
+  },
+  {
+    "url": "https://raw.githubusercontent.com/qdrant/qdrant/v1.15.5/docs/redoc/master/openapi.json",
+    "file": "qdrant-openapi-v1.15.5.json",
+    "bytes": 475596,
+    "sha256": "3760bbb7b93486149fdc6ecfa3b645bcbb3d30f424b77c015ebb5c82bd6e54ac",
+    "status": "retrieved"
+  }
+]

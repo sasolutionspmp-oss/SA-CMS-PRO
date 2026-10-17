@@ -1,0 +1,51 @@
+{
+  "artifacts": {
+    "01-provider-protocol.log": {
+      "bytes": 5928,
+      "sha256": "12ee2e26ef6310b3863a7eebcac6b423c2a8529d5b91985210b005d0864ad982"
+    },
+    "02-provider-protocol-fixture-corrected.log": {
+      "bytes": 4131,
+      "sha256": "89322179bb1b6f269b1f279cc1f0ab7a072dbe26393ea055fefbf7b709038f56"
+    },
+    "HANDOFF.md": {
+      "bytes": 4229,
+      "sha256": "f5665d89ed25b2331ca23b1ae5000875a9e8778fd3b8c2312c41ca615c608f32"
+    },
+    "PROTOCOL_REFERENCES.json": {
+      "bytes": 809,
+      "sha256": "eb511964c45afdbc2f272ce9cbbadd4aea7dfacfcfbea40b6554e8583ac3f5d4"
+    },
+    "SOURCE_INVENTORY.json": {
+      "bytes": 575,
+      "sha256": "e940de441162156dd50adf34e322fa5cdf7820c682bc092830f29b4b67803f2c"
+    },
+    "ollama-api-docs-v0.12.6.md": {
+      "bytes": 54650,
+      "sha256": "8e88095b31e066c544e1db334c9ce444b53a74c9cccba528e0e33fe737ade483"
+    },
+    "ollama-api-types-v0.12.6.go": {
+      "bytes": 32362,
+      "sha256": "76284a08192880b4b50efd31afbecc5050a19df383870c49b974e57fff6983f0"
+    },
+    "qdrant-openapi-v1.15.5.json": {
+      "bytes": 475596,
+      "sha256": "3760bbb7b93486149fdc6ecfa3b645bcbb3d30f424b77c015ebb5c82bd6e54ac"
+    }
+  },
+  "owned_paths": [
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/http.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/providers.py",
+    "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_providers.py"
+  ],
+  "qualification": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=apps/cipher/platform/apps/cipher_aec python -m unittest cipher_aec.tests.test_semantic_index_providers -v",
+    "connected_provider_calls": 0,
+    "host_protocol_cases": 19,
+    "native_execution": "not performed",
+    "result": "passed"
+  },
+  "source_inventory": "SOURCE_INVENTORY.json",
+  "source_inventory_sha256": "e940de441162156dd50adf34e322fa5cdf7820c682bc092830f29b4b67803f2c",
+  "workspace": "/dev/shm/cipher-doc04-semantic-20261017/workspace"
+}

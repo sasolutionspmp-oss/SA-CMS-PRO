@@ -1,0 +1,71 @@
+{
+  "base_commit": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+  "actual_shared_files_modified": false,
+  "requires_local_composition": true,
+  "modules.txt_append": [
+    "Cipher Semantic Index"
+  ],
+  "governance/context.py_add_to": [
+    "PROJECT_ABILITIES",
+    "COMPANY_ABILITIES"
+  ],
+  "ability": "document.semantic.manage",
+  "duty_choice_append": "document.semantic.manage",
+  "permission_query_conditions": {
+    "Cipher Semantic Corpus": "cipher_aec.semantic_index.store.no_native_rows"
+  },
+  "has_permission": {
+    "Cipher Semantic Corpus": "cipher_aec.semantic_index.store.deny_native_access"
+  },
+  "routes": {
+    "prepare": {
+      "method": "POST",
+      "body_contract": "SemanticPrepareRequest",
+      "response_contract": "SemanticJobResponse",
+      "handler": "cipher_aec.semantic_index.api.call",
+      "operation": "prepare",
+      "command": true
+    },
+    "cancel": {
+      "method": "POST",
+      "body_contract": "SemanticJobRequest",
+      "response_contract": "SemanticJobResponse",
+      "handler": "cipher_aec.semantic_index.api.call",
+      "operation": "cancel",
+      "command": true
+    },
+    "status": {
+      "method": "POST",
+      "body_contract": "SemanticJobRequest",
+      "response_contract": "SemanticJobResponse",
+      "handler": "cipher_aec.semantic_index.api.call",
+      "operation": "status",
+      "command": false
+    },
+    "query": {
+      "method": "POST",
+      "body_contract": "SemanticQueryRequest",
+      "response_contract": "SemanticQueryResponse",
+      "handler": "cipher_aec.semantic_index.api.call",
+      "operation": "query",
+      "command": false
+    }
+  },
+  "worker": {
+    "rebuild": "cipher_aec.semantic_index.worker.rebuild",
+    "reconcile": "cipher_aec.semantic_index.worker.reconcile",
+    "queue": "long",
+    "after_commit": true,
+    "schedule_enabled": false
+  },
+  "source_change_hooks": {
+    "events": [
+      "revision available or superseded",
+      "rights revised/revoked",
+      "issued standing withdrawn/superseded",
+      "adoption authorization no longer readable"
+    ],
+    "rule": "Queue bounded explicit Company/Project scope reconciliation after commit using an explicitly authorized current document.semantic.manage user. Query always rechecks current sources even if cleanup has not run. Do not infer grants or scan all tenants. Follow returned next_offset until complete."
+  },
+  "ricky_integration": "Opt-in only after local provider/source/rights qualification; keep canonical citation digest and exact chunk span. No Ricky adapter changes in this ref."
+}

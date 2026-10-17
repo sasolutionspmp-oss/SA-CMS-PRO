@@ -1,0 +1,14 @@
+{
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/http.py": {
+    "bytes": 5422,
+    "sha256": "76b8726de1ee633294799fe1bfea3e9cb124ff1205ebe9d239647c109d3e033b"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/providers.py": {
+    "bytes": 11377,
+    "sha256": "0d9988396118cd7f8c2b875383756b94f713f0b34a5e20071c1822c5a5ec88cb"
+  },
+  "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_providers.py": {
+    "bytes": 17611,
+    "sha256": "231fcfdadebcd1621f78f4254e3cedaeacb2b876d3094690a8bea381b07b4ffc"
+  }
+}

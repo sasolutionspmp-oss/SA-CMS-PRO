@@ -1,0 +1,25 @@
+{
+  "award_boundary": "blocked; no award action/retry; no procurement/finance/deployment/provider writes",
+  "base_commit": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+  "baseline_paths_unchanged": 918,
+  "candidate_branch": "cipher/doc04-semantic-backend-20261017",
+  "candidate_qualification": "bounded host-qualified backend source; shared composition/native/provider acceptance pending",
+  "created_at": "2026-10-17T13:23:50.903781+00:00",
+  "evidence_inventory_sha256": "79956f5d1461ed659433f37fa542bcb50fd743389e2ac68a69c2a934b73abaf3",
+  "final_host_run": {
+    "log": "05-doc04-final-host.log",
+    "result": "passed",
+    "sha256": "276009b9d22918797a48352c95797b35593a74ab3e56fce2ca123c7cfd000a8e",
+    "tests": 85
+  },
+  "known_dependency": "DOC03 actual DOC-/REV- lifecycle mutation/replay and public schema compatibility: unapplied patch plus schema followup",
+  "local_Task_trial_overlay_applied": false,
+  "native_qualified": false,
+  "owned_runtime_test_paths": 20,
+  "provider_connected": false,
+  "qualified_composed_source_paths": 938,
+  "qualified_inventory_sha256": "ed5a7311c4d4be773dd956912c9258d4e0871bee9107410a70ed147b6a5dea11",
+  "shared_files_modified": false,
+  "source_fragment_handoff_paths": 26,
+  "source_inventory_sha256": "fa1314518da0e5b52ef3c67387c8d97d95c5d17ba3d6e5b0044c9a9ae43b6b1a"
+}

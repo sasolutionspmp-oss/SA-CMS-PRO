@@ -1,0 +1,422 @@
+{
+  "$defs": {
+    "SemanticScope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "scope_type": {
+              "const": "Company"
+            },
+            "project": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "company",
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "company": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "scope_type": {
+              "const": "Project"
+            },
+            "project": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            }
+          },
+          "required": [
+            "company",
+            "scope_type",
+            "project"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SemanticSource": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "revision_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "selection": {
+              "enum": [
+                "working",
+                "issued"
+              ]
+            },
+            "adoption_id": {
+              "type": "null"
+            },
+            "adoption_digest": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "document_id",
+            "revision_id",
+            "source_sha256",
+            "selection",
+            "adoption_id",
+            "adoption_digest"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "revision_id": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            },
+            "selection": {
+              "const": "adopted"
+            },
+            "adoption_id": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "adoption_digest": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "document_id",
+            "revision_id",
+            "source_sha256",
+            "selection",
+            "adoption_id",
+            "adoption_digest"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "SemanticJobResponse": {
+      "type": "object",
+      "properties": {
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "generation": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "status": {
+          "enum": [
+            "pending",
+            "running",
+            "retryable",
+            "rejected",
+            "active",
+            "retired",
+            "cancelled",
+            "deleted"
+          ]
+        },
+        "chunks": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1024
+        },
+        "indexed_chunks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1024
+        },
+        "error_code": {
+          "oneOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 140
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "replayed": {
+          "type": "boolean"
+        },
+        "connected_qualification": {
+          "const": false
+        }
+      },
+      "required": [
+        "operation_id",
+        "generation",
+        "status",
+        "chunks",
+        "indexed_chunks",
+        "error_code",
+        "replayed",
+        "connected_qualification"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticPrepareRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SemanticSource"
+          },
+          "minItems": 1,
+          "maxItems": 16,
+          "uniqueItems": true
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "scope",
+        "sources",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticJobRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "operation_id": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "required": [
+        "scope",
+        "operation_id"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticQueryRequest": {
+      "type": "object",
+      "properties": {
+        "scope": {
+          "$ref": "#/$defs/SemanticScope"
+        },
+        "question": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 4000
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 16
+        }
+      },
+      "required": [
+        "scope",
+        "question",
+        "limit"
+      ],
+      "additionalProperties": false
+    },
+    "SemanticQueryResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "const": "ready"
+        },
+        "generation": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "profile_id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "results": {
+          "type": "array",
+          "maxItems": 16,
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "score": {
+                "type": "number"
+              },
+              "excerpt": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1024
+              },
+              "chunk_sha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "start": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "end": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "citation": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "document_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "revision_id": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "document_title": {
+                    "type": "string"
+                  },
+                  "revision_number": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "page": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "page_label": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "excerpt_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "source_sha256": {
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{64}$"
+                  },
+                  "company": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "scope_type": {
+                    "enum": [
+                      "Company",
+                      "Project"
+                    ]
+                  },
+                  "project": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      {
+                        "type": "null"
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "document_id",
+                  "revision_id",
+                  "document_title",
+                  "revision_number",
+                  "page",
+                  "page_label",
+                  "excerpt_sha256",
+                  "source_sha256"
+                ],
+                "additionalProperties": false
+              },
+              "source": {
+                "$ref": "#/$defs/SemanticSource"
+              }
+            },
+            "required": [
+              "id",
+              "score",
+              "excerpt",
+              "chunk_sha256",
+              "start",
+              "end",
+              "citation",
+              "source"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "connected_qualification": {
+          "const": false
+        }
+      },
+      "required": [
+        "status",
+        "generation",
+        "profile_id",
+        "results",
+        "connected_qualification"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

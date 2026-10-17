@@ -1,0 +1,117 @@
+{
+  "status": "unapplied_local_composition_followup",
+  "base": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+  "internal_patch": "DOC03_NATIVE_NAME_COMPATIBILITY.patch",
+  "native_name_schema_proposals": [
+    {
+      "definition": "DcIssuedStandingRequest",
+      "property": "document_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcRequestLifecycleRequest",
+      "property": "document_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcIssuedStandingBody",
+      "property": "document_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcIssuedStanding",
+      "property": "document_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcLifecycleRequest",
+      "property": "parent_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcLifecycle",
+      "property": "document_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcLifecycle",
+      "property": "parent_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    },
+    {
+      "definition": "DcIssueReference",
+      "property": "revision_id",
+      "observed": {
+        "type": "string",
+        "format": "uuid"
+      },
+      "proposal": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 140
+      }
+    }
+  ],
+  "preserve_uuid": [
+    "documentary issue/event/request/fact identifiers",
+    "operation identifiers",
+    "adoption identifiers"
+  ],
+  "qualification": "Actual DOC02 upload -> issue -> withdraw/supersede -> source refusal -> semantic deletion, through regenerated public contracts; no acceptance claimed"
+}

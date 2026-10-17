@@ -1,0 +1,48 @@
+test_bad_urls_paths_headers_and_payloads_never_reach_opener (cipher_aec.tests.test_semantic_index_providers.BoundedHttpTests.test_bad_urls_paths_headers_and_payloads_never_reach_opener) ... ok
+test_loopback_stub_receives_actual_json_and_redirect_is_never_followed (cipher_aec.tests.test_semantic_index_providers.BoundedHttpTests.test_loopback_stub_receives_actual_json_and_redirect_is_never_followed) ... ok
+test_read_deadline_is_checked_and_raw_transport_errors_are_hidden (cipher_aec.tests.test_semantic_index_providers.BoundedHttpTests.test_read_deadline_is_checked_and_raw_transport_errors_are_hidden) ... ok
+test_real_json_encoding_timeout_and_response_bounds (cipher_aec.tests.test_semantic_index_providers.BoundedHttpTests.test_real_json_encoding_timeout_and_response_bounds) ... ok
+test_identity_is_pinned_and_reverified_before_each_embedding_batch (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_identity_is_pinned_and_reverified_before_each_embedding_batch) ... ok
+test_missing_embedding_capability_wrong_dimensions_and_remote_models_refuse (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_missing_embedding_capability_wrong_dimensions_and_remote_models_refuse) ... ok
+test_tag_digest_missing_duplicate_or_changed_model_refuses_before_embed (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_tag_digest_missing_duplicate_or_changed_model_refuses_before_embed) ... ok
+test_text_batch_bounds_and_invalid_configuration_make_no_provider_call (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_text_batch_bounds_and_invalid_configuration_make_no_provider_call) ... ok
+test_transport_errors_are_safe_and_there_is_no_fixture_fallback (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_transport_errors_are_safe_and_there_is_no_fixture_fallback) ... ERROR
+test_vectors_require_exact_batch_dimensions_and_finite_nonboolean_numbers (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_vectors_require_exact_batch_dimensions_and_finite_nonboolean_numbers) ... ok
+test_metadata_only_exact_keys_and_input_ids_are_enforced_before_writes (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_metadata_only_exact_keys_and_input_ids_are_enforced_before_writes) ... ok
+test_preprovisioned_collection_is_verified_without_creating_or_migrating (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_preprovisioned_collection_is_verified_without_creating_or_migrating) ... ok
+test_query_invalid_bounds_duplicates_scores_and_overlong_results_fail_closed (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_query_invalid_bounds_duplicates_scores_and_overlong_results_fail_closed) ... ok
+test_query_requires_all_three_filters_and_returns_only_verified_metadata (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_query_requires_all_three_filters_and_returns_only_verified_metadata) ... ok
+test_scroll_is_bounded_to_scope_profile_and_allows_old_generations_for_reconciliation (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_scroll_is_bounded_to_scope_profile_and_allows_old_generations_for_reconciliation) ... ok
+test_scroll_refuses_cross_scope_nonuuid_offset_and_cursor_cycle (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_scroll_refuses_cross_scope_nonuuid_offset_and_cursor_cycle) ... ok
+test_unavailable_provider_explicitly_refuses_every_operation (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_unavailable_provider_explicitly_refuses_every_operation) ... ok
+test_upsert_and_delete_wait_for_confirmed_completion (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_upsert_and_delete_wait_for_confirmed_completion) ... ok
+test_wrong_scope_profile_generation_or_snippet_from_query_is_refused (cipher_aec.tests.test_semantic_index_providers.QdrantProtocolTests.test_wrong_scope_profile_generation_or_snippet_from_query_is_refused) ... ok
+
+======================================================================
+ERROR: test_transport_errors_are_safe_and_there_is_no_fixture_fallback (cipher_aec.tests.test_semantic_index_providers.OllamaProtocolTests.test_transport_errors_are_safe_and_there_is_no_fixture_fallback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-doc04-semantic-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_providers.py", line 79, in test_transport_errors_are_safe_and_there_is_no_fixture_fallback
+    provider=embedder(Scripted([exception]))
+                      ^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-doc04-semantic-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_providers.py", line 27, in __init__
+    def __init__(self,replies):self.replies=deepcopy(replies);self.calls=[]
+                                            ^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/copy.py", line 136, in deepcopy
+    y = copier(x, memo)
+        ^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/copy.py", line 196, in _deepcopy_list
+    append(deepcopy(a, memo))
+           ^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/copy.py", line 162, in deepcopy
+    y = _reconstruct(x, memo, *rv)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/copy.py", line 253, in _reconstruct
+    y = func(*args)
+        ^^^^^^^^^^^
+TypeError: DomainError.__init__() missing 1 required positional argument: 'message'
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.014s
+
+FAILED (errors=1)
