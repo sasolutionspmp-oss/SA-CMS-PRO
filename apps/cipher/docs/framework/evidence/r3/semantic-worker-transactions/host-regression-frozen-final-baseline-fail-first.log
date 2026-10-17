@@ -1,0 +1,945 @@
+test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) ... 
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='dirty') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='callback') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='savepoint') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='read_connected') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='request') ... FAIL
+a3577803e09e72b9af22178bdd9c4d1225536485:cipher_aec.semantic_index.store:89: UserWarning: disabled
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='disabled') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='wrong_method') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='wrong_site') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='shadow_db') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='dirty') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='callback') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='savepoint') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='read_connected') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='request') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='disabled') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='wrong_method') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='wrong_site') ... FAIL
+  test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='shadow_db') ... FAIL
+test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) ... 
+  test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='write') ... FAIL
+  test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='callback') ... FAIL
+a3577803e09e72b9af22178bdd9c4d1225536485:cipher_aec.semantic_index.store:89: UserWarning: disabled
+  test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='disabled') ... FAIL
+test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers (__main__.WorkerTransactionHostTests.test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers) ... 
+  test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers (__main__.WorkerTransactionHostTests.test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers) (broken='before_commit') ... FAIL
+  test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers (__main__.WorkerTransactionHostTests.test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers) (broken='after_commit') ... FAIL
+test_cas_conflict_retains_winner_and_resumes_same_operation_and_point_ids (__main__.WorkerTransactionHostTests.test_cas_conflict_retains_winner_and_resumes_same_operation_and_point_ids) ... FAIL
+test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) ... 
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='COMMIT/* host */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='ROLLBACK/* host */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*! COMMIT */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*!100000 COMMIT */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*M!100000 COMMIT */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*m! ROLLBACK */') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/* ordinary leading comment */ COMMIT') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='CALL host_procedure()') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='EXECUTE host_statement') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='ANALYZE TABLE host_table') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='XA START host_branch') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='SELECT 1; COMMIT') ... FAIL
+  test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='SELECT 1/*! COMMIT */') ... FAIL
+test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) ... 
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='add') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='run') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='reset') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='add') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='run') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='reset') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='add') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='run') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='reset') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='add') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='run') ... FAIL
+  test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='reset') ... FAIL
+test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) ... 
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='commit') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='rollback') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='savepoint') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='raw_savepoint') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='second_job') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='job_method') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='job_site') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='proxy') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='connection') ... FAIL
+  test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='database') ... FAIL
+test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids (__main__.WorkerTransactionHostTests.test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids) ... 
+  test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids (__main__.WorkerTransactionHostTests.test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids) (location='document') ... FAIL
+  test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids (__main__.WorkerTransactionHostTests.test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids) (location='commit') ... FAIL
+test_failing_native_rollback_callback_cannot_leave_partial_work_for_outer_commit (__main__.WorkerTransactionHostTests.test_failing_native_rollback_callback_cannot_leave_partial_work_for_outer_commit) ... FAIL
+test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) ... 
+  test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='rebuild', location='document') ... FAIL
+  test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='rebuild', location='commit') ... FAIL
+  test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='reconcile', location='document') ... FAIL
+  test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='reconcile', location='commit') ... FAIL
+test_prior_job_store_cannot_borrow_new_job_ownership_or_abort_its_transaction (__main__.WorkerTransactionHostTests.test_prior_job_store_cannot_borrow_new_job_ownership_or_abort_its_transaction) ... FAIL
+test_provider_failure_retains_only_committed_progress_and_retries_same_point_ids (__main__.WorkerTransactionHostTests.test_provider_failure_retains_only_committed_progress_and_retries_same_point_ids) ... FAIL
+test_quoted_semicolons_and_comment_text_allow_actual_rebuild_journey (__main__.WorkerTransactionHostTests.test_quoted_semicolons_and_comment_text_allow_actual_rebuild_journey) ... FAIL
+test_repeatable_read_refuses_before_plaintext_or_provider_effects (__main__.WorkerTransactionHostTests.test_repeatable_read_refuses_before_plaintext_or_provider_effects) ... 
+  test_repeatable_read_refuses_before_plaintext_or_provider_effects (__main__.WorkerTransactionHostTests.test_repeatable_read_refuses_before_plaintext_or_provider_effects) (entry='rebuild') ... FAIL
+  test_repeatable_read_refuses_before_plaintext_or_provider_effects (__main__.WorkerTransactionHostTests.test_repeatable_read_refuses_before_plaintext_or_provider_effects) (entry='reconcile') ... FAIL
+test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) ... 
+  test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='before_commit') ... FAIL
+  test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='after_commit') ... FAIL
+  test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='before_rollback') ... FAIL
+  test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='after_rollback') ... FAIL
+test_successful_actual_rebuild_has_multiple_committed_checkpoints_and_restores_context (__main__.WorkerTransactionHostTests.test_successful_actual_rebuild_has_multiple_committed_checkpoints_and_restores_context) ... FAIL
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='dirty')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='callback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='savepoint')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='read_connected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='request')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='disabled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='wrong_method')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='wrong_site')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='rebuild', case='shadow_db')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='dirty')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='callback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='savepoint')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='read_connected')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='request')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='disabled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='wrong_method')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='wrong_site')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control (__main__.WorkerTransactionHostTests.test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control) (entry='reconcile', case='shadow_db')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 475, in test_admission_preserves_every_foreign_caller_without_set_user_or_transaction_control
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='write')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 682, in test_callback_or_dirty_write_added_before_owned_save_is_never_committed
+    self.assertFalse(h.pending)
+AssertionError: {'host-caller': {'payload': 'must never be semantic-committed'}} is not false
+
+======================================================================
+FAIL: test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='callback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 678, in test_callback_or_dirty_write_added_before_owned_save_is_never_committed
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-contaminated-save' != 'blocked'
+- unsafe-contaminated-save
++ blocked
+
+
+======================================================================
+FAIL: test_callback_or_dirty_write_added_before_owned_save_is_never_committed (__main__.WorkerTransactionHostTests.test_callback_or_dirty_write_added_before_owned_save_is_never_committed) (case='disabled')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 678, in test_callback_or_dirty_write_added_before_owned_save_is_never_committed
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-contaminated-save' != 'blocked'
+- unsafe-contaminated-save
++ blocked
+
+
+======================================================================
+FAIL: test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers (__main__.WorkerTransactionHostTests.test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers) (broken='before_commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 601, in test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers (__main__.WorkerTransactionHostTests.test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers) (broken='after_commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 601, in test_callback_reset_failure_preserves_unsafe_and_cleans_other_original_managers
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_cas_conflict_retains_winner_and_resumes_same_operation_and_point_ids (__main__.WorkerTransactionHostTests.test_cas_conflict_retains_winner_and_resumes_same_operation_and_point_ids)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 727, in test_cas_conflict_retains_winner_and_resumes_same_operation_and_point_ids
+    self.assertEqual(h.committed, winner, 'Recovery replaced a winning CAS checkpoint')
+AssertionError: {'447[247 chars]on': 4, 'profile_id': '0ed1da7bb1f1470c09559cf[2026 chars]4}'}} != {'447[247 chars]on': 3, 'profile_id': '0ed1da7bb1f1470c09559cf[2048 chars]3}'}}
+Diff is 9476 characters long. Set self.maxDiff to None to see it. : Recovery replaced a winning CAS checkpoint
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='COMMIT/* host */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='ROLLBACK/* host */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*! COMMIT */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*!100000 COMMIT */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*M!100000 COMMIT */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/*m! ROLLBACK */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='/* ordinary leading comment */ COMMIT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='CALL host_procedure()')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='EXECUTE host_statement')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='ANALYZE TABLE host_table')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='XA START host_branch')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='SELECT 1; COMMIT')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-control' != 'blocked'
+- unsafe-control
++ blocked
+
+
+======================================================================
+FAIL: test_commented_raw_transaction_controls_never_reach_native_sql (__main__.WorkerTransactionHostTests.test_commented_raw_transaction_controls_never_reach_native_sql) (query='SELECT 1/*! COMMIT */')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 524, in test_commented_raw_transaction_controls_never_reach_native_sql
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 421, in assert_owned_refusal
+    result = h.execute() if execute else h.call()
+                                         ^^^^^^^^
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 374, in <lambda>
+    h.call = lambda: (worker.rebuild(SCOPE, operation, ACTOR.user) if entry == 'rebuild'
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "a3577803e09e72b9af22178bdd9c4d1225536485:cipher_aec.semantic_index.worker", line 18, in rebuild
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 340, in <lambda>
+    return SimpleNamespace(run=lambda *args, **kwargs: h.probe(actual),
+                                                       ^^^^^^^^^^^^^^^
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 520, in probe
+    h.db.sql(query)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 238, in sql
+    raise AssertionError('Unexpected host SQL: ' + text)
+AssertionError: Unexpected host SQL: SELECT 1/*! COMMIT */
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='add')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='run')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_commit', missing='reset')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='add')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='run')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_commit', missing='reset')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='add')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='run')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='before_rollback', missing='reset')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='add')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='run')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user (__main__.WorkerTransactionHostTests.test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user) (callback='after_rollback', missing='reset')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 497, in test_empty_callback_manager_with_missing_api_refuses_before_opening_or_set_user
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='rollback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='savepoint')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='raw_savepoint')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='second_job')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='job_method')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='job_site')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='proxy')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='connection')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_external_transaction_job_or_connection_replacement_cannot_reuse_store (__main__.WorkerTransactionHostTests.test_external_transaction_job_or_connection_replacement_cannot_reuse_store) (case='database')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 658, in test_external_transaction_job_or_connection_replacement_cannot_reuse_store
+    self.assert_owned_refusal(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 425, in assert_owned_refusal
+    self.assert_blocked(result, 'semantic_worker_required')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 414, in assert_blocked
+    self.assertEqual(result['status'], 'blocked')
+AssertionError: 'unsafe-stale-owner' != 'blocked'
+- unsafe-stale-owner
++ blocked
+
+
+======================================================================
+FAIL: test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids (__main__.WorkerTransactionHostTests.test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids) (location='document')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 695, in test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids
+    self.assert_blocked(h.execute(), 'semantic_unavailable')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 417, in assert_blocked
+    self.assertEqual(result['error_code'], code)
+AssertionError: 'semantic_worker_required' != 'semantic_unavailable'
+- semantic_worker_required
++ semantic_unavailable
+
+
+======================================================================
+FAIL: test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids (__main__.WorkerTransactionHostTests.test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids) (location='commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 695, in test_failed_progress_save_aborts_before_service_recovery_and_replays_same_ids
+    self.assert_blocked(h.execute(), 'semantic_unavailable')
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 417, in assert_blocked
+    self.assertEqual(result['error_code'], code)
+AssertionError: 'semantic_worker_required' != 'semantic_unavailable'
+- semantic_worker_required
++ semantic_unavailable
+
+
+======================================================================
+FAIL: test_failing_native_rollback_callback_cannot_leave_partial_work_for_outer_commit (__main__.WorkerTransactionHostTests.test_failing_native_rollback_callback_cannot_leave_partial_work_for_outer_commit)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 744, in test_failing_native_rollback_callback_cannot_leave_partial_work_for_outer_commit
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='rebuild', location='document')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 441, in test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return
+    self.assertEqual(h.committed, before, 'Frappe normal-return commit persisted a failed checkpoint')
+AssertionError: {'447[247 chars]on': 2, 'profile_id': '0ed1da7bb1f1470c09559cf[2048 chars]2}'}} != {'447[247 chars]on': 1, 'profile_id': '0ed1da7bb1f1470c09559cf[2010 chars]1}'}}
+Diff is 9444 characters long. Set self.maxDiff to None to see it. : Frappe normal-return commit persisted a failed checkpoint
+
+======================================================================
+FAIL: test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='rebuild', location='commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 441, in test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return
+    self.assertEqual(h.committed, before, 'Frappe normal-return commit persisted a failed checkpoint')
+AssertionError: {'447[247 chars]on': 2, 'profile_id': '0ed1da7bb1f1470c09559cf[2048 chars]2}'}} != {'447[247 chars]on': 1, 'profile_id': '0ed1da7bb1f1470c09559cf[2010 chars]1}'}}
+Diff is 9444 characters long. Set self.maxDiff to None to see it. : Frappe normal-return commit persisted a failed checkpoint
+
+======================================================================
+FAIL: test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='reconcile', location='document')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 441, in test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return
+    self.assertEqual(h.committed, before, 'Frappe normal-return commit persisted a failed checkpoint')
+AssertionError: {'447[247 chars]on': 5, 'profile_id': '0ed1da7bb1f1470c09559cf[2010 chars]5}'}} != {'447[247 chars]on': 4, 'profile_id': '0ed1da7bb1f1470c09559cf[2043 chars]4}'}}
+Diff is 9434 characters long. Set self.maxDiff to None to see it. : Frappe normal-return commit persisted a failed checkpoint
+
+======================================================================
+FAIL: test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return (__main__.WorkerTransactionHostTests.test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return) (entry='reconcile', location='commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 441, in test_native_fault_after_write_cannot_be_committed_by_execute_job_normal_return
+    self.assertEqual(h.committed, before, 'Frappe normal-return commit persisted a failed checkpoint')
+AssertionError: {'447[247 chars]on': 5, 'profile_id': '0ed1da7bb1f1470c09559cf[2010 chars]5}'}} != {'447[247 chars]on': 4, 'profile_id': '0ed1da7bb1f1470c09559cf[2043 chars]4}'}}
+Diff is 9434 characters long. Set self.maxDiff to None to see it. : Frappe normal-return commit persisted a failed checkpoint
+
+======================================================================
+FAIL: test_prior_job_store_cannot_borrow_new_job_ownership_or_abort_its_transaction (__main__.WorkerTransactionHostTests.test_prior_job_store_cannot_borrow_new_job_ownership_or_abort_its_transaction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 767, in test_prior_job_store_cannot_borrow_new_job_ownership_or_abort_its_transaction
+    self.assert_restored(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 404, in assert_restored
+    self.assertEqual(h.frappe.session, h.original_session)
+AssertionError: {'use[20 chars]est', 'sid': 'queue@example.test', 'data': {}} != {'use[20 chars]est', 'sid': 'original-session', 'data': {'token': 'original'}}
+
+======================================================================
+FAIL: test_provider_failure_retains_only_committed_progress_and_retries_same_point_ids (__main__.WorkerTransactionHostTests.test_provider_failure_retains_only_committed_progress_and_retries_same_point_ids)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 798, in test_provider_failure_retains_only_committed_progress_and_retries_same_point_ids
+    self.assert_restored(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 404, in assert_restored
+    self.assertEqual(h.frappe.session, h.original_session)
+AssertionError: {'use[20 chars]est', 'sid': 'queue@example.test', 'data': {}} != {'use[20 chars]est', 'sid': 'original-session', 'data': {'token': 'original'}}
+
+======================================================================
+FAIL: test_quoted_semicolons_and_comment_text_allow_actual_rebuild_journey (__main__.WorkerTransactionHostTests.test_quoted_semicolons_and_comment_text_allow_actual_rebuild_journey)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 549, in test_quoted_semicolons_and_comment_text_allow_actual_rebuild_journey
+    self.assert_restored(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 404, in assert_restored
+    self.assertEqual(h.frappe.session, h.original_session)
+AssertionError: {'use[20 chars]est', 'sid': 'queue@example.test', 'data': {}} != {'use[20 chars]est', 'sid': 'original-session', 'data': {'token': 'original'}}
+
+======================================================================
+FAIL: test_repeatable_read_refuses_before_plaintext_or_provider_effects (__main__.WorkerTransactionHostTests.test_repeatable_read_refuses_before_plaintext_or_provider_effects) (entry='rebuild')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 617, in test_repeatable_read_refuses_before_plaintext_or_provider_effects
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_repeatable_read_refuses_before_plaintext_or_provider_effects (__main__.WorkerTransactionHostTests.test_repeatable_read_refuses_before_plaintext_or_provider_effects) (entry='reconcile')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 617, in test_repeatable_read_refuses_before_plaintext_or_provider_effects
+    with self.assertRaises(DomainError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+======================================================================
+FAIL: test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='before_commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 565, in test_replaced_callback_manager_never_runs_unknown_replacement_cleanup
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='after_commit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 565, in test_replaced_callback_manager_never_runs_unknown_replacement_cleanup
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='before_rollback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 565, in test_replaced_callback_manager_never_runs_unknown_replacement_cleanup
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_replaced_callback_manager_never_runs_unknown_replacement_cleanup (__main__.WorkerTransactionHostTests.test_replaced_callback_manager_never_runs_unknown_replacement_cleanup) (callback='after_rollback')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 565, in test_replaced_callback_manager_never_runs_unknown_replacement_cleanup
+    with self.assertRaises(RuntimeError) as refusal:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_successful_actual_rebuild_has_multiple_committed_checkpoints_and_restores_context (__main__.WorkerTransactionHostTests.test_successful_actual_rebuild_has_multiple_committed_checkpoints_and_restores_context)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 761, in test_successful_actual_rebuild_has_multiple_committed_checkpoints_and_restores_context
+    self.assert_restored(h)
+  File "/dev/shm/cipher-semantic-worker-repair-20261017/test_worker_transactions_host.py", line 404, in assert_restored
+    self.assertEqual(h.frappe.session, h.original_session)
+AssertionError: {'use[20 chars]est', 'sid': 'queue@example.test', 'data': {}} != {'use[20 chars]est', 'sid': 'original-session', 'data': {'token': 'original'}}
+
+----------------------------------------------------------------------
+Ran 16 tests in 1.101s
+
+FAILED (failures=76)

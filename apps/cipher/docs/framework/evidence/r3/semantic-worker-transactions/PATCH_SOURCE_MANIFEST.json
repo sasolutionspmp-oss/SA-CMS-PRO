@@ -1,0 +1,45 @@
+{
+  "base": "a3577803e09e72b9af22178bdd9c4d1225536485",
+  "scope": "External functional patch only; published application source stays on base.",
+  "patch_apply_check": "PASS against independent exact-base Git index; no site/runtime application.",
+  "patch_sha256": "951102c43d1ae5cacd60aa511a327197a0652430a21962c506552d4042174c83",
+  "files": [
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/transactions.py",
+      "candidate": "candidate/transactions.py",
+      "preimage_sha256": null,
+      "preimage_bytes": null,
+      "candidate_sha256": "73d6b9ee4f20e3e6ea4ba41c11a2fd6457dc1432bd4376408981463e49ae537a",
+      "candidate_bytes": 15861,
+      "change": "new"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/worker.py",
+      "candidate": "candidate/worker.py",
+      "preimage_sha256": "614ca8f3d7836294e8fd1876acd818d320452ad545abc4c6aa644dd6f2e6dbd9",
+      "preimage_bytes": 1756,
+      "candidate_sha256": "e68fe4b9f5511a8afb6fa29cdf7a508d557b64e721b6520c56c22d926baf53ac",
+      "candidate_bytes": 1807,
+      "change": "modified"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/store.py",
+      "candidate": "candidate/store.py",
+      "preimage_sha256": "94986abf978cb7be077cd5b00e865a74d1c38941150a4f85063bb21f68d51a9a",
+      "preimage_bytes": 5938,
+      "candidate_sha256": "50845327eaa79facce1e2481b116fc9cd7c3bcea4dc0181fb9af60a89ac46b8b",
+      "candidate_bytes": 6085,
+      "change": "modified"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_store.py",
+      "candidate": "candidate/test_semantic_index_store.py",
+      "preimage_sha256": "d501d6a1bc1e5c598cf10628085a13d309e52788082e9c1cbb772f0b63d9e844",
+      "preimage_bytes": 19493,
+      "candidate_sha256": "1effeaf4045c95bd234495491ec45f49bbfdab2658c913f22b97c47899350b53",
+      "candidate_bytes": 19419,
+      "change": "modified"
+    }
+  ],
+  "composition_dependency": "Local DuplicateEntryError to semantic_conflict insertion handler is separate; compose inside _save and preserve durable save abort fence."
+}

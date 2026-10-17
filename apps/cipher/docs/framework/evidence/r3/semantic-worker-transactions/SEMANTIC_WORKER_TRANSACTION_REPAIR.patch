@@ -1,0 +1,641 @@
+diff --git a/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/store.py b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/store.py
+index 0e910393..4ec8da51 100644
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/store.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/store.py
+@@ -4,31 +4,17 @@ Durable mode is reserved for a dedicated worker transaction. Request handlers
+ enqueue after commit; they must not commit another command's transaction.
+ """
+ from contextvars import ContextVar
+-from contextlib import contextmanager
+ import json
+ import frappe
+ from cipher_aec.api.contracts import canonical_json, digest
+ from cipher_aec.api.errors import DomainError
+ from cipher_aec.governance.context import trusted_write, require_trusted_write
+ from .contracts import corpus_key, checkpoint
++from .transactions import dedicated_worker, require_clean_worker
+ 
+ DOCTYPE='Cipher Semantic Corpus'
+ MAX_STATE_BYTES=8*1024*1024
+ _plan=ContextVar('semantic_checkpoint_plan',default=None)
+-_worker=ContextVar('semantic_dedicated_worker',default=False)
+-
+-def require_clean_worker():
+-    if not _worker.get() or getattr(frappe.db,'transaction_writes',None)!=0:
+-        raise DomainError('semantic_worker_required','Semantic checkpoints require a clean dedicated worker transaction.',409)
+-
+-@contextmanager
+-def dedicated_worker():
+-    # Private process/queue entry boundary, never exposed as an RPC option.
+-    if getattr(frappe.db,'transaction_writes',None)!=0:
+-        raise DomainError('semantic_worker_required','Start semantic work in a clean dedicated worker transaction.',409)
+-    token=_worker.set(True)
+-    try: yield
+-    finally: _worker.reset(token)
+ 
+ def require_fresh_reads():
+     # Pinned MariaDB/Frappe backend. Do not change isolation or commit a caller's
+@@ -51,9 +37,14 @@ def validate_state(value):
+ class FrappeStore:
+     def __init__(self, *, durable=False):
+         self.durable=durable
+-        if durable: require_clean_worker()
++        self._owner=require_clean_worker() if durable else None
++
++    def _require_worker(self):
++        if require_clean_worker() is not self._owner:
++            raise DomainError('semantic_worker_required','This checkpoint belongs to another worker.',409)
+ 
+     def load(self,key):
++        if self.durable: self._require_worker()
+         require_fresh_reads()
+         # Direct bounded exact-name access, never an unscoped DocType list.
+         if not frappe.db.exists(DOCTYPE,key): return None
+@@ -67,7 +58,20 @@ class FrappeStore:
+         return value
+ 
+     def save(self,key,expected,value):
+-        if self.durable: require_clean_worker()
++        if not self.durable:
++            return self._save(key,expected,value)
++        try:
++            self._require_worker()
++            return self._save(key,expected,value)
++        except BaseException as error:
++            # Abort before SemanticService.run can attempt a recovery read/save.
++            # A stale store can never acquire another job's transaction.
++            from .transactions import _owner
++            if _owner.get() is self._owner:
++                self._owner.abort(error)
++            raise
++
++    def _save(self,key,expected,value):
+         require_fresh_reads()
+         validate_state(value)
+         if key!=corpus_key(value['scope'],value['profile_id']) or value['version']!=expected+1:
+@@ -86,7 +90,7 @@ class FrappeStore:
+                     doc=frappe.get_doc(DOCTYPE,key,for_update=True); doc.update(fields); doc.save(ignore_permissions=True)
+                 else:
+                     frappe.get_doc({'doctype':DOCTYPE,'name':key,**fields}).insert(ignore_permissions=True,set_name=key)
+-            if self.durable: frappe.db.commit()
++            if self.durable: self._owner.commit_checkpoint()
+         finally: _plan.reset(token)
+ 
+ def require_checkpoint_write(doc,value):
+diff --git a/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/transactions.py b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/transactions.py
+new file mode 100644
+index 00000000..f1c93926
+--- /dev/null
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/transactions.py
+@@ -0,0 +1,392 @@
++"""Exclusive, initially unopened Frappe worker transaction leases.
++
++No request may enter this boundary. It never repairs or rolls back a caller's
++transaction. A normal worker return is safe only after its owned transaction
++has been fully rolled back; completed explicit checkpoint commits survive.
++"""
++from collections import deque
++from contextlib import contextmanager
++from contextvars import ContextVar
++import re
++
++import frappe
++from cipher_aec.api.errors import DomainError
++
++_owner = ContextVar('semantic_transaction_owner', default=None)
++_CALLBACKS = ('before_commit', 'after_commit', 'before_rollback', 'after_rollback')
++_CONTROLS = {'commit', 'rollback', 'start', 'begin', 'savepoint', 'release',
++             'set', 'alter', 'create', 'drop', 'truncate', 'rename', 'lock', 'unlock'}
++_ORDINARY = {'select', 'show', 'describe', 'desc', 'explain', 'insert', 'update',
++             'delete', 'replace', 'with'}
++_MISSING = object()
++
++
++class UnsafeWorkerTransaction(RuntimeError):
++    """An owned rollback/close failed; never convert this to a blocked return."""
++
++
++def _refuse():
++    return DomainError('semantic_worker_required',
++                       'Start semantic work in a fresh dedicated worker transaction.', 409)
++
++
++def _db():
++    local = getattr(frappe, 'local', None)
++    return getattr(local, 'db', None) if local is not None else None
++
++
++def _proxy_db():
++    proxy = getattr(frappe, 'db', None)
++    resolve = getattr(proxy, '_get_current_object', None)
++    return resolve() if callable(resolve) else proxy
++
++
++def _queues(db):
++    result = {}
++    for name in _CALLBACKS:
++        manager = getattr(db, name, None)
++        functions = getattr(manager, '_functions', None)
++        if (not isinstance(functions, deque)
++                or not all(callable(getattr(manager, method, None)) for method in ('add', 'run', 'reset'))):
++            raise _refuse()
++        result[name] = tuple(functions)
++    return result
++
++
++def _zero(value):
++    return type(value) is int and value == 0
++
++
++def _read_committed(db):
++    try:
++        rows = db.sql('SELECT @@session.tx_isolation')
++    except Exception:
++        raise DomainError('semantic_unavailable',
++                          'Current database read isolation cannot be verified.', 503) from None
++    if (not isinstance(rows, (list, tuple)) or len(rows) != 1
++            or not isinstance(rows[0], (list, tuple)) or len(rows[0]) != 1
++            or str(rows[0][0]).upper().replace('_', '-').replace(' ', '-') != 'READ-COMMITTED'):
++        raise DomainError('semantic_unavailable',
++                          'Semantic work requires current committed database reads.', 503)
++
++
++def require_worker(*, clean=False):
++    owner = _owner.get()
++    if owner is None:
++        raise _refuse()
++    owner.check(clean=clean)
++    return owner
++
++
++def require_clean_worker():
++    return require_worker(clean=True)
++
++
++def _head(text):
++    """Reject batch/hidden control SQL without rejecting quoted document text."""
++    i, length = 0, len(text)
++    while i < length:
++        char = text[i]
++        if char in "'\"`":
++            quote = char
++            i += 1
++            while i < length:
++                if text[i] == '\\':
++                    i += 2
++                elif text[i] == quote:
++                    if i + 1 < length and text[i + 1] == quote:
++                        i += 2
++                    else:
++                        i += 1
++                        break
++                else:
++                    i += 1
++            else:
++                raise _refuse()
++        elif text.startswith('/*', i):
++            if text.startswith(('/*!', '/*M!', '/*m!'), i):
++                raise _refuse()
++            end = text.find('*/', i + 2)
++            if end == -1:
++                raise _refuse()
++            i = end + 2
++        elif char == '#' or (text.startswith('--', i)
++                              and (i + 2 == length or text[i + 2].isspace())):
++            end = text.find('\n', i)
++            i = length if end == -1 else end + 1
++        elif char == ';':
++            raise _refuse()
++        else:
++            i += 1
++    return re.sub(r'\A(?:\s+|--[^\n]*(?:\n|$)|\#[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)*', '', text)
++
++
++class _Owner:
++    def __init__(self, entry):
++        local = getattr(frappe, 'local', None)
++        if local is None:
++            raise _refuse()
++        db = _db()
++        job = getattr(local, 'job', None)
++        site = getattr(local, 'site', None)
++        if (_owner.get() is not None or entry not in ('rebuild', 'reconcile')
++                or getattr(local, 'request', None) is not None
++                or not isinstance(site, str) or not site
++                or job is None or getattr(job, 'site', None) != site
++                or getattr(job, 'method', None) != 'cipher_aec.semantic_index.worker.' + entry
++                or db is None or _proxy_db() is not db
++                or getattr(db, '_conn', _MISSING) is not None
++                or getattr(db, 'last_query', None) is not None
++                or getattr(db, '_cipher_semantic_worker_used', False)
++                or not _zero(getattr(db, 'transaction_writes', None))
++                or not _zero(getattr(db, 'auto_commit_on_many_writes', None))
++                or not _zero(getattr(db, '_disable_transaction_control', None))
++                or any(_queues(db).values())):
++            raise _refuse()
++        methods = ('sql', 'commit', 'rollback', 'begin', 'savepoint', 'release_savepoint', 'close')
++        self.original = {name: getattr(db, name, None) for name in methods}
++        if not callable(getattr(db, 'connect', None)) or not all(map(callable, self.original.values())):
++            raise _refuse()
++        self.previous = {name: vars(db).get(name, _MISSING) for name in methods}
++        self.db, self.job, self.site = db, job, site
++        self.method = job.method
++        self.managers = {name: getattr(db, name) for name in _CALLBACKS}
++        self.connection = None
++        self.valid = False
++        self.failure = None
++        self.aborted = False
++        self.unsafe = False
++        self.installed = False
++        self.control = None
++        self.expected_sql = []
++        self.epoch = None
++        self.before_commit = lambda: self._before('checkpoint')
++        self.before_rollback = lambda: self._before('abort')
++
++    def _bound(self):
++        return (_db() is self.db and _proxy_db() is self.db and self.db._conn is self.connection
++                and getattr(frappe.local, 'job', None) is self.job
++                and getattr(self.job, 'site', None) == self.site
++                and getattr(self.job, 'method', None) == self.method
++                and getattr(frappe.local, 'site', None) == self.site
++                and getattr(frappe.local, 'request', None) is None)
++
++    def _lost(self):
++        self.valid = False
++        raise _refuse()
++
++    def _before(self, expected):
++        self.valid = False  # every physical transaction boundary spends its lease
++        if self.control != expected or not self._bound():
++            raise _refuse()
++
++    def _callback_identity(self):
++        if any(getattr(self.db, n) is not self.managers[n] for n in _CALLBACKS):
++            self._lost()
++
++    def _callbacks(self, *, native_write=False):
++        self._callback_identity()
++        queues = _queues(self.db)
++        if (queues['before_commit'] != (self.before_commit,)
++                or queues['before_rollback'] != (self.before_rollback,)):
++            self._lost()
++        # Native Document.save registers cache invalidation after commit/rollback.
++        # Only this exact lexical checkpoint write may acquire those callbacks.
++        if not native_write and queues != self.expected_callbacks:
++            self._lost()
++
++    def check(self, *, clean=False, native_write=False):
++        if self.failure is not None:
++            raise self.failure
++        if not self.valid or not self._bound() or self.control is not None:
++            self._lost()
++        if (not _zero(self.db._disable_transaction_control)
++                or not _zero(self.db.auto_commit_on_many_writes)
++                or type(self.db.transaction_writes) is not int
++                or self.db.transaction_writes < 0
++                or (clean and self.db.transaction_writes != 0)):
++            self._lost()
++        self._callbacks(native_write=native_write)
++
++    def _sql(self, query, *args, **kwargs):
++        text = str(query)
++        # Match Frappe's string query boundary, including leading SQL comments.
++        try:
++            head = _head(text)
++        except DomainError:
++            self._lost()
++        identifier = re.match(r'[A-Za-z_]+', head)
++        word = identifier.group().lower() if identifier else ''
++        if word in _CONTROLS:
++            normalized = ' '.join(head.lower().rstrip(';').split())
++            if (not self.control or not self.expected_sql
++                    or normalized != self.expected_sql[0] or not self._bound()):
++                self._lost()
++            self.expected_sql.pop(0)
++        elif word not in _ORDINARY or not self.valid or not self._bound():
++            # Rollback/commit callbacks may not write or open another snapshot.
++            self._lost()
++        return self.original['sql'](query, *args, **kwargs)
++
++    def _begin(self, *args, **kwargs):
++        if not self.control or not self.expected_sql or self.expected_sql[0] != 'start transaction':
++            self._lost()
++        return self.original['begin'](*args, **kwargs)
++
++    def _foreign_control(self, *args, **kwargs):
++        self._lost()
++
++    def open(self):
++        # Mark the wrapper spent even if its fresh physical connection refuses RC.
++        self.db._cipher_semantic_worker_used = True
++        try:
++            self.db.connect()
++        finally:
++            self.connection = self.db._conn
++        if self.connection is None or not _zero(self.db.transaction_writes) or any(_queues(self.db).values()):
++            raise _refuse()
++        _read_committed(self.db)  # verify; never SET session/server isolation
++        self.original['begin']()  # caller DB was proven unopened before ownership
++        self._callback_identity()
++        self.db.sql = self._sql
++        self.db.begin = self._begin
++        for name in ('commit', 'rollback', 'savepoint', 'release_savepoint', 'close'):
++            setattr(self.db, name, self._foreign_control)
++        self.installed = True
++        self._arm()
++
++    def _arm(self):
++        if (not self._bound() or not _zero(self.db.transaction_writes)
++                or not _zero(self.db._disable_transaction_control)
++                or not _zero(self.db.auto_commit_on_many_writes)
++                or any(_queues(self.db).values())):
++            raise _refuse()
++        self.db.before_commit.add(self.before_commit)
++        self.db.before_rollback.add(self.before_rollback)
++        self.expected_callbacks = _queues(self.db)
++        self.epoch = object()
++        self.valid = True
++        _read_committed(self.db)
++
++    def commit_checkpoint(self):
++        self.check(native_write=True)
++        _read_committed(self.db)
++        self.control = 'checkpoint'
++        self.expected_sql = ['commit', 'start transaction']
++        try:
++            self.original['commit']()
++            if self.expected_sql or not self._bound():
++                self._lost()
++        finally:
++            self.control = None
++            self.expected_sql = []
++        self._arm()  # only a successful owned checkpoint may renew the epoch
++
++    def abort(self, error=None):
++        if self.unsafe:
++            raise UnsafeWorkerTransaction('Semantic worker connection must be discarded.')
++        if self.aborted:
++            return
++        self.failure = error
++        self.valid = False
++        try:
++            if (self.connection is None or not self._bound()
++                    or not _zero(self.db._disable_transaction_control)):
++                raise UnsafeWorkerTransaction('Semantic worker rollback ownership cannot be verified.')
++            self._callback_identity()  # never run an unknown replacement manager
++            self.control = 'abort'
++            self.expected_sql = ['rollback', 'start transaction'] if self.installed else []
++            self.original['rollback']()  # full rollback clears pending commit callbacks
++            if self.expected_sql or not _zero(self.db.transaction_writes) or any(_queues(self.db).values()):
++                raise UnsafeWorkerTransaction('Semantic worker rollback did not finish cleanly.')
++            self.aborted = True
++        except BaseException:
++            self.unsafe = True
++            # A failed rollback is not a safe blocked result. Closing only the
++            # exact owned physical connection prevents later ordinary-return commit.
++            if self.connection is not None:
++                try:
++                    if self.db._conn is self.connection:
++                        self.original['close']()
++                    else:
++                        self.connection.close()
++                except BaseException:
++                    pass
++            for manager in self.managers.values():
++                try:
++                    manager.reset()
++                except BaseException:
++                    pass
++            raise UnsafeWorkerTransaction('Semantic worker rollback failed; discard this connection.') from None
++        finally:
++            self.control = None
++            self.expected_sql = []
++
++    def finish(self):
++        if not self.aborted:
++            self.check(clean=True)
++            _read_committed(self.db)
++            self.abort()  # release owned read locks; final framework commit is empty
++
++    def release(self):
++        self.valid = False
++        cleanup_failed = False
++        if self.installed:
++            for name, previous in self.previous.items():
++                try:
++                    if previous is _MISSING:
++                        delattr(self.db, name)
++                    else:
++                        setattr(self.db, name, previous)
++                except BaseException:
++                    cleanup_failed = True
++        # Never close a replacement connection that another caller installed.
++        if self.connection is not None and self.db._conn is self.connection:
++            try:
++                self.original['close']()
++            except BaseException:
++                cleanup_failed = True
++        if cleanup_failed and not self.unsafe:
++            raise UnsafeWorkerTransaction('Semantic worker cleanup failed; discard this context.')
++
++
++@contextmanager
++def dedicated_worker(*, entry=None):
++    owner = _Owner(entry)  # all caller refusals happen before ownership/mutation
++    token = _owner.set(owner)
++    try:
++        try:
++            owner.open()
++            yield owner
++            owner.finish()
++        except BaseException as error:
++            if owner.connection is not None and not owner.aborted and not owner.unsafe:
++                owner.abort(error)
++            raise
++    finally:
++        try:
++            owner.release()
++        finally:
++            _owner.reset(token)
++
++
++@contextmanager
++def worker_user(user):
++    """Restore the exact worker session and locals touched by Frappe.set_user."""
++    require_clean_worker()
++    local, session = frappe.local, frappe.session
++    local_names = ('cache', 'form_dict', 'jenv_restricted', 'jenv_unrestricted',
++                   'role_permissions', 'new_doc_templates', 'user_perms')
++    saved = {name: getattr(local, name, _MISSING) for name in local_names}
++    session_saved = {name: getattr(session, name, _MISSING) for name in ('user', 'sid', 'data')}
++    try:
++        frappe.set_user(user)
++        yield
++    finally:
++        for target, values in ((local, saved), (session, session_saved)):
++            for name, value in values.items():
++                if value is _MISSING:
++                    if hasattr(target, name):
++                        delattr(target, name)
++                else:
++                    setattr(target, name, value)
+diff --git a/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/worker.py b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/worker.py
+index d583aba2..072ac67d 100644
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/worker.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/semantic_index/worker.py
+@@ -1,38 +1,43 @@
+-"""Dedicated worker transactions only; no hooks/scheduler are auto-enabled."""
++"""Dedicated worker entrypoints; never turn caller admission errors into success."""
+ from cipher_aec.api.errors import DomainError
+ from . import contracts as c
+ 
+-def rebuild(scope,operation_id,requested_user):
+-    import frappe
+-    from cipher_aec.governance.context import current_actor,require_effects_enabled
+-    from .configuration import service
++
++def _run(entry, requested_user, effect):
++    from cipher_aec.governance.context import require_effects_enabled
+     from .store import dedicated_worker
+-    c.scope(scope); c.uid(operation_id); c.identifier(requested_user)
+-    previous=frappe.session.user
+-    try:
+-        frappe.set_user(requested_user)
+-        require_effects_enabled()
+-        with dedicated_worker():
+-            backend=service(durable=True)
+-            # run binds the job's exact original user/person and refreshes duties.
+-            return backend.run(scope,operation_id,current_actor())
+-    except DomainError as error:
+-        # Frappe can retain this safe code without question/source/provider body.
+-        return {'status':'blocked','error_code':error.code,'connected_qualification':False}
+-    finally: frappe.set_user(previous)
++    from .transactions import worker_user
++    # Admission is outside the DomainError handler: no caller transaction/user
++    # mutation, rollback, or ordinary returned value on an unsafe invocation.
++    with dedicated_worker(entry=entry) as transaction:
++        try:
++            with worker_user(requested_user):
++                require_effects_enabled()
++                return effect()
++        except DomainError as error:
++            # Frappe.execute_job commits ordinary returned values. Roll back our
++            # complete owned transaction (including pending callbacks) first.
++            transaction.abort(error)
++            return {'status': 'blocked', 'error_code': error.code,
++                    'connected_qualification': False}
+ 
+-def reconcile(scope,requested_user,offset=None):
+-    import frappe
+-    from cipher_aec.governance.context import current_actor,require_effects_enabled
++
++def rebuild(scope, operation_id, requested_user):
++    from cipher_aec.governance.context import current_actor
+     from .configuration import service
+-    from .store import dedicated_worker
+-    c.scope(scope); c.identifier(requested_user)
+-    if offset is not None: c.uid(offset)
+-    previous=frappe.session.user
+-    try:
+-        frappe.set_user(requested_user); require_effects_enabled()
+-        with dedicated_worker():
+-            return service(durable=True).reconcile(scope,current_actor(),offset=offset)
+-    except DomainError as error:
+-        return {'status':'blocked','error_code':error.code,'connected_qualification':False}
+-    finally: frappe.set_user(previous)
++    c.scope(scope)
++    c.uid(operation_id)
++    c.identifier(requested_user)
++    return _run('rebuild', requested_user,
++                lambda: service(durable=True).run(scope, operation_id, current_actor()))
++
++
++def reconcile(scope, requested_user, offset=None):
++    from cipher_aec.governance.context import current_actor
++    from .configuration import service
++    c.scope(scope)
++    c.identifier(requested_user)
++    if offset is not None:
++        c.uid(offset)
++    return _run('reconcile', requested_user,
++                lambda: service(durable=True).reconcile(scope, current_actor(), offset=offset))
+diff --git a/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_store.py b/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_store.py
+index 5cd95030..98c2488a 100644
+--- a/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_store.py
++++ b/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_semantic_index_store.py
+@@ -20,6 +20,7 @@ from cipher_aec.api.errors import DomainError
+ from cipher_aec.tests.test_semantic_index_service import ACTOR, SELECTOR, SCOPE, fixture
+ 
+ STORE_MODULE = 'cipher_aec.semantic_index.store'
++TRANSACTIONS_MODULE = 'cipher_aec.semantic_index.transactions'
+ CONTROLLER_MODULE = 'cipher_aec.cipher_semantic_index.doctype.cipher_semantic_corpus.cipher_semantic_corpus'
+ 
+ 
+@@ -139,7 +140,7 @@ def native_projection_fixture():
+         'cipher_aec.governance.context': module('cipher_aec.governance.context', trusted_write=trusted_write,
+                                                require_trusted_write=require_trusted_write),
+     }
+-    names = set([STORE_MODULE, CONTROLLER_MODULE, *stubs])
++    names = set([STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE, *stubs])
+     # Importing a controller also attaches each new package to its parent.
+     # Preserve those attributes, including when the package was initially absent.
+     for name in list(names):
+@@ -153,14 +154,14 @@ def native_projection_fixture():
+         parent_name, attribute = name.rsplit('.', 1)
+         parent = sys.modules.get(parent_name)
+         attributes[name] = (parent, getattr(parent, attribute, missing) if parent else missing)
+-    saved = {name: sys.modules.pop(name) for name in (STORE_MODULE, CONTROLLER_MODULE) if name in sys.modules}
++    saved = {name: sys.modules.pop(name) for name in (STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE) if name in sys.modules}
+     try:
+         with patch.dict(sys.modules, stubs):
+             store = importlib.import_module(STORE_MODULE)
+             controller = importlib.import_module(CONTROLLER_MODULE)
+             yield state, db, store, controller, trusted_write
+     finally:
+-        for name in (STORE_MODULE, CONTROLLER_MODULE):
++        for name in (STORE_MODULE, TRANSACTIONS_MODULE, CONTROLLER_MODULE):
+             sys.modules.pop(name, None)
+         sys.modules.update(saved)
+         for name, (original_parent, original_attribute) in attributes.items():
+@@ -339,29 +340,21 @@ class SemanticCheckpointStoreTests(unittest.TestCase):
+         self.assertEqual(self.state.commits, 0)
+         self.assertFalse(self.store.durable)
+ 
+-    def test_durable_store_requires_clean_dedicated_worker_at_construction_and_every_save(self):
++    def test_durable_store_refuses_counter_only_admission_without_owned_worker_context(self):
+         self.assert_code('semantic_worker_required', lambda: self.store_module.FrappeStore(durable=True))
+-        for writes in (1, None, '0'):
++        for writes in (0, 1, None, '0'):
+             self.db.transaction_writes = writes
+             with self.subTest(writes=writes):
++                # This legacy projection fixture has no native job, actual local
++                # DB, physical connection or callback managers. A zero counter
++                # cannot establish ownership. Full worker lifecycle/recovery is
++                # exercised by the separate actual-transaction host regression.
+                 self.assert_code('semantic_worker_required', lambda: self.store_module.dedicated_worker().__enter__())
+-        self.db.transaction_writes = 0
+-        with self.store_module.dedicated_worker():
+-            durable = self.store_module.FrappeStore(durable=True)
+-            self.db.transaction_writes = 1
+-            self.assert_code('semantic_worker_required', lambda: durable.save(self.key, 0, self.value))
+-            self.assertFalse(self.state.rows)
+-            self.db.transaction_writes = 0
+-            durable.save(self.key, 0, self.value)
+-            self.assertEqual(self.state.commits, 1)
+-            self.assertEqual(self.db.transaction_writes, 0)
+-            durable.save(self.key, 1, self.successor())
+-            self.assertEqual(self.state.commits, 2)
+-            self.assertEqual(self.db.transaction_writes, 0)
+-        value = self.successor()
+-        value['version'] = 3
+-        self.assert_code('semantic_worker_required', lambda: durable.save(self.key, 2, value))
+-        self.assertEqual(self.state.commits, 2)
++                self.assert_code('semantic_worker_required', lambda: self.store_module.dedicated_worker(entry='rebuild').__enter__())
++                self.assert_code('semantic_worker_required', lambda: self.store_module.FrappeStore(durable=True))
++                self.assertEqual(self.db.transaction_writes, writes)
++        self.assertEqual(self.state.commits, 0)
++        self.assertFalse(self.state.rows)
+ 
+     def test_unavailable_transaction_counter_cannot_establish_worker_admission(self):
+         # The class default is also removed in this explicit unsupported DB.

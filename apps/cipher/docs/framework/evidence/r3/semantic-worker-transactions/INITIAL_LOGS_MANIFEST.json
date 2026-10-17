@@ -1,0 +1,60 @@
+{
+  "qualification": "All earlier reports retained, including setup/API-transition fixture failures and earlier baseline/green suites; final reports determine qualification.",
+  "files": [
+    {
+      "path": "existing-semantic-host-final.log",
+      "bytes": 8751,
+      "sha256": "1e8930cbd07ae40eb8402c43958ef15bea184ace1777ecb6b55346fe17c84b5f"
+    },
+    {
+      "path": "existing-semantic-host-first.log",
+      "bytes": 10282,
+      "sha256": "f160fe72d18c565651a1976bc1349634ebb7b925c5bbecb24ae9cecebf57600a"
+    },
+    {
+      "path": "host-regression-baseline-fail-first.log",
+      "bytes": 41070,
+      "sha256": "706b68c4003d54eec97a38e7afc8dd069bd5e149441583bc7ab6fa192adc2f1a"
+    },
+    {
+      "path": "host-regression-baseline-settled-api-fail-first.log",
+      "bytes": 43119,
+      "sha256": "e492540f86b03b4155f16916aefcb8d8dbeadc9f874d0e24c430e8d0f3af868a"
+    },
+    {
+      "path": "host-regression-candidate-first.log",
+      "bytes": 53671,
+      "sha256": "9fdfd7de6a255529ba12eb75527e972f65f684201ce18b108e90d7c4ebb39120"
+    },
+    {
+      "path": "host-regression-candidate-second.log",
+      "bytes": 2122,
+      "sha256": "e1ea0bdfa60e147c6e8dcc7e9db84887083683731dd3c721b05dc46ec079f35d"
+    },
+    {
+      "path": "host-regression-final-eleven-baseline-fail-first.log",
+      "bytes": 46432,
+      "sha256": "c4325c61a579646676432a1fa956f3f60ea53bc28e9fb35a5eb6072991e41b57"
+    },
+    {
+      "path": "host-regression-final-green.log",
+      "bytes": 2323,
+      "sha256": "7d6249e02f382d3ceb70c05fdc375ed67dd27fcdd517a2e344e73b85f6393ce5"
+    },
+    {
+      "path": "host-regression-final-suite-baseline-fail-first.log",
+      "bytes": 45302,
+      "sha256": "e5036ef87f4619e85aafcd6940f52f9a2af39be76f1276d2ecfdeeec77595f18"
+    },
+    {
+      "path": "host-regression-review-final-baseline-fail-first.log",
+      "bytes": 76922,
+      "sha256": "d3fb92d4111a4401aaf676cd14b86411e7038d0c2b25e2b607425797a2d07ce2"
+    },
+    {
+      "path": "host-regression-review-final-green.log",
+      "bytes": 3089,
+      "sha256": "31aead217e36651f429dbc6fb34a957ee162d4faba7daf1a64960802f3ad4fbf"
+    }
+  ]
+}

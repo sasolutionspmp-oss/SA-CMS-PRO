@@ -1,0 +1,40 @@
+{
+  "award_boundary": "Prior automatic approval rejection remains; no host/route retry; dependent procurement/finance rollout blocked.",
+  "base": "a3577803e09e72b9af22178bdd9c4d1225536485",
+  "branch": "cipher/semantic-worker-transaction-candidate-20261017",
+  "created_utc": "2026-10-17T15:25:44.562229+00:00",
+  "evidence_manifest": "ARTIFACT_SHA256.json",
+  "excluded_local_dependency": "Separate first-insert DuplicateEntryError to semantic_conflict patch not included.",
+  "existing_files_modified_by_patch": 3,
+  "host_tests": {
+    "combined_tests": 56,
+    "components": {
+      "existing_semantic_service_store": 40,
+      "transaction_regressions": 16
+    },
+    "identical_transaction_suite_baseline": {
+      "errors": 0,
+      "expected_failing_subcases": 76,
+      "methods": 16,
+      "retrievable_log": "host-regression-retrievable-baseline-fail-first.log"
+    },
+    "log": "final-combined-56-host.log",
+    "result": "PASS"
+  },
+  "native_configuration_changed": false,
+  "native_plan": "NATIVE_PROOF_PLAN.md",
+  "native_runtime_database_provider_actions": false,
+  "preserved_refs": {
+    "cipher/doc03-backend-contract-20261017": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+    "cipher/doc03-reviewer-source-review-20261017": "aaa1b1ae306497cfd62ce2783008942e8ed4b41a",
+    "cipher/doc04-semantic-backend-20261017": "b70497f0a7e33b400d2f9ffdacb8e116bb66e556",
+    "cipher/fld02-offline-backend-20261017": "392a19f8c01b4253a5aaeaa99878408d394dc9cb"
+  },
+  "providers": "Disabled; no connected acceptance claim.",
+  "publication_scope": "Artifacts only; no application tree changes.",
+  "remaining": "Native installed API/connector/isolation/callback/transaction race proof and local composition with separate CAS patch; actual provider qualification separate.",
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "source_candidate_files": 4,
+  "source_manifest": "PATCH_SOURCE_MANIFEST.json",
+  "status": "Source candidate: external functional patch and host evidence; native proof pending local sole integration owner."
+}

@@ -1,0 +1,35 @@
+{
+  "qualification": "Captured/reference Frappe API source for AST host evidence, not a claim these hashes match the current local native image. Original MIT source notices retained. utils.py publicly fetched from https://raw.githubusercontent.com/frappe/frappe/v15.108.0/frappe/utils/__init__.py; other copies pre-existed on cloud.",
+  "files": [
+    {
+      "file": "native_reference/database.py",
+      "source": "/tmp/cipher-company-proposals-r14/native-controller-review/database.py",
+      "sha256": "dc9fe0620ab7ceb300bee2b5da5c247d8979727139c785bb591e0a54e3bebf15",
+      "bytes": 47652
+    },
+    {
+      "file": "native_reference/background_jobs.py",
+      "source": "/tmp/cipher-ai04-stage-a/pinned-runtime-source/background_jobs.py",
+      "sha256": "45d721dbb4efb0b609831f2e578c219aba4d1010faa35a9672d41e4e978568bc",
+      "bytes": 23418
+    },
+    {
+      "file": "native_reference/utils.py",
+      "source": "/dev/shm/cipher-semantic-worker-repair-20261017/frappe-utils-reference.py",
+      "sha256": "9bd987808258622585f2c06733cc0bb579702adb5316cd9056eedda3100fd12e",
+      "bytes": 31035
+    },
+    {
+      "file": "native_reference/frappe_init.py",
+      "source": "/tmp/cipher-company-proposals-r14/native-controller-review/frappe_init.py",
+      "sha256": "933561c566fe4bac7455554f018dd05395f6125111d733ee0a3f3720918c65a4",
+      "bytes": 45069
+    },
+    {
+      "file": "native_reference/document.py",
+      "source": "/tmp/cipher-company-proposals-r14/native-controller-review/document.py",
+      "sha256": "38fc658498a23a42cc8a14ae424591e527c6354d4eada06f12a19644e85b8d00",
+      "bytes": 73173
+    }
+  ]
+}

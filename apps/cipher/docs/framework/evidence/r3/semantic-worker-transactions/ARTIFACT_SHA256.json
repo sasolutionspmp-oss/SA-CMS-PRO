@@ -1,0 +1,140 @@
+{
+  "qualification": "All handoff artifacts except this self inventory; publication frozen manifest includes its hash.",
+  "files": [
+    {
+      "path": "HANDOFF.md",
+      "bytes": 6450,
+      "sha256": "7028bd15a8e56d597b6d8ca28676e3231418ef7bddb72a5c3407b90efdeb417c"
+    },
+    {
+      "path": "INDEPENDENT_TRANSACTION_FINAL_CONFIRMATION.md",
+      "bytes": 5292,
+      "sha256": "5b68c456efb626b8866f01c79b0ee9b9110795320229faee47e3d2bb1ec2b60b"
+    },
+    {
+      "path": "INDEPENDENT_TRANSACTION_SOURCE_REVIEW.md",
+      "bytes": 9756,
+      "sha256": "320043d0c38d71d2aa97308b0814a1e1fd8467c0ecb826da98245837042f42b4"
+    },
+    {
+      "path": "INITIAL_LOGS.tar.gz",
+      "bytes": 13812,
+      "sha256": "71769fd6c8734d752dbd0fd7c2597ede44462d44fbff7bca4aca9714040c8e70"
+    },
+    {
+      "path": "INITIAL_LOGS_MANIFEST.json",
+      "bytes": 2135,
+      "sha256": "aa8164ff53899c5ff69965d2e6743d9157e2cb9b39a9ad8960264a93e76ab283"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 2062,
+      "sha256": "3270b083161414969f310e1916fee4f708ef3b2a5dc269aacbe75c49b3f68210"
+    },
+    {
+      "path": "NATIVE_PROOF_PLAN.md",
+      "bytes": 5148,
+      "sha256": "8ea65a427ac1f0ce12814fcb46e726aba8eb7ef4e1ff82d52388e690bd40ac6a"
+    },
+    {
+      "path": "NATIVE_REFERENCE_MANIFEST.json",
+      "bytes": 1631,
+      "sha256": "be1e14e80fc29d4d7f937c758ecda05feccd778ed8920c88ff382bb6ece19426"
+    },
+    {
+      "path": "PATCH_SOURCE_MANIFEST.json",
+      "bytes": 2176,
+      "sha256": "ce179616a4fa622f946ebf7ac59d0bc07007eaba432365da95b2716a4f4ab906"
+    },
+    {
+      "path": "SEMANTIC_WORKER_TRANSACTION_REPAIR.patch",
+      "bytes": 29389,
+      "sha256": "951102c43d1ae5cacd60aa511a327197a0652430a21962c506552d4042174c83"
+    },
+    {
+      "path": "candidate/store.py",
+      "bytes": 6085,
+      "sha256": "50845327eaa79facce1e2481b116fc9cd7c3bcea4dc0181fb9af60a89ac46b8b"
+    },
+    {
+      "path": "candidate/test_semantic_index_store.py",
+      "bytes": 19419,
+      "sha256": "1effeaf4045c95bd234495491ec45f49bbfdab2658c913f22b97c47899350b53"
+    },
+    {
+      "path": "candidate/transactions.py",
+      "bytes": 15861,
+      "sha256": "73d6b9ee4f20e3e6ea4ba41c11a2fd6457dc1432bd4376408981463e49ae537a"
+    },
+    {
+      "path": "candidate/worker.py",
+      "bytes": 1807,
+      "sha256": "e68fe4b9f5511a8afb6fa29cdf7a508d557b64e721b6520c56c22d926baf53ac"
+    },
+    {
+      "path": "existing-semantic-host-final-isolated.log",
+      "bytes": 8751,
+      "sha256": "432ccdb53fc761cdfe08f699407196e023e71e508171e7db61fea01af2a04242"
+    },
+    {
+      "path": "final-combined-56-host.log",
+      "bytes": 12372,
+      "sha256": "463facc76df68d29f677c3a3c206122db8c1b5265b2bcca6bab84f975d8f694a"
+    },
+    {
+      "path": "host-regression-frozen-final-baseline-fail-first.log",
+      "bytes": 86073,
+      "sha256": "71bd45fbef82c3f57311f0981ef1523430f35aea5f11808b51f5abf17a36f431"
+    },
+    {
+      "path": "host-regression-frozen-final-green.log",
+      "bytes": 3272,
+      "sha256": "5b843c8ffe8ec0ede870e36501308714c563ea9997127732b7423bda9d6a54fa"
+    },
+    {
+      "path": "host-regression-retrievable-baseline-fail-first.log",
+      "bytes": 86073,
+      "sha256": "d2dcb98485297f509ce17dc768cb31867d53b4da03b4a909bd17d6e411097cc2"
+    },
+    {
+      "path": "native_reference/LICENSE.txt",
+      "bytes": 1118,
+      "sha256": "bc6001a54ffcc4ab520424d7dbb85b293578efcdcb7d8f8055e00dddf942e5d7"
+    },
+    {
+      "path": "native_reference/background_jobs.py",
+      "bytes": 23418,
+      "sha256": "45d721dbb4efb0b609831f2e578c219aba4d1010faa35a9672d41e4e978568bc"
+    },
+    {
+      "path": "native_reference/database.py",
+      "bytes": 47652,
+      "sha256": "dc9fe0620ab7ceb300bee2b5da5c247d8979727139c785bb591e0a54e3bebf15"
+    },
+    {
+      "path": "native_reference/document.py",
+      "bytes": 73173,
+      "sha256": "38fc658498a23a42cc8a14ae424591e527c6354d4eada06f12a19644e85b8d00"
+    },
+    {
+      "path": "native_reference/frappe_init.py",
+      "bytes": 45069,
+      "sha256": "933561c566fe4bac7455554f018dd05395f6125111d733ee0a3f3720918c65a4"
+    },
+    {
+      "path": "native_reference/utils.py",
+      "bytes": 31035,
+      "sha256": "9bd987808258622585f2c06733cc0bb579702adb5316cd9056eedda3100fd12e"
+    },
+    {
+      "path": "run_pinned_baseline.py",
+      "bytes": 1355,
+      "sha256": "517ee32019c3a3396029aa90e5066a1d0ea44a22049738195ed82a53f790d63b"
+    },
+    {
+      "path": "test_worker_transactions_host.py",
+      "bytes": 41344,
+      "sha256": "49211df720964664a409345fcf890a9a9dcc8af97ee9d3fbf7e7acfa75ada1d0"
+    }
+  ]
+}
