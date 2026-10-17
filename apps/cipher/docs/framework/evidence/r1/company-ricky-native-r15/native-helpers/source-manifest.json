@@ -1,0 +1,68 @@
+{
+  "schema": "cipher.r15.native-helper-public-source.v1",
+  "status": "exact_retained_helpers",
+  "files": [
+    {
+      "file": "native-helpers/native-qualification/r15_native_helper.py",
+      "sha256": "d78bc778428d741cc54be9449a11c09344080f4a3c1f037ce707da0c697a2b29"
+    },
+    {
+      "file": "native-helpers/native-qualification/R15_NATIVE_SEQUENCE.md",
+      "sha256": "31d187148d4735876a7eec59f46f3117a82364636b54e30cfa56b6d1f1d4b689"
+    },
+    {
+      "file": "native-helpers/native-execution-v2/r15_execution.py",
+      "sha256": "f47a94dd3e003984413c1c8bb87fce8ea40c7568853bd085eec1278e8bf49a8a"
+    },
+    {
+      "file": "native-helpers/native-execution-v2/test_r15_execution.py",
+      "sha256": "dbfe62e62ee0b6f6338859a3f16fe8d48eac90e0acaba495dfcf7253afb0ee42"
+    },
+    {
+      "file": "native-helpers/native-execution-v2/EXECUTION.md",
+      "sha256": "a8ddd2c5af9d2850e539e71a8819afb669d1566a077f8e9e80c4787a2654684b"
+    },
+    {
+      "file": "native-helpers/native-execution-v3/r15_boundaries.py",
+      "sha256": "57b93171fff3ca44695de772b540bfc456c4ec34a95e34dcaef8aff812492d21"
+    },
+    {
+      "file": "native-helpers/native-execution-v3/test_r15_boundaries.py",
+      "sha256": "2977c2bbf5d040da676f360e9e62972308bb05e43d31458ba993f3be87a50a0f"
+    },
+    {
+      "file": "native-helpers/native-execution-v3/BOUNDARIES.md",
+      "sha256": "75d1d6ad9c93b0424d0a784fe5294699c121883b6933b15627ae4539557ea771"
+    },
+    {
+      "file": "native-helpers/native-execution-v4/r15_adjudication.py",
+      "sha256": "aff5a91342e52ae45f02fdba4851c0185fee8591a924b21e84d29f461d27686f"
+    },
+    {
+      "file": "native-helpers/native-execution-v4/test_r15_adjudication.py",
+      "sha256": "eaec4b8fcd75996a397dbeec0c9d71745dc56cf9306f6af1d16bcfed9973bce0"
+    },
+    {
+      "file": "native-helpers/native-execution-v4/ADJUDICATION.md",
+      "sha256": "f69f1922340bb9cdb45957410d4d0ca766c744ff8c621463b53d98eec7379893"
+    },
+    {
+      "file": "native-helpers/native-rollback-listener-v1/r15_rollback_listener.py",
+      "sha256": "9891d89632bcc46204e9a1584123d41cc50aa128cc421d76d42750915dee631c"
+    },
+    {
+      "file": "native-helpers/native-rollback-listener-v1/test_r15_rollback_listener.py",
+      "sha256": "528eb79a5e13217c235e025a1ef8786e9085909272e5c3d4e45287eabf2dc407"
+    },
+    {
+      "file": "native-helpers/native-rollback-listener-v1/LISTENER.md",
+      "sha256": "a6223e114d8d44a98d2e9adb8286b2faac8812a8960f177117a704c855d51668"
+    },
+    {
+      "file": "native-helpers/root_final_native_audit.py",
+      "sha256": "8dcb74139d5e9bdb430866ce1305a524ed27d53e2617df2415a421546b5879ef"
+    }
+  ],
+  "private_fixture_credentials_and_vendor_source_copies_included": false,
+  "root_final_audit_supersedes_original_failed_results": false
+}

@@ -28,9 +28,9 @@ def create_estimate(company, operation_id, title, currency, pricing_date, pursui
         return service.create_estimate(company, None, operation_id, title, currency, pricing_date, pursuit_id=pursuit_id)
 
 
-def calculate_revision(company, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations):
+def calculate_revision(company, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations, *, _draft_save=None):
     with scopes.activate("Company", company, None):
-        return service.calculate_revision(company, None, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations)
+        return service.calculate_revision(company, None, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations, **({"_draft_save": _draft_save} if _draft_save is not None else {}))
 
 
 def get_record(company, kind, record_id):

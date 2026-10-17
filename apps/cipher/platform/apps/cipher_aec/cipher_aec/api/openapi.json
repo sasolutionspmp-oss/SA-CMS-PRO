@@ -60142,6 +60142,965 @@
         "x-idempotency-scope": "canonical-person + UUIDv4; payload-bound, current rights checked before replay"
       }
     },
+    "/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject": {
+      "get": {
+        "operationId": "cipher_aec.ricky.company_draft_save_api.draft_save_subject",
+        "tags": [
+          "company_draft_save_api"
+        ],
+        "summary": "draft save subject",
+        "security": [
+          {
+            "frappeSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result; Frappe message envelope is normalized once by the client.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/CompanyDraftSaveSubject"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current authority denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unavailable or out-of-scope resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation, lifecycle, manifest or grant conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale source version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Required version/idempotency precondition missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Retryable concurrency or quarantined/unavailable service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Present for retryable database concurrency conflicts."
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "company",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          {
+            "name": "proposal_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ]
+      }
+    },
+    "/api/method/cipher_aec.ricky.company_draft_save_api.save_draft": {
+      "post": {
+        "operationId": "cipher_aec.ricky.company_draft_save_api.save_draft",
+        "tags": [
+          "company_draft_save_api"
+        ],
+        "summary": "save draft",
+        "security": [
+          {
+            "frappeSession": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authorized result; Frappe message envelope is normalized once by the client.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "data": {
+                          "$ref": "#/components/schemas/CompanyDraftSaveResponse"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "data"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or expired session",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Current authority denied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Unavailable or out-of-scope resource",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Operation, lifecycle, manifest or grant conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "412": {
+            "description": "Stale source version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "428": {
+            "description": "Required version/idempotency precondition missing",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Retryable concurrency or quarantined/unavailable service",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "object",
+                      "properties": {
+                        "schema": {
+                          "const": "cipher.api.v1"
+                        },
+                        "request_id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "meta": {
+                          "$ref": "#/components/schemas/Meta"
+                        },
+                        "error": {
+                          "$ref": "#/components/schemas/Error"
+                        }
+                      },
+                      "required": [
+                        "schema",
+                        "request_id",
+                        "meta",
+                        "error"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            },
+            "headers": {
+              "Retry-After": {
+                "schema": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "description": "Present for retryable database concurrency conflicts."
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "company": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "proposal_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "expected_version": {
+                    "const": 1
+                  },
+                  "expected_content_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "mapping_version": {
+                    "const": "1"
+                  },
+                  "expected_payload_digest": {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  },
+                  "operation_id": {
+                    "type": "string",
+                    "format": "uuid"
+                  }
+                },
+                "required": [
+                  "company",
+                  "proposal_id",
+                  "expected_version",
+                  "expected_content_digest",
+                  "mapping_version",
+                  "expected_payload_digest",
+                  "operation_id"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "X-Frappe-CSRF-Token",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Session token obtained from the authorized session endpoint."
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "x-idempotency-scope": "canonical-person + UUIDv4; payload-bound, current rights checked before replay"
+      }
+    },
     "/api/method/cipher_aec.ricky.company_proposal_api.cancel_run": {
       "post": {
         "operationId": "cipher_aec.ricky.company_proposal_api.cancel_run",
@@ -78532,6 +79491,492 @@
           "is_current",
           "current_revision",
           "accepted_baseline_id"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSaveCore": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "step_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "invocation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "target_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "base_revision_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "saved_revision_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposal_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "preparation_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "manifest_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "payload_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "saved_revision_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "receipt_id": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "core_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "schema": {
+            "const": "cipher.ricky.company.draft-save.v1"
+          },
+          "scope_type": {
+            "const": "Company"
+          },
+          "project": {
+            "type": "null"
+          },
+          "company": {
+            "type": "string",
+            "minLength": 1
+          },
+          "user": {
+            "type": "string",
+            "minLength": 1
+          },
+          "person": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposal_version": {
+            "const": 1
+          },
+          "action": {
+            "enum": [
+              "aec.scope.draft",
+              "aec.estimate.draft"
+            ]
+          },
+          "classification": {
+            "const": "unverified-author-suggestion"
+          },
+          "mapping_version": {
+            "const": "1"
+          },
+          "command": {
+            "enum": [
+              "ricky.company.proposal.save-scope.v1",
+              "ricky.company.proposal.save-estimate.v1"
+            ]
+          },
+          "canonical_command": {
+            "enum": [
+              "commercial.proposal.revise",
+              "estimate.calculate.v1"
+            ]
+          },
+          "target_doctype": {
+            "enum": [
+              "Cipher Proposal",
+              "Cipher Estimate"
+            ]
+          },
+          "saved_doctype": {
+            "enum": [
+              "Cipher Proposal Revision",
+              "Cipher Estimate Revision"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "proposal_id",
+          "run_id",
+          "step_id",
+          "invocation_id",
+          "target_id",
+          "base_revision_id",
+          "saved_revision_id",
+          "operation_id",
+          "proposal_digest",
+          "preparation_digest",
+          "manifest_digest",
+          "payload_digest",
+          "saved_revision_digest",
+          "receipt_id",
+          "core_digest",
+          "schema",
+          "scope_type",
+          "project",
+          "company",
+          "user",
+          "person",
+          "proposal_version",
+          "action",
+          "classification",
+          "mapping_version",
+          "command",
+          "canonical_command",
+          "target_doctype",
+          "saved_doctype",
+          "created_at"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSavePayload": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "proposal_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expected_revision": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "expected_native_fingerprint": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "composition": {
+                "$ref": "#/components/schemas/ComComposition"
+              }
+            },
+            "required": [
+              "proposal_id",
+              "expected_revision",
+              "expected_native_fingerprint",
+              "composition"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "estimate_id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "expected_revision": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EstLineInput"
+                },
+                "maxItems": 100
+              },
+              "adjustments": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EstAdjustment"
+                },
+                "maxItems": 30
+              },
+              "conversion_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "maxItems": 64
+              },
+              "basis_description": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "basis_citations": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/EstCitationReference"
+                },
+                "maxItems": 8
+              }
+            },
+            "required": [
+              "estimate_id",
+              "expected_revision",
+              "lines",
+              "adjustments",
+              "conversion_ids",
+              "basis_description",
+              "basis_citations"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "CompanyDraftSaveCanonicalResult": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "proposal": {
+                "$ref": "#/components/schemas/ComProposal"
+              },
+              "revision": {
+                "$ref": "#/components/schemas/ComRevision"
+              }
+            },
+            "required": [
+              "proposal",
+              "revision"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "estimate": {
+                "$ref": "#/components/schemas/CompanyEstEstimateRecord"
+              },
+              "revision": {
+                "$ref": "#/components/schemas/CompanyEstRevisionRecord"
+              },
+              "calculation": {
+                "$ref": "#/components/schemas/CompanyEstSnapshotRecord"
+              },
+              "history_id": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "estimate",
+              "revision",
+              "calculation",
+              "history_id"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "CompanyDraftSaveReason": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "minLength": 1
+          },
+          "message": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSaveSubjectRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "company",
+          "proposal_id"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSaveRequest": {
+        "type": "object",
+        "properties": {
+          "company": {
+            "type": "string",
+            "minLength": 1
+          },
+          "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "expected_version": {
+            "const": 1
+          },
+          "expected_content_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "mapping_version": {
+            "const": "1"
+          },
+          "expected_payload_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "operation_id": {
+            "type": "string",
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "company",
+          "proposal_id",
+          "expected_version",
+          "expected_content_digest",
+          "mapping_version",
+          "expected_payload_digest",
+          "operation_id"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSaveSubject": {
+        "type": "object",
+        "properties": {
+          "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "proposal_version": {
+            "const": 1
+          },
+          "proposal_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "action": {
+            "enum": [
+              "aec.scope.draft",
+              "aec.estimate.draft"
+            ]
+          },
+          "mapping_version": {
+            "const": "1"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/CompanyDraftSavePayload"
+          },
+          "payload_digest": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "eligible": {
+            "type": "boolean"
+          },
+          "reason": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CompanyDraftSaveReason"
+              }
+            ]
+          },
+          "application": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CompanyDraftSaveCore"
+              }
+            ]
+          },
+          "saved": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "$ref": "#/components/schemas/CompanyDraftSaveCanonicalResult"
+              }
+            ]
+          }
+        },
+        "required": [
+          "proposal_id",
+          "proposal_version",
+          "proposal_digest",
+          "action",
+          "mapping_version",
+          "payload",
+          "payload_digest",
+          "expires_at",
+          "eligible",
+          "reason",
+          "application",
+          "saved"
+        ],
+        "additionalProperties": false
+      },
+      "CompanyDraftSaveResponse": {
+        "type": "object",
+        "properties": {
+          "application": {
+            "$ref": "#/components/schemas/CompanyDraftSaveCore"
+          },
+          "saved": {
+            "$ref": "#/components/schemas/CompanyDraftSaveCanonicalResult"
+          },
+          "operation": {
+            "$ref": "#/components/schemas/ComOperation"
+          }
+        },
+        "required": [
+          "application",
+          "saved",
+          "operation"
         ],
         "additionalProperties": false
       },

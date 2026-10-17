@@ -1,0 +1,99 @@
+{
+  "status": "two-positive-cases-audited",
+  "scope_and_estimate": true,
+  "other_declared_cases": "not_run",
+  "old_rows_unchanged": true,
+  "additions": {
+    "Cipher Ricky Run": [
+      "11828da2-323e-445f-b56d-6bdbbff14351",
+      "13aba0b5-8fb1-4e8d-932a-2cb38a846fc5"
+    ],
+    "Cipher Ricky Step": [
+      "c790cc48-b471-4a11-ba50-47b4a49d0718",
+      "eed38ff3-944b-474d-8528-0d6c75bb829b"
+    ],
+    "Cipher Tool Invocation": [
+      "16af9863-3298-4b5f-bd1f-8b5120295b6c",
+      "b7bcbd17-a065-42cd-9373-e10bce063e8f"
+    ],
+    "Cipher Proposed Change": [
+      "38fea8b8-67ea-434c-9e3d-e71a178ba79a",
+      "52f16426-9201-4631-832d-b3c8fbef131a"
+    ],
+    "Cipher Delegation": [
+      "1d3068a6-d9d9-495e-8e32-e94b2c9c2c4b",
+      "5918df03-871e-46e7-bf00-a5b494d2ae94"
+    ],
+    "Cipher Run Artifact": [
+      "159705d4-fb30-42f5-880d-46668d8bd5fe",
+      "891f445f-acac-4658-a9d4-9284baa001fd"
+    ],
+    "Cipher Command Receipt": [
+      "0936a706d2bdeead81021cbd787f2b783ba4f08775233c1c81c1d7fe0187223c",
+      "273032ca4a841daf39cecbc6377132309eebf269d0516eb3058502ef2241345e",
+      "75258b19b8fb0d1894a3bef4532bb6bf9998635b8f9c4c1427f3bee3be05ee37",
+      "924766d8878a9b09e32ea618b9874943b5f50f1917c820841926831196dd6bd2",
+      "a6b45d81685d848b01a1b8db9faae2feb0ea80070abc938760b4658bc346a347",
+      "b342226ae1c02a2040229578ac45f9b4b6e7eb33097f0422dc9fba54d207f95b",
+      "db6fd337fcdf6e71532e4e13c385997d202e5b1054de1e384644ee83ceb5e995",
+      "f8352b8d08d63a20edc4efaaae5a501823e283cd6fde902b7fe86294cf075b1a",
+      "fc2cc5df81f0b3d4cfe9f07d8284c96ffaf3d05d875094e5452a716f383e4f26"
+    ],
+    "Cipher History Event": [
+      "7vm90pluat",
+      "8008iuvgq9",
+      "80bfh22n8q",
+      "82jdo1bnps",
+      "87kemju3af",
+      "87licd1d3u",
+      "8baavopd0e",
+      "8l7nali0cp",
+      "8lcse8l6uv",
+      "a8mju4v62h",
+      "ap1758dn5o"
+    ],
+    "Cipher Estimate": [
+      "270c3693-1baa-419f-b822-96cee0a8ad41"
+    ],
+    "Cipher Estimate Revision": [
+      "4b482bc1-db8e-4c54-b6b7-8f71d35ef473",
+      "5ab18d25-f3b9-452b-a1a3-f7647169d8d5",
+      "d571078a-733d-4b1e-91b2-a854e9441cb4"
+    ],
+    "Cipher Calculation Snapshot": [
+      "28ddf559-51d2-455d-b11c-fbd8cd06bdb6",
+      "6942784e-a59c-4fe3-9df7-fa53859ec3ee",
+      "6d34bd40-065d-4bd5-bf70-13de0d1a6682"
+    ],
+    "Cipher Estimate Line": [
+      "0beb210f-2ee0-4734-85ef-fe0bcc8bdd46",
+      "385a056d-b057-4a93-978d-ee6904c50f96",
+      "4610697d-d3c8-4862-8471-860eea1a59b1",
+      "545fcb84-9220-41be-99fa-c8b3003bb194",
+      "742442ae-ceb6-48fb-853b-1222a9720afe",
+      "97c735ba-1689-45e8-9f43-d516e6c07637"
+    ],
+    "Cipher Proposal": [
+      "51cd90b6-c9b0-4515-a311-b7c2ba751dc5"
+    ],
+    "Cipher Proposal Revision": [
+      "1fe4825f-d381-451b-a631-ee9918b76113",
+      "21e1ad75-5e18-4a50-98d5-83e9e10bcaac",
+      "3386d95a-f5b3-4b34-8a7c-978ea5cf0b22"
+    ],
+    "Quotation": [
+      "SAL-QTN-2026-00002"
+    ],
+    "Quotation Item": [
+      "a8mf6ffg7k"
+    ],
+    "Cipher Ricky Draft Save": [
+      "5a2e6e92-4b62-5f30-b231-d5220a4729ec",
+      "e03e931e-7a7f-5f7e-8195-59a39c1e1808"
+    ]
+  },
+  "wire_heartbeats": 61,
+  "config_source_indexes_unchanged": true,
+  "original_private_report_sha256": "5c39bed3d3d52db798c169679e35a252660b0c90b49532eb8beeb79b6645f77e",
+  "scope": "two positive cases before separate boundary-case execution"
+}

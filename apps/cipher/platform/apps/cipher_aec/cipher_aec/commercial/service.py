@@ -245,7 +245,7 @@ def create_proposal(company, pursuit_id, composition, operation_id):
     return run_company_command(company=company, operation_id=operation_id, command="commercial.proposal.create", payload=payload, ability="commercial.write", effect=effect)
 
 
-def save_proposal_revision(company, proposal_id, expected_revision, expected_native_fingerprint, composition, operation_id):
+def save_proposal_revision(company, proposal_id, expected_revision, expected_native_fingerprint, composition, operation_id, *, _draft_save=None):
     authored = contracts.composition(composition)
     payload = {"proposal_id": proposal_id, "expected_revision": expected_revision, "expected_native_fingerprint": expected_native_fingerprint, "composition": authored}
     def effect(actor, native_company):
@@ -262,7 +262,7 @@ def save_proposal_revision(company, proposal_id, expected_revision, expected_nat
         if quotation.docstatus != 0 or digest(actual) != expected_native_fingerprint or expected_native_fingerprint != proposal["native_fingerprint"]:
             raise DomainError("stale_native_source", "Refresh the native quotation before saving.", 412)
         return _save_revision(actor, company, proposal, quotation, authored, operation_id, native_company, proposal_doc=doc)
-    return run_company_command(company=company, operation_id=operation_id, command="commercial.proposal.revise", payload=payload, ability="commercial.write", effect=effect)
+    return run_company_command(company=company, operation_id=operation_id, command="commercial.proposal.revise", payload=payload, ability="commercial.write", effect=effect, **({"draft_save": _draft_save} if _draft_save is not None else {}))
 
 
 def authorize_receipt(actor, company, result, *, lock=False):

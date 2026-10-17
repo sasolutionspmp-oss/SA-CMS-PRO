@@ -179,5 +179,11 @@ _module("cipher_aec.awards.api", {
     "create_handoff": ("POST", "AwHandoffCommand", True), "plan_handoff": ("POST", "AwPlanCommand", True),
 })
 
+_module("cipher_aec.ricky.company_draft_save_api", {
+    "draft_save_subject": ("GET", "CompanyDraftSaveSubject"),
+    "save_draft": ("POST", "CompanyDraftSaveResponse", True),
+})
+
+
 AUTH_RPC = frozenset({"login", "logout", "frappe.auth.login", "frappe.auth.logout", "frappe.auth.get_logged_user"})
 RPC = frozenset(ROUTES) | AUTH_RPC

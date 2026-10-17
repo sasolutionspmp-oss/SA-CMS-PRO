@@ -2,7 +2,7 @@
 
 Stage B now provides deterministic, persisted scope and estimate suggestions in the existing SAP UI5 Company assistant. Isolated R14 native qualification passed for three stored suggestions and one request cancelled before persistence. Final reconciliation and [nine connected screens](evidence/r1/company-ricky-native-r14/ui/README.md) passed. This extends [Stage A](AI04_COMPANY_READ_INTEGRATION.md); it does not deploy the candidate to main.
 
-Suggestions require human review and do not save a commercial/estimate revision, accept a baseline or grant approval. Explicit human draft-save is Stage C work. The local Ricky model and QuickBooks remain unconnected; deterministic qualification does not establish those connections.
+The original Stage B suggestion requires human review and does not itself save a commercial/estimate revision, accept a baseline or grant approval. [Stage C reviewed draft saves](AI04_COMPANY_DRAFT_SAVES.md) subsequently qualified the separate explicit human save command. The local Ricky model and QuickBooks remain unconnected; deterministic qualification does not establish those connections.
 
 ## Implemented boundary
 
@@ -38,7 +38,7 @@ A narrow native wire correction excludes Frappe's internal `_server_messages` de
 
 **Saved suggestions** is an explicit Company mode beside the unchanged four **Company reads**. Scope preparation uses authored sections, selected evidence and separately labeled unverified statements. Estimate preparation selects existing canonical lines or eligible saved measurements, original units and authored notes; the browser generates no quantities.
 
-Authorized selectors use their actual paging contracts; citation search is bounded and followed by exact citation re-read. Parent changes clear dependent choices. Requests retain the selected working revision. Review shows readable fields, exact rational quantity strings/units, original source navigation, version and expiry standing, with optional integrity details. It states deterministic preparation, unverified author suggestion and review required. There is no Apply, Accept or draft-save control.
+Authorized selectors use their actual paging contracts; citation search is bounded and followed by exact citation re-read. Parent changes clear dependent choices. Requests retain the selected working revision. Review shows readable fields, exact rational quantity strings/units, original source navigation, version and expiry standing, with optional integrity details. It states deterministic preparation, unverified author suggestion and review required. These R14 screens had no Apply, Accept or draft-save control; the separately qualified R15 Stage C adds explicit reviewed draft saves.
 
 Pointers bind original User, Person and Company. Source denial removes source-bearing content. Unknown Start/Stop retains the mounted UUID/payload and locks mode return, close and fresh submission, including the shell toggle. Recovery validates the original admission/receipt; terminal observations cannot change across refresh. This is mounted-view recovery, not durable recovery of an unknown command across reload.
 
@@ -70,4 +70,4 @@ Normal session maintenance was attributed, never undone: only the relevant origi
 
 A later wrapper called the success-only verifier on the cancelled case. It refused before phase entry, after the distinct cancellation verifier had passed; no product/native mutation occurred. That failed record remains preserved.
 
-Stage C explicit human draft-save is next. The Company history interface, live model/QuickBooks qualification and broader operational recovery remain separate. Award execution/recovery, downstream finance and main deployment retain their own gates; this slice does not reconstruct or enable the blocked award driver.
+[Stage C explicit human draft-save](AI04_COMPANY_DRAFT_SAVES.md) is now qualified separately. The Company history interface, live model/QuickBooks qualification and broader operational recovery remain separate. Award execution/recovery, downstream finance and main deployment retain their own gates; this slice does not reconstruct or enable the blocked award driver.

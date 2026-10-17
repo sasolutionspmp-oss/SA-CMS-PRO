@@ -1,0 +1,38 @@
+{
+  "schema": "cipher.r15.publication-checks.v1",
+  "credential_scan": {
+    "status": "passed",
+    "public_files_scanned": 1644,
+    "known_actual_private_secret_values": 16,
+    "collection": {
+      "configs": 4,
+      "original_user_passwords": 9,
+      "cookie_values": 21,
+      "public_non_login_placeholders_excluded": 3
+    },
+    "matched_public_paths": [],
+    "classification": "Only actual config secrets, original User password fields and cookie values collected. Typed database fingerprints are integrity data, not credential values. R13 explicit non-login placeholder classified from its source assignment.",
+    "prior_scan_attempts_retained": true,
+    "private_values_emitted": false
+  },
+  "required_unchanged_legacy_regression": {
+    "status": "passed",
+    "exit_code": 0,
+    "log_sha256": "67868f8ddb30de8b45514739dd02b4200b3f5aef16fc8fad3a216cb9d4713566",
+    "classification": "required unchanged legacy regression; not new ERP acceptance",
+    "original_failed_collection_retained": true,
+    "materialized_from": "HEAD legacy files; no platform/product/framework files",
+    "repository_modified": false,
+    "tests_passed": 2703,
+    "duration_seconds": 1728.577
+  },
+  "source_inventory_files_verified": 697,
+  "closed_native_checkpoint": {
+    "status": "passed",
+    "archive_sha256": "f4809b7df065073eeed100eeb3a0bf398874af2a44b961ce9aceba404ee6787c",
+    "regular_files_fully_read": 37,
+    "closed_native_manifest_sha256": "82886e2f29bed2898f8e5044d55158d2015d056a1071f48bec896d86fd4b520e",
+    "matched_final_audit": true,
+    "private_values_emitted": false
+  }
+}

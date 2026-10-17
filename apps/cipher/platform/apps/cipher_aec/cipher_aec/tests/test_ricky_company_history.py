@@ -362,3 +362,24 @@ class CompanyCommandHistoryPrivacyTests(unittest.TestCase):
         self.fixture.store.rows["run",self.owner_run]["result_digest"] = "0" * 64
         with self.assertRaises(DomainError) as error:self.history(self.company,limit=1,count_mode="exact")
         self.assertEqual(error.exception.code,"source_integrity")
+
+
+class CompanyDraftSaveMixedHistory(unittest.TestCase):
+    def test_application_subject_uses_original_reader_before_totals_and_cursors(self):
+        from cipher_aec.ricky import company_draft_save as saves
+        h=CompanyCommandHistoryPrivacyTests();h.setUp();self.addCleanup(h.doCleanups)
+        name='f-application';h.db.execute('INSERT INTO `tabCipher History Event` VALUES (?,?,?,?,?)',
+            (name,'2026-10-16 12:00:00.000001',h.company,'Company',None))
+        h.records[name]=SimpleNamespace(name=name,subject_type='Cipher Ricky Draft Save',subject_id='immutable-application',event='ricky.company.proposal.draft-saved')
+        def original(actor,company,identifier):
+            if actor.user!=h.owner.user or actor.person_id!=h.owner.person_id or not h.fixture.boundary.fixture.source_allowed:
+                raise DomainError('not_found','Original suggestion/source denied.',404)
+        h.stack.enter_context(patch.object(saves,'authorize_history',side_effect=original))
+        page=h.history(h.company,limit=1,count_mode='exact')
+        self.assertEqual(page['total'],3);self.assertEqual(page['items'][0]['id'],name)
+        next_page=h.history(h.company,limit=1,count_mode='exact',cursor=page['next_cursor'])
+        self.assertEqual(next_page['items'][0]['id'],'d-owner-stop')
+        self.assertFalse(h.readable(h.records[name],h.alias,h.company,None))
+        self.assertFalse(h.readable(h.records[name],h.owner,h.company,'Project'))
+        h.fixture.boundary.fixture.source_allowed=False
+        self.assertEqual(h.history(h.company,count_mode='exact')['total'],0)

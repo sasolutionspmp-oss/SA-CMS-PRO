@@ -291,7 +291,7 @@ def create_estimate(company, project, operation_id, title, currency, pricing_dat
     return run_command(company=company, project=project, operation_id=operation_id, command="estimate.create.v1", payload={"title": title, "currency": currency, "pricing_date": pricing_date, **({"pursuit_id": pursuit_id} if scope.scope_type == "Company" else {})}, ability="estimate.write", effect=effect)
 
 
-def calculate_revision(company, project, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations):
+def calculate_revision(company, project, operation_id, estimate_id, expected_revision, lines, adjustments, conversion_ids, basis_description, basis_citations, *, _draft_save=None):
     identifier(estimate_id, "estimate_id")
     if expected_revision is not None:
         identifier(expected_revision, "expected_revision")
@@ -366,7 +366,7 @@ def calculate_revision(company, project, operation_id, estimate_id, expected_rev
                 "history_id": _event(actor, company, project, operation_id, "estimate.revision.calculated", "revision", revision)}
     return run_command(company=company, project=project, operation_id=operation_id, command="estimate.calculate.v1",
                        payload={"estimate_id": estimate_id, "expected_revision": expected_revision, "lines": lines, "adjustments": adjustments,
-                                "conversion_ids": conversion_ids, "basis_description": basis_description, "basis_citations": basis_citations}, ability="estimate.write", effect=effect)
+                                "conversion_ids": conversion_ids, "basis_description": basis_description, "basis_citations": basis_citations}, ability="estimate.write", effect=effect, **({"draft_save": _draft_save} if _draft_save is not None else {}))
 
 
 def get_record(company, project, kind, record_id):

@@ -1,0 +1,86 @@
+{
+  "schema": "cipher.company-draft-save.backend-qualification.v1",
+  "status": "passed",
+  "failure": null,
+  "snapshot_sha256": "353279970396d8716db9ed0760079e7f13cd42b47bdc55bed238042bc9bbd46d",
+  "test_summary": {
+    "collected": 942,
+    "unique": 942,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "missing_declared_cases": []
+  },
+  "running_web_source_unchanged": true,
+  "candidate_source_unchanged": true,
+  "native_draft_save_scenarios_qualified": false,
+  "main_changed": false,
+  "installation_migration_frontend_repeated": false,
+  "original_private_report_sha256": "f8a78805fa44c4888edaf279f8bf245eaeaef8b2f80df5af50e0c844c29f6fba",
+  "stages": [
+    {
+      "name": "candidate-path-absent",
+      "classification": "read-only-preflight",
+      "status": "passed",
+      "duration_seconds": 0.064,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "copy-candidate-app",
+      "classification": "isolated-code-copy",
+      "status": "passed",
+      "duration_seconds": 0.114,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "candidate-import-inventory",
+      "classification": "read-only-source-check",
+      "status": "passed",
+      "duration_seconds": 0.165,
+      "exit_code": 0,
+      "log_sha256": "c9b18d4a328cf47bc7ea65ba73538961343a27f31360c4f4a99b18c078841e6d"
+    },
+    {
+      "name": "frappe-integration-tests",
+      "classification": "actual-frappe",
+      "status": "passed",
+      "duration_seconds": 14.163,
+      "exit_code": 0,
+      "log_sha256": "6c5f13ecf11039783b93351cc81f6aea5a47e4a5152a8a62e9ad91043c00ce21"
+    },
+    {
+      "name": "collect-integration-junit",
+      "classification": "evidence",
+      "status": "passed",
+      "duration_seconds": 0.032,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "frappe-unit-tests",
+      "classification": "actual-frappe",
+      "status": "passed",
+      "duration_seconds": 23.186,
+      "exit_code": 0,
+      "log_sha256": "45c548d84eff40063647dd5c2b304341c0031257ab48d4bf1d58688458fe22aa"
+    },
+    {
+      "name": "collect-unit-junit",
+      "classification": "evidence",
+      "status": "passed",
+      "duration_seconds": 0.016,
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "candidate-openapi-check",
+      "classification": "actual-frappe",
+      "status": "passed",
+      "duration_seconds": 0.265,
+      "exit_code": 0,
+      "log_sha256": "b7ee80f39c03778ef37aec2e67fdd0585a0bce9ec0aa8b8d4d7787c2583f6195"
+    }
+  ]
+}

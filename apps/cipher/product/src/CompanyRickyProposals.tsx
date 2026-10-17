@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, CheckBox, Icon, Input, Label, Link, MessageStrip, Option, Select, TextArea, Title } from '@ui5/webcomponents-react';
 import { ApiError, rpc } from './api/client';
 import { companySuggestions } from './api/company-ricky-proposals';
@@ -13,6 +13,7 @@ import { companyEstimating } from './api/company-estimating';
 import { useResource, date, human } from './hooks';
 import { useMutation } from './useMutation';
 import { Empty, Failure, Loading, Status } from './components';
+import CompanyDraftSave from './CompanyDraftSave';
 
 const invalid = () => new ApiError('This saved suggestion or its original sources could not be verified. Refresh access before continuing.', 'INVALID_CONTRACT', 200);
 const companyRecord = (row: { company: string; scope_type: string; project: unknown }, company: string) => row.company === company && row.scope_type === 'Company' && row.project === null;
@@ -33,7 +34,8 @@ export default function CompanyRickyProposals({ company, user, person, capabilit
   const pendingDigest = useRef('');
   const start = useMutation<{ company: string; request: Selection; operation_id?: string }, Awaited<ReturnType<typeof companySuggestions.start>>>(companySuggestions.start, (value, input) => matchesSuggestionAdmission(value, input.company, input.request, pendingDigest.current));
   const stop = useMutation<{ company: string; run_id: string; operation_id?: string }, Awaited<ReturnType<typeof companySuggestions.stop>>>(companySuggestions.stop, (value, input) => matchesSuggestionStop(value, input.company, input.run_id));
-  const locked = building || start.locked || stop.locked;
+  const [draftLocked, setDraftLocked] = useState(false);
+  const locked = building || start.locked || stop.locked || draftLocked;
   useEffect(() => { onLockedChange?.(locked); return () => onLockedChange?.(false); }, [locked, onLockedChange]);
   const reading = useResource(canRead && runId ? `${pointer}/${currentAccess}/run/${runId}/${refresh}` : null, async signal => {
     const run = await companySuggestions.run({ company, run_id: runId }, signal);
@@ -81,12 +83,13 @@ export default function CompanyRickyProposals({ company, user, person, capabilit
     finally { preparing.current = false; setBuilding(false); }
   };
   const reset = () => { if (locked) return; original.current = undefined; sessionStorage.removeItem(pointer); setRunId(''); setStopped(undefined); setLocalError(undefined); setRefresh(value => value + 1); };
+  const invalidateAccess = useCallback(() => setRefresh(value => value + 1), []);
   const accessError = reading.error || review.error;
   return <aside className="ricky-panel company-suggestions" aria-label="Company saved suggestions">
     <header className="ricky-header"><div className="ricky-identity"><div className="ricky-mark"><Icon name="da" /></div><div><Title level="H2">Saved suggestions</Title><span>Company review</span></div></div><Button icon="decline" accessibleName="Close Ricky" design="Transparent" disabled={locked} onClick={onClose} /></header>
     <div className="ricky-context"><Icon name="building" /><div><span>COMPANY CONTEXT</span><strong>{company}</strong></div></div>
     <div className="ricky-scroll"><Button design="Transparent" disabled={locked} onClick={onReads}>Company reads</Button>
-      <MessageStrip design="Information" hideCloseButton>Deterministic preparation; no model call. Saved suggestions require human review and do not change your business records.</MessageStrip>
+      <MessageStrip design="Information" hideCloseButton>Deterministic preparation; no model call. Review the saved suggestion and its sources before explicitly saving a new working draft.</MessageStrip>
       {!canRead && <Empty title="Saved suggestions unavailable" icon="locked">Your current Company permissions do not allow these requests.</Empty>}
       {canRead && runId && <>
         {reading.loading && <Loading label="Checking the saved request and current access…" />}
@@ -94,7 +97,8 @@ export default function CompanyRickyProposals({ company, user, person, capabilit
         {reading.data && !reading.loading && !accessError && <><div className="run-status"><Status value={reading.data.run.status} /><span>Saved Company request</span></div>{reading.data.run.error && <MessageStrip design="Negative" hideCloseButton>{reading.data.run.error.message}</MessageStrip>}{review.loading && <Loading label="Checking the saved suggestion and exact original citations…" />}{review.data && !review.loading && <SavedReview {...review.data} user={user} navigate={navigate} />}{reading.data.events.items.length > 0 && <details><summary>Preparation progress</summary>{reading.data.events.items.map(row => <p key={row.id}>{labels[row.tool_name]} · {human(row.status)}</p>)}</details>}</>}
         <Button disabled={locked} onClick={() => setRefresh(value => value + 1)}>Refresh suggestion access</Button>
       </>}
-      {runId && <><Button disabled={stop.busy || building || start.locked || Boolean(stopped)} onClick={async () => { const value = stop.unknown ? await stop.recover() : await stop.run({ company, run_id: runId }); if (value) { setStopped(value.status); setRefresh(value => value + 1); } }}>{stop.unknown ? 'Recover original Stop' : 'Stop this request'}</Button>{stopped && <p role="status">Stop confirmed: {human(stopped)}. This receipt contains no source contents. A terminal saved suggestion remains available under current access.</p>}{!locked && (stopped || reading.data && terminalSuggestion(reading.data.run.status)) && <Button onClick={reset}>New suggestion</Button>}</>}
+      <CompanyDraftSave proposal={canRead && !reading.loading && !accessError && !review.loading ? review.data?.proposal : undefined} user={user} person={person} capabilities={capabilities} disabled={building || start.locked || stop.locked} onLockedChange={setDraftLocked} onAccessInvalidated={invalidateAccess} navigate={navigate} />
+      {runId && <><Button disabled={stop.busy || building || start.locked || draftLocked || Boolean(stopped)} onClick={async () => { const value = stop.unknown ? await stop.recover() : await stop.run({ company, run_id: runId }); if (value) { setStopped(value.status); setRefresh(value => value + 1); } }}>{stop.unknown ? 'Recover original Stop' : 'Stop this request'}</Button>{stopped && <p role="status">Stop confirmed: {human(stopped)}. This receipt contains no source contents. A terminal saved suggestion remains available under current access.</p>}{!locked && (stopped || reading.data && terminalSuggestion(reading.data.run.status)) && <Button onClick={reset}>New suggestion</Button>}</>}
       {!runId && canRead && <SuggestionForm company={company} pointer={pointer} capabilities={capabilities} locked={locked} onSubmit={submit} />}
       {start.unknown && <Button disabled={start.busy} onClick={async () => accept(await start.recover())}>Recover original suggestion request</Button>}
       {start.error && <Failure error={start.error} />}{stop.error && <Failure error={stop.error} />}{localError && <Failure error={localError} />}
@@ -171,7 +175,7 @@ function SuggestionForm({ company, pointer, capabilities, locked, onSubmit }: { 
 
 function SavedReview({ proposal, citations, units, user, navigate }: { proposal: Suggestion; citations: CompanyCitation[]; units: Unit[]; user: string; navigate: (path: string) => void }) {
   const output = proposal.preparation; const expired = Date.parse(proposal.expires_at) <= Date.now();
-  return <section aria-label="Saved suggestion review"><Title level="H3">Saved suggestion</Title><MessageStrip design="Information" hideCloseButton>Review required. This is an unverified author suggestion, prepared deterministically. It has not been applied.</MessageStrip>
+  return <section aria-label="Saved suggestion review"><Title level="H3">Saved suggestion</Title><MessageStrip design="Information" hideCloseButton>Review required. This is an unverified author suggestion, prepared deterministically. Any saved working draft is tracked separately below.</MessageStrip>
     <p>Version {proposal.version} · Prepared {date(proposal.created_at)} · {user}</p><p role="status">{expired ? 'Review window expired. Authorized historical review remains available.' : `Review window ends ${new Date(proposal.expires_at).toLocaleString('en-US')}.`} This view does not grant permission to apply the suggestion.</p>
     <p className="caption">Retained original preparation. Later working revisions do not replace this saved suggestion.</p>
     {output.kind === 'scope-draft.v1' ? output.proposed_fields.sections.map((row, index) => <div key={index}><h4>{row.heading}</h4><p style={{ whiteSpace: 'pre-wrap' }}>{row.text}</p></div>) : <><h4>Proposed canonical quantities</h4>{output.proposed_fields.quantity_selections.map(row => <div key={row.line_record_id}><p>{row.quantity.numerator} / {row.quantity.denominator} {unitLabel(units.find(unit => unit.id === row.quantity.target_unit_id))}</p><p className="caption">{human(row.quantity.provenance)} · {human(row.quantity.quantity_basis)} · {row.quantity.independently_verified ? 'Independently verified source' : 'No independent quantity verification claimed'}</p></div>)}<h4>Authored notes</h4><p style={{ whiteSpace: 'pre-wrap' }}>{output.proposed_fields.notes || 'None supplied.'}</p></>}

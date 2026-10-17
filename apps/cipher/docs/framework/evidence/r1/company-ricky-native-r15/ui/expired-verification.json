@@ -1,0 +1,95 @@
+{
+  "schema": "cipher.company.live-ui.reviewed-draft.v1",
+  "status": "passed",
+  "synthetic_business_data": true,
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "model_invoked": false,
+  "reused_existing_authenticated_session": true,
+  "login_requests": 0,
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_run"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.run_events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_citation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.proposal_revision"
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    }
+  ],
+  "console": [],
+  "failures": [],
+  "blocked_requests": [],
+  "business_writes": 0,
+  "ricky_commands": 0,
+  "capture_note": "Actual unconsumed canonical draft subject in original author session; no API mocks, save or model call.",
+  "case": "unsaved-expiry-r15",
+  "mode": "expired",
+  "captures": [
+    {
+      "name": "05-expired-unsaved-draft",
+      "width": 1440,
+      "file": "05-expired-unsaved-draft-1440.png",
+      "sha256": "dcfe80451e4e6c585ce7e6823b1fb04f5c8caad61766832ac2aeeb5c0366d9de"
+    },
+    {
+      "name": "05-expired-unsaved-draft",
+      "width": 390,
+      "file": "05-expired-unsaved-draft-390.png",
+      "sha256": "94629f26599a8b62c611fb73e328730e006b79a4cef92876363bee32ceb8fdb9"
+    }
+  ],
+  "private_report_sha256": "2ffde5b434ccb8ee9117b05c6f590fef45085db7a4c6fd024d0763d774f60556",
+  "driver_sha256": "d21761e8762cc78b54f8a4be548779a594b364d8d31cf4ce03a09247b3e4878a",
+  "save_disabled_after_natural_expiry": true
+}

@@ -42,7 +42,7 @@ class CompanyProposalBackend(CompanyBackend):
         return ProposalAECReader(self, authority, request, lock=lock, execution=execution)
 
     @contextmanager
-    def source_scope(self, authority, request, manifest=None, *, lock=False, execution=False, expected_plan=None):
+    def source_scope(self, authority, request, manifest=None, *, lock=False, execution=False, expected_plan=None, _extra_plan=None):
         from cipher_aec.estimating import scopes
         from cipher_aec.estimating.lockplan import Discovery, prepared, resources
         from cipher_aec.commercial import sources as commercial
@@ -112,6 +112,13 @@ class CompanyProposalBackend(CompanyBackend):
                 validate_resource_plan(expected_plan)
                 if any(not requested.issubset(original) for requested, original in zip(resources(plan), resources(expected_plan))):
                     raise RickyError("stale_source", "The original proposal source union grew after admission.")
+            if _extra_plan is not None:
+                # The original plan was checked before the internal writer union.
+                validate_resource_plan(_extra_plan)
+                plan = commercial.merge(plan, _extra_plan)
+                if plan["generated_sources"]:
+                    raise RickyError("source_dependency_unqualified", "Generated inputs remain unavailable.")
+                validate_resource_plan(plan)
             import frappe
             for row in [*plan["native_refs"], *({"doctype": "Currency", "name": name} for name in plan["currencies"])]:
                 if frappe.db.get_value(row["doctype"], row["name"], "name") != row["name"]:

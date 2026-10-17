@@ -1,0 +1,67 @@
+{
+  "schema": "cipher.r15.additive-sync-preservation.v1",
+  "status": "passed_exact_additive_sync",
+  "before_sha256": "da38be0703949e90c512142e029cd0ccd91dbc6fd6f1aba7202bdd624b57a277",
+  "after_sha256": "8502594df5f5f59eaa784fa15ec0a43d64a3d60376b7f0e905177895f9c1ec1c",
+  "old_tables": 820,
+  "new_tables": [
+    "tabCipher Ricky Draft Save"
+  ],
+  "old_columns_and_indexes_unchanged": true,
+  "config_unchanged": true,
+  "changed_tables": {
+    "tabDocField": {
+      "removed": 0,
+      "added": 14,
+      "removed_names": [],
+      "added_parents": [
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save",
+        "Cipher Ricky Draft Save"
+      ],
+      "added_names": [
+        "0elpm9k9h0",
+        "0elt7cob0f",
+        "0elrvq62vc",
+        "0el2frei2i",
+        "0elekfn9p7",
+        "0eljnrfv9t",
+        "0el0ngubqa",
+        "0elo9jj43s",
+        "0ellnfhr7f",
+        "0el0jcm4eu",
+        "0el1ee7nf9",
+        "0el8lajlna",
+        "0ela2gao0i",
+        "0el8a3cvs5"
+      ]
+    },
+    "tabDocType": {
+      "removed": 0,
+      "added": 1,
+      "removed_names": [],
+      "added_parents": [
+        null
+      ],
+      "added_names": [
+        "Cipher Ricky Draft Save"
+      ]
+    }
+  },
+  "old_rows_preserved": 25279,
+  "new_metadata_rows": 15,
+  "existing_business_or_financial_rows_changed": 0,
+  "existing_projects_changed": 0,
+  "original_private_report_sha256": "cfafc3f96c2f2738438f5973540e30b9343e0ec7ab38e58f5a3585e9ebd4e5ff"
+}

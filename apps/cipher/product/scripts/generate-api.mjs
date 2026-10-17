@@ -17,9 +17,36 @@ for (const [sourcePath, destination, title] of [
   ['takeoff/schemas/api-company-v2.schema.json', 'company-takeoff.generated.ts', 'CipherCompanyTakeoffContract'],
   ['ricky/schemas/company-api-v1.schema.json', 'company-ricky.generated.ts', 'CipherCompanyRickyContract'],
   ['ricky/schemas/company-proposal-api-v1.schema.json', 'company-ricky-proposals.generated.ts', 'CipherCompanyRickyProposalContract'],
+  ['ricky/schemas/company-draft-save-api-v1.schema.json', 'company-draft-saves.generated.ts', 'CipherCompanyDraftSaveContract'],
 ]) {
   const source = await readFile(new URL(`../../platform/apps/cipher_aec/cipher_aec/${sourcePath}`, import.meta.url), 'utf8');
-  const schema = JSON.parse(source.replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));
+  let published = JSON.parse(source);
+  const sourceTexts = [source];
+  if (destination === 'company-draft-saves.generated.ts') {
+    const available = { ...published.$defs };
+    for (const dependency of ['commercial/schemas/api-v1.schema.json', 'estimating/schemas/api-v1.schema.json', 'estimating/schemas/api-company-v2.schema.json']) {
+      const text = await readFile(new URL(`../../platform/apps/cipher_aec/cipher_aec/${dependency}`, import.meta.url), 'utf8');
+      sourceTexts.push(text);
+      for (const [name, definition] of Object.entries(JSON.parse(text).$defs)) {
+        if (available[name] && JSON.stringify(available[name]) !== JSON.stringify(definition)) throw new Error(`Conflicting draft-save definition: ${name}`);
+        available[name] = definition;
+      }
+    }
+    const definitions = { ...published.$defs };
+    const visit = value => {
+      if (!value || typeof value !== 'object') return;
+      if (value.$ref) {
+        if (!value.$ref.startsWith('#/$defs/')) throw new Error('Draft-save contracts require an explicit local definition.');
+        const name = value.$ref.slice('#/$defs/'.length);
+        if (!available[name]) throw new Error(`Missing draft-save definition: ${name}`);
+        if (!definitions[name]) { definitions[name] = available[name]; visit(definitions[name]); }
+      }
+      for (const child of Object.values(value)) visit(child);
+    };
+    for (const definition of Object.values(definitions)) visit(definition);
+    published = { ...published, $defs: definitions };
+  }
+  const schema = JSON.parse(JSON.stringify(published).replaceAll('"$defs"', '"definitions"').replaceAll('#/$defs/', '#/definitions/'));
   if (destination === 'company-ricky-proposals.generated.ts') {
     // The compiler otherwise drops siblings of this oneOf. Merge equivalent
     // closed branches for types only; runtime validation uses the original.
@@ -27,13 +54,14 @@ for (const [sourcePath, destination, title] of [
     schema.definitions.CompanyRickyProposalResponse = { oneOf: oneOf.map(branch => ({ ...base, ...branch,
       properties: { ...base.properties, ...branch.properties }, required: [...new Set([...base.required, ...branch.required])], additionalProperties: false })) };
   }
-  const hash = createHash('sha256').update(source).digest('hex');
+  const hash = createHash('sha256').update(sourceTexts.length === 1 ? source : JSON.stringify(sourceTexts)).digest('hex');
   let generated = await compile(schema, title, {
     unreachableDefinitions: true,
-    ...(destination === 'company-ricky-proposals.generated.ts' ? { ignoreMinAndMaxItems: true } : {}),
+    ...(['company-ricky-proposals.generated.ts', 'company-draft-saves.generated.ts'].includes(destination) ? { ignoreMinAndMaxItems: true } : {}),
     bannerComment: `/* Generated from cipher_aec/${sourcePath}. Do not edit.\n * Source SHA-256: ${hash}\n * Regenerate: npm run generate:api\n */`,
   });
   if (destination === 'company-ricky-proposals.generated.ts') generated += `\n// Published closed runtime shapes, generated from the same source as these types.\nexport const companyRickyProposalSchema = ${source.trim()} as const;\n`;
+  if (destination === 'company-draft-saves.generated.ts') generated += `\n// Exact published definitions and their transitive canonical dependencies.\nexport const companyDraftSaveSchema = ${JSON.stringify(published, null, 2)} as const;\n`;
   const output = new URL(`../src/api/${destination}`, import.meta.url);
   if (check) {
     let existing = '';

@@ -177,7 +177,30 @@ class ProjectCompatibilityTests(unittest.TestCase):
         commands=next(node for node in new.body if isinstance(node,ast.Assign)
             and any(isinstance(target,ast.Name) and target.id=='COMPANY_RICKY_COMMANDS' for target in node.targets))
         self.assertEqual(ast.literal_eval(commands.value.args[0]),{'ricky.company.read.start.v1','ricky.company.read.cancel.v1',
-            'ricky.company.proposal.start.v1','ricky.company.proposal.cancel.v1'})
+            'ricky.company.proposal.start.v1','ricky.company.proposal.cancel.v1',
+            'ricky.company.proposal.save-scope.v1','ricky.company.proposal.save-estimate.v1'})
+        # Normalize only the reviewed optional Company application context.
+        case.assertEqual(after.args.kwonlyargs[-1].arg,'draft_save')
+        case.assertIsNone(ast.literal_eval(after.args.kw_defaults[-1]))
+        after.args.kwonlyargs.pop();after.args.kw_defaults.pop()
+        draft_condition=ast.parse("scope_type == 'Company' and draft_save is not None",mode='eval').body
+        observed=[]
+        class DraftCompanyShape(ast.NodeTransformer):
+            def visit_If(self,node):
+                if ast.dump(node.test)==ast.dump(draft_condition):
+                    observed.append(ast.unparse(node))
+                    return []
+                return self.generic_visit(node)
+            def visit_With(self,node):
+                if len(node.items)==1 and isinstance(node.items[0].context_expr,ast.Name) and node.items[0].context_expr.id=='draft_save_boundary':
+                    result=[]
+                    for child in node.body:
+                        value=self.visit(child)
+                        result.extend(value if isinstance(value,list) else [value] if value is not None else [])
+                    return result
+                return self.generic_visit(node)
+        after=DraftCompanyShape().visit(after)
+        case.assertEqual(len(observed),5)
         class LegacyProjectShape(ast.NodeTransformer):
             def visit_If(self,node):
                 if 'ricky.company.read.start.v1' in ast.unparse(node.test):
@@ -317,7 +340,10 @@ class CompanyRickyRegistrationTests(unittest.TestCase):
             '/api/method/cipher_aec.ricky.company_proposal_api.get_proposal',
             '/api/method/cipher_aec.ricky.company_proposal_api.cancel_run'}
         self.assertEqual({key for key in generated['paths'] if key.startswith('/api/method/cipher_aec.ricky.company_proposal_api.')},proposals)
-        old_paths={key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals}
+        draft_saves={'/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject',
+            '/api/method/cipher_aec.ricky.company_draft_save_api.save_draft'}
+        self.assertEqual({key for key in generated['paths'] if key.startswith('/api/method/cipher_aec.ricky.company_draft_save_api.')},draft_saves)
+        old_paths={key:value for key,value in generated['paths'].items() if not key.startswith(prefix) and key not in proposals|draft_saves}
         self.assertEqual(canonical_sha(old_paths),'8c755c2d712b51177683a8bed770428405d9342db1f879cedd5f7aace895a04c')
         self.assertEqual(json.loads((ROOT/'api/openapi.json').read_text()),generated)
     def test_native_projection_closes_company_rows_and_counts_without_changing_project(self):

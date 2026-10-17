@@ -103,3 +103,7 @@ for _ricky_type, _ricky_query in (
 ):
     permission_query_conditions[_ricky_type] = "cipher_aec.ricky.permissions." + _ricky_query
     has_permission[_ricky_type] = "cipher_aec.ricky.permissions.has_permission"
+
+# Human draft-save linkage is visible only through its exact scoped reader.
+permission_query_conditions["Cipher Ricky Draft Save"] = "cipher_aec.ricky.company_draft_save.query"
+has_permission["Cipher Ricky Draft Save"] = "cipher_aec.ricky.company_draft_save.has_permission"

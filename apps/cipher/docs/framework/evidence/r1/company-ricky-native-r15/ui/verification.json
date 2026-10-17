@@ -1,0 +1,300 @@
+{
+  "schema": "cipher.company.live-ui.reviewed-draft.v1",
+  "status": "passed",
+  "synthetic_business_data": true,
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "model_invoked": false,
+  "reused_existing_authenticated_session": true,
+  "login_requests": 0,
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuit"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.proposals"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_run"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.run_events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_citation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.proposal_revision"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.commercial.api.pursuits"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_run"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.run_events"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_proposal_api.get_proposal"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.get_citation"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.ricky.company_draft_save_api.draft_save_subject"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record"
+    }
+  ],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    }
+  ],
+  "console": [],
+  "failures": [],
+  "blocked_requests": [],
+  "saved_reviews": [
+    {
+      "kind": "scope",
+      "run_id": "11828da2-323e-445f-b56d-6bdbbff14351",
+      "actual_saved_application_loaded": true
+    },
+    {
+      "kind": "estimate",
+      "run_id": "13aba0b5-8fb1-4e8d-932a-2cb38a846fc5",
+      "actual_saved_application_loaded": true
+    }
+  ],
+  "font_status": {
+    "status": "loaded",
+    "fonts": [
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-Bold",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      },
+      {
+        "family": "72-SemiboldDuplex",
+        "status": "loaded"
+      },
+      {
+        "family": "72",
+        "status": "loaded"
+      }
+    ]
+  },
+  "business_writes": 0,
+  "ricky_commands": 0,
+  "capture_note": "Actual previously reviewed draft saves from the isolated ERPNext backend, original authenticated session, GET-only browser capture.",
+  "captures": [
+    {
+      "name": "01-working-record-selection",
+      "width": 1440,
+      "file": "01-working-record-selection-1440.png",
+      "sha256": "8dbd302cad0760ff3b92d0f5855031e0f87afb0f7a455e1bf7bbfed2fbe4ac6e"
+    },
+    {
+      "name": "01-working-record-selection",
+      "width": 900,
+      "file": "01-working-record-selection-900.png",
+      "sha256": "dcf5a8d14ee34a04d9b5766a6874e7e7c62066c0d4a484603a46f61caaba9ad6"
+    },
+    {
+      "name": "01-working-record-selection",
+      "width": 390,
+      "file": "01-working-record-selection-390.png",
+      "sha256": "3b32c0844b433874e7614b64fda2882ccb50470956916c3c85b5bba49dd10253"
+    },
+    {
+      "name": "02-saved-scope-draft",
+      "width": 1440,
+      "file": "02-saved-scope-draft-1440.png",
+      "sha256": "6ffd199a77d628d4209481e9281f9b7b4d57f4e94a7006c86f8b226350a4936d"
+    },
+    {
+      "name": "02-saved-scope-draft",
+      "width": 900,
+      "file": "02-saved-scope-draft-900.png",
+      "sha256": "1ba4461ed61d1e294bd9969a6ebe8f14387abb9fc58d331700815a5ae87817ab"
+    },
+    {
+      "name": "02-saved-scope-draft",
+      "width": 390,
+      "file": "02-saved-scope-draft-390.png",
+      "sha256": "e7a6809b81ff3eebbe4f202fc516a6ca101e7caba942c545e7b6d68eac380ca1"
+    },
+    {
+      "name": "03-saved-estimate-draft",
+      "width": 1440,
+      "file": "03-saved-estimate-draft-1440.png",
+      "sha256": "9d7a88550422d7a39c543f280a5c87073187676fc0140d989f6a20e943c28a76"
+    },
+    {
+      "name": "03-saved-estimate-draft",
+      "width": 900,
+      "file": "03-saved-estimate-draft-900.png",
+      "sha256": "ec20a7705f8bdc50f59d463c5c79af062942cd2bf6b02e99e2b13d0d80175f9b"
+    },
+    {
+      "name": "03-saved-estimate-draft",
+      "width": 390,
+      "file": "03-saved-estimate-draft-390.png",
+      "sha256": "cf081359dc0149cdaea7aefc9d1dc2c0fbf6448eba7a9371d0490dda1a1aeee1"
+    }
+  ],
+  "private_report_sha256": "5c7881bf0100fac3cad6caaba7aab85d5b74af7fd594725a973d6f9d8898eb5b",
+  "driver_sha256": "42e751a252814a8a793e68d65dc73aa5ba844562009b8a7e3dadcdc9370d8b57",
+  "observer_sha256": "24df97c2313356df511e0b7b1b2f6d43587c7cee485f093ae2a6bcadb843ecd4"
+}

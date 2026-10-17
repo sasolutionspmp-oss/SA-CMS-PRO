@@ -11,19 +11,20 @@ from .context import assert_synthetic_site, current_actor, require_project, requ
 
 # Company deterministic preparation only; never inherit Project/model commands.
 COMPANY_RICKY_COMMANDS = frozenset({"ricky.company.read.start.v1", "ricky.company.read.cancel.v1",
-    "ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1"})
+    "ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1",
+    "ricky.company.proposal.save-scope.v1", "ricky.company.proposal.save-estimate.v1"})
 
 def run_command(*, company, project, operation_id, command, payload, ability, effect, guard=None, participant_people=()):
     return _run_scoped_command(company=company, project=project, scope_type="Project", operation_id=operation_id,
         command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
 
 
-def run_company_command(*, company, operation_id, command, payload, ability, effect, guard=None, participant_people=()):
+def run_company_command(*, company, operation_id, command, payload, ability, effect, guard=None, participant_people=(), draft_save=None):
     return _run_scoped_command(company=company, project=None, scope_type="Company", operation_id=operation_id,
-        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people)
+        command=command, payload=payload, ability=ability, effect=effect, guard=guard, participant_people=participant_people, draft_save=draft_save)
 
 
-def _run_scoped_command(*, company, project, scope_type, operation_id, command, payload, ability, effect, guard, participant_people):
+def _run_scoped_command(*, company, project, scope_type, operation_id, command, payload, ability, effect, guard, participant_people, draft_save=None):
     """One Frappe request transaction: no commits or remote effects inside this service.
 
     Person locking serializes the UUID namespace across commands and projects. Project
@@ -36,6 +37,11 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         # never acquire new locks or replace the outer command's savepoint.
         if logical_operation_stats() is not None:
             raise DomainError("nested_company_command", "Company commands cannot execute inside another Company command.", 409)
+    if scope_type == "Company" and draft_save is not None:
+        from cipher_aec.ricky.company_draft_save import DraftSaveContext
+        if type(draft_save) is not DraftSaveContext or draft_save.company != company:
+            raise DomainError("invalid_draft_save", "Only a concrete server-owned draft-save context is supported.", 422)
+        command, payload, ability = draft_save.command(command, ability, payload)
     assert_synthetic_site()
     operation_id = parse_operation_id(operation_id)
     company = text(company, "Company")
@@ -62,6 +68,8 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
         # The NEW effect binds the same server-captured reference below.
         current_ricky_session_reference = session_authority_reference(actor)
         require_session_authority(actor, current_ricky_session_reference, lock=True)
+    if scope_type == "Company" and draft_save is not None:
+        draft_save.prelock(actor)
     locked_project = authorize(actor, lock=True)
     if scope_type == "Company":
         for prefix, read_ability in (("document.", "document.read"), ("estimate.", "estimate.read"), ("takeoff.", "estimate.read")):
@@ -125,23 +133,32 @@ def _run_scoped_command(*, company, project, scope_type, operation_id, command, 
             award_boundary = nullcontext()
         with award_boundary:
             with logical_operation(company, command, operation_id) if scope_type == "Company" else nullcontext(), trusted_write():
-                if guard is not None:
-                    guard(actor, locked_project)
-                if scope_type == "Company" and command in {"ricky.company.read.start.v1", "ricky.company.proposal.start.v1"}:
-                    from cipher_aec.ricky.company_backend import start_session_binding
-                    with start_session_binding(actor=actor, company=company, reference=current_ricky_session_reference):
-                        result = effect(actor, locked_project)
+                if scope_type == "Company" and draft_save is not None:
+                    draft_save_boundary = draft_save.new_effect(actor)
                 else:
-                    result = effect(actor, locked_project)
-                if not isinstance(result, dict) or "operation" in result:
-                    raise RuntimeError("Domain commands must return a result object without operation metadata")
-                record = frappe.get_doc({"doctype": "Cipher Command Receipt", "name": receipt_name,
-                    "person": actor.person_id, "operation_id": operation_id, "company": company,
-                    "project": project, "scope_type": scope_type, "command": command, "request_hash": request_hash,
-                    "result_json": canonical_json(result), "result_hash": digest(result), "state": "Succeeded"})
-                from cipher_aec.awards.runtime import quiet_award_write
-                quiet_award_write(record)
-                record.insert(ignore_permissions=True, set_name=receipt_name)
+                    draft_save_boundary = nullcontext()
+                with draft_save_boundary:
+                    if guard is not None:
+                        guard(actor, locked_project)
+                    if scope_type == "Company" and command in {"ricky.company.read.start.v1", "ricky.company.proposal.start.v1"}:
+                        from cipher_aec.ricky.company_backend import start_session_binding
+                        with start_session_binding(actor=actor, company=company, reference=current_ricky_session_reference):
+                            result = effect(actor, locked_project)
+                    else:
+                        result = effect(actor, locked_project)
+                    if scope_type == "Company" and draft_save is not None:
+                        result = draft_save.reserve(actor, result, operation_id, receipt_name)
+                    if not isinstance(result, dict) or "operation" in result:
+                        raise RuntimeError("Domain commands must return a result object without operation metadata")
+                    record = frappe.get_doc({"doctype": "Cipher Command Receipt", "name": receipt_name,
+                        "person": actor.person_id, "operation_id": operation_id, "company": company,
+                        "project": project, "scope_type": scope_type, "command": command, "request_hash": request_hash,
+                        "result_json": canonical_json(result), "result_hash": digest(result), "state": "Succeeded"})
+                    from cipher_aec.awards.runtime import quiet_award_write
+                    quiet_award_write(record)
+                    record.insert(ignore_permissions=True, set_name=receipt_name)
+                    if scope_type == "Company" and draft_save is not None:
+                        draft_save.persist(actor, result)
     except (frappe.QueryDeadlockError, frappe.QueryTimeoutError):
         # The database can have discarded the entire transaction on a deadlock;
         # rolling back to a now-missing savepoint would mask the real conflict.
@@ -182,7 +199,9 @@ def authorize_receipt(actor, command, company, project, result, scope_type="Proj
             if command not in COMPANY_RICKY_COMMANDS:
                 raise DomainError("unsupported_company_ricky_command", "This Company Ricky command is not registered.", 403)
             require_company(company, ability="ricky.run", actor=actor, lock=True)
-            if command in {"ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1"}:
+            if command in {"ricky.company.proposal.save-scope.v1", "ricky.company.proposal.save-estimate.v1"}:
+                from cipher_aec.ricky.company_draft_save import authorize_receipt as authorize_company_ricky
+            elif command in {"ricky.company.proposal.start.v1", "ricky.company.proposal.cancel.v1"}:
                 from cipher_aec.ricky.company_proposal_service import authorize_receipt as authorize_company_ricky
             else:
                 from cipher_aec.ricky.company_service import authorize_receipt as authorize_company_ricky
