@@ -1,0 +1,41 @@
+{
+  "schema": "cipher.company-takeoff.ui-qualification.v3",
+  "status": "passed_composed_with_real_visual_correction",
+  "fixture_only": true,
+  "distinct_composed_cases": 72,
+  "reused_v2_distinct_cases": 71,
+  "new_phone_clipping_regression": 1,
+  "latest_visual_execution_passed": 1,
+  "responsive_compatibility_executions_passed": 2,
+  "compatibility_overlap_with_v2": 2,
+  "full_suite_run": false,
+  "typecheck": "passed",
+  "build": {
+    "path": "/dev/shm/cipher-company-takeoff-ui-r17/v3/dist",
+    "files": 915,
+    "exit_code": 0,
+    "full_log_sha256": "584ed041189e3b1874da42a8e6fc9ece32c57e3e27c614bf0c0daa3f4c635d13",
+    "inventory": "DIST_INVENTORY.json",
+    "inventory_sha256": "9efb2fdc8c04faf7df4876c582d4f9399a66215592aa4afcbc33cf77ceb122e4"
+  },
+  "generated_checks_reused_unchanged": 13,
+  "backend_unchanged_files": 550,
+  "production_v2_delta_paths": 2,
+  "test_v2_delta_paths": 1,
+  "business_behavior_delta": "none; wrapping UI5 Title/Button section headers and bounded child layout only",
+  "original_v2_metadata_and_OCR_corrections_preserved": true,
+  "original_failed_visual_boundary": {
+    "report_sha256": "43f0e65c828982469914ae7958a7bc3aa5d64677c34af94e31b6e6ce4ec81422",
+    "reason": "Saved measurements heading left coordinate negative; saved detail exceeded padded card edge"
+  },
+  "retained_test_setup_failure": {
+    "report_sha256": "f1fc16a05dcff82be49962fd394d53c1990c5f8f653439447a371d57c41d8c57",
+    "reason": "initial bounds helper did not walk UI5 shadow roots"
+  },
+  "retained_initial_incomplete_build": {
+    "status": "incomplete_asset_preparation",
+    "original_build_exit": 0,
+    "reason": "Direct Vite invocation omitted the package build step that copies existing pinned PDF resources. Original log retained; this attempt is not the qualified production bundle.",
+    "native_execution": false
+  }
+}

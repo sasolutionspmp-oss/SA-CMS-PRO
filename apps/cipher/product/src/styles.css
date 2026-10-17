@@ -213,3 +213,19 @@ h2 { font-size: 1.125rem; } h3 { font-size: 1rem; } p { line-height: 1.55; }
 .company-suggestions ui5-select, .company-suggestions ui5-checkbox { width: 100%; min-width: 0; max-width: 100%; }
 .company-suggestions h4, .company-suggestions p, .company-suggestions summary { overflow-wrap: anywhere; }
 .company-suggestions pre { max-width: 100%; overflow: auto; font-size: .6875rem; }
+.company-takeoff-command { display: grid; gap: .75rem; margin: 1rem 2rem; }
+.company-takeoff-command:empty { display: none; }
+.company-takeoff-page { min-width: 0; }
+.company-takeoff-page > .surface, .company-takeoff-source { display: grid; gap: 1rem; min-width: 0; }
+.company-takeoff-page > .surface { padding: 1rem; margin-block-end: 1rem; }
+.company-takeoff-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-block: 1rem; }
+.company-takeoff-fields > div { display: grid; gap: .35rem; min-width: 0; }
+.company-takeoff-fields ui5-input, .company-takeoff-fields ui5-textarea { width: 100%; }
+.company-takeoff-list { list-style: none; padding: 0; margin: 0; }
+.company-takeoff-list li { border-block-end: 1px solid var(--sapList_BorderColor); padding-block: .75rem; overflow-wrap: anywhere; }
+.company-takeoff-page code { overflow-wrap: anywhere; }
+@media (max-width: 599px) { .company-takeoff-fields { grid-template-columns: minmax(0, 1fr); } .company-takeoff-command { margin: 1rem; } }
+
+.company-takeoff-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; min-width: 0; }
+.company-takeoff-page > .surface > *, .company-takeoff-section-heading > * { min-width: 0; max-width: 100%; }
+.company-takeoff-page p { overflow-wrap: anywhere; }

@@ -4,11 +4,17 @@ Owner authorized execution of the framework. Current source worktree: `/tmp/ciph
 
 Published Company/commercial checkpoint `f709a336ea2ad5f1686c38c0701cde5cb61d811f` in [draft PR #28](https://github.com/sasolutionspmp-oss/SA-CMS-PRO/pull/28) passed its complete frozen verification: 315 backend cases, seven workflow acceptance procedures, four process checks and 100 browser scenarios. [Actual UI walkthrough](LIVE_BUILD_WALKTHROUGH.md) and [checkpoint review](evidence/r1/company-com02-checkpoint-review.md) show what is implemented. Project award, procurement and downstream finance remain active roadmap work; generated-document inputs and full-history performance remain gated.
 
-## Current checkpoint: Company Activity
+## Current checkpoint: Company drawing takeoff
+
+[Company drawing takeoff](COMPANY_TAKEOFF.md) now connects pre-award set creation, authorized exact PDF viewing and explicit manual quantities to the existing Company backend. The reviewed UI passed its recorded focused/type/build/generated checks. Backend source remains the qualified R15 source; thirteen generated contracts are unchanged.
+
+The original actual run exposed an embedded-text dependency: upload/set succeeded, but text preview returned 422 for a valid vector-only PDF. That run remains failed and its original two UUIDs/records stay preserved. The corrected UI uses authorized metadata and exact raw PDF bytes. A separately named continuation reused the same records and saved one manual measurement. [Twelve real screens](evidence/r1/company-takeoff-r17/ui/README.md) and [independent native evidence](evidence/r1/company-takeoff-r17/README.md) verify eleven total declared additions across the two epochs, exact hashes and preservation of all other inventoried business state and closed evidence. MAIN is unchanged. Attaching saved manual takeoff evidence to an exact Company estimate line is the next bounded implementation slice; calibration and broader EST-02/UX-03 remain active.
+
+## Prior checkpoint: Company Activity
 
 [Company Activity](COMPANY_ACTIVITY.md) now connects the existing authorized history API to the SAP UI5 Company workspace: recorded actors/times, expandable details, bounded Previous/Next and supported record links. Known Company/User/Person/capability changes clear old source-bearing rows and cursor state. The corrected UI passed 262 distinct composed browser cases, thirteen unchanged generated contracts and the 911-file build; the original static-path failure and four failing-first permission regressions remain retained.
 
-[Nine actual connected screens](evidence/r1/company-activity-r16/ui/README.md) used three real GETs and no mocked response, login, business command or model. Independent before/after comparison preserved 78 inventoried tables' business rows, source/config/indexes and closed R15 evidence, with only time-bounded original User/Session heartbeats. Backend source is unchanged from the 942-case R15 gate. Company-scoped pre-award takeoff UI is now the next independent business workflow under implementation; award-dependent procurement remains gated.
+[Nine actual connected screens](evidence/r1/company-activity-r16/ui/README.md) used three real GETs and no mocked response, login, business command or model. Independent before/after comparison preserved 78 inventoried tables' business rows, source/config/indexes and closed R15 evidence, with only time-bounded original User/Session heartbeats. Backend source is unchanged from the 942-case R15 gate. [R16 hosted CI](evidence/r1/company-activity-r16/hosted-ci.json) passed all 25 stages. Company takeoff is qualified in R17 above; award-dependent procurement remains gated.
 
 ## Prior checkpoint: reviewed Company draft saves
 

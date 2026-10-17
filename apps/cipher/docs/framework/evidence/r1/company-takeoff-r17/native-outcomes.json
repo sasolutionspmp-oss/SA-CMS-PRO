@@ -1,0 +1,230 @@
+{
+  "status": "passed_with_original_capture_failure_retained",
+  "original_capture_status": "failed",
+  "business_commands_total": 3,
+  "commands": [
+    {
+      "method": "cipher_aec.documents.company_api.upload_document",
+      "operation_id": "5b116857-f3f9-46b5-bc42-6e66b35a76a7",
+      "status": "confirmed",
+      "input_sha256": "34989e3fb6bdbaea789ccc9c2a348b2406c32beb8a11820bacb030da671ee9c4",
+      "result": {
+        "document": {
+          "id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+          "title": "R17 Synthetic manual quantity source",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+          "scope_type": "Company",
+          "revision_number": 1,
+          "filename": "r17-synthetic-manual-source.pdf",
+          "mime_type": "application/pdf",
+          "byte_length": 523,
+          "sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f",
+          "scan_status": "not_scanned",
+          "retrieval_status": "available",
+          "extraction_status": "ocr_unavailable",
+          "extractor_version": "cipher-safe-text-v1",
+          "page_count": 1,
+          "extraction_warning": "No embedded text; OCR is not configured."
+        },
+        "revision": {
+          "id": "REV-baba356be54b4d1790f8d8acd3437014",
+          "revision_number": 1,
+          "filename": "r17-synthetic-manual-source.pdf",
+          "mime_type": "application/pdf",
+          "byte_length": 523,
+          "sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f",
+          "scan_status": "not_scanned",
+          "retrieval_status": "available",
+          "extraction_status": "ocr_unavailable",
+          "extractor_version": "cipher-safe-text-v1",
+          "page_count": 1,
+          "extraction_warning": "No embedded text; OCR is not configured.",
+          "scope_type": "Company",
+          "company": "Cipher Synthetic Company",
+          "project": null
+        },
+        "history_id": "nmj6e9g6ar",
+        "operation": {
+          "id": "5b116857-f3f9-46b5-bc42-6e66b35a76a7",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    },
+    {
+      "method": "cipher_aec.takeoff.company_api.create_set",
+      "operation_id": "d476be91-4bb5-4be7-b60f-db2dec5fb416",
+      "status": "confirmed",
+      "input_sha256": "181fa25ae124b6a79f4748cfd8ae439ba5336ffeb4c813059fb55dd77ec6b99c",
+      "result": {
+        "takeoff_set": {
+          "scope_type": "Company",
+          "id": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T01:58:32.771670+00:00",
+          "status": "authored",
+          "title": "R17 Synthetic pre-award takeoff",
+          "discipline": "Civil",
+          "drawing_package": "R17 Synthetic Sheet 01",
+          "basis": "Explicitly authored synthetic manual quantities. No calibrated geometric measurement is asserted.",
+          "supported_method": "authored-manual-and-verified-pdf-planar-v1"
+        },
+        "history_id": "nmomstphc1",
+        "operation": {
+          "id": "d476be91-4bb5-4be7-b60f-db2dec5fb416",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    },
+    {
+      "method": "cipher_aec.takeoff.company_api.create_measurement",
+      "operation_id": "549bda6e-c330-4229-9fad-ffd418e6fee9",
+      "status": "confirmed",
+      "input_sha256": "553cfc0cf7a6776790e248ddef2a72cf512ff6aa7e4dee853c4f092a0661cba3",
+      "result": {
+        "measurement": {
+          "scope_type": "Company",
+          "id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:08:06.669970+00:00",
+          "status": "authored",
+          "takeoff_set": "42ddc5db-386c-43b9-ab10-2c82c9f9e126",
+          "family_id": "a0990d7e-8cf2-4e1f-af9b-92b97a6a285e",
+          "revision_number": 1,
+          "predecessor": null,
+          "source": {
+            "document_id": "DOC-cbdbdeabf47b4f379d8c4ef5a3e9fc14",
+            "revision_id": "REV-baba356be54b4d1790f8d8acd3437014",
+            "revision_number": 1,
+            "current_revision": "REV-baba356be54b4d1790f8d8acd3437014",
+            "current_revision_number": 1,
+            "is_current": true,
+            "page": 1,
+            "page_count": 1,
+            "mime_type": "application/pdf",
+            "source_sha256": "825a44720a98302484a191258f40e9e51cfe4ef696655444d4af22cad679733f",
+            "byte_length": 523,
+            "extraction_status": "ocr_unavailable",
+            "scope_type": "Company",
+            "company": "Cipher Synthetic Company",
+            "project": null
+          },
+          "source_head_policy": "current-working-revision-v1",
+          "definition": {
+            "method": "manual",
+            "kind": "length",
+            "locator": "R17 Sheet 01 / manual quantity reference",
+            "reason": "Explicit synthetic author quantity for workflow verification. Quantity is not inferred from drawing pixels.",
+            "result_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+            "result_precision": 6,
+            "tolerance": "0.000001",
+            "waste_fraction": "0",
+            "formula_version": "cipher.takeoff.planar.v1",
+            "manual_quantity": {
+              "amount": "2.500000",
+              "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "precision": 6
+            }
+          },
+          "calibration_id": null,
+          "calibration_digest": null,
+          "verification_id": null,
+          "page_geometry": null,
+          "unit_manifest": {
+            "schema": "cipher.canonical.v2",
+            "dataset_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+            "scope": {
+              "scope_type": "Company",
+              "company": "Cipher Synthetic Company",
+              "project": null
+            },
+            "records": [
+              {
+                "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+                "kind": "company",
+                "revision": 1,
+                "fields": {
+                  "name": "Cipher Synthetic Company",
+                  "currency": "USD",
+                  "timezone": "Asia/Kolkata"
+                },
+                "target": {
+                  "doctype": "Company",
+                  "name": "Cipher Synthetic Company"
+                }
+              },
+              {
+                "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+                "kind": "uom",
+                "revision": 1,
+                "fields": {
+                  "symbol": "RC01cc066dc8ba8",
+                  "dimension": "length",
+                  "precision": 6
+                },
+                "target": {
+                  "doctype": "UOM",
+                  "name": "Ricky metre 1cc066dc8ba8"
+                }
+              }
+            ],
+            "unit_conversions": []
+          },
+          "conversion_ids": [],
+          "source_citations": [],
+          "result": {
+            "formula_version": "cipher.takeoff.planar.v1",
+            "method": "manual",
+            "geometry_kind": "manual",
+            "quantity": {
+              "amount": "2.500000",
+              "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+              "precision": 6
+            },
+            "raw_interval": {
+              "lower": {
+                "numerator": "5",
+                "denominator": "2"
+              },
+              "upper": {
+                "numerator": "5",
+                "denominator": "2"
+              }
+            },
+            "result_interval": {
+              "lower": {
+                "numerator": "5",
+                "denominator": "2"
+              },
+              "upper": {
+                "numerator": "5",
+                "denominator": "2"
+              }
+            },
+            "tolerance": "0.000001",
+            "rounding": "half_up_unique_interval",
+            "waste_fraction": "0",
+            "calibration_claim": "none-manual",
+            "result_digest": "31a02546a0301d8e07a5143728e469d7cdef6e247c46bdf9158702fe2023f394"
+          }
+        },
+        "history_id": "ta329nrp6p",
+        "operation": {
+          "id": "549bda6e-c330-4229-9fad-ffd418e6fee9",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    }
+  ],
+  "latest_capture_business_commands": 0
+}

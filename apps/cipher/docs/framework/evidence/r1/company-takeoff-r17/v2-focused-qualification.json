@@ -1,0 +1,222 @@
+{
+  "schema": "cipher.company-takeoff.ui-qualification.v2",
+  "status": "passed_composed",
+  "fixture_only": true,
+  "latest_affected_cases": 37,
+  "latest_node_contract_cases": 5,
+  "latest_browser_cases": 32,
+  "reused_unchanged_compatibility_static_cases": 34,
+  "distinct_composed_cases": 71,
+  "full_suite_run": false,
+  "unaffected_compatibility_rerun": false,
+  "workers": 1,
+  "retries": 0,
+  "latest_report": {
+    "path": "/dev/shm/cipher-company-takeoff-ui-r17/v2/focused-final/report.json",
+    "sha256": "d67d91d27b140a2123f509ceb1df52af65068bea35350f4a3323917a84be32cd"
+  },
+  "reused_reports": [
+    {
+      "path": "/dev/shm/cipher-company-takeoff-ui-r17/focused-final/report.json",
+      "sha256": "513a312331988dbc7968be3eb079de5ce7b1fbe358aab7197111cd4671b77aac"
+    },
+    {
+      "path": "/dev/shm/cipher-company-takeoff-ui-r17/static-and-activity-final/report.json",
+      "sha256": "125b7283415a12b7f695867bcbf992ca5d3c8181ff7806a1157536587c11dad8"
+    }
+  ],
+  "reused_cases": [
+    {
+      "file": "company-context.spec.ts",
+      "title": "copied second-Company award evidence link preserves exact Company and revision through sign-in",
+      "line": 18
+    },
+    {
+      "file": "company-context.spec.ts",
+      "title": "unavailable Company in a copied document link fails before source detail, preview or byte requests",
+      "line": 39
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "human-reviewed scope saves one linked canonical draft",
+      "line": 17
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "human-reviewed estimate saves one linked canonical draft",
+      "line": 17
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "lost save retains original operation across denial and locks panel/navigation",
+      "line": 33
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "wrongReceipt save retains original operation across denial and locks panel/navigation",
+      "line": 33
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "expired suggestion remains reviewable with save disabled",
+      "line": 51
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "denyWrite suggestion remains reviewable with save disabled",
+      "line": 51
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "stale original head is rejected without a recovery lock or an invented saved draft",
+      "line": 59
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "draft review and explicit save remain usable at 390px",
+      "line": 68
+    },
+    {
+      "file": "company-draft-save.spec.ts",
+      "title": "draft review and explicit save remain usable at 900px",
+      "line": 68
+    },
+    {
+      "file": "company-ricky-navigation-guard.spec.ts",
+      "title": "uncertain Company command keeps its original identity and mounted recovery through workspace controls",
+      "line": 4
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company estimate title and actions remain usable at 1440px",
+      "line": 7
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company estimate title and actions remain usable at 900px",
+      "line": 7
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company estimate title and actions remain usable at 390px",
+      "line": 7
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company estimate loads and calculates exact lines without Project authority parameters",
+      "line": 27
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company unknown calculation keeps exact recovery reachable through later412 without exposing rebase",
+      "line": 34
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "a successful operation UUID with wrong estimate subject remains unknown until matching replay",
+      "line": 43
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company upload recovery uses retained bytes after the local File becomes unreadable",
+      "line": 48
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company source text remains literal and source preview uses Company endpoint",
+      "line": 56
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "Company source revision links open the exact owned stored revision",
+      "line": 61
+    },
+    {
+      "file": "company.spec.ts",
+      "title": "a foreign Company revision link never reads bytes or preview under the wrong document title",
+      "line": 66
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "title": "saved measurement uses compact exact quantity, authorized revision choices and readable impact labels",
+      "line": 10
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "title": "uncertain evidence binding locks saved revision and line choices and replays exact original identity",
+      "line": 21
+    },
+    {
+      "file": "takeoff-binding.spec.ts",
+      "title": "inspecting a saved rectangle restores its stored outline after the tool starts as a segment",
+      "line": 27
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "PDF selection inverts native rotation 0, crop, view rotation, zoom, CSS scale and DPR",
+      "line": 5
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "PDF selection inverts native rotation 90, crop, view rotation, zoom, CSS scale and DPR",
+      "line": 5
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "PDF selection inverts native rotation 180, crop, view rotation, zoom, CSS scale and DPR",
+      "line": 5
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "PDF selection inverts native rotation 270, crop, view rotation, zoom, CSS scale and DPR",
+      "line": 5
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "a denied new drawing source hides every pixel of the previous source",
+      "line": 26
+    },
+    {
+      "file": "takeoff.spec.ts",
+      "title": "PDF bytes with a different SHA cannot render or accept drawing points",
+      "line": 34
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "title": "a mounted global mutation lock disables every activity navigation control",
+      "line": 129
+    },
+    {
+      "file": "company-activity.spec.ts",
+      "title": "the new activity navigation cannot escape an uncertain original draft save",
+      "line": 155
+    },
+    {
+      "file": "product.spec.ts",
+      "title": "packaged static assets preserve exact SVG and dependency notice bytes",
+      "line": 301
+    }
+  ],
+  "failing_first_exact_v1_production": {
+    "production_hashes": "/dev/shm/cipher-company-takeoff-ui-r17/v2/failing-first-production-sha256.json",
+    "production_hashes_sha256": "83672e9a1eea6a578040507b04ff882c37135f7b9594ec8f328898d609c96419",
+    "actual_native_shape_report": "/dev/shm/cipher-company-takeoff-ui-r17/v2/failing-first-native-shape/report.json",
+    "report_sha256": "1c3667ca15f873e753e1911ee1ba2788719b73ca90c80976451c9c9d0fe20f5b",
+    "expected_failures": 2
+  },
+  "typecheck": "passed",
+  "generated_checks": 13,
+  "build": {
+    "path": "/dev/shm/cipher-company-takeoff-ui-r17/v2/dist",
+    "modules": 2039,
+    "files": 915,
+    "exit_code": 0,
+    "full_log": "/dev/shm/cipher-company-takeoff-ui-r17/v2/build-final.log",
+    "full_log_sha256": "f0ab4081c60c25fb117cb981a8bee83e79bd9e08dfb4caf10c5c5eff0b9fe712",
+    "inventory": "DIST_INVENTORY.json",
+    "inventory_sha256": "15e2311009bf4e718cffaabaaaf4cc39dc2fccc27c26674b9feb8f85b2ec0627"
+  },
+  "native_execution_by_child": false,
+  "screenshots_by_child": false,
+  "unresolved_concerns": []
+}

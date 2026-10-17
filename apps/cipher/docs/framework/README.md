@@ -14,6 +14,8 @@ Start with [current implementation status](IMPLEMENTATION_STATUS.md) for actual 
 
 The [live build walkthrough](LIVE_BUILD_WALKTHROUGH.md) links the actual container screenshots in workflow order.
 
+[Company drawing takeoff](COMPANY_TAKEOFF.md) now provides pre-award sets, exact stored PDF viewing without an OCR dependency and explicit manual quantities. [Twelve actual R17 screens](evidence/r1/company-takeoff-r17/ui/README.md) and independent native audits retain the original failed run and qualify its separate continuation.
+
 [Company Activity](COMPANY_ACTIVITY.md) now presents authorized saved changes, exact recorded actors/times and bounded paging in SAP UI5. [Nine actual R16 screens](evidence/r1/company-activity-r16/ui/README.md) used the real ERPNext backend; 262 distinct composed browser cases and independent read-only preservation passed.
 
 [Reviewed Company draft saves — Stage C](AI04_COMPANY_DRAFT_SAVES.md) now connects exact human review to canonical proposal/estimate revisions. R15 passed 942 fresh backend cases, 239 distinct composed browser cases, real native saves/refusals/rollback and independent concurrency reconciliation. The [thirteen actual R15 screens](evidence/r1/company-ricky-native-r15/ui/README.md) include eligible and naturally expired review. [Final evidence](evidence/r1/company-ricky-native-r15/README.md) retains the original concurrency expectations and their failures. Main, live Ricky and QuickBooks remain separately gated.
