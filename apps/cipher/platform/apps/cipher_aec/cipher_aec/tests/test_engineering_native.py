@@ -69,6 +69,9 @@ class TestEngineeringNative(IntegrationTestCase):
         # Neither native permission nor ignore_permissions + trusted_write is a writer.
         doc=frappe.get_doc('Cipher RFI Revision',question['id']);self.assertFalse(frappe.has_permission(doc.doctype,'read',doc=doc,user=frappe.session.user))
         with self.assertRaises(DomainError):doc.save(ignore_permissions=True)
+        # A rejected Frappe save updates the in-memory modified timestamp. Reload
+        # the original row so this assertion reaches the trusted-write guard.
+        doc=frappe.get_doc('Cipher RFI Revision',question['id'])
         with trusted_write(),self.assertRaises(DomainError):doc.save(ignore_permissions=True)
         response=service.create_response(self.company,self.project,str(uuid4()),header['id'],question['id'],digest(header),{'answer':'Use the referenced technical detail.','potential_cost_impact':'Separate commercial decision required.','potential_schedule_impact':''},[])['response']
         packet=approvals.request_action(self.company,self.project,'engineering.rfi.authorize.v1',response['id'],digest(response),str(uuid4()))['packet']

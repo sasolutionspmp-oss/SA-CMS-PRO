@@ -1,0 +1,11 @@
+{
+  "schema": "cipher.eng01.native-test-correction.v1",
+  "source_files": 790,
+  "changed_source_path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_engineering_native.py",
+  "before_sha256": "1ef54e62525ff643708630f363dcd40c72e254d2ab544f659593f5826a1e193b",
+  "after_sha256": "e1848fee673577fb34347c7aeab9e96cde786179921f0997dfecdcff3d5b89b3",
+  "syntax_check": "passed",
+  "actual_native_rerun": "pending",
+  "product_controller_permission_source_changed": false,
+  "frontend_backend_host_generated_build_results": "unchanged from original ENG01 qualification; not rerun or claimed fresh"
+}
