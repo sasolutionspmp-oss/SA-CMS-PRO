@@ -1,0 +1,994 @@
+{
+  "schema": "cipher.r18.actual-company-line-binding.v1",
+  "status": "passed",
+  "actual_backend": true,
+  "mocked_api_responses": false,
+  "synthetic_business_data": true,
+  "model_invoked": false,
+  "login_requests": 0,
+  "backend_origin": "http://127.0.0.1:18886",
+  "backend_host": "cipher-ci-ai04-20261016.localhost",
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/method/cipher_aec.takeoff.company_api.bind_line",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "takeoff_set",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.takeoff.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.api.v1.session",
+      "parameter_names": []
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_units",
+      "parameter_names": [
+        "company"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_records",
+      "parameter_names": [
+        "company",
+        "kind",
+        "limit",
+        "count_mode"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.list_acceptances",
+      "parameter_names": [
+        "company",
+        "estimate_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.get_record",
+      "parameter_names": [
+        "company",
+        "kind",
+        "record_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.estimating.company_api.acceptance_subject",
+      "parameter_names": [
+        "company",
+        "revision_id"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/method/cipher_aec.documents.company_api.list_documents",
+      "parameter_names": [
+        "company"
+      ]
+    }
+  ],
+  "static_responses": [
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "6d32298882c1cbe0a0d13c16de1a6dc68624aeb3721031f8c1b70868959c2557"
+    },
+    {
+      "path": "assets/index-DzZ3Ez3J.css",
+      "bytes": 41754,
+      "sha256": "2a34a4446cad3b8170c85b057c080c63822abf163a552a56fad3cfddeb040192"
+    },
+    {
+      "path": "assets/components-iGcKV4fH.js",
+      "bytes": 81835,
+      "sha256": "4fdae634f8f728417b1aacce5ede2e1825a466ef7cf636258a12d6e8035e64a0"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/Input-CwXdBqda.js",
+      "bytes": 56529,
+      "sha256": "ba63aceeff2735b2fe33b392e55d358d60a05aea25a4ff6bc574afe7f2d6825d"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/CheckBox-CAD9lq4S.js",
+      "bytes": 372,
+      "sha256": "af90b1a9d5d143710619991480ddeffef2f0e24572381f0728e653cb3327c9d9"
+    },
+    {
+      "path": "assets/Input-BSpgmWzK.js",
+      "bytes": 511,
+      "sha256": "0dfa006560ecbdcfa618469f36c1ce638ac29976b6782ce9be985f0f315067b7"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Zb3-8Meg.js",
+      "bytes": 20074,
+      "sha256": "147b77e7cd66ca203fdf1ff2db873ffc5f4bd377d39d95fcf7d20fb109b6b9e2"
+    },
+    {
+      "path": "assets/TableHeaderRow-CIC3KJDf.js",
+      "bytes": 52987,
+      "sha256": "1c17f19e6733e54a1dd4265eaaf41205fde7e43bbe86e6b9f459c2fd45b13a8b"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Link-DY3iq4dH.js",
+      "bytes": 387,
+      "sha256": "15d54d1ddf240b759d94d0322c8850ed020e2f37fbdfdc4807f31a03ea4d7f21"
+    },
+    {
+      "path": "assets/useMutation-B9-u4Tjt.js",
+      "bytes": 1632,
+      "sha256": "733f2d47f78848104c0c4ca6fd4fedf9ee19b8693f0d3809fe2789081949cec5"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/TextArea-DlXby0Ft.js",
+      "bytes": 26979,
+      "sha256": "bc06d6d5cadaebec3990a4b744ed751be8808fb35288a0712b17e9a09c9eb1ab"
+    },
+    {
+      "path": "assets/estimating-C74_SHsh.js",
+      "bytes": 1468,
+      "sha256": "dd0ee408685ee51200dc93b9d699a7f83f0d8133bcd1fd2442c650e498483bb0"
+    },
+    {
+      "path": "assets/index-BEBKtSXm.js",
+      "bytes": 1335252,
+      "sha256": "4f19b9411f6c882f2d4b72d8d3b9b314d29d2f37a0a2666d65a96323a644cb76"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "assets/CompanyTakeoff-B9VVJAFA.js",
+      "bytes": 130384,
+      "sha256": "c87b553350c2a7c57c7875ba1f613f62c26844151336d65c27c42afe93d515fb"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "bytes": 24532,
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    },
+    {
+      "path": "assets/InputComposition-DStib4IT.js",
+      "bytes": 753,
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "index.html",
+      "bytes": 1975,
+      "sha256": "6d32298882c1cbe0a0d13c16de1a6dc68624aeb3721031f8c1b70868959c2557"
+    },
+    {
+      "path": "assets/index-DzZ3Ez3J.css",
+      "bytes": 41754,
+      "sha256": "2a34a4446cad3b8170c85b057c080c63822abf163a552a56fad3cfddeb040192"
+    },
+    {
+      "path": "assets/Input-CwXdBqda.js",
+      "bytes": 56529,
+      "sha256": "ba63aceeff2735b2fe33b392e55d358d60a05aea25a4ff6bc574afe7f2d6825d"
+    },
+    {
+      "path": "assets/ListItemBaseTemplate-CbrcVXZB.js",
+      "bytes": 120631,
+      "sha256": "41561498315dfe2160631fc7327155d191f0fa8c886a77d41410030a6f0e629f"
+    },
+    {
+      "path": "assets/ResponsivePopover-CNcUs9NR.js",
+      "bytes": 64810,
+      "sha256": "ad36ae0322e45c4f2bdbf26d3ff122bbc7ac3a71c69ef5886567d216f5ea96f2"
+    },
+    {
+      "path": "assets/CheckBox-CAD9lq4S.js",
+      "bytes": 372,
+      "sha256": "af90b1a9d5d143710619991480ddeffef2f0e24572381f0728e653cb3327c9d9"
+    },
+    {
+      "path": "assets/Input-BSpgmWzK.js",
+      "bytes": 511,
+      "sha256": "0dfa006560ecbdcfa618469f36c1ce638ac29976b6782ce9be985f0f315067b7"
+    },
+    {
+      "path": "assets/TableHeaderRow-CIC3KJDf.js",
+      "bytes": 52987,
+      "sha256": "1c17f19e6733e54a1dd4265eaaf41205fde7e43bbe86e6b9f459c2fd45b13a8b"
+    },
+    {
+      "path": "assets/Text-DmNohnYj.js",
+      "bytes": 2236,
+      "sha256": "57f7f56e21607f4f95e37696321fb97c0474bafba87d34359188f12011829514"
+    },
+    {
+      "path": "assets/components-iGcKV4fH.js",
+      "bytes": 81835,
+      "sha256": "4fdae634f8f728417b1aacce5ede2e1825a466ef7cf636258a12d6e8035e64a0"
+    },
+    {
+      "path": "assets/Select-CZ-1SP8s.js",
+      "bytes": 44959,
+      "sha256": "4adda3f8da636990b4040cfb51345b0ced248a361f402152519cd0f12eaef8c7"
+    },
+    {
+      "path": "assets/Button-CtMyNuGb.js",
+      "bytes": 306856,
+      "sha256": "8c244117f973d1b3fdbed72968cbd89a01e55fcf51ad610e9a10d9d919f0ea81"
+    },
+    {
+      "path": "assets/ToolbarSpacer-Zb3-8Meg.js",
+      "bytes": 20074,
+      "sha256": "147b77e7cd66ca203fdf1ff2db873ffc5f4bd377d39d95fcf7d20fb109b6b9e2"
+    },
+    {
+      "path": "assets/useMutation-B9-u4Tjt.js",
+      "bytes": 1632,
+      "sha256": "733f2d47f78848104c0c4ca6fd4fedf9ee19b8693f0d3809fe2789081949cec5"
+    },
+    {
+      "path": "assets/Link-DY3iq4dH.js",
+      "bytes": 387,
+      "sha256": "15d54d1ddf240b759d94d0322c8850ed020e2f37fbdfdc4807f31a03ea4d7f21"
+    },
+    {
+      "path": "assets/Link-BIuZTJrB.js",
+      "bytes": 7168,
+      "sha256": "78d6574c04fe64164d1b39bc90665d0a71ae287418ba783f884818fc96945288"
+    },
+    {
+      "path": "assets/estimating-C74_SHsh.js",
+      "bytes": 1468,
+      "sha256": "dd0ee408685ee51200dc93b9d699a7f83f0d8133bcd1fd2442c650e498483bb0"
+    },
+    {
+      "path": "assets/TextArea-DlXby0Ft.js",
+      "bytes": 26979,
+      "sha256": "bc06d6d5cadaebec3990a4b744ed751be8808fb35288a0712b17e9a09c9eb1ab"
+    },
+    {
+      "path": "assets/index-BEBKtSXm.js",
+      "bytes": 1335252,
+      "sha256": "4f19b9411f6c882f2d4b72d8d3b9b314d29d2f37a0a2666d65a96323a644cb76"
+    },
+    {
+      "path": "assets/72-Regular-DC3_Dn2o.woff2",
+      "bytes": 23756,
+      "sha256": "c33e1916f644b2f0408ef6d01ee8dbb37a889b0f8d824bc961b43269b3abbf69"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/72-Italic-myBDifN9.woff2",
+      "bytes": 19532,
+      "sha256": "5e8870967516d32f56e5b43b5e63ca74f04d7bb49d53e76569cb690e10100851"
+    },
+    {
+      "path": "assets/CompanyTakeoff-B9VVJAFA.js",
+      "bytes": 130384,
+      "sha256": "c87b553350c2a7c57c7875ba1f613f62c26844151336d65c27c42afe93d515fb"
+    },
+    {
+      "path": "assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "bytes": 24584,
+      "sha256": "81e704ea8fab61aa9c62d50d3873415e441b771405765c3158dfdcf74455f5ab"
+    },
+    {
+      "path": "cipher-mark.svg",
+      "bytes": 196,
+      "sha256": "7df2e85457237593184ef1d8a4f1d1dee52dc48cc4dca8926868c59388667497"
+    },
+    {
+      "path": "assets/NativeChoice-BfWHh-3u.js",
+      "bytes": 2577,
+      "sha256": "1055513644f73fdab976600e3cafdfcdc1c80a5e719d3ce6212cf6cd2c0113ad"
+    },
+    {
+      "path": "assets/CompanyEstimates-BlTwucaI.js",
+      "bytes": 20696,
+      "sha256": "e22b7ed69d2cbe7e99e225fe55018fff439a3f6df458a91568e48934e51dd147"
+    },
+    {
+      "path": "assets/CompanyApprovals-B91diTd4.js",
+      "bytes": 39280,
+      "sha256": "96f5588b73fdf0521e8d2aacc75ef46eaa68ac2c4e034220953086b00d447e2d"
+    },
+    {
+      "path": "assets/award-draft-BIkr6qzb.js",
+      "bytes": 4011,
+      "sha256": "c7efb4f53c70dfede584381a7bc05d7005da770e2716d764890a24e36daedf91"
+    },
+    {
+      "path": "assets/72-Bold-JdVmBElm.woff2",
+      "bytes": 23684,
+      "sha256": "270387a820fef53fe57f8f7514bc8a69e986ded2a01fd8722c024e2081aa6c1c"
+    },
+    {
+      "path": "assets/72-Semibold-CqFkVA5s.woff2",
+      "bytes": 24532,
+      "sha256": "56f0dfef94587821c23a6856f5385b6175692c3fb32a62be5f38d1e956f0f872"
+    },
+    {
+      "path": "assets/72-Black-D-MfWIU0.woff2",
+      "bytes": 25564,
+      "sha256": "672f44858cd60f55855738fb828bbcc48ddb8714f581e9763dfaa67d4e696edc"
+    },
+    {
+      "path": "assets/InputComposition-DStib4IT.js",
+      "bytes": 753,
+      "sha256": "5fafdc1074e05429613e9cde14dc5a9294737a483fd3b14f453044a9327aa23c"
+    },
+    {
+      "path": "assets/ListItemStandardExpandableTextTemplate-CrOaD1ST.js",
+      "bytes": 4394,
+      "sha256": "65fe3d36a57f4579380aea0d0a6569e34b7beb12c7c89cfd25601015b08c1f28"
+    }
+  ],
+  "downloads": [],
+  "font_responses": [
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Regular-DC3_Dn2o.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Italic-myBDifN9.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-SemiboldDuplex-CHMUD2Nw.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Bold-JdVmBElm.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Semibold-CqFkVA5s.woff2",
+      "status": 200
+    },
+    {
+      "path": "/assets/72-Black-D-MfWIU0.woff2",
+      "status": 200
+    }
+  ],
+  "failures": [],
+  "console": [],
+  "blocked_requests": [],
+  "authenticated_original_session_reused": true,
+  "business_commands": 1,
+  "command_kinds": [
+    "Company manual quantity evidence attachment"
+  ],
+  "original_estimate_snapshot_preservation_requires_native_verification": true,
+  "commands": [
+    {
+      "method": "cipher_aec.takeoff.company_api.bind_line",
+      "operation_id": "06bc96ca-f9f9-45b5-8023-59bddc96e1a6",
+      "status": "confirmed",
+      "input_sha256": "52a4812bd9900e88649846ac9704ab3f8732b4d30e313bc4c360cf89aa4c2c46",
+      "http_status": 200,
+      "result": {
+        "binding": {
+          "scope_type": "Company",
+          "id": "33b65e38-213a-4d92-a18f-c384ebb08206",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:50:55.634643+00:00",
+          "status": "authored",
+          "measurement_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "measurement_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+          "estimate_line_record": "034c4d79-ec08-4bcc-a8f2-d91c798daf4f",
+          "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+          "estimate_revision": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+          "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+          "estimate_line_digest": "ee698b787d6f8c1368e631c68623f1a57f93a74e026b4f8a78d191a7d5c23e59",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "reason": "Explicit synthetic reviewed manual quantity evidence. This exact saved line retains its original quantity and pricing; no calibrated geometry is asserted.",
+          "quantity_basis": "net-quantity-v1",
+          "waste_policy": "net-takeoff-estimate-component-waste-v1",
+          "provenance": "subsequently-attached-takeoff-evidence-v1",
+          "original_snapshot_claim": "authored-quantity-not-recomputed"
+        },
+        "history_id": "mcs8pf9mfv",
+        "operation": {
+          "id": "06bc96ca-f9f9-45b5-8023-59bddc96e1a6",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    }
+  ],
+  "captures": [
+    {
+      "name": "01-existing-manual-measurement",
+      "width": 1440,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "3a0abccef22313bd96c316e00a91da171f6c90cd112c11d058656d31e703852f",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "01-existing-manual-measurement-1440.png"
+    },
+    {
+      "name": "01-existing-manual-measurement",
+      "width": 900,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "2e80fc7e2b6ce393b6fb027625dcbd1d52db1b75429ce37d9e6cf0d5743e4872",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "01-existing-manual-measurement-900.png"
+    },
+    {
+      "name": "01-existing-manual-measurement",
+      "width": 390,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "4745ec4a7c91bbe8ee6cc70a060904fae24a1794921ead4a06f9dfbd8cb89131",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "01-existing-manual-measurement-390.png"
+    },
+    {
+      "name": "02-exact-saved-line-review",
+      "width": 1440,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "ee7fd35bda477a4cfe30cd59628a531692bb97849d2508e336a8cad9c8bc56b6",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "02-exact-saved-line-review-1440.png"
+    },
+    {
+      "name": "02-exact-saved-line-review",
+      "width": 900,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "8f08c4c4c8e7c1e3e7117a971f54d0d03b5ff60064cfa94379218f9be877a200",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "02-exact-saved-line-review-900.png"
+    },
+    {
+      "name": "02-exact-saved-line-review",
+      "width": 390,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "0b692fe2cbc7c626b97cdda06f0ac80fe25780906dbec1c8fd9429896483d3d6",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "02-exact-saved-line-review-390.png"
+    },
+    {
+      "name": "03-verified-evidence-attachment",
+      "width": 1440,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "1d1e089ee304a2b3f81361eebf9e79c3ec95b26bcacf8d53957ffcf47839389e",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          },
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "03-verified-evidence-attachment-1440.png"
+    },
+    {
+      "name": "03-verified-evidence-attachment",
+      "width": 900,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "11540e665ef8ced13a2b3d80b234fa21b09ed1c9899976b0cdf5dc5f46962125",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          },
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "03-verified-evidence-attachment-900.png"
+    },
+    {
+      "name": "03-verified-evidence-attachment",
+      "width": 390,
+      "url": "http://127.0.0.1:5214/company/takeoff/42ddc5db-386c-43b9-ab10-2c82c9f9e126?company=Cipher%20Synthetic%20Company",
+      "sha256": "0af31f02e8cf213a2ace8683bead6719477f676a52b0d7edfdd879eca9153de2",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          },
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "03-verified-evidence-attachment-390.png"
+    },
+    {
+      "name": "04-original-saved-estimate",
+      "width": 1440,
+      "url": "http://127.0.0.1:5214/company/estimates/be392b8d-160b-456e-93c8-3c1474287352?company=Cipher%20Synthetic%20Company",
+      "sha256": "da165ff00cff3439e3281834a6e482173a90d604768efd27e8c1741b2a893d4a",
+      "bounds": {
+        "viewport": 1440,
+        "document": 1440,
+        "main": [
+          {
+            "width": 1184,
+            "scroll": 1184
+          }
+        ]
+      },
+      "path": "04-original-saved-estimate-1440.png"
+    },
+    {
+      "name": "04-original-saved-estimate",
+      "width": 900,
+      "url": "http://127.0.0.1:5214/company/estimates/be392b8d-160b-456e-93c8-3c1474287352?company=Cipher%20Synthetic%20Company",
+      "sha256": "ab804982a77b5719346c219157b89c473c810e918b0ff5ab6909fb3487ca2282",
+      "bounds": {
+        "viewport": 900,
+        "document": 900,
+        "main": [
+          {
+            "width": 644,
+            "scroll": 644
+          }
+        ]
+      },
+      "path": "04-original-saved-estimate-900.png"
+    },
+    {
+      "name": "04-original-saved-estimate",
+      "width": 390,
+      "url": "http://127.0.0.1:5214/company/estimates/be392b8d-160b-456e-93c8-3c1474287352?company=Cipher%20Synthetic%20Company",
+      "sha256": "aecd2cd3269d6487eee922f36fa07cbba5cb495bfe45709f20a6e4e3a9552bf2",
+      "bounds": {
+        "viewport": 390,
+        "document": 390,
+        "main": [
+          {
+            "width": 390,
+            "scroll": 390
+          }
+        ]
+      },
+      "path": "04-original-saved-estimate-390.png"
+    }
+  ]
+}

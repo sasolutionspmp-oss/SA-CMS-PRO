@@ -1,0 +1,28 @@
+{
+  "schema": "cipher.r18.binding-independent-verification.v1",
+  "status": "passed",
+  "new_rows": {
+    "Cipher Takeoff Line Binding": 1,
+    "Cipher Command Receipt": 1,
+    "Cipher History Event": 1
+  },
+  "business_commands": 1,
+  "original_estimate_revision_line_calculation_snapshot_unchanged": true,
+  "original_measurement_source_unit_facts_unchanged": true,
+  "all_other_inventoried_business_rows_unchanged": true,
+  "source_config_indexes_closed_native_evidence_unchanged": true,
+  "exact_original_operation_request_result_receipt_history_hashes_verified": true,
+  "immutable_native_binding_matches_HTTP": true,
+  "target_to_binding_epoch_actual_state_unchanged": true,
+  "auth": {
+    "status": "passed",
+    "bounded_user_changes": 0,
+    "bounded_session_changes": 0,
+    "transport_ip_change_independently_hash_verified": false,
+    "observer_business_writes": 0
+  },
+  "before_sha256": "f9cab816ec728c10c3849215cb713a59e28d9ef2839021e794c904aa0b224101",
+  "after_sha256": "a12b1e6cabb2a063078558537443a458c25b24523ae2127acf3b9576cb4fbb82",
+  "browser_report_sha256": "370052da850c3ada8fd22412ad893ad9f3878df85a480090003dbf80425ba78c",
+  "binding_id": "33b65e38-213a-4d92-a18f-c384ebb08206"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "cipher.r18.target-verifier-correction.v1",
+  "status": "original_target_success_independently_verified",
+  "original_failed_verifier_retained": true,
+  "reason": "Assumed proxy transport IP would persist immediately; native Session persists at its pinned heartbeat interval. Actual before/after User and Session rows were exact. Original strict heartbeat validator accepted zero changes.",
+  "original_verifier_sha256": "a5aedf4810d6cea90116ba659eb1aeeef3b550ab0fec9fed88d7329a80eacd17",
+  "corrected_readonly_verifier_sha256": "4ed83f1b2501f7d3e0fbdc4a1016b2a401f2fd6f93c50f6f098695d068a8f11e",
+  "passed_report_sha256": "b93ae442eab9fccee231531b65bf2ef44365147756c2deec21d3354f27805f68",
+  "business_commands_repeated_for_verification": 0
+}

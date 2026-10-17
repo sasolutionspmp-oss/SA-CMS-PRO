@@ -1,0 +1,412 @@
+{
+  "schema": "cipher.r18.actual-native-outcomes.v1",
+  "status": "passed_with_original_driver_failures_preserved",
+  "successful_business_commands": 3,
+  "target_commands": [
+    {
+      "method": "cipher_aec.estimating.company_api.create_estimate",
+      "operation_id": "fc5ed563-41a1-4c40-92d9-f74b46b8cc3e",
+      "status": "confirmed",
+      "input_sha256": "c30cdeb8405acf273e74160bd069b667882be6d6d8d566d916b6bcaf8ca8ed64",
+      "http_status": 200,
+      "result": {
+        "estimate": {
+          "scope_type": "Company",
+          "id": "be392b8d-160b-456e-93c8-3c1474287352",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:48:48.265399+00:00",
+          "status": "draft",
+          "title": "R18 Synthetic manual quantity estimate",
+          "currency": "USD",
+          "pricing_date": "2026-10-16",
+          "revision_number": 0,
+          "current_revision": null,
+          "pursuit_id": null
+        },
+        "history_id": "l52v224qhb",
+        "operation": {
+          "id": "fc5ed563-41a1-4c40-92d9-f74b46b8cc3e",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    },
+    {
+      "method": "cipher_aec.estimating.company_api.calculate_revision",
+      "operation_id": "e71d5bd8-4f41-46b8-9695-1e6b4c53456d",
+      "status": "confirmed",
+      "input_sha256": "1ec6c1fdb21f0c999e2bd8f6754d3e204070d1f93ab8f2b157b787f9f4395377",
+      "http_status": 200,
+      "result": {
+        "estimate": {
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "company": "Cipher Synthetic Company",
+          "created_at": "2026-10-17T02:48:48.265399+00:00",
+          "currency": "USD",
+          "current_revision": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+          "id": "be392b8d-160b-456e-93c8-3c1474287352",
+          "pricing_date": "2026-10-16",
+          "project": null,
+          "pursuit_id": null,
+          "revision_number": 1,
+          "scope_type": "Company",
+          "status": "draft",
+          "title": "R18 Synthetic manual quantity estimate"
+        },
+        "revision": {
+          "scope_type": "Company",
+          "id": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:48:48.325833+00:00",
+          "status": "draft-calculated",
+          "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+          "revision_number": 1,
+          "predecessor": null,
+          "calculation_snapshot": "d3b37702-e0d0-41f9-b4be-c3f80fdea122",
+          "currency": "USD",
+          "pricing_date": "2026-10-16",
+          "policy_version": "cipher.estimate.line-half-up.v1",
+          "line_record_ids": [
+            "034c4d79-ec08-4bcc-a8f2-d91c798daf4f"
+          ],
+          "source_citations": [
+            {
+              "company": "Cipher Synthetic Company",
+              "document_id": "DOC-b6b5c84f5b1d488ca9ee0c16a0ad9d72",
+              "document_title": "Ricky authored manual source",
+              "excerpt": "Synthetic Company Ricky authored rate 1.25 USD per metre. Manual quantity 2 metres. Exactly 1 metre equals 100 centimetres. No calibrated geometry or model claim.\n",
+              "excerpt_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b",
+              "id": "0e38555298d259aac876ba4de53631d43c3f7f32253c6f6921edaaa47585e62b",
+              "page": 1,
+              "page_label": "1",
+              "project": null,
+              "revision_id": "REV-7d66c03af46248968f7570cdbc8b4c82",
+              "revision_number": 1,
+              "scope_type": "Company",
+              "source_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b"
+            }
+          ],
+          "basis_description": "Explicit synthetic manual source quantity. Independently retained takeoff evidence will be attached to this exact saved line; no calibrated drawing quantity is asserted.",
+          "direct": {
+            "amount": "3.13",
+            "currency": "USD"
+          },
+          "indirect": {
+            "amount": "0.00",
+            "currency": "USD"
+          },
+          "contingency": {
+            "amount": "0.00",
+            "currency": "USD"
+          },
+          "total": {
+            "amount": "3.13",
+            "currency": "USD"
+          }
+        },
+        "calculation": {
+          "scope_type": "Company",
+          "id": "d3b37702-e0d0-41f9-b4be-c3f80fdea122",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:48:48.317260+00:00",
+          "status": "calculated",
+          "subject_type": "Cipher Estimate Revision",
+          "subject_id": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+          "inputs": {
+            "schema": "cipher.estimate.inputs.v2",
+            "unit_manifest": {
+              "schema": "cipher.canonical.v2",
+              "dataset_id": "d3b37702-e0d0-41f9-b4be-c3f80fdea122",
+              "scope": {
+                "scope_type": "Company",
+                "company": "Cipher Synthetic Company",
+                "project": null
+              },
+              "records": [
+                {
+                  "id": "0b7d3b2c-d9a3-51de-86bf-500047d5a5c2",
+                  "kind": "company",
+                  "revision": 1,
+                  "fields": {
+                    "name": "Cipher Synthetic Company",
+                    "currency": "USD",
+                    "timezone": "Asia/Kolkata"
+                  },
+                  "target": {
+                    "doctype": "Company",
+                    "name": "Cipher Synthetic Company"
+                  }
+                },
+                {
+                  "id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+                  "kind": "uom",
+                  "revision": 1,
+                  "fields": {
+                    "symbol": "RC01cc066dc8ba8",
+                    "dimension": "length",
+                    "precision": 6
+                  },
+                  "target": {
+                    "doctype": "UOM",
+                    "name": "Ricky metre 1cc066dc8ba8"
+                  }
+                }
+              ],
+              "unit_conversions": []
+            },
+            "currency": "USD",
+            "currency_exponent": 2,
+            "pricing_date": "2026-10-16",
+            "policy_version": "cipher.estimate.line-half-up.v1",
+            "basis_description": "Explicit synthetic manual source quantity. Independently retained takeoff evidence will be attached to this exact saved line; no calibrated drawing quantity is asserted.",
+            "basis_citations": [],
+            "rates": {
+              "42604488-0870-4c36-841d-88fbf3a2a8dc": {
+                "cost_type": "material",
+                "currency": "USD",
+                "exclusions": "Tax and freight",
+                "expiry_date": null,
+                "freight_tax_assumptions": "None included",
+                "geography": "Synthetic",
+                "id": "42604488-0870-4c36-841d-88fbf3a2a8dc",
+                "inclusions": "Authored material",
+                "item": null,
+                "party": null,
+                "party_type": null,
+                "permission_basis": "Fixture author owns this synthetic source",
+                "predecessor": null,
+                "quote_date": "2026-10-16",
+                "quote_reference": "Explicit synthetic authored rate",
+                "rate_amount": "1.25",
+                "rate_precision": 6,
+                "revision": 1,
+                "source_citations": [
+                  {
+                    "company": "Cipher Synthetic Company",
+                    "document_id": "DOC-b6b5c84f5b1d488ca9ee0c16a0ad9d72",
+                    "document_title": "Ricky authored manual source",
+                    "excerpt": "Synthetic Company Ricky authored rate 1.25 USD per metre. Manual quantity 2 metres. Exactly 1 metre equals 100 centimetres. No calibrated geometry or model claim.\n",
+                    "excerpt_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b",
+                    "id": "0e38555298d259aac876ba4de53631d43c3f7f32253c6f6921edaaa47585e62b",
+                    "page": 1,
+                    "page_label": "1",
+                    "project": null,
+                    "revision_id": "REV-7d66c03af46248968f7570cdbc8b4c82",
+                    "revision_number": 1,
+                    "scope_type": "Company",
+                    "source_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b"
+                  }
+                ],
+                "source_id": "f231d436-2fcb-4ce8-99bb-ee4257917ba2",
+                "title": "Authored metre rate",
+                "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+              }
+            },
+            "assemblies": {},
+            "lines": [
+              {
+                "alternate": "",
+                "cost_code": "R18-01",
+                "description": "R18 synthetic authored manual quantity",
+                "included": true,
+                "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+                "material_factor": "1",
+                "notes": "Explicit authored quantity in the canonical unit. Attach retained manual takeoff evidence separately; no geometric calibration claim.",
+                "quantity": {
+                  "amount": "2.500000",
+                  "precision": 6,
+                  "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+                },
+                "rate_source_id": "42604488-0870-4c36-841d-88fbf3a2a8dc",
+                "waste_fraction": "0"
+              }
+            ],
+            "adjustments": []
+          },
+          "result": {
+            "schema": "cipher.estimate.result.v1",
+            "policy": {
+              "version": "cipher.estimate.line-half-up.v1",
+              "rounding_mode": "ROUND_HALF_UP",
+              "currency_exponent": 2,
+              "intermediate": "exact-rational",
+              "line_rounding": "sum-exact-components-then-round",
+              "component_allocation": "nonnegative-largest-remainder-tie-by-stable-component-id",
+              "header_rounding": "sum-rounded-lines"
+            },
+            "lines": [
+              {
+                "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+                "description": "R18 synthetic authored manual quantity",
+                "quantity": {
+                  "amount": "2.500000",
+                  "precision": 6,
+                  "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+                },
+                "quantity_method": "authored",
+                "included": true,
+                "alternate": "",
+                "cost_code": "R18-01",
+                "components": [
+                  {
+                    "component_id": "07516f42-c6be-47e9-a086-28c612f87017",
+                    "rate_source_id": "42604488-0870-4c36-841d-88fbf3a2a8dc",
+                    "rate_revision": 1,
+                    "cost_type": "material",
+                    "source_unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259",
+                    "resource_quantity_exact": {
+                      "numerator": "5",
+                      "denominator": "2"
+                    },
+                    "priced_quantity_exact": {
+                      "numerator": "5",
+                      "denominator": "2"
+                    },
+                    "material_factor": {
+                      "numerator": "1",
+                      "denominator": "1"
+                    },
+                    "waste_fraction": {
+                      "numerator": "0",
+                      "denominator": "1"
+                    },
+                    "unrounded_cost": {
+                      "numerator": "25",
+                      "denominator": "8"
+                    },
+                    "allocated_amount": {
+                      "amount": "3.13",
+                      "currency": "USD"
+                    },
+                    "rounding_increment": {
+                      "amount": "0.01",
+                      "currency": "USD"
+                    }
+                  }
+                ],
+                "unrounded_extension": {
+                  "numerator": "25",
+                  "denominator": "8"
+                },
+                "extension": {
+                  "amount": "3.13",
+                  "currency": "USD"
+                }
+              }
+            ],
+            "adjustments": [],
+            "direct": {
+              "amount": "3.13",
+              "currency": "USD"
+            },
+            "indirect": {
+              "amount": "0.00",
+              "currency": "USD"
+            },
+            "contingency": {
+              "amount": "0.00",
+              "currency": "USD"
+            },
+            "total": {
+              "amount": "3.13",
+              "currency": "USD"
+            },
+            "conversion_references": [],
+            "input_digest": "a055ad0dfa3f58b2a6e8328e5f3dd759480d4f528b2f74a63f56c84edbc32096",
+            "output_digest": "3ecd69e8e21597442d291e41af3ed32d21cc49aa57e9ba893aa0b111cd80f85b"
+          },
+          "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+          "currency_policy": {
+            "currency": "USD",
+            "currency_exponent": 2,
+            "fraction_units": 100,
+            "native_currency_version": "2026-10-16 08:44:46.834949"
+          },
+          "input_digest": "a055ad0dfa3f58b2a6e8328e5f3dd759480d4f528b2f74a63f56c84edbc32096",
+          "output_digest": "3ecd69e8e21597442d291e41af3ed32d21cc49aa57e9ba893aa0b111cd80f85b",
+          "source_citations": [
+            {
+              "company": "Cipher Synthetic Company",
+              "document_id": "DOC-b6b5c84f5b1d488ca9ee0c16a0ad9d72",
+              "document_title": "Ricky authored manual source",
+              "excerpt": "Synthetic Company Ricky authored rate 1.25 USD per metre. Manual quantity 2 metres. Exactly 1 metre equals 100 centimetres. No calibrated geometry or model claim.\n",
+              "excerpt_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b",
+              "id": "0e38555298d259aac876ba4de53631d43c3f7f32253c6f6921edaaa47585e62b",
+              "page": 1,
+              "page_label": "1",
+              "project": null,
+              "revision_id": "REV-7d66c03af46248968f7570cdbc8b4c82",
+              "revision_number": 1,
+              "scope_type": "Company",
+              "source_sha256": "8153dba19ecd16d28bccbbc4f8d2b1878e7b5037493aa58faf17b6afee92436b"
+            }
+          ]
+        },
+        "history_id": "l53sosu9gu",
+        "operation": {
+          "id": "e71d5bd8-4f41-46b8-9695-1e6b4c53456d",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    }
+  ],
+  "actual_browser_binding": [
+    {
+      "method": "cipher_aec.takeoff.company_api.bind_line",
+      "operation_id": "06bc96ca-f9f9-45b5-8023-59bddc96e1a6",
+      "status": "confirmed",
+      "input_sha256": "52a4812bd9900e88649846ac9704ab3f8732b4d30e313bc4c360cf89aa4c2c46",
+      "http_status": 200,
+      "result": {
+        "binding": {
+          "scope_type": "Company",
+          "id": "33b65e38-213a-4d92-a18f-c384ebb08206",
+          "company": "Cipher Synthetic Company",
+          "project": null,
+          "author_person": "7e351e70e0",
+          "author_user": "ricky.company.author.1cc066dc8ba8@cipher.example",
+          "created_at": "2026-10-17T02:50:55.634643+00:00",
+          "status": "authored",
+          "measurement_id": "d4517e7c-3adf-4d71-b853-69a4ec376f85",
+          "measurement_digest": "4d44146805c91b435e29345eeecf4c072a1e03186e4bdb139b957e04e9b8839f",
+          "estimate_line_record": "034c4d79-ec08-4bcc-a8f2-d91c798daf4f",
+          "estimate": "be392b8d-160b-456e-93c8-3c1474287352",
+          "estimate_revision": "13cea07c-9a38-481a-bf6f-8976b6c2cb4b",
+          "line_id": "07516f42-c6be-47e9-a086-28c612f87017",
+          "estimate_line_digest": "ee698b787d6f8c1368e631c68623f1a57f93a74e026b4f8a78d191a7d5c23e59",
+          "quantity": {
+            "amount": "2.500000",
+            "precision": 6,
+            "unit_id": "b52a2d7f-0deb-4e87-a0b4-471c32b9f259"
+          },
+          "reason": "Explicit synthetic reviewed manual quantity evidence. This exact saved line retains its original quantity and pricing; no calibrated geometry is asserted.",
+          "quantity_basis": "net-quantity-v1",
+          "waste_policy": "net-takeoff-estimate-component-waste-v1",
+          "provenance": "subsequently-attached-takeoff-evidence-v1",
+          "original_snapshot_claim": "authored-quantity-not-recomputed"
+        },
+        "history_id": "mcs8pf9mfv",
+        "operation": {
+          "id": "06bc96ca-f9f9-45b5-8023-59bddc96e1a6",
+          "status": "succeeded",
+          "replayed": false
+        }
+      }
+    }
+  ],
+  "new_rows_total": 11,
+  "original_UUID_reused_after_428": true,
+  "successful_commands_repeated": 0,
+  "model_or_provider_invoked": false
+}

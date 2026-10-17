@@ -1,0 +1,21 @@
+{
+  "schema": "cipher.r18.original-checkbox-driver-failure.v1",
+  "status": "original_failed_before_any_binding_dispatch",
+  "original_browser_status_preserved": "failed",
+  "reason": "Playwright check() rejected before custom UI5 checked state settled. Retained actual screenshot shows checked box and enabled action. Continue with normal keyboard Space and awaited state.",
+  "business_commands": 0,
+  "new_business_rows": 0,
+  "all_existing_business_source_config_indexes_closed_evidence_exact": true,
+  "auth": {
+    "status": "passed",
+    "bounded_user_changes": 0,
+    "bounded_session_changes": 0,
+    "transport_ip_change_independently_hash_verified": false,
+    "observer_business_writes": 0
+  },
+  "original_browser_report_sha256": "d72f76b3acf60a92b8657208fc0940fde6277272b6dec8ef5dd87b8aad00b3b4",
+  "before_sha256": "fa97f35f5a274276ad1a21191430aa358c59a59a68d0db4f2fe3feba12dc33fb",
+  "after_sha256": "e4d0f35c6695f0d03969cee9f762ddb5209ef610a5e46fad878accc87303315a",
+  "product_source_changed": false,
+  "replacement_estimate_or_measurement": false
+}

@@ -1,0 +1,21 @@
+{
+  "status": "unchanged",
+  "before": {
+    "at": "2026-10-17T02:45:50.180174+00:00",
+    "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+    "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+    "containers": {
+      "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+      "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+    }
+  },
+  "after": {
+    "at": "2026-10-17T02:51:17.402321+00:00",
+    "main_head": "7248171c14584deeaa308f850646ef5d7aeec891",
+    "main_status": "?? apps/cipher/docs/framework/AI04_COMPANY_READ_INTEGRATION.md\n?? apps/cipher/docs/framework/evidence/r1/ai04-company-authority-contract-tests.json\n",
+    "containers": {
+      "cipher-r0-runtime-1": "131d33103a68d12a763eb9402a0e4ca6792343d0a5d571d284feae98acd9bdb3 2026-10-15T15:11:47.70663337Z",
+      "cipher-ai04-stage-a-20261016-runtime-1": "fd5e233cbfd69890afc29e09bcc968d695e5a5c2b90bc60feee61b78be1f11e8 2026-10-16T03:12:18.081208862Z"
+    }
+  }
+}

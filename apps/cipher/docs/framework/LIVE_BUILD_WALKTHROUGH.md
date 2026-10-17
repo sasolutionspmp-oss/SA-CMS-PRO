@@ -6,6 +6,8 @@ synthetic business records. They are not generated images or design mockups.
 The private development service listens at `http://127.0.0.1:18880` in the
 execution environment; this address does not make it publicly reachable.
 
+The latest [Company quantity evidence gallery](evidence/r1/company-takeoff-binding-r18/ui/README.md) shows the original manual measurement, exact saved-line review, independently verified attachment and unchanged saved estimate at desktop, tablet and phone widths, using one actual browser command against the isolated backend.
+
 The latest [Company drawing takeoff gallery](evidence/r1/company-takeoff-r17/ui/README.md) shows the actual register, authorized stored PDF, reviewed manual entry and saved measurement at desktop, tablet and phone widths. It uses the real isolated backend and preserves the original OCR dependency failure separately from its successful corrected continuation.
 
 The latest [Company saved-suggestion gallery](evidence/r1/company-ricky-native-r14/ui/README.md) shows actual scope selection, saved scope and saved estimate review at 1440, 900 and 390 pixels. These nine screens use the isolated backend and original authenticated cookies: 23 actual API GETs, 15 successful font responses, no browser errors/blocked requests/business commands and no login/model call. Root visually reviewed all nine. The [Stage B checkpoint](AI04_COMPANY_PROPOSALS.md) records the four native cases and preservation. R10 screenshots retain their original read-workspace source; mocked browser captures are separate. No human draft-save/apply or main deployment is claimed.

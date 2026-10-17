@@ -1,0 +1,196 @@
+{
+  "browser_cases": 83,
+  "build": {
+    "files": 915,
+    "modules": 2041,
+    "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/dist",
+    "status": "passed"
+  },
+  "classification": "synthetic_interception_host_qualification",
+  "configuration_sha256": {
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/BASELINE_R17_V3.json": "417f444376144dde68f58cb57518c455b18c950c9407adcb72921bf8341554e3",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/playwright-r18.config.mjs": "047a7edb247c66677b7223f7767bea61bc8dd6c1464099c6fb10ff965ee8ab72",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/vite-r18.config.mjs": "3b38a7f2985176844f0208662f70a8d7ff1e2f9647749a73e4a7099e3942ec1e"
+  },
+  "focused_cases": 104,
+  "fresh_distinct_cases": 105,
+  "full_suite": "not run; affected gates only",
+  "generated_contracts_verified": 13,
+  "integrity": {
+    "App_backend_generated_Project_takeoff": "byte-identical to R17 v3",
+    "changed_paths": 7,
+    "preserved_epochs": {
+      "/dev/shm/cipher-company-takeoff-binding-ui-r18/workspace": {
+        "files": 714,
+        "inventory_sha256": "02b63bfcbfb699f1b02e240a8793f54de93d8840ce779936cec7f1f3cd30962f"
+      },
+      "/dev/shm/cipher-company-takeoff-ui-r17/v2/workspace": {
+        "files": 714,
+        "inventory_sha256": "a3178583ca814f780a5ce5c6f685645a9862dddeee50ebec86f561060faf1758"
+      },
+      "/dev/shm/cipher-company-takeoff-ui-r17/v3/workspace": {
+        "files": 714,
+        "inventory_sha256": "b65a9a634a809a02942d4f315ab669360292f2cce011c2d183b46580f1646594"
+      },
+      "/dev/shm/cipher-company-takeoff-ui-r17/workspace": {
+        "files": 714,
+        "inventory_sha256": "02b63bfcbfb699f1b02e240a8793f54de93d8840ce779936cec7f1f3cd30962f"
+      }
+    },
+    "production_paths": 4,
+    "source_files": 719,
+    "test_paths": 3,
+    "unchanged_base_files": 712
+  },
+  "logs_sha256": {
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-01.log": "f77a42d261f289c035584b9a851dfad37f41095e5c5f417f0a0c309a5dd98bd8",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-02.log": "e6dcea122f8232c97f79a8c4bba587841ce10397eed6869e8f954b402ed0e718",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-03.log": "04697636ff2b666e10daadf5970b4c4c990de50f24f5e825227c3da3ed9e440b",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-04.log": "7d984de00b165e4ac9a534df77cf7532f4dc3f057f771a838ef113f71e90b961",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-05.log": "a63b16f03e4460bf4fb6eeaf3d31fb0eb36dcc9a7680fa9d2e4e30b760b690ec",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-06.log": "3bc1b506940c6df426230bf4a6a82e2f7c27453f5d9f712fc921484ab442c4a4",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-07-failing-first.log": "1aee1412409e2f4b7748bad2d674cac989a989376244fc96bc1f68e67e6b23ff",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-08-failing-first.log": "b202bc6ee67414123b2f8ffd1a558e042fcac43aba51d3c634c9f339179bde3c",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/build-final.log": "886b80044304d8d35ab1a6e749cfd08ef9c6b3576efc82552289cc6135eb8e7f",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/build-qualified.log": "29c85c0e49d27ff906517fd59d45b3279a05c5307469d009de5b8e190a9e0993",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/focused-final.log": "dc57c9f02ff694abbd97aa457a6eac235c47f8cec69a545c5b9ae0b06d2c1a14",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/generated-01.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/generated-qualified.log": "1b7dc707445b4b628ff2df44b07a185036cd64ddd8f1dd07d6b3bff49c985686",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/static-final.log": "8a9000a48e5170e1401b2a1aa74913d1d9f1dcf1aaba7df241f6b3936fa85f54",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/typecheck-03.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/typecheck-final.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/typecheck-first.log": "c6103b628008adba012d183e9bc5fa530f7b352726dcae2c19e53bf54d0829d3",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/typecheck-qualified.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895",
+    "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/typecheck-second.log": "aba8f461b491ace2868fd6bd0f61221369b0cc34fb186aa1f6081ad5ad85f895"
+  },
+  "native_qualification": "pending root-owned; child made no native calls or captures",
+  "node_contract_cases": 22,
+  "reports": {
+    "attempt-01": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-01/report.json",
+      "sha256": "322b2e831ded3a8992d5fa7b283ff321c2113dafe88e5bc693496560ba1e652f",
+      "stats": {
+        "duration": 4492.062999999999,
+        "expected": 5,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:32:54.768Z",
+        "unexpected": 7
+      }
+    },
+    "attempt-02": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-02/report.json",
+      "sha256": "e1f53285862bcad4155c26974ab00d9ed083c0ae123909e89db42e01b5725b78",
+      "stats": {
+        "duration": 20634.954999999998,
+        "expected": 11,
+        "flaky": 0,
+        "skipped": 13,
+        "startTime": "2026-10-17T02:33:08.204Z",
+        "unexpected": 1
+      }
+    },
+    "attempt-03": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-03/report.json",
+      "sha256": "6f006b800b2c0fae5a312f09360848d2861243108cefa4512440adf32cbe18e1",
+      "stats": {
+        "duration": 1120.472,
+        "expected": 12,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:33:50.499Z",
+        "unexpected": 0
+      }
+    },
+    "attempt-04": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-04/report.json",
+      "sha256": "5bd3edd8b8f69e73f5c3089d0e5df9b0e5f958b8657e945b5e9cf77e487b6aa5",
+      "stats": {
+        "duration": 3857.5190000000002,
+        "expected": 1,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:34:02.582Z",
+        "unexpected": 0
+      }
+    },
+    "attempt-05": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-05/report.json",
+      "sha256": "182e21d1a8dfcf61b6e527f49d83421a454c13e5918547ad2f113143abf36583",
+      "stats": {
+        "duration": 94728.815,
+        "expected": 25,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:34:30.460Z",
+        "unexpected": 5
+      }
+    },
+    "attempt-06": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-06/report.json",
+      "sha256": "0304ad1768e53933f142ed064d743f9a3779ff0fae6f940963ed2ec752a39ee0",
+      "stats": {
+        "duration": 50827.75399999999,
+        "expected": 32,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:36:35.619Z",
+        "unexpected": 1
+      }
+    },
+    "attempt-07-failing-first": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-07-failing-first/report.json",
+      "sha256": "38d2c31f026e9a48b8b604fd17fc020feeaeec2e2fcec8bad20988c41fd54ce4",
+      "stats": {
+        "duration": 2408.045,
+        "expected": 13,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:37:48.026Z",
+        "unexpected": 4
+      }
+    },
+    "attempt-08-failing-first": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/attempt-08-failing-first/report.json",
+      "sha256": "22700d05e436d9a4db8facd5287f13ee75b32f53bb5c75a5f89c5e13213d9a46",
+      "stats": {
+        "duration": 14239.2,
+        "expected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:38:07.453Z",
+        "unexpected": 1
+      }
+    },
+    "focused-final": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/focused-final/report.json",
+      "sha256": "3086397694bb8dd327e604b0394e26ce234ab8081814bf835044f4e7538c6f5d",
+      "stats": {
+        "duration": 222613.53900000002,
+        "expected": 104,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:38:39.697Z",
+        "unexpected": 0
+      }
+    },
+    "static-final": {
+      "path": "/dev/shm/cipher-company-takeoff-binding-ui-r18/v2/static-final/report.json",
+      "sha256": "069837bc302b3fe22849fc96493c4b972d4496c94a64746dd5129b9c48105eda",
+      "stats": {
+        "duration": 3325.638,
+        "expected": 1,
+        "flaky": 0,
+        "skipped": 0,
+        "startTime": "2026-10-17T02:42:27.424Z",
+        "unexpected": 0
+      }
+    }
+  },
+  "retries": 0,
+  "schema": "cipher.company-takeoff-line.ui-qualification.v1",
+  "screenshots": "disabled",
+  "static_asset_cases": 1,
+  "typecheck": "passed",
+  "workers": 1
+}

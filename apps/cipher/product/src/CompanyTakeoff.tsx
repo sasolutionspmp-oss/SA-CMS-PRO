@@ -5,6 +5,11 @@ import { companyTakeoff } from './api/company-takeoff';
 import { invalidTakeoff, matchesCreatedMeasurement, matchesCreatedSet, takeoffShape, validTakeoffPdfMetadata } from './api/company-takeoff-validation';
 import type { CommandActor } from './api/company-takeoff-validation';
 import type { CompanyTakeoffCreateSetRequest, CompanyTakeoffCreateSetResponse, CompanyTakeoffCreateMeasurementRequest, CompanyTakeoffCreateMeasurementResponse, CompanyTakeoffMeasurementRecord, CompanyTakeoffSetRecord } from './api/company-takeoff.generated';
+import CompanyTakeoffBinding, { SavedBinding } from './CompanyTakeoffBinding';
+import type { SavedLineBinding } from './CompanyTakeoffBinding';
+import { companyTakeoffBinding, matchesBinding } from './api/company-takeoff-binding';
+import type { LineReview } from './api/company-takeoff-binding';
+import type { CompanyTakeoffBindLineRequest, CompanyTakeoffBindLineResponse } from './api/company-takeoff.generated';
 import { sourceApi } from './api/sources';
 import { useResource } from './hooks';
 import { useMutation } from './useMutation';
@@ -24,7 +29,7 @@ const pathFor = (company: string, id?: string) => `/company/takeoff${id ? '/' + 
 export default function CompanyTakeoff(props: Props) {
   const binding = useRef<(CommandActor & { company: string; documentId?: string }) | undefined>(undefined);
   const [savedSet, setSavedSet] = useState<{ company: string; id: string }>();
-  const [commandKind, setCommandKind] = useState<'set' | 'measurement'>('set');
+  const [commandKind, setCommandKind] = useState<'set' | 'measurement' | 'line'>('set');
   const [notice, setNotice] = useState(''); const [revision, setRevision] = useState(0); const [accessDenied, setAccessDenied] = useState(false);
   const createSet = useMutation<SetInput, CompanyTakeoffCreateSetResponse>(async input => {
     const result = await companyTakeoff.createSet(input);
@@ -34,31 +39,49 @@ export default function CompanyTakeoff(props: Props) {
     const result = await companyTakeoff.createMeasurement(input);
     if (!binding.current?.documentId || !matchesCreatedMeasurement(result, input, binding.current, binding.current.documentId)) throw invalidTakeoff(); return result;
   });
-  const ownLocked = createSet.locked || createMeasurement.locked;
+  const authority = JSON.stringify([props.company, props.user, props.personId, [...props.capabilities].sort()]);
+  const currentAuthority = useRef(authority); currentAuthority.current = authority;
+  const linePlan = useRef<{ review: LineReview; authority: string; actor: CommandActor; sent: boolean; controller: AbortController } | undefined>(undefined);
+  const [savedLine, setSavedLine] = useState<SavedLineBinding>();
+  useEffect(() => { const plan = linePlan.current; if (plan && !plan.sent && plan.authority !== authority) plan.controller.abort(); setSavedLine(undefined); }, [authority]);
+  const bindLine = useMutation<CompanyTakeoffBindLineRequest, CompanyTakeoffBindLineResponse>(async input => {
+    const plan = linePlan.current; if (!plan) throw invalidTakeoff();
+    if (!plan.sent) {
+      try { await companyTakeoffBinding.preflight(plan.review, plan.controller.signal); if (currentAuthority.current !== plan.authority || plan.controller.signal.aborted) throw invalidTakeoff(); }
+      catch (error) { if (error instanceof ApiError && [403, 404].includes(error.status)) throw error; throw new ApiError('Evidence was not submitted. Refresh and review the current estimate and source before trying again.', 'binding_preflight_refused', 412); }
+      plan.sent = true;
+    }
+    const result = await companyTakeoffBinding.bind(input);
+    if (!takeoffShape('CompanyTakeoffBindLineResponse', result) || !matchesBinding(result.binding, input, plan.review, plan.actor)) throw invalidTakeoff();
+    return result;
+  });
+  const finishLine = (result?: CompanyTakeoffBindLineResponse) => { const plan = linePlan.current; if (result && plan) { setSavedLine({ response: result, review: plan.review, authority: plan.authority }); setNotice('Quantity evidence attachment confirmed.'); setRevision(n => n + 1); linePlan.current = undefined; binding.current = undefined; } return Boolean(result); };
+  const ownLocked = createSet.locked || createMeasurement.locked || bindLine.locked;
   const locked = ownLocked || Boolean(props.navigationLocked);
-  const unknown = createSet.unknown || createMeasurement.unknown;
+  const unknown = createSet.unknown || createMeasurement.unknown || bindLine.unknown;
   const sameActor = !binding.current || binding.current.company === props.company && binding.current.user === props.user && binding.current.personId === props.personId;
   useEffect(() => { props.onLockedChange(ownLocked); return () => props.onLockedChange(false); }, [ownLocked, props.onLockedChange]);
-  const authority = JSON.stringify([props.company, props.user, props.personId, [...props.capabilities].sort()]);
   useEffect(() => { setNotice(''); setSavedSet(undefined); }, [authority]);
   const finishSet = (v?: CompanyTakeoffCreateSetResponse) => { if (v) { setSavedSet({ company: v.takeoff_set.company, id: v.takeoff_set.id }); setNotice('Company takeoff set created.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
   const finishMeasurement = (v?: CompanyTakeoffCreateMeasurementResponse) => { if (v) { setNotice('Manual measurement saved. This is an authored quantity, without a calibrated geometry claim.'); binding.current = undefined; setRevision(n => n + 1); } return Boolean(v); };
-  const commandError = commandKind === 'set' ? createSet.error : createMeasurement.error;
+  const commandError = commandKind === 'set' ? createSet.error : commandKind === 'measurement' ? createMeasurement.error : bindLine.error;
   useEffect(() => { if (commandError && [403, 404].includes(commandError.status)) setAccessDenied(true); }, [commandError]);
   return <>
     {(props.active || locked) && <div className="company-takeoff-command" aria-label="Company takeoff command state">
-      {unknown && <><MessageStrip design="Critical" hideCloseButton>The result is uncertain. Keep this view open and recover the original request. Recovery lasts while this view stays open.</MessageStrip>{!sameActor && <p>Restore the original Company and signed-in person to recover this request.</p>}<Button disabled={createSet.busy || createMeasurement.busy || !sameActor || !props.active || props.navigationLocked} onClick={async () => { if (createSet.unknown) finishSet(await createSet.recover()); else finishMeasurement(await createMeasurement.recover()); }}>Recover original takeoff request</Button></>}
+      {unknown && <><MessageStrip design="Critical" hideCloseButton>The result is uncertain. Keep this view open and recover the original request. Recovery lasts while this view stays open.</MessageStrip>{!sameActor && <p>Restore the original Company and signed-in person to recover this request.</p>}<Button disabled={createSet.busy || createMeasurement.busy || bindLine.busy || !sameActor || !props.active || props.navigationLocked} onClick={async () => { if (createSet.unknown) finishSet(await createSet.recover()); else if (createMeasurement.unknown) finishMeasurement(await createMeasurement.recover()); else finishLine(await bindLine.recover()); }}>Recover original takeoff request</Button></>}
       {commandError && <Failure error={commandError} />}
       {notice && <MessageStrip design="Positive" hideCloseButton>{notice}</MessageStrip>}
       {savedSet && !locked && <Button onClick={() => props.navigate(pathFor(savedSet.company, savedSet.id))}>Open created takeoff set</Button>}
     </div>}
+    {props.active && !accessDenied && savedLine?.authority === authority && props.capabilities.includes('estimate.read') && props.capabilities.includes('document.read') && <div className="page company-takeoff-page"><SavedBinding saved={savedLine} locked={locked} onDenied={() => setAccessDenied(true)} /></div>}
     {props.active && accessDenied && <div className="page"><MessageStrip design="Information" hideCloseButton>Source access changed. Previous takeoff content is hidden. Recover an uncertain request before reopening current sources.</MessageStrip><Button disabled={locked} onClick={() => { setAccessDenied(false); setRevision(n => n + 1); }}>Recheck Company takeoff access</Button></div>}
     {props.active && !accessDenied && <AuthorityView key={authority} {...props} locked={locked} revision={revision}
+      bindLine={async (review, reason) => { if (locked) return false; setCommandKind('line'); binding.current = { company: props.company, user: props.user, personId: props.personId }; linePlan.current = { review: structuredClone(review), authority, actor: { user: props.user, personId: props.personId }, sent: false, controller: new AbortController() }; setNotice(''); setSavedLine(undefined); return finishLine(await bindLine.run({ company: props.company, measurement_id: review.measurement.id, estimate_line_record: review.line.id, quantity_basis: 'net-quantity-v1', reason })); }}
       createSet={async input => { if (locked) return false; setCommandKind('set'); binding.current = { company: props.company, user: props.user, personId: props.personId }; setNotice(''); return finishSet(await createSet.run(input)); }}
       createMeasurement={async (input, documentId) => { if (locked) return false; setCommandKind('measurement'); binding.current = { company: props.company, user: props.user, personId: props.personId, documentId }; setNotice(''); return finishMeasurement(await createMeasurement.run(input)); }} />}
   </>;
 }
-type ViewProps = Props & { locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string) => Promise<boolean> };
+type ViewProps = Props & { bindLine: (review: LineReview, reason: string) => Promise<boolean>; locked: boolean; revision: number; createSet: (input: SetInput) => Promise<boolean>; createMeasurement: (input: MeasureInput, documentId: string) => Promise<boolean> };
 function AuthorityView(props: ViewProps) {
   if (!props.capabilities.includes('estimate.read') || !props.capabilities.includes('document.read')) return <div className="page"><PageHeading eyebrow="COMPANY ESTIMATING" title="Company drawing takeoff" /><Failure error={new ApiError('Company takeoff needs current estimate and source read access.', 'capability_denied', 403)} /></div>;
   return props.setId ? <Workspace key={props.setId} {...props} setId={props.setId} /> : <Register {...props} />;
@@ -142,7 +165,7 @@ function SavedMeasurements(props: ViewProps & { setId: string }) {
     {rows.loading ? <Loading /> : rows.error ? <Failure error={rows.error} onRetry={props.locked ? undefined : () => { setSelected(''); paging.reset(); }} /> : rows.data?.items.length ? <ul className="company-takeoff-list">{rows.data.items.map(value => { const row = value.record as CompanyTakeoffMeasurementRecord; return <li key={row.id}><Button disabled={props.locked} design="Transparent" onClick={() => setSelected(row.id)}>{row.definition.locator}</Button><p>{quantityLabel(row)} · {row.result.method === 'manual' ? 'Authored manual quantity' : 'Saved calibrated quantity'}</p><p>{value.current_use?.eligible ? 'Server reports eligible for current use' : 'Historical / unavailable for new use'}</p></li>; })}</ul> : <Empty title="No saved measurements" icon="measure">Save a manual quantity against an exact source page.</Empty>}
     {!rows.loading && !rows.error && <Pager paging={paging} next={rows.data?.next_cursor} disabled={props.locked} />}
     {detail.loading && <Loading label="Reading saved measurement…" />}{detail.error && <Failure error={detail.error} onRetry={props.locked ? undefined : detail.refresh} />}
-    {r && <section aria-label="Saved Company measurement"><Title level="H3">{r.definition.locator}</Title><p>{r.definition.reason}</p><Fact label="Quantity">{quantityLabel(r)} · precision {r.result.quantity.precision}</Fact><p>{r.result.method === 'manual' ? 'Authored manual quantity. No calibrated geometry claim.' : 'Historical calibrated result. This workspace provides read-only inspection.'}</p><p>Source revision {r.source.revision_number} · Page {r.source.page}</p><p>{detail.data?.current_use?.eligible ? 'Server reports eligible for current use.' : `Unavailable for new use: ${detail.data?.current_use?.reasons.join(', ')}`}</p><Button disabled={props.locked} onClick={() => props.navigate(`/company/documents/${encodeURIComponent(r.source.document_id)}/revisions/${encodeURIComponent(r.source.revision_id)}?${new URLSearchParams({ company: props.company, page: String(r.source.page) })}`)}>Open exact measurement source</Button><details><summary>Stored measurement integrity</summary><code>{r.id}</code><p>Unit {r.result.quantity.unit_id}</p><code>{r.source.source_sha256}</code><p>Recorded {r.created_at} by {r.author_user}</p></details></section>}
+    {r && <section aria-label="Saved Company measurement"><Title level="H3">{r.definition.locator}</Title><p>{r.definition.reason}</p><Fact label="Quantity">{quantityLabel(r)} · precision {r.result.quantity.precision}</Fact><p>{r.result.method === 'manual' ? 'Authored manual quantity. No calibrated geometry claim.' : 'Historical calibrated result. This workspace provides read-only inspection.'}</p><p>Source revision {r.source.revision_number} · Page {r.source.page}</p><p>{detail.data?.current_use?.eligible ? 'Server reports eligible for current use.' : `Unavailable for new use: ${detail.data?.current_use?.reasons.join(', ')}`}</p><Button disabled={props.locked} onClick={() => props.navigate(`/company/documents/${encodeURIComponent(r.source.document_id)}/revisions/${encodeURIComponent(r.source.revision_id)}?${new URLSearchParams({ company: props.company, page: String(r.source.page) })}`)}>Open exact measurement source</Button>{props.capabilities.includes('estimate.write') && detail.data && <CompanyTakeoffBinding key={r.id} company={props.company} selected={detail.data} locked={props.locked} submit={props.bindLine} />}<details><summary>Stored measurement integrity</summary><code>{r.id}</code><p>Unit {r.result.quantity.unit_id}</p><code>{r.source.source_sha256}</code><p>Recorded {r.created_at} by {r.author_user}</p></details></section>}
   </section>;
 }
 function Field({ label, value, onChange, disabled, multiline = false }: { label: string; value: string; onChange: (value: string) => void; disabled: boolean; multiline?: boolean }) {

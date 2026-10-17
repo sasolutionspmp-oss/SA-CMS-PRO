@@ -14,6 +14,8 @@ Start with [current implementation status](IMPLEMENTATION_STATUS.md) for actual 
 
 The [live build walkthrough](LIVE_BUILD_WALKTHROUGH.md) links the actual container screenshots in workflow order.
 
+[Company manual quantity evidence](COMPANY_TAKEOFF_EVIDENCE.md) now links a saved measurement to an explicitly reviewed exact saved estimate line. [Twelve actual R18 screens](evidence/r1/company-takeoff-binding-r18/ui/README.md) and independent native audits show the saved attachment and unchanged pricing.
+
 [Company drawing takeoff](COMPANY_TAKEOFF.md) now provides pre-award sets, exact stored PDF viewing without an OCR dependency and explicit manual quantities. [Twelve actual R17 screens](evidence/r1/company-takeoff-r17/ui/README.md) and independent native audits retain the original failed run and qualify its separate continuation.
 
 [Company Activity](COMPANY_ACTIVITY.md) now presents authorized saved changes, exact recorded actors/times and bounded paging in SAP UI5. [Nine actual R16 screens](evidence/r1/company-activity-r16/ui/README.md) used the real ERPNext backend; 262 distinct composed browser cases and independent read-only preservation passed.
