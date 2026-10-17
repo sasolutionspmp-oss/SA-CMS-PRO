@@ -1,0 +1,23 @@
+{
+  "award_execution": "blocked_no_retry_dependent_procurement_finance_blocked",
+  "base": "0147603655624c3ad66ef73f6921a06805abff9a",
+  "baseline_app_paths_unchanged": 754,
+  "branch": "cipher/fld02-offline-backend-20261017",
+  "browser_vault_implemented": false,
+  "created_at": "2026-10-17T14:25:07.818488+00:00",
+  "evidence_inventory_sha256": "29d1d224239fd4d9d700ff46ff6a1f4285ce4cd4f298bd798d2a0c27c211aafc",
+  "final_host_tests": 74,
+  "final_log_sha256": "db59373c9c5ea4e9f92767eab17324853a6e08b1959f418e04cd2e65ef8bf00c",
+  "global_capture_uuid_reservation_installed": false,
+  "native_qualified": false,
+  "new_runtime_test_paths": 25,
+  "provider_or_runtime_actions": false,
+  "qualified_app_source_paths": 779,
+  "qualified_inventory_sha256": "f155a6157cddb459520772c2317013fa098fe96d2ccc851f075d30dd671f5cd2",
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "review_sha256": "17d523abb2b5d844b23cf39f3365e21ed640f8a87d51df903ad86e7a9dde12a7",
+  "shared_source_modified": false,
+  "source_inventory_sha256": "d9b41ae5548b2ca32e24be3b675872a521af794a901cf0dd426d91006047587f",
+  "source_paths": 30,
+  "status": "host-qualified bounded source candidate; native/HTTP/browser qualification pending local"
+}

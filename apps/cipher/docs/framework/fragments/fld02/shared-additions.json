@@ -1,0 +1,91 @@
+{
+  "base": "0147603655624c3ad66ef73f6921a06805abff9a",
+  "shared_files_modified": false,
+  "modules.txt_append": [
+    "Cipher Field Offline"
+  ],
+  "reuse_project_abilities": [
+    "field.read",
+    "field.write"
+  ],
+  "automatic_grants": false,
+  "after_install_or_migrate": [
+    "cipher_aec.field_offline.install.ensure_indexes"
+  ],
+  "permission_query_conditions": {
+    "Cipher Field Offline Device": "cipher_aec.field_offline.install.query_denied",
+    "Cipher Field Offline Capture": "cipher_aec.field_offline.install.query_denied",
+    "Cipher Field Offline Event": "cipher_aec.field_offline.install.query_denied"
+  },
+  "has_permission": {
+    "Cipher Field Offline Device": "cipher_aec.field_offline.install.permission_denied",
+    "Cipher Field Offline Capture": "cipher_aec.field_offline.install.permission_denied",
+    "Cipher Field Offline Event": "cipher_aec.field_offline.install.permission_denied"
+  },
+  "receipt_dispatch": {
+    "prefix": "offline.field.",
+    "callback": "cipher_aec.field_offline.service.authorize_receipt",
+    "scope": "Project",
+    "notes": "Metadata receipts preserve original summaries; full capture/field results reauthorize separately."
+  },
+  "history_dispatch": {
+    "subject_types": [
+      "Cipher Field Offline Device"
+    ],
+    "callback": "cipher_aec.field_offline.service.authorize_history_subject"
+  },
+  "routes": {
+    "cipher_aec.field_offline.api.register_device": {
+      "method": "POST",
+      "response": "FoDeviceMutationResponse",
+      "request": "FoRegisterDeviceRequest",
+      "command": true
+    },
+    "cipher_aec.field_offline.api.revoke_device": {
+      "method": "POST",
+      "response": "FoDeviceMutationResponse",
+      "request": "FoRevokeDeviceRequest",
+      "command": true
+    },
+    "cipher_aec.field_offline.api.stage_capture": {
+      "method": "POST",
+      "response": "FoCaptureMutationResponse",
+      "request": "FoStageCaptureRequest",
+      "command": true
+    },
+    "cipher_aec.field_offline.api.get_capture": {
+      "method": "GET",
+      "response": "FoGetCaptureResponse",
+      "request": "FoGetCaptureRequest",
+      "command": false
+    },
+    "cipher_aec.field_offline.api.inspect_capture": {
+      "method": "GET",
+      "response": "FoInspectCaptureResponse",
+      "request": "FoInspectCaptureRequest",
+      "command": false
+    },
+    "cipher_aec.field_offline.api.apply_capture": {
+      "method": "POST",
+      "response": "FoApplyCaptureResponse",
+      "request": "FoApplyCaptureRequest",
+      "command": true
+    },
+    "cipher_aec.field_offline.api.discard_capture": {
+      "method": "POST",
+      "response": "FoCaptureMutationResponse",
+      "request": "FoDiscardCaptureRequest",
+      "command": true
+    },
+    "cipher_aec.field_offline.api.resolve_capture": {
+      "method": "POST",
+      "response": "FoCaptureMutationResponse",
+      "request": "FoResolveCaptureRequest",
+      "command": true
+    }
+  },
+  "scheduler_or_service_worker": null,
+  "browser_vault_implemented": false,
+  "device_policy": "cipher_aec/field_offline/device-policy.json",
+  "namespace_reservation": "No global UUID reservation is installed. Staging/replay binds immutable capture payload; unrelated canonical use is detected before effects."
+}

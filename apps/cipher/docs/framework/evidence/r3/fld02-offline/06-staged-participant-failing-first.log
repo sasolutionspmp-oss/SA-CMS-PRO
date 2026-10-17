@@ -1,0 +1,15 @@
+test_staged_superintendent_cannot_silently_become_another_person_before_apply (cipher_aec.tests.test_field_offline.OfflineFieldTests.test_staged_superintendent_cannot_silently_become_another_person_before_apply) ... FAIL
+
+======================================================================
+FAIL: test_staged_superintendent_cannot_silently_become_another_person_before_apply (cipher_aec.tests.test_field_offline.OfflineFieldTests.test_staged_superintendent_cannot_silently_become_another_person_before_apply)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-fld02-offline-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_field_offline.py", line 265, in test_staged_superintendent_cannot_silently_become_another_person_before_apply
+    with self.assertRaises(DomainError) as error:apply(service,e,staged)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: DomainError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.011s
+
+FAILED (failures=1)

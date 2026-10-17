@@ -1,0 +1,109 @@
+{
+  "doctype": "DocType",
+  "name": "Cipher Field Offline Device",
+  "module": "Cipher Field Offline",
+  "custom": 0,
+  "istable": 0,
+  "is_submittable": 0,
+  "track_changes": 0,
+  "allow_rename": 0,
+  "engine": "InnoDB",
+  "autoname": "Prompt",
+  "naming_rule": "Set by user",
+  "index_web_pages_for_search": 0,
+  "fields": [
+    {
+      "fieldname": "scope_type",
+      "fieldtype": "Select",
+      "label": "Scope",
+      "options": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "company",
+      "fieldtype": "Link",
+      "label": "Company",
+      "options": "Company",
+      "reqd": 1
+    },
+    {
+      "fieldname": "project",
+      "fieldtype": "Link",
+      "label": "Project",
+      "options": "Project",
+      "reqd": 1
+    },
+    {
+      "fieldname": "author_person",
+      "fieldtype": "Link",
+      "label": "Author",
+      "options": "Cipher Person",
+      "reqd": 1
+    },
+    {
+      "fieldname": "status",
+      "fieldtype": "Data",
+      "label": "Status",
+      "reqd": 1
+    },
+    {
+      "fieldname": "record_digest",
+      "fieldtype": "Data",
+      "label": "Digest",
+      "length": 64,
+      "reqd": 1
+    },
+    {
+      "fieldname": "data_json",
+      "fieldtype": "Long Text",
+      "label": "Private offline record",
+      "hidden": 1,
+      "reqd": 1
+    },
+    {
+      "fieldname": "device_id",
+      "fieldtype": "Data",
+      "label": "Device Id"
+    },
+    {
+      "fieldname": "capture_id",
+      "fieldtype": "Data",
+      "label": "Capture Id"
+    },
+    {
+      "fieldname": "owner_person",
+      "fieldtype": "Data",
+      "label": "Owner Person"
+    },
+    {
+      "fieldname": "revision_number",
+      "fieldtype": "Int",
+      "label": "Revision Number"
+    },
+    {
+      "fieldname": "last_event",
+      "fieldtype": "Data",
+      "label": "Last Event"
+    }
+  ],
+  "field_order": [
+    "scope_type",
+    "company",
+    "project",
+    "author_person",
+    "status",
+    "record_digest",
+    "data_json",
+    "device_id",
+    "capture_id",
+    "owner_person",
+    "revision_number",
+    "last_event"
+  ],
+  "permissions": [
+    {
+      "role": "System Manager",
+      "read": 1
+    }
+  ]
+}

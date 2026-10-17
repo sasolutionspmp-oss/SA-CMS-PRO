@@ -1,0 +1,12 @@
+======================================================================
+ERROR: test_existing_native_update_also_refuses_without_the_exact_private_plan (cipher_aec.tests.test_field_offline_persistence.OfflinePersistenceBoundaryTests.test_existing_native_update_also_refuses_without_the_exact_private_plan)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/cipher-fld02-offline-20261017/workspace/apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_field_offline_persistence.py", line 93, in test_existing_native_update_also_refuses_without_the_exact_private_plan
+    doc.update(status='revoked', data_json=canonical_json(value), record_digest=digest(value))
+TypeError: fixtures.<locals>.FakeDocument.update() got an unexpected keyword argument 'status'
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.057s
+
+FAILED (errors=1)
