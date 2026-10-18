@@ -1,0 +1,168 @@
+{
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "source_commit": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+  "scope": "Product workflow source and cited backend/framework facts only. Hash verification is not runtime or acceptance execution.",
+  "files": [
+    {
+      "path": "apps/cipher/docs/framework/BACKEND_FRAMEWORK.md",
+      "bytes": 106945,
+      "sha256": "5d7dc20b77483eb36122e6d1d1394f8028090cf97a7469776fdd1b102d798986",
+      "git_blob": "440cbe9897d091abd6b91dc013d2ebde31806e8c",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/docs/framework/BACKEND_FRAMEWORK.md"
+    },
+    {
+      "path": "apps/cipher/docs/framework/FLD03_QUALITY_SAFETY.md",
+      "bytes": 6466,
+      "sha256": "9cafe771ed197dabfca79b753302841b9712bd704b5addf0ba82554c8d86bf33",
+      "git_blob": "44c98168b9e0f475d4495677a08b30e91cd38f7d",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/docs/framework/FLD03_QUALITY_SAFETY.md"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/contracts.py",
+      "bytes": 12819,
+      "sha256": "c17a6768e938a7051da660b5f6e8ff9105296009cecdc77210148a426b81fa8a",
+      "git_blob": "8e0aad845a0020b71ea52ce4c9865b91a4272e62",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/field/contracts.py"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field/service.py",
+      "bytes": 25358,
+      "sha256": "ef862b28a23fa4cb268005b0490fc8d8d7d53262de0890fed0d6b5bf4d5c73a7",
+      "git_blob": "a62597d336d050d12a24624bd913d3b332c4e25a",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/field/service.py"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/device-policy.json",
+      "bytes": 2195,
+      "sha256": "275598cf44a22fe09133a4addb61a82ede4917416e4e031623e4e99dd44042d3",
+      "git_blob": "1d7ab2367ceb6b8276a5afcdead7a2724ee08700",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/device-policy.json"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/service.py",
+      "bytes": 23169,
+      "sha256": "fc2cd0ba235535e1635a9932750e76a7b574aa22a498654cde552634b4d795d6",
+      "git_blob": "6fbb5060c13ae49ca9a18032c71d0f35825cc0fd",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/service.py"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/README.md",
+      "bytes": 3957,
+      "sha256": "4ae7ebc59caf21de4bf8411466e0024759670701df2fd9797584e71b4ca93922",
+      "git_blob": "b19bcdfea7022aa9b0f173123428062911fb93b8",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/README.md"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/contracts.py",
+      "bytes": 8921,
+      "sha256": "cb85a33bc99959c2f82ab88d56cc4b834e7910034dff90131f60ba2cd79960ec",
+      "git_blob": "04136d2126c3e02930ac928de9f7221cc0543384",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/contracts.py"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/privacy.py",
+      "bytes": 11846,
+      "sha256": "3e9672bbc5ab63a747ae290548f7e74c780be61ddb9d46f29235b553b3470f98",
+      "git_blob": "5963aab4747c99923f0cc74db21389736ea06aaa",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/privacy.py"
+    },
+    {
+      "path": "apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/service.py",
+      "bytes": 21673,
+      "sha256": "c2e37ef87defb3d27c20304e37953fcd6b570654519010d4a59cbed83b782f07",
+      "git_blob": "e29e363dc539f35a36a0e166e10e9293104686a5",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/platform/apps/cipher_aec/cipher_aec/quality_safety/service.py"
+    },
+    {
+      "path": "apps/cipher/product/src/App.tsx",
+      "bytes": 39973,
+      "sha256": "026c611c8f7cc73d3cbc063c57219bc9336dd037ca270964413cb640f9100950",
+      "git_blob": "76d6b1169f545c9416f116f14795c1deac12bef3",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/App.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/FieldOffline.tsx",
+      "bytes": 33310,
+      "sha256": "508dc0b43744812061a0202aaa2d160282152d7902e5307bc25bc8081382fccb",
+      "git_blob": "8492232d2ae1975f53f38dbe606b6aea9a292925",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/FieldOffline.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/FieldOfflineEditor.tsx",
+      "bytes": 26012,
+      "sha256": "ac844f61035ce9004ae290e48b8e143adc826e583de43cba7e9f488c0440ce7c",
+      "git_blob": "0f86f97efc6cc7f560bddbdf8dd8ea26ef710059",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/FieldOfflineEditor.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/FieldRecords.tsx",
+      "bytes": 25023,
+      "sha256": "91ce7802725adc588da73e90f4c4cb4dbd5affa97e99b129d3042076759f2e66",
+      "git_blob": "291c1d86830044f8f82d3c11cc6e261cda1a8213",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/FieldRecords.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/QualitySafety.tsx",
+      "bytes": 20981,
+      "sha256": "67aaf9d1e275098a329355a6ed1d5d427af5555812b68ce7179819ce9bb334bb",
+      "git_blob": "ca21941ee6ac7df51d04ee0d1d6889916871eec8",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/QualitySafety.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/QualitySafetyEditor.tsx",
+      "bytes": 9571,
+      "sha256": "3e75221d7cf24f7b3be47c4cb968420e7d06bd07c2da8b3dc408546826610618",
+      "git_blob": "e1cba1e40fe9c4ab41feae26e64ee43271dd1cbb",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/QualitySafetyEditor.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/QualitySafetySources.tsx",
+      "bytes": 8594,
+      "sha256": "76d4336d060080c1bbe30eeadf1707c58c028274345363f91a0de00a9d94a1d6",
+      "git_blob": "fc70b789404bdbecf6ea44080e84ef6f3d2afeab",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/QualitySafetySources.tsx"
+    },
+    {
+      "path": "apps/cipher/product/src/api/client.ts",
+      "bytes": 8678,
+      "sha256": "824aab836e9b4600f17f1954f553682ea6d94431ccc4c2eafcf29b3c5c38857d",
+      "git_blob": "823fef0f9582e7abfb4500f4c6f69eda12077db1",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/api/client.ts"
+    },
+    {
+      "path": "apps/cipher/product/src/api/field-offline.ts",
+      "bytes": 21688,
+      "sha256": "e84b3cee65558291a83a72cb1a49b524e8cc469ae2da85c46e645ef6d16f323f",
+      "git_blob": "78a8bb8ac3109233c0181b796a4e131d623fb371",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/api/field-offline.ts"
+    },
+    {
+      "path": "apps/cipher/product/src/api/quality-safety.ts",
+      "bytes": 11780,
+      "sha256": "77b5a65ad85b75b0c9a956102a6e06734020dcdff707d29725148da303e1110e",
+      "git_blob": "abbe919796176b2c1bea1313165cc39cb49701b7",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/api/quality-safety.ts"
+    },
+    {
+      "path": "apps/cipher/product/src/field-offline-vault.ts",
+      "bytes": 20617,
+      "sha256": "465c2ea8afd0cb8d305ffdf9fc0b975c61e0c41db71b27e99e306d44dea04e97",
+      "git_blob": "3ccd5f18e56474e90504a6789a89c4194da545d5",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/field-offline-vault.ts"
+    },
+    {
+      "path": "apps/cipher/product/src/hooks.ts",
+      "bytes": 2405,
+      "sha256": "1b7d283fa4273ba3cd5a5faedc57ec6cb5be3cd5f402b04d0f81ef544b407fb2",
+      "git_blob": "75af84a98bf33845f155bf3ba1fbf105d5b63de6",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/hooks.ts"
+    },
+    {
+      "path": "apps/cipher/product/src/useMutation.ts",
+      "bytes": 2025,
+      "sha256": "9c06c7cf8fafa4f0fd11e6d25fc97b5b916721e315d62c937340c9ee2baff1f1",
+      "git_blob": "58030177044312973d17a10c29a0dfd7cc884531",
+      "source_url": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO/blob/4b884afa21ca1618bd47e2107d8212d261ecc1e9/apps/cipher/product/src/useMutation.ts"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "cipher.candidate5.operator-documentation.v1",
+  "status": "SOURCE_REVIEWED_DOCUMENTATION_ONLY",
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "base_sha": "4b884afa21ca1618bd47e2107d8212d261ecc1e9",
+  "branch": "cipher/c5-operator-walkthrough-20261018",
+  "artifact_path": "apps/cipher/docs/framework/evidence/r3/candidate5-operator-guide-20261018",
+  "files": [
+    "ACCEPTANCE_CHECKLIST.md",
+    "ARTIFACT_SHA256.json",
+    "INDEPENDENT_REVIEW.md",
+    "MANIFEST.json",
+    "OBSERVATIONS.md",
+    "OPERATOR_WALKTHROUGH.md",
+    "README.md",
+    "SOURCE_MANIFEST.json"
+  ],
+  "file_count": 8,
+  "application_changes": 0,
+  "acceptance_items": 19,
+  "acceptance_status": "All unchecked/unexecuted by this documentation task",
+  "native18_status": "source-prepared; native UNRUN",
+  "concurrency_status": "source-prepared; native UNRUN",
+  "verification": "Exact-source prose review, source/file hash and Git readback only; no tests or runtime actions",
+  "line_endings": "UTF-8 with LF, final LF; raw-byte hashes, no CRLF transport normalization",
+  "hash_manifest": "ARTIFACT_SHA256.json lists seven files; own raw-byte hash is external readback evidence."
+}

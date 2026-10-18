@@ -1,0 +1,50 @@
+{
+  "algorithm": "SHA-256 over raw UTF-8/LF bytes; Git SHA-1 blobs also supplied",
+  "listed_files": 7,
+  "total_files_including_this_manifest": 8,
+  "own_hash": "External publication readback; no circular self-hash.",
+  "files": [
+    {
+      "path": "ACCEPTANCE_CHECKLIST.md",
+      "bytes": 4470,
+      "sha256": "817864bb333cafb9bf432bd9f33cd4a992ca965fad2d35932976616c42c24136",
+      "git_blob": "c98d8cabe9c46966defca9c04c8f17a54c379e29"
+    },
+    {
+      "path": "INDEPENDENT_REVIEW.md",
+      "bytes": 3943,
+      "sha256": "6851bfe535e3ab1091effaa73273c14ef60655258c9a06d23634d36984e43ac0",
+      "git_blob": "d15fd9c2ace072f6343ac6cfbc9b029886be33da"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 1198,
+      "sha256": "db0ae514604510ba94757e8f8cd581cf8a6fc78fc6cc7a4fdd56ae9db931e648",
+      "git_blob": "45396bf7f554ed9131eebf0ce3d1022e0719c066"
+    },
+    {
+      "path": "OBSERVATIONS.md",
+      "bytes": 3675,
+      "sha256": "8f04530a7d66e46f65e83bf3861c24725e2b6e7ba9d8a350d88dda9c9e17efea",
+      "git_blob": "8dff514c64f196e482fe7c358a0a8c9518428ad8"
+    },
+    {
+      "path": "OPERATOR_WALKTHROUGH.md",
+      "bytes": 8144,
+      "sha256": "c7f68d46070207a9919c7d3faa2e3177103c09623e6d262a72dc83a955f16bfe",
+      "git_blob": "fbad0b96fd694a3aef174baf699b4f174baa7697"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1218,
+      "sha256": "11836c49e94c4e2f826942b878e310b3751341187df82c8cd4a57a0980e65968",
+      "git_blob": "d8c157355abbc5544075a204eb2c436307376e13"
+    },
+    {
+      "path": "SOURCE_MANIFEST.json",
+      "bytes": 9984,
+      "sha256": "15d39d146a6a33be253a00de5190ed9a9ecdfedd82b98da0c9aa293b7310ae38",
+      "git_blob": "80d218e22d21cad35019e67e350539cc12254d83"
+    }
+  ]
+}
