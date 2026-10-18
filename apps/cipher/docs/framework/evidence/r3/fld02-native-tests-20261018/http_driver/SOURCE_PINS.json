@@ -1,0 +1,69 @@
+{
+  "schema": "cipher.fld02.http-source-pins.v1",
+  "status": "prepared_unrun_static_only",
+  "actual_source_commit": "310a946bd34d06c9f7c1a3d96ab7274733142cd9",
+  "frozen_fld02_contract_commit": "392a19f8",
+  "inputs": {
+    "transport": {
+      "relative_path": "repository/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/transport.py",
+      "sha256": "f1aba8866dc1c4bbf7210990224c37662a23f6b7a84e8f197fc419482391793a"
+    },
+    "transport_contracts": {
+      "relative_path": "repository/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/contracts.py",
+      "sha256": "f91fd0fdf834433817f427c66309bcce209210c9266e3eaa876408989f4a2e90"
+    },
+    "session": {
+      "relative_path": "repository/apps/cipher/platform/apps/cipher_aec/cipher_aec/api/v1.py",
+      "sha256": "3d8d8550d9629ea8a09bbcf3e8acccfe47efd8529a9cf5f20be73575b4f98bfd"
+    },
+    "field_contracts": {
+      "relative_path": "repository/apps/cipher/platform/apps/cipher_aec/cipher_aec/field/contracts.py",
+      "sha256": "c17a6768e938a7051da660b5f6e8ff9105296009cecdc77210148a426b81fa8a"
+    },
+    "field_service": {
+      "relative_path": "repository/apps/cipher/platform/apps/cipher_aec/cipher_aec/field/service.py",
+      "sha256": "ef862b28a23fa4cb268005b0490fc8d8d7d53262de0890fed0d6b5bf4d5c73a7"
+    },
+    "fld02_api": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/api.py",
+      "sha256": "c9376b03144b68368c8e654f14372804358ce14bb7118c062ba8317c592dffab"
+    },
+    "fld02_contracts": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/contracts.py",
+      "sha256": "01629128b4af32a94b2e494ec2a12adf54d6f7f1e69d5c19edb5c36c6c65f72b"
+    },
+    "fld02_service": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/service.py",
+      "sha256": "fc2cd0ba235535e1635a9932750e76a7b574aa22a498654cde552634b4d795d6"
+    },
+    "fld02_spec": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/spec.py",
+      "sha256": "b29ad8c93dfc6194c1ae67c3c97684dcbcd382fabc388e3a1b2b515bf17ed4ec"
+    },
+    "fld02_routes": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/route-contracts.json",
+      "sha256": "840dc2495ea59de87aafe5e7274fa414705a1c358dd9fdb6eb91d09420c6148a"
+    },
+    "fld02_schema": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/schemas/api-v1.schema.json",
+      "sha256": "99e32521ba518224b327cdeb0643e5d91342406a41ee8e24ec617953d4602d84"
+    },
+    "fld02_privacy": {
+      "relative_path": "contract-source/apps/cipher/platform/apps/cipher_aec/cipher_aec/field_offline/device-policy.json",
+      "sha256": "275598cf44a22fe09133a4addb61a82ede4917416e4e031623e4e99dd44042d3"
+    }
+  },
+  "verification": {
+    "driver_imported": false,
+    "driver_executed": false,
+    "http_requests": 0,
+    "native_runtime_or_db_access": false,
+    "static_ast_parse": true,
+    "in_memory_compile_no_execution": true,
+    "json_parsed": true
+  },
+  "notes": [
+    "The pinned route/transport observations are source evidence, not runtime qualification.",
+    "Local driver journal is a private plaintext operator artifact, not the required encrypted browser vault."
+  ]
+}

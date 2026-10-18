@@ -1,0 +1,120 @@
+{
+  "qualification": "Every handoff artifact except self inventory. Frozen publication manifest includes this inventory hash.",
+  "files": [
+    {
+      "path": "ADD_NATIVE_TESTS.patch",
+      "bytes": 61990,
+      "sha256": "47d04ef541aa13027faf3a3778486ca941cc91f691b35335024b0c9a8f841621"
+    },
+    {
+      "path": "COMPOSE_MAP.json",
+      "bytes": 1050,
+      "sha256": "85ca186d1d318e6ee608703d093efde8de987e01fbff0342fbbd2de72458d849"
+    },
+    {
+      "path": "FRAPPE16_REFERENCE.json",
+      "bytes": 323,
+      "sha256": "db931d2190f8e185e0c2d0864518dadf59a880c8d558b629bd9cc1959c7f651a"
+    },
+    {
+      "path": "FRAPPE_REFERENCE_LICENSE.txt",
+      "bytes": 1118,
+      "sha256": "bc6001a54ffcc4ab520424d7dbb85b293578efcdcb7d8f8055e00dddf942e5d7"
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 5405,
+      "sha256": "0408ddb6e72e4af1e225d206bc2de7de8534714258682e1b6e3d063b9007d760"
+    },
+    {
+      "path": "INDEPENDENT_SOURCE_REVIEW.md",
+      "bytes": 14569,
+      "sha256": "feaec8fbe14ad90d90bde3c4f477ef34804f22b4ee68d1d3f6ff566c0f1eaa24"
+    },
+    {
+      "path": "MANIFEST.json",
+      "bytes": 2589,
+      "sha256": "0552a94f02bb77dacc1cd24b73414d8266165a624228ca5fc51ed6e4367a505c"
+    },
+    {
+      "path": "NATIVE_PROOF_PLAN.md",
+      "bytes": 7550,
+      "sha256": "8c72fbb59d66caca1d815d00426671d5470e73fc1e552e6d762cd4b0633f913a"
+    },
+    {
+      "path": "NATIVE_TEST_RECEIPT.template.json",
+      "bytes": 9484,
+      "sha256": "5e803254435ce1d5384259768a1662d8951c3d1b1b15c42627cf4ab665af66b6"
+    },
+    {
+      "path": "SOURCE_CONTRACTS.json",
+      "bytes": 16504,
+      "sha256": "3914c9a2f9f8fa170b7cff03b852653348c78979605d5b7df9329c1a0d87f825"
+    },
+    {
+      "path": "STATIC_PREPARATION_RECEIPT.json",
+      "bytes": 2600,
+      "sha256": "b7d442e6a059de3a72be5e6464ae12a7de65c836d540f1b51485d85bd6ac5398"
+    },
+    {
+      "path": "check_prepared_bundle.py",
+      "bytes": 4185,
+      "sha256": "adb80999bd7d338ced0caab5f4312ebb6e72d955539a69e48bfaf7512f88be8c"
+    },
+    {
+      "path": "frappe16-integration-test-case-reference.py",
+      "bytes": 6488,
+      "sha256": "ad0922ab07d0fbac1efd16d875979e72850272e097d0fb0a26be3a46878fa0a8"
+    },
+    {
+      "path": "http_driver/README.md",
+      "bytes": 11003,
+      "sha256": "536fea627783ad204c2aae957851137abd7d90f5ad4df47e1e9024ef1e19df7e"
+    },
+    {
+      "path": "http_driver/SOURCE_PINS.json",
+      "bytes": 3386,
+      "sha256": "2eea6bdde1f5b9587c6cd636ee17f321aefb04f8a847c432a7e82a05d87c26c2"
+    },
+    {
+      "path": "http_driver/example-envelope.json",
+      "bytes": 790,
+      "sha256": "e3dcc080cf09e511cbe07359b47254ebc64a44383196835ea1075e8043d59681"
+    },
+    {
+      "path": "http_driver/fld02_http_driver.py",
+      "bytes": 53697,
+      "sha256": "7eb65e0f1f28ed9eda7d41b9c7346dfe282de763268b4eba9a4655bd0740b600"
+    },
+    {
+      "path": "http_driver/frozen-api-v1.schema.json",
+      "bytes": 67693,
+      "sha256": "99e32521ba518224b327cdeb0643e5d91342406a41ee8e24ec617953d4602d84"
+    },
+    {
+      "path": "native_tests/COVERAGE.md",
+      "bytes": 5396,
+      "sha256": "8c0d216cb50024853048194663345d9eed9b12122bedb72c3e260f4649de3546"
+    },
+    {
+      "path": "native_tests/fld02_native_fixture.py",
+      "bytes": 4188,
+      "sha256": "0896c86523cbda509115b5aa134fcb78f9a0ea1ec3173c61d3279ee24352bf95"
+    },
+    {
+      "path": "native_tests/test_field_offline_native.py",
+      "bytes": 56193,
+      "sha256": "123343684cc5d44294f15db875338785451f16e884d549c4f19624a715515905"
+    },
+    {
+      "path": "static-preparation-final.log",
+      "bytes": 2600,
+      "sha256": "b7d442e6a059de3a72be5e6464ae12a7de65c836d540f1b51485d85bd6ac5398"
+    },
+    {
+      "path": "static-preparation-first.log",
+      "bytes": 2600,
+      "sha256": "863c41a046f34ea752be1b37f6249e1306facbf93828f470616a693a7583ca5f"
+    }
+  ]
+}

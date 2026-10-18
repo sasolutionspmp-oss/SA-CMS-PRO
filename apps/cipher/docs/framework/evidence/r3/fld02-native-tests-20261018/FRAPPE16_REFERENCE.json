@@ -1,0 +1,6 @@
+{
+  "url": "https://raw.githubusercontent.com/frappe/frappe/v16.52.0/frappe/tests/classes/integration_test_case.py",
+  "bytes": 6488,
+  "sha256": "ad0922ab07d0fbac1efd16d875979e72850272e097d0fb0a26be3a46878fa0a8",
+  "qualification": "Public exact-tag source reference; not executed, not proof of installed native image."
+}

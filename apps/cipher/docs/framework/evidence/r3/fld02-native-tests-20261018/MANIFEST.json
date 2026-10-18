@@ -1,0 +1,39 @@
+{
+  "award_boundary": "No award retry on any host/route; dependent procurement/finance rollout remains blocked.",
+  "base": "310a946bd34d06c9f7c1a3d96ab7274733142cd9",
+  "branch": "cipher/fld02-native-test-bundle-20261018",
+  "copy_preimages": "Absent at exact base, see COMPOSE_MAP.json.",
+  "created_utc": "2026-10-18T07:55:02.443948+00:00",
+  "hash_manifest": "ARTIFACT_SHA256.json",
+  "http_driver_executed": false,
+  "independent_review": "INDEPENDENT_SOURCE_REVIEW.md (no blocking source findings, runtime pending)",
+  "native_declared_cases": 18,
+  "native_evidence": "NATIVE_TEST_RECEIPT.template.json (all observed values null; all cases UNRUN)",
+  "native_executed_cases": 0,
+  "native_site_database_runtime_provider_model_actions": false,
+  "native_test_copy_files": 2,
+  "offline_contract": "392a19f8c01b4253a5aaeaa99878408d394dc9cb",
+  "preserved_refs": {
+    "cipher/doc03-backend-contract-20261017": "9d937ae1e0c10bb989e8c59f494e2998e41a8a43",
+    "cipher/doc03-reviewer-source-review-20261017": "aaa1b1ae306497cfd62ce2783008942e8ed4b41a",
+    "cipher/doc04-semantic-backend-20261017": "b70497f0a7e33b400d2f9ffdacb8e116bb66e556",
+    "cipher/fld02-offline-backend-20261017": "392a19f8c01b4253a5aaeaa99878408d394dc9cb",
+    "cipher/framework-final-draft": "f79df23af5bdb1c8cccf538241452bef2c459672",
+    "cipher/preserve-doc03-project-20261017": "d03bce8d0116ad39a505f4bb3a57cdec672b9e47",
+    "cipher/preserve-doc03-successor-wip-20261017": "142faec7d9b3f78374761b9e735a6fc08721550b",
+    "cipher/semantic-worker-transaction-candidate-20261017": "ed536381abc429e3fd3915e28439949301669624"
+  },
+  "publication_scope": "New artifact files only; production and existing application test trees unchanged.",
+  "remaining": "Local functional FLD02+FLD03 composition/migration; admitted native18; separateconnection/restart/latefault proofs; actual authenticated HTTP; browservault and provider/model qualification separate.",
+  "repository": "https://github.com/sasolutionspmp-oss/SA-CMS-PRO",
+  "source_contract_manifest": "SOURCE_CONTRACTS.json",
+  "static_checks": {
+    "bound_source_files": 48,
+    "frozen_schema_bytes_match": true,
+    "new_test_patch_apply_check": "PASS against separate exact-base index",
+    "qualification": "Compilation/AST/source binding only, never native proof.",
+    "syntax_source_guards": "PASS"
+  },
+  "status": "PREPARED / UNRUN native and HTTP test source; not runtime acceptance.",
+  "storage_recovery": "Previous unpublished tmp/shm drafts were lost after cloud restart; only this unfinished bundle reconstructed from immutable sources."
+}

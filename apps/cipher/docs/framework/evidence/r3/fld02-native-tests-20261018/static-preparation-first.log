@@ -1,0 +1,43 @@
+{
+  "qualification": "STATIC PREPARATION ONLY; no native, HTTP, DB, runtime, provider or model execution.",
+  "syntax_source_checks": "PASS",
+  "declared_native_methods": [
+    "test_fld02_n01_canonical_person_owns_device_and_original_login_survives_alias_sync",
+    "test_fld02_n02_revoked_device_refuses_staged_and_new_capture_without_field_effect",
+    "test_fld02_n03_disabled_original_binding_fails_even_when_alias_is_enabled",
+    "test_fld02_n04_reassigned_participant_binding_requires_explicit_new_identity_review",
+    "test_fld02_n05_stage_inspect_apply_reconciles_exact_native_header_revision_quantity_and_photo",
+    "test_fld02_n06_current_ingest_rights_are_rechecked_after_stage_then_original_recovery_is_read_only",
+    "test_fld02_n07_changed_source_head_is_an_explicit_conflict_and_preserves_original_bytes",
+    "test_fld02_n08_duplicate_stage_and_same_operation_retry_keep_one_exact_immutable_capture",
+    "test_fld02_n09_original_uuid_recovery_and_direct_field_retry_return_one_exact_committed_result",
+    "test_fld02_n10_shared_person_operation_collision_cannot_become_another_field_command",
+    "test_fld02_n11_native_controllers_and_repository_cannot_rewrite_or_delete_capture_envelope",
+    "test_fld02_n12_base_conflict_requires_linked_fresh_uuid_and_exact_current_quantity_predecessor",
+    "test_fld02_n13_discard_with_revoked_source_read_rights_redacts_payload_and_preserves_event",
+    "test_fld02_n14_recover_original_after_real_acceptance_amendment_redaction_and_write_revocation",
+    "test_fld02_n15_current_read_duties_and_source_rights_gate_every_historical_receipt_read",
+    "test_fld02_n16_quantity_lineage_keeps_exact_decimal_strings_and_source_byte_hashes",
+    "test_fld02_n17_tm_ticket_exact_documentary_lines_apply_once_without_task_or_financial_effects",
+    "test_fld02_n18_explicit_case_rollback_removes_own_rows_files_and_preserves_unrelated_file"
+  ],
+  "native_status": "UNRUN",
+  "http_status": "UNRUN",
+  "backend_reference": "310a946bd34d06c9f7c1a3d96ab7274733142cd9",
+  "offline_reference": "392a19f8c01b4253a5aaeaa99878408d394dc9cb",
+  "source_contract_files_verified": 48,
+  "files": [
+    {
+      "path": "http_driver/fld02_http_driver.py",
+      "sha256": "4068095b3cbb6960dffc07fd62702de71839fa2efdf42adb4dcf28317cba53c5"
+    },
+    {
+      "path": "native_tests/fld02_native_fixture.py",
+      "sha256": "0896c86523cbda509115b5aa134fcb78f9a0ea1ec3173c61d3279ee24352bf95"
+    },
+    {
+      "path": "native_tests/test_field_offline_native.py",
+      "sha256": "a126ea526ec70ec156af03cc902a6f132bbe8bb8c3eec6cbe97fecb5ff945b7e"
+    }
+  ]
+}

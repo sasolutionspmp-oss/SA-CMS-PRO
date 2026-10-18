@@ -1,0 +1,22 @@
+{
+  "backend_reference": "310a946bd34d06c9f7c1a3d96ab7274733142cd9",
+  "scope": "Copy exactly these new test/helper files after local-owned functional FLD02/FLD03 composition and migration. No production source/config changes. HTTP driver remains an optional standalone operator artifact.",
+  "new_files": [
+    {
+      "artifact": "native_tests/fld02_native_fixture.py",
+      "destination": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/fld02_native_fixture.py",
+      "preimage": null,
+      "preimage_status": "absent at exact backend reference",
+      "sha256": "0896c86523cbda509115b5aa134fcb78f9a0ea1ec3173c61d3279ee24352bf95",
+      "bytes": 4188
+    },
+    {
+      "artifact": "native_tests/test_field_offline_native.py",
+      "destination": "apps/cipher/platform/apps/cipher_aec/cipher_aec/tests/test_field_offline_native.py",
+      "preimage": null,
+      "preimage_status": "absent at exact backend reference",
+      "sha256": "123343684cc5d44294f15db875338785451f16e884d549c4f19624a715515905",
+      "bytes": 56193
+    }
+  ]
+}

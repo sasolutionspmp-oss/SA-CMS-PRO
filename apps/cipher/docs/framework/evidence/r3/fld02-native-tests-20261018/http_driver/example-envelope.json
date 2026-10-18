@@ -1,0 +1,26 @@
+{
+  "schema": "cipher.field.offline.v1",
+  "device_id": "123e4567-e89b-42d3-a456-426614174000",
+  "capture_id": "123e4567-e89b-42d3-a456-426614174001",
+  "company": "SYNTHETIC TEST COMPANY",
+  "project": "SYNTHETIC TEST PROJECT",
+  "actor_person": "SYNTHETIC-OPERATOR",
+  "actor_user": "operator@synthetic.example",
+  "captured_at": "2026-10-18T12:00:00Z",
+  "command": {
+    "action": "create",
+    "family": "daily",
+    "definition": {
+      "local_date": "2026-10-18",
+      "superintendent_user": "operator@synthetic.example",
+      "weather": "",
+      "weather_sources": [],
+      "crews": [],
+      "activities": ["Synthetic documentary field observation for an authorized local trial."],
+      "delays": [],
+      "visitors": []
+    },
+    "photos": [],
+    "quantities": []
+  }
+}
